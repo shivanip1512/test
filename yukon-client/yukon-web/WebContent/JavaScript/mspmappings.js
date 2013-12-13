@@ -1,8 +1,13 @@
 
 function SubstationToRouteMappings_SelectListener(url) {
     var x = jQuery("#subSelectList")[0].selectedIndex,
-        substationId = jQuery("#subSelectList")[0].options[x].value,
+        optionsList = jQuery("#subSelectList")[0].options,
+        substationId,
         routeElement = jQuery('#route_element');
+    if (x < 0 || 0 >= optionsList.length) {
+        return;
+    }
+    substationId = optionsList[x].value;
     jQuery.ajax({
         type: "POST",
         url: url,
@@ -17,7 +22,7 @@ function SubstationToRouteMappings_addRoute() {
         routeId,
         routeName,
         length;
-    if (substationIndex == -1) {
+    if (substationIndex === -1) {
         return false;
     }
     routeIndex = jQuery("#avRoutesSelectList")[0].selectedIndex;
@@ -32,11 +37,17 @@ function SubstationToRouteMappings_removeRoute() {
         routeIndex,
         route,
         length;
-    if (substationIndex == -1) {
+    if (substationIndex === -1) {
         return false;
     }
     routeIndex = jQuery("#routeIdSelectList")[0].selectedIndex;
+    if (0 > routeIndex) {
+        return false;
+    }
     route = jQuery("#routeIdSelectList")[0].options[routeIndex];
+    if ('undefined' === typeof route) {
+        return false;
+    }
     jQuery("#routeIdSelectList")[0].options[routeIndex] = null;
 
     length = jQuery("#avRoutesSelectList")[0].options.length;
