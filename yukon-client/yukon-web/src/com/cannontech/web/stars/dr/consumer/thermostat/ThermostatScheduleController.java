@@ -231,14 +231,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @RequestMapping(value = "history", 
                     method = RequestMethod.GET)
     public String history(HttpServletRequest request,
-                         @ModelAttribute("customerAccount") CustomerAccount account,
                          @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                          @RequestParam(defaultValue = "10") int itemsPerPage,
                          @RequestParam(defaultValue = "1", value="page") int currentPage,
                          LiteYukonUser user,
-                         FlashScope flashScope,
                          ModelMap map) throws NotAuthorizedException, ServletRequestBindingException {
-        
+
         if(isCommunicationDisabled(user)){
             return "consumer/thermostat/thermostatDisabled.jsp";
         }

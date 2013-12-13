@@ -92,7 +92,8 @@ jQuery(document).ready(function() {
     </tfoot>
     <tbody>
         <c:forEach var="jobWrapper" items="${filterResult.resultList}">
-            <tr id="tr_${jobWrapper.job.id}" title="Job ID: ${jobWrapper.job.id}">
+            <cti:msg2 var="rowTitle" key=".jobID" argument="${jobWrapper.job.id}"/>
+            <tr id="tr_${jobWrapper.job.id}" title="${rowTitle}">
                 <td>
                     <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
                         <cti:param name="jobId" value="${jobWrapper.job.id}"/>

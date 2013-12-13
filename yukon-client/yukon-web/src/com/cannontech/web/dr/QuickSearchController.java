@@ -120,7 +120,7 @@ public class QuickSearchController {
         String sort = quickSearchBean.getSort();
         boolean descending = quickSearchBean.getDescending();
         Comparator<DisplayablePao> sorter = null;
-        if (! StringUtils.isEmpty(sort)) {
+        if (!StringUtils.isEmpty(sort)) {
             CombinedSortableField sortField =
                 CombinedSortableField.valueOf(sort);
             if (sortField != null) {

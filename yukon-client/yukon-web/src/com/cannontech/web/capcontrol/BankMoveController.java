@@ -2,13 +2,10 @@ package com.cannontech.web.capcontrol;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -115,10 +112,10 @@ public class BankMoveController {
     }
     
     @RequestMapping
-    public String movedCapBanks( @RequestParam(required=false) Integer itemsPerPage,
-                                 @RequestParam(value="page", defaultValue="1") Integer currentPage,
-                                 ModelMap model, 
-                                 YukonUserContext context) throws ServletRequestBindingException {
+    public String movedCapBanks(@RequestParam(required=false) Integer itemsPerPage,
+                                @RequestParam(value="page", defaultValue="1") Integer currentPage,
+                                ModelMap model,
+                                YukonUserContext context) throws ServletRequestBindingException {
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
 
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());

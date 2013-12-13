@@ -71,7 +71,7 @@ function showFileUpload() {
             </select>
         </form>
     </div>
-        
+
     <c:if test="${showAddMeter}">
         <div class="stacked clearfix">
             <form action="addMeter/view" id="addMeterForm">

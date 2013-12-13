@@ -89,7 +89,7 @@ public class ScheduledJobsFilterBackingBean extends ListBackingBean {
     }
 
     public List<DeviceRequestType> getTypeFilterAsList() {
-        if (! StringUtils.isEmpty(typeFilterAsString) && !typeFilterAsString.equals("ANY")) {
+        if (!StringUtils.isEmpty(typeFilterAsString) && !typeFilterAsString.equals("ANY")) {
             return Collections.singletonList(DeviceRequestType.valueOf(typeFilterAsString));
         }
         return null;

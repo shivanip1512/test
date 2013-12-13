@@ -505,7 +505,7 @@ public class MeterEventsReportController {
                                                                                 backingBean.isIncludeDisabledPaos(),
                                                                                 backingBean.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null,
                                                                                 userContext);
-        if ( ! StringUtils.isEmpty(backingBean.getSort())) {
+        if (!StringUtils.isEmpty(backingBean.getSort())) {
             if (backingBean.getDescending()) {
                 Collections.sort(events, Collections.reverseOrder(getSorter(backingBean.getSort(), userContext)));
             } else {
