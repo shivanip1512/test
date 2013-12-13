@@ -3,20 +3,13 @@
 
 <cti:url var="url" value="/macsscheduler/schedules/innerView"/>
 
-<cti:standardPage module="tools" page="script">
-
-<cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
-
-<script language="JavaScript">
-    jQuery(function() {
-       new Ajax.PeriodicalUpdater('main', '${url}?sortBy=${sortBy}&descending=${descending}', {
-           "method": 'post', "frequency": 5, "decay": 1
-       });
-    });
-</script>
-
-<div id="main">
-    <jsp:include page="${url}"/>
-</div>
-    
+<cti:standardPage module="tools" page="scripts">
+    <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
+    <cti:url var="baseUrl" value="${url}">
+        <cti:param name="sortBy" value="${param.sortBy}" />
+        <cti:param name="descending" value="${param.descending}" />
+    </cti:url>
+    <div data-reloadable data-url="${baseUrl}">
+        <jsp:include page="${url}"/>
+    </div>
 </cti:standardPage>

@@ -386,6 +386,22 @@
       </page>
       <page name="scripts" type="BASIC">
         <link>/macsscheduler/schedules/view</link>
+        <pages>
+            <page name="scripts.start" type="BASIC">
+                <pages>
+                    <page name="scripts.start" type="DETAIL" hideFavorite="true">
+	                   <labelArgument>${schedule.scheduleName}</labelArgument>
+                    </page>
+                </pages>
+            </page>
+            <page name="scripts.stop" type="BASIC">
+                <pages>
+                    <page name="scripts.stop" type="DETAIL" hideFavorite="true">
+	                   <labelArgument>${schedule.scheduleName}</labelArgument>
+                    </page>
+                </pages>
+            </page>
+        </pages>
       </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->

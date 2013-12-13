@@ -1,55 +1,27 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<style>
-    #stopform { margin:0px; padding:0px; }
-</style>
-
-<cti:url var="submitUrl" value="/macsscheduler/schedules" />
-<cti:standardPage title="Scheduled Scripts" module="tools">
-    
+<cti:standardPage module="tools" page="scripts.stop">
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
-    
-    <h2 class="stacked">Stop Schedule</h2>
-    <div style="width: 400px;">
-        <form id="stopform" method="post" action="${submitUrl}/action">
-        <tags:boxContainer title="Schedule Name: ${schedule.scheduleName}">
-            <h4>Stop</h4>
-            <table>
-                <tr>
-                    <td><input type="radio" name="time" id="radio" value="stopnow" checked="checked" /></td>
-                    <td>Now</td>
-                </tr>
-                <tr>
-                    <td><input type="radio" name="time" id="radio" value="stoptime"/></td>
-                    <td>Time</td>
-                    <td>
-                        <cti:formatDate value="${stopTime}" type="TIME" var="formattedStopTime" />
-                        <input type="text" value="${formattedStopTime}"
-                            name="stoptime" onfocus="javascript:macsscheduledscripts_stopFocus();"/>
-                        ${zone}
-                    </td>
-                </tr>
-                <tr>
-                    <td><%-- Empty --%></td>
-                    <td>Date</td>
-                    <td>
-                        <cti:formatDate value="${stopTime}" type="DATE" var="formattedStopDate" />
-                        <input type="text" value="${formattedStopDate}"
-                            name="stopdate" onfocus="javascript:macsscheduledscripts_stopFocus();" />
-                    </td>
-                </tr>
-            </table>
-        </tags:boxContainer>
-                
-        <input type="submit" name="buttonAction" value="Apply" />
-        <input type="submit" name="buttonAction" value="Back" />
-        <input type="submit" name="buttonAction" value="Reset" />
-        <input type="hidden" name="currenttime" value="${currentTime}" />
+    <form id="stopform" method="post" action="action">
+        <tags:sectionContainer2 nameKey=".start" styleClass="clearfix">
+            <div>
+                <input type="checkbox" name="stopNow" checked="checked"/><i:inline key=".stopNow"/>
+            </div>
+            <dt:dateTime name="stop" value="${stopTime}" />
+        </tags:sectionContainer2>
+
+        <div class="page-action-area">
+            <cti:button type="submit" nameKey="apply" classes="primary action"/>
+            <cti:button nameKey="back" href="view"/>
+        </div>
+
         <input type="hidden" name="id" value="${schedule.id}" />
         <input type="hidden" name="sortBy" value="${sortBy}"/>
         <input type="hidden" name="descending" value="${descending}"/>
-        </form>
-    </div>
+        <input type="hidden" name="isStart" value="false"/>
+    </form>
 </cti:standardPage>

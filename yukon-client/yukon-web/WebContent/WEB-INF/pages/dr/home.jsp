@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dr" page="home">
     <tags:simpleDialog id="drDialog"/>
@@ -132,4 +133,5 @@
             </tags:boxContainer2>
         </div>
     </div>
+    <dt:pickerIncludes/>
 </cti:standardPage>

@@ -1,17 +1,27 @@
-function macsscheduledscripts_startFocus() {
-    $("startform").time[1].checked = true;
-}
+var Yukon = (function (yukonMod) {
+    return yukonMod;
+})(Yukon || {});
+Yukon.namespace('Yukon.Macs');
+Yukon.Macs = (function () {
+    var _autoUpdatePageContent = function () {
+        var tableContainer = jQuery('[data-reloadable]'),
+            reloadUrl = tableContainer.attr('data-url');
+        tableContainer.load(reloadUrl, function () {
+            setTimeout(_autoUpdatePageContent, 5000);
+        });
 
-function macsscheduledscripts_stopFocus() {
-    $("stopform").time[1].checked = true;
-}
+    },
+        mod = {
+            init: function () {
+                var tableContainer = jQuery('[data-reloadable]');
+                if (tableContainer.length === 1) {
+                    _autoUpdatePageContent();
+                }
+            }
+    };
+    return mod;
+}());
 
-function macsscheduledscripts_updater(url, sortBy, descending) {
-	// DEPRECATED
-    new Ajax.Updater('main', url, {
-        'method': 'POST', parameters: { 'sortBy': sortBy, 'descending': descending },
-        onSuccess: function() {
-            setTimeout(function() {macsscheduledscripts_updater(url,sortBy,descending); }, 5000);
-        }
-    });
-}
+jQuery(function () {
+    Yukon.Macs.init();
+});

@@ -198,60 +198,44 @@ public class MACSScheduleController extends MultiActionController {
         final ModelAndView mav = new ModelAndView();
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
+        final Boolean isStart = ServletRequestUtils.getRequiredBooleanParameter(request, "isStart");
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        
-        mav.setView(createRedirectView(sortBy, descending));
-        
-        String buttonAction = ServletRequestUtils.getRequiredStringParameter(request, "buttonAction");
-        if (buttonAction.equals("Back")) {
-        	return mav;
-        }
-        if (buttonAction.equals("Reset")) {
-        	mav.setView(createResetView(sortBy, descending, id, null));
-            return mav;
-        }
-        
-        final String time = ServletRequestUtils.getRequiredStringParameter(request, "time");
-        final String stopTime = ServletRequestUtils.getRequiredStringParameter(request, "stoptime");
-        final String stopDate = ServletRequestUtils.getRequiredStringParameter(request, "stopdate");
+        final String stopTime = ServletRequestUtils.getRequiredStringParameter(request, "stop");
         final LiteYukonUser liteYukonUser = yukonUserContext.getYukonUser();
         final TimeZone timeZone = yukonUserContext.getTimeZone();
-        //i18n this isn't legit, the time and date must be parsed separately
-        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, yukonUserContext);
-        Date start = null;
-        
-        if (!isEditable(liteYukonUser)) return mav;
-        
-        if (time.equals("startnow")) {
-            start = Calendar.getInstance(timeZone).getTime();
-        }
-        
-        if (time.equals("starttime")) {
-            String startTime = ServletRequestUtils.getStringParameter(request, "starttime");
-            String startDate = ServletRequestUtils.getStringParameter(request, "startdate");
-            //i18n this isn't legit, the time and date must be parsed separately
-            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, yukonUserContext);
-        }
-        
-        if (time.equals("stopnow")) stop = Calendar.getInstance(timeZone).getTime();
+        final Schedule schedule = service.getById(id);
 
-        if (time.equals("stopnow") || time.equals("stoptime")) start = stop;
-            
-        if (start != null) {
-            Schedule schedule = service.getById(id);
-            
+        mav.setView(createRedirectView(sortBy, descending));
+
+        Date stop = dateFormattingService.flexibleDateParser(stopTime, yukonUserContext);
+
+        if (!isEditable(liteYukonUser)) return mav;
+
+        if (isStart) {
+            final boolean startNow = ServletRequestUtils.getBooleanParameter(request, "startNow", false);
+            Date start = null;
+            if (startNow) {
+                start = Calendar.getInstance(timeZone).getTime();
+            } else {
+                String startTime = ServletRequestUtils.getStringParameter(request, "start");
+                start = dateFormattingService.flexibleDateParser(startTime, yukonUserContext);
+            }
             if (start.compareTo(stop) > 0) {
-            	
-            	mav.setView(createResetView(sortBy, descending, id, "Start date must be before stop date."));
+                mav.setView(createResetView(sortBy, descending, id, "Start date must be before stop date."));
                 return mav;
             }
-            
-        	service.start(schedule, start, stop);
+            service.start(schedule, start, stop);
+        } else {
+            final boolean stopNow = ServletRequestUtils.getBooleanParameter(request, "stopNow", false);
+            if (stopNow) {
+                stop = Calendar.getInstance(timeZone).getTime();
+            }
+            service.stop(schedule, stop);
         }
-        
+
         return mav;
     }
-    
+
     public ModelAndView toggleState(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");

@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -105,4 +106,5 @@ function clearFilter() {
             jQuery("#filterPopup").dialog("open");
         </script>
     </c:if>
+    <dt:pickerIncludes/>
 </cti:standardPage>
