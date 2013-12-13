@@ -40,8 +40,8 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ib.inventoryId, ib.accountId, ib.deviceId, ib.deviceLabel, ib.alternateTrackingNumber,");
         sql.append(    "lmhw.manufacturerSerialNumber, lmhw.lmHardwareTypeId, meterTypeId,");
-        sql.append(    "ecm.energyCompanyId, cyle.yukonDefinitionId, ypo.type as devicePaoType,");
-        sql.append(    "ypo.paoName as devicePaoName, lmhtyle.entryText as hwDisplayType,");
+        sql.append(    "ecm.energyCompanyId, c_yle.yukonDefinitionId, ypo.type as devicePaoType,");
+        sql.append(    "ypo.paoName as devicePaoName, lmht_yle.entryText as hwDisplayType,");
         sql.append(    "dmg.meterNumber as deviceMeterNumber, mhw.meterNumber as meterMeterNumber");
         baseQuery = sql;
 
@@ -51,8 +51,8 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         sql.append(    "left join meterHardwareBase mhw on mhw.inventoryId = ib.inventoryId");
         sql.append(    "left join ecToInventoryMapping ecm on ecm.inventoryId = ib.inventoryId");
         sql.append(    "left join yukonPaobject ypo on ib.deviceId = ypo.paobjectId");
-        sql.append(    "left join yukonListEntry cyle on cyle.entryId = ib.categoryId");
-        sql.append(    "left join yukonListEntry lmhtyle on lmhtyle.entryId = lmhw.lmHardwareTypeId");
+        sql.append(    "left join yukonListEntry c_yle on c_yle.entryId = ib.categoryId");
+        sql.append(    "left join yukonListEntry lmht_yle on lmht_yle.entryId = lmhw.lmHardwareTypeId");
         sql.append(    "left join deviceMeterGroup dmg on dmg.deviceId = ib.deviceId");
         queryTables = sql;
 

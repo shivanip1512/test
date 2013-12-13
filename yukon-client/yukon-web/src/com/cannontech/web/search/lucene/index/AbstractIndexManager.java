@@ -247,12 +247,9 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             }
 
             // Make sure we don't search while someone is updating the index
-            final IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
-            try {
+            try (IndexSearcher indexSearcher = new IndexSearcher(indexLocation)) {
                 TopDocs topDocs = indexSearcher.search(query, maxResults);
                 return handler.processHits(topDocs, indexSearcher);
-            } finally {
-                indexSearcher.close();
             }
         }
 

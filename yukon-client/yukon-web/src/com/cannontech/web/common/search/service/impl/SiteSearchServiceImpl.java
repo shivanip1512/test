@@ -72,6 +72,8 @@ public class SiteSearchServiceImpl implements SiteSearchService {
             this.startIndex = startIndex;
             this.numWanted = numWanted;
             this.user = user;
+            // The first iteration, we'll query a few extra to avoid a second iteration if possible.  300 should
+            // be large enough for any site map pages and DR pages for _most_ customers that would be weeded out.
             numToQuery = startIndex + numWanted + 300;
         }
 
