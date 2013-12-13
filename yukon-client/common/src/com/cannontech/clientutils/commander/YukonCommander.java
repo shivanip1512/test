@@ -93,13 +93,11 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class YukonCommander extends JFrame implements DBChangeLiteListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
+public class YukonCommander extends JFrame implements DBChangeLiteListener, ActionListener,
+    FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
 
     // Needs to be the first thing to ensure logging is setup correctly
     private static final String applicationName = "Commander";
-    static {
-        BootstrapUtils.setApplicationName(applicationName);
-   }
 
 	private YC yc;
 	private PaoDefinitionDao paoDefinitionDao;
