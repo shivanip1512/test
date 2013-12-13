@@ -13,6 +13,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -60,7 +61,7 @@ public class DrPaoTypeHandler implements PaoTypeHandler {
         int paoId = paoIdentifier.getPaoId();
         PaoType paoType = paoIdentifier.getPaoType();
 
-        builder.module("dr");
+        builder.module(SiteModule.DR.getName());
         String path = null;
         String pageName = null;
         if (controlAreaPaoTypes.contains(paoType)) {
@@ -86,7 +87,7 @@ public class DrPaoTypeHandler implements PaoTypeHandler {
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.DEMAND_RESPONSE, user)) {
-            return new TermQuery(new Term("module", "dr"));
+            return new TermQuery(new Term("module", SiteModule.DR.getName()));
         }
         return null;
     }

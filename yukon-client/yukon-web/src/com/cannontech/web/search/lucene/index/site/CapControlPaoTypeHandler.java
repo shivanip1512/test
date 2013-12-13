@@ -11,32 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.search.lucene.index.PageType;
 import com.cannontech.web.search.lucene.index.site.PaoPageIndexBuilder.PaoTypeHandler;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 
 public class CapControlPaoTypeHandler implements PaoTypeHandler {
     @Autowired private RolePropertyDao rolePropertyDao;
 
-    private final static Set<PaoType> allTypes;
-    static {
-        Builder<PaoType> builder = ImmutableSet.builder();
-        for (PaoType paoType : PaoType.values()) {
-            if (paoType.isCapControl()) {
-                builder.add(paoType);
-            }
-        }
-        allTypes = builder.build();
-    }
-
     @Override
     public Set<PaoType> getTypesHandled() {
-        return allTypes;
+        return PaoType.getCapControlTypes();
     }
 
     @Override
@@ -46,7 +34,7 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
 
         builder.pageType(PageType.LEGACY);
         String paoName = rs.getString("paoName");
-        builder.module("capcontrol");
+        builder.module(SiteModule.CAPCONTROL.getName());
         PaoType paoType = paoIdentifier.getPaoType();
         builder.pageName("edit." + paoType.name());
         builder.path("/editor/cbcBase.jsf?type=2&itemid=" + paoId);
@@ -78,7 +66,7 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
     @Override
     public Query userLimitingQuery(LiteYukonUser user) {
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user)) {
-            return new TermQuery(new Term("module", "capcontrol"));
+            return new TermQuery(new Term("module", SiteModule.CAPCONTROL.getName()));
         }
         return null;
     }

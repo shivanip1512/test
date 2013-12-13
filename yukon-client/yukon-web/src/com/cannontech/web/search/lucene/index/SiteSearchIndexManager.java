@@ -214,10 +214,7 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
         String basePageKey = pageKey.substring(0, pageKey.lastIndexOf(':'));
         PageIndexBuilder indexBuilder = indexBuildersByBasePageKey.get(basePageKey);
         PageType pageType = PageType.valueOf(document.get("pageType"));
-        if (indexBuilder.isAllowedToView(document, user)) {
-            Page page = pageType.buildPage(document);
-            return page;
-        }
-        return null;
+
+        return indexBuilder.isAllowedToView(document, user) ? pageType.buildPage(document) : null;
     }
 }

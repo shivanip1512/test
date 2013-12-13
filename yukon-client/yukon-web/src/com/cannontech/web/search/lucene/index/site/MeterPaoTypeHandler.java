@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.userpage.model.SiteModule;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PaoLoadingService;
@@ -40,7 +41,7 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
             throws SQLException {
         int paoId = paoIdentifier.getPaoId();
 
-        builder.module("amr");
+        builder.module(SiteModule.AMI.getName());
         String path = "/meter/home?deviceId=" + paoId;
         String pageName = "meterDetail.electric";
         if (paoIdentifier.getPaoType().isWaterMeter()) {
@@ -70,7 +71,7 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
         }
 
         if (!allowed) {
-            return new TermQuery(new Term("module", "amr"));
+            return new TermQuery(new Term("module", SiteModule.AMI.getName()));
         }
 
         return null;

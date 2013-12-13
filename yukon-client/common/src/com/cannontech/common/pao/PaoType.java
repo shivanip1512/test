@@ -1,6 +1,8 @@
 package com.cannontech.common.pao;
 
 
+import java.util.Set;
+
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
@@ -14,6 +16,7 @@ import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 public enum PaoType implements DatabaseRepresentationSource {
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -248,7 +251,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> lmProgramTypes;
     private final static ImmutableSet<PaoType> directProgramTypes;
     private final static ImmutableSet<PaoType> twoWayLcrTypes;
-    
+    private final static ImmutableSet<PaoType> capControlTypes;
+
     public final static int INVALID = -1;
 
     static {
@@ -457,8 +461,16 @@ public enum PaoType implements DatabaseRepresentationSource {
             LCR3102,
             LCR6200_RFN,
             LCR6600_RFN);
+
+        Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
+        for (PaoType paoType : PaoType.values()) {
+            if (paoType.isCapControl()) {
+                capControlTypeBuilder.add(paoType);
+            }
+        }
+        capControlTypes = capControlTypeBuilder.build();
     }
-    
+
     /**
      * Looks up the PaoType based on its Java constant ID.
      * 
@@ -540,7 +552,11 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isCapControl() {
         return PaoClass.CAPCONTROL == paoClass;
     }
-    
+
+    public static Set<PaoType> getCapControlTypes() {
+        return capControlTypes;
+    }
+
     public static boolean isCapControl(LiteYukonPAObject lite) {
         boolean isCategoryCapControl = lite.getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL;
         boolean isCategoryDevice = lite.getPaoType().getPaoCategory() == PaoCategory.DEVICE;

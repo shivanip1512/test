@@ -69,8 +69,8 @@ public final class Page {
     }
 
     public Page(String path, String module, String pageName, List<String> summaryArgs) {
-        checkState(module != null);
-        checkState(pageName != null);
+        checkArgument(module != null);
+        checkArgument(pageName != null);
         this.userPage = null;
         this.summaryArgs = summaryArgs.toArray(new Object[summaryArgs.size()]);
         this.legacyPage = new LegacyPage(path, module, pageName, this.summaryArgs);
