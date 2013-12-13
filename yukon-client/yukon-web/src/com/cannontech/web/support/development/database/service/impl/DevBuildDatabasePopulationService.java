@@ -17,6 +17,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.development.model.BulkFakePointInjectionDto;
 import com.cannontech.development.model.RfnTestEvent;
@@ -30,7 +31,9 @@ import com.google.common.collect.Maps;
 
 public class DevBuildDatabasePopulationService {
 
-    private static Logger log = YukonLogManager.getLogger(DevBuildDatabasePopulationService.class);
+    // Don't make this static, we don't want the logger to initialize before we get a chance
+    // to set the application name
+    private Logger log = YukonLogManager.getLogger(DevBuildDatabasePopulationService.class);
     private static DevDatabasePopulationService devDatabasePopulationService;
     private static BulkPointDataInjectionService bulkPointDataInjectionService;
     private static RfnEventTestingService rfnEventTestingService;
@@ -41,6 +44,11 @@ public class DevBuildDatabasePopulationService {
     private final static int RFN_NUM_DAYS_BEFORE_NOW_EVENTS_SHOULD_START = 10;
     
     public static void main(String[] args) {
+        BootstrapUtils.setApplicationName("DevDatabasePopulationService");
+        new DevBuildDatabasePopulationService().run();
+    }
+
+    public void run() {
         try {
             YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
             devDatabasePopulationService = YukonSpringHook.getBean(DevDatabasePopulationService.class);
@@ -67,7 +75,7 @@ public class DevBuildDatabasePopulationService {
      * adds an energy company and some accounts (with some hardware per),
      * and adds some cap control objects
      */
-    private static void insertInitialDatabaseData() {
+    private void insertInitialDatabaseData() {
         // Setup task 
         DevDbSetupTask task = new DevDbSetupTask();
         List<DevPaoType> meters = task.getDevAMR().getMeterTypes();
@@ -87,7 +95,7 @@ public class DevBuildDatabasePopulationService {
      * Send out rfn events (which will also create these meters since they won't be in the db).
      * The service manager must be started for this to do anything
      */
-    private static void insertRfnMetersAndEvents() {
+    private void insertRfnMetersAndEvents() {
         log.info("inserting rfn meters and events...");
         
         Map<RfnConditionType, Integer> eventTypeCountMap = Maps.newHashMapWithExpectedSize(RfnConditionType.values().length);
@@ -131,7 +139,7 @@ public class DevBuildDatabasePopulationService {
      * Inserts water usage point data in a way that indicates a water leak
      * (for testing the Water Leak Report)
      */
-    private static void insertWaterUsagePointData(String groupName) {
+    private void insertWaterUsagePointData(String groupName) {
         BulkFakePointInjectionDto bulkInjection = new BulkFakePointInjectionDto();
         bulkInjection.setAttribute(BuiltInAttribute.USAGE_WATER);
         bulkInjection.setGroupName(groupName);
@@ -154,7 +162,7 @@ public class DevBuildDatabasePopulationService {
         bulkPointDataInjectionService.excecuteInjection(bulkInjection);
     }
     
-    private static void insertMeterUsagePointData() {
+    private void insertMeterUsagePointData() {
         /* USAGE */
         BulkFakePointInjectionDto usageData = new BulkFakePointInjectionDto();
         usageData.setAttribute(BuiltInAttribute.USAGE);
