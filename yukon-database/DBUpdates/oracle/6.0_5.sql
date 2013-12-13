@@ -166,4 +166,4 @@ WHERE Name = 'DISPATCH_MACHINE';
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.0', '9-DEC-2013', 'Latest Update', 5, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.0', '13-DEC-2013', 'Latest Update', 5, SYSDATE);
