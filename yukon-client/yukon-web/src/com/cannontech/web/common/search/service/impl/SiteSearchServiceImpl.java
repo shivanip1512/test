@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
@@ -43,6 +45,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
 
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private SiteSearchIndexManager siteSearchIndexManager;
+    @Autowired private RolePropertyDao rolePropertyDao;;
 
     private final static Analyzer analyzer = new YukonObjectSearchAnalyzer();
 
@@ -180,14 +183,19 @@ public class SiteSearchServiceImpl implements SiteSearchService {
      */
     private BooleanQuery buildBaseQuery(LiteYukonUser user) {
         BooleanQuery query = new BooleanQuery();
-        // TODO:  should at least in some cases include child energy companies
-        int ecId;
         Query noEcQuery = new TermQuery(new Term("energyCompanyId", "none"));
         try {
-            ecId = ecService.getEnergyCompanyIdByOperator(user);
+            int ecId = ecService.getEnergyCompanyIdByOperator(user);
             BooleanQuery ecQuery = new BooleanQuery();
             ecQuery.add(noEcQuery, Occur.SHOULD);
             ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(ecId))), Occur.SHOULD);
+            boolean searchChildEcs = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
+            if (searchChildEcs) {
+                List<Integer> childEcIds = ecService.getChildEnergyCompanies(ecId);
+                for (Integer childEcId : childEcIds) {
+                    ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(childEcId))), Occur.SHOULD);
+                }
+            }
             query.add(ecQuery, Occur.MUST);
         } catch (EnergyCompanyNotFoundException ecnfe) {
             // Operator is not part of an energy company.

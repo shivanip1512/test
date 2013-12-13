@@ -5,6 +5,7 @@ import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
 
 import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -14,6 +15,7 @@ import org.apache.lucene.search.TermQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.pao.PaoType;
@@ -29,6 +31,8 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 @Service
 public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
+    private final Logger log = YukonLogManager.getLogger(InventoryPageIndexBuilder.class);
+
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
 
@@ -84,6 +88,9 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
         int inventoryId = rs.getInt("inventoryId");
         int ecId = rs.getInt("energyCompanyId");
+        if (log.isTraceEnabled()) {
+            log.trace("processing inventory id " + inventoryId + " with ec " + ecId);
+        }
 
         builder.pageKey(createPageKey(inventoryId)).ecId(ecId);
 
