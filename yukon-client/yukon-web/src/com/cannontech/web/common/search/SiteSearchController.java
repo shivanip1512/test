@@ -3,7 +3,6 @@ package com.cannontech.web.common.search;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.node.POJONode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -31,11 +30,10 @@ public class SiteSearchController {
     @Autowired private SiteSearchService siteSearchService;
 
     @RequestMapping(value="/search/autocomplete.json", method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody POJONode autoComplete(@RequestParam(value="q") String searchString,
+    public @ResponseBody List<String> autoComplete(@RequestParam(value="q") String searchString,
             YukonUserContext userContext) {
         List<String> results = siteSearchService.autocomplete(searchString, userContext);
-        POJONode response = new POJONode(results);
-        return response;
+        return results;
     }
 
     @RequestMapping(value="/search", method=RequestMethod.GET)

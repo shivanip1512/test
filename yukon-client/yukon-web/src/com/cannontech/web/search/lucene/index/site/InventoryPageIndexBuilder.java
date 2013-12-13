@@ -145,14 +145,13 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
-        if (database == CHANGE_INVENTORY_DB) {
-            SqlStatementBuilder whereClause = new SqlStatementBuilder();
-            whereClause.append("ib.inventoryId").eq(id);
+        SqlStatementBuilder whereClause = null;
 
-            return whereClause;
+        if (database == CHANGE_INVENTORY_DB) {
+            whereClause = new SqlStatementBuilder("ib.inventoryId").eq(id);
         }
 
-        return null;
+        return whereClause;
     }
 
     @Override

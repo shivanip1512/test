@@ -108,14 +108,13 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     protected SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
-        if (database == DBChangeMsg.CHANGE_PAO_DB) {
-            SqlStatementBuilder whereClause = new SqlStatementBuilder();
-            whereClause.append("ypo.paobjectId").eq(id);
+        SqlStatementBuilder whereClause = null;
 
-            return whereClause;
+        if (database == DBChangeMsg.CHANGE_PAO_DB) {
+            whereClause = new SqlStatementBuilder("ypo.paobjectId").eq(id);
         }
 
-        return null;
+        return whereClause;
     }
 
     @Override

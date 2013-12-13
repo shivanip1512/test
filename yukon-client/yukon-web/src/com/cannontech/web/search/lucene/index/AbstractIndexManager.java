@@ -157,10 +157,6 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         return recordCount;
     }
 
-    public void getCurrentRecord() {
-        count.get();
-    }
-
     /**
      * Method to get the analyzer for a specific index.
      * @return Index specific analyzer
@@ -492,7 +488,8 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
     }
 
     /**
-     * Can be used by base classes to process a set of updates immediately.  This is for  
+     * Can be used by base classes to process a set of updates immediately.  This is for indexing site map
+     * pages just before doing a search.  There are so few of them, we can afford to do this.
      */
     protected void indexImmediately(IndexUpdateInfo indexUpdateInfo) {
         try (IndexWriter indexWriter = new IndexWriter(indexLocation, getIndexWriterConfig())) {
