@@ -7,7 +7,7 @@
 <%@ attribute name="tableClass" %>
 
 <c:set var="nameValueContainer2" value="true" scope="request"/>
-<table class="name-value-table ${pageScope.tableClass} <c:if test="${empty pageScope.naturalWidth || pageScope.naturalWidth == true}">natural-width </c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
+<table class="name-value-table ${pageScope.tableClass}<c:if test="${empty pageScope.naturalWidth || pageScope.naturalWidth == true}"> natural-width</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
     <thead></thead>
     <tfoot></tfoot>
     <tbody>
