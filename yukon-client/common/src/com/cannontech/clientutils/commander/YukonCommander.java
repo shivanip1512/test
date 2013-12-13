@@ -52,6 +52,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.common.util.SwingUtil;
@@ -93,6 +94,13 @@ import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class YukonCommander extends JFrame implements DBChangeLiteListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
+
+    // Needs to be the first thing to ensure logging is setup correctly
+    private static final String applicationName = "Commander";
+    static {
+        BootstrapUtils.setApplicationName(applicationName);
+   }
+
 	private YC yc;
 	private PaoDefinitionDao paoDefinitionDao;
 	
@@ -1528,7 +1536,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		try
 		{
 	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-	        clientStartupHelper.setAppName("Commander");
+	        clientStartupHelper.setAppName(applicationName);
 	        clientStartupHelper.setRequiredRole(YukonRole.COMMANDER.getRoleId());
 	        clientStartupHelper.setSplashUrl(CtiUtilities.COMMANDER_SPLASH);
 

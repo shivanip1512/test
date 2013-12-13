@@ -131,14 +131,15 @@ public class BootstrapUtils {
         return getYukonBase(false) + KEYS_DIRECTORY;
     }
 
+    private static final String unknownApplication = "UnknownApplication";
     /**
      * Set the name of the application. In many cases, this does not need to be called. See
      * {@link #getApplicationName()}.  If this is called, it must be called before Spring starts up
-     * (i.e. before any calls to {@link YukonSpringHook}.
+     * (i.e. before any calls to {@link YukonSpringHook}).
      */
     public final static void setApplicationName(String defaultName) {
         String existingName = System.getProperty("cti.app.name");
-        if (existingName == null) {
+        if (existingName == null || existingName.equals(unknownApplication)) {
             System.setProperty("cti.app.name", defaultName);
         }
     }
@@ -165,10 +166,11 @@ public class BootstrapUtils {
             if (CtiUtilities.isRunningAsWebApplication()) {
                 System.setProperty("cti.app.name", "Webserver");
             } else {
-                System.setProperty("cti.app.name", "UnknownApplication");
+                System.setProperty("cti.app.name", unknownApplication);
             }
         }
         String appName = System.getProperty("cti.app.name");
+
         return appName;
     }
 }

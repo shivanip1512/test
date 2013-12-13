@@ -68,6 +68,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -183,7 +184,13 @@ public class DatabaseEditor
 		PopupMenuListener,
 		DBChangeLiteListener
 {
-   //all editor frame sizes
+    // Needs to be the first thing to ensure logging is setup correctly
+    private static final String applicationName = "DBEditor";
+    static {
+        BootstrapUtils.setApplicationName(applicationName);
+    }
+
+    //all editor frame sizes
    public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
    
    public static final URL DBEDITOR_IMG_16 = DatabaseEditor.class.getResource("/DatabaseEditor16.gif");
@@ -2029,7 +2036,7 @@ public static void main(String[] args) {
     try
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-        clientStartupHelper.setAppName("DBEditor");
+        clientStartupHelper.setAppName(applicationName);
         clientStartupHelper.setRequiredRole(YukonRole.DATABASE_EDITOR.getRoleId());
         clientStartupHelper.setContext("com.cannontech.context.dbeditor");
         clientStartupHelper.setSplashUrl(CtiUtilities.DBEDITOR_SPLASH);

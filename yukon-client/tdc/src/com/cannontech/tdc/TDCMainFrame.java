@@ -33,6 +33,7 @@ import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.tdc.model.IDisplay;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -74,7 +75,16 @@ import com.klg.jclass.page.awt.JCAWTPreviewer;
 import com.klg.jclass.page.awt.JCAWTPrinter;
 import com.klg.jclass.page.awt.JCAWTScreenPrinter;
 
-public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener, TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.util.Observer, MessageListener {
+public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.tdc.spawn.TDCMainFrameSpawnListener,
+    TDCMainPanelListener, com.cannontech.tdc.toolbar.AlarmToolBarListener, java.awt.event.ActionListener,
+    java.awt.event.ItemListener, java.util.Observer, MessageListener {
+    
+    // Needs to be the first thing to ensure logging is setup correctly
+    private static final String applicationName = "TDC";
+    static {
+        BootstrapUtils.setApplicationName(applicationName);
+   }
+    
 	private Clock ticker = null;
 	private transient javax.swing.JDialog textSearchDialog = null;
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
@@ -4095,7 +4105,7 @@ public static void main(final java.lang.String[] args)
     try
     {
         ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
-        clientStartupHelper.setAppName("TDC");
+        clientStartupHelper.setAppName(applicationName);
         clientStartupHelper.setRequiredRole(YukonRole.TABULAR_DISPLAY_CONSOLE.getRoleId());
         clientStartupHelper.setSplashUrl(CtiUtilities.TDC_SPLASH);
 
