@@ -466,29 +466,13 @@
         </cti:msgScope>
     </c:if>
     <c:if test="${not isSubscribedWidget}">
-        <cti:button id="createMonitorBtn" nameKey="create" icon="icon-plus-green"/>
-        <cti:msg2 var="popupTitle" key=".create"/>
-        <tags:simplePopup id="createMonitorDialog" title="${popupTitle}" on="#createMonitorBtn">
-            <ul class="simple-list">
-                <li>
-                    <a href="/amr/deviceDataMonitor/createPage"><i:inline key="widgetClasses.DeviceDataMonitorsWidget.name"/></a>
-                </li>
-                <li>
-                    <a href="/amr/outageProcessing/monitorEditor/edit"><i:inline key="widgets.outageMonitorsWidget.tableHeader.name"/></a>
-                </li>
-                <li>
-                    <a href="/amr/tamperFlagProcessing/edit"><i:inline key="widgets.tamperFlagMonitorsWidget.tableHeader.name"/></a>
-                </li>
-                <li>
-                    <a href="/amr/statusPointMonitoring/creationPage"><i:inline key="widgets.statusPointMonitorsWidget.tableHeader.name"/></a>
-                </li>
-                <li>
-                    <a href="/amr/porterResponseMonitor/createPage"><i:inline key="widgets.porterResponseMonitorsWidget.name"/></a>
-                </li>
-                <li>
-                    <a href="/common/vee/monitor/edit"><i:inline key="widgets.validationMonitorsWidget.tableHeader.name"/></a>
-                </li>
-            </ul>
-        </tags:simplePopup>
+        <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" containerCssClass="fr">
+            <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
+            <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="/amr/outageProcessing/monitorEditor/edit" />
+            <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="/amr/tamperFlagProcessing/edit" />
+            <cm:dropdownOption key="widgets.statusPointMonitorsWidget.tableHeader.name" href="/amr/statusPointMonitoring/creationPage" />
+            <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="/amr/porterResponseMonitor/createPage" />
+            <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/common/vee/monitor/edit" />
+        </cm:dropdown>
     </c:if>
 </div>
