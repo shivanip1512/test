@@ -114,16 +114,22 @@ void ManagedConnection::closeConnection()
     unsigned       delayMillis = 250; // 250ms, 500ms, 1sec, 2sec, 4sec
 
     activemq::core::ActiveMQConnection* conn = dynamic_cast<activemq::core::ActiveMQConnection*>( _connection.get() );
-
-    for( unsigned attempt=0; conn && ! conn->isClosed() && attempt != maxAttempt; attempt++ )
+    if( ! conn )
     {
+        return;
+    }
+
+    for( unsigned attempt=0; attempt != maxAttempt; attempt++ )
+    {
+        string errorMessage;
+
         try
         {
             conn->close();
         }
-        catch(...)
+        catch(cms::CMSException& e)
         {
-            // while closing, we don't care about exceptions
+            errorMessage = e.what(); // capture the error message
         }
 
         // check if the connection was closed
@@ -132,9 +138,11 @@ void ManagedConnection::closeConnection()
             return;
         }
 
+        // log error if close has failed
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime::now() << "Error closing ActiveMQ connection" << ((attempt != maxAttempt) ? ", will retry" : "") << __FILE__ << " ("<< __LINE__ << ")" << endl;
+            dout << CtiTime::now() << "Error closing ActiveMQ connection: \"" << errorMessage << "\" "
+                 << ((attempt != maxAttempt) ? ", will retry " : " ") << __FILE__ << " ("<< __LINE__ << ")" << endl;
         }
 
         Sleep(delayMillis);
@@ -244,6 +252,10 @@ bool ManagedConnection::verifyConnection() const
     return ( conn && !conn->isClosed() && conn->isStarted() && !conn->isTransportFailed() );
 }
 
+const string& ManagedConnection::getBrokerUri() const
+{
+    return _brokerUri;
+}
 
 /*-----------------------------------------------------------------------------
   Managed destination

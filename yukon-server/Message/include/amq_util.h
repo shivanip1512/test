@@ -127,6 +127,8 @@ public:
     cms::Session* createSession();
 
     bool verifyConnection() const;
+
+    const std::string& getBrokerUri() const;
 };
 
 

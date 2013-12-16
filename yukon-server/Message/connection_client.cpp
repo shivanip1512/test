@@ -63,15 +63,9 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
  */
 bool CtiClientConnection::establishConnection()
 {
-    const long receiveMillis    = 30000;
-    const long timeToLiveMillis = receiveMillis - 1000;
-    const long maxMessageCount  = 120;
-
-    bool initialized = false;
-
-    long messageCount = 0;
-
-    auto_ptr<QueueProducer> handshakeProducer;
+    const long receiveMillis       = 30000;
+    const long timeToLiveMillis    = receiveMillis - 1000;
+    const long loggingMessageCount = 120;
 
     try
     {
@@ -79,100 +73,106 @@ bool CtiClientConnection::establishConnection()
         {
             try
             {
-                if( ! initialized )
+                // clean up activemq objects before resetting the connection
+                CtiConnection::deleteResources();
+
+                logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"."
+                                         "\nbroker URI: \"" + _connection->getBrokerUri() + "\"" );
+
+                // reset and start connection to the broker, throws ConnectionException
+                _connection->start();
+
+                logDebug( __FUNCTION__, "connected to the broker" );
+
+                _sessionIn.reset( _connection->createSession() );
+                _sessionOut.reset( _connection->createSession() );
+
+                // create a temporary producer to initiate talk with the server`s listener connection
+                QueueProducer handshakeProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName ));
+                handshakeProducer.setTimeToLiveMillis( timeToLiveMillis );
+
+                // Create consumer for inbound traffic
+                _consumer.reset( createTempQueueConsumer( *_sessionIn ));
+
+                unsigned messageCount = 0;
+
+                while( !_valid && !_dontReconnect && _connection->verifyConnection() )
                 {
-                    logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"" );
+                    // create an empty message for handshake
+                    auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
 
-                    // clean up activemq objects before resetting the connection
-                    handshakeProducer.reset();
-                    CtiConnection::deleteResources();
+                    outMessage->setCMSReplyTo( _consumer->getDestination() );
+                    outMessage->setCMSType( MessageType::clientInit );
 
-                    // reset and start connection to the broker, throws ConnectionException
-                    _connection->start();
+                    handshakeProducer.send( outMessage.get() );
 
-                    logDebug( __FUNCTION__, "connected to the broker" );
-
-                    _sessionIn.reset( _connection->createSession() );
-                    _sessionOut.reset( _connection->createSession() );
-
-                    // create a temporary producer to initiate talk with the server`s listener connection
-                    handshakeProducer.reset( new QueueProducer(*_sessionOut, _sessionOut->createQueue( _serverQueueName )));
-                    handshakeProducer->setTimeToLiveMillis( timeToLiveMillis );
-
-                    // Create consumer for inbound traffic
-                    _consumer.reset( createTempQueueConsumer( *_sessionIn ));
-
-                    messageCount = 0;
-
-                    initialized = true;
-                }
-
-                // create an empty message for handshake
-                auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
-
-                outMessage->setCMSReplyTo( _consumer->getDestination() );
-                outMessage->setCMSType( MessageType::clientInit );
-
-                handshakeProducer->send( outMessage.get() );
-
-                if( messageCount == 0 )
-                {
-                    logDebug( __FUNCTION__, "waiting for server reply." );
-                }
-
-                // We should block here until the delay expires or until the connection is closed
-                auto_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
-
-                if( inMessage.get() )
-                {
-                    if( inMessage->getCMSType() != MessageType::serverResp )
+                    if( ! messageCount )
                     {
-                        initialized = false; // something went wrong?
-
-                        logStatus( __FUNCTION__, "unexpected message: \"" + inMessage->getCMSType() + "\"" );
+                        logDebug( __FUNCTION__, "waiting for server reply." );
                     }
-                    else if( ! inMessage->getCMSReplyTo() )
-                    {
-                        initialized = false; // something went wrong?
 
-                        logStatus( __FUNCTION__, "received NULL ReplyTo destination." );
-                    }
-                    else
+                    // We should block here until the delay expires or until the connection is closed
+                    auto_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
+
+                    if( inMessage.get() )
                     {
+                        if( inMessage->getCMSType() != MessageType::serverResp )
+                        {
+                            logStatus( __FUNCTION__, "unexpected message: \"" + inMessage->getCMSType() + "\"" );
+
+                            break; // something went wrong? - retry connecting from scratch
+                        }
+
+                        if( ! inMessage->getCMSReplyTo() )
+                        {
+                            logStatus( __FUNCTION__, "received NULL ReplyTo destination." );
+
+                            break; // something went wrong? - retry connecting from scratch
+                        }
+
                         _producer.reset( createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() ));
 
                         _valid = true;
 
                         logStatus( __FUNCTION__, "successfully connected.\n"
-                                "inbound destination  : " + _consumer->getDestPhysicalName() + "\n"
-                                "outbound destination : " + _producer->getDestPhysicalName());
+                                                 "inbound destination  : " + _consumer->getDestPhysicalName() + "\n"
+                                                 "outbound destination : " + _producer->getDestPhysicalName());
                     }
-                }
-                else if( ++messageCount == maxMessageCount )
-                {
-                    // if we reach the maximum number of attempt, reconnect
-                    initialized = false;
+                    else
+                    {
+                        if( ! messageCount )
+                        {
+                            logStatus( __FUNCTION__, "timeout while trying to connect to \"" + _serverQueueName + "\". reconnecting." );
+                        }
+
+                        if( ++messageCount == loggingMessageCount )
+                        {
+                            messageCount = 0; // reset the message count
+                        }
+
+                        // check for a cancellation before re-sending a handshake message
+                        checkCancellation();
+                    }
                 }
             }
             catch( cms::CMSException& e )
             {
                 if( !_dontReconnect )
                 {
-                    initialized = false;
-
                     logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
 
-                    Sleep( 1000 ); // Don't pound the system....
+                    Sleep(1000); // Don't pound the system....
                 }
             }
             catch( ConnectionException& e )
             {
                 if( !_dontReconnect )
                 {
-                    logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
+                    logStatus( __FUNCTION__, "unable to connect to the broker at \"" + _connection->getBrokerUri() + "\". reconnecting." );
                 }
             }
 
+            // check for a cancellation after each connection attempt
             checkCancellation();
         }
 
