@@ -313,33 +313,29 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
 
         unsigned records_inspected = 0, dirty_records = 0, rows_written = 0;
 
+        id_statistics_map::const_iterator itr = begin;
+
+        while( itr != end )
         {
-            Database::DatabaseTransaction trans(conn);
+            PaoStatistics &p = *(itr++->second);
 
-            id_statistics_map::const_iterator itr = begin;
+            ++records_inspected;
 
-            while( itr != end )
+            if( p.isDirty() )
             {
-                PaoStatistics &p = *(itr++->second);
+                Database::DatabaseWriter writer(conn);
 
-                ++records_inspected;
+                rows_written += p.writeRecords(writer);
 
-                if( p.isDirty() )
+                if( !(++dirty_records % 1000) )
                 {
-                    Database::DatabaseWriter writer(conn);
+                    threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
 
-                    rows_written += p.writeRecords(writer);
-
-                    if( !(++dirty_records % 1000) )
                     {
-                        threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " ";
-                            dout << "inspected " << records_inspected << " / " << chunk_size << " statistics records; ";
-                            dout << dirty_records << " records have written a total of " << rows_written << " rows." << endl;
-                        }
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " ";
+                        dout << "inspected " << records_inspected << " / " << chunk_size << " statistics records; ";
+                        dout << dirty_records << " records have written a total of " << rows_written << " rows." << endl;
                     }
                 }
             }

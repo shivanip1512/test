@@ -5506,7 +5506,15 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
             dout << CtiTime() << " - " << updater.asString() << endl;
         }
 
-        updater.execute();
+        if( ! updater.execute() )
+        {
+            string loggedSQLstring = updater.asString();
+            {
+                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << loggedSQLstring << endl;
+            }
+            return;
+        }
     }
     else
     {
@@ -5540,9 +5548,17 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
                 dout << CtiTime() << " - " << inserter.asString() << endl;
             }
 
-            _insertDynamicDataFlag = FALSE;
+            if( ! inserter.execute() )
+            {
+                string loggedSQLstring = inserter.asString();
+                {
+                    dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << loggedSQLstring << endl;
+                }
+                return;
+            }
 
-            inserter.execute();
+            _insertDynamicDataFlag = FALSE;
         }
     }
 

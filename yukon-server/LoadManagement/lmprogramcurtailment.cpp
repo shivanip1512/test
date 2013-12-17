@@ -890,7 +890,14 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
                 dout << CtiTime() << " - " << inserter.asString() << endl;
             }
 
-            inserter.execute();
+            if( ! inserter.execute() )
+            {
+                string loggedSQLstring = inserter.asString();
+                {
+                    dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << loggedSQLstring << endl;
+                }
+            }
         }
     }
 }

@@ -2352,42 +2352,38 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
             return NOTNORMAL;
         }
 
+        try
         {
-            Cti::Database::DatabaseTransaction trans(conn);
+            std::deque<CtiTableMeterReadLog>::iterator result_itr = resultQueue.begin(),
+                                                       result_end = resultQueue.end();
 
-            try
+            const int total = resultQueue.size();
+            int i = endVal - total + 1, count = 0;
+
+            for(; result_itr != result_end && i <= endVal; ++result_itr, ++i )
             {
-                std::deque<CtiTableMeterReadLog>::iterator result_itr = resultQueue.begin(),
-                                                           result_end = resultQueue.end();
-
-                const int total = resultQueue.size();
-                int i = endVal - total + 1, count = 0;
-
-                for(; result_itr != result_end && i <= endVal; ++result_itr, ++i )
-                {
-                    if( !(++count % 1000) )
-                    {
-                        string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
-                        WriteOutput(current.c_str());
-                    }
-
-                    result_itr->setLogID(i);
-                    result_itr->setRequestLogID(requestLogId);
-                    result_itr->Insert(conn);
-                }
-
-                if( count % 1000 )
+                if( !(++count % 1000) )
                 {
                     string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
                     WriteOutput(current.c_str());
                 }
+
+                result_itr->setLogID(i);
+                result_itr->setRequestLogID(requestLogId);
+                result_itr->Insert(conn);
             }
-            catch(...)
+
+            if( count % 1000 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
+                WriteOutput(current.c_str());
+            }
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }

@@ -1058,31 +1058,27 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     return;
                 }
 
+                try
                 {
-                    Cti::Database::DatabaseTransaction trans(conn);
-
-                    try
+                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
                     {
-                        while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                        panicCounter++;
+                        if( pTblEntry->Insert(conn) )
                         {
-                            panicCounter++;
-                            if( pTblEntry->Insert(conn) )
-                            {
-                                writtenEntries.putQueue(pTblEntry);
-                            }
-                            else
-                            {
-                                // Error is logged by the insert function, do not send bad value to clients.
-                                delete pTblEntry;
-                            }
+                            writtenEntries.putQueue(pTblEntry);
+                        }
+                        else
+                        {
+                            // Error is logged by the insert function, do not send bad value to clients.
+                            delete pTblEntry;
                         }
                     }
-                    catch(...)
+                }
+                catch(...)
+                {
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }
@@ -1159,24 +1155,20 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
                     return;
                 }
 
+                try
                 {
-                    Cti::Database::DatabaseTransaction trans(conn);
-
-                    try
+                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
                     {
-                        while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
-                        {
-                            panicCounter++;
-                            pTblEntry->UpdateDynamic(conn);
-                            delete pTblEntry;
-                        }
+                        panicCounter++;
+                        pTblEntry->UpdateDynamic(conn);
+                        delete pTblEntry;
                     }
-                    catch(...)
+                }
+                catch(...)
+                {
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
             }

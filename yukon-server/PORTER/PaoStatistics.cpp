@@ -190,22 +190,33 @@ unsigned PaoStatistics::writeRecords(Database::DatabaseWriter &writer)
 
     for each(const PaoStatisticsRecordSPtr &p in _stale_records)
     {
-        p->writeRecord(writer);
+        if( p->isDirty() && p->writeRecord(writer) )
+        {
+            rows_written++;
+        }
     }
 
-    rows_written = _stale_records.size();
-
+    // clear all the stale records, even if write record has fail
     _stale_records.clear();
 
-    //  If lifetime is dirty, then all records exist and are dirty.
-    if( _lifetime && _lifetime->isDirty() )
+    if( _lifetime && _lifetime->isDirty() && _lifetime->writeRecord(writer) )
     {
-        _lifetime->writeRecord(writer);
-        _monthly ->writeRecord(writer);
-        _daily   ->writeRecord(writer);
-        _hourly  ->writeRecord(writer);
+        rows_written++;
+    }
 
-        rows_written += 4;
+    if( _monthly && _monthly->isDirty() && _monthly->writeRecord(writer) )
+    {
+        rows_written++;
+    }
+
+    if( _daily && _daily->isDirty() && _daily->writeRecord(writer) )
+    {
+        rows_written++;
+    }
+
+    if( _hourly && _hourly->isDirty() && _hourly->writeRecord(writer) )
+    {
+        rows_written++;
     }
 
     return rows_written;
@@ -220,7 +231,11 @@ long PaoStatistics::getPaoId() const
 
 bool PaoStatistics::isDirty() const
 {
-    return ! _stale_records.empty() || _lifetime && _lifetime->isDirty();
+    return ! _stale_records.empty() ||
+           ( _lifetime && _lifetime->isDirty() ) ||
+           ( _monthly  && _monthly ->isDirty() ) ||
+           ( _daily    && _daily   ->isDirty() ) ||
+           ( _hourly   && _hourly  ->isDirty() );
 }
 
 
