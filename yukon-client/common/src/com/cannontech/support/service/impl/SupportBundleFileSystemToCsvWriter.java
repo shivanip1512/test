@@ -7,12 +7,15 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.zip.ZipWriter;
 
@@ -22,18 +25,24 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
 
     private String zipDirectory;
     private String zipFilename;
+    private final String[] header
+        = { "File", "Size", "LastModified", "Created", "MD5"};
 
     @Override
     public void addToZip(ZipWriter zipWriter, ReadableInstant start, ReadableInstant stop) {
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
         Writer pw = zipWriter.getBufferedWriter(zipDirectory, zipFilename);
 
         CSVWriter csvWriter = new CSVWriter(pw);
 
-        String[] firstLine = { "File", "Size", "MD5" };
-        csvWriter.writeNext(firstLine);
+        csvWriter.writeNext(header);
 
         File directory = new File(CtiUtilities.getYukonBase());
-        writeDirToCsv(directory, "", csvWriter);
+        try {
+            writeDirToCsv(directory, "", csvWriter, df);
+        } catch (IOException e) {
+            throw new RuntimeException("Error whie trying to create csv", e);
+        }
 
         try {
             pw.flush();
@@ -43,24 +52,27 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
 
     }
 
-    private void writeDirToCsv(File directory, String path, CSVWriter csvWriter) {
+    private void writeDirToCsv(File directory, String path, CSVWriter csvWriter, SimpleDateFormat df) throws IOException {
         File[] filesAndDirs = directory.listFiles();
 
         // If java cannot access a directory, listFiles() returns null
         if (filesAndDirs != null) {
             for (File file : filesAndDirs) {
                 if (file.isDirectory()) {
-                    writeDirToCsv(file, path + file.getName() + "/", csvWriter);
+                    writeDirToCsv(file, path + file.getName() + "/", csvWriter, df);
                 } else if (file.isFile()){
                     String[] nextLine =
-                    { path + file.getName(), String.valueOf(file.length()), getMD5(file) };
+                    {path + file.getName(),
+                     String.valueOf(file.length()),
+                     df.format(new Date(file.lastModified())),
+                     df.format(FileUtil.getCreationDate(file)),
+                     getMD5(file)};
                     csvWriter.writeNext(nextLine);
                 }
             }
         } else {
             log.warn("Unable to access directory " + directory.getAbsolutePath() + ". It cannot be added to csv output.");
-            String[] nextLine =
-            { path, "0", "-Unable to include directory-" };
+            String[] nextLine = {path, "0", "0", "0", "-Unable to include directory-"};
             csvWriter.writeNext(nextLine);
         }
     }
@@ -74,9 +86,7 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
             return "-Unable to hash-";
         }
 
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
+        try (InputStream inputStream = new FileInputStream(file)) {
             byte[] buffer = new byte[4096];
             int read;
             while ((read = inputStream.read(buffer)) != -1) {
@@ -85,13 +95,6 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
         } catch (IOException ioException) {
             log.warn("Unable to hash file " + file.getAbsolutePath() + file.getName() + " The file might be used by another process.");
             return "-Unable to hash-";
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                }
-            }
         }
 
         byte[] digest = md5Hasher.digest();
