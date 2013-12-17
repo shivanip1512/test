@@ -61,12 +61,13 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
                 if (file.isDirectory()) {
                     writeDirToCsv(file, path + file.getName() + "/", csvWriter, df);
                 } else if (file.isFile()){
-                    String[] nextLine =
-                    {path + file.getName(),
-                     String.valueOf(file.length()),
-                     df.format(new Date(file.lastModified())),
-                     df.format(FileUtil.getCreationDate(file)),
-                     getMD5(file)};
+                    String[] nextLine = {
+                        path + file.getName(),
+                        String.valueOf(file.length()),
+                        df.format(new Date(file.lastModified())),
+                        df.format(FileUtil.getCreationDate(file)),
+                        getMD5(file)
+                    };
                     csvWriter.writeNext(nextLine);
                 }
             }
