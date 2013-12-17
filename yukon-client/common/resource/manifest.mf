@@ -70,4 +70,7 @@ Class-Path: ./
  servlet-api.jar 
  bcpkix-jdk15on-149.jar 
  bcprov-jdk15on-149.jar 
+ jackson-databind-2.2.3.jar 
+ jackson-core-2.2.3.jar 
+ jackson-annotations-2.2.3.jar 
  libthrift-0.9.0.jar

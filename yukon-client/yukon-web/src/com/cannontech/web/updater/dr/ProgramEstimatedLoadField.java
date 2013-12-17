@@ -1,7 +1,5 @@
 package com.cannontech.web.updater.dr;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -13,6 +11,8 @@ import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceH
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 

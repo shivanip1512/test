@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.node.BooleanNode;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -100,6 +99,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.SessionUtil;
 import com.cannontech.web.util.TextView;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.google.common.collect.Lists;
 
 @Controller

@@ -89,6 +89,15 @@
         <dependent-module archiveName="bcprov-jdk15on-149.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcprov-jdk15on-149.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="jackson-databind-2.2.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-databind-2.2.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jackson-core-2.2.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-core-2.2.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jackson-annotations-2.2.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-annotations-2.2.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="jfreereport.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jfreereport.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
@@ -159,9 +168,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-el-1.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/yukon-web/WebContent/WEB-INF/lib/commons-el-1.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="jackson-all-1.9.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jackson-all-1.9.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="antlr-2.7.6rc1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/antlr-2.7.6rc1.jar">
