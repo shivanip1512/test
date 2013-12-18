@@ -1,6 +1,6 @@
 package com.cannontech.web.updater;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -17,21 +17,17 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
     
     @Override
     public UpdateResponse getUpdates(Set<String> requests, long afterDate, YukonUserContext userContext) {
-        UpdateResponse response = new UpdateResponse();
-        response.asOfTime = timeSource.getCurrentMillis();
-        Set<UpdateValue> result = new HashSet<>();
-        for (String request : requests) {
+        Map<String, String> responseValues = new HashMap<>();
 
+        for (String request : requests) {
             UpdateValue updateValue = getValue(request, afterDate, userContext, true);
             if (updateValue != null) {
-                result.add(updateValue);
+                responseValues.put(updateValue.getFullIdentifier(), updateValue.getValue().trim());
             }
         }
-
-        response.values = result;
-        return response;
+        return new UpdateResponse(responseValues, timeSource.getCurrentMillis());
     }
-    
+
     protected UpdateValue getValue(String fullIdentifier, long afterDate, YukonUserContext userContext, boolean wait) {
         Matcher m = idSplitter.matcher(fullIdentifier);
         if (m.matches() && m.groupCount() == 2) {

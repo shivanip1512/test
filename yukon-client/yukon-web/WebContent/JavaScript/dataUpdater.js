@@ -174,8 +174,8 @@ function initiateCannonDataUpdate(url, delayMs) {
         // if none exist on this page, get out
         // build up JS object to be used for request
         var reqData = {
-                'fromDate': lastUpdate,
-                'data' : []
+                fromDate : lastUpdate,
+                requestTokens : []
             },
             updaters = [
                 '-',
@@ -194,16 +194,16 @@ function initiateCannonDataUpdate(url, delayMs) {
 
         jQuery.each (updaters, function(index, updateStr) {
             var addedData = getUpdater(updateStr);
-            reqData.data = reqData.data.concat(addedData);
+            reqData.requestTokens = reqData.requestTokens.concat(addedData);
         });
         cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap;
             jQuery.each (idMap, function(key, val) {
-                reqData.data = reqData.data.concat(val);
+                reqData.requestTokens = reqData.requestTokens.concat(val);
             });
         });
 
-        if (0 === reqData.data.length) {
+        if (0 === reqData.requestTokens.length) {
             // schedule next update
             if (_updaterTimeout) {
                 clearTimeout(_updaterTimeout);
@@ -228,7 +228,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             }
             failureCallback();
         });
-        reqData.data = [];
+        reqData.requestTokens = [];
     }
     if (_updaterTimeout) {
         clearTimeout(_updaterTimeout);

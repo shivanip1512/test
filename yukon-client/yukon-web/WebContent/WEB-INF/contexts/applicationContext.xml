@@ -29,7 +29,7 @@
         <property name="messageConverters">
            <list>
              <!-- Message converters -->
-             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter "/>
+             <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
             </list>
          </property>
     </bean>
