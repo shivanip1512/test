@@ -14,21 +14,21 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <div class="f-dateRange oh">
-	<dt:date path="${pageScope.startPath}"
-			 name="${pageScope.startName}"
-			 value="${pageScope.startValue}"
-			 disabled="${pageScope.disabled}"
-			 cssClass="${pageScope.cssClass} f-dateStart"
-			 cssDialogClass="${pageScope.cssDialogClass}"
-			 maxDate="${pageScope.endValue}"/>
-	<jsp:doBody/>
+    <dt:date path="${pageScope.startPath}"
+             name="${pageScope.startName}"
+             value="${pageScope.startValue}"
+             disabled="${pageScope.disabled}"
+             cssClass="${pageScope.cssClass} f-dateStart"
+             cssDialogClass="${pageScope.cssDialogClass}"
+             maxDate="${pageScope.endValue}"/>
+    <jsp:doBody/>
 <!-- Only force includes on the first input -->
-	<dt:date path="${pageScope.endPath}"
-			 name="${pageScope.endName}"
-			 value="${pageScope.endValue}"
-			 disabled="${pageScope.disabled}"
-			 cssClass="${pageScope.cssClass} f-dateEnd"
-			 cssDialogClass="${pageScope.cssDialogClass}"
-			 minDate="${pageScope.startValue}" 
-			 maxDate="${pageScope.maxDate}" />
+    <dt:date path="${pageScope.endPath}"
+             name="${pageScope.endName}"
+             value="${pageScope.endValue}"
+             disabled="${pageScope.disabled}"
+             cssClass="${pageScope.cssClass} f-dateEnd"
+             cssDialogClass="${pageScope.cssDialogClass}"
+             minDate="${pageScope.startValue}" 
+             maxDate="${pageScope.maxDate}" />
 </div>
