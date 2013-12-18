@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -33,10 +36,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 
 public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterReadPercentageModel.ModelRow> implements
         UserContextModelAttributes {
-
+                                     
     public enum MeterReadPercentagePeriod {
 
         TWO_DAYS("2 days", 35),
@@ -104,7 +108,12 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     private YukonUserContext context;
     private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
-
+    private static Set<Attribute> usageAttributes = new HashSet<>();
+    {
+        usageAttributes.add(BuiltInAttribute.USAGE);
+        usageAttributes.add(BuiltInAttribute.USAGE_WATER);
+    }
+   
     @Override
     public void doLoadData() {
         List<DateRange> dateRanges = createDateRanges();
@@ -114,12 +123,23 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
         Multimap<PaoType, Attribute> allDefinedAttributes = paoDefinitionDao.getPaoTypeAttributesMultiMap();
         Multimap<Attribute, PaoType> dest = HashMultimap.create();
         Multimaps.invertFrom(allDefinedAttributes, dest);
-        Collection<PaoType> possiblePaoTypes = dest.get(BuiltInAttribute.USAGE);
-
+        Collection<PaoType> possiblePaoTypes = new ArrayList<>();
+        for(Attribute attribute: usageAttributes){
+            possiblePaoTypes.addAll(dest.get(attribute));
+        }
+        
         for (DeviceGroup group : groups) {
             // Get list of possible PAO types in the group we are using. This will reduce the
             // number of queries later.
             Collection<PaoType> actualPaoTypes = paoDefinitionService.findListOfPaoTypesInGroup(group, possiblePaoTypes);
+            Map<PaoType, Attribute> paoTypeToAttribute = new HashMap<>();
+            for (PaoType paoType : actualPaoTypes) {  
+                //lookup the usage attribute for the paoType
+                Set<Attribute> availAttributes = new HashSet<Attribute>(allDefinedAttributes.get(paoType));
+                Attribute usageAttribute = Sets.intersection(availAttributes, usageAttributes).iterator().next();
+                paoTypeToAttribute.put(paoType, usageAttribute);
+            }
+            
             int deviceCount = deviceGroupService.getDeviceCount(Collections.singleton(group));
             if (deviceCount > 0) {
 
@@ -138,10 +158,10 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
                 DateMidnight tenYrStartDate = tenYrStopDate.minusYears(10);
                 DateRange tenYrDateRange = new DateRange(tenYrStartDate, tenYrStopDate);
 
-                int successTenYearCount = getSuccessfulDeviceCount(group, actualPaoTypes, tenYrDateRange);
+                int successTenYearCount = getSuccessfulDeviceCount(paoTypeToAttribute, group, actualPaoTypes, tenYrDateRange);
 
                 for (DateRange range : dateRanges) {
-                    int successCount = getSuccessfulDeviceCount(group, actualPaoTypes, range);
+                    int successCount = getSuccessfulDeviceCount(paoTypeToAttribute, group, actualPaoTypes, range);
                     ModelRow groupRow = new ModelRow();
                     groupRow.groupName = group.getFullName();
                     groupRow.countUnsupported = unsupportedCount;
@@ -191,11 +211,13 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
      * @param dateRange
      * @return
      */
-    private int getSuccessfulDeviceCount(DeviceGroup group, Collection<PaoType> actualPaoTypes, DateRange dateRange) {
+    private int getSuccessfulDeviceCount(Map<PaoType, Attribute> paoTypeToAttribute,
+                                         DeviceGroup group, Collection<PaoType> actualPaoTypes,
+                                         DateRange dateRange) {
         int successCount = 0;
-        for (PaoType paoType : actualPaoTypes) {
+        for (PaoType paoType : actualPaoTypes) {           
             PaoTypePointIdentifier paoTypePointIdentifier =
-                attributeService.getPaoTypePointIdentifierForAttribute(paoType, BuiltInAttribute.USAGE);
+                attributeService.getPaoTypePointIdentifierForAttribute(paoType, paoTypeToAttribute.get(paoType));
             SqlStatementBuilder sql = new SqlStatementBuilder();
             // In the end all we care about is the count.
             sql.append("select count(PAObjectID)");
@@ -283,7 +305,7 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
             }
             break;
         }
-        DatedModelAttributes datedModel = (DatedModelAttributes) this;
+        DatedModelAttributes datedModel = this;
         // date range for the report header
         datedModel.setStartDate(startDate.toDate());
         datedModel.setStopDate(new DateTime(new DateMidnight(context.getJodaTimeZone())).minusSeconds(1).toDate());
