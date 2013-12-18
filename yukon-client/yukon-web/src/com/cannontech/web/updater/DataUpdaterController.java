@@ -1,5 +1,6 @@
 package com.cannontech.web.updater;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
-import com.google.common.collect.Sets;
 
 @Controller
 public class DataUpdaterController {
@@ -24,8 +24,8 @@ public class DataUpdaterController {
     public @ResponseBody UpdateResponse update(@RequestBody UpdateRequest dataUpdateRequest,
             HttpServletResponse response, YukonUserContext userContext) {
 
-        Long fromDate = dataUpdateRequest.getFromDate();
-        Set<String> tokens = Sets.newHashSet(dataUpdateRequest.getRequestTokens());
+        long fromDate = dataUpdateRequest.getFromDate();
+        Set<String> tokens = new HashSet<>(dataUpdateRequest.getRequestTokens());
 
         try {
             return dataUpdaterService.getUpdates(tokens, fromDate, userContext);
