@@ -22,11 +22,11 @@
 <dt:pickerIncludes/>
 
 <c:if test="${empty id}">
-	<c:if test="${empty pageScope.path}">
-		<cti:uniqueIdentifier var="id" prefix="timeInputId_"/>
+    <c:if test="${empty pageScope.path}">
+        <cti:uniqueIdentifier var="id" prefix="timeInputId_"/>
     </c:if>
     <c:if test="${!empty pageScope.path}">
-	    <c:set var="id" value="${path}"/>
+        <c:set var="id" value="${path}"/>
     </c:if>
 </c:if>
 
@@ -35,20 +35,20 @@
 <c:set var="timeZoneFull" value=""/>
 
 <c:choose>
-	<c:when test="${empty pageScope.value}">
-		<c:if test="${not empty pageScope.path && not empty status.actualValue}">
-			<spring:bind path="${path}">
-			    <cti:formatDate var="timeValue" value="${status.actualValue}" type="TIME24H"/>
-			    <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
-			    <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
-		    </spring:bind>
-	    </c:if>
-	</c:when>
-	<c:otherwise>
-	    <cti:formatDate var="timeValue" value="${pageScope.value}" type="TIME24H"/>
-	    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
-	    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
-	</c:otherwise>
+    <c:when test="${empty pageScope.value}">
+        <c:if test="${not empty pageScope.path && not empty status.actualValue}">
+            <spring:bind path="${path}">
+                <cti:formatDate var="timeValue" value="${status.actualValue}" type="TIME24H"/>
+                <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
+                <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
+            </spring:bind>
+        </c:if>
+    </c:when>
+    <c:otherwise>
+        <cti:formatDate var="timeValue" value="${pageScope.value}" type="TIME24H"/>
+        <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+        <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
+    </c:otherwise>
 </c:choose>
 
 <c:if test="${!empty pageScope.minDate}">
@@ -65,12 +65,12 @@
 <cti:msg var="jsDateTimeFormat" key="yukon.common.dateFormatting.TIME24H.js" />
 
 <c:choose>
-	<c:when test="${not empty pageScope.path}">
-		<spring:bind path="${path}">
-			<cti:displayForPageEditModes modes="VIEW">
-				${status.value}
-			</cti:displayForPageEditModes>
-			<cti:displayForPageEditModes modes="EDIT,CREATE">
+    <c:when test="${not empty pageScope.path}">
+        <spring:bind path="${path}">
+            <cti:displayForPageEditModes modes="VIEW">
+                ${status.value}
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
                             path="${path}"
                             value="${timeValue}"
@@ -85,32 +85,32 @@
                             data-time-zone-full="${timeZoneFull}"
                             data-class="${pageScope.cssDialogClass}"
                             autocomplete="off" />
-			</cti:displayForPageEditModes>
-			<c:if test="${status.error}">
-				<br>
-				<form:errors path="${path}" cssClass="error" />
-			</c:if>
-		</spring:bind>
-	</c:when>
-	<c:otherwise>
-		<cti:displayForPageEditModes modes="VIEW">
-				${timeValue}
-			</cti:displayForPageEditModes>
-			<cti:displayForPageEditModes modes="EDIT,CREATE">
-				<input	id="${id}" 
+            </cti:displayForPageEditModes>
+            <c:if test="${status.error}">
+                <br>
+                <form:errors path="${path}" cssClass="error" />
+            </c:if>
+        </spring:bind>
+    </c:when>
+    <c:otherwise>
+        <cti:displayForPageEditModes modes="VIEW">
+                ${timeValue}
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <input    id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
-				        value="${timeValue}"
-						class="f-timePicker f-timePickerUI timePicker ${cssClass}"
-						<c:if test="${disabled}">disabled="true"</c:if>
-						data-max-date="${maxFormattedDate}"
-						data-min-date="${minFormattedDate}"
+                        value="${timeValue}"
+                        class="f-timePicker f-timePickerUI timePicker ${cssClass}"
+                        <c:if test="${disabled}">disabled="true"</c:if>
+                        data-max-date="${maxFormattedDate}"
+                        data-min-date="${minFormattedDate}"
                         data-step-hour="${pageScope.stepHour}"
                         data-step-minute="${pageScope.stepMinute}"
                         data-class="${pageScope.cssDialogClass}"
-						data-date-time-format="${jsDateTimeFormat}"
+                        data-date-time-format="${jsDateTimeFormat}"
                         data-time-zone-short="${timeZoneShort}"
                         data-time-zone-full="${timeZoneFull}"
                         autocomplete="off" />
-			</cti:displayForPageEditModes>
-	</c:otherwise>
+            </cti:displayForPageEditModes>
+    </c:otherwise>
 </c:choose>
