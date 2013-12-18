@@ -23,11 +23,11 @@
 <dt:pickerIncludes/>
 
 <c:if test="${empty id}">
-	<c:if test="${empty pageScope.path}">
-		<cti:uniqueIdentifier var="id" prefix="dateTimeInputId_"/>
+    <c:if test="${empty pageScope.path}">
+        <cti:uniqueIdentifier var="id" prefix="dateTimeInputId_"/>
     </c:if>
     <c:if test="${!empty pageScope.path}">
-	    <c:set var="id" value="${pageScope.path}"/>
+        <c:set var="id" value="${pageScope.path}"/>
     </c:if>
 </c:if>
 
@@ -36,20 +36,20 @@
 <c:set var="timeZoneFull" value=""/>
 
 <c:choose>
-	<c:when test="${empty pageScope.value}">
-		<c:if test="${not empty pageScope.path && not empty status.actualValue}">
-			<spring:bind path="${path}">
-			    <cti:formatDate var="dateTimeValue" value="${status.actualValue}" type="DATEHM"/>
-			    <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
-			    <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
-		    </spring:bind>
-	    </c:if>
-	</c:when>
-	<c:otherwise>
-	    <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="DATEHM"/>
-	    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
-	    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
-	</c:otherwise>
+    <c:when test="${empty pageScope.value}">
+        <c:if test="${not empty pageScope.path && not empty status.actualValue}">
+            <spring:bind path="${path}">
+                <cti:formatDate var="dateTimeValue" value="${status.actualValue}" type="DATEHM"/>
+                <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
+                <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
+            </spring:bind>
+        </c:if>
+    </c:when>
+    <c:otherwise>
+        <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="DATEHM"/>
+        <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+        <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
+    </c:otherwise>
 </c:choose>
 
 <c:if test="${!empty pageScope.minDate}">
@@ -66,10 +66,10 @@
 <cti:msg var="jsDateTimeFormat" key="yukon.common.dateFormatting.BOTH.js" />
 
 <c:choose>
-	<c:when test="${not empty pageScope.path}">
-		<spring:bind path="${pageScope.path}">
-			<cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
-			<cti:displayForPageEditModes modes="EDIT,CREATE">
+    <c:when test="${not empty pageScope.path}">
+        <spring:bind path="${pageScope.path}">
+            <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
                 <form:input id="${id}" 
                             path="${path}" 
@@ -79,41 +79,42 @@
                             data-date-time-format="${jsDateTimeFormat}"
                             data-max-date="${pageScope.maxFormattedDate}"
                             data-min-date="${pageScope.minFormattedDate}"
-	                        data-step-hour="${pageScope.stepHour}"
-	                        data-step-minute="${pageScope.stepMinute}"
+                            data-step-hour="${pageScope.stepHour}"
+                            data-step-minute="${pageScope.stepMinute}"
                             data-time-zone-short="${timeZoneShort}"
                             data-time-zone-full="${timeZoneFull}"
-	                        data-class="${pageScope.cssDialogClass}" 
-	                        autocomplete="off"/>
-			</cti:displayForPageEditModes>
-			<c:if test="${status.error}">
+                            data-class="${pageScope.cssDialogClass}" 
+                            autocomplete="off"/>
+            </cti:displayForPageEditModes>
+            <c:if test="${status.error}">
                 <br>
                 <%-- TODO: br doesn't work here since this date/time element will be taller than
                      than line height br will only bump you down line height, need figure out best way to fix. --%>
-				<form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
-			</c:if>
-		</spring:bind>
-	</c:when>
-	<c:otherwise>
-		<cti:displayForPageEditModes modes="VIEW">
-				${dateTimeValue}
-			</cti:displayForPageEditModes>
-			<cti:displayForPageEditModes modes="EDIT,CREATE">
-				<input	id="${id}" 
+                <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
+            </c:if>
+        </spring:bind>
+    </c:when>
+    <c:otherwise>
+        <cti:displayForPageEditModes modes="VIEW">
+                ${dateTimeValue}
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                
+                <input    id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"
-						class="f-dateTimePicker f-dateTimePickerUI dateTimePicker ${cssClass}"
-						<c:if test="${disabled}">disabled="true"</c:if>
-						data-max-date="${pageScope.maxFormattedDate}"
-						data-min-date="${pageScope.minFormattedDate}"
-						data-step-hour="${pageScope.stepHour}"
-						data-step-minute="${pageScope.stepMinute}"
+                        class="f-dateTimePicker f-dateTimePickerUI dateTimePicker ${cssClass}"
+                        <c:if test="${disabled}">disabled="true"</c:if>
+                        data-max-date="${pageScope.maxFormattedDate}"
+                        data-min-date="${pageScope.minFormattedDate}"
+                        data-step-hour="${pageScope.stepHour}"
+                        data-step-minute="${pageScope.stepMinute}"
                         data-class="${pageScope.cssDialogClass}"
-						data-date-time-format="${jsDateTimeFormat}"
-						data-time-zone-short="${timeZoneShort}"
-						data-time-zone-full="${timeZoneFull}"
-						autocomplete="off"/>
-						
-			</cti:displayForPageEditModes>
-	</c:otherwise>
+                        data-date-time-format="${jsDateTimeFormat}"
+                        data-time-zone-short="${timeZoneShort}"
+                        data-time-zone-full="${timeZoneFull}"
+                        autocomplete="off"/>
+                        
+            </cti:displayForPageEditModes>
+    </c:otherwise>
 </c:choose>
