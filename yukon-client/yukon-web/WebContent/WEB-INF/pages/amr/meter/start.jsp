@@ -9,8 +9,9 @@
 
 		<div class="column-12-12">
             <div class="column one">
-
-                <ct:widget bean="allMonitorsWidget"/>
+                <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE">
+                    <ct:widget bean="allMonitorsWidget"/>
+                </cti:checkRolesAndProperties>
 
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
