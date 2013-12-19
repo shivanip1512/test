@@ -36,7 +36,13 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
-@CheckRoleProperty(YukonRoleProperty.DEVICE_DATA_MONITORING)
+@CheckRoleProperty({YukonRoleProperty.DEVICE_DATA_MONITORING,
+                    YukonRoleProperty.OUTAGE_PROCESSING,
+                    YukonRoleProperty.TAMPER_FLAG_PROCESSING,
+                    YukonRoleProperty.STATUS_POINT_MONITORING,
+                    YukonRoleProperty.PORTER_RESPONSE_MONITORING,
+                    YukonRoleProperty.VALIDATION_ENGINE,
+                    })
 public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
     @Autowired protected DeviceDataMonitorDao deviceDataMonitorDao;

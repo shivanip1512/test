@@ -618,7 +618,7 @@
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="DEVICE_DATA_MONITORING"/>
+                <constructor-arg value="DEVICE_DATA_MONITORING OUTAGE_PROCESSING TAMPER_FLAG_PROCESSING STATUS_POINT_MONITORING PORTER_RESPONSE_MONITORING VALIDATION_ENGINE"/>
             </bean>
         </property>
     </bean>

@@ -22,6 +22,7 @@
 
 <cti:msg2 var="undoText" key="yukon.common.undo"/>
 
+<cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
     <table class="compact-results-table monitor-subs dashed stacked" data-undo-text="${undoText}">
@@ -92,7 +93,8 @@
     </table>
     </c:if>
 </cti:msgScope>
-
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
     <table class="compact-results-table monitor-subs dashed stacked" data-removed-text="${removedText}" data-undo-text="${undoText}">
@@ -162,7 +164,8 @@
     </table>
     </c:if>
 </cti:msgScope>
-
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="TAMPER_FLAG_PROCESSING">
 <cti:msgScope paths="widgets.tamperFlagMonitorsWidget">
     <c:if test="${not empty tamperFlagMonitorsWidgetError }">
         <div class="error">${tamperFlagMonitorsWidgetError}</div>
@@ -237,8 +240,8 @@
     </table>
     </c:if>
 </cti:msgScope>
-
-
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="STATUS_POINT_MONITORING">
 <cti:msgScope paths="widgets.statusPointMonitorsWidget">
     <c:if test="${not empty statusPointMonitorsWidgetError}">
         <div class="error"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
@@ -306,7 +309,8 @@
     </table>
     </c:if>
 </cti:msgScope>
-
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="PORTER_RESPONSE_MONITORING">
 <cti:msgScope paths="widgets.porterResponseMonitorsWidget">
     <c:if test="${not empty porterResponseMonitorError}">
         <div class="error">${porterResponseMonitorError}</div>
@@ -370,8 +374,8 @@
     </table>
     </c:if>
 </cti:msgScope>
-
-
+</cti:checkRolesAndProperties>
+<cti:checkRolesAndProperties value="VALIDATION_ENGINE">
 <cti:msgScope paths="widgets.validationMonitorsWidget">
     <c:if test="${not empty validationMonitorsWidgetError}">
         <div class="error">${validationMonitorsWidgetError}</div>
@@ -445,6 +449,7 @@
     </table>
     </c:if>
 </cti:msgScope>
+</cti:checkRolesAndProperties>
 
 </table>
 
@@ -459,20 +464,34 @@
 </c:if>
 
 <div class="action-area">
-    <c:if test="${not empty validationMonitors}">
-        <cti:msgScope paths="widgets.validationMonitorsWidget">
-            <cti:url var="reviewUrl" value="/common/veeReview/home"/>
-            <a href="${reviewUrl}" class="notes"><i:inline key=".review"/></a>
-        </cti:msgScope>
-    </c:if>
+    <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
+        <c:if test="${not empty validationMonitors}">
+            <cti:msgScope paths="widgets.validationMonitorsWidget">
+                <cti:url var="reviewUrl" value="/common/veeReview/home"/>
+                <a href="${reviewUrl}" class="notes"><i:inline key=".review"/></a>
+            </cti:msgScope>
+        </c:if>
+    </cti:checkRolesAndProperties>
     <c:if test="${not isSubscribedWidget}">
         <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" containerCssClass="fr">
-            <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
-            <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="/amr/outageProcessing/monitorEditor/edit" />
-            <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="/amr/tamperFlagProcessing/edit" />
-            <cm:dropdownOption key="widgets.statusPointMonitorsWidget.tableHeader.name" href="/amr/statusPointMonitoring/creationPage" />
-            <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="/amr/porterResponseMonitor/createPage" />
-            <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/common/vee/monitor/edit" />
+            <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
+                <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
+                <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="/amr/outageProcessing/monitorEditor/edit" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="TAMPER_FLAG_PROCESSING">
+                <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="/amr/tamperFlagProcessing/edit" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="STATUS_POINT_MONITORING">
+                <cm:dropdownOption key="widgets.statusPointMonitorsWidget.tableHeader.name" href="/amr/statusPointMonitoring/creationPage" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="PORTER_RESPONSE_MONITORING">
+                <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="/amr/porterResponseMonitor/createPage" />
+            </cti:checkRolesAndProperties>
+            <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
+                <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/common/vee/monitor/edit" />
+            </cti:checkRolesAndProperties>
         </cm:dropdown>
     </c:if>
 </div>
