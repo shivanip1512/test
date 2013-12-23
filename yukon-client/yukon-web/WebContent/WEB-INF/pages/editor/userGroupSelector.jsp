@@ -15,46 +15,46 @@
 
 <script language="JavaScript">
 
-	function forwardToUserEdit(selectedItems) {
-		window.location = "/adminSetup/user/permissions?userId=" +
-		    $('userIdSelected').value;
-		window.event.returnValue = false;
-		return true;
-	}
+    function forwardToUserEdit(selectedItems) {
+        window.location = "/adminSetup/user/permissions?userId=" +
+            $('userIdSelected').value;
+        window.event.returnValue = false;
+        return true;
+    }
 
-	function forwardToGroupEdit(selectedItems) {
-		window.location = "/adminSetup/userGroup/permissions?groupId=" +
-		    $('loginGroupIdSelected').value;
-		window.event.returnValue = false;
-		return true;
-	}
-	
+    function forwardToGroupEdit(selectedItems) {
+        window.location = "/adminSetup/userGroup/permissions?groupId=" +
+            $('loginGroupIdSelected').value;
+        window.event.returnValue = false;
+        return true;
+    }
+    
 </script>
 
-	<input id="userIdSelected" type="hidden" value=""> 
-	<div>
-		Select user to edit:
-	    <tags:pickerDialog type="userPicker" id="userPicker"
-	        destinationFieldId="userIdSelected" endAction="forwardToUserEdit"
-	        immediateSelectMode="true">
+    <input id="userIdSelected" type="hidden" value=""> 
+    <div>
+        Select user to edit:
+        <tags:pickerDialog type="userPicker" id="userPicker"
+            destinationFieldId="userIdSelected" endAction="forwardToUserEdit"
+            immediateSelectMode="true">
             <cti:icon icon="icon-magnifier"/>
-	    </tags:pickerDialog>
-		<span style="display:none" id="userSelectedName"></span> 
-	</div>
-	
-	<br/>
-	OR
-	<br/><br/>
+        </tags:pickerDialog>
+        <span style="display:none" id="userSelectedName"></span> 
+    </div>
+    
+    <br/>
+    OR
+    <br/><br/>
 
-	<div>
-		Select group to edit:
-	    <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker"
-	        destinationFieldId="loginGroupIdSelected" endAction="forwardToGroupEdit"
-	        immediateSelectMode="true">
+    <div>
+        Select group to edit:
+        <tags:pickerDialog type="loginGroupPicker" id="loginGroupPicker"
+            destinationFieldId="loginGroupIdSelected" endAction="forwardToGroupEdit"
+            immediateSelectMode="true">
             <cti:icon icon="icon-magnifier"/>
-	    </tags:pickerDialog>
-	    <input id="loginGroupIdSelected" type="hidden" value=""> 
-		<span style="display:none" id="groupSelectedName"></span> 
-	</div>
+        </tags:pickerDialog>
+        <input id="loginGroupIdSelected" type="hidden" value=""> 
+        <span style="display:none" id="groupSelectedName"></span> 
+    </div>
 
 </cti:standardPage>
