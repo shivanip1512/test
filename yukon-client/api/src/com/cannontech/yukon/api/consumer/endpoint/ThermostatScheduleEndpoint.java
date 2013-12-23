@@ -68,7 +68,7 @@ public class ThermostatScheduleEndpoint {
                     } catch (EmptyResultDataAccessException e) {
                         Element fe;
                         if(scheduleName.isEmpty()){
-                            fe = XMLFailureGenerator.generateFailure(thermostatSchedule, "OtherException", "Schedule name can't be empty.");
+                            fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "Schedule name can't be empty.");
                         }else{
                             fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "No schedule named: " + scheduleName);
                         }
