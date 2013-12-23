@@ -13,18 +13,20 @@
             </c:if>
             <div class="column_12_12 clearfix">
                 <div class="column one">
-                    <tags:sectionContainer2 nameKey=".start">
+                    <cti:msg2 var="startText" key="defaults.start"/>
+                    <tags:sectionContainer title="${startText}">
                     <div>
                         <input type="checkbox" name="startNow" checked="checked"/><i:inline key=".startNow"/>
                         <dt:dateTime name="start" value="${currentTime}" />
                     </div>
-                    </tags:sectionContainer2>
+                    </tags:sectionContainer>
                 </div>
                 <div class="column two nogutter">
-                    <tags:sectionContainer2 nameKey=".stop">
+                    <cti:msg2 var="stopText" key="defaults.stop"/>
+                    <tags:sectionContainer title="${stopText}">
                         <div>&nbsp;</div>
                         <dt:dateTime name="stop" value="${stopTime}" />
-                    </tags:sectionContainer2>
+                    </tags:sectionContainer>
                 </div>
             </div>
 
