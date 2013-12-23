@@ -54,18 +54,27 @@ public class ThermostatScheduleEndpoint {
         try {
             
             List<String> scheduleNames = requestTemplate.evaluateAsStringList("//y:scheduleName");
-            // remove duplicate names
-            scheduleNames = ImmutableSet.copyOf(scheduleNames).asList();
-
-            for (String scheduleName : scheduleNames) {
-                try {
-                    AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount
-                            .getAccountId(), scheduleName);
-                    resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
-                } catch (EmptyResultDataAccessException e) {
-                    Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "No schedule named: " + scheduleName);
-                    resp.addContent(fe);
-                    continue;
+            if(scheduleNames.isEmpty()){
+                Element fe = XMLFailureGenerator.generateFailure(thermostatSchedule, "OtherException", "At least one schedule name is required.");
+                resp.addContent(fe);
+            }else{
+                // remove duplicate names
+                scheduleNames = ImmutableSet.copyOf(scheduleNames).asList();
+                for (String scheduleName : scheduleNames) {
+                    try {
+                        AccountThermostatSchedule accountThermostatSchedule = accountThermostatScheduleDao.getSchedulesForAccountByScheduleName(customerAccount
+                                .getAccountId(), scheduleName);
+                        resp.addContent(buildResponseForAccountThermostatSchedule(customerAccount, accountThermostatSchedule));
+                    } catch (EmptyResultDataAccessException e) {
+                        Element fe;
+                        if(scheduleName.isEmpty()){
+                            fe = XMLFailureGenerator.generateFailure(thermostatSchedule, "OtherException", "Schedule name can't be empty.");
+                        }else{
+                            fe = XMLFailureGenerator.generateFailure(thermostatSchedule, e, "OtherException", "No schedule named: " + scheduleName);
+                        }
+                        resp.addContent(fe);
+                        continue;
+                    }
                 }
             }
         } catch (Exception e) {
