@@ -1,8 +1,8 @@
 var currentOrderByColum = 'STRATEGY';
 var currentAscendingOrder = true;
 
-var validateAndShow = function(){
-    if ($('strategyName').value.strip() == '' || $('substationName').value.strip() == ''){
+var validateAndShow = function () {
+    if ($('strategyName').value.strip() == '' || $('substationName').value.strip() == '') {
         alert('Strategy and Substation names are required.');
         return;
     }
@@ -11,7 +11,7 @@ var validateAndShow = function(){
     paoPicker.show();
 }
 
-var setMappedNameId = function() {
+var setMappedNameId = function () {
     
     toggleLmMappingsWaitIndicators(true, $('addButton'));
     if ($('mappedNameId').value.strip() == '') {
@@ -21,149 +21,149 @@ var setMappedNameId = function() {
     
     var success = true;
 
-	getMappedName(function(mappedName) {
-	
-		var overwrite = true;
-		if (mappedName != null && mappedName != $('mappedName').innerHTML) {
-			overwrite = confirm('Strategy/Substation ' + $('strategyName').value + '/' + $('substationName').value + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('mappedName').innerHTML + '"?');
-		    success = overwrite;
-		} 
-	
-		if (overwrite) {
-	
-			var url = '/multispeak/setup/lmMappings/addOrUpdateMapping';
-			var params = {
-			    'strategyName': $('strategyName').value,
-			    'substationName': $('substationName').value,
-			    'mappedNameId': $('mappedNameId').value
-			};
-	    
-			new Ajax.Request(url, {
-				'parameters': params,
-				'evalScripts': true,
-				'onSuccess': function(transport, json) {
-					$('mappedNameDisplay').innerHTML = $('mappedName').innerHTML;
-					
-					toggleLmMappingsWaitIndicators(false, $('addButton'));
-					flashYellow($('mappedNameDisplay'));
-					reloadAllMappingsTable(null, false);
-				},
-				'onException': function(e) {
-					
-					toggleLmMappingsWaitIndicators(false, $('addButton'));
-					alert('Error adding mapping: ' + e.responseText);
-				}
-			});
-		} else {
-			toggleLmMappingsWaitIndicators(false, $('addButton'));
-		}
-	
-	});
-	
-	return success;
+    getMappedName(function (mappedName) {
+    
+        var overwrite = true;
+        if (mappedName != null && mappedName != $('mappedName').innerHTML) {
+            overwrite = confirm('Strategy/Substation ' + $('strategyName').value + '/' + $('substationName').value + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('mappedName').innerHTML + '"?');
+            success = overwrite;
+        } 
+    
+        if (overwrite) {
+    
+            var url = '/multispeak/setup/lmMappings/addOrUpdateMapping';
+            var params = {
+                'strategyName': $('strategyName').value,
+                'substationName': $('substationName').value,
+                'mappedNameId': $('mappedNameId').value
+            };
+        
+            new Ajax.Request(url, {
+                'parameters': params,
+                'evalScripts': true,
+                'onSuccess': function (transport, json) {
+                    $('mappedNameDisplay').innerHTML = $('mappedName').innerHTML;
+                    
+                    toggleLmMappingsWaitIndicators(false, $('addButton'));
+                    flashYellow($('mappedNameDisplay'));
+                    reloadAllMappingsTable(null, false);
+                },
+                'onException': function (e) {
+                    
+                    toggleLmMappingsWaitIndicators(false, $('addButton'));
+                    alert('Error adding mapping: ' + e.responseText);
+                }
+            });
+        } else {
+            toggleLmMappingsWaitIndicators(false, $('addButton'));
+        }
+    
+    });
+    
+    return success;
 }
 
 function getMappedName(callback) {
 
-	var url = '/multispeak/setup/lmMappings/findMapping';
-	var params = {
-	    'strategyName': $('strategyName').value,
-	    'substationName': $('substationName').value
-	};
-	
-	 new Ajax.Request(url, {
-	   'parameters': params,
-	   'asynchronous': false,
-	   'onSuccess': function(transport, json) {
-		 	var mappedName = json['mappedName'];
-			callback(mappedName);
-	   },
-	   'onException': function(e) {
-			alert('Error searching for Strategy/Substation: ' + e.responseText);
-		   }
-		 });
+    var url = '/multispeak/setup/lmMappings/findMapping';
+    var params = {
+        'strategyName': $('strategyName').value,
+        'substationName': $('substationName').value
+    };
+    
+     new Ajax.Request(url, {
+       'parameters': params,
+       'asynchronous': false,
+       'onSuccess': function (transport, json) {
+             var mappedName = json['mappedName'];
+            callback(mappedName);
+       },
+       'onException': function (e) {
+            alert('Error searching for Strategy/Substation: ' + e.responseText);
+           }
+         });
 
 }
   
 
-function doLmMappingNameSearch(){
-	
-	toggleLmMappingsWaitIndicators(true, $('searchButton'));
+function doLmMappingNameSearch() {
+    
+    toggleLmMappingsWaitIndicators(true, $('searchButton'));
 
-	getMappedName(function(mappedName) {
-	
-		if (mappedName != null) {
-			$('mappedNameDisplay').innerHTML = mappedName;
-		} else {
-			$('mappedNameDisplay').innerHTML = 'Not Found';
-		}
-		
-		toggleLmMappingsWaitIndicators(false, $('searchButton'));
-		flashYellow($('mappedNameDisplay'));
-	
-	});
+    getMappedName(function (mappedName) {
+    
+        if (mappedName != null) {
+            $('mappedNameDisplay').innerHTML = mappedName;
+        } else {
+            $('mappedNameDisplay').innerHTML = 'Not Found';
+        }
+        
+        toggleLmMappingsWaitIndicators(false, $('searchButton'));
+        flashYellow($('mappedNameDisplay'));
+    
+    });
 }
 
 function reloadAllMappingsTable(col, isReorder) {
 
-	if (isReorder) {
-		if (col != currentOrderByColum) {
-			currentAscendingOrder = true;
-		} else {
-			currentAscendingOrder = !currentAscendingOrder;
-		}
-		currentOrderByColum = col;
-	}
+    if (isReorder) {
+        if (col != currentOrderByColum) {
+            currentAscendingOrder = true;
+        } else {
+            currentAscendingOrder = !currentAscendingOrder;
+        }
+        currentOrderByColum = col;
+    }
 
-	// call reload
-	var url = '/multispeak/setup/lmMappings/reloadAllMappingsTable';
-	var params = {
-	    'col': currentOrderByColum,
-	    'ascending': currentAscendingOrder
-	};
-	
-	new Ajax.Updater('allMappingsTableDiv', url, {
-	   'parameters': params,
-	   'evalScripts': true,
-	   'onSuccess': function(transport, json) {
-	   },
-	   'onException': function(e) {
-	   }
-	 });
+    // call reload
+    var url = '/multispeak/setup/lmMappings/reloadAllMappingsTable';
+    var params = {
+        'col': currentOrderByColum,
+        'ascending': currentAscendingOrder
+    };
+    
+    new Ajax.Updater('allMappingsTableDiv', url, {
+       'parameters': params,
+       'evalScripts': true,
+       'onSuccess': function (transport, json) {
+       },
+       'onException': function (e) {
+       }
+     });
 }
 
 
 function removeLmMapping(mspLMInterfaceMappingId) {
-	
-	if (!confirm('Are you sure you want to remove this mappping?')) {
-		return;
-	}
-	
-	var url = '/multispeak/setup/lmMappings/removeMapping';
-	var params = {
-	    'mspLMInterfaceMappingId': mspLMInterfaceMappingId
-	};
-	
-	 new Ajax.Request(url, {
-	   'parameters': params,
-	   'evalScripts': true,
-	   'onSuccess': function(transport, json) {
-		 	reloadAllMappingsTable(null, false);
-	   },
-	   'onException': function(e) {
-			alert('Error removing mapping: ' + e.responseText);
-	   }
-	});
+    
+    if (!confirm('Are you sure you want to remove this mappping?')) {
+        return;
+    }
+    
+    var url = '/multispeak/setup/lmMappings/removeMapping';
+    var params = {
+        'mspLMInterfaceMappingId': mspLMInterfaceMappingId
+    };
+    
+     new Ajax.Request(url, {
+       'parameters': params,
+       'evalScripts': true,
+       'onSuccess': function (transport, json) {
+             reloadAllMappingsTable(null, false);
+       },
+       'onException': function (e) {
+            alert('Error removing mapping: ' + e.responseText);
+       }
+    });
 
 }
 
 function toggleLmMappingsWaitIndicators(isWaiting, buttonEl) {
-	
-	if (isWaiting) {
-		$('waitImg').show();
-		buttonEl.disable();
-	} else {
-		$('waitImg').hide();
-		buttonEl.enable();
-	}
+    
+    if (isWaiting) {
+        $('waitImg').show();
+        buttonEl.disable();
+    } else {
+        $('waitImg').hide();
+        buttonEl.enable();
+    }
 }
