@@ -55,6 +55,7 @@ import com.cannontech.web.menu.renderer.SearchRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -72,6 +73,7 @@ public class LayoutController {
     @Autowired private SearchRenderer searchRenderer;
     @Autowired private HttpExpressionLanguageResolver expressionLanguageResolver;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private UserPreferenceService prefService;
     
     private List<String> layoutScriptFiles;
     
@@ -312,6 +314,9 @@ public class LayoutController {
         }
         
         map.addAttribute("currentTime", new Date());
+        
+        map.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
+        map.addAttribute("alertFlash", prefService.getDefaultNotificationAlertFlash(yukonUser));
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");   

@@ -140,7 +140,7 @@
         
                     <c:forEach var="objPrefName" items="${allPreferenceNames}" >
                         <tr data-type="${objPrefName}">
-                            <td class="name"><i:inline key="${objPrefName.formatKey}"/></td>
+                            <td class="name" style="max-width: 151px"><i:inline key="${objPrefName.formatKey}"/></td>
                             <c:set var="prefName" value="${objPrefName.toString()}" />
                             <c:set var="isString" value='${"StringType".equals(objPrefName.valueType)}' />
                             <c:set var="isEnum" value='${objPrefName.valueType.toString().startsWith("EnumType")}' />

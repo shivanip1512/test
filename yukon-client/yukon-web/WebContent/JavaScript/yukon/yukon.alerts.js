@@ -10,7 +10,9 @@ var Yukon = (function (yukonMod) {
 })(Yukon || {});
 Yukon.namespace('Yukon.Alerts');
 Yukon.Alerts = (function () {
-    var initialized = false, 
+        var initialized = false,
+        countInitialized = false,
+        oldCount = 0,
         _alert_button = "#yukon-alert-button",
         _clear_button = "#yukon_clear_alerts_button",
         _viewAlertUrl = "/common/alert/view",
@@ -35,10 +37,23 @@ Yukon.Alerts = (function () {
             if (count > 0) {
                 button.addClass('red');
                 button.show();
+                button.removeClass('flash');
+                button.removeClass('animated');
+                if(countInitialized && oldCount < count) {
+                    if(jQuery('[data-alert-flash]').attr('data-alert-flash') === "true") {
+                        button.addClass('flash');
+                        button.addClass('animated');
+                    }
+                    if(jQuery('[data-alert-sound]').attr('data-alert-sound') === "true") {
+                        jQuery('#alert-audio')[0].play();
+                    }
+                }
             } else {
                 button.removeClass('red');  
                 button.hide();
             }
+            oldCount = count;
+            countInitialized = true;
         },
 
         _closeAlertWindow = function() {

@@ -66,6 +66,28 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
+    public boolean getDefaultNotificationAlertFlash(LiteYukonUser user) {
+        String notificationAlertFlash = this.getPreference(user, UserPreferenceName.NOTIFICATION_ALERT_FLASH);
+        if(notificationAlertFlash.equalsIgnoreCase("on")) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean getDefaultNotificationAlertSound(LiteYukonUser user) {
+        String notificationAlertSound = this.getPreference(user, UserPreferenceName.NOTIFICATION_ALERT_SOUND);
+        if(notificationAlertSound.equalsIgnoreCase("on")) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    @Override
     public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType newValue, LiteYukonUser user) {
         if (newValue == null) {
             throw new IllegalArgumentException("Cannot set preference to NULL");

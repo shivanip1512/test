@@ -63,6 +63,10 @@
         <c:forEach items="${javaScriptFiles}" var="file">
             <script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
+        
+        <audio id="alert-audio">
+            <source src="/WebConfig/yukon/audio/beep1-shortened.mp3" type="audio/mpeg">
+        </audio>
     </head>
 <body class="<c:out value="${module.moduleName}"/>_module">
 <cti:msgScope paths="layout.standard">
@@ -85,7 +89,7 @@
                 <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
-                <cti:button id="yukon-alert-button" classes="action dn" label="0"/>
+                <cti:button id="yukon-alert-button" data-alert-sound="${alertSounds}" data-alert-flash="${alertFlash}" classes="action dn" label="0"/>
                 <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
                     <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                         <cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}" var="userEditUrl"/>

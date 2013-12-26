@@ -37,6 +37,10 @@ public interface UserPreferenceService {
     public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user);
 
     public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user);
+    
+    public boolean getDefaultNotificationAlertFlash(LiteYukonUser user);
+    
+    public boolean getDefaultNotificationAlertSound(LiteYukonUser user);
 
     public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType type, LiteYukonUser user)
             throws IllegalArgumentException;
