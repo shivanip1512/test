@@ -6,24 +6,24 @@
 <cti:standardPage module="support" page="databaseValidate">
 
 <c:choose>
-	<c:when test="${not empty msgError}">
-		${msgError}
-	</c:when>
-	<c:otherwise>
-		<script>
+    <c:when test="${not empty msgError}">
+        ${msgError}
+    </c:when>
+    <c:otherwise>
+        <script>
             jQuery(function() {
-				new Ajax.Updater('compareResults', '/support/database/validate/results');
-			});
-		</script>
-		
-		<div id="compareResults">
-			<c:if test="${displayOracleWarning}">
-				<i:inline key=".oracleWarning"/>
-			</c:if>
-			<br>
-			<i:inline key=".loading"/> <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
-		</div>
+                new Ajax.Updater('compareResults', '/support/database/validate/results');
+            });
+        </script>
+        
+        <div id="compareResults">
+            <c:if test="${displayOracleWarning}">
+                <i:inline key=".oracleWarning"/>
+            </c:if>
+            <br>
+            <i:inline key=".loading"/> <img id="slowInputProcessImg${uniqueId}" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting" >
+        </div>
 
-	</c:otherwise>
+    </c:otherwise>
 </c:choose>
 </cti:standardPage>
