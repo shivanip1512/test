@@ -6,11 +6,15 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 public final class UpdateRequest {
     private final List<String> requestTokens;
     private final long fromDate;
 
+    /**
+     * @return an immutable List
+     */
     public List<String> getRequestTokens() {
         return requestTokens;
     }
@@ -31,7 +35,7 @@ public final class UpdateRequest {
         checkArgument(fromDate != null);
         checkArgument(requestTokens != null);
 
-        this.requestTokens = requestTokens;
+        this.requestTokens = ImmutableList.copyOf(requestTokens);
         this.fromDate = fromDate.longValue();
     }
 }
