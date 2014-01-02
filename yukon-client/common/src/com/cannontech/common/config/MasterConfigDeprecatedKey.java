@@ -25,8 +25,12 @@ public enum MasterConfigDeprecatedKey {
     SCANNER_QUEUE, // see yuk-8552
     SCANNER_QUEUE_SCANS, // see yuk-8552
 
-    /* YUKON_DNP_* deprecated with introduction of DNP Device Configurations in 5.5.2 */
-//    YUKON_DNP_INTERNAL_RETRIES, // 
+    /* The following YUKON_DNP_* keys were intended to be deprecated but have been commented out of this enum.
+     * This was done to prevent the 5.5.2 update script from throwing an exception when
+     * attempting to look up these CPARMs using the @start-cparm annotation.
+     * See YUK-12836 for more information */
+
+//    YUKON_DNP_INTERNAL_RETRIES, 
 //    YUKON_DNP_LOCALTIME,
 //    YUKON_DNP_OMIT_TIME_REQUEST_DEVICEIDS,
 //    YUKON_DNP_TIMESYNCS,
