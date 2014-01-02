@@ -31,14 +31,14 @@
         	
             function validateGroupIsSelected(btn, alertText) {
         
-                if ($('groupName').value == '') {
+                if (jQuery('#groupName').val() === '') {
                     alert(alertText);
                     return false;
                 }
                 
-                $('submitGroupCommanderButton').disable();
-                $('waitImg').show();
-                $('groupCommanderForm').submit();
+                jQuery('#submitGroupCommanderButton').prop('disabled', true);
+                jQuery('#waitImg').show();
+                jQuery('#groupCommanderForm').submit();
             }
 
         </script>

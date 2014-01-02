@@ -14,7 +14,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="reset" onclick="doResetBankOpCount(${bankId}, $F('newOpCount'))"/>
+            <cti:button nameKey="reset" onclick="doResetBankOpCount(${bankId}, jQuery('#newOpCount').val())"/>
         </div>
     </div>
 </cti:msgScope>

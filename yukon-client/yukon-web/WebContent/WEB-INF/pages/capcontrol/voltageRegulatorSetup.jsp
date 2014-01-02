@@ -71,6 +71,20 @@
             <script type="text/javascript">
                 var picker = [];
                 var rowNumber = 0;
+                jQuery(function () {
+                    // delegated event listeners for Select Point and No Point links
+                    jQuery('.regulatorPointTable').on('click', '[id^="pickerLink"]', function (event) {
+                        var rowNum = jQuery(event.currentTarget).data('rowNum');
+                        picker[rowNum].show.call(picker[rowNum]);
+                    });
+                    jQuery('.regulatorPointTable').on('click', '[id^="clearPoint"]', function (event) {
+                        var rowNum = jQuery(event.currentTarget).data('rowNum');
+                        // workaround for jQuery, which can't use [, ], : and other characters as selectors
+                        jQuery(jQuery('[id^="paoName"]')[rowNum]).html('(none)');
+                        jQuery(jQuery('[id^="pointName"]')[rowNum]).html('(none)');
+                        jQuery(jQuery('[id^="pointId"]')[rowNum]).val(-1);
+                    });
+                });
             </script>
         </f:verbatim>
         <x:dataTable rowIndexVar="rowIndex" var="mapping" value="#{capControlForm.regulatorBase.pointMappings}"
@@ -112,21 +126,15 @@
 
                     <f:verbatim>
                         <script type="text/javascript">
+                            var filterType;
                             picker[rowNumber] = new Picker('OK', 'Cancel', 'filterablePointPicker', '', 'picker[' + rowNumber + ']', 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
                             picker[rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
-                            var filterType = document.getElementById('filterType[' + rowNumber + ']').value;
+                            filterType = document.getElementById('filterType[' + rowNumber + ']').value;
                             picker[rowNumber].extraArgs = filterType;
                             picker[rowNumber].immediateSelectMode = true;
                             picker[rowNumber].init.call(picker[rowNumber]);
-
-                            function createPickerShower(rowNumberIn) {
-                                return function() {
-                                    picker[rowNumberIn].show.call(picker[rowNumberIn]);
-                                }
-                            }
-                            Event.observe('pickerLink[' + rowNumber + ']','click', createPickerShower(rowNumber));
-
-
+                            // stash rowNumber for delegate event handler
+                            jQuery(jQuery('[id^="pickerLink"]')[rowNumber]).data('rowNum', rowNumber);
                         </script>
                     </f:verbatim>
                 </h:column>
@@ -139,19 +147,8 @@
                     <x:commandLink id="clearPoint" forceId="true" onclick="javascript:return;" value="No Point" rendered="#{capControlForm.editingAuthorized}"/>
                     <f:verbatim>
                         <script type="text/javascript">
-                            function createClearPoint(rowNumberIn) {
-                                return function() {
-                                    var paoName = document.getElementById('paoName[' + rowNumberIn + ']');
-                                    var pointName = document.getElementById('pointName[' + rowNumberIn + ']');
-                                    var point = document.getElementById('pointId[' + rowNumberIn + ']');
-
-                                    paoName.innerHTML = '(none)';
-                                    pointName.innerHTML = '(none)';
-                                    point.value = -1;
-                                }
-                            }     
-                            Event.observe('clearPoint[' + rowNumber + ']','click', createClearPoint(rowNumber));
-                               rowNumber++;
+                            jQuery(jQuery('[id^="clearPoint"]')[rowNumber]).data('rowNum', rowNumber);
+                            rowNumber += 1;
                         </script>
                     </f:verbatim>
                                                 

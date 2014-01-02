@@ -8,36 +8,36 @@
 <script>
     var params = [];
     
-    function loadCommanderCommand(event) {
+    function loadCommanderCommand (event) {
+        var selectElement = jQuery(event.currentTarget),
+            originalCmd = selectElement.val();
         // init params for this command
         params = [];
-        var selectElement = jQuery(event.currentTarget);
-        var originalCmd = selectElement.val();
         // parse for parameters
         getCommanderParams(originalCmd);
         // replace any escaped question marks (double ?) with single ?
         originalCmd = originalCmd.replace('??', '?');
         // kick off replacements
-        processCommanderReplacement(0, originalCmd, originalCmd, selectElement.attr("data-cmdfield"));
+        processCommanderReplacement(0, originalCmd, originalCmd, selectElement.data("cmdfield"));
     }
     
     // prompt for a replacement for the parameter
     // replacements will stop when no more parameters exist
-    function processCommanderReplacement(paramIdx, originalCmd, cmd, cmdField) {
+    function processCommanderReplacement (paramIdx, originalCmd, cmd, cmdField) {
         var param = params[paramIdx],
-        windowHeight = jQuery(window).height(),
-        position = {my: 'top', at: 'top+' + windowHeight/5 },
-        displayParam;
-        if (param != undefined) {
+            windowHeight = jQuery(window).height(),
+            position = {my: 'top', at: 'top+' + windowHeight/5 },
+            displayParam;
+        if (typeof param !== 'undefined') {
             displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
             jQuery("#commanderPrompterConfirm label>span").text(displayParam);
             jQuery("#commanderPrompterConfirm").dialog({
                 resizable: false,
                 modal: true,
-                title: jQuery("#commanderPrompterConfirm").attr('data-title'),
+                title: jQuery("#commanderPrompterConfirm").data('title'),
                 position : position,
                 buttons: {
-                    "<cti:msg key="yukon.web.components.dialog.ok"/>": function() {
+                    "<cti:msg key="yukon.web.components.dialog.ok"/>": function () {
                         jQuery( this ).dialog( "close" );
                         replacement = jQuery( this ).find("input:text").val();
                         cmd = cmd.replace(param, replacement);
@@ -45,7 +45,7 @@
                         // try next replacements
                         processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
                     },
-                    "<cti:msg key="yukon.web.components.dialog.cancel"/>": function() {
+                    "<cti:msg key="yukon.web.components.dialog.cancel"/>": function () {
                         jQuery( this ).find("input:text").val("");
                         jQuery( this ).dialog( "close" );
                         //the EXT version of this tried to populate an undefined field.  Pretty sure this
@@ -57,27 +57,32 @@
         }
         else {
             // no parameter on first attempt, set command value as-is
-            if (paramIdx == 0) {
-                $(cmdField).value = originalCmd;
+            if (paramIdx === 0) {
+                jQuery('#' + cmdField).val(originalCmd);
             }
         }
     }
     
-    function getCommanderParams(cmd) {
-        var cmdIdx = 0;
+    function getCommanderParams (cmd) {
+        var cmdIdx = 0,
+            startIdx,
+            endIdx,
+            j,
+            param,
+            displayParam;
         while(cmdIdx < cmd.length) {
             // search for ?' or ?" to that indicates the beginning of a prompt replacement
-            if (cmd.charAt(cmdIdx) == '?') {
-                var startIdx = cmdIdx;
-                var endIdx = null;
-                if (cmd.charAt(cmdIdx + 1) == '?') {
+            if (cmd.charAt(cmdIdx) === '?') {
+                startIdx = cmdIdx;
+                endIdx = null;
+                if (cmd.charAt(cmdIdx + 1) === '?') {
                     cmdIdx = cmdIdx + 2;
                     continue;
                 }
                 // quoted prompt string if quote immediately follows ?
-                if (cmd.charAt(cmdIdx + 1) == "'" || cmd.charAt(cmdIdx + 1) == '"') {
-                    for (j = cmdIdx + 2; j < cmd.length; j++) {
-                        if (cmd.charAt(j) == "'" || cmd.charAt(j) == '"') {
+                if (cmd.charAt(cmdIdx + 1) === "'" || cmd.charAt(cmdIdx + 1) === '"') {
+                    for (j = cmdIdx + 2; j < cmd.length; j += 1) {
+                        if (cmd.charAt(j) === "'" || cmd.charAt(j) === '"') {
                             endIdx = j;
                             break;    
                         }
@@ -87,26 +92,26 @@
                 // ends at space or quote that is to be preserved, or eol
                 else {
                     // Skip over any spaces at the beginning of the prompt
-                    var j = cmdIdx + 1;
-                    for (j = cmdIdx + 1; j < cmd.length; j++) {
-                        if (cmd.charAt(j) != ' ') {
+                    j = cmdIdx + 1;
+                    for (j = cmdIdx + 1; j < cmd.length; j += 1) {
+                        if (cmd.charAt(j) !== ' ') {
                             break;
                         }
                     }
-                    for (j; j < cmd.length; j++) {
-                        if (cmd.charAt(j) == ' ' || cmd.charAt(j) == "'" || cmd.charAt(j) == '"') {
+                    for (j; j < cmd.length; j += 1) {
+                        if (cmd.charAt(j) === ' ' || cmd.charAt(j) === "'" || cmd.charAt(j) === '"') {
                             endIdx = j - 1;
                             break;    
                         }
                     }
-                    if (endIdx == null) {
+                    if (endIdx === null) {
                         endIdx = cmd.length;
                     }
                 }
                 // pull the parameter prompt from the command
-                var param = cmd.substring(startIdx, endIdx + 1);
+                param = cmd.substring(startIdx, endIdx + 1);
                 // clean it up for display and prompt user for replacement
-                var displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
+                displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
                 // save original prompt string and replacement
                 params.push(param);
                 // move index forward past this prompt to continue parsing command

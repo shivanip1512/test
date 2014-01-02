@@ -9,8 +9,9 @@
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <script type="text/javascript">
     jQuery(function() {
-        $$('a.moveLink').each(function(a) {
-            a.observe('click', function(event) {Yukon.CapControl.getMovedBankMenu(a.id, event)});
+        jQuery('#movedCBTable').on('click', 'a.moveLink', function (event) {
+            var a = event.currentTarget;
+            Yukon.CapControl.getMovedBankMenu(a.id, event);
         });
     });
     </script>

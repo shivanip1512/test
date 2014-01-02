@@ -1,142 +1,134 @@
-function show(layerName) {
-    $(layerName).style.display = '';
+function show (layerName) {
+    jQuery('#' + layerName)[0].style.display = '';
 }
-function hide(layerName) {
-    $(layerName).style.display = 'none';
+function hide (layerName) {
+    jQuery('#' + layerName)[0].style.display = 'none';
 }
-function showStyle(tablink) {
-    $(tablink).style.fontWeight = 'bold;';
+function showStyle (tablink) {
+    jQuery('#' + tablink)[0].style.fontWeight = 'bold;';
 }
-function hideStyle(tablink) {
-    $(tablink).style.fontWeight = 'normal;';
+function hideStyle (tablink) {
+    jQuery('#' + tablink)[0].style.fontWeight = 'normal;';
 }
 
 var old_tab = "failed";
 var selected_tab = "failed";
 
-function show_next(new_tab) {
-
+function show_next (new_tab) {
     old_tab = selected_tab;
-    
+
     // toggle results pane
     hide(old_tab+'_data');
     show(new_tab+'_data');
-    
+
     // toggle report links
     hide(old_tab+'_reports');
     show(new_tab+'_reports');
-    
+
     // toggle report title
     hide(old_tab+'_title');
     show(new_tab+'_title');
-    
+
     selected_tab = new_tab;
-    
 }
 
-
-
-
-
-
-function removeDataFromTable(table) {
-    for(rowIdx = table.rows.length - 1; rowIdx >= 1; rowIdx--) {
-        table.deleteRow(rowIdx)
+function removeDataFromTable (table) {
+    var rowIdx;
+    for(rowIdx = table.rows.length - 1; rowIdx >= 1; rowIdx -= 1) {
+        table.deleteRow(rowIdx);
     }
 }
     
 function addRowsToTable(table, items, itemFieldNames) {
-    
-    function addColumnToRow(row, idx, val) {
-        
-        var cell = row.insertCell(idx);
-        
-        var valItems = $A(val.split('<br>'));
-        valItems.each(function(valItem) {
-        
-        	var textNode = document.createTextNode(valItem);
-        	var br = document.createElement('br');
-        	
-        	cell.appendChild(textNode);
-        	cell.appendChild(br);
+    var addColumnToRow = function (row, idx, val) {
+        var cell = row.insertCell(idx),
+            valItems = [].slice.call(val.split('<br>'), 0);
+        valItems.forEach(function (valItem, index, arr) {
+            var textNode = document.createTextNode(valItem),
+                br = document.createElement('br');
+            cell.appendChild(textNode);
+            cell.appendChild(br);
        	});
-    }
+    };
 
-    items.each(function(item) {
-        
-        var row = table.insertRow(-1);
-        
-        itemFieldCount = 0;
-        itemFieldNames.each(function(itemFieldName) {
+    items.forEach(function (item, index, arr) {
+        var row = table.insertRow(-1),
+            itemFieldCount = 0;
+        itemFieldNames.forEach(function (itemFieldName, index, arr) {
             addColumnToRow(row, itemFieldCount, eval('item.' + itemFieldName));
-            itemFieldCount++;
+            itemFieldCount += 1;
         });
     });
 }
-    
-    
+
 function setupRefreshStuff(url, refreshPeriod) {
        
-    var onRefreshComplete = function(transport) {
-    
-        var content = transport.responseText;
-        var json = content.evalJSON();
-        
+    var onRefreshFailure = function (transport, json) {
+        alert("Unable to refresh results:\n" + transport.responseText);
+    },
+    updateResults = function () {
+        jQuery.ajax({
+            url: url,
+            type: 'POST',
+            data: {}
+        }).done(function (data, textStatus, jqXHR) {
+            onRefreshComplete(jqXHR);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            onRefreshFailure(jqXHR);
+        });
+    },
+    onRefreshComplete = function (transport) {
+        var content = transport.responseText,
+            json = JSON.parse(content),
+            failed_table,
+            pendingComm_table,
+            failedComm_table;
+
         // SET COUNTS
-        $('importDataCount').innerHTML = json.importDataCount;
-        $('failureCount').innerHTML = json.failureCount;
-        $('pendingCommsCount').innerHTML = json.pendingCommsCount;
-        $('failedCommsCount').innerHTML = json.failedCommsCount;
-        
+        jQuery('#importDataCount').html(json.importDataCount);
+        jQuery('#failureCount').html(json.failureCount);
+        jQuery('#pendingCommsCount').html(json.pendingCommsCount);
+        jQuery('#failedCommsCount').html(json.failedCommsCount);
+
         // SET IMPORT TIMES
-        $('lastImportAttempt').innerHTML = json.lastImportAttempt;
-        $('nextImportAttempt').innerHTML = json.nextImportAttempt;
-        
+        jQuery('#lastImportAttempt').html(json.lastImportAttempt);
+        jQuery('#nextImportAttempt').html(json.nextImportAttempt);
+
         // GET TABLE OBJS AND COUNT ROWS
-        var failed_table = $('failed_table');
-        var pendingComm_table = $('pendingComm_table');
-        var failedComm_table = $('failedComm_table');
-        
+        failed_table = jQuery('#failed_table')[0];
+        pendingComm_table = jQuery('#pendingComm_table')[0];
+        failedComm_table = jQuery('#failedComm_table')[0];
+
         // FANCY HIGHLIGHTING
-        if (json.importDataCount != parseInt($('prevImportDataCount').value)) {
-            flashYellow($('importDataCount'), 2);
+        if (json.importDataCount !== parseInt(jQuery('#prevImportDataCount').val()), 10) {
+            flashYellow(jQuery('#importDataCount')[0], 2);
         }
-        $('prevImportDataCount').value = json.importDataCount;
+        jQuery('#prevImportDataCount').val(json.importDataCount);
         
         if (json.failureCount > failed_table.rows.length - 1) {
-            flashYellow($('failureCount'), 2);
+            flashYellow(jQuery('#failureCount')[0], 2);
         }
         if (json.pendingCommsCount > pendingComm_table.rows.length - 1) {
-            flashYellow($('pendingCommsCount'), 2);
+            flashYellow(jQuery('#pendingCommsCount')[0], 2);
         }
         if (json.failedCommsCount > failedComm_table.rows.length - 1) {
-            flashYellow($('failedCommsCount'), 2);
+            flashYellow(jQuery('#failedCommsCount')[0], 2);
         }
-        
+
         // rebuild failures table
         removeDataFromTable(failed_table);
         addRowsToTable(failed_table, json.failures, ['failName','errorString','failTime']);
-        
+
         // rebuild pending comms table
         removeDataFromTable(pendingComm_table);
         addRowsToTable(pendingComm_table, json.pendingComms, ['pendingName','routeName','substationName']);
-        
+
         // rebuild failed comms table
         removeDataFromTable(failedComm_table);
         addRowsToTable(failedComm_table, json.failedComms, ['failName','routeName','substationName','errorString','failTime']);
-        
-        
+
         setTimeout(updateResults, refreshPeriod);
-    }
-    
-    var onRefreshFailure = function(transport, json) {
-        alert("Unable to refresh results:\n" + transport.responseText);
     };
-    
-    var updateResults = function() {
-          new Ajax.Request(url, {'method': 'post', 'onSuccess': onRefreshComplete, 'onFailure': onRefreshFailure, 'parameters': {}});
-    }
-    
+
     updateResults();
-    
 }

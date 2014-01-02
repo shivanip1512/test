@@ -1,88 +1,92 @@
-jQuery(function () {
+Yukon.namespace('Yukon.ui.veeReview');
 
-    $$('td.ACTION_TD').each(function (el) {
+Yukon.ui.veeReview = (function () {
+    var _resetDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
+            var elemToDisable = action === 'DELETE' ? deleteImgEl : acceptImgEl;
+            jQuery(elemToDisable).attr('disabled', 'disabled');
+        },
+        _toggleDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
+            if (action === 'DELETE') {
+                jQuery(deleteImgEl).removeAttr('disabled');
+                jQuery(acceptImgEl).attr('disabled', 'disabled');
+            }
+            if (action === 'ACCEPT') {
+                jQuery(acceptImgEl).removeAttr('disabled');
+                jQuery(deleteImgEl).attr('disabled', 'disabled');
+            }
+        },
+        _getActionTdHash = function (el) {
+            var descendants = jQuery(el).children(),
+                idParts = descendants[0].id.split('_'),
+                action = idParts[1],
+                changeId = idParts[3];
 
-        Event.observe(el, 'click', function () {
+            return {
+                action : action,
+                deleteImgEl : jQuery('#ACTION_DELETE_IMG_' + changeId)[0],
+                acceptImgEl : jQuery('#ACTION_ACCEPT_IMG_' + changeId)[0],
+                valueEl : jQuery('#ACTION_' + changeId)[0]
+            };
+        },
+        mod;
+    mod = {
+        checkUncheckAll : function (action) {
+            var checkAllState = jQuery('#checkAllState');
 
-            var h = getActionTdHash(el);
-            var action = h.get('action');
-            var valueEl = h.get('valueEl');
-
-            if (valueEl.value == action) {
-                resetDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
+            jQuery('td.ACTION_TD').each(function (index, el) {
+                var h = _getActionTdHash(el),
+                    tdAction = h.action,
+                    valueEl = h.valueEl,
+                    delImgEl = h.deleteImgEl,
+                    accImgEl = h.acceptImgEl;
+        
+                if (checkAllState.val() === action) {
+                    _resetDeleteAccept(tdAction, delImgEl, accImgEl);
+                    valueEl.value = '';
+                } else {
+                    _toggleDeleteAccept(action, delImgEl, accImgEl);
+                    valueEl.value = action;
+                }
+            });
+            if (checkAllState.val() === action) {
+                checkAllState.val('');
+            } else {
+                checkAllState.val(action);
+            }
+        },
+        reloadForm : function () {
+            var reloadMsg = jQuery('#reloadForm').data('reloadmsg');
+            jQuery('#saveButton').prop('disabled', true);
+            jQuery('#reloadButton').val(reloadMsg);
+            jQuery('#reloadButton').prop('disabled', true);
+            jQuery('#reloadSpinner').show();
+            jQuery("#saveForm input[type='checkbox']").each(function (index, el) {
+                var h = document.createElement('input');
+                h.setAttribute('type', 'hidden');
+                h.setAttribute('name', el.getAttribute('name'));
+                h.setAttribute('value', el.checked);
+                jQuery('#reloadForm')[0].appendChild(h);
+                jQuery(el).prop('disabled', true);
+            });
+            jQuery('#reloadForm').submit();
+        }
+    };
+    jQuery(function () {
+        jQuery('#saveForm').on('click', 'td.ACTION_TD', function (ev) {
+            var elTarg = ev.currentTarget,
+                h = _getActionTdHash(elTarg),
+                action = h.action,
+                valueEl = h.valueEl,
+                delImgEl = h.deleteImgEl,
+                accImgEl = h.acceptImgEl;
+            if (valueEl.value === action) {
+                _resetDeleteAccept(action, delImgEl, accImgEl);
                 valueEl.value = '';
             } else {
-                toggleDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
+                _toggleDeleteAccept(action, delImgEl, accImgEl);
                 valueEl.value = action;
             }
         });
     });
-});
-
-function checkUncheckAll (action) {
-
-    var checkAllState = $('checkAllState');
-
-    $$('td.ACTION_TD').each(function (el) {
-
-        var h = getActionTdHash(el);
-        var tdAction = h.get('action');
-        var valueEl = h.get('valueEl');
-
-        if (checkAllState.value == action) {
-            resetDeleteAccept(tdAction, h.get('deleteImgEl'), h.get('acceptImgEl'));
-            valueEl.value = '';
-        } else {
-            toggleDeleteAccept(action, h.get('deleteImgEl'), h.get('acceptImgEl'));
-            valueEl.value = action;
-        }
-    });
-
-    if (checkAllState.value == action) {
-        checkAllState.value = '';
-    } else {
-        checkAllState.value = action;
-    }
-}
-
-function resetDeleteAccept (action, deleteImgEl, acceptImgEl) {
-
-    if (action == 'DELETE') {
-        jQuery(deleteImgEl).attr('disabled', 'disabled');
-    }
-    if (action == 'ACCEPT') {
-        jQuery(acceptImgEl).attr('disabled', 'disabled');
-    }
-}
-
-function toggleDeleteAccept (action, deleteImgEl, acceptImgEl) {
-
-    if (action == 'DELETE') {
-        jQuery(deleteImgEl).removeAttr('disabled');
-        jQuery(acceptImgEl).attr('disabled', 'disabled');
-    }
-    if (action == 'ACCEPT') {
-        jQuery(acceptImgEl).removeAttr('disabled');
-        jQuery(deleteImgEl).attr('disabled', 'disabled');
-    }
-}
-
-/**
- * 
- * @param el    {Element}
- * @returns     {Hash} 
- */
-function getActionTdHash (el) {
-
-    var descendants = el.descendants();
-    var idParts = descendants[0].id.split('_');
-    var action = idParts[1];
-    var changeId = idParts[3];
-
-    return $H({
-        'action' : action,
-        'deleteImgEl' : $('ACTION_DELETE_IMG_' + changeId),
-        'acceptImgEl' : $('ACTION_ACCEPT_IMG_' + changeId),
-        'valueEl' : $('ACTION_' + changeId)
-    });
-}
+    return mod;
+})();

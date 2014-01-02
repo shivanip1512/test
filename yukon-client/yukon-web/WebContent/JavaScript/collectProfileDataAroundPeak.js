@@ -1,25 +1,39 @@
 // initiate profile collection
-function peakDayProfile_start(divId, profileRequestOrigin) {
-    
-    $(divId + '_startButton').disable();
-        
-    var initiateComplete = function(transport, json) {
+function peakDayProfile_start (divId, profileRequestOrigin) {
+    var initiateComplete,
+        args,
+        url;
+
+    jQuery('#' + divId + '_startButton').prop('disabled', true);
+
+    initiateComplete = function (transport, json) {
         alert(json['returnMsg']);
-        $(divId + '_startButton').enable();
+        jQuery('#' + divId + '_startButton').prop('disabled', false);
     };
 
-    var args = {};
-    args.deviceId = $F(divId + '_deviceId');
-    args.email = $F(divId + '_email');
-    args.peakDate = $F(divId + '_selectedPeakDate');
-    args.startDate = $F(divId + '_startDate');
-    args.stopDate = $F(divId + '_stopDate');
-    args.beforeDays = $F(divId + '_beforeDays');
-    args.afterDays = $F(divId + '_afterDays');
+    args = {};
+    args.deviceId = jQuery('#' + divId + '_deviceId').val();
+    args.email = jQuery('#' + divId + '_email').val();
+    args.peakDate = jQuery('#' + divId + '_selectedPeakDate').val();
+    args.startDate = jQuery('#' + divId + '_startDate').val();
+    args.stopDate = jQuery('#' + divId + '_stopDate').val();
+    args.beforeDays = jQuery('#' + divId + '_beforeDays').val();
+    args.afterDays = jQuery('#' + divId + '_afterDays').val();
     args.profileRequestOrigin = profileRequestOrigin;
-    
-    var url = '/meter/highBill/initiateLoadProfile';
-    new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': initiateComplete, 'onFailure': initiateComplete, 'parameters': args});
-  
+
+    url = '/meter/highBill/initiateLoadProfile';
+    //new Ajax.Request(url, {'method': 'post', 'evalScripts': true, 'onComplete': initiateComplete, 'onFailure': initiateComplete, 'parameters': args});
+    jQuery.ajax({
+        url: url,
+        type: 'POST',
+        data: args
+    }).done(function (data, textStatus, jqXHR) {
+        var jsonData = Yukon.ui.aux.getHeaderJSON(jqXHR);
+        initiateComplete(jqXHR, jsonData);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        var jsonData = {};
+        jsonData.returnMsg = jqXHR.responseText;
+        initiateComplete(jqXHR, jsonData);
+    });
 }
 

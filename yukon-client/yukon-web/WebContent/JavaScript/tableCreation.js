@@ -18,55 +18,71 @@
 //        }
 //     }
 // An unattached table DOM element is returned from this function.
-function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
-    var resultTable = document.createElement("table");
-    var resultTableHead = document.createElement("thead");
+function createHtmlTableFromJson (dataArray, outputCols, rowCallback) {
+    var resultTable = document.createElement("table"),
+        resultTableHead = document.createElement("thead"),
+        resultTableBody,
+        headRow,
+        col,
+        headCell,
+        i,
+        tableRow,
+        tableCell,
+        node,
+        link,
+        linkFuncGenerate,
+        linkFunc,
+        dataString,
+        displayDataString,
+        maxLen,
+        text,
+        emptyFunction = function () {};
     resultTable.appendChild(resultTableHead);
-    var headRow = document.createElement("tr");
+    headRow = document.createElement("tr");
     resultTableHead.appendChild(headRow);
-    for (var col = 0; col < outputCols.length; col++) {
-        var headCell = document.createElement("th");
+    for (col = 0; col < outputCols.length; col++) {
+        headCell = document.createElement("th");
         headCell.appendChild(document.createTextNode(outputCols[col].title));
         headRow.appendChild(headCell);
     }
-    var resultTableBody = document.createElement("tbody");
+    resultTableBody = document.createElement("tbody");
     resultTable.appendChild(resultTableBody);
-    for (var i=0; i < dataArray.length; i++) {
-      var tableRow = document.createElement("tr");
-      (rowCallback || Prototype.emptyFunction)(tableRow, dataArray[i]);
-      resultTableBody.appendChild(tableRow);
-      for (var col = 0; col < outputCols.length; col++) {
-          var tableCell = document.createElement("td");
-          var node = tableCell;
-          tableRow.appendChild(tableCell);
-          if (outputCols[col].link) {
-              var link = document.createElement("a");
-              node = link;
-              tableCell.appendChild(link);
-              var linkFuncGenerate = outputCols[col].link;
-              var linkFunc = linkFuncGenerate(dataArray[i], link);
-              
-              if(linkFunc != null) {
-              	  link.setAttribute("href", "javascript:void(0)");
-	              Event.observe(link,'click',linkFunc);
-              }
-          }
-          
-          var dataString = dataArray[i][outputCols[col].field];
-          if(dataString === undefined) {
-          	dataString = outputCols[col].field;
-          }
-          var displayDataString = dataString;
-          var maxLen = outputCols[col].maxLen;
-          if (maxLen && dataString.length > maxLen) {
-        	  displayDataString = dataString.truncate(maxLen, '...');
-        	  tableCell.setAttribute("title", dataString);
-          }
-          
-          //in case we want to display static text but maintain a value
-          var text = document.createTextNode(displayDataString);
-          node.appendChild(text);
-      }
+    for (i = 0; i < dataArray.length; i++) {
+        tableRow = document.createElement("tr");
+        (rowCallback || emptyFunction)(tableRow, dataArray[i]);
+        resultTableBody.appendChild(tableRow);
+        for (col = 0; col < outputCols.length; col++) {
+            tableCell = document.createElement("td");
+            node = tableCell;
+            tableRow.appendChild(tableCell);
+            if (outputCols[col].link) {
+                link = document.createElement("a");
+                node = link;
+                tableCell.appendChild(link);
+                linkFuncGenerate = outputCols[col].link;
+                linkFunc = linkFuncGenerate(dataArray[i], link);
+
+                if (linkFunc !== null) {
+                    link.setAttribute("href", "javascript:void(0)");
+                    jQuery(link).on('click', linkFunc);
+                }
+            }
+
+            dataString = dataArray[i][outputCols[col].field];
+            if (dataString === undefined) {
+                dataString = outputCols[col].field;
+            }
+            displayDataString = dataString;
+            maxLen = outputCols[col].maxLen;
+            if (maxLen && dataString.length > maxLen) {
+                displayDataString = dataString.truncate(maxLen, '...');
+                tableCell.setAttribute("title", dataString);
+            }
+
+            //in case we want to display static text but maintain a value
+            text = document.createTextNode(displayDataString);
+            node.appendChild(text);
+        }
     }
     return resultTable;
 }

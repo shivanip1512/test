@@ -31,40 +31,15 @@
 
     <h2>${pageTitle}</h2>
     <br>
-    
-    <script type="text/javascript">
-    
-        function reloadForm() {
-            
-            $('saveButton').disable();
-            $('reloadButton').value = '${reloading}';
-            $('reloadButton').disable();
-            $('reloadSpinner').show();
 
-            $('saveForm').getElementsBySelector('input[type=checkbox]').each(function(el) {
-                
-                   var h = document.createElement('input');
-                   h.setAttribute('type', 'hidden');
-                   h.setAttribute('name', el.getAttribute('name'));
-                   h.setAttribute('value', el.checked);
-                $('reloadForm').appendChild(h);
-
-                el.disable();
-            });
-
-            $('reloadForm').submit();
-        }
-    
-    </script>
-    
-    <form id="reloadForm" action="/common/veeReview/home" method="get">
+    <form id="reloadForm" action="/common/veeReview/home" method="get" data-reloadmsg="${reloading}">
            <c:if test="${!noPoints}">
                <input type="hidden" name="afterPaoId" value="${afterPaoId}">
            </c:if>
     </form>
-    
+
     <c:choose>
-    
+
     <c:when test="${fn:length(groupedExtendedReviewPoints) == 0}">
         <table class="results-table">
         <tr><td style="text-align:center;font-style:italic;" class="subtle">
@@ -109,7 +84,7 @@
                             </c:forEach>
                             
                             <cti:dataGridCell>
-                                <input id="reloadButton" type="button" onclick="reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/spinner.gif">
+                                <input id="reloadButton" type="button" onclick="Yukon.ui.veeReview.reloadForm();" value="${reload}"> <img id="reloadSpinner" style="display:none;" src="/WebConfig/yukon/Icons/spinner.gif">
                             </cti:dataGridCell>
                         
                         </cti:dataGrid>
@@ -149,11 +124,11 @@
                 <th>${next}</th>
                 <th align="center">
                     ${delete}
-                    <cti:icon icon="icon-cross" title="Check/Uncheck All" onclick="checkUncheckAll('DELETE');" classes="pointer"/>
+                    <cti:icon icon="icon-cross" title="Check/Uncheck All" onclick="Yukon.ui.veeReview.checkUncheckAll('DELETE');" classes="pointer"/>
                 </th>
                 <th align="center" >
                     ${accept}
-                    <cti:icon icon="icon-tick" title="Check/Uncheck All" onclick="checkUncheckAll('ACCEPT');" classes="pointer"/>
+                    <cti:icon icon="icon-tick" title="Check/Uncheck All" onclick="Yukon.ui.veeReview.checkUncheckAll('ACCEPT');" classes="pointer"/>
                 </th>
             </tr>
             

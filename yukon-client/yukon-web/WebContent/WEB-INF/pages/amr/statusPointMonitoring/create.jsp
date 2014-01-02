@@ -44,7 +44,7 @@
     </form:form>
     <script type="text/javascript">
         jQuery(function() {
-	        $$('#basicInfoForm input')[1].focus();
-	    });
+            jQuery('#basicInfoForm input')[1].focus();
+        });
     </script>
 </cti:standardPage>

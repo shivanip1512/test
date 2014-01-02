@@ -1,11 +1,10 @@
-function calculatePreviousReadingDifference(attributeName, readingValue){
-	
-	var currentValueName = attributeName+"_latestReading";
-	var previousReadingsSelect = attributeName+"_previousReading"
-	var totalConsumptionName = attributeName+"_total";
-
-	var currentValue = $(currentValueName).value;
-	var previousVal = $(previousReadingsSelect).options[$(previousReadingsSelect).selectedIndex].value;
-	var totalUsage = readingValue - previousVal;
-	$(totalConsumptionName).innerHTML = totalUsage.toFixed(3);
+function calculatePreviousReadingDifference (attributeName, readingValue) {
+    
+    var currentValueName = attributeName + "_latestReading",
+        previousReadingsSelect = attributeName + "_previousReading",
+        totalConsumptionName = attributeName + "_total",
+        prevReadingSelectObj = jQuery('#' + previousReadingsSelect)[0],
+        previousVal = prevReadingSelectObj.options[prevReadingSelectObj.selectedIndex].value,
+        totalUsage = readingValue - previousVal;
+    jQuery('#' + totalConsumptionName).html(totalUsage.toFixed(3));
 }

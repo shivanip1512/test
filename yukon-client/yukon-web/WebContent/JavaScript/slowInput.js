@@ -1,27 +1,24 @@
 /*  This function takes care of resetting the source of the image.  By doing this reset it 
 allows animated gifs to continue running even after the submit or link has happened.
 */
-function formSubmit(myForm, imgId, imgPath){
-    $(myForm).submit();
-    $(imgId).src = imgPath;
+function formSubmit (myForm, imgId, imgPath) {
+    jQuery('#' + myForm).submit();
+    jQuery('#' + imgId).attr('src', imgPath);
 }
 
 /* This function is used with the slowInput.tag to allow a user to see that a form has been
 submitted in cases were a form takes a bit of time to process.
 */
-function updateButton(actionButton, waitingLabel, myForm, imgId, disableOtherButtons){
-    $(actionButton).getElementsBySelector('.slowInput_waiting').invoke('show');
-    var input = $(actionButton).getElementsBySelector('input').first();
-    var initialLabel = input.value;
-    input.value = waitingLabel;
-    
+function updateButton (actionButton, waitingLabel, myForm, imgId, disableOtherButtons) {
+    var input;
+    jQuery('#' + actionButton).find('.slowInput_waiting').show();
+    input = jQuery('#' + actionButton).find('input');
+    input.val(waitingLabel);
     if (disableOtherButtons) {
-	    $$('input[type=button]').each(function(el) {
-			el.disable();
-		});
+        jQuery("input[type='button']").prop('disabled', true);
     } else {
-    	input.disable();
+        input.prop('disabled', true);
     }
-    
+
     formSubmit(myForm, imgId, '/WebConfig/yukon/Icons/spinner.gif');
 }

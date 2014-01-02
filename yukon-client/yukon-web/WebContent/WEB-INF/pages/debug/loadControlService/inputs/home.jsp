@@ -10,11 +10,11 @@
     <script>
         
         function toggleObserveConstraintsAndExecute(forceEl, observeAndExecuteId) {
-            if (forceEl.checked) {
-                $(observeAndExecuteId).checked = false;
-                $(observeAndExecuteId).disabled = true;
+            if (jQuery(forceEl).is(':checked')) {
+                jQuery('#' + observeAndExecuteId).prop('checked', false);
+                jQuery('#' + observeAndExecuteId).prop('disabled', true);
             } else {
-                $(observeAndExecuteId).disabled = false;
+                jQuery('#' + observeAndExecuteId).prop('disabled', false);
             }
         }
     </script>

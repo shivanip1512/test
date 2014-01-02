@@ -1,50 +1,65 @@
 
-function indexManager_buildIndex(indexName) {
+function indexManager_buildIndex (indexName) {
     var indexManager_getProgressWrapper = function () {
         indexManager_getProgress(indexName);
     };
-    new Ajax.Request("/index/buildIndex?index=" + indexName, {"method":"get", "onComplete":indexManager_getProgressWrapper, "onFailure":indexManager_ajaxError});
+    jQuery.ajax({
+        url: "/index/buildIndex?index=" + indexName,
+        type: 'get'
+    }).done(function (data, textStatus, jqXHR) {
+        indexManager_getProgressWrapper();
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        indexManager_ajaxError(jqXHR);
+    });
 }
 var indexManager_getProgress = function (indexName) {
     var indexManager_updateProgressWrapper = function (transport, json) {
         indexManager_updateProgress(transport, json, indexName);
     };
-    new Ajax.Request("/index/percentDone?index=" + indexName, {"method":"get", "onComplete":indexManager_updateProgressWrapper, "onFailure":indexManager_ajaxError});
+    jQuery.ajax({
+        url: "/index/percentDone?index=" + indexName,
+        type: 'get'
+    }).done(function (data, textStatus, jqXHR) {
+        var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+        indexManager_updateProgressWrapper(jqXHR, json);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        indexManager_ajaxError(jqXHR);
+    });
 };
 var indexManager_updateProgress = function (transport, json, indexName) {
-    var percentDone = json.percentDone;
-    var isBuilding = json.isBuilding;
-    var newDate = json.newDate;
-    
-    var dateCreated = document.getElementById(indexName + "dateCreated");
-    var percentComplete = document.getElementById(indexName + "percentComplete");
-    var buildIndex = document.getElementById(indexName + "buildIndex");
+    var percentDone = json.percentDone,
+        isBuilding = json.isBuilding,
+        newDate = json.newDate,
+        dateCreated = document.getElementById(indexName + "dateCreated"),
+        percentComplete = document.getElementById(indexName + "percentComplete"),
+        buildIndex = document.getElementById(indexName + "buildIndex");
+
     if (isBuilding) {
         setTimeout("indexManager_getProgress('" + indexName + "')", 1000);
     }
     if (isBuilding && percentDone < 100) {
-        dateCreated.innerHTML = "Building started at: " + newDate;
+        jQuery(dateCreated).html("Building started at: " + newDate);
         buildIndex.style.display = "none";
         percentComplete.style.display = "";
         indexManager_updateIndexProgressBar(indexName, percentDone);
     } else {
-        dateCreated.innerHTML = newDate;
+        jQuery(dateCreated).html(newDate);
         percentComplete.style.display = "none";
         buildIndex.style.display = "";
-        document.getElementById(indexName + "progressText").innerHTML = "";
+        jQuery('#' + indexName + "progressText").html("");
     }
 };
 var indexManager_ajaxError = function (transport, json) {
     errorHolder = document.createElement("div");
-    errorHolder.innerHTML = "There is a problem with the index: " + transport.responseText;
+    jQuery(errorHolder).html("There is a problem with the index: " + transport.responseText);
     document.getElementsByTagName("body")[0].appendChild(errorHolder);
 };
 
-function indexManager_updateIndexProgressBar(indexName, percent) {
+function indexManager_updateIndexProgressBar (indexName, percent) {
     progressText = document.getElementById(indexName + "progressText");
     progressInner = document.getElementById(indexName + "progressInner");
     if (percent > 20) {
-        progressText.innerHTML = parseInt(percent) + "%";
+        jQuery(progressText).html(parseInt(percent, 10) + "%");
     }
     progressInner.style.width = percent + "%";
 }

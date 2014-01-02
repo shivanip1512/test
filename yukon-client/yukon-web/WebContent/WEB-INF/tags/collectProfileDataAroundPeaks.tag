@@ -31,51 +31,52 @@
 
 <script type="text/javascript">
 
-    function changePeak() {
-    
+    function changePeak () {
         // convert el lists into js arrays
-        var preAvailableDaysAfterPeak = $A();
+        var preAvailableDaysAfterPeak = [],
+            postAvailableDaysAfterPeak,
+            afterDaysSelectElement,
+            afterDaysItemsCount,
+            i,
+            peakDaySelectElement;
+
         <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
             preAvailableDaysAfterPeak.push('${d}')
         </c:forEach>
-        
-        var postAvailableDaysAfterPeak = $A();
+
+        postAvailableDaysAfterPeak = [];
         <c:forEach var="d" items="${postAvailableDaysAfterPeak}">
             postAvailableDaysAfterPeak.push('${d}')
         </c:forEach>
-    
+
         // remove after days options so they can be reset
-        var afterDaysSelectElement = $('${id}_afterDays');
-        var afterDaysItemsCount = afterDaysSelectElement.options.length;
-        for (var i = afterDaysItemsCount - 1; i >= 0; i--) {
+        afterDaysSelectElement = jQuery('#' + '${id}_afterDays')[0];
+        afterDaysItemsCount = afterDaysSelectElement.options.length;
+        for (i = afterDaysItemsCount - 1; i >= 0; i -= 1) {
             afterDaysSelectElement.remove(i);
         }
-    
+
         // set start stop date for selected peak date
         // reset days after drop down options
-        var peakDaySelectElement = $('${id}_selectedPeakDate');
-        
-        if (peakDaySelectElement.selectedIndex == 0) {
-        
-            $('${id}_startDate').value='${preStartDate}';
-            $('${id}_stopDate').value='${preStopDate}';
-            
+        peakDaySelectElement = jQuery('#' + '${id}_selectedPeakDate')[];
+
+        if (peakDaySelectElement.selectedIndex === 0) {
+            jQuery('#' + '${id}_startDate').val('${preStartDate}');
+            jQuery('#' + '${id}_stopDate').val('${preStopDate}');
+
             setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, preAvailableDaysAfterPeak);
         }
         else {
-            
-            $('${id}_startDate').value='${postStartDate}';
-            $('${id}_stopDate').value='${postStopDate}';
-            
+            jQuery('#' + '${id}_startDate').val('${postStartDate}');
+            jQuery('#' + '${id}_stopDate').val('${postStopDate}');
+
             setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, postAvailableDaysAfterPeak);
         }
     }
-    
+
     // helper function to reset days after options
-    function setAvailableValuesForDaysAfterSelectElement(selectElement, values) {
-    
-        values.each(function(optVal){
-                                
+    function setAvailableValuesForDaysAfterSelectElement (selectElement, values) {
+        values.forEach(function (optVal, index, arr) {
             var newOpt = document.createElement('option');
             newOpt.setAttribute('value', optVal);
             newOpt.appendChild(document.createTextNode(optVal));

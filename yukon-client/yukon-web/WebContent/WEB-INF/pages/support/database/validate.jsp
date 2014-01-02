@@ -11,8 +11,13 @@
     </c:when>
     <c:otherwise>
         <script>
-            jQuery(function() {
-                new Ajax.Updater('compareResults', '/support/database/validate/results');
+            jQuery(function () {
+                jQuery.ajax({
+                    type: 'post',
+                    url: '/support/database/validate/results'
+                }).done(function (data, textStatus, jqXHR) {
+                    jQuery('#compareResults').html(jqXHR.responseText);
+                });
             });
         </script>
         
