@@ -388,7 +388,7 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval">Alarm Reporting Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmReportingInterval.description">The interval at which the RFN device reports new alarms (in minutes).</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval">Alarm Repeat Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval.description">Time before repeating an alarm if state didn’t change (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.alarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats">OV/UV Alarm Repeat Count</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
 
