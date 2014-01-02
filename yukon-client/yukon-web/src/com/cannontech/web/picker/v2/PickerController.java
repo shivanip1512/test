@@ -1,15 +1,12 @@
 package com.cannontech.web.picker.v2;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +15,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.SubList;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.v2.service.PickerFactory;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/v2/*")
@@ -53,28 +51,22 @@ public class PickerController {
     }
 
     @RequestMapping
-    public void idSearch(HttpServletResponse response, String type,
-            Integer[] initialIds, String extraArgs, YukonUserContext context)
-            throws IOException {
+    @ResponseBody
+    public Map<String, ?> idSearch(String type, Integer[] initialIds, String extraArgs, YukonUserContext context) {
         Picker<?> picker = pickerService.getPicker(type);
 
-        SearchResults<?> searchResult =
-            picker.search(Lists.newArrayList(initialIds),
-                    extraArgs, context);
+        SearchResults<?> searchResult = picker.search(Lists.newArrayList(initialIds), extraArgs, context);
 
-        JSONObject json = getPopulatedJsonObj(searchResult, context);
+        searchResult = resolveDisplayables(searchResult, context);
 
-        response.setContentType("application/json");
-
-        try (PrintWriter out = response.getWriter()) {
-            out.print(json.toString());
-        }
+        return Collections.singletonMap("hits", searchResult);
     }
 
     @RequestMapping
-    public void search(HttpServletResponse response, String type, String ss,
+    @ResponseBody
+    public Map<String, Object> search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
-            Integer count, String extraArgs, YukonUserContext context) throws IOException {
+            Integer count, String extraArgs, YukonUserContext context) {
         int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
         if (count == -1) {
@@ -86,8 +78,10 @@ public class PickerController {
 
         response.setContentType("application/json");
 
-        JSONObject json = getPopulatedJsonObj(searchResult, context);
-
+        searchResult = resolveDisplayables(searchResult, context);
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(4);
+        json.put("hits", searchResult);
+        
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(context);
         MessageSourceResolvable resolvable =
@@ -97,43 +91,40 @@ public class PickerController {
                                              searchResult.getHitCount());
         json.put("pages", messageSourceAccessor.getMessage(resolvable));
 
-        resolvable =
-            new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages",
-                                             searchResult.getHitCount());
+        resolvable =  new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages", searchResult.getHitCount());
         json.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
 
-        resolvable =
-            new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected",
-                                             searchResult.getHitCount());
+        resolvable = new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected", searchResult.getHitCount());
         json.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
+        json.put("hits", searchResult);
 
-        response.setContentType("application/json");
-
-        try (PrintWriter out = response.getWriter()) {
-            out.print(json.toString());
-        }
+        return json;
     }
 
-    private JSONObject getPopulatedJsonObj(SearchResults<?> searchResult, YukonUserContext context) {
-        JSONObject json = new JSONObject();
-        // Here we have special support for maps. This allows us to support enums and resolve displayable objs
-        if (!searchResult.getResultList().isEmpty() && searchResult.getResultList().get(0) instanceof Map) {
+    /**
+     * Special support for maps. This allows us to support enums and resolve displayable objs
+     */
+    private SearchResults<?> resolveDisplayables(SearchResults<?> searchResult, YukonUserContext context) {
+        if (searchResult.getResultList().isEmpty()) {
+            return searchResult;
+        }
+
+        if (searchResult.getResultList().get(0) instanceof Map) {
             List<Map<String, String>> newHits = new ArrayList<>();
-            for (Object hitObj : searchResult.getResultList()) {
+            for (Map<String, ?> hitObj : (List<Map<String, ?>>)searchResult.getResultList()) {
                 Map<String, String> newHit = new HashMap<>();
-                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
-                    String propertyName = (String) entry.getKey();
+                for (Map.Entry<String, ?> entry : hitObj.entrySet()) {
+                    String propertyName = entry.getKey();
                     Object propertyValue = entry.getValue();
                     String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, context);
                     newHit.put(propertyName, translatedValue);
                 }
                 newHits.add(newHit);
             }
-            searchResult = SearchResults.pageBasedForSubList(searchResult.getCount(),
-                          new SubList<>(newHits, (searchResult.getCurrentPage() - 1) * searchResult.getCount(), searchResult.getHitCount()));
+            searchResult = SearchResults.pageBasedForSublist(newHits, searchResult.getCurrentPage(), searchResult.getCount(), searchResult.getHitCount());
         }
-        json.put("hits", JSONObject.fromBean(searchResult));
-        return json;
+
+        return searchResult;
     }
 
     /**

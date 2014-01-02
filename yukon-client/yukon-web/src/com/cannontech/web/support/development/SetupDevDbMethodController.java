@@ -4,8 +4,6 @@ import java.beans.PropertyEditorSupport;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +49,7 @@ import com.cannontech.web.support.development.database.service.impl.DevEventLogC
 import com.cannontech.web.support.development.database.service.impl.DevRolePropUpdaterService;
 import com.cannontech.web.support.development.database.service.impl.DevStarsCreationService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/development/setupDatabase/*")
@@ -99,9 +98,9 @@ public class SetupDevDbMethodController {
 
     @RequestMapping
     @ResponseBody
-    public String checkAvailability() {
-        JSONObject json = new JSONObject();
-        
+    public Map<String, Object> checkAvailability() {
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(8);
+
         json.put("roleProperties", !devRolePropUpdaterService.isRunning());
         json.put("amr", !devAMRCreationService.isRunning());
         json.put("capControl", !devCapControlCreationService.isRunning());
@@ -110,12 +109,12 @@ public class SetupDevDbMethodController {
         json.put("starsProgress", devStarsCreationService.getPercentComplete());
         json.put("eventLog", !devEventLogCreationService.isRunning());
         json.put("eventLogProgress", devEventLogCreationService.getPercentComplete());
-        
-        return json.toString();
+
+        return json;
     }
     
     @RequestMapping
-    public String setupRoleProperties(DevRoleProperties devRoleProperties, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
+    public String setupRoleProperties(DevRoleProperties devRoleProperties, FlashScope flashScope, ModelMap model) {
         if (!devRolePropUpdaterService.isRunning()) {
             try {
                 Map<YukonRole,Boolean> results = devRolePropUpdaterService.executeSetup(devRoleProperties);
@@ -144,7 +143,7 @@ public class SetupDevDbMethodController {
     }
 
     @RequestMapping 
-    public String setupAMR(DevAMR devAMR, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
+    public String setupAMR(DevAMR devAMR, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
         amrValidator.validate(devAMR, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -167,7 +166,7 @@ public class SetupDevDbMethodController {
     }
 
     @RequestMapping
-    public String setupCapControl(DevCapControl devCapControl, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
+    public String setupCapControl(DevCapControl devCapControl, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
         capControlValidator.validate(devCapControl, bindingResult);
         
         boolean simComFound = paoDao.getLiteYukonPaoByName(DevCommChannel.SIM.getName(), false).size() == 1;

@@ -3,8 +3,6 @@ package com.cannontech.common.search.result;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.util.SubList;
-
 public class SearchResults<T> {
     private int hitCount;           //total count (possibly estimate) of results available
     private int startIndex;         //inclusive, 0-based
@@ -28,23 +26,6 @@ public class SearchResults<T> {
     @SuppressWarnings("unchecked")
     public static <T> SearchResults<T> emptyResult() {
         return (SearchResults<T>) emptyResult;
-    }
-
-   /**
-    * Returns a SearchResult containing a specific "page" of items, based on the specified parameters.
-    * 
-    * @param size - size of all items (not size of itemList since itemList is only the current page items)
-    * @param itemList - items for current page
-    * 
-    * @deprecated Use {@link #pageBasedForSublist(List, int, int, int)}
-    */
-    @Deprecated
-    public static  <T> SearchResults<T> pageBasedForSubList(int itemsPerPage, SubList<T> itemList) {
-        SearchResults<T> result = new SearchResults<>();
-        result.setResultList(itemList);
-        result.setBounds(itemList.getStartIndex(), itemsPerPage, itemList.getOriginalSize());
-
-        return result;
     }
 
     /**

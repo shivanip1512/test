@@ -138,19 +138,17 @@
             function checkAvailability() {
                 jQuery.ajax({
                   url: "checkAvailability",
-                  dataType: "json",
-                  success: function(data) {
-                    var data = jQuery.parseJSON(data);
-                    setWidgetAvailability(jQuery("#roleProperties"),data.roleProperties);
-                    setWidgetAvailability(jQuery("#capControl"),data.capControl, data.capControlProgress);
-                    setWidgetAvailability(jQuery("#amr"),data.amr);
-                    setWidgetAvailability(jQuery("#stars"),data.stars,data.starsProgress);
-                    setWidgetAvailability(jQuery("#eventLog"),data.eventLog, data.eventLogProgress);
-                  }
+                  dataType: "json"
+                }).done(function (data) {
+                    setWidgetAvailability(jQuery("#roleProperties"), data.roleProperties);
+                    setWidgetAvailability(jQuery("#capControl"), data.capControl, data.capControlProgress);
+                    setWidgetAvailability(jQuery("#amr"), data.amr);
+                    setWidgetAvailability(jQuery("#stars"), data.stars, data.starsProgress);
+                    setWidgetAvailability(jQuery("#eventLog"), data.eventLog, data.eventLogProgress);
                 });
               }
             checkAvailability();
-            setInterval(checkAvailability,1500);
+            setInterval(checkAvailability, 1500);
     	});
     </script>
 
