@@ -1,20 +1,16 @@
 package com.cannontech.esub.web.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jsonOLD.JSONObject;
-
-import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -23,6 +19,7 @@ import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * AlarmTextStyleServlet chooses between two svg styles given a list of point ids 
@@ -43,20 +40,19 @@ import com.cannontech.spring.YukonSpringHook;
  * @author alauinger
  */
 public class AlarmTextStyleServlet extends HttpServlet {
-	/**
-	 * TODO: combine this updating code and the same in DrawingUpdater
-	 * @see javax.servlet.http.HttpServlet#service(HttpServletRequest, HttpServletResponse)
-	 */
-	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+
+	@Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String referrer = req.getParameter("referrer");
-	    BufferedReader jsonDataReader = req.getReader();
-        String jsonData = FileCopyUtils.copyToString(jsonDataReader);
-        JSONObject object = new JSONObject(jsonData);
-        String deviceIdStr = object.getString("deviceIds");
-        String pointIdStr = object.getString("pointIds");
-        String alarmCategoryIdStr = object.getString("alarmCategoryIds");
-        String fill1 = object.getString("fill1");
-        String fill2 = object.getString("fill2");
+        Map<String, String> object
+            = jsonObjectMapper.readValue(req.getReader(), Map.class);
+        String deviceIdStr = object.get("deviceIds");
+        String pointIdStr = object.get("pointIds");
+        String alarmCategoryIdStr = object.get("alarmCategoryIds");
+        String fill1 = object.get("fill1");
+        String fill2 = object.get("fill2");
         boolean inAlarm = false;
 	
         /* check if any of the points on these devices are in alarm*/
@@ -138,7 +134,8 @@ public class AlarmTextStyleServlet extends HttpServlet {
 	/**
 	 * @see javax.servlet.Servlet#init(ServletConfig)
 	 */
-	public void init(ServletConfig cfg) throws ServletException {
+	@Override
+    public void init(ServletConfig cfg) throws ServletException {
 		super.init(cfg);							
 	}
 }

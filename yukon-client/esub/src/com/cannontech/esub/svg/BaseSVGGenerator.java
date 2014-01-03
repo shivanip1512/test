@@ -632,7 +632,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
             
             int muteX = x + 170;
             int muteY = y + 6;
-            jsGenerator.addButton(muteX, muteY, 150, 16, false, false, false, "CGUI.root", "Mute", "toggleMute();");        
+            jsGenerator.addButton(muteX, muteY, 150, 16, false, false, false, "CGUI.root", "Mute", "toggleMute();");
         }
         
         return retElement;      

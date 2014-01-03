@@ -1,19 +1,17 @@
 package com.cannontech.web.widget.support;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.jsonOLD.JSONArray;
-import net.sf.jsonOLD.JSONObject;
-
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.cannontech.web.PageEditMode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WidgetUtils {
-    
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
+
     public static Map<String,String> combineParameters(Map<String,String> outer, Map<String,? extends Object> inner) {
         Map<String,String> emptyMap1 = Collections.emptyMap();
         outer = (outer != null ? outer : emptyMap1);
@@ -30,54 +28,14 @@ public class WidgetUtils {
         }
         return result;
     }
-    
-    public static String generateJsonString(Object obj) {
-        if (obj == null) {
-            return "null";
-        } else if (obj instanceof String) {
+
+    public static String generateJsonString(Object obj) throws JsonProcessingException {
+        if (obj instanceof String){
             return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
-        } else if (obj instanceof Map<?, ?>) {
-            return new JSONObject((Map<?, ?>)obj).toString();
-        } else if (obj instanceof Collection<?>) {
-            return new JSONArray((Collection<?>)obj).toString();
-        } else if (obj instanceof Boolean) {
-        	Boolean boolObj = (Boolean)obj;
-        	return boolObj.toString();
-        } else if (obj instanceof PageEditMode) {
-        	PageEditMode pageEditModeObj = (PageEditMode)obj;
-        	return pageEditModeObj.name();
-        } else if (obj.getClass().isArray()) {
-            return JSONArray.fromObject(obj).toString();
-        } else {
-            return JSONObject.fromObject(obj).toString();
         }
+        return jsonObjectMapper.writeValueAsString(obj);
     }
-    
-    public static String generateJsonString2(Object obj) {
-        if (obj == null) {
-            return "null";
-        } else if (obj instanceof String) {
-            return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
-        } else if (obj instanceof Map<?, ?>) {
-            //have not confirmed that this works
-            return net.sf.json.JSONObject.fromObject(obj).toString();
-        } else if (obj instanceof Collection<?>) {
-            return net.sf.json.JSONArray.fromObject(obj).toString();
-        } else if (obj instanceof Boolean) {
-            Boolean boolObj = (Boolean)obj;
-            return boolObj.toString();
-        } else if (obj instanceof PageEditMode) {
-            PageEditMode pageEditModeObj = (PageEditMode)obj;
-            return pageEditModeObj.name();
-        } else if (obj.getClass().isArray()) {
-            //have not confirmed that this works
-            return net.sf.json.JSONArray.fromObject(obj).toString();
-        } else {
-            //have not confirmed that this works
-            return net.sf.json.JSONObject.fromObject(obj).toString();
-        }
-    }
-    
+
     /**
      * We want to return a string that doesn't contain any new lines,
      * quote characters, or other nonsense.

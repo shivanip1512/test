@@ -1,22 +1,18 @@
 package com.cannontech.esub.web.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import net.sf.jsonOLD.JSONObject;
-
-import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -25,22 +21,20 @@ import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.spring.YukonSpringHook;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Returns true if alarm audio should be active.
  * Also can mute alarm audio for the current user.
- * @author alauinger
  */
 public class AlarmAudioServlet extends HttpServlet {
 
     public static final String PARAM_MUTE_ARG = "mute";
     public static final String PARAM_DISPLAY_NAME_ARG = "display";
     private static String MUTE_TIMESTAMP_SESSION_KEY = "MUTED_DISPLAYS";
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
 
-    /**
-     * @see javax.servlet.http.HttpServlet#service(HttpServletRequest,
-     *      HttpServletResponse)
-     */
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String referrer = req.getParameter("referrer");
         HttpSession session = req.getSession(false);
@@ -60,18 +54,18 @@ public class AlarmAudioServlet extends HttpServlet {
             w.write("ok");        
             return;
         }
-        
-        BufferedReader jsonDataReader = req.getReader();
-        String jsonData = FileCopyUtils.copyToString(jsonDataReader);
-        JSONObject object = new JSONObject(jsonData);
-        String deviceIdStr = object.getString("deviceIds");
-        String pointIdStr = object.getString("pointIds");
-        String alarmCategoryIdStr = object.getString("alarmCategoryIds");
+
+        Map<String, String> object
+            = jsonObjectMapper.readValue(req.getReader(), Map.class);
+
+        String deviceIdStr = object.get("deviceIds");
+        String pointIdStr = object.get("pointIds");
+        String alarmCategoryIdStr = object.get("alarmCategoryIds");
 
         List<Integer> deviceIds = StringUtils.parseIntStringForList(deviceIdStr);
         List<Integer> pointIds = StringUtils.parseIntStringForList(pointIdStr);
         List<Integer> alarmCategoryIds = StringUtils.parseIntStringForList(alarmCategoryIdStr);
-        List<Signal> allSigs = new LinkedList<Signal>();
+        List<Signal> allSigs = new LinkedList<>();
 
         try {
             List<Signal> deviceSigs = YukonSpringHook.getBean(AlarmDao.class).getSignalsForPaos(deviceIds);

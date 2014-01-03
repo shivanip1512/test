@@ -2,8 +2,6 @@ package com.cannontech.stars.dr.thermostat.model;
 
 import java.util.Comparator;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.joda.time.LocalTime;
 
 import com.cannontech.common.temperature.Temperature;
@@ -18,15 +16,7 @@ public class AccountThermostatScheduleEntry {
 	private Temperature	coolTemp;
 	private Temperature	heatTemp;
 	
-	public AccountThermostatScheduleEntry() {
-	}
-	
-	public AccountThermostatScheduleEntry(JSONObject obj){
-	    this.startTime = obj.getInt("startTime");
-	    this.timeOfWeek = TimeOfWeek.valueOf(obj.getString("timeOfWeek"));
-        this.coolTemp = Temperature.fromFahrenheit(obj.getDouble("coolTemp"));
-        this.heatTemp = Temperature.fromFahrenheit(obj.getDouble("heatTemp"));
-	}
+	public AccountThermostatScheduleEntry() {}
 
 	public AccountThermostatScheduleEntry(int startTime, TimeOfWeek timeOfWeek, Temperature coolTemp, Temperature	heatTemp) {
 		this.startTime = startTime;
@@ -104,7 +94,7 @@ public class AccountThermostatScheduleEntry {
                @Override
                public int compare(AccountThermostatScheduleEntry o1, AccountThermostatScheduleEntry o2) {
                    if(o1.getStartTime() != o2.getStartTime()){
-                       return (new Integer(o1.getStartTime())).compareTo(new Integer(o2.getStartTime())); 
+                       return (Integer.valueOf(o1.getStartTime())).compareTo(Integer.valueOf(o2.getStartTime())); 
                    }
                    if(o1.getCoolTemp() != o2.getCoolTemp()){
                        return (o1.getCoolTemp()).compareTo(o2.getCoolTemp()); 

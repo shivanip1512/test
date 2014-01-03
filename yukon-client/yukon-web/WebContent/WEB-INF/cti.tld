@@ -2273,15 +2273,7 @@
         java.lang.String generateJsonString(java.lang.Object)
     </function-signature>
   </function>
-  
-  <function>
-    <name>jsonString2</name>
-    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
-    <function-signature>
-        java.lang.String generateJsonString2(java.lang.Object)
-    </function-signature>
-  </function>
-    
+
   <function>
     <name>jsSafe</name>
     <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
