@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentResponse;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.ProgramEnrollmentElementResponseMapper;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 
+@Ignore("YUK-11816")
 public class UnenrollmentRequestEndpointTest {
 
     private UnenrollmentRequestEndpoint impl;
@@ -34,7 +35,6 @@ public class UnenrollmentRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeNotFoundException() throws Exception {
         
         // init
@@ -61,7 +61,6 @@ public class UnenrollmentRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeIllegalArgument() throws Exception {
      
         // init
@@ -88,7 +87,6 @@ public class UnenrollmentRequestEndpointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeSingle() throws Exception {
         
         // init
@@ -112,7 +110,6 @@ public class UnenrollmentRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeMutliple() throws Exception {
 
         // init
@@ -142,7 +139,6 @@ public class UnenrollmentRequestEndpointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvokeOptionalRequirements() throws Exception {
 
         // init

@@ -20,6 +20,7 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
+@Ignore("YUK-11816")
 public class ResetOverrideCountBySerialNumberRequestEndpointTest {
 
     private ResetOverrideCountBySerialNumberRequestEndpoint impl;
@@ -46,7 +47,6 @@ public class ResetOverrideCountBySerialNumberRequestEndpointTest {
     }
    
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
 
     	// Load schemas

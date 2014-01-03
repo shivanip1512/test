@@ -25,6 +25,7 @@ import com.cannontech.yukon.api.loadManagement.endpoint.ListAllScenarioProgramsR
 import com.cannontech.yukon.api.utils.TestUtils;
 import com.google.common.collect.Lists;
 
+@Ignore("YUK-11816")
 public class ListAllScenarioProgramsRequestEndpointTest {
 
     private ListAllScenarioProgramsRequestEndpoint impl;
@@ -105,7 +106,6 @@ public class ListAllScenarioProgramsRequestEndpointTest {
     }
    
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // init

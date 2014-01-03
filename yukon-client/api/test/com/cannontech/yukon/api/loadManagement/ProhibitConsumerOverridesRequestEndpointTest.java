@@ -8,12 +8,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.events.loggers.StarsEventLogService;
-import com.cannontech.common.events.service.EventLogMockServiceFactory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
+import com.cannontech.yukon.api.loadManagement.adapters.EventLogMockServiceFactory;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ProhibitConsumerOverridesRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;

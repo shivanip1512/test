@@ -24,6 +24,7 @@ import com.cannontech.yukon.api.loadManagement.endpoint.ProgramControlHistoryReq
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
+@Ignore("YUK-11816")
 public class ProgramControlHistoryRequestEndpointTest {
 
 	private ProgramControlHistoryRequestEndpoint impl;
@@ -90,7 +91,6 @@ public class ProgramControlHistoryRequestEndpointTest {
     }
     
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         
         // init

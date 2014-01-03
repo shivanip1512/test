@@ -27,6 +27,7 @@ import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
 import com.cannontech.yukon.api.utils.TestUtils;
 
+@Ignore("YUK-11816")
 public class UpdateAccountsRequestEndpointTest {
     private UpdateAccountsRequestEndpoint impl;
 
@@ -72,7 +73,6 @@ public class UpdateAccountsRequestEndpointTest {
     }
 
     @Test
-    @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         /*
          * Test the success file 
