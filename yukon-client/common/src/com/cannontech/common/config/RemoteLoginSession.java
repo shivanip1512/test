@@ -5,22 +5,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import net.sf.jsonOLD.JSONException;
-import net.sf.jsonOLD.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
 
 import com.cannontech.clientutils.YukonHttpInvokerRequestExecutor;
 import com.cannontech.clientutils.YukonLogManager;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RemoteLoginSession {
 
@@ -31,6 +30,9 @@ public class RemoteLoginSession {
     private String errorMsg;
     private String username;
     private String password;
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private TypeReference<Map<String, String>> stringStringMapType
+        = new TypeReference<Map<String, String>>() {/*jackson required*/};
     
     private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
  
@@ -88,7 +90,7 @@ public class RemoteLoginSession {
             public void run() {
                 try {
                     String url = host+"/checkConnection";
-                    JSONObject json = readJsonFromUrl(url, "", true);
+                    Map<String, String> json = readJsonFromUrl(url, "", true);
                     if(json.get("result").equals("failure")){
                         log.debug("Session timed out attempting to reconnect");
                         connect();
@@ -101,43 +103,33 @@ public class RemoteLoginSession {
         }, 0, 5, TimeUnit.MINUTES);
         log.info("Scheduled a task to keep session alive.");
     }
-    
-    private JSONObject readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return new JSONObject(sb.toString());
-    }
 
     /**
-     * This method will return a JSONObject from URL
+     * This method will return a Map<String, String> from URL
      * 
      * @param addJsessionId - true if the Cookie with JSESSIONID should be set
      */
-    private JSONObject readJsonFromUrl(String url, String urlParameters, boolean addJsessionId) throws IOException, JSONException {
+    private Map<String, String> readJsonFromUrl(String url, String urlParameters, boolean addJsessionId) throws IOException {
         OutputStreamWriter writer = null;
         BufferedReader reader = null;
         try {
             URL u = new URL(url);
             URLConnection conn = u.openConnection();
-            if(addJsessionId){
+            if (addJsessionId) {
                 conn.setRequestProperty("Cookie", "JSESSIONID="+ getJsessionId());
             }
             conn.setDoOutput(true);
             writer = new OutputStreamWriter(conn.getOutputStream());
             writer.write(urlParameters);
             writer.flush();
-            reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),
-                                                         Charset.forName("UTF-8")));
-            return readAll(reader);
+            reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), Charset.forName("UTF-8")));
+            return jsonObjectMapper.readValue(reader, stringStringMapType);
         } finally {
-            if(writer != null){
+            if(writer != null) {
                 writer.close();
             }
-            if(reader != null){
-                reader.close();    
+            if(reader != null) {
+                reader.close();
             }
         }
     }
@@ -145,24 +137,24 @@ public class RemoteLoginSession {
     /**
      * This method will attempt to create a new session. If it succeeds the jsessionId will be set. If it fails it will set the error message.
      */
-    private void connect(){
+    private void connect() {
         String url = host+"/remoteLogin";
         log.debug("Creating new session. Getting jsessionId from " + url);
         String urlParameters = "username=" + username + "&password=" + password+"&noLoginRedirect=true";
         try {
-            JSONObject json = readJsonFromUrl(url, urlParameters, false);
+            Map<String, String> json = readJsonFromUrl(url, urlParameters, false);
             if(json.get("result").equals("success")){
-                jsessionId = (String)json.get("jsessionId");
+                jsessionId = json.get("jsessionId");
                 isValid = true;
                 log.debug("Succesfully retrieved jsessionId");
             }else if(json.get("result").equals("failure")){
-                errorMsg = (String)json.get("errorMsg");
+                errorMsg = json.get("errorMsg");
                 log.debug("User failed to login: " + getErrorMsg());
             }else{
                 log.error("User failed to login. Invalid connect result");
                 errorMsg = "User failed to login";
             }
-        } catch (JSONException | IOException e) {
+        } catch (IOException e) {
             log.error("User failed to login", e);
             errorMsg = "User failed to login";
         }     

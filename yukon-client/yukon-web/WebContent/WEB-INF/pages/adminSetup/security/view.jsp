@@ -226,8 +226,7 @@
             data: { "generateNewKey": generateNewKey},
             cache: false,
             dataType: "json" 
-        }).done(function(jsonResponse) {
-            var publicKeyObj = jQuery.parseJSON(jsonResponse);
+        }).done(function(publicKeyObj) {
             if(!publicKeyObj.doesExist) {
                 // No public Key exists
                 jQuery("#publicKeyText").hide();

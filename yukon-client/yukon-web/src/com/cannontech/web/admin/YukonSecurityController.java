@@ -3,11 +3,10 @@ package com.cannontech.web.admin;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -21,8 +20,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,6 +44,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
@@ -298,16 +296,13 @@ public class YukonSecurityController {
 
     @RequestMapping(value = "/config/security/getPublicKey")
     @ResponseBody 
-    public String getPublicKey(HttpServletRequest request, ModelMap model, FlashScope flashScope, YukonUserContext userContext) 
-                                       throws CryptoException, ServletRequestBindingException {
-        csrfTokenService.validateToken(request);
-        boolean generateNewKey = ServletRequestUtils.getBooleanParameter(request, "generateNewKey");
-
+    public Map<String, Object> getPublicKey(boolean generateNewKey, YukonUserContext userContext) 
+                throws CryptoException {
         if(generateNewKey) {
             rsaKeyfileService.generateNewKeyPair();
         }
 
-        JSONObject publicKeyJsonObj = new JSONObject();
+        Map<String, Object> publicKeyJsonObj = Maps.newHashMapWithExpectedSize(4);
         publicKeyJsonObj.put("isExpired", rsaKeyfileService.isKeyPairExpired());
         publicKeyJsonObj.put("doesExist", rsaKeyfileService.doesKeyPairExist());
         String expiration = dateFormattingService.format(rsaKeyfileService.getExpiration(),
@@ -321,7 +316,7 @@ public class YukonSecurityController {
         }
         publicKeyJsonObj.put("publicKey",publicKey);
 
-        return publicKeyJsonObj.toString();
+        return publicKeyJsonObj;
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/importKeyFile")
@@ -332,26 +327,26 @@ public class YukonSecurityController {
         if (!ServletFileUpload.isMultipartContent(request)) {
             model.addAttribute("showDialog", "importKey");
             return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean,flashScope, userContext);     
-        } else {
-
-            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-            MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(null, "keyFile"));
-            fileImportBindingBean.setFile(dataFile);
-
-            importFileValidator.validate(fileImportBindingBean, bindingResult);
-
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("showDialog", "importKey");
-                return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, flashScope, userContext);
-            } else {
-                boolean success = handleUploadedFile(fileImportBindingBean, flashScope);
-                if (!success) {
-                    model.addAttribute("showDialog", "importKey");
-                    return view(request, model, new EncryptedRoute(), new EncryptionKey(),fileImportBindingBean, flashScope, userContext); 
-                }
-                return "redirect:view";
-            }
         }
+
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+        MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(null, "keyFile"));
+        fileImportBindingBean.setFile(dataFile);
+
+        importFileValidator.validate(fileImportBindingBean, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("showDialog", "importKey");
+            return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, flashScope, userContext);
+        }
+
+        boolean success = handleUploadedFile(fileImportBindingBean, flashScope);
+        if (!success) {
+            model.addAttribute("showDialog", "importKey");
+            return view(request, model, new EncryptedRoute(), new EncryptionKey(),fileImportBindingBean, flashScope, userContext); 
+        }
+
+        return "redirect:view";
     }
 
     private boolean handleUploadedFile(FileImportBindingBean fileImportBindingBean, FlashScope flashScope) {

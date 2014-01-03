@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -10,10 +11,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
-
-import net.sf.jsonOLD.JSONArray;
-import net.sf.jsonOLD.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -25,7 +24,6 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.joda.time.Period;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -118,6 +116,9 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -156,10 +157,17 @@ public class OptOutServiceImpl implements OptOutService {
 	@Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
+    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
 	private RolePropertyDao rolePropertyDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
+	@PostConstruct
+	public void postConstruct() {
+	    // We made up our own form of JSON, so we need to support it:
+        jsonObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        jsonObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+	}
 
 	@Override
     @Transactional
@@ -1207,24 +1215,39 @@ public class OptOutServiceImpl implements OptOutService {
 	 */
 	private List<OptOutLimit> parseOptOutLimitString(String optOutLimitString) {
 		
-		List<OptOutLimit> optOutLimits = new ArrayList<OptOutLimit>();
+		List<OptOutLimit> optOutLimits = new ArrayList<>();
 		
 		if(StringUtils.isBlank(optOutLimitString)) {
 			return optOutLimits;
 		}
 		
-		JSONArray limitArray = new JSONArray(optOutLimitString);
-		for(int i = 0; i < limitArray.length(); i++) {
-			JSONObject limitObject = limitArray.getJSONObject(i);
-			OptOutLimit limit = new OptOutLimit();
-			limit.setStartMonth(limitObject.getInt("start"));
-			limit.setStopMonth(limitObject.getInt("stop"));
-			limit.setLimit(limitObject.getInt("limit"));
-			optOutLimits.add(limit);
-		}
+		TypeReference<List<Map<String, Integer>>> listOfMapType
+		    = new TypeReference<List<Map<String, Integer>>>() {/*empty*/};
+		    
+		List<Map<String, Integer>> limits;
+        try {
+            limits = jsonObjectMapper.readValue(optOutLimitString, listOfMapType);
+    		for(Map<String, Integer> limit : limits) {
+    		    if (!limit.containsKey("start")) {
+    		        throw new IOException("Missing 'start' value. Invalid JSON for Opt Out Limit");
+    		    }
+                if (!limit.containsKey("stop")) {
+                    throw new IOException("Missing 'stop' value. Invalid JSON for Opt Out Limit");
+                }
+                if (!limit.containsKey("limit")) {
+                    throw new IOException("Missing 'limit' value. Invalid JSON for Opt Out Limit");
+                }
+    			OptOutLimit optOutLimit = new OptOutLimit();
+    			optOutLimit.setStartMonth(limit.get("start"));
+    			optOutLimit.setStopMonth(limit.get("stop"));
+    			optOutLimit.setLimit(limit.get("limit"));
+    			optOutLimits.add(optOutLimit);
+    		}
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to parse json (" + optOutLimitString + ")", e);
+        }
 		
 		return optOutLimits;
-		
 	}
 	
     

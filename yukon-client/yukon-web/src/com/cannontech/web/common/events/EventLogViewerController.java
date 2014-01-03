@@ -15,8 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +68,8 @@ import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.JsTreeNode;
 import com.cannontech.web.util.WebFileUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -85,15 +85,17 @@ public class EventLogViewerController {
     private final int maxCsvRows = 65535; // The total number of rows possible in excel minus one row for the header row.
     private final String eventLogResolvablePrefix ="yukon.common.events.";
     
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private EventLogCategoryValidator eventLogCategoryValidator;
-    private EventLogFilterFactory eventLogFilterFactory;
-    private EventLogTypeValidator eventLogTypeValidator;
-    private EventLogDao eventLogDao;
-    private EventLogService eventLogService;
-    private EventLogUIService eventLogUIService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private DateFormattingService dateFormattingService;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private EventLogCategoryValidator eventLogCategoryValidator;
+    @Autowired private EventLogFilterFactory eventLogFilterFactory;
+    @Autowired private EventLogTypeValidator eventLogTypeValidator;
+    @Autowired private EventLogDao eventLogDao;
+    @Autowired private EventLogService eventLogService;
+    @Autowired private EventLogUIService eventLogUIService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DateFormattingService dateFormattingService;
+
+    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping(value="viewByCategory", params="!export")
     public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean, 
@@ -237,7 +239,7 @@ public class EventLogViewerController {
     }
 
     @ModelAttribute
-    public void setupTreeModelData(String eventLogType, ModelMap map) {
+    public void setupTreeModelData(String eventLogType, ModelMap map) throws JsonProcessingException {
         buildTreeModelData(eventLogType, map);
     }
     
@@ -362,8 +364,9 @@ public class EventLogViewerController {
 
     /**
      * Builds up the model map for the tree structure for selecting an event type.
+     * @throws JsonProcessingException 
      */
-    private void buildTreeModelData(String eventLogType, ModelMap model) {
+    private void buildTreeModelData(String eventLogType, ModelMap model) throws JsonProcessingException {
         // Build Select Event Tree
         // ALL GROUPS HIERARCHY
         EventCategoryHierarchy everythingHierarchy = getEventLogHierarchy();
@@ -377,8 +380,7 @@ public class EventLogViewerController {
         String extSelectedNodePath = callback.getjsTreeSelectedNodePath();
         model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
-        JSONObject allGroupsJsonObj = new JSONObject(allGroupsRoot.toMap());
-        String allGroupsDataJson = allGroupsJsonObj.toString();
+        String allGroupsDataJson = jsonObjectMapper.writeValueAsString(allGroupsRoot.toMap());
         model.addAttribute("allEventCategoriesDataJson", allGroupsDataJson);
     }
     
@@ -591,50 +593,4 @@ public class EventLogViewerController {
         }
         
     }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setEventLogCategoryValidator(EventLogCategoryValidator eventLogCategoryValidator) {
-        this.eventLogCategoryValidator = eventLogCategoryValidator;
-    }
-    
-    @Autowired
-    public void setEventLogFilterFactory(EventLogFilterFactory eventLogFilterFactory) {
-        this.eventLogFilterFactory = eventLogFilterFactory;
-    }
-    
-    @Autowired
-    public void setEventLogTypeValidator(EventLogTypeValidator eventLogTypeValidator) {
-        this.eventLogTypeValidator = eventLogTypeValidator;
-    }
-    
-    @Autowired
-    public void setEventLogDao(EventLogDao eventLogDao) {
-        this.eventLogDao = eventLogDao;
-    }
-    
-    @Autowired
-    public void setEventLogService(EventLogService eventLogService) {
-        this.eventLogService = eventLogService;
-    }
-    
-    @Autowired
-    public void setEventLogUIService(EventLogUIService eventLogUIService) {
-        this.eventLogUIService = eventLogUIService;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
 }

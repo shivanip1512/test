@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.optout.service;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.easymock.EasyMockSupport;
@@ -15,6 +17,7 @@ import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.dao.impl.RolePropertyDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl;
 
 public class OptOutServiceTest extends EasyMockSupport {
@@ -45,10 +48,13 @@ public class OptOutServiceTest extends EasyMockSupport {
         residentialGroup_Four.setGroupName("Test Group Four");
     }
     
-    private static final String optOutLimitRolePropertyValue_residentialGroup_One = "[{start:4;stop:10;limit:2},{start:11;stop:3;limit:3}]";
-    private static final String optOutLimitRolePropertyValue_residentialGroup_Two = "[{start:10;stop:9;limit:1}]";
-    private static final String optOutLimitRolePropertyValue_residentialGroup_ParctialLimit = "[{start:4;stop:10;limit:2}]";
-    private static final String optOutLimitRolePropertyValue_residentialGroup_NoLimit = "";
+    private static final String optOutLimit_twoValues = "[{start:4,stop:10,limit:2},{start:11,stop:3,limit:3}]";
+    private static final String optOutLimit_oneValue = "[{start:10,stop:9,limit:1}]";
+    private static final String optOutLimit_oneValue2 = "[{\"start\":4,\"stop\":10,\"limit\":2}]";
+    private static final String optOutLimit_singleQuoteJson = "[{'start':4,'stop':10,'limit':2}]";
+    private static final String optOutLimit_superfluousJson = "[{\"start\":4,\"stop\":10,\"limit\":2,\"anotherLimit\":3,\"anotherStart\":20}]";
+    private static final String optOutLimit_missingInfoJson = "[{\"start\":4,\"stop\":10}]";
+    private static final String optOutLimit_empty = "";
     
     private static final DateTime date_One = dateTimeFormmater.parseDateTime("01/12/2012");
     private static final DateTime date_Two = dateTimeFormmater.parseDateTime("05/16/2012");
@@ -63,13 +69,19 @@ public class OptOutServiceTest extends EasyMockSupport {
                 case RESIDENTIAL_OPT_OUT_LIMITS:
                     switch (liteYukonGroup.getGroupID()) {
                         case 1:
-                            return optOutLimitRolePropertyValue_residentialGroup_One;
+                            return optOutLimit_twoValues;
                         case 2:
-                            return optOutLimitRolePropertyValue_residentialGroup_ParctialLimit;
+                            return optOutLimit_oneValue2;
                         case 3:
-                            return optOutLimitRolePropertyValue_residentialGroup_NoLimit;
+                            return optOutLimit_empty;
                         case 4:
-                            return optOutLimitRolePropertyValue_residentialGroup_Two;
+                            return optOutLimit_oneValue;
+                        case 5:
+                            return optOutLimit_singleQuoteJson;
+                        case 6: 
+                            return optOutLimit_superfluousJson;
+                        case 7: 
+                            return optOutLimit_missingInfoJson;
                         default:
                             throw new EmptyResultDataAccessException(1);
                     }
@@ -82,8 +94,31 @@ public class OptOutServiceTest extends EasyMockSupport {
     @Before
     public void setup() {
         optOutService = new OptOutServiceImpl();
-
         optOutService.setRolePropertyDao(rolePropertyDaoMock);
+        optOutService.postConstruct();
+    }
+
+    @Test
+    public void testSingleQuoteJson() {
+        List<OptOutLimit> optOutList = optOutService.findCurrentOptOutLimit(new LiteYukonGroup(5));
+        Assert.assertEquals(optOutList.size(), 1);
+        Assert.assertEquals(optOutList.get(0).getLimit(), 2);
+        Assert.assertEquals((int)optOutList.get(0).getStartMonth(), 4);
+        Assert.assertEquals((int)optOutList.get(0).getStopMonth(), 10);
+    }
+
+    @Test
+    public void testSuperfluousJson() {
+        List<OptOutLimit> optOutList = optOutService.findCurrentOptOutLimit(new LiteYukonGroup(6));
+        Assert.assertEquals(optOutList.size(), 1);
+        Assert.assertEquals(optOutList.get(0).getLimit(), 2);
+        Assert.assertEquals((int)optOutList.get(0).getStartMonth(), 4);
+        Assert.assertEquals((int)optOutList.get(0).getStopMonth(), 10);
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testMissingInfoJson() {
+        optOutService.findCurrentOptOutLimit(new LiteYukonGroup(7));
     }
 
     /**
