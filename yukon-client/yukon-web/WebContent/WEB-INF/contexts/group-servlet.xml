@@ -31,19 +31,7 @@
         <property name="prefix" value="/WEB-INF/pages/group/"/>
     </bean>
     
-    <bean id="groupEditorController" class="com.cannontech.web.group.GroupEditorController" >
-        
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupDao" ref="deviceGroupDao" />
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-        <property name="copyDeviceGroupService" ref="copyDeviceGroupService" />
-        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        
-        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
-        <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
-        
-    </bean>
+    <bean id="groupEditorController" class="com.cannontech.web.group.GroupEditorController"/>
     
     <bean class="com.cannontech.web.group.DeviceGroupUpdaterController" />
     

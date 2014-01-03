@@ -1,11 +1,13 @@
 package com.cannontech.web.dynamicBilling;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -36,13 +38,16 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonHelper;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping(value = "/*")
@@ -54,14 +59,7 @@ public class DynamicBillingController {
 	@Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JsonHelper jsonHelper;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
-	
-    @RequestMapping(value = "_overview.html")
-    public String overview(ModelMap model) {
-        List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
-        model.addAttribute("allRows", allRows);
-        
-        return "_overview.jsp";
-    }
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping(value = "_create.html")
     public String create(ModelMap model, final YukonUserContext context) {
@@ -207,7 +205,9 @@ public class DynamicBillingController {
     }
 
     @RequestMapping(value = "save.json")
-    public @ResponseBody JSONObject save(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray, ModelMap model) {
+    public @ResponseBody JSONObject save(int formatId, String formatName, String footer,
+                                         String header, String delimiter, String fieldArray, ModelMap model)
+            throws JsonParseException, JsonMappingException, IOException {
         // retrieve all information from the page and save it to db
         DynamicFormat savedFormat = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
         dynamicBillingFileDao.save(savedFormat);
@@ -227,7 +227,9 @@ public class DynamicBillingController {
      * then parsed to be html friendly and then sent to the page
      */
     @RequestMapping
-    public @ResponseBody String updatePreview(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray, ModelMap model) {
+    public @ResponseBody String updatePreview(int formatId, String formatName, String footer, String header,
+                                              String delimiter, String fieldArray)
+            throws JsonParseException, JsonMappingException, IOException {
 
         StringBuffer returnString = new StringBuffer();
         DynamicFormat format = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
@@ -326,7 +328,9 @@ public class DynamicBillingController {
      * Helper method to get the parameters out of the request and build a DynamicFormat
      * object.
      */
-    private DynamicFormat parseIntoDynamicFormat(int formatId, String formatName, String footer, String header, String delimiter, String fieldArray) {
+    private DynamicFormat parseIntoDynamicFormat(int formatId, String formatName, String footer, String header,
+                                                 String delimiter, String fieldArray)
+            throws JsonParseException, JsonMappingException, IOException {
         
         DynamicFormat format = new DynamicFormat();
         
@@ -338,54 +342,53 @@ public class DynamicBillingController {
         format.setHeader(header);
         format.setDelim(delimiter);
         
-        // selectedFields is an JSON String representation containing the fields
-        // that customer chooses
-        net.sf.jsonOLD.JSONArray myJSONArray = new net.sf.jsonOLD.JSONArray(fieldArray);
+        List<Map<String,String>> fields
+            = jsonObjectMapper.readValue(fieldArray, List.class);
         
         // for loop for temporarily saving the selected fields, as well as the
         // formats associated(date, value)
-        for (int i = 0; i < myJSONArray.length(); i++) {
+        int count = 0;
+        for (Map<String, String> fieldValues : fields) {
             DynamicBillingField field = new DynamicBillingField();
             field.setFormat("");
             field.setFormatId(format.getFormatId());
-            field.setOrder(i);
+            field.setOrder(count);
+            count++;
 
-            net.sf.jsonOLD.JSONObject object = myJSONArray.getJSONObject(i);
-
-            field.setName(object.getString("field"));
-            field.setFormat(object.getString("format"));
+            field.setName(fieldValues.get("field"));
+            field.setFormat(fieldValues.get("format"));
             
-            String maxLength = object.getString("maxLength");
+            String maxLength = fieldValues.get("maxLength");
             if(!StringUtils.isEmpty(maxLength)) {
                 field.setMaxLength(Integer.valueOf(maxLength));
             }
             
-            field.setPadChar(object.getString("padChar"));
+            field.setPadChar(fieldValues.get("padChar"));
             
-            String padSide = object.getString("padSide");
+            String padSide = fieldValues.get("padSide");
             if(!StringUtils.isEmpty(padSide)){
                 field.setPadSide(padSide);
             }
             
-            String readingTypeStr = object.getString("readingType");
+            String readingTypeStr = fieldValues.get("readingType");
             if(!StringUtils.isEmpty(readingTypeStr)){
                 ReadingType readingType = ReadingType.valueOf(readingTypeStr);
                 field.setReadingType(readingType);
             }
             
-            String readingChannelStr = object.getString("readingChannel");
+            String readingChannelStr = fieldValues.get("readingChannel");
             if(!StringUtils.isEmpty(readingChannelStr)){
                 Channel channel = Channel.valueOf(readingChannelStr);
                 field.setChannel(channel);
             }
             
-            String roundingModeStr = object.getString("roundingMode");
+            String roundingModeStr = fieldValues.get("roundingMode");
             if(!StringUtils.isEmpty(roundingModeStr)){
                 RoundingMode roundingMode = RoundingMode.valueOf(roundingModeStr);
                 field.setRoundingMode(roundingMode);
             }
             
-            fieldList.add(i, field);
+            fieldList.add(field);
         }
         format.setFieldList(fieldList);
         

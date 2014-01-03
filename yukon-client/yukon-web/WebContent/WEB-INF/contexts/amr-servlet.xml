@@ -18,7 +18,6 @@
         <property name="mappings">
             <props>
                 <prop key="/bulkimporter/upload">BulkImporterUploadController</prop>
-                <prop key="/bulkimporter/refreshResults">BulkImporterRefreshController</prop>
                 <prop key="/bulkimporter/home">BulkImporterHomeController</prop>
                 <prop key="/profile/*">ProfileController</prop>
                 <prop key="/voltageAndTou/*">VoltageAndTouController</prop>
@@ -52,12 +51,7 @@
             </bean>
         </property>
     </bean>
-    
-    <bean id="BulkImporterRefreshController" class="com.cannontech.web.bulkimporter.BulkImporterRefreshController">
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="bulkImportDataDao" ref="bulkImportDataDao"/>
-    </bean>
-    
+
     <bean id="BulkImporterHomeController" class="com.cannontech.web.bulkimporter.BulkImporterHomeController"/>
     
     <bean id="ProfileController" class="com.cannontech.web.amr.profile.ProfileController">

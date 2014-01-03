@@ -1,8 +1,6 @@
 package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.beans.PropertyEditor;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -10,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jsonOLD.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +18,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
@@ -93,25 +89,18 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
     }
     
     @RequestMapping
-    public void cancelJob(HttpServletResponse response, int jobId) throws IOException {
-    	YukonJob job = jobManager.getJob(jobId);
-    	boolean isJobStopped = jobManager.abortJob(job);
-    	
-    	JSONObject object = new JSONObject();
-    	object.put("isJobStopped", isJobStopped);
-    	
-    	response.setContentType("application/json");
-        try (PrintWriter out = response.getWriter()) {
-    		out.print(object.toString());
-    	}
+    @ResponseBody
+    public Map<String, Boolean> cancelJob(int jobId) {
+        YukonJob job = jobManager.getJob(jobId);
+        boolean isJobStopped = jobManager.abortJob(job);
+        return Collections.singletonMap("isJobStopped", isJobStopped);
     }
     
     @RequestMapping
-    public void toggleEnabled(HttpServletResponse response, YukonUserContext userContext, int jobId)
-            throws IOException {
+    @ResponseBody
+    public Map<String, Boolean> toggleEnabled(YukonUserContext userContext, int jobId) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
         YukonJob job = jobManager.getJob(jobId);
-        JSONObject object = new JSONObject();
         boolean enabled = false;
         if (job.isDisabled()) {
             jobManager.enableJob(job);
@@ -119,13 +108,9 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         } else {
             jobManager.disableJob(job);
         }
-        object.put("jobEnabled", enabled);
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.print(object.toString());
-        out.close();
+        return Collections.singletonMap("jobEnabled", enabled);
     }
-	
+
     @RequestMapping
     public String detail(int jobId, ModelMap model, YukonUserContext userContext) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);

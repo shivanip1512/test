@@ -10,11 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -49,24 +46,25 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsTreeNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class GroupEditorController extends MultiActionController {
 
-	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-	
-    private DeviceGroupService deviceGroupService = null;
-    private DeviceGroupUiService deviceGroupUiService = null;
-    private DeviceGroupProviderDao deviceGroupDao = null;
-    private DeviceGroupEditorDao deviceGroupEditorDao = null;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
-    private CopyDeviceGroupService copyDeviceGroupService = null;
-    private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
-    private RolePropertyDao rolePropertyDao;
-    private DeviceGroupComposedDao deviceGroupComposedDao;
-    
-    private DeviceCollectionFactory deviceCollectionFactory = null;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupUiService deviceGroupUiService;
+    @Autowired private DeviceGroupProviderDao deviceGroupDao;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private CopyDeviceGroupService copyDeviceGroupService;
+    @Autowired private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
@@ -155,8 +153,7 @@ public class GroupEditorController extends MultiActionController {
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
         mav.addObject("extSelectedNodePath", extSelectedNodePath);
         
-        JSONObject allGroupsJsonObj = new JSONObject(allGroupsRoot.toMap());
-        String allGroupsDataJson = allGroupsJsonObj.toString();
+        String allGroupsDataJson = jsonObjectMapper.writeValueAsString(allGroupsRoot.toMap());
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         // MOVE GROUPS TREE JSON
@@ -164,8 +161,8 @@ public class GroupEditorController extends MultiActionController {
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
         JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null);
         
-        JSONObject moveGroupJsonObj = new JSONObject(moveGroupRoot.toMap());
-        mav.addObject("moveGroupDataJson", moveGroupJsonObj.toString()); 
+        String moveGroupJson = jsonObjectMapper.writeValueAsString(moveGroupRoot.toMap());
+        mav.addObject("moveGroupDataJson", moveGroupJson); 
         
         // COPY GROUPS TREE JSON
         Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
@@ -176,8 +173,8 @@ public class GroupEditorController extends MultiActionController {
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
         JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null);
         
-        JSONObject copyGroupJson = new JSONObject(copyExtRoot.toMap());
-        mav.addObject("copyGroupDataJson", copyGroupJson.toString()); 
+        String copyGroupJson = jsonObjectMapper.writeValueAsString(copyExtRoot.toMap());
+        mav.addObject("copyGroupDataJson", copyGroupJson); 
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
@@ -333,7 +330,7 @@ public class GroupEditorController extends MultiActionController {
     }
 
     public ModelAndView showAddDevicesByCollection(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException {
+            HttpServletResponse response) throws ServletException, JsonProcessingException {
 
         ModelAndView mav = new ModelAndView("addDevices.jsp");
 
@@ -361,8 +358,7 @@ public class GroupEditorController extends MultiActionController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup());
-        JSONObject jsonObj = new JSONObject(root.toMap());
-        String dataJson = jsonObj.toString();
+        String dataJson = jsonObjectMapper.writeValueAsString(root.toMap());
         
         mav.addObject("groupDataJson", dataJson);
 
@@ -566,63 +562,5 @@ public class GroupEditorController extends MultiActionController {
 
         return mav;
 
-    }
-    
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-
-    @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-
-    @Required
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Required
-    public void setCopyDeviceGroupService(
-            CopyDeviceGroupService copyDeviceGroupService) {
-        this.copyDeviceGroupService = copyDeviceGroupService;
-    }
-    
-    @Required
-    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
-    
-    @Required
-    public void setDeviceGroupCollectionHelper(
-            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
-    }
-    
-    @Required
-    public void setDeviceCollectionDeviceGroupHelper(
-            DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper) {
-        this.deviceCollectionDeviceGroupHelper = deviceCollectionDeviceGroupHelper;
-    }
-    
-    @Autowired
-    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
-        this.deviceGroupUiService = deviceGroupUiService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupComposedDao(DeviceGroupComposedDao deviceGroupComposedDao) {
-        this.deviceGroupComposedDao = deviceGroupComposedDao;
     }
 }

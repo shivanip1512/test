@@ -1,14 +1,11 @@
 package com.cannontech.web.admin.substations;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jsonOLD.JSONArray;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +25,8 @@ import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/substations/*")
@@ -40,6 +39,9 @@ public class SubstationController {
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private TypeReference<List<Integer>> integerListType
+        = new TypeReference<List<Integer>>() {/*Jackson requires*/};
 
     @RequestMapping("routeMapping/view")
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
@@ -121,12 +123,7 @@ public class SubstationController {
         if (substationId == null) {
             return viewRoute(request, response);
         }            
-
-        final JSONArray array = JSONArray.fromString(jsonString);
-        final List<Integer> routeIdList = new ArrayList<Integer>(array.length());
-        for (int x = 0; x < array.length(); x++) {
-            routeIdList.add(Integer.parseInt(array.getString(x)));
-        }
+        List<Integer> routeIdList = jsonObjectMapper.readValue(jsonString, integerListType);
 
         strmDao.update(substationId, routeIdList);
         return viewRoute(request,response);

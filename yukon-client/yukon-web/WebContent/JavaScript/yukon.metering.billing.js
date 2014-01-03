@@ -201,7 +201,6 @@ Yukon.MeteringBilling = (function() {
         _url_list_schedule_jobs = "/billing/_jobs",   // "/amr/scheduledBilling/_jobs.html",
         _url_delete_scheduled_job = "/scheduledBilling/delete.json",
 
-        _url_format_setup = "/dynamicBilling/_overview.html",
         _url_format_copy = "/dynamicBilling/_copy.html",
         _url_format_create = "/dynamicBilling/_create.html",
         _url_format_delete = "/dynamicBilling/delete.json",
@@ -249,10 +248,6 @@ Yukon.MeteringBilling = (function() {
         // Used by _jobs.jsp, ASSUMED TO EXIST BY scheduledFileExportJobs.tag
         delete_schedule_job : function(jobId) {
             _delete_schedule_job(null, {'jobId': jobId});
-        },
-
-        show_setup_home: function(event) {
-            return _get_format_ajax_page(event, _url_format_setup);
         },
 
         show_create_form: function(event) {

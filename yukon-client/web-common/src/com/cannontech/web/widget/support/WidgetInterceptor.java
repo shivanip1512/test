@@ -7,16 +7,18 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.cannontech.web.taglib.MessageScopeHelper;
 import com.cannontech.web.taglib.MessageScopeHelper.ScopeHolder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WidgetInterceptor extends HandlerInterceptorAdapter {
 
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+
+    @Override
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
@@ -42,9 +44,9 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
-        JSONObject object = new JSONObject(existingParams);
-        response.addHeader("X-JSON", object.toString());
-   
+
+        response.addHeader("X-JSON", jsonObjectMapper.writeValueAsString(existingParams));
+
         ScopeHolder scope = createScope(handler, existingParams);
         MessageScopeHelper.forRequest(request).pushScope(scope);
     }

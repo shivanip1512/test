@@ -34,7 +34,7 @@
     
                 // commercial setup
                 // when in VIEW mode, don't show commercial values unless the account is commercial
-                var viewMode = ${cti:jsonString(mode) == 'VIEW'};
+                var viewMode = ${mode == 'VIEW'};
                 if (!viewMode) {
                     var isCommercial = ${cti:jsonString(accountGeneral.accountDto.isCommercial)};
                     toggleCommercialInputs(isCommercial);

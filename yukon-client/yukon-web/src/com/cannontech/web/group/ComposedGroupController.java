@@ -10,8 +10,6 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.jsonOLD.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,21 +43,26 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.JsTreeNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/composedGroup/*")
 public class ComposedGroupController {
-    
-	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupUiService deviceGroupUiService;
-    private DeviceGroupComposedDao deviceGroupComposedDao;
-    private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
-    private TransactionOperations transactionTemplate;
-    
+
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DeviceGroupUiService deviceGroupUiService;
+    @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
+    @Autowired private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
+    @Autowired private TransactionOperations transactionTemplate;
+
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
+
     @RequestMapping
-    public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
+    public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model)
+                throws ServletException, JsonProcessingException {
         
         // parameters
         String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
@@ -186,8 +189,7 @@ public class ComposedGroupController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
         
-        JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
-        String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();
+        String chooseGroupTreeJson = jsonObjectMapper.writeValueAsString(groupExtRoot.toMap());
         model.addAttribute("chooseGroupTreeJson", chooseGroupTreeJson);
         
         return "composedGroup/create.jsp";
@@ -335,35 +337,5 @@ public class ComposedGroupController {
             Integer otherOrder = o.getOrder();
             return thisOrder.compareTo(otherOrder);
         }
-    }
-    
-    @Autowired
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupUiService(DeviceGroupUiService deviceGroupUiService) {
-        this.deviceGroupUiService = deviceGroupUiService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupComposedDao(DeviceGroupComposedDao deviceGroupComposedDao) {
-        this.deviceGroupComposedDao = deviceGroupComposedDao;
-    }
-    
-    @Autowired
-    public void setDeviceGroupComposedGroupDao(DeviceGroupComposedGroupDao deviceGroupComposedGroupDao) {
-        this.deviceGroupComposedGroupDao = deviceGroupComposedGroupDao;
-    }
-    
-    @Autowired
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
 }
