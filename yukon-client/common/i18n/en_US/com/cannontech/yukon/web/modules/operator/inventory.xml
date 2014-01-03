@@ -3,7 +3,7 @@
 <properties>
     
     <!-- /inventory/home.jsp -->
-    <entry key="yukon.web.modules.operator.inventory.home.pageName">Asset Dashboard</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.pageName">Assets Dashboard</entry>
     <entry key="yukon.web.modules.operator.inventory.home.contextualPageName">Assets</entry>
     <entry key="yukon.web.modules.operator.inventory.home.deviceSelection.title">Inventory Actions</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryButton.label">Select by Inventory</entry>
