@@ -81,8 +81,6 @@
                 </fileset>
             </classpath>
         </javac>
-        <copy file="${srcdir}//com/cannontech/common/config/master.cfg"
-            todir="${destdir}/com/cannontech/common/config"/>
     </target>
 
     <!-- Run tests. This target must be supplied a halt and destdir property -->
@@ -100,7 +98,6 @@
                 <pathelement location="${destdir}"/>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
-                    <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
             <formatter type="xml" />
