@@ -43,8 +43,8 @@
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
             <param name="halt" value="yes"/>
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
@@ -52,16 +52,16 @@
     <target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
             <param name="halt" value="no"/>
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
     <!-- Compile unit tests - will compile all unit tests -->
     <target name="compileUnitTests">
         <antcall target="compileTests">
-            <param name="srcdir" value="test/unit"/>
-            <param name="destdir" value="test/build/unit" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
