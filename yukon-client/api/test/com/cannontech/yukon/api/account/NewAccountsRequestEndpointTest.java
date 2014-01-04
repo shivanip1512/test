@@ -52,6 +52,11 @@ public class NewAccountsRequestEndpointTest {
     }
 
     @Test
+    public void emptyTest() {
+        // need at least one not ignored test
+    }
+    
+    @Test
     @Ignore("YUK-11816")
     public void testInvoke() throws Exception {
         /*
