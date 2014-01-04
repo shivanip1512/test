@@ -42,7 +42,7 @@
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="yes"/>
+            <param name="halt" value="no"/>
             <param name="srcdir" value="test"/>
             <param name="destdir" value="test/build" />
         </antcall>
