@@ -12,7 +12,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msg2 key="${titleKey}" arguments="${arguments}" var="theTitle"/>
+<cti:msg2 key="${titleKey}" arguments="${arguments}" var="theTitle" javaScriptEscape="true"/>
 <tags:simplePopup title="${theTitle}" id="${id}" onClose="${pageScope.onClose}" on="${pageScope.on}" options="${pageScope.options}" styleClass="${pageScope.styleClass}" showImmediately="${pageScope.showImmediately}">
     <jsp:doBody/>
 </tags:simplePopup>

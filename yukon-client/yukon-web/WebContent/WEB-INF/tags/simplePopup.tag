@@ -11,7 +11,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div id="${id}" title="${title}" class="${pageScope.styleClass} dn" style="${pageScope.style}" role="dialog">
+<div id="${id}" class="${pageScope.styleClass} dn" style="${pageScope.style}" role="dialog">
     <jsp:doBody/>
 </div>
 <script type="text/javascript">
@@ -19,6 +19,7 @@ var windowHeight = jQuery(window).height(),
 position = {my: 'top', at: 'top+' + windowHeight/5 },
 defaults = { width: 'auto', 
              autoOpen: false,
+             title: '${title}',
              position : position
 };
 
