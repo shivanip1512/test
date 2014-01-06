@@ -33,6 +33,7 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -108,11 +109,8 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
     private YukonUserContext context;
     private MeterReadPercentagePeriod period = MeterReadPercentagePeriod.SEVEN_DAYS;
     protected List<ModelRow> data = new ArrayList<ModelRow>();
-    private static Set<Attribute> usageAttributes = new HashSet<>();
-    {
-        usageAttributes.add(BuiltInAttribute.USAGE);
-        usageAttributes.add(BuiltInAttribute.USAGE_WATER);
-    }
+    private final static Set<? extends Attribute> usageAttributes =
+            ImmutableSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.USAGE_WATER);
    
     @Override
     public void doLoadData() {
