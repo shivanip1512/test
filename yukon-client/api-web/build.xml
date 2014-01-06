@@ -47,6 +47,9 @@
         <include name="geronimo-jms_1.1_spec-1.1.1.jar"/>
         <include name="guava-13.0.1.jar"/>
         <include name="i18n-en_US.jar"/>
+        <include name="jackson-annotations-2.2.3.jar"/>
+        <include name="jackson-core-2.2.3.jar"/>
+        <include name="jackson-databind-2.2.3.jar"/>
         <include name="jasypt-1.9.0.jar"/>
         <include name="jaxen-1.1.1.jar"/>
         <include name="jaxm-api.jar"/>
