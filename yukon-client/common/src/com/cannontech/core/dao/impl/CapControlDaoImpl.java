@@ -35,6 +35,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.google.common.collect.Lists;
 
@@ -339,7 +340,8 @@ public class CapControlDaoImpl  implements CapControlDao{
         } else if (type == PaoType.CAP_CONTROL_SPECIAL_AREA) {
             sql.append("SPAreaId").eq(id);
         } else if (type == PaoType.CAPBANK) {
-            sql.append("PointId").eq(id);
+        	int pointId = ((CapBankDevice)streamable).getStatusPointID();
+            sql.append("PointId").eq(pointId);
         }
         sql.append("AND DateTime").gte(date.toDate());
         
