@@ -560,7 +560,7 @@ void ModbusProtocol::clearPoints()//ok, this does more than clear points. Sue me
 {
     _retries = 0;//reset retry count
     _points.clear();
-    _points_start = _points.begin();
+    _points_finish = _points_start = _points.begin();
     _command = Command_Error;
 }
 

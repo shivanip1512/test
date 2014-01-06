@@ -295,6 +295,11 @@ int ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 
                     getDevicePoints(points);
 
+                    if( points.empty() )
+                    {
+                        return ErrorNoPointsOnDevice;
+                    }
+
                     std::vector<CtiPointManager::ptr_type>::iterator itr;
 
                     for( itr = points.begin(); itr != points.end(); itr++ )
