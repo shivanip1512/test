@@ -144,7 +144,7 @@ function JsWidgetObject (shortName, parameters) {
                     jQuery('#' + args.buttonID).find('span').text(defaultButtonText);
                 }
                 jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
-                jQuery('#' + container).find('button').prop('disabled', true);
+                jQuery('#' + container).find('button').prop('disabled', false);
             },
             oldParams,
             url;
