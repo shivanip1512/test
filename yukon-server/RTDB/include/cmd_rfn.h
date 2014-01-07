@@ -11,6 +11,7 @@ namespace Commands {
 
 class RfnCentronSetLcdConfigurationCommand;
 class RfnCentronGetLcdConfigurationCommand;
+class RfnDemandFreezeConfigurationCommand;
 class RfnGetDemandFreezeInfoCommand;
 class RfnLoadProfileGetRecordingCommand;
 class RfnVoltageProfileGetRecordingCommand;
@@ -50,6 +51,7 @@ public:
         virtual void handleCommandResult(const RfnCommand &)                                {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)      {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)      {}
+        virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)       {}
         virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)             {}
         virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)         {}
         virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &)      {}

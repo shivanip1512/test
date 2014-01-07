@@ -50,6 +50,7 @@ protected:
     void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand  & cmd );
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand         & cmd );
     void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand             & cmd );
+    void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand       & cmd );
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand     & cmd );
     void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand     & cmd );
     void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand         & cmd );

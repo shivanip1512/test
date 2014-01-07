@@ -109,15 +109,19 @@ void RfnDemandFreezeCommand::validateStatus(const unsigned char status, const un
 
 RfnDemandFreezeConfigurationCommand::RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze )
     :   RfnDemandFreezeCommand( Operation_SetDayOfDemandFreeze ),
-        _freezeDay( 0x00 )
-{
+        freezeDay( day_of_freeze )
     /*
         0       : freeze disabled
         1 - 31  : day number of freeze
         32 +    : last day of month
     */
+{
+}
 
-    _freezeDay = day_of_freeze;
+
+void RfnDemandFreezeConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
 }
 
 
@@ -125,7 +129,7 @@ RfnCommand::Bytes RfnDemandFreezeConfigurationCommand::getCommandData()
 {
     RfnCommand::Bytes   data;
 
-    data.push_back( _freezeDay );
+    data.push_back( freezeDay );
 
     return data;
 }

@@ -120,19 +120,20 @@ public:
 
 class IM_EX_DEVDB RfnDemandFreezeConfigurationCommand : public RfnDemandFreezeCommand
 {
-    unsigned char _freezeDay;
-
 protected:
 
     virtual Bytes getCommandData();
 
 public:
 
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
     RfnDemandFreezeConfigurationCommand( const unsigned char day_of_freeze );
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );
 
+    const unsigned char freezeDay;
 };
 
 

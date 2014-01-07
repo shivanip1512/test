@@ -1474,6 +1474,12 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnGetDemandFree
 }
 
 
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand & cmd )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, cmd.freezeDay );
+}
+
+
 namespace {
 
 void storeSchedule(RfnResidentialDevice &dev, const Commands::RfnTouScheduleConfigurationCommand::Schedule &schedule)

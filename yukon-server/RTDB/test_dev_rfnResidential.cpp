@@ -556,7 +556,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
             command->decodeCommand( decode_time, response );
 
-            dut.handleCommandResult( static_cast<Commands::RfnTouScheduleGetConfigurationCommand &>(*command) );
+            dut.extractCommandResult( *command );
         }
     }
 
@@ -1291,6 +1291,62 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
         BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(), expected.end(),
                 results.begin(),  results.end());
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
+{
+    test_RfnResidentialDevice dut;
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    dut._type = TYPE_RFN410FX;
+
+    BOOST_CHECK( ! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+
+    {
+        CtiCommandParser parse("putconfig install freezeday");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x55)(0x02)(0x07);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+
+            std::vector<unsigned char> response = boost::assign::list_of
+                        (0x56)(0x00)(0x00)(0x00)(0x00);
+
+            command->decodeCommand( CtiTime::now(), response );
+
+            dut.extractCommandResult( *command );
+
+            BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+
+            BOOST_CHECK_EQUAL( 7, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+        }
     }
 }
 
