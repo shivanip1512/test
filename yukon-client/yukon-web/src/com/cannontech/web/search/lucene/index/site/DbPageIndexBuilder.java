@@ -139,20 +139,21 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
 
     public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
             String type) {
-        SqlFragmentSource whereClause = getWhereClauseForDbChange(database, category, id);
-        if (whereClause != null) {
-            Term deleteTerm = new Term("pageKey", createPageKey(id));
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(getBaseQuery());
-            sql.append(getQueryTables());
-            sql.append("where").append(whereClause);
-            // Don't need to run the query if it's a delete; the deleteTerm is the important thing (the documents
-            // list should just be empty).
+        Term deleteTerm = new Term("pageKey", createPageKey(id));
+        if (dbChangeType != DbChangeType.DELETE) {
+            // No new or updated documents if it's a delete...just need the deleteTerm.
             List<Document> documents = Collections.emptyList();
-            if (dbChangeType != DbChangeType.DELETE) {
-                documents = jdbcTemplate.query(sql, documentRowMapper);
-            }
             return new IndexUpdateInfo(documents, deleteTerm);
+        } else {
+            SqlFragmentSource whereClause = getWhereClauseForDbChange(database, category, id);
+            if (whereClause != null) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(getBaseQuery());
+                sql.append(getQueryTables());
+                sql.append("where").append(whereClause);
+                List<Document> documents = jdbcTemplate.query(sql, documentRowMapper);
+                return new IndexUpdateInfo(documents, deleteTerm);
+            }
         }
 
         return null;

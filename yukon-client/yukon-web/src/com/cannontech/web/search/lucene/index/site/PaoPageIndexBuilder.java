@@ -156,7 +156,9 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
     @Override
     public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
             String type) {
-        if (database == DBChangeMsg.CHANGE_PAO_DB) {
+        // If it's a delete, we won't be able to get the type to know if we handle it or not.  That's okay though;
+        // we'll just be asking Lucene to delete a non-existent row.
+        if (database == DBChangeMsg.CHANGE_PAO_DB && dbChangeType != DbChangeType.DELETE) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select type from yukonPaobject where paobjectId").eq(id);
             PaoType paoType = jdbcTemplate.queryForObject(sql, RowMapper.PAO_TYPE);

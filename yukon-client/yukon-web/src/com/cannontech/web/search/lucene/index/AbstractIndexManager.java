@@ -201,15 +201,15 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             if (info != null) {
                 boolean success = updateQueue.offer(info);
                 if (!success) {
-                    log.warn("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
+                    log.error("Unable to insert IndexUpdateInfo onto work queue (it is full), index will be out of sync");
                     updateErrorCount.getAndIncrement();
                 }
             }
         } catch (RuntimeException e) {
             if (log.isDebugEnabled()) {
-                log.warn("Caught exception handling db change for " + getIndexName() + ": ", e);
+                log.error("Caught exception handling db change for " + getIndexName() + ": ", e);
             } else {
-                log.warn("Caught exception handling db change for " + getIndexName() + ": " + e);
+                log.error("Caught exception handling db change for " + getIndexName() + ": " + e);
             }
             updateErrorCount.getAndIncrement();
             currentException = e;
@@ -320,7 +320,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
                 }
             } catch (Throwable e) {
                 updateErrorCount.getAndIncrement();
-                log.warn("Caught unknown exception while processing updates, index is probably out of sync", e);
+                log.error("Caught unknown exception while processing updates, index is probably out of sync", e);
             }
         }
     }
@@ -452,7 +452,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
      */
     private void checkForException() {
         if (currentException != null) {
-            throw currentException;
+            log.warn("This index may be corrupted because of a previous exception:", currentException);
         }
     }
 
