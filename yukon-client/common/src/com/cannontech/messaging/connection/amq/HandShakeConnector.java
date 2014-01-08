@@ -5,6 +5,7 @@ import javax.jms.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
+import com.cannontech.messaging.connection.transport.HandShakeTimeoutException;
 import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 import com.cannontech.messaging.connection.transport.amq.AmqProducerTransport;
@@ -56,7 +57,7 @@ class HandShakeConnector {
 
             // Validate
             if (rspMessage == null) {
-                throw new TransportException("Timeout while waiting for the server to reply to a connection request");
+                throw new HandShakeTimeoutException("Timeout while waiting for the server to reply to a connection request");
             }
 
             if (!HAND_SHAKE_RESP_MSG_TYPE.equals(rspMessage.getJMSType())) {

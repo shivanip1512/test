@@ -11,6 +11,7 @@ import com.cannontech.messaging.connection.event.ConnectionEvent;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEvent;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
+import com.cannontech.messaging.connection.transport.HandShakeTimeoutException;
 import com.cannontech.messaging.connection.transport.Transport;
 import com.cannontech.message.util.Message;
 
@@ -132,8 +133,14 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 //clear the flag
                 Thread.interrupted();
             }
+            catch (HandShakeTimeoutException e) {
+                isFailed = true;
+                
+                logger.warn(e);
+            }
             catch (Exception e) {
                 isFailed = true;
+                
                 if (disconnectRequested || disableWorkerThreadLogError) {
                     logger.debug("Error in connection worker thread", e);
                 }
