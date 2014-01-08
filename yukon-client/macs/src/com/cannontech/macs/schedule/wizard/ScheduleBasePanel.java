@@ -1501,7 +1501,7 @@ public Object getValue(Object val)
 		sch = (Schedule)val;
 
 	// ID must be set by server!!	
-	sch.setScheduleName( getJTextFieldScheduleName().getText() );
+	sch.setScheduleName( getJTextFieldScheduleName().getText().trim() );
 	sch.setCategoryName( getJComboBoxCategory().getSelectedItem().toString() );
 	sch.setType( getJComboBoxType().getSelectedItem().toString() );
 	sch.setTemplateType(ScriptTemplateTypes.getScriptTemplateFromString((String)getTemplateComboBox().getSelectedItem()));
@@ -1692,7 +1692,7 @@ public boolean isInputValid()
 		return false;
 	}
 	
-	String scheduleName = getJTextFieldScheduleName().getText();
+	String scheduleName = getJTextFieldScheduleName().getText().trim();
     if( org.apache.commons.lang.StringUtils.isBlank(scheduleName) )
 	{
 		setErrorString("The Schedule Name text field must be filled in");
