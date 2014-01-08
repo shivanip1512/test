@@ -177,7 +177,6 @@ Yukon.Tdc = (function () {
             jQuery(document).on('click', '.f-one-alarm-ack-b', function () {
                 var pointId = jQuery(this).attr("pointId");
                 var condition = jQuery(this).attr("condition");
-                        console.debug(pointId);
                         var data = {
                             pointId : pointId,
                             condition : condition
