@@ -3498,6 +3498,8 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
                     //  we reset the retry count any time there's a success
                     _daily_read_info.request.multi_day_retries = -1;
 
+                    bool all_out_of_range = true;
+
                     while( !daily_readings.empty() )
                     {
                         point_info pi = daily_readings.top();
@@ -3508,6 +3510,8 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
                             pi.value -= static_cast<long>(pi.value) % 2;
                         }
 
+                        all_out_of_range &= (pi.description == ErrorText_OutOfRange);
+
                         insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
                                               pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
                                               0.1, TAG_POINT_MUST_ARCHIVE);
@@ -3515,6 +3519,11 @@ INT Mct410Device::decodeGetValueDailyRead(const INMESS *InMessage, CtiTime &Time
                         ++_daily_read_info.request.begin;
 
                         daily_readings.pop();
+                    }
+
+                    if( all_out_of_range )
+                    {
+                        status = ErrorInvalidTimestamp;
                     }
 
                     if( _daily_read_info.request.begin < _daily_read_info.request.end )

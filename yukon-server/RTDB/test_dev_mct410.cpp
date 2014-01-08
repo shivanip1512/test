@@ -1824,7 +1824,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     }
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getvalue_daily_reads_all_bad)
     {
-        CtiTime timenow;
+        const CtiDate datenow(4, 7, 2013);
+        CtiTime timenow(datenow, 12, 34, 56);
 
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 21);  //  set the device to SSPEC revision 2.1
         mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, 1);
@@ -1859,7 +1860,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             im.Buffer.DSt.Length = 13;
             im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
 
-            BOOST_CHECK_EQUAL( NoError , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
+            BOOST_CHECK_EQUAL( ErrorInvalidTimestamp , mct410.decodeGetValueDailyRead(&im, timenow, vgList, retList, outList) );
         }
 
         {
@@ -1869,6 +1870,19 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_REQUIRE(retMsg);
 
+            BOOST_CHECK_EQUAL( retMsg->Status(), ErrorInvalidTimestamp );
+            /*
+            //  Doesn't work due to const CtiDate Today; in dev_mct410.cpp
+            BOOST_CHECK_EQUAL(
+                    retMsg->ResultString(),
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/14/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/15/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/16/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/17/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/18/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Test MCT-410iL / PulseAccumulator1 = (invalid data) @ 12/19/2013 00:00:00 [Requested interval outside of valid range]\n"
+                    "Multi-day daily read request complete\n" );
+            */
             CtiMultiMsg_vec points = retMsg->PointData();
 
             BOOST_CHECK_EQUAL( points.size(), 0 );
