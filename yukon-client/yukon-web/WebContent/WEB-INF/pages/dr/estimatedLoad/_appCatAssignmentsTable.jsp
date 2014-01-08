@@ -46,11 +46,7 @@
                 </tbody>
             </table>
             <c:if test="${pagedAppCats.hitCount > pagedAppCats.count}">
-                <cti:url value="${sortUrl}" var="pagedurl">
-                   <cti:param name="sort" value="${sort}"/>
-                   <cti:param name="descending" value="${descending}"/>
-                </cti:url>
-                <tags:pagingResultsControls baseUrl="${pagedurl}" result="${pagedAppCats}"/>
+                <tags:pagingResultsControls baseUrl="${sortUrl}" result="${pagedAppCats}"/>
             </c:if>
         </c:otherwise>
     </c:choose>

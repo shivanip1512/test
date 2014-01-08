@@ -29,11 +29,8 @@
     <c:if test="${empty pagedFormulas.resultList}">
         <span class="empty-list"><i:inline key=".noFormulas"/></span>
     </c:if>
+
     <c:if test="${pagedFormulas.hitCount > pagedFormulas.count}">
-	    <cti:url value="${sortUrl}" var="pagedUrl">
-	       <cti:param name="sort" value="${sort}"/>
-	       <cti:param name="descending" value="${descending}"/>
-	    </cti:url>
-	    <tags:pagingResultsControls baseUrl="${pagedUrl}" result="${pagedFormulas}"/>
+        <tags:pagingResultsControls baseUrl="${sortUrl}" result="${pagedFormulas}"/>
     </c:if>
 </cti:msgScope>
