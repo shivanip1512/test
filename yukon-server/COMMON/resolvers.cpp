@@ -676,6 +676,10 @@ INT resolvePAOClass(const string& _rwsTemp)
     {
         nRet = PAOClassMeter;
     }
+    else if(rwsTemp == "rfmesh")
+    {
+        nRet = PAOClassRFMesh;
+    }
     else if(rwsTemp == "gridadvisor")
     {
         nRet = PAOClassGridAdvisor;

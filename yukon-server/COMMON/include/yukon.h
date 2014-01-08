@@ -84,6 +84,7 @@ enum CtiPAOClass_t
     PAOClassRTU,
     PAOClassIED,
     PAOClassMeter,
+    PAOClassRFMesh,
     PAOClassGridAdvisor,
     PAOClassCarrier,
     PAOClassGroup,

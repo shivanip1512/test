@@ -68,6 +68,26 @@ BOOST_AUTO_TEST_CASE(test_resolveAmpUseType)
     BOOST_CHECK_EQUAL(resolveAmpUseType(tempName), amptype);
 }
 
+BOOST_AUTO_TEST_CASE(test_resolvePaoClass)
+{
+    BOOST_CHECK_EQUAL(resolvePAOClass("port"),           0);
+    BOOST_CHECK_EQUAL(resolvePAOClass("route"),          1);
+    BOOST_CHECK_EQUAL(resolvePAOClass("transmitter"),    2);
+    BOOST_CHECK_EQUAL(resolvePAOClass("rtu"),            3);
+    BOOST_CHECK_EQUAL(resolvePAOClass("ied"),            4);
+    BOOST_CHECK_EQUAL(resolvePAOClass("meter"),          5);
+    BOOST_CHECK_EQUAL(resolvePAOClass("rfmesh"),         6);
+    BOOST_CHECK_EQUAL(resolvePAOClass("gridadvisor"),    7);
+    BOOST_CHECK_EQUAL(resolvePAOClass("carrier"),        8);
+    BOOST_CHECK_EQUAL(resolvePAOClass("group"),          9);
+    BOOST_CHECK_EQUAL(resolvePAOClass("capcontrol"),     10);
+    BOOST_CHECK_EQUAL(resolvePAOClass("virtual"),        11);
+    BOOST_CHECK_EQUAL(resolvePAOClass("loadmanagement"), 12);
+    BOOST_CHECK_EQUAL(resolvePAOClass("system"),         13);
+    BOOST_CHECK_EQUAL(resolvePAOClass("schedule"),       14);
+    BOOST_CHECK_EQUAL(resolvePAOClass("rutabaga"),       15);
+}
+
 BOOST_AUTO_TEST_CASE(test_resolvePointType)
 {
     string tempName = "amp 2";
