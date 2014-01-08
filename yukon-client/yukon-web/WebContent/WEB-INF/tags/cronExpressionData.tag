@@ -170,8 +170,16 @@
 <div id="${id}_cronExpCustomDiv" style="display:none;">
 
 	<i:inline key="yukon.web.components.cronPicker.cronExpression"/><br>
-	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="fl"> 
-	<cti:icon icon="icon-help" id="cron_help_icon"/>
+    <c:if test="${not empty invalidCronString}">
+        <c:set var="errorClass" value="error"/>
+    </c:if>
+    <div class="clearfix">
+    	<input type="text" name="${id}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="fl ${errorClass}"> 
+    	<cti:icon icon="icon-help" id="cron_help_icon"/>
+    </div>
+    <c:if test="${invalidCronString}">
+        <div class="error"><i:inline key="yukon.common.invalidCron"/></div>
+    </c:if>
 	
     <cti:msg2 var="cronTitle" key="yukon.web.components.cronPicker.cronHelpTitle"/>
 	<tags:simplePopup id="${id}_customCronExpressInfoPopup" title="${cronTitle}" on="#cron_help_icon">

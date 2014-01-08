@@ -48,8 +48,10 @@
             </tags:nameValueContainer2>
         </tags:boxContainer2>
         
-        <cti:button nameKey="cancel" href="view"/>
-        <cti:button nameKey="submit" type="submit"/>
+        <div class="page-action-area">
+            <cti:button nameKey="submit" type="submit" classes="action primary"/>        
+            <cti:button nameKey="cancel" href="view"/>
+        </div>
     </form:form>
 
 </cti:standardPage>

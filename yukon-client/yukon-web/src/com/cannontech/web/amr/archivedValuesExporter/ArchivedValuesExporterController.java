@@ -90,6 +90,8 @@ import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValida
 import com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
+import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
@@ -548,24 +550,41 @@ public class ArchivedValuesExporterController {
             }
         }
         ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
-        
-        String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-        exportData.setScheduleCronString(scheduleCronString);
         exportData.setParameters(parameters);
+        
+        try {
+            String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+            exportData.setScheduleCronString(scheduleCronString);
+        } catch (ServletRequestBindingException | IllegalArgumentException | ParseException e) {
+            bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
+        }
         
         scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
         scheduledFileExportValidator.validate(exportData, bindingResult);
-        if(bindingResult.hasErrors()) {
+        
+        if (bindingResult.hasErrors()) {
+            
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
             model.addAttribute("attributes", attributeSet);
             model.addAttribute("dataRange", dataRange);
             model.addAttribute("deviceCollection", deviceCollection);
-            model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
+            
+            if (bindingResult.hasFieldErrors("scheduleCronString")) {
+                CronExpressionTagState state = new CronExpressionTagState();
+                state.setCronTagStyleType(CronTagStyleType.CUSTOM);
+                state.setCustomExpression(CustomCronTagStyleHandler.getCustomExpression("scheduleCronString", request));
+                model.addAttribute("cronExpressionTagState", state);
+                model.addAttribute("invalidCronString", true);
+            } else {
+                model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
+            }
+            
             model.addAttribute("jobId", jobId);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
+            
             return "archivedValuesExporter/schedule.jsp";
         }
         

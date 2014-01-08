@@ -22,7 +22,11 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
         return CronTagStyleType.CUSTOM;
     }
 	
-	// BUILD
+    public static String getCustomExpression(String id, HttpServletRequest request) throws ServletRequestBindingException {
+        String exp = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_CUSTOM_EXPRESSION);
+        return exp;
+    }
+	
 	@Override
 	public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws ServletRequestBindingException {
 
@@ -37,7 +41,6 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 	}
 
 	
-	// CAN PARSE
 	@Override
 	public boolean canParse(String[] parts) {
 
@@ -50,9 +53,7 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 			return false;
 		}
 	}
-
 	
-	// PARSE
 	@Override
 	public CronExpressionTagState parse(String[] parts, YukonUserContext userContext) {
 
@@ -65,7 +66,6 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
 		return state;
 	}
 	
-	// DESCRIPTION
 	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
 		
 		String desc = "Custom, " + state.getCustomExpression();
