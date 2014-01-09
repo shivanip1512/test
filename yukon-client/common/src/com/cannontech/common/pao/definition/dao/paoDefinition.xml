@@ -305,11 +305,16 @@
         </configuration>
     </pao>
 
-    <pao id="RFN_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+    <pao id="RFN_CONFIGURATION" abstract="true" inherits="DEMAND_FREEZE_CONFIGURATION">
         <configuration>
             <category type="rfnOvUv"/>
             <category type="demandProfile"/>
             <category type="tou"/>
+        </configuration>
+    </pao>
+    
+    <pao id="DEMAND_FREEZE_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+        <configuration>
             <category type="demandFreeze"/>
         </configuration>
     </pao>
@@ -2311,7 +2316,7 @@
     </pao>
 
     <!-- MCT 410 BASE -->
-    <pao id="MCT_410_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PEAK_REPORT_TAG, SUPPORTS_VOLTAGE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG">
+    <pao id="MCT_410_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PEAK_REPORT_TAG, SUPPORTS_VOLTAGE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG, DEMAND_FREEZE_CONFIGURATION">
     	<points>
             <point type="PulseAccumulator" offset="1">
             	<init>true</init>
