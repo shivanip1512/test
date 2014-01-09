@@ -822,7 +822,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoin
             {
                 const unsigned *raw_value = reinterpret_cast<const unsigned *>(&rcv.points[0].value);
 
-                BOOST_CHECK_EQUAL( raw_value[0],                    0x33333334 );
+                BOOST_CHECK_EQUAL( raw_value[0],                    0x33333333 );
                 BOOST_CHECK_EQUAL( raw_value[1],                    0x406F7333 );
                 BOOST_CHECK_CLOSE( rcv.points[0].value,             251.6, 1e-6 );
                 BOOST_CHECK_EQUAL( rcv.points[0].type,              AnalogPointType );

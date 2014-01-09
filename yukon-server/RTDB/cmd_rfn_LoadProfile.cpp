@@ -598,7 +598,8 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 
         // Point value
 
-        const double value = (double)getDataFromBytes( lpPointDescriptor, pos, value_size ) * _uomModifier2.getScalingFactor();
+        const double raw_value = (double)getDataFromBytes( lpPointDescriptor, pos, value_size );
+        const double value = adjustByScalingFactor( raw_value, _uomModifier2.getScalingFactor() );
         pos += value_size;
 
         // Point status

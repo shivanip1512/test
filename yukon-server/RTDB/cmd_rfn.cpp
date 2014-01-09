@@ -52,6 +52,18 @@ RfnCommand::Bytes RfnCommand::getCommandHeader()
     return header;
 }
 
+double RfnCommand::adjustByScalingFactor(double value, double scalingFactor) const
+{
+    if ( scalingFactor == 1e-1 )
+    {
+        double temp = value * 1e2;
+
+        return temp * 1e-3;
+    }
+
+    return value * scalingFactor;
+}
+
 // Defaults to Advanced Metrology, which operates via Channel Manager
 unsigned char RfnCommand::getApplicationServiceId() const
 {
