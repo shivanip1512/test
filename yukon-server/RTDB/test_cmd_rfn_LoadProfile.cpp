@@ -628,7 +628,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
 
             BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                            exp.begin() , exp.end() );
-    }
+        }
 
         // decode
         {
@@ -759,6 +759,76 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints )
                 BOOST_CHECK_EQUAL( rcv.points[9].quality,           InvalidQuality );
                 BOOST_CHECK_EQUAL( rcv.points[9].offset,            expected_offset );
                 BOOST_CHECK_EQUAL( rcv.points[9].time.seconds(),    timestamp + interval_seconds*3 );
+            }
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_LoadProfile_GetLoadProfilePoints_FloatingPoint )
+{
+    using Cti::Devices::Commands::RfnCommand;
+
+    Cti::Test::set_to_central_timezone();
+
+    //  begin == end, before today
+    {
+        const CtiTime now  (CtiDate(10, 8, 2013), 8, 23, 0);
+        const CtiDate begin( 7, 7, 2013);
+        const CtiDate end  ( 6, 8, 2013);
+
+        RfnLoadProfileReadPointsCommand command(now, begin, end);
+
+        // execute
+        {
+            const std::vector< unsigned char > exp = boost::assign::list_of
+                    ( 0x68 )( 0x05 )( 0x01 )
+                    ( 0x04 )
+                    ( 0x00 )( 0x08 ) // 8 bytes
+                    ( 0x51 )( 0xd8 )( 0xf5 )( 0xd0 )  // start timestamp
+                    ( 0x52 )( 0x00 )( 0x82 )( 0xd0 ); // end timestamp
+
+            RfnCommand::RfnRequestPayload rcv = command.executeCommand( execute_time );
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                           exp.begin() , exp.end() );
+        }
+
+        // decode
+        {
+            const std::vector< unsigned char > response = boost::assign::list_of
+                   ( 0x69 )( 0x05 )( 0x00 )( 0x01 )
+                   ( 0x03 )
+                   ( 0x00 )( 0x11 ) // tlv size = 17-byte
+                   // report header
+                   ( 0x00 ) // channel number
+                   ( 0x10 ) // uom
+                   ( 0x80 )( 0x00 ) // uom modifier 1
+                   ( 0x01 )( 0x40 ) // uom modifier 2
+                   ( 0x12 ) // 18 minute intervals
+                   ( 0x01 ) // Number of profile point records
+                   // record 1
+                   ( 0x51 )( 0xd8 )( 0xf5 )( 0xd3 )
+                   ( 0x03 ) // 16-bit absolute
+                   ( 0x01 )
+                   ( 0x09 )( 0xd4 )( 0x00 );
+
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+
+            BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+
+            BOOST_REQUIRE_EQUAL( rcv.points.size(), 1 );
+
+            // record 1
+            {
+                const unsigned *raw_value = reinterpret_cast<const unsigned *>(&rcv.points[0].value);
+
+                BOOST_CHECK_EQUAL( raw_value[0],                    0x33333334 );
+                BOOST_CHECK_EQUAL( raw_value[1],                    0x406F7333 );
+                BOOST_CHECK_CLOSE( rcv.points[0].value,             251.6, 1e-6 );
+                BOOST_CHECK_EQUAL( rcv.points[0].type,              AnalogPointType );
+                BOOST_CHECK_EQUAL( rcv.points[0].quality,           NormalQuality );
+                BOOST_CHECK_EQUAL( rcv.points[0].offset,            214 );
+                BOOST_CHECK_EQUAL( rcv.points[0].time.seconds(),    0x51d8f5d3 );
             }
         }
     }
