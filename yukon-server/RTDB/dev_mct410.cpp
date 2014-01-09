@@ -179,6 +179,7 @@ Mct410Device::ConfigPartsList Mct410Device::initConfigParts()
     Mct410Device::ConfigPartsList tempList;
 
     tempList.push_back(Mct4xxDevice::PutConfigPart_disconnect);
+    tempList.push_back(Mct4xxDevice::PutConfigPart_freeze_day);
 
     return tempList;
 }
@@ -1739,6 +1740,93 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
     }
 
     outList.push_back(om.release());
+
+    return NoError;
+}
+
+int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly)
+{
+    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if ( ! deviceConfig )
+    {
+        return NoConfigData;
+    }
+
+    if ( ! readsOnly )
+    {
+        boost::optional<unsigned char>  configFreezeDay,
+                                        paoFreezeDay;
+
+        {
+            const std::string           configKey( MCTStrings::DemandFreezeDay );
+            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
+
+            if ( ! configValue  )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
+                     << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                return NoConfigData;
+            }
+
+            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned char>::max() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *configValue << ") found for config key \""
+                     << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                return BADPARAM;
+            }
+
+            configFreezeDay = static_cast<unsigned>( *configValue );
+        }
+
+        {
+            long pao_value;
+
+            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, pao_value ) )
+            {
+                paoFreezeDay = static_cast<unsigned>( pao_value );
+            }
+        }
+
+        if( *configFreezeDay == *paoFreezeDay )  // both exist and are equal
+        {
+            if( ! parse.isKeyValid("force") )
+            {
+                return ConfigCurrent;
+            }
+        }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+        }
+
+        // send the new value
+
+        OutMessage->Sequence = EmetconProtocol::PutConfig_FreezeDay;
+        if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
+            return NoMethod;
+        }
+        OutMessage->Buffer.BSt.Message[0] = *configFreezeDay;
+        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+    }
+    else
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_Freeze;
+        if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+        {
+            return NoMethod;
+        }
+
+        insertConfigReadOutMessage("getconfig freeze", *OutMessage, outList);
+    }
 
     return NoError;
 }

@@ -167,6 +167,8 @@ const string MCTStrings::DisconnectMinutes = "disconnectMinutes";
 const string MCTStrings::ConnectMinutes = "connectMinutes";
 const string MCTStrings::ReconnectButton = "reconnectButton";
 
+const string MCTStrings::DemandFreezeDay    = "demandFreezeDay";
+
 /* DNP */
 const string DNPStrings::omitTimeRequest = "omitTimeRequest";
 const string DNPStrings::internalRetries = "internalRetries";

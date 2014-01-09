@@ -2459,6 +2459,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("disconnectMinutes", "7");
         config.insertValue("connectMinutes", "17");
         config.insertValue("reconnectButton", "true");
+        config.insertValue("demandFreezeDay", "12");
 
         test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -2471,7 +2472,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2493,6 +2494,24 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
         }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x0c);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all_alternate)
     {
@@ -2506,6 +2525,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("disconnectMinutes", "6");
         config.insertValue("connectMinutes", "18");
         config.insertValue("reconnectButton", "false");
+        config.insertValue("demandFreezeDay", "21");
 
         test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
@@ -2518,7 +2538,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2533,6 +2553,24 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             const std::vector<unsigned> expected = boost::assign::list_of
                 (0x01)(0xe2)(0x40)(0x11)(0xd7)(0x03)(0x06)(0x12)(0x44);
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = boost::assign::list_of
+                (0x15);
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(),
