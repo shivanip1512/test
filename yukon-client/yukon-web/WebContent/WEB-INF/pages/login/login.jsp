@@ -8,7 +8,7 @@
         <div class="login-content">
             <div class="column-12-12">
                 <div class="one column">
-                    <div><h1 class="tagline">Optimizing Energy Delivery</h1></div>
+                    <div><h1 class="tagline"><cti:msg2 key="yukon.web.login.tagline"/></h1></div>
                 </div>
                 <div class="two column nogutter">
                     <div class="faded-round-box login-form">
@@ -32,7 +32,9 @@
                             <div class="clearfix stacked"><input type="text" id="login_email" name="USERNAME" class="fl f-focus" placeholder="<cti:msg2 key="yukon.web.login.username"/>"></div>
                             <div class="clearfix">
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
-                                <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
+                                <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
+                                    <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
+                                </cti:checkGlobalSetting>
                             </div>
                             <div class="action-area">
                                 <label class="fl remember-me"><input type="checkbox" id="remember_me" name="rememberme"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
