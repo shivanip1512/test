@@ -84,6 +84,7 @@
     <entry key="yukon.web.modules.tools.bulk.analysis.list.remove.hoverText">Delete analysis</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.message">Are you sure you want to delete this analysis?</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.list.deleteConfirmation.title">Delete Analysis</entry>
+    <entry key="yukon.web.modules.tools.bulk.analysis.list.deleted">Analysis successfully deleted.</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.list.viewButton.hoverText">View analysis results</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.list.viewButtonNoDevices.hoverText">No results to view</entry>
     <entry key="yukon.web.modules.tools.bulk.analysis.list.viewButtonAnalyzing.hoverText">Unable to view until analysis is complete.</entry>

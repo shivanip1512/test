@@ -17,6 +17,20 @@ public class Analysis {
     private AdaStatus status;
     private String statusId;
     
+    public Analysis() {}
+    
+    protected Analysis(Analysis analysis) {
+        this.attribute = analysis.attribute;
+        this.analysisId = analysis.analysisId;
+        this.dateTimeRange = analysis.dateTimeRange;
+        this.intervalPeriod = analysis.intervalPeriod;
+        this.lastChangeId = analysis.lastChangeId;
+        this.runDate = analysis.runDate;
+        this.excludeBadPointQualities = analysis.excludeBadPointQualities;
+        this.status = analysis.status;
+        this.statusId = analysis.statusId;
+    }
+    
     public BuiltInAttribute getAttribute() {
         return attribute;
     }
