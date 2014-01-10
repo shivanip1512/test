@@ -54,6 +54,9 @@ RfnCommand::Bytes RfnCommand::getCommandHeader()
 
 double RfnCommand::adjustByScalingFactor(double value, double scalingFactor) const
 {
+    //  Temporary workaround for YUK-12814.
+    //  The voltage UOM sent to C++ (deci, 1e-1) differs from that sent to Java (milli, 1e-3), resulting in ever-so-slightly different values for the same timestamp.
+    //  The following code reenacts the 1e-3 UOM calc in order to make the bits match exactly.
     if ( scalingFactor == 1e-1 )
     {
         double temp = value * 1e2;

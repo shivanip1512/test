@@ -208,7 +208,7 @@ protected:
         // unsigned short extension_bit         : 1;
     };
 
-    virtual double adjustByScalingFactor(double value, double scalingFactor) const;
+    double adjustByScalingFactor(double value, double scalingFactor) const;
 
     //
     // Type Length Values
