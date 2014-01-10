@@ -1817,16 +1817,14 @@ int Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq, CtiComma
         OutMessage->Buffer.BSt.Message[0] = *configFreezeDay;
         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
     }
-    else
-    {
-        OutMessage->Sequence = EmetconProtocol::GetConfig_Freeze;
-        if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
-        {
-            return NoMethod;
-        }
 
-        insertConfigReadOutMessage("getconfig freeze", *OutMessage, outList);
+    OutMessage->Sequence = EmetconProtocol::GetConfig_Freeze;
+    if ( ! getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt) )
+    {
+        return NoMethod;
     }
+
+    insertConfigReadOutMessage("getconfig freeze", *OutMessage, outList);
 
     return NoError;
 }

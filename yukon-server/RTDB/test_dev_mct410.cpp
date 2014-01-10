@@ -2472,7 +2472,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2494,6 +2494,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
         }
+
+        // Freeze Day messages - read-after-write.
+
+        int freezeDayWriteMsgPriority,
+            freezeDayReadMsgPriority;       // Capture message priorities to validate ordering
+
+        // Write message
         {
             const OUTMESS *om = *om_itr++;
 
@@ -2511,7 +2518,25 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 expected.end(),
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            freezeDayWriteMsgPriority = om->Priority;
         }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            freezeDayReadMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK( freezeDayWriteMsgPriority > freezeDayReadMsgPriority );
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all_alternate)
     {
@@ -2538,7 +2563,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK( vgList.empty() );
         BOOST_CHECK( retList.empty() );
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 2 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -2560,6 +2585,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
         }
+
+        // Freeze Day messages - read-after-write.
+
+        int freezeDayWriteMsgPriority,
+            freezeDayReadMsgPriority;       // Capture message priorities to validate ordering
+
+        // Write message
         {
             const OUTMESS *om = *om_itr++;
 
@@ -2577,7 +2609,25 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 expected.end(),
                 om->Buffer.BSt.Message,
                 om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+
+            freezeDayWriteMsgPriority = om->Priority;
         }
+        // Read message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x4f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            freezeDayReadMsgPriority = om->Priority;
+        }
+
+        // This validates the read-after-write behavior... write message has higher priority
+
+        BOOST_CHECK( freezeDayWriteMsgPriority > freezeDayReadMsgPriority );
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
