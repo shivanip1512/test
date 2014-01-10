@@ -33,7 +33,6 @@ import static com.cannontech.core.roleproperties.YukonRole.WORK_ORDER;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -126,7 +125,6 @@ public enum YukonRoleProperty {
     VIEW_ALARMS_AS_ALERTS(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 18, booleanType()),
     DEFAULT_TIMEZONE(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 19, stringType()),
     SESSION_TIMEOUT(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 20, integerType()),
-    CSRF_TOKEN_MODE(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 21, InputTypeFactory.enumType(CsrfTokenMode.class)),
     
     ESUB_EDITOR_ROLE_EXITS(APPLICATION_ESUBSTATION_EDITOR, APPLICATION_ESUBSTATION_EDITOR.getBasePropertyId(), booleanType()),
     
