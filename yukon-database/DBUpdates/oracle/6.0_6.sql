@@ -100,6 +100,11 @@ UPDATE StatusPointMonitor SET Attribute = REPLACE(Attribute, 'TOU_RATE_C_ENERGY_
 UPDATE StatusPointMonitor SET Attribute = REPLACE(Attribute, 'TOU_RATE_D_ENERGY_GENERATED', 'RECEIVED_KWH_D') WHERE Attribute LIKE '%TOU_RATE_D_ENERGY_GENERATED%';
 /* End YUK-12863 */
 
+/* Start YUK-12791 */
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -10821;
+DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10821;
+/* End YUK-12791 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
