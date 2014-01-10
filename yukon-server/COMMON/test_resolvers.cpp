@@ -429,6 +429,24 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "rfn-430kv";
     devType = TYPE_RFN430KV;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn-430sl0";
+    devType = TYPE_RFN430SL0;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn-430sl1";
+    devType = TYPE_RFN430SL1;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn-430sl2";
+    devType = TYPE_RFN430SL2;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn-430sl3";
+    devType = TYPE_RFN430SL3;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn-430sl4";
+    devType = TYPE_RFN430SL4;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+
+
+
     tempName = "mct-430a3";
     devType = TYPEMCT430A3;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

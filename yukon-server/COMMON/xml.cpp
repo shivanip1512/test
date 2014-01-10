@@ -631,6 +631,11 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
         ("RFN430A3K",                   TYPE_RFN430A3K)
         ("RFN430A3R",                   TYPE_RFN430A3R)
         ("RFN430KV",                    TYPE_RFN430KV)
+        ("RFN430SL0",                   TYPE_RFN430SL0)
+        ("RFN430SL1",                   TYPE_RFN430SL1)
+        ("RFN430SL2",                   TYPE_RFN430SL2)
+        ("RFN430SL3",                   TYPE_RFN430SL3)
+        ("RFN430SL4",                   TYPE_RFN430SL4)
 
         //  --- RTU devices ---
         ("RTU_DART",                    TYPE_DARTRTU)
@@ -726,7 +731,7 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
 
 /*
-    Missing... 
+    Missing...
 
     LCR6(2|6)00_RFN
     RFWMETER

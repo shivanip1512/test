@@ -168,6 +168,11 @@ string desolveDeviceType( int aType )
         case TYPE_RFN430A3K:    Ret = "rfn-430a3k";     break;
         case TYPE_RFN430A3R:    Ret = "rfn-430a3r";     break;
         case TYPE_RFN430KV:     Ret = "rfn-430kv";      break;
+        case TYPE_RFN430SL0:    Ret = "rfn-430sl0";     break;
+        case TYPE_RFN430SL1:    Ret = "rfn-430sl1";     break;
+        case TYPE_RFN430SL2:    Ret = "rfn-430sl2";     break;
+        case TYPE_RFN430SL3:    Ret = "rfn-430sl3";     break;
+        case TYPE_RFN430SL4:    Ret = "rfn-430sl4";     break;
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 

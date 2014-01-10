@@ -80,6 +80,12 @@ enum DeviceTypes {
     TYPE_RFN430A3R,
     //  RFN KV
     TYPE_RFN430KV,
+    //  RFN Sentinel
+    TYPE_RFN430SL0,
+    TYPE_RFN430SL1,
+    TYPE_RFN430SL2,
+    TYPE_RFN430SL3,
+    TYPE_RFN430SL4,
 
     // Substation device identifiers
     TYPE_CCU700,

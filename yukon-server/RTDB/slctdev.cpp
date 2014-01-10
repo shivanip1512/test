@@ -242,6 +242,11 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_RFN430A3K,    makeDevice<Rfn430a3kDevice>)
     (TYPE_RFN430A3R,    makeDevice<Rfn430a3rDevice>)
     (TYPE_RFN430KV,     makeDevice<Rfn430kvDevice>)
+    (TYPE_RFN430SL0,    makeDevice<Rfn430sl0Device>)
+    (TYPE_RFN430SL1,    makeDevice<Rfn430sl1Device>)
+    (TYPE_RFN430SL2,    makeDevice<Rfn430sl2Device>)
+    (TYPE_RFN430SL3,    makeDevice<Rfn430sl3Device>)
+    (TYPE_RFN430SL4,    makeDevice<Rfn430sl4Device>)
     //  Electronic meters
     (TYPE_FULCRUM,      makeDevice<CtiDeviceFulcrum>)
     (TYPE_QUANTUM,      makeDevice<CtiDeviceQuantum>)
