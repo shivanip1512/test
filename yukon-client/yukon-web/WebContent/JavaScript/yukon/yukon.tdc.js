@@ -3,14 +3,32 @@ var Yukon = (function (yukonMod) {
 })(Yukon || {});
 Yukon.namespace('Yukon.Tdc');
 Yukon.Tdc = (function () {
+    var _playAudio = function() {
+        try {
+            jQuery('#alarm-audio')[0].play();
+        } catch (err) {
+            // IE will throw js exceptions sometimes,
+            // probably caused by no audio service started or audio driver installed.
+        }
+    },
+    _pauseAudio = function() {
+        try {
+            jQuery('#alarm-audio')[0].pause();
+        } catch (err) {
+            // IE will throw js exceptions sometimes,
+            // probably caused by no audio service started or audio driver installed.
+        }
+    },
+    tdcMod; 
         
     tdcMod = {
+        
         toggleAlarm : function (alarms) {
             if(jQuery('#alarm-audio')[0].mute == null || jQuery('#alarm-audio')[0].mute == false){
                 if (alarms.value == 'MULT_ALARMS') {
-                    jQuery('#alarm-audio')[0].play();
+                    _playAudio();
                 } else if (alarms.value == 'NO_ALARMS') {
-                    jQuery('#alarm-audio')[0].pause();
+                    _pauseAudio();
                 }
             }
         },
@@ -29,7 +47,7 @@ Yukon.Tdc = (function () {
             jQuery('#b_mute').click(function (e) {
                 jQuery('#b_mute').hide();
                 jQuery('#b_unmute').show();
-                jQuery('#alarm-audio')[0].pause();
+                _pauseAudio();
                 jQuery('#alarm-audio')[0].mute = true;
             });
 
