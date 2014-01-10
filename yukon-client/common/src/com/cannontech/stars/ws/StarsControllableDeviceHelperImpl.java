@@ -117,43 +117,21 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Override
     @Transactional
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
-
-        LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
         
         // Get Inventory, if exists on account
-        liteInv = getInventoryOnAccount(dto, lsec);
+        LiteInventoryBase  liteInv = getInventoryOnAccount(dto, lsec);
         // Inventory already exists on the account
         if (liteInv != null) {
             throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto), yec.getName());
         }
-        
-        YukonListEntry deviceType = getDeviceType(dto, lsec);
-        HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
-        
+                
         // add device to account
         liteInv = internalAddDeviceToAccount(dto, lsec, user);
-        if (ht.isRf()) {
-            try {
-            // add rf device
-            RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
-            String manufacturer = mm.getManufacturer().trim();
-            String model = mm.getModel().trim();
-            String templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
-            String templateName = templatePrefix + manufacturer + "_" + model;
-            YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
-            RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), new RfnIdentifier(dto.getSerialNumber(), manufacturer, model));
-            rfnDeviceDao.updateDevice(device);
-            inventoryBaseDao.updateInventoryBaseDeviceId(liteInv.getInventoryID(), device.getPaoIdentifier().getPaoId());
-            dbChangeManager.processDbChange(liteInv.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
-                DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
-            } catch (BadTemplateDeviceCreationException e) {
-                throw new StarsInvalidArgumentException(e.getMessage(), e);
-            }
-        }
+
         return liteInv;
     }
 
@@ -226,10 +204,10 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                                                          LiteStarsEnergyCompany lsec, 
                                                          LiteYukonUser user) {
 
-        LiteInventoryBase lib = null;
+        boolean isNewDevice = false;
+        LiteInventoryBase lib = getInventory(dto, lsec);
+        
         // See if Inventory exists
-        lib = getInventory(dto, lsec);
-
         if (lib != null) {
             // Inventory associated to an account, error out
             if (lib.getAccountID() > 0) {
@@ -239,9 +217,11 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             // currentStateId should be retained
             lib.setRemoveDate(0);
             lib.setInstallDate(new Date().getTime());
-        }// Inventory doesn't exist, create a new one
+        }
         else {
+            // Inventory doesn't exist, create a new one
             lib = buildLiteInventoryBase(dto, lsec);
+            isNewDevice = true;
         }
 
         // By this point, we should have an existing or new Inventory to add
@@ -254,6 +234,28 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
         // call service to add device on the customer account
         lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
+        if(isNewDevice){
+            YukonListEntry deviceType = getDeviceType(dto, lsec);
+            HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
+            if (ht.isRf()) {
+                try {
+                // add rf device
+                RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
+                String manufacturer = mm.getManufacturer().trim();
+                String model = mm.getModel().trim();
+                String templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
+                String templateName = templatePrefix + manufacturer + "_" + model;
+                YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
+                RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), new RfnIdentifier(dto.getSerialNumber(), manufacturer, model));
+                rfnDeviceDao.updateDevice(device);
+                inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
+                dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                    DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
+                } catch (BadTemplateDeviceCreationException e) {
+                    throw new StarsInvalidArgumentException(e.getMessage(), e);
+                }
+            }
+        }
         return lib;
     }
 

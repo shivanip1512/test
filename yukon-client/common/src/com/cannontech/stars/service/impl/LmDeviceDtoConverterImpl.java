@@ -29,7 +29,11 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 		LmDeviceDto dto = new LmDeviceDto();
 		dto.setAccountNumber(accountNo);
 		
-		dto.setDeviceLabel(hwFields[ImportFields.IDX_DEVICE_LABEL]);
+		String label = hwFields[ImportFields.IDX_DEVICE_LABEL];	
+		if(StringUtils.isNotEmpty(label)){
+		    dto.setDeviceLabel(label);
+		}
+		
 		String deviceTypeText = hwFields[ImportFields.IDX_DEVICE_TYPE];
         dto.setDeviceType(deviceTypeText);
         
