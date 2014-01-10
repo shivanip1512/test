@@ -95,6 +95,7 @@
               </page>
               <page name="validationEditor.CREATE" type="BASIC" hideFavorite="true">
               </page>
+              <page name="validation.review" type="BASIC"></page>
             </pages>
           </page>
           <page name="meterSearchResults" type="BASIC">

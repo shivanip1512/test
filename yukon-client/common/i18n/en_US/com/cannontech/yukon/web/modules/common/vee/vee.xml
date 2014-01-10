@@ -20,26 +20,22 @@
 	<!-- VeeReviewController review.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.common.vee.review.home.pageTitle">VEE Review</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.displayTypes">Display Types</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.device">Device</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.previous">Previous</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.flagged">Flagged</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.next">Next</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.delete">Delete</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.header.accept">Accept</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.saveAndContinue"><![CDATA[Save & Continue]]></entry>
-    <entry key="yukon.web.modules.common.vee.review.home.reload">Reload</entry>
-    <entry key="yukon.web.modules.common.vee.review.home.reloading">Reloading...</entry>
+    <entry key="yukon.web.modules.amr.validation.review.pageName">VEE Review</entry>
+    <entry key="yukon.web.modules.amr.validation.review.displayTypes.title">Display Types</entry>
+    <entry key="yukon.web.modules.amr.validation.review.device">Device</entry>
+    <entry key="yukon.web.modules.amr.validation.review.previous">Previous</entry>
+    <entry key="yukon.web.modules.amr.validation.review.flagged">Flagged</entry>
+    <entry key="yukon.web.modules.amr.validation.review.next">Next</entry>
+    <entry key="yukon.web.modules.amr.validation.review.delete">Delete</entry>
+    <entry key="yukon.web.modules.amr.validation.review.accept">Accept</entry>
+    <entry key="yukon.web.modules.amr.validation.review.saveAndContinue.label"><![CDATA[Save & Continue]]></entry>
+    <entry key="yukon.web.modules.amr.validation.review.reload.label">Reload</entry>
+    <entry key="yukon.web.modules.amr.validation.review.emptyList">No Points to Review</entry>
+    <entry key="yukon.web.modules.amr.validation.review.reload.label">Reload</entry>
+    <entry key="yukon.web.modules.amr.validation.review.reload.labelBusy">Reloading...</entry>
+    <entry key="yukon.web.modules.amr.validation.review.reloading">Reloading...</entry>
     
-    <entry key="yukon.web.modules.common.vee.review.home.instructions.header">Instructions</entry>
-    
-    <entry key="yukon.web.modules.common.vee.review.home.displayTypes.popupInfo"><![CDATA[
-    	&bull; Only display flagged data matching those types that are checked.
-    	<br><br>
-    ]]></entry>
-    
-    <entry key="yukon.web.modules.common.vee.review.home.header.delete.popupInfo"><![CDATA[
+    <entry key="yukon.web.modules.amr.validation.review.deleteInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to remove from the database.
     	<br>&bull; To mark a row for deletion, change its delete icon from <i class="icon icon-cross fn" disabled="disabled"></i> to <i class="icon icon-cross fn"></i> by clicking on it.
     	<br>&bull; You may un-mark a row by clicking its icon again.
@@ -47,7 +43,7 @@
     	<br><br>
     ]]></entry>
     
-    <entry key="yukon.web.modules.common.vee.review.home.header.accept.popupInfo"><![CDATA[
+    <entry key="yukon.web.modules.amr.validation.review.acceptInfo"><![CDATA[
     	&bull; Mark flagged values that you would like to unflag by marking them as accepted values.
     	<br>&bull; To mark a row as accepted, change its accept icon from <i class="icon icon-tick fn" disabled="disabled"></i> to <i class="icon icon-tick fn"></i> by clicking on it.
     	<br>&bull; You may un-mark a row by clicking its icon again.

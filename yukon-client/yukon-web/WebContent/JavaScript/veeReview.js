@@ -3,16 +3,16 @@ Yukon.namespace('Yukon.ui.veeReview');
 Yukon.ui.veeReview = (function () {
     var _resetDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
             var elemToDisable = action === 'DELETE' ? deleteImgEl : acceptImgEl;
-            jQuery(elemToDisable).attr('disabled', 'disabled');
+            jQuery(elemToDisable).addClass('disabled');
         },
         _toggleDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
             if (action === 'DELETE') {
-                jQuery(deleteImgEl).removeAttr('disabled');
-                jQuery(acceptImgEl).attr('disabled', 'disabled');
+                jQuery(deleteImgEl).removeClass('disabled');
+                jQuery(acceptImgEl).addClass('disabled');
             }
             if (action === 'ACCEPT') {
-                jQuery(acceptImgEl).removeAttr('disabled');
-                jQuery(deleteImgEl).attr('disabled', 'disabled');
+                jQuery(acceptImgEl).removeClass('disabled');
+                jQuery(deleteImgEl).addClass('disabled');
             }
         },
         _getActionTdHash = function (el) {
@@ -23,8 +23,8 @@ Yukon.ui.veeReview = (function () {
 
             return {
                 action : action,
-                deleteImgEl : jQuery('#ACTION_DELETE_IMG_' + changeId)[0],
-                acceptImgEl : jQuery('#ACTION_ACCEPT_IMG_' + changeId)[0],
+                deleteImgEl : jQuery('#ACTION_DELETE_IMG_' + changeId).find('.icon')[0],
+                acceptImgEl : jQuery('#ACTION_ACCEPT_IMG_' + changeId).find('.icon')[0],
                 valueEl : jQuery('#ACTION_' + changeId)[0]
             };
         },
@@ -39,7 +39,7 @@ Yukon.ui.veeReview = (function () {
                     valueEl = h.valueEl,
                     delImgEl = h.deleteImgEl,
                     accImgEl = h.acceptImgEl;
-        
+
                 if (checkAllState.val() === action) {
                     _resetDeleteAccept(tdAction, delImgEl, accImgEl);
                     valueEl.value = '';
