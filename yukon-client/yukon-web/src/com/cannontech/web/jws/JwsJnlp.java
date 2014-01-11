@@ -163,10 +163,6 @@ public enum JwsJnlp {
         this.jars = jars;
     }
 
-    public boolean isMainJnlp() {
-        return !(this == BOUNCY_CASTLE || this == CLIENT_LIBS);
-    }
-    
     public String getPath() {
         return path;
     }
