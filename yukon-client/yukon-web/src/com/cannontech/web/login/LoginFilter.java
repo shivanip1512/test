@@ -76,7 +76,7 @@ public class LoginFilter implements Filter {
                          "/**/*.gif",
                          "/**/*.jpg",
                          "/**/*.html",
-                         "/jws/*.jar",
+                         "/jws/*.jar", // jws is protected by custom ip filter. See JwsController
                          "/jws/bc.jnlp",
                          "/jws/client_libs.jnlp",
                          "/remote/**",
@@ -97,7 +97,7 @@ public class LoginFilter implements Filter {
 
         boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
         boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
-        
+
         /* For excluded requests, try to attach the userContext, but they may not be logged in. */
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
