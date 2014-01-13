@@ -11,31 +11,34 @@
 
 <script type="text/javascript">
 ${pageScope.addPao} = function() {
+    //add the object to the widget
     ${widgetParameters.jsWidget}.doActionRefresh({
         command:    "addPao",
         buttonID:   "${pageScope.addPaoSpanId}", 
         waitingText:""
      });
+
     return true;
 }
+
 </script>
     <tags:widgetState paoIdsList="${paoIds}"/>
     
     <div id="paoTable">
-	   <span>Select items that <b>${instructionText}</b> have this permission.</span>
-		<br><br>
+       <span>Select items that <b>${instructionText}</b> have this permission.</span>
+        <br><br>
         <c:choose>
             <c:when test="${empty paoList}">
                 No Existing Permissions
             </c:when>
             <c:otherwise>
-                <div class="permissionsContainer">
+                <div class="scroll-large">
                     <table class="compact-results-table row-highlighting">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
-                                <th class="remove-column">Remove</th>
+                                <th class="remove-column tar">Remove</th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -48,7 +51,7 @@ ${pageScope.addPao} = function() {
                                     <td>
                                         <c:out value="${pao.type}" />
                                     </td>
-                                    <td class="remove-column">
+                                    <td class="remove-column remove">
                                         <tags:widgetActionRefreshImage nameKey="remove" method="removePao" paoId="${pao.paoId}" icon="icon-cross"/>
                                     </td>
                                 </tr>
@@ -59,7 +62,7 @@ ${pageScope.addPao} = function() {
                 </div>
             </c:otherwise>
         </c:choose>
-		
+        
         <div class="action-area">
             <c:if test="${showSave}">
                 <span id="${widgetParameters.widgetId}_results">
@@ -67,9 +70,16 @@ ${pageScope.addPao} = function() {
                 </span>
             </c:if>
             <span class="widgetActionLink">
-                    <tags:pickerDialog type="${widgetParameters.pickerType}" id="${pageScope.pickerId}"
-                       destinationFieldId="${pageScope.newPaoId}" endAction="${pageScope.addPao}"
-                       multiSelectMode="true" memoryGroup="${pageScope.pickerId}" linkType="button" nameKey="add"/>
+                    <tags:pickerDialog extraArgs="${energyCompanyId}"
+                                        id="${pageScope.pickerId}"
+                                        type="${widgetParameters.pickerType}"
+                                        destinationFieldId="${pageScope.newPaoId}"
+                                        endAction="${pageScope.addPao}"
+                                        multiSelectMode="true"
+                                        memoryGroup="${pageScope.pickerId}"
+                                        linkType="button"
+                                        icon="icon-add"
+                                        nameKey="add"/>
                     <input id="${pageScope.newPaoId}" name="newPaoId" type="hidden">
                     <script type="text/javascript">
                         ${pageScope.pickerId}.excludeIds = [

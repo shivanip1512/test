@@ -10,20 +10,20 @@
         <div class="column-12-12">
             
             <div class="column one">
-                <div>
+                <div class="stacked">
                     <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".lm.notes"/></span>
                 </div>
-        		<tags:widget bean="groupPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
-    		</div>
-    		
+                <tags:widget bean="groupPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true" container="section"/>
+            </div>
+            
             <div class="column two nogutter">
-                <div>
+                <div class="stacked">
                     <span class="strong-label-small"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".cc.notes"/></span>
                 </div>
-        		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"
-                    permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility"/>
+                <tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"
+                    permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility" container="section"/>
             </div>
             
         </div>
