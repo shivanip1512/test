@@ -215,9 +215,6 @@ UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_D_USAGE', 'USAGE_RATE_D'
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Usage', '/Usage Rate D') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate D Usage%';
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Usage', '/Usage Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Usage%';
  
-UPDATE JobProperty SET Value = REPLACE(Value, 'ENERGY_GENERATED', 'RECEIVED_KWH') WHERE Name = 'attributes' AND Value LIKE '%ENERGY_GENERATED%';
-UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroup' AND Value LIKE '%/Energy Generated%';
-UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Energy Generated%';
 UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_A_ENERGY_GENERATED', 'RECEIVED_KWH_RATE_A') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_A_ENERGY_GENERATED%';
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate A Energy Generated%';
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate A Energy Generated', '/Received kWh Rate A') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate A Energy Generated%';
@@ -230,6 +227,9 @@ UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate C Energy Generated', '/
 UPDATE JobProperty SET Value = REPLACE(Value, 'TOU_RATE_D_ENERGY_GENERATED', 'RECEIVED_KWH_D') WHERE Name = 'attributes' AND Value LIKE '%TOU_RATE_D_ENERGY_GENERATED%';
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE Name = 'deviceGroup' AND Value LIKE '%/Tou Rate D Energy Generated%';
 UPDATE JobProperty SET Value = REPLACE(Value, '/Tou Rate D Energy Generated', '/Received kWh Rate D') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Tou Rate D Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'ENERGY_GENERATED', 'RECEIVED_KWH') WHERE Name = 'attributes' AND Value LIKE '%ENERGY_GENERATED%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroup' AND Value LIKE '%/Energy Generated%';
+UPDATE JobProperty SET Value = REPLACE(Value, '/Energy Generated', '/Received kWh') WHERE Name = 'deviceGroupNames' AND Value LIKE '%/Energy Generated%';
 /* End YUK-12602 */
 
 /* Start YUK-12572 */
