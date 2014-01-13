@@ -23,7 +23,7 @@
         <c:forEach items="${result.resultList}" var="analysis">
             <cti:msg2 var="attribName" key="${analysis.attribute}" htmlEscape="true"/>
             <c:if test="${analysis.status != 'DELETED'}">
-                <tr>
+                <tr data-analysis="${analysis.analysisId}" data-status="${analysis.status}">
                     <input type="hidden" value="${analysis.analysisId}"/>
                     <td>
                         <cti:formatDate value="${analysis.runDate}" type="DATEHM"/>
@@ -48,67 +48,60 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-                    <c:choose>
-                        <%--if analyzing, disable view button, enable delete, status links to progress page--%>
-                        <c:when test="${analysis.status == 'RUNNING'}">
-                            <td>
-                                <cti:url var="analysisProgressUrl" value="/bulk/archiveDataAnalysis/home/processing">
-                                    <cti:param name="resultsId" value="${analysis.statusId}"/>
-                                    <cti:param name="analysisId" value="${analysis.analysisId}"/>
-                                </cti:url>
-                                <cti:link href="${analysisProgressUrl}" key="${analysis.status.formatKey}"/>
-                            </td>
-                            <td>
-                                <cti:button nameKey="viewButtonAnalyzing" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
-                                <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
-                                <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
-                            </td>
-                        </c:when>
-                        <%-- if complete with some devices successfully analyzed, enable view, enable delete, status doesn't link--%>
-                        <%-- if complete with 0 devices successfully analyzed, disable view, enable delete, status doesn't link--%>
-                        <c:when test="${analysis.status == 'COMPLETE' || analysis.status == 'INTERRUPTED'}">
-                            <td>
-                                <i:inline key="${analysis.status}"/>
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${analysis.deviceCount == 0}">
-                                        <cti:button nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
-                                        <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
-                                        <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
-                                            <cti:param name="analysisId" value="${analysis.analysisId}"/>
-                                        </cti:url>
-                                        <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
-                                        <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
-                                        <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </c:when>
-                        <%--if reading, enable view, enable delete, status links to read progress--%>
-                        <c:when test="${analysis.status == 'READING'}">
-                            <td>
-                                <cti:url var="readProgressUrl" value="/bulk/archiveDataAnalysis/read/readResults">
-                                    <cti:param name="resultId" value="${analysis.statusId}"/>
-                                    <cti:param name="analysisId" value="${analysis.analysisId}"/>
-                                </cti:url>
-                                <cti:link href="${readProgressUrl}" key="${analysis.status.formatKey}"/>
-                            </td>
-                            <td>
-                                <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
-                                    <cti:param name="analysisId" value="${analysis.analysisId}"/>
-                                </cti:url>
-                                <cti:button nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
-                                <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
-                                <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
-                            </td>
-                            <cti:dataUpdaterCallback function="Yukon.ArchiveDataAnalysis.changeStatus"
+                    
+                    <td>
+                        <div class="f-analysis-status">
+                            <c:choose>
+                                <c:when test="${analysis.status == 'RUNNING'}">
+                                    <cti:url var="analysisProgressUrl" value="/bulk/archiveDataAnalysis/home/processing">
+                                        <cti:param name="resultsId" value="${analysis.statusId}"/>
+                                        <cti:param name="analysisId" value="${analysis.analysisId}"/>
+                                    </cti:url>
+                                    <cti:link href="${analysisProgressUrl}" key="${analysis.status.formatKey}"/>
+                                </c:when>
+                                <c:when test="${analysis.status == 'READING'}">
+                                    <cti:url var="readProgressUrl" value="/bulk/archiveDataAnalysis/read/readResults">
+                                        <cti:param name="resultId" value="${analysis.statusId}"/>
+                                        <cti:param name="analysisId" value="${analysis.analysisId}"/>
+                                    </cti:url>
+                                    <cti:link href="${readProgressUrl}" key="${analysis.status.formatKey}"/>
+                                </c:when>
+                                <c:when test="${analysis.status == 'COMPLETE' || analysis.status == 'INTERRUPTED'}">
+                                    <i:inline key="${analysis.status}"/>
+                                </c:when>
+                            </c:choose>
+                        </div>
+                    </td>
+                    <td>
+                        <cti:url var="viewUrl" value="/bulk/archiveDataAnalysis/results/view">
+                            <cti:param name="analysisId" value="${analysis.analysisId}"/>
+                        </cti:url>
+                        <div class="f-analysis-actions">
+                            <c:choose>
+                                <c:when test="${analysis.status == 'RUNNING'}">
+                                    <cti:button classes="f-results-button" nameKey="viewButtonAnalyzing" renderMode="image" href="${viewUrl}" disabled="true" icon="icon-application-view-columns"/>
+                                </c:when>
+                                <c:when test="${analysis.status == 'READING'}">
+                                    <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                </c:when>
+                                <c:when test="${analysis.status == 'COMPLETE' || analysis.status == 'INTERRUPTED'}">
+                                    <c:choose>
+                                        <c:when test="${analysis.deviceCount == 0}">
+                                            <cti:button classes="f-results-button" nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                            </c:choose>
+                            <cti:button id="deleteButton_${analysis.analysisId}" nameKey="remove" renderMode="image" icon="icon-cross" href="/bulk/archiveDataAnalysis/list/delete?analysisId=${analysis.analysisId}"/>
+                            <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
+                        </div>
+                    </td>
+                    <cti:dataUpdaterCallback function="Yukon.ArchiveDataAnalysis.changeStatus"
                                 value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
-                        </c:when>
-                    </c:choose>
+                    
                 </tr>
             </c:if>
         </c:forEach>
