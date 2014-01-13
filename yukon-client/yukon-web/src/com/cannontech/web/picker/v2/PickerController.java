@@ -111,13 +111,13 @@ public class PickerController {
 
         if (searchResult.getResultList().get(0) instanceof Map) {
             List<Map<String, String>> newHits = new ArrayList<>();
-            for (Map<String, ?> hitObj : (List<Map<String, ?>>)searchResult.getResultList()) {
+            for (Object hitObj : searchResult.getResultList()) {
                 Map<String, String> newHit = new HashMap<>();
-                for (Map.Entry<String, ?> entry : hitObj.entrySet()) {
-                    String propertyName = entry.getKey();
+                for (Map.Entry<?, ?> entry : ((Map<?, ?>) hitObj).entrySet()) {
+                    Object propertyName = entry.getKey();
                     Object propertyValue = entry.getValue();
                     String translatedValue = objectFormattingService.formatObjectAsString(propertyValue, context);
-                    newHit.put(propertyName, translatedValue);
+                    newHit.put((String) propertyName, translatedValue);
                 }
                 newHits.add(newHit);
             }
