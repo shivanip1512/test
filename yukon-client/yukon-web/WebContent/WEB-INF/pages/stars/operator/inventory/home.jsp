@@ -93,52 +93,53 @@ function showFileUpload() {
         
         <div class="column-14-10">
             <div class="one column">
-            
-                <tags:sectionContainer2 nameKey="deviceSelection" hideEnabled="false" styleClass="stacked">
-                    <table class="inventoryActionsTable">
-                        <%-- INVENTORY PICKER--%>
-                        <tr>
-                            <td>
-                                <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
-                                    <input type="hidden" name="collectionType" value="idList"/>
-                                    <input type="hidden" name="idList.ids" id="inventoryIds"/>
-                                    <tags:pickerDialog type="lmHardwareBasePicker" 
-                                                        extraArgs="${energyCompanyId}" 
-                                                        id="inventoryPicker" 
-                                                        multiSelectMode="true" 
-                                                        destinationFieldId="inventoryIds" 
-                                                        endAction="submitSelectionForm" 
-                                                        nameKey="selectInventoryButton"><i:inline key=".selectInventoryButton.label"/></tags:pickerDialog>
-                                </form>
-                            </td>
-                            <td><i:inline key=".selectInventoryDescription"/></td>
-                        </tr>
-                        <%-- INVENTORY FILTER --%>
-                        <tr>
-                            <td><a href="setupFilterRules"><i:inline key=".selectFilterButton.label"/></a></td>
-                            <td><i:inline key=".selectFilterDescription"/></td>
-                        </tr>
-                        <%-- FILE UPLOAD --%>
-                        <tr>
-                            <td>
-                                <a href="javascript:showFileUpload();"><i:inline key=".selectFileButton.label"/></a>
-                                <div id="fileUploadPopup" title="${fileUploadTitle}" class="dn">
-                                    <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
-                                    <form method="post" action="${submitUrl}" enctype="multipart/form-data">
-                                        <tags:nameValueContainer2>
-                                            <tags:nameValue2 nameKey=".fileLabel">
-                                                <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
-                                                <input type="hidden" name="collectionType" value="fileUpload">
-                                                <input type="hidden" name="fileUpload.energyCompanyId" value="${energyCompanyId}">
-                                            </tags:nameValue2>
-                                        </tags:nameValueContainer2>
+                <cti:checkRolesAndProperties value="INVENTORY">
+                    <tags:sectionContainer2 nameKey="deviceSelection" hideEnabled="false" styleClass="stacked">
+                        <table class="inventoryActionsTable">
+                            <%-- INVENTORY PICKER--%>
+                            <tr>
+                                <td>
+                                    <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
+                                        <input type="hidden" name="collectionType" value="idList"/>
+                                        <input type="hidden" name="idList.ids" id="inventoryIds"/>
+                                        <tags:pickerDialog type="lmHardwareBasePicker" 
+                                                            extraArgs="${energyCompanyId}" 
+                                                            id="inventoryPicker" 
+                                                            multiSelectMode="true" 
+                                                            destinationFieldId="inventoryIds" 
+                                                            endAction="submitSelectionForm" 
+                                                            nameKey="selectInventoryButton"><i:inline key=".selectInventoryButton.label"/></tags:pickerDialog>
                                     </form>
-                                </div>
-                            </td>
-                            <td><i:inline key=".selectFileDescription"/></td>
-                        </tr>
-                    </table>
-                </tags:sectionContainer2> 
+                                </td>
+                                <td><i:inline key=".selectInventoryDescription"/></td>
+                            </tr>
+                            <%-- INVENTORY FILTER --%>
+                            <tr>
+                                <td><a href="setupFilterRules"><i:inline key=".selectFilterButton.label"/></a></td>
+                                <td><i:inline key=".selectFilterDescription"/></td>
+                            </tr>
+                            <%-- FILE UPLOAD --%>
+                            <tr>
+                                <td>
+                                    <a href="javascript:showFileUpload();"><i:inline key=".selectFileButton.label"/></a>
+                                    <div id="fileUploadPopup" title="${fileUploadTitle}" class="dn">
+                                        <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
+                                        <form method="post" action="${submitUrl}" enctype="multipart/form-data">
+                                            <tags:nameValueContainer2>
+                                                <tags:nameValue2 nameKey=".fileLabel">
+                                                    <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">
+                                                    <input type="hidden" name="collectionType" value="fileUpload">
+                                                    <input type="hidden" name="fileUpload.energyCompanyId" value="${energyCompanyId}">
+                                                </tags:nameValue2>
+                                            </tags:nameValueContainer2>
+                                        </form>
+                                    </div>
+                                </td>
+                                <td><i:inline key=".selectFileDescription"/></td>
+                            </tr>
+                        </table>
+                    </tags:sectionContainer2> 
+                </cti:checkRolesAndProperties>
                 
                 <c:if test="${showLinks}">
                     <tags:sectionContainer2 nameKey="links" styleClass="stacked">
