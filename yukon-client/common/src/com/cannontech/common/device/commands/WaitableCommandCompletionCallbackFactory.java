@@ -7,24 +7,49 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
+import com.cannontech.common.pao.PaoType;
 
 public class WaitableCommandCompletionCallbackFactory {
-    private int betweenResultsMaxDelay = 60;
-    private int totalMaxDelay = 180;
+    private int betweenResultsMaxDelay;
+    private int totalMaxDelay;
+    
+    private static final int BETWEEN_RESULTS_MAX_DELAY_DEFAULT = 60;
+    private static final int TOTAL_MAX_DELAY_DEFAULT = 180;
+    private static final int RFN_DELAY_MULTIPLIER = 7;
 
     private ConfigurationSource configurationSource;
 
     @PostConstruct
     public void initialize() {
         betweenResultsMaxDelay =
-            configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY",
-                                           betweenResultsMaxDelay);
-        totalMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY",
-                                                       totalMaxDelay);
+            configurationSource.getInteger(
+                "COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY",
+                BETWEEN_RESULTS_MAX_DELAY_DEFAULT);
+        
+        totalMaxDelay = 
+            configurationSource.getInteger(
+                "COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY",
+                TOTAL_MAX_DELAY_DEFAULT);
     }
 
+    private <T> WaitableCommandCompletionCallback<T> createWaitable(CommandCompletionCallback<T> delegate, int resultsDelay, int totalDelay) {
+        return new WaitableCommandCompletionCallback<T>(delegate, resultsDelay, totalDelay);
+    }
+    
+    public <T> WaitableCommandCompletionCallback<T> createWaitable(CommandCompletionCallback<T> delegate, PaoType paoType) {
+        int resultsDelay = betweenResultsMaxDelay;
+        int totalDelay = totalMaxDelay;
+
+        if (paoType.isRfn()) {
+            resultsDelay = RFN_DELAY_MULTIPLIER * BETWEEN_RESULTS_MAX_DELAY_DEFAULT;
+            totalDelay = RFN_DELAY_MULTIPLIER * TOTAL_MAX_DELAY_DEFAULT;
+        }
+
+        return createWaitable(delegate, resultsDelay, totalDelay);
+    }
+    
     public <T> WaitableCommandCompletionCallback<T> createWaitable(CommandCompletionCallback<T> delegate) {
-        return new WaitableCommandCompletionCallback<T>(delegate, betweenResultsMaxDelay, totalMaxDelay);
+        return createWaitable(delegate, betweenResultsMaxDelay, totalMaxDelay);
     }
 
     @ManagedAttribute

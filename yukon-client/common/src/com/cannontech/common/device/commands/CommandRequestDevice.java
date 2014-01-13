@@ -10,6 +10,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 public class CommandRequestDevice extends CommandRequestBase {
     private SimpleDevice device;
 
+    @Override
     public SimpleDevice getDevice() {
         return device;
     }

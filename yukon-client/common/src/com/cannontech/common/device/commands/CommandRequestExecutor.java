@@ -26,17 +26,6 @@ public interface CommandRequestExecutor<T> {
 
     /**
      * Method to execute multiple command request for a given user (this method
-     * will block until command execution is complete)
-     * @param commands - List of command request to execute
-     * @param user - User executing the commands
-     * @return Results of executing commands
-     * @throws CommandCompletionException
-     */
-    public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user)
-            throws CommandCompletionException;
-
-    /**
-     * Method to execute multiple command request for a given user (this method
      * will NOT block until command execution is complete).
      * @param commands - Commands to execute
      * @param callback - Callback which will be called as the commands execute

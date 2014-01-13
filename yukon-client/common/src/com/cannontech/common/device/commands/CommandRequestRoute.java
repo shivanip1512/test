@@ -2,11 +2,12 @@ package com.cannontech.common.device.commands;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.common.device.model.SimpleDevice;
+
 /**
  * Command request class for route based commands
  */
 public class CommandRequestRoute extends CommandRequestBase {
-
     private int routeId;
 
     public int getRouteId() {
@@ -23,5 +24,10 @@ public class CommandRequestRoute extends CommandRequestBase {
         tsc.append("routeId", getRouteId());
         tsc.append("command", getCommandCallback());
         return tsc.toString();
+    }
+
+    @Override
+    public SimpleDevice getDevice() {
+        return null;
     }
 }

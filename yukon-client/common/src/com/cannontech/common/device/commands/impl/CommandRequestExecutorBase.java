@@ -50,6 +50,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionId
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.support.CommandPermissionConverter;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.PorterRequestCancelService;
@@ -290,19 +291,19 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     // EXECUTE SINGLE, WAIT (wraps single command in list then calls execute-multiple-wait)
     @Override
     public CommandResultHolder execute(T command, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
-        
-        return execute(Collections.singletonList(command), type, user);
-    }
-    
-
-    // EXECUTE MULTIPLE, WAIT (makes a waitable callback then calls execute-multiple-with-callback)
-    @Override
-    public CommandResultHolder execute(List<T> commands, DeviceRequestType type, LiteYukonUser user) throws CommandCompletionException {
-        
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
-        WaitableCommandCompletionCallback<Object> waitableCallback = waitableCommandCompletionCallbackFactory.createWaitable(callback);
 
-        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = execute(commands, waitableCallback, type, user);
+        PaoType paoType = null;
+        if (command.getDevice() != null) {
+            paoType = command.getDevice().getDeviceType();
+        }
+
+        WaitableCommandCompletionCallback<Object> waitableCallback = 
+            waitableCommandCompletionCallbackFactory.createWaitable(callback, paoType);
+
+        CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = 
+            execute(Collections.singletonList(command), waitableCallback, type, user);
+
         callback.setCommandRequestExecutionIdentifier(commandRequestExecutionIdentifier);
 
         try {
@@ -314,7 +315,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             throw new CommandCompletionException("Timed out while blocking for command completion", e);
         }
     }
-    
+
     // EXECUTE MULTIPLE, CALLBACK (creates a one time use parameterDto and calls executeWithParameterDto)
     @Override
     public CommandRequestExecutionIdentifier execute(final List<T> commands,
