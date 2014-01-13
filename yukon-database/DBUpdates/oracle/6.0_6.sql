@@ -109,4 +109,4 @@ DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10821;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.0', '13-JAN-2014', 'Latest Update', 6, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.0', '15-JAN-2014', 'Latest Update', 6, SYSDATE);
