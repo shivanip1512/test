@@ -191,7 +191,7 @@
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.label">b.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.text">The REMOVE customer action deletes a customer account including all account and enrollment information. Load control devices that was assigned to the account is moved to the general inventory.</entry>
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.label">c.</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.text">If the USERNAME and PASSWORD fields are specified, the USER_GROUP becomes a required field. However, a customer’s user group cannot be updated or removed using the USER_GROUP field.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.text">If the USERNAME and PASSWORD fields are specified, the USER_GROUP becomes a required field. However, a customer's user group cannot be updated or removed using the USER_GROUP field.</entry>
     
     <!-- Import Hardware Fields -->
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.ACCOUNT_NO">Customer account number. Maximum number of characters is 40.</entry>
@@ -214,7 +214,7 @@
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.b.label">b.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.b.text">The REMOVE hardware action removes a load control device from a customer and moves it to the general inventory.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.c.label">c.</entry> 
-    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.c.text">If the install date is not included, it defaults to today’s date.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.c.text">If the install date is not included, it defaults to today's date.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.label">d.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.text">In addition to ACCOUNT_NO, DEVICE_TYPE, and SERIAL_NO, these fields are required to correctly enroll a load control device into a load control program.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.label">e.</entry> 
