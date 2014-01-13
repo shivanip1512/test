@@ -30,7 +30,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     private static final LiteYukonGroup residentialGroup_Two = new LiteYukonGroup();
     private static final LiteYukonGroup residentialGroup_Three = new LiteYukonGroup();
     private static final LiteYukonGroup residentialGroup_Four = new LiteYukonGroup();
-    {
+    static {
         residentialGroup_One.setGroupID(1);
         residentialGroup_One.setGroupDescription("Test residential login group");
         residentialGroup_One.setGroupName("Test Group");
@@ -95,7 +95,6 @@ public class OptOutServiceTest extends EasyMockSupport {
     public void setup() {
         optOutService = new OptOutServiceImpl();
         optOutService.setRolePropertyDao(rolePropertyDaoMock);
-        optOutService.postConstruct();
     }
 
     @Test

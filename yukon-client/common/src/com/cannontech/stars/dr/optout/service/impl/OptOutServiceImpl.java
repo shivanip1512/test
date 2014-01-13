@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
@@ -162,8 +161,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
-	@PostConstruct
-	public void postConstruct() {
+	public OptOutServiceImpl() {
 	    // We made up our own form of JSON, so we need to support it:
         jsonObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         jsonObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
