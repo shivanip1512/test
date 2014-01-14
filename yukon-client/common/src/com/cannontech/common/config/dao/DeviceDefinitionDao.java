@@ -1,4 +1,4 @@
-package com.cannontech.common.config.retrieve;
+package com.cannontech.common.config.dao;
 
 import java.io.InputStream;
 

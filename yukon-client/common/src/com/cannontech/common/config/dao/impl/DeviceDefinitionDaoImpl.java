@@ -1,4 +1,4 @@
-package com.cannontech.common.config.retrieve;
+package com.cannontech.common.config.dao.impl;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.config.dao.DeviceDefinitionDao;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.springframework.core.io.UrlResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.common.config.retrieve.DeviceDefinitionDao;
+import com.cannontech.common.config.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;

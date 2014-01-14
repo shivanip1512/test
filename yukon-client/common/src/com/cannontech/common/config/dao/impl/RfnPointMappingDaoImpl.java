@@ -1,4 +1,4 @@
-package com.cannontech.common.config.retrieve;
+package com.cannontech.common.config.dao.impl;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 

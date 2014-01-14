@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.config.retrieve.DeviceDefinitionDao;
-import com.cannontech.common.config.retrieve.RfnPointMappingDao;
+import com.cannontech.common.config.dao.DeviceDefinitionDao;
+import com.cannontech.common.config.dao.RfnPointMappingDao;
 
 @Controller
 @RequestMapping("/config/*")

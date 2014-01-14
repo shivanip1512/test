@@ -48,7 +48,7 @@ import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.retrieve.DeviceDefinitionDao;
+import com.cannontech.common.config.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;

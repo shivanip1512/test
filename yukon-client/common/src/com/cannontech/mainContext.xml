@@ -306,8 +306,8 @@
 
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
 
-    <bean class="com.cannontech.common.config.retrieve.RfnPointMappingDaoImpl"/>
-    <bean class="com.cannontech.common.config.retrieve.DeviceDefinitionDaoImpl"/>
+    <bean class="com.cannontech.common.config.dao.impl.RfnPointMappingDaoImpl"/>
+    <bean class="com.cannontech.common.config.dao.impl.DeviceDefinitionDaoImpl"/>
 
     <bean id="yukonUserContextService" class="com.cannontech.i18n.service.impl.YukonUserContextServiceImpl" />
     
