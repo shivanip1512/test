@@ -26,6 +26,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.YukonLogManager;
@@ -62,8 +63,8 @@ public class JwsController {
 
     /** Note: This is exposed without login filter. No user available*/
     @RequestMapping(value = "/{requestedJar:.+\\.jar}")
-    public void getJar(HttpServletRequest request, HttpServletResponse response, @PathVariable String requestedJar)
-            throws IOException {
+    public void getJar(HttpServletRequest request, HttpServletResponse response, @PathVariable String requestedJar,
+            @RequestParam("version-id") String requestedVersion) throws IOException {
 
         if (jarDownloadTokens.getIfPresent(request.getRemoteHost()) == null) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -77,10 +78,20 @@ public class JwsController {
             return;
         }
 
+        String jarVersionId = Long.toString(Files.getLastModifiedTime(jarFile).toMillis());
+        if (!requestedVersion.equals(jarVersionId)) {
+            String errorMsg = requestedJar + " is at version " + jarVersionId
+                            + ". Requested version (" + requestedVersion +") is not valid.";
+            log.debug(errorMsg);
+            response.setContentType("application/x-java-jnlp-error");
+            response.getWriter().write(errorMsg);
+            return;
+        }
+
         response.setContentType("application/java-archive");
         response.setHeader("Cache-Control", "public");
         response.setContentLength((int) Files.size(jarFile));
-        response.setDateHeader("Last-Modified", Files.getLastModifiedTime(jarFile).toMillis());
+        response.setHeader("x-java-jnlp-version-id", jarVersionId);
 
         try {
             Files.copy(jarFile, response.getOutputStream());
@@ -97,11 +108,7 @@ public class JwsController {
     /** Note: This is exposed without login filter. No user available */
     @RequestMapping(value = "/{requestedJnlp:client_libs\\.jnlp|bc\\.jnlp}")
     public void getExtensionJnlp(HttpServletRequest request, HttpServletResponse response,
-            @PathVariable JwsJnlp requestedJnlp) throws IOException {
-
-        response.setContentType("application/x-java-jnlp-file");
-        response.setHeader("Cache-Control", "private");
-        response.setHeader("Pragma", "");
+            @PathVariable JwsJnlp requestedJnlp, @RequestParam("version-id") String requestedVersion) throws IOException {
 
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
@@ -126,12 +133,26 @@ public class JwsController {
         Element resourcesElem = new Element("resources");
         jnlpElem.addContent(resourcesElem);
 
-        for (String jarFile : requestedJnlp.getAppJars()) {
-            Element jarElem = new Element("jar");
-            jarElem.setAttribute("href", jarFile);
-            jarElem.setAttribute("size", Long.toString(Files.size(jarFileBase.resolve(jarFile))));
-            resourcesElem.addContent(jarElem);
+        long jnlpVersion = 0;
+        for (String jar : requestedJnlp.getAppJars()) {
+            long jarVersionNum = addJarToElement(jar, resourcesElem);
+            jnlpVersion = Math.max(jnlpVersion, jarVersionNum);
         }
+
+        String jnlpVersionId = Long.toString(jnlpVersion);
+        if (!requestedVersion.equals(jnlpVersionId)) {
+            String errorMsg = requestedJnlp.name() + " is at version " + jnlpVersionId
+                            + ". Requested version (" + requestedVersion +") is not valid.";
+            log.debug(errorMsg);
+            response.setContentType("application/x-java-jnlp-error");
+            response.getWriter().write(errorMsg);
+            return;
+        }
+
+        response.setHeader("x-java-jnlp-version-id", jnlpVersionId);
+        response.setContentType("application/x-java-jnlp-file");
+        response.setHeader("Cache-Control", "private");
+        response.setHeader("Pragma", "");
 
         Element compElem = new Element("component-desc");
         jnlpElem.addContent(compElem);
@@ -142,8 +163,8 @@ public class JwsController {
     }
 
     @RequestMapping(value = "/{requestedJnlp:dbeditor\\.jnlp|tdc\\.jnlp|trending\\.jnlp|esub\\.jnlp|commander\\.jnlp}")
-    public void getApplicationJnlp(HttpServletRequest request, HttpServletResponse response, @PathVariable JwsJnlp requestedJnlp)
-            throws IOException {
+    public void getApplicationJnlp(HttpServletRequest request, HttpServletResponse response,
+                @PathVariable JwsJnlp requestedJnlp, LiteYukonUser user) throws IOException {
         jarDownloadTokens.put(request.getRemoteHost(), requestedJnlp.getTitle());
 
         response.setContentType("application/x-java-jnlp-file");
@@ -183,34 +204,25 @@ public class JwsController {
         j2seElem.setAttribute("max-heap-size", configurationSource.getString("JNLP_MAX_HEAP_SIZE", "384m"));
         resourcesElem.addContent(j2seElem);
 
-        // add main class jar
-        Element mainJarElem = new Element("jar");
-        resourcesElem.addContent(mainJarElem);
-        mainJarElem.setAttribute("href", requestedJnlp.getAppMainClassJar());
-        mainJarElem.setAttribute("size", Long.toString(Files.size(jarFileBase.resolve(requestedJnlp.getAppMainClassJar()))));
-        for (String jarFile : requestedJnlp.getAppJars()) {
-            Element jarElem = new Element("jar");
-            jarElem.setAttribute("href", jarFile);
-            jarElem.setAttribute("size", Long.toString(Files.size(jarFileBase.resolve(jarFile))));
-            resourcesElem.addContent(jarElem);
+        long versionNum = addJarToElement(requestedJnlp.getAppMainClassJar(), resourcesElem);
+        for (String jar : requestedJnlp.getAppJars()) {
+            long jarVersionNum = addJarToElement(jar, resourcesElem);
+            versionNum = Math.max(versionNum, jarVersionNum);
         }
 
-        addExtension(request, resourcesElem, "bc");
-        addExtension(request, resourcesElem, "client_libs");
+        addExtension(request, resourcesElem, JwsJnlp.BOUNCY_CASTLE);
+        addExtension(request, resourcesElem, JwsJnlp.CLIENT_LIBS);
 
         // add some properties to ease log in
-        LiteYukonUser user = ServletUtil.getYukonUser(request.getSession());
-        if (user != null) {
-            Element userPropElem = new Element("property");
-            userPropElem.setAttribute("name", "jnlp.yukon.user");
-            userPropElem.setAttribute("value", user.getUsername());
-            resourcesElem.addContent(userPropElem);
-        }
-
         Element userPropElem = new Element("property");
-        userPropElem.setAttribute("name", "jnlp.yukon.server.base");
-        userPropElem.setAttribute("value", CtiUtilities.getYukonBase());
+        userPropElem.setAttribute("name", "jnlp.yukon.user");
+        userPropElem.setAttribute("value", user.getUsername());
         resourcesElem.addContent(userPropElem);
+
+        Element serverBasePropElem = new Element("property");
+        serverBasePropElem.setAttribute("name", "jnlp.yukon.server.base");
+        serverBasePropElem.setAttribute("value", CtiUtilities.getYukonBase());
+        resourcesElem.addContent(serverBasePropElem);
 
         // add server info
         URL hostUrl = ServletUtil.getHostURL(request);
@@ -235,13 +247,35 @@ public class JwsController {
         out.output(body, responseOutStream);
     }
 
-    private void addExtension(HttpServletRequest request, Element resourcesElem, String extensionName) {
+    private long addJarToElement(String jarToAdd, Element element) throws IOException {
+        Path jarFile = jarFileBase.resolve(jarToAdd);
+        long versionNum = Files.getLastModifiedTime(jarFile).toMillis();
+        Element jarElem = new Element("jar");
+        jarElem.setAttribute("href", jarToAdd);
+        jarElem.setAttribute("size", Long.toString(Files.size(jarFile)));
+        jarElem.setAttribute("version", Long.toString(versionNum));
+        element.addContent(jarElem);
+        return versionNum;
+    }
+
+    private void addExtension(HttpServletRequest request, Element resourcesElem, JwsJnlp extension) throws IOException {
         Element extensionElem = new Element("extension");
-        String extensionUrl = ServletUtil.createSafeUrl(request, extensionName + ".jnlp");
+        String extensionUrl = ServletUtil.createSafeUrl(request, extension.getPath());
         extensionElem.setAttribute("href", extensionUrl);
+        extensionElem.setAttribute("version", Long.toString(getExtensionJnlpVersionNumber(extension)));
         resourcesElem.addContent(extensionElem);
     }
 
+    private long getExtensionJnlpVersionNumber(JwsJnlp jnlp) throws IOException {
+        long versionNum = 0;
+        for (String jar : jnlp.getAppJars()) {
+            Path jarFile = jarFileBase.resolve(jar);
+            long jarVersionNum = Files.getLastModifiedTime(jarFile).toMillis();
+            versionNum = Math.max(versionNum, jarVersionNum);
+        }
+        return versionNum;
+    }
+    
     @InitBinder
     public void initialize(WebDataBinder webDataBinder) {
         webDataBinder.registerCustomEditor(JwsJnlp.class, new PropertyEditorSupport () {
