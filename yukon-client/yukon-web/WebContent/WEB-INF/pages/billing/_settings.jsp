@@ -10,6 +10,8 @@
 <input id="in_formatType_itronEvent" type="hidden" value="${TYPE_CURTAILMENT_EVENTS_ITRON}" />
 
 <span id="txt_selectGroup" class="error dn fl"><cti:msg key="yukon.web.billing.mustSelectGroup"/></span>
+<span id="txt_invalidDemandDaysPrevious" class="error dn"><cti:msg key="yukon.web.billing.invalidDemandDaysPrevious"/></span> 
+<span id="txt_invalidEnergyDaysPrevious" class="error dn"><cti:msg key="yukon.web.billing.invalidEnergyDaysPrevious"/></span>
 
     <c:set var="origEndDate" value="${BILLING_BEAN.endDate}"></c:set>
     <c:set var="systemTimezone" value="${tzFormat.format(origEndDate)}"></c:set>
@@ -39,11 +41,11 @@
                     <dt:date name="endDate" value="${origEndDate}" />
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.demandDaysPrevious" var="demandDaysPrevious" />
-                <tags:nameValue name="${demandDaysPrevious}">
-                    <input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">
+                <tags:nameValue name="${demandDaysPrevious}" id="row_demand_days_previous">
+                 <input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">                    
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.energyDaysPrevious" var="energyDaysPrevious" />
-                <tags:nameValue name="${energyDaysPrevious}">
+                <tags:nameValue name="${energyDaysPrevious}" id="row_energy_days_previous">
                     <input type="text" name="energyDays" value="${BILLING_BEAN.energyDaysPrev}" size = "8">
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.removeMultiplier" var="removeMultiplier" />
@@ -53,9 +55,9 @@
                 <cti:msg key="yukon.web.billing.billingGroup" var="billingGroup" />
                 <tags:nameValue name="${billingGroup}" id="row_billing_group" nameClass="vat">
 
-                    <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
+                  <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
                     <tags:deviceGroupNameSelector fieldName="billGroup" fieldValue="${billGroup}" dataJson="${dataJson}" classes="fl"/>
-
+					
                 </tags:nameValue>
 
             </tags:nameValueContainer>

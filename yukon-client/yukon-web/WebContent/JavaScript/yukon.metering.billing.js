@@ -32,8 +32,44 @@ Yukon.MeteringBilling = (function() {
             return true;
         },
 
+        _is_valid_demand_days = function() {
+        	var demandDaysPrevious = jQuery("input[name=demandDays]").val();        	
+            // Check if demand days is positive Integer
+            var isPositiveInteger =  /^\d+$/.test(demandDaysPrevious);          
+            var errDemandDaysPrevious = jQuery("#txt_invalidDemandDaysPrevious");
+            if (!isPositiveInteger || demandDaysPrevious  > 65535 ) {
+            	 errDemandDaysPrevious.remove();             	 
+                 jQuery("#row_demand_days_previous .value").append(errDemandDaysPrevious);
+                 errDemandDaysPrevious.show();
+                 return false;
+            }            
+            errDemandDaysPrevious.hide();
+            return true;
+        },
+
+        _is_valid_energy_days = function() {
+        	var energyDaysPrevious = jQuery("input[name=energyDays]").val();
+            // Check if energy days is positive Integer        	
+            var isPositiveInteger =  /^\d+$/.test(energyDaysPrevious);   
+            var errEnergyDaysPrevious = jQuery("#txt_invalidEnergyDaysPrevious");
+            if (!isPositiveInteger || energyDaysPrevious > 65535 ) {
+            	errEnergyDaysPrevious.remove();
+             	jQuery("#row_energy_days_previous .value").append(errEnergyDaysPrevious);
+             	errEnergyDaysPrevious.show();
+                return false;
+            }            
+            errEnergyDaysPrevious.hide();
+            return true;
+        },
+        
         _do_submit_settings_form = function(event, method, url) {
             _STOP_EVENT(event);
+            if (!_is_valid_demand_days()) {
+                return false;
+            }    
+            if (!_is_valid_energy_days()) {
+                return false;
+            }               
             if (!_is_valid_billing_group()) {
                 return false;
             }
@@ -271,6 +307,14 @@ Yukon.MeteringBilling = (function() {
         },
 
         do_generate_billing_file: function(event) {
+            if (!_is_valid_demand_days()) {
+            	_STOP_EVENT(event);
+                return false;
+            }    
+            if (!_is_valid_energy_days()) {
+            	_STOP_EVENT(event);
+                return false;
+            }   
             if (!_is_valid_billing_group()) {
                 _STOP_EVENT(event);
                 return false;
