@@ -2,9 +2,9 @@ package com.cannontech.database.data.pao;
 
 
 /**
- * This type was created in VisualAge.
+ * @deprecated Use PaoCategory, PaoClass, PaoType enums
  */
-@Deprecated /* Use PaoCategory, PaoClass, PaoType enums */
+@Deprecated
 public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapControlTypes
 {
 	public final static int INVALID = -1;
@@ -31,5 +31,4 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    	public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
    	public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
    	public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
-
 }

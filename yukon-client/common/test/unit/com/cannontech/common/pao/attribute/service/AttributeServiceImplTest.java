@@ -5,17 +5,15 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.common.config.ConfigResourceLoader;
-import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest.MockEmptyDeviceDefinitionDao;
 import com.cannontech.common.pao.service.impl.PointServiceImpl;
 import com.cannontech.database.data.lite.LitePoint;
 
@@ -31,12 +29,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         service = new AttributeServiceImpl();
 
-        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
-            @Override
-            public Resource getResource(ConfigFile config) {
-                return null;
-            }
-        });
+        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();

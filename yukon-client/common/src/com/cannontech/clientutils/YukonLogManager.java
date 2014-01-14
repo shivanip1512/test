@@ -141,12 +141,12 @@ public class YukonLogManager {
      * In some cases for base classes: this.getClass()
      * @return existing logger or new logger if it doesn't already exist
      */
-    public static Logger getLogger(Class c) {
+    public static Logger getLogger(Class<?> c) {
         Logger tempLogger = Logger.getLogger(c);
         return  tempLogger; 
     }
     
-    public static LogHelper getLogHelper(Class c) {
+    public static LogHelper getLogHelper(Class<?> c) {
         Logger logger = getLogger(c);
         return LogHelper.getInstance(logger);
     }

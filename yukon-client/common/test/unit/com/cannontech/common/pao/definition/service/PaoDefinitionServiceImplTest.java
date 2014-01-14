@@ -9,11 +9,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.common.config.ConfigResourceLoader;
-import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -21,6 +18,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest.MockEmptyDeviceDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -55,12 +53,7 @@ public class PaoDefinitionServiceImplTest {
     public void setUp() throws Exception {
 
         service = new PaoDefinitionServiceImpl();
-        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
-            @Override
-            public Resource getResource(ConfigFile config) {
-                return null;
-            }
-        });
+        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
         service.setPaoDefinitionDao(paoDefinitionDao);
 
         pointDao = new MockPointDao();

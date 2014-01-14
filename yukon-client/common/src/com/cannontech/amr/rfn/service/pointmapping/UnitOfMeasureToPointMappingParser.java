@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.service.pointmapping;
 
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -21,8 +21,7 @@ import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigResourceLoader;
-import com.cannontech.common.config.retrieve.ConfigFile;
+import com.cannontech.common.config.retrieve.RfnPointMappingDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -195,13 +194,14 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
     private final NullCachedPointValue nullCachedPointValue = new NullCachedPointValue();
     
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private ConfigResourceLoader configResourceLoader;
-    
+    @Autowired private RfnPointMappingDao rfnPointMappingDao;
+
     @PostConstruct
     public void initialize() throws Exception {
-        Resource xmlFile = configResourceLoader.getResource(ConfigFile.RFN_POINT_MAPPING);
-        pointMapperMap = parse(xmlFile);
-        
+        try (InputStream xmlFile = rfnPointMappingDao.getPointMappingFile()) {
+            pointMapperMap = parse(xmlFile);
+        }
+
         computingCache = CacheBuilder.newBuilder().concurrencyLevel(6).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<CachedPointKey, CachedPointValue>() {
                 @Override
                 public CachedPointValue load(CachedPointKey key) throws Exception {
@@ -359,13 +359,12 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         }
     }
 
-    public ImmutableMultimap<PaoType, PointMapper> parse(Resource resource) throws Exception {
-        
+    private ImmutableMultimap<PaoType, PointMapper> parse(InputStream inputStream) throws Exception {
         Builder<PaoType, PointMapper> builder = ImmutableMultimap.builder();
-        
+
         SAXBuilder saxBuilder = new SAXBuilder();
-        Document configDoc = saxBuilder.build(resource.getInputStream());
-        
+        Document configDoc = saxBuilder.build(inputStream);
+
         Element rootElement = configDoc.getRootElement();
         Iterable<Element> elementChildren = getElementChildren(rootElement, "pointGroup");
         for (Element rfnDeviceElement : elementChildren) {

@@ -3,7 +3,6 @@ package com.cannontech.common.pao.definition.dao;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.config.ConfigResourceLoader;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -172,11 +171,6 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
     @Override
     public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    @Override
-    public void setConfigResourceLoader(ConfigResourceLoader loader) {
         throw new UnsupportedOperationException("not implemented");
     }
 

@@ -2,7 +2,6 @@ package com.cannontech.common.config;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -45,15 +44,15 @@ public class RemoteLoginSession {
             keepSessionAlive();
         }
     }
-    
-    public InputStream getInputStreamFromUrl(String location) throws IOException{
-        log.debug("inputStreamFromUrl " + host +location);
-        URL url = new URL(host +location);
-        URLConnection conn = url.openConnection();
-        conn.setRequestProperty("Cookie", "JSESSIONID="+ getJsessionId());
-        return conn.getInputStream();  
+
+    public URLConnection openConnectionToLocation(String location) throws IOException {
+        log.debug("inputStreamFromUrl " + host + location);
+        URL url = new URL(host + location);
+        URLConnection connection = url.openConnection();
+        connection.setRequestProperty("Cookie", "JSESSIONID=" + getJsessionId());
+        return connection;
     }
-    
+
     /**
      * This method creates an intercepter with the jsessionId to be set in a cookie.
      */

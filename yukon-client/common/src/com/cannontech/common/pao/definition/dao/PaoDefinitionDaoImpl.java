@@ -48,8 +48,7 @@ import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigResourceLoader;
-import com.cannontech.common.config.retrieve.ConfigFile;
+import com.cannontech.common.config.retrieve.DeviceDefinitionDao;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -125,7 +124,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     private Resource inputFile = null;
     private Resource schemaFile = null;
-    private Resource customInputFile = null;
     private Resource pointLegendFile = null;
     private final Logger log = YukonLogManager.getLogger(PaoDefinitionDaoImpl.class);
 
@@ -146,11 +144,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private List<String> fileIdOrder = null;
     private SetMultimap<Pair<PaoType, PointIdentifier>, BuiltInAttribute> paoAndPointToAttributeMap;
     
-    private UnitMeasureDao unitMeasureDao;
-    private StateDao stateDao;
-    private PointDao pointDao;
-    @Autowired private ConfigResourceLoader configResourceLoader;
-    
+    @Autowired private UnitMeasureDao unitMeasureDao;
+    @Autowired private StateDao stateDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DeviceDefinitionDao deviceDefinitionDao;
+
     /**
      * Enum used to filter when retrieving paos that support tags. 
      *      YES returns only Paos that are creatable.
@@ -162,46 +160,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         NO,
         DONT_CARE;
     }
-    
-    @Autowired
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
-    }
-    
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
+
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }
     
     public void setSchemaFile(Resource schemaFile) {
         this.schemaFile = schemaFile;
-    }
-    
-    /**
-     * Setter for unit test to set this file instead of loading it with resource loader.
-     * DO NOT USE THIS UNLESS YOU ARE WRITING A UNIT TEST!!
-     * @param customInputResource
-     */
-    public void setCustomInputFile(Resource customInputResource) {
-        this.customInputFile = customInputResource;
-    }
-    
-    /**
-     * DON NOT USE, only for unit testing to bypass loading a custom config file.
-     * @param loader
-     */
-    @Override
-    public void setConfigResourceLoader(ConfigResourceLoader loader) {
-        this.configResourceLoader = loader;
     }
 
     public void setPointLegendFile(Resource pointLegendFile) {
@@ -565,6 +530,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         throw new NotFoundException("could not find " + type + "/" + defaultPointName);
     }
 
+    /**
+     * A little class to help us handle the two different ways we need to get input streams for XML files.
+     */
+    private static interface InputStreamProvider {
+        InputStream openStream() throws IOException;
+    }
+
     // INITALIZATION
     //============================================
     /**
@@ -596,13 +568,23 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         
         // definition resources (in order from lowest level overrides to highest)
-        Resource deviceDefinitionXmlFile = getCustomInputFile(); // Use getter to allow for unit testing
-        List<Resource> definitionResources = new ArrayList<Resource>();
-        if (deviceDefinitionXmlFile != null && deviceDefinitionXmlFile.exists() && deviceDefinitionXmlFile.isReadable()) {
-            definitionResources.add(deviceDefinitionXmlFile);
+        List<InputStreamProvider> definitionResources = new ArrayList<>();
+        InputStream customDefinitions = deviceDefinitionDao.findCustomDeviceDefinitions();
+        if (customDefinitions != null) {
+            validateXmlSchema(customDefinitions);
+            definitionResources.add(new InputStreamProvider() {
+                @Override
+                public InputStream openStream() throws IOException {
+                    return deviceDefinitionDao.findCustomDeviceDefinitions();
+                }});
         }
-        definitionResources.add(inputFile);
-        
+        validateXmlSchema(inputFile.getInputStream());
+        definitionResources.add(new InputStreamProvider() {
+            @Override
+            public InputStream openStream() throws IOException {
+                return inputFile.getInputStream();
+            }});
+
         // merge resources, sort
         Map<String, PaoStore> paoStores;
         try {
@@ -647,18 +629,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         paoTypeAttributesMultiMap = builder.build();
     }
-    
-    /**
-     * Method to retrieve custom deviceDefinition.xml file only if it's null, need to allow unit tests to set this file instead of
-     * the usual loading from resource loader.
-     */
-    private Resource getCustomInputFile() {
-        if (customInputFile == null) {
-            customInputFile = configResourceLoader.getResource(ConfigFile.PAO_DEFINITIONS);
-        }
-        return customInputFile;
-    }
-    
+
     private void mergeInheritedPaoStoresOntoPaoStore(PaoStore paoStore, Map<String, PaoStore> paoStores) {
     	
     	List<String> inheritedIds = paoStore.getInheritedIds();
@@ -670,29 +641,25 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	}
     }
     
-    private Map<String, PaoStore> mergeDefinitionResourcesIntoPaoStoreMap(List<Resource> definitionResources) throws Exception {
-		
+    private Map<String, PaoStore> mergeDefinitionResourcesIntoPaoStoreMap(List<InputStreamProvider> definitionFiles)
+            throws Exception {
     	Map<String, PaoStore> paoStores = new LinkedHashMap<String, PaoStore>();
-    	
+
     	int resourceCount = 0;
     	boolean isLastResource = false;
-    	for (Resource definitionResource : definitionResources) {
-    	
+    	for (InputStreamProvider definitionResource : definitionFiles) {
     		resourceCount++;
-    		if (resourceCount == definitionResources.size()) {
+    		if (resourceCount == definitionFiles.size()) {
     			isLastResource = true;
     		}
-    		
-			validateXmlSchema(definitionResource);
-			InputStreamReader reader = new InputStreamReader(definitionResource.getInputStream());
-			
-			try {
+
+    		try (InputStreamReader reader = new InputStreamReader(definitionResource.openStream())) {
 	            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
 	            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 	            PaoDefinitions definition = (PaoDefinitions) unmarshaller.unmarshal(reader);
 			    
-	            for(Pao pao : definition.getPao()) {
-	        		if(pao.isEnabled()) {
+	            for (Pao pao : definition.getPao()) {
+	        		if (pao.isEnabled()) {
 	                
 	        			PaoStore paoStore = new PaoStore(pao);
 	        			String id = paoStore.getId();
@@ -709,21 +676,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 		        		}
 	        		}
 	            }
-			} finally {
-				try {
-	                if (reader != null) {
-	                    reader.close();
-	                }
-	            } catch (IOException e) {}
 			}
     	}
     	
     	return paoStores;
     }
 
-    private void validateXmlSchema(Resource currentDefinitionResource) throws IOException,
+    private void validateXmlSchema(InputStream currentDefinition) throws IOException,
             SAXException, ParserConfigurationException {
-        InputStream is = currentDefinitionResource.getInputStream();
         URL schemaUrl = schemaFile.getURL();
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false); // this is for DTD, so we want it off
@@ -754,8 +714,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         });
         
         
-        xmlReader.parse(new InputSource(is));
-        is.close();
+        xmlReader.parse(new InputSource(currentDefinition));
+        currentDefinition.close();
     }
     
     // ADD PAO

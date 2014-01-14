@@ -1,11 +1,9 @@
 package com.cannontech.common.pao.definition.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,11 +13,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import com.cannontech.common.config.ConfigResourceLoader;
-import com.cannontech.common.config.retrieve.ConfigFile;
+import com.cannontech.common.config.retrieve.DeviceDefinitionDao;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -47,14 +44,12 @@ import com.google.common.collect.Sets;
  * Test class for PaoDefinitionDao
  */
 public class PaoDefinitionDaoImplTest {
-
     private PaoDefinitionDao dao = null;
     private SimpleDevice device = null;
 
-    public static PaoDefinitionDao getTestPaoDefinitionDao(ConfigResourceLoader loader) throws Exception {
-
+    public static PaoDefinitionDao getTestPaoDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) throws Exception {
         PaoDefinitionDaoImpl dao = new PaoDefinitionDaoImpl();
-        dao.setConfigResourceLoader(loader);
+        ReflectionTestUtils.setField(dao, "deviceDefinitionDao", deviceDefinitionDao);
 
         // Use testPaoDefinition.xml for testing
         ClassLoader classLoader = dao.getClass().getClassLoader();
@@ -63,24 +58,29 @@ public class PaoDefinitionDaoImplTest {
 
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
-        
-        // setCustomInputFile MUST be called BEFORE initialize
-        dao.setCustomInputFile(null);
-        dao.setStateDao(new PaoDefinitionDaoImplTest().new MockStateDao());
-        dao.setUnitMeasureDao(new PaoDefinitionDaoImplTest().new MockUnitMeasureDao());
+
+        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
+        ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
         dao.initialize();
 
         return dao;
     }
 
+    public static class MockEmptyDeviceDefinitionDao implements DeviceDefinitionDao {
+        @Override
+        public long getCustomFileSize() {
+            return 0;
+        }
+
+        @Override
+        public InputStream findCustomDeviceDefinitions() {
+            return null;
+        }
+    }
+
     @Before
     public void setUp() throws Exception {
-
-        dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
-            public Resource getResource(ConfigFile config) {
-                return null;
-            }
-        });
+        dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
 
         device = new SimpleDevice(10, 1019); // 1019 = MCT 310
         device.setType(1019);
@@ -211,9 +211,6 @@ public class PaoDefinitionDaoImplTest {
 
     }
 
-    /**
-     * Test getPaoDefinition()
-     */
     @Test
     public void testGetPaoDefinition() {
 
@@ -230,9 +227,6 @@ public class PaoDefinitionDaoImplTest {
 
     }
 
-    /**
-     * Test getDeviceTypesForChangeGroup()
-     */
     public void testGetDevicesForChangeGroup() {
 
         // Test with supported change group
@@ -274,9 +268,6 @@ public class PaoDefinitionDaoImplTest {
         }
     }
 
-    /**
-     * Test getAffected()
-     */
     @Test
     public void testGetAffected() {
 
@@ -461,18 +452,31 @@ public class PaoDefinitionDaoImplTest {
         PaoDefinitionDaoImpl dao = new PaoDefinitionDaoImpl();
         URL inputResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/testPaoDefinition.xml");
         dao.setInputFile(new UrlResource(inputResource));
-        URL customFileUrl = classLoader.getResource("com/cannontech/common/pao/definition/dao/testCustomPaoDefinition.xml");
-        
+
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
-        // setCustomInputFile MUST be called BEFORE initialize
-        dao.setCustomInputFile(new UrlResource(customFileUrl));
-        dao.setStateDao(new PaoDefinitionDaoImplTest().new MockStateDao());
-        dao.setUnitMeasureDao(new PaoDefinitionDaoImplTest().new MockUnitMeasureDao());
+        ReflectionTestUtils.setField(dao, "stateDao", new MockStateDao());
+        ReflectionTestUtils.setField(dao, "unitMeasureDao", new MockUnitMeasureDao());
+        final URL customFileUrl =
+                classLoader.getResource("com/cannontech/common/pao/definition/dao/testCustomPaoDefinition.xml");
+        ReflectionTestUtils.setField(dao, "deviceDefinitionDao", new DeviceDefinitionDao() {
+            @Override
+            public long getCustomFileSize() {
+                return 10; // good enough to let the test pass
+            }
+
+            @Override
+            public InputStream findCustomDeviceDefinitions() {
+                try {
+                    return customFileUrl.openStream();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         dao.initialize();
-        
-        
+
         // Test that the point templates are custom
         
         // Test custom definition overrides standard definition - point
@@ -615,20 +619,23 @@ public class PaoDefinitionDaoImplTest {
         return list;
     }
 
-    private class MockUnitMeasureDao implements UnitMeasureDao {
-
+    private static class MockUnitMeasureDao implements UnitMeasureDao {
+        @Override
         public List<LiteUnitMeasure> getLiteUnitMeasures() {
             return null;
         }
 
+        @Override
         public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
             return null;
         }
 
+        @Override
         public LiteUnitMeasure getLiteUnitMeasure(int uomid) {
             return null;
         }
 
+        @Override
         public LiteUnitMeasure getLiteUnitMeasure(String uomName) {
 
             if (uomName.equals("measure0")) {
@@ -641,16 +648,18 @@ public class PaoDefinitionDaoImplTest {
 
     }
 
-    private class MockStateDao implements StateDao {
-
+    private static class MockStateDao implements StateDao {
+        @Override
         public LiteState findLiteState(int stateGroupID, int rawState) {
             return null;
         }
 
+        @Override
         public LiteStateGroup getLiteStateGroup(int stateGroupID) {
             return null;
         }
 
+        @Override
         public LiteStateGroup getLiteStateGroup(String stateGroupName) {
 
             if (stateGroupName.equals("state0")) {
@@ -659,13 +668,14 @@ public class PaoDefinitionDaoImplTest {
             throw new IllegalArgumentException("State group doesn't exist: " + stateGroupName);
         }
 
+        @Override
         public LiteState[] getLiteStates(int stateGroupID) {
             return null;
         }
 
+        @Override
         public LiteStateGroup[] getAllStateGroups() {
             return null;
         }
-
     }
 }
