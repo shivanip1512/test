@@ -2,7 +2,8 @@ package com.cannontech.web.jws;
 
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public enum JwsJnlp {
     DBEDITOR("dbeditor.jnlp",
@@ -136,12 +137,14 @@ public enum JwsJnlp {
                 "yukon-help.jar"
                 ),
     ;
-    
-    private static final Map<String, JwsJnlp> jnlps = Maps.newHashMapWithExpectedSize(5);
+
+    private final static Map<String, JwsJnlp> jnlps;
     static {
+        Builder<String, JwsJnlp> builder = ImmutableMap.builder();
         for (JwsJnlp app : values()) {
-            jnlps.put(app.getPath(), app);
+            builder.put(app.getPath(), app);
         }
+        jnlps = builder.build();
     }
 
     private final String path;

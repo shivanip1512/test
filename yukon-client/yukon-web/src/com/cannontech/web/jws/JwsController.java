@@ -43,16 +43,16 @@ import com.google.common.cache.CacheBuilder;
 
 @Controller
 public class JwsController {
+    private final static Logger log = YukonLogManager.getLogger(JwsController.class);
 
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired  private GlobalSettingDao globalSettingDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private Cache<String, String> jarDownloadTokens
         = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
     private Path jarFileBase = Paths.get(CtiUtilities.getYukonBase(), "Client/bin");
-    private Logger log = YukonLogManager.getLogger(JwsController.class);
 
     @RequestMapping("/applications")
     public String applications(ModelMap model, LiteYukonUser user) {
@@ -61,8 +61,10 @@ public class JwsController {
         return "applications.jsp";
     }
 
-    /** Note: This is exposed without login filter. No user available*/
-    @RequestMapping(value = "/{requestedJar:.+\\.jar}")
+    /** 
+     * This is exposed without login filter. No user available
+     */
+    @RequestMapping("/{requestedJar:.+\\.jar}")
     public void getJar(HttpServletRequest request, HttpServletResponse response, @PathVariable String requestedJar,
             @RequestParam("version-id") String requestedVersion) throws IOException {
 
@@ -82,7 +84,7 @@ public class JwsController {
         if (!requestedVersion.equals(jarVersionId)) {
             String errorMsg = requestedJar + " is at version " + jarVersionId
                             + ". Requested version (" + requestedVersion +") is not valid.";
-            log.debug(errorMsg);
+            log.error(errorMsg);
             response.setContentType("application/x-java-jnlp-error");
             response.getWriter().write(errorMsg);
             return;
@@ -96,17 +98,17 @@ public class JwsController {
         try {
             Files.copy(jarFile, response.getOutputStream());
         } catch (ClientAbortException e) {
-            // JWS downloads only the first ~32KB of files it has cached locally. It terminates the connection 
-            // before we are able to send the entire file which causes this exception. 
-            // Interesting conundrum: JWS doesn't download the entire file even when it doesn't have it cached. 
-            // It downloads about 95% of it and somehow rebuilds the jar's central directory
-            // ... explain that one to me
+            // JWS downloads about 95% of the jar then terminates the connection
+            // before we are able to send the entire file. JWS somehow
+            // rebuilds the jar's central directory ... explain that one to me
             log.debug("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
         }
     }
 
-    /** Note: This is exposed without login filter. No user available */
-    @RequestMapping(value = "/{requestedJnlp:client_libs\\.jnlp|bc\\.jnlp}")
+    /**
+     * This is exposed without login filter. No user available
+     */
+    @RequestMapping("/{requestedJnlp:(?:client_libs|bc)\\.jnlp}")
     public void getExtensionJnlp(HttpServletRequest request, HttpServletResponse response,
             @PathVariable JwsJnlp requestedJnlp, @RequestParam("version-id") String requestedVersion) throws IOException {
 
@@ -143,7 +145,7 @@ public class JwsController {
         if (!requestedVersion.equals(jnlpVersionId)) {
             String errorMsg = requestedJnlp.name() + " is at version " + jnlpVersionId
                             + ". Requested version (" + requestedVersion +") is not valid.";
-            log.debug(errorMsg);
+            log.error(errorMsg);
             response.setContentType("application/x-java-jnlp-error");
             response.getWriter().write(errorMsg);
             return;
@@ -162,7 +164,7 @@ public class JwsController {
         out.output(doc, responseOutStream);
     }
 
-    @RequestMapping(value = "/{requestedJnlp:dbeditor\\.jnlp|tdc\\.jnlp|trending\\.jnlp|esub\\.jnlp|commander\\.jnlp}")
+    @RequestMapping("/{requestedJnlp:(?:dbeditor|tdc|trending|esub|commander)\\.jnlp}")
     public void getApplicationJnlp(HttpServletRequest request, HttpServletResponse response,
                 @PathVariable JwsJnlp requestedJnlp, LiteYukonUser user) throws IOException {
         jarDownloadTokens.put(request.getRemoteHost(), requestedJnlp.getTitle());
@@ -232,8 +234,9 @@ public class JwsController {
         resourcesElem.addContent(hostPropElem);
 
         Element rememberMeSettingPropElem = new Element("property");
-        ClientApplicationRememberMe rememberMeSetting = globalSettingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME,
-                                                                                 ClientApplicationRememberMe.class);
+        ClientApplicationRememberMe rememberMeSetting = 
+            globalSettingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME,
+                                     ClientApplicationRememberMe.class);
         rememberMeSettingPropElem.setAttribute("name", "jnlp.yukon.rememberMe");
         rememberMeSettingPropElem.setAttribute("value", rememberMeSetting.name());
         resourcesElem.addContent(rememberMeSettingPropElem);
@@ -275,7 +278,7 @@ public class JwsController {
         }
         return versionNum;
     }
-    
+
     @InitBinder
     public void initialize(WebDataBinder webDataBinder) {
         webDataBinder.registerCustomEditor(JwsJnlp.class, new PropertyEditorSupport () {
