@@ -34,16 +34,16 @@ import com.cannontech.web.login.access.UrlAccessChecker;
 
 @Controller
 public class IntegrationLoginController {
-    private static final String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
-    private static final String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
+    private final Logger logger = YukonLogManager.getLogger(getClass());
+
+    private final static String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
+    private final static String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
 
     @Autowired private SimpleMessageDigestHasher simpleHasher;
     @Autowired private LoginService loginService;
     @Autowired private UrlAccessChecker urlAccessChecker;
     @Autowired private ConfigurationSource config;
     @Autowired private YukonUserDao yukonUserDao;
-
-    private final Logger logger = YukonLogManager.getLogger(getClass());
 
     @RequestMapping("/integrationLogin")
     public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -73,76 +73,90 @@ public class IntegrationLoginController {
 
         return new ModelAndView("redirect:" + redirect);
     }
-    
-    @RequestMapping(value="/remoteLogin", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception {
+
+    @RequestMapping(value="/remoteLogin", method = RequestMethod.POST)
+    public @ResponseBody
+    Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response, String username,
+        String password) throws Exception {
         Map<String, String> result = new HashMap<>();
         try {
             loginService.login(request, username, password);
             result.put("result", "success");
-            result.put("jsessionId",  request.getSession().getId());
-        }catch (PasswordExpiredException e) {
+            result.put("jsessionId", request.getSession().getId());
+        } catch (PasswordExpiredException e) {
             logger.info("The password is expired", e);
             result.put("result", "failure");
-            result.put("errorMsg", "The password for "+username+" is expired.  Please log into the web to reset it.");
-        }catch (AuthenticationThrottleException e) {
+            result.put("errorMsg", "The password for " + username
+                + " is expired.  Please log into the web to reset it.");
+        } catch (AuthenticationThrottleException e) {
             logger.info("Login disabled", e);
             result.put("result", "failure");
-            result.put("errorMsg", "Login disabled, please retry after "+e.getThrottleSeconds()+" seconds. If the problem persists, contact your system administrator.");
-        }
-        catch (BadAuthenticationException|NotAuthorizedException e) {
+            result.put("errorMsg", "Login disabled, please retry after " + e.getThrottleSeconds()
+                + " seconds. If the problem persists, contact your system administrator.");
+        } catch (BadAuthenticationException | NotAuthorizedException e) {
             logger.info("Invalid username/password", e);
             result.put("result", "failure");
-            result.put("errorMsg", "Authentication failed for "+username+". Check that CAPS LOCK is off, and try again. If the problem persists, contact your system administrator.");
+            result.put("errorMsg", "Authentication failed for " + username
+                + ". Check that CAPS LOCK is off, and try again. If the problem persists, contact your system "
+                + "administrator.");
         }
+
         return result;
     }
-    
-    @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> checkConnection(HttpServletRequest request) {
+
+    @RequestMapping(value="/checkConnection", method = RequestMethod.POST)
+    public @ResponseBody
+    Map<String, String> checkConnection(HttpServletRequest request) {
         Map<String, String> result = new HashMap<>();
-        if(request.getSession(false) == null){
+        if (request.getSession(false) == null) {
             result.put("result", "failure");
-        }else{
-            result.put("result", "success");  
+        } else {
+            result.put("result", "success");
         }
         return result;
     }
-    
-    private LiteYukonUser validateLogin(HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServletException {
+
+    private LiteYukonUser validateLogin(HttpServletRequest request, HttpServletResponse response) throws IOException,
+            ServletException {
         String headerName = config.getString(HEADER_PROPERTY_KEY, "");
-        if (headerName.equals("")) return null;
+        if (headerName.equals(""))
+            return null;
 
         String loginToken = request.getHeader(headerName);
-        if (loginToken == null) return null;
+        if (loginToken == null)
+            return null;
         logger.debug("Header found");
 
         String premiseNumber = ServletRequestUtils.getStringParameter(request, "PremiseNumber");
         String accountIdentifier = ServletRequestUtils.getStringParameter(request, "Account_Identifier");
 
-        if (premiseNumber == null || accountIdentifier == null) return null;
+        if (premiseNumber == null || accountIdentifier == null) {
+            return null;
+        }
         logger.debug("Premise number and Account Identifier found");
 
         String secret = config.getString(SECRET_PROPERTY_KEY, "");
-        if (secret.equals("")) return null;
+        if (secret.equals(""))
+            return null;
         logger.debug("Secret found");
 
         String input = premiseNumber + loginToken + secret;
         String hash = simpleHasher.hash(input);
 
-        if (!hash.equalsIgnoreCase(accountIdentifier)) return null;
+        if (!hash.equalsIgnoreCase(accountIdentifier)) {
+            return null;
+        }
         logger.debug("Hash validation successful");
 
         LiteYukonUser user = yukonUserDao.findUserByUsername(premiseNumber);
-        if (user == null) return null;
+        if (user == null) {
+            return null;
+        }
         logger.debug("User found for premise");
 
         loginService.createSession(request, user);
-        ActivityLogger.logEvent(user.getUserID(),
-                                LoginService.LOGIN_WEB_ACTIVITY_ACTION,
-                                "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());        
+        ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername()
+            + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         return user;
     }
 }
-   
