@@ -21,8 +21,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RemoteLoginSession {
+    private final static Logger log = YukonLogManager.getLogger(RemoteLoginSession.class);
 
-    private static final Logger log = YukonLogManager.getLogger(RemoteLoginSession.class);
     private String jsessionId;
     private String host;
     private boolean isValid;
@@ -30,17 +30,17 @@ public class RemoteLoginSession {
     private String username;
     private String password;
     private ObjectMapper jsonObjectMapper = new ObjectMapper();
-    private TypeReference<Map<String, String>> stringStringMapType
-        = new TypeReference<Map<String, String>>() {/*jackson required*/};
-    
+    private TypeReference<Map<String, String>> stringStringMapType = new TypeReference<Map<String, String>>() {};
+
     private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
- 
+
     public RemoteLoginSession(String host, String username, String password) {
         this.host = host;
         this.username = username;
         this.password = password;
+
         connect();
-        if(isValid){
+        if (isValid) {
             keepSessionAlive();
         }
     }
@@ -56,22 +56,22 @@ public class RemoteLoginSession {
     /**
      * This method creates an intercepter with the jsessionId to be set in a cookie.
      */
-    public HttpInvokerClientInterceptor getClientInterceptor(String location){
+    public HttpInvokerClientInterceptor getClientInterceptor(String location) {
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
         YukonHttpInvokerRequestExecutor requestExecutor = new YukonHttpInvokerRequestExecutor(jsessionId);
         interceptor.setHttpInvokerRequestExecutor(requestExecutor);
         interceptor.setServiceUrl(host + location);
         return interceptor;
     }
-    
-    public boolean isValid(){
+
+    public boolean isValid() {
         return isValid;
     }
 
     public String getHost() {
         return host;
     }
-    
+
     public String getErrorMsg() {
         return errorMsg;
     }
@@ -81,16 +81,17 @@ public class RemoteLoginSession {
     }
 
     /**
-     * This method is checking if the session is alive every 5 minutes if session is not found it will attempt to call connect() to create a new session
+     * This method is checking if the session is alive every 5 minutes if session is not found it
+     * will attempt to call connect() to create a new session
      */
     private void keepSessionAlive() {
         scheduledExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String url = host+"/checkConnection";
+                    String url = host + "/checkConnection";
                     Map<String, String> json = readJsonFromUrl(url, "", true);
-                    if(json.get("result").equals("failure")){
+                    if (json.get("result").equals("failure")) {
                         log.debug("Session timed out attempting to reconnect");
                         connect();
                     }
@@ -108,14 +109,15 @@ public class RemoteLoginSession {
      * 
      * @param addJsessionId - true if the Cookie with JSESSIONID should be set
      */
-    private Map<String, String> readJsonFromUrl(String url, String urlParameters, boolean addJsessionId) throws IOException {
+    private Map<String, String> readJsonFromUrl(String url, String urlParameters, boolean addJsessionId)
+            throws IOException {
         OutputStreamWriter writer = null;
         BufferedReader reader = null;
         try {
             URL u = new URL(url);
             URLConnection conn = u.openConnection();
             if (addJsessionId) {
-                conn.setRequestProperty("Cookie", "JSESSIONID="+ getJsessionId());
+                conn.setRequestProperty("Cookie", "JSESSIONID=" + getJsessionId());
             }
             conn.setDoOutput(true);
             writer = new OutputStreamWriter(conn.getOutputStream());
@@ -124,38 +126,39 @@ public class RemoteLoginSession {
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), Charset.forName("UTF-8")));
             return jsonObjectMapper.readValue(reader, stringStringMapType);
         } finally {
-            if(writer != null) {
+            if (writer != null) {
                 writer.close();
             }
-            if(reader != null) {
+            if (reader != null) {
                 reader.close();
             }
         }
     }
-    
+
     /**
-     * This method will attempt to create a new session. If it succeeds the jsessionId will be set. If it fails it will set the error message.
+     * This method will attempt to create a new session. If it succeeds the jsessionId will be set.
+     * If it fails it will set the error message.
      */
     private void connect() {
-        String url = host+"/remoteLogin";
+        String url = host + "/remoteLogin";
         log.debug("Creating new session. Getting jsessionId from " + url);
-        String urlParameters = "username=" + username + "&password=" + password+"&noLoginRedirect=true";
+        String urlParameters = "username=" + username + "&password=" + password + "&noLoginRedirect=true";
         try {
             Map<String, String> json = readJsonFromUrl(url, urlParameters, false);
-            if(json.get("result").equals("success")){
+            if (json.get("result").equals("success")) {
                 jsessionId = json.get("jsessionId");
                 isValid = true;
                 log.debug("Succesfully retrieved jsessionId");
-            }else if(json.get("result").equals("failure")){
+            } else if (json.get("result").equals("failure")) {
                 errorMsg = json.get("errorMsg");
                 log.debug("User failed to login: " + getErrorMsg());
-            }else{
+            } else {
                 log.error("User failed to login. Invalid connect result");
                 errorMsg = "User failed to login";
             }
         } catch (IOException e) {
             log.error("User failed to login", e);
             errorMsg = "User failed to login";
-        }     
+        }
     }
 }
