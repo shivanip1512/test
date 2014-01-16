@@ -235,7 +235,13 @@
             submitForm(-2, 'addAttribute');
         }
         jQuery('#attributeDialog').bind('editAttributeOkPressed', editAttributeOkPressed);
-        
+
+        jQuery("#attributeDialog").keydown(function (event) {
+            if (13 === event.which) {
+                editAttributeOkPressed();
+            }
+        });
+
         function editFieldOkPressed() {
             jQuery('#fieldDialog').dialog('close');
             jQuery('#dialogFieldFormElements').hide().remove().appendTo(jQuery('#exporterForm'));
