@@ -22,6 +22,7 @@ public class AmqConnectionListenerFactory extends AmqConnectionFactoryBase imple
         AmqListenerConnection conn = new AmqListenerConnection("", getFullQueueName());
         conn.setConnectionService(connectionSvc);
         conn.setMessageFactory(getMessageFactory());
+        conn.setAutoReconnect(true);
 
         return conn;
     }
