@@ -39,7 +39,6 @@ import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.ImmutableList;
 
 public class LoginFilter implements Filter {
-    
     private final Logger log = YukonLogManager.getLogger(getClass());
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -50,10 +49,8 @@ public class LoginFilter implements Filter {
     private RolePropertyDao rolePropertyDao;
     private LoginService loginService;
 
-    /*
-     * Setup ant-style paths that should be processed even if the user is not logged in.
-     * All paths should start with a slash because that's just the way it works
-     */
+    // Setup ant-style paths that should be processed even if the user is not logged in.
+    // All paths should start with a slash because that's just the way it works
     private final static ImmutableList<String> excludedFilePaths =
         ImmutableList.of(LoginController.LOGIN_URL,
                          "/remoteLogin",
@@ -88,29 +85,30 @@ public class LoginFilter implements Filter {
                          "/jws/*");
     
     @Override
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
-        
-        /* Support accented chars in request params. */
+
+        // Support accented chars in request params.
         req.setCharacterEncoding("UTF-8");
 
         boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
         boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
 
-        /* For excluded requests, try to attach the userContext, but they may not be logged in. */
+        // For excluded requests, try to attach the userContext, but they may not be logged in.
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
             attachYukonUserContext(request, false);
             chain.doFilter(request, response);
             return;
         }
-        
+
         boolean loggedIn = isLoggedIn(request);
-            
-        if(!loggedIn) {
-            /* Try to log them in using a LoginRequestHandler to handle the login request. */ 
-            /* Send error response if we fail to log them in. */
+
+        if (!loggedIn) {
+            // Try to log them in using a LoginRequestHandler to handle the login request.
+            // Send error response if we fail to log them in.
             boolean success = false;
             for (LoginRequestHandler handler : loginRequestHandlers) {
                 success = handler.handleLoginRequest(request, response);
@@ -119,11 +117,11 @@ public class LoginFilter implements Filter {
                     break;
                 }
             }
-            
+
             if (!success) {
-                /* If we got here, they couldn't be authenticated, send an error response. */
+                // If we got here, they couldn't be authenticated, send an error response.
                 log.debug("All login attempts failed, returning error");
-                
+
                 boolean noRedirect = ServletRequestUtils.getBooleanParameter(request, "noLoginRedirect", false);
                 if (ajaxRequest || noRedirect) {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
@@ -133,11 +131,11 @@ public class LoginFilter implements Filter {
                 return;
             }
         }
-        
-        /* At this point the user has been authenticated, check for timeout and authorization. */
+
+        // At this point the user has been authenticated, check for timeout and authorization.
         LiteYukonUser user = attachYukonUserContext(request, true).getYukonUser();
-        
-        /* Check session timeout, update last activity time if successful, redirect to login page if expired. */
+
+        // Check session timeout, update last activity time if successful, redirect to login page if expired.
         try {
             checkSessionTimeout(request, ajaxRequest);
         } catch (SessionTimeoutException e) {
@@ -146,16 +144,16 @@ public class LoginFilter implements Filter {
             sendLoginRedirect(request, response);
             return;
         }
-        
-        /* Check for access authorization */
+
+        // Check for access authorization
         try {
             verifyPathAccess(request);
-        } catch(NotAuthorizedException naexception) {
+        } catch (NotAuthorizedException naexception) {
             log.error(naexception.getMessage());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-            
+
         chain.doFilter(req, resp);
     }
 
@@ -163,27 +161,27 @@ public class LoginFilter implements Filter {
         HttpSession session = request.getSession(false);
         if (session != null) {
             SessionInfo sessionInfo = (SessionInfo) session.getAttribute(ServletUtil.SESSION_INFO);
-            /* Update the IP Address */
+            // Update the IP Address
             sessionInfo.setIpAddress(request.getRemoteAddr());
-            
+
             Instant lastActivityTime = sessionInfo.getLastActivityTime();
             LiteYukonUser user = YukonUserContextUtils.getYukonUserContext(request).getYukonUser();
             int sessionTimeout = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user);
-            
+
             Instant validActivityThreshold = new Instant().minus(Duration.standardMinutes(sessionTimeout));
-            
-            if(lastActivityTime.isBefore(validActivityThreshold)) {
-                /* Timeout */
+
+            if (lastActivityTime.isBefore(validActivityThreshold)) {
+                // Timeout
                 log.debug("Session Timeout for request: " + request.getRequestURI());
                 throw new SessionTimeoutException();
             } else {
-                /* Update the last activity time to now for non ajax requests. */
-                if(!ajaxRequest) {
+                // Update the last activity time to now for non ajax requests.
+                if (!ajaxRequest) {
                     sessionInfo.setLastActivityTime(new Instant());
                 }
             }
         } else {
-            /* Timeout */
+            // Timeout
             log.debug("Session Timeout for request: " + request.getRequestURI());
             throw new SessionTimeoutException();
         }
@@ -192,25 +190,28 @@ public class LoginFilter implements Filter {
     private void verifyPathAccess(final HttpServletRequest request) {
         boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
         if (!hasUrlAccess) {
-            throw new NotAuthorizedException("Invalid path access for user: " + urlPathHelper.getPathWithinApplication(request));
+            throw new NotAuthorizedException("Invalid path access for user: "
+                + urlPathHelper.getPathWithinApplication(request));
         }
     }
 
     private String getRedirectedFrom(HttpServletRequest request) {
         boolean isExcludedRedirectedFromRequest = ServletUtil.isExcludedRequest(request, excludedRedirectedPaths);
-        if (isExcludedRedirectedFromRequest) return "";
-        
+        if (isExcludedRedirectedFromRequest) {
+            return "";
+        }
+
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
-        
+
         // strip any unsafe navigation from the URL before it gets encoded.
         String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
         String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
         return encodedNavUrl;
     }
 
-    private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String navUrl = getRedirectedFrom(request);
         String redirectURL = LoginController.LOGIN_URL;
         if (!StringUtils.isBlank(navUrl)) {
@@ -227,13 +228,13 @@ public class LoginFilter implements Filter {
             return false;
         }
     }
-    
+
     private YukonUserContext attachYukonUserContext(HttpServletRequest request, boolean isFailureAnError) {
         try {
             YukonUserContext context = userContextResolver.resolveContext(request);
             request.setAttribute(YukonUserContextUtils.userContextAttrName, context);
             return context;
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
             if (isFailureAnError) {
                 log.info("Unable to attach YukonUserContext to request", e);
@@ -258,5 +259,4 @@ public class LoginFilter implements Filter {
     @Override
     public void destroy() {
     }
-
 }
