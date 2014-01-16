@@ -296,8 +296,9 @@ public class YukonSecurityController {
 
     @RequestMapping(value = "/config/security/getPublicKey")
     @ResponseBody 
-    public Map<String, Object> getPublicKey(boolean generateNewKey, YukonUserContext userContext) 
+    public Map<String, Object> getPublicKey(HttpServletRequest request, boolean generateNewKey, YukonUserContext userContext) 
                 throws CryptoException {
+        csrfTokenService.validateToken(request);
         if(generateNewKey) {
             rsaKeyfileService.generateNewKeyPair();
         }
