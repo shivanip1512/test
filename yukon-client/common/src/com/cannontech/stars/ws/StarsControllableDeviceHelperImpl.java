@@ -268,8 +268,10 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
         // update Device label, if specified
         String deviceLabel = dto.getDeviceLabel();
-        if (deviceLabel != null) {
+        if (StringUtils.isNotEmpty(deviceLabel)) {
             lib.setDeviceLabel(deviceLabel);
+        }else{
+            lib.setDeviceLabel(dto.getSerialNumber()); 
         }
 
         // Derive Account Id

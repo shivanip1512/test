@@ -230,6 +230,10 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 if (StringUtils.isBlank(newSerialNo)) {
                     throw new StarsInvalidArgumentException("Serial Number is required");
                 }
+                
+                if (StringUtils.isBlank(liteInv.getDeviceLabel())) {
+                    liteInv.setDeviceLabel(newSerialNo);
+                }
 
                 // see if serialNumber is changed, if so, see it doesn't already
                 // exist on another device
