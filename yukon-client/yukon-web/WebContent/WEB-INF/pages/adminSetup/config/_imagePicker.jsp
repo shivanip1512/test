@@ -9,8 +9,10 @@
 <cti:msgScope paths="yukon.common.imagePicker">
 <div class="separated-sections image-picker" data-category="${category}">
     <div class="section clearfix">
-        <cti:button classes="b-upload" nameKey="upload" icon="icon-bullet-go-up"/>
-        <div class="upload-progress"></div><div class="upload-percent"></div>
+        <form id="file-upload" action="/common/images" method="post">
+            <input id="uploader" class="b-upload fr" type="file" name="file" multiple accept="image/*" />
+            <div class="upload-progress"></div><div class="upload-percent"></div>
+        </form>
     </div>
     <c:forEach var="image" items="${images}">
         <div class="section">
@@ -33,5 +35,11 @@
             </div>
         </div>
     </c:forEach>
+    <script type="text/javascript">
+    jQuery(function () {
+        // init now that all the pieces are in place
+        Yukon.Themes.initFileUpload();
+    });
+    </script>
 </div>
 </cti:msgScope>

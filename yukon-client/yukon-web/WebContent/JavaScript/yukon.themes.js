@@ -36,9 +36,9 @@ Yukon.Themes = (function () {
                 return;
             }
             
-            jQuery('.f-color-input').each(function(idx, item) {
-                var item = jQuery(item);
-                var color = item.val();
+            jQuery('.f-color-input').each(function (idx, item) {
+                var item = jQuery(item),
+                    color = item.val();
                 item.spectrum({
                     color: color,
                     showInput: true,
@@ -99,49 +99,7 @@ Yukon.Themes = (function () {
                 
                 return false;
             });
-            
-            jQuery('#file-upload').fileupload({
-                dataType: 'json',
-                start: function (e) {
-                    var bar = jQuery('#file-upload input').data('button').next();
-                    jQuery(bar).progressbar({max:100, value: 0});
-                },
-                done: function (e, data) {
-                    if (data.result.status == 'success') {
-                        var uploadArea = jQuery(jQuery('#file-upload input').data('button')).parent(),
-                            copy = uploadArea.next().clone();
-                        
-                        uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
-                        
-                        copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
-                        copy.find('.f-name-value').text(data.result.image.name);
-                        copy.find('.f-category-value').text(data.result.image.category);
-                        copy.find('.f-size-value').text(data.result.image.size);
-                        copy.find('.simple-input-image img').attr('alt', data.result.image.name);
-                        copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id);
-                        
-                        copy.insertAfter(uploadArea);
-                    } else {
-                        //TODO something useful here
-                    }
-                },
-                progressall: function (e, data) {
-                    var progress = parseInt(data.loaded / data.total * 100, 10),
-                        button = jQuery('#file-upload input').data('button'),
-                        bar = jQuery(button.next()),
-                        percent = jQuery(bar.next());
-                    bar.progressbar("value", progress);
-                    percent.text(progress + "%");
-                }
-            });
-            
-            jQuery(document).on('click', '.b-upload', function(e) {
-                var category = jQuery(e.currentTarget).closest('.image-picker').data('category');
-                jQuery('#file-upload input').data('button', e.currentTarget);
-                jQuery('#file-upload').fileupload('option', 'formData', {'category': category});
-                jQuery('#file-upload input').trigger('click');
-            });
-            
+
             // if i don't listen for this event it doesn't work, God knows why
             jQuery(document).on('show.spectrum', 'input', function(e) {
                 e.preventDefault();
@@ -169,8 +127,53 @@ Yukon.Themes = (function () {
             });
             
             initialized = true;
-        }
+        },
+        initFileUpload: function () {
+            var uploadBtn = jQuery('.b-upload'),
+                category = uploadBtn.closest('.image-picker').data('category');
 
+            jQuery('#file-upload').fileupload({
+                dataType: 'text',
+                start: function (e) {
+                    var bar = jQuery('#file-upload input').next();
+                    if (typeof bar !== 'undefined') {
+                        jQuery(bar).progressbar({max:100, value: 0});
+                    }
+                },
+                done: function (e, data) {
+                    var dataParsed = JSON.parse(data.result),
+                        uploadArea,
+                        copy;
+                    data.result = dataParsed;
+                    if (data.result.status === 'success') {
+                        uploadArea = jQuery('#file-upload input').closest('.section');
+                        copy = uploadArea.next().clone();
+
+                        uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
+
+                        copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
+                        copy.find('.f-name-value').text(data.result.image.name);
+                        copy.find('.f-category-value').text(data.result.image.category);
+                        copy.find('.f-size-value').text(data.result.image.size);
+                        copy.find('.simple-input-image img').attr('alt', data.result.image.name);
+                        copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id);
+
+                        copy.insertAfter(uploadArea);
+                    } else {
+                        //TODO something useful here
+                    }
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10),
+                        button = jQuery('#file-upload input'),
+                        bar = jQuery(button.next()),
+                        percent = jQuery(bar.next());
+                    bar.progressbar("value", progress);
+                    percent.text(progress + "%");
+                }
+            });
+            jQuery('#file-upload').fileupload('option', 'formData', {'category': category});
+        }
     };
     return themeMod;
 }());

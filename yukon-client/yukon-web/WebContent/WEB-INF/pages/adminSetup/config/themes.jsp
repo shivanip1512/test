@@ -19,16 +19,12 @@
 
 <cti:includeScript link="/JavaScript/yukon.themes.js"/>
 <script type="text/javascript">
-jQuery(function() {
+jQuery(function () {
     Yukon.Themes.init({chooseText: '${chooseText}',
                        okText: '${okText}',
                        cancelText: '${cancelText}'});
 });
 </script>
-
-<form id="file-upload" class="dn" action="/common/images" method="post">
-    <input type="file" name="file" multiple>
-</form>
 
     <div class="clearfix">
         <div class="category fl">

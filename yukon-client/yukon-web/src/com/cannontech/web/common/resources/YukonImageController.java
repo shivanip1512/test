@@ -10,6 +10,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -70,7 +71,7 @@ public class YukonImageController {
     }
     
     @RequestMapping(value="/images", method=RequestMethod.POST)
-    public @ResponseBody Map<String, Object> upload(HttpServletRequest req, YukonUserContext context, @RequestParam(defaultValue="logos") String category) {
+    public void upload(HttpServletResponse resp, HttpServletRequest req, YukonUserContext context, @RequestParam(defaultValue="logos") String category) throws IOException {
         
         Map<String, Object> json = new HashMap<>();
         
@@ -91,7 +92,6 @@ public class YukonImageController {
             if(!file.getContentType().startsWith("image")) {
                 throw new IllegalArgumentException("Only image files are valid.");
             }
-            
             InputStream inputStream = file.getInputStream();
             LiteYukonImage image = yid.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
             Map<String, Object> imageStats = new HashMap<>(); 
@@ -109,8 +109,12 @@ public class YukonImageController {
             json.put("status", "error");
             json.put("message", e.getMessage());
         }
-        
-        return json;
+        // content type must be text or html or IE will throw up a save/open dialog
+        resp.setContentType("text/plain");
+        ServletOutputStream out = resp.getOutputStream();
+        JSONObject jsonData = JSONObject.fromObject(json);
+        out.print(jsonData.toString());
+        out.close();
     }
     
     private enum YukonImage {
