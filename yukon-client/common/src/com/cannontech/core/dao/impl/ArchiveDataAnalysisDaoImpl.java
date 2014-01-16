@@ -192,7 +192,6 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    @Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_UNCOMMITTED)
     public void deleteAnalysis(final int analysisId) {
         log.info("Deleting analysis with id " + analysisId);
         updateStatus(analysisId, AdaStatus.DELETED, null);
