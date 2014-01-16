@@ -1,13 +1,13 @@
 
 function SubstationToRouteMappings_SelectListener(url) {
-    var x = jQuery("#subSelectList")[0].selectedIndex,
+    var substationIndex = jQuery("#subSelectList")[0].selectedIndex,
         optionsList = jQuery("#subSelectList")[0].options,
         substationId,
         routeElement = jQuery('#route_element');
-    if (x < 0 || 0 >= optionsList.length) {
+    if (substationIndex < 0 || 0 >= optionsList.length) {
         return;
     }
-    substationId = optionsList[x].value;
+    substationId = optionsList[substationIndex].value;
     jQuery.ajax({
         type: "POST",
         url: url,
