@@ -1,13 +1,15 @@
 package com.cannontech.clientutils;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -75,7 +77,7 @@ public class YukonLogManager {
             //console
             BasicConfigurator.configure();
             Logger.getRootLogger().setLevel(Level.INFO);
-            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
+            getMyLogger().error("Unable to configure logging, using BasicConfigurator to log to console (path=" + path + ")");
             dumpDebugInfo();
             return;
         }   
@@ -101,34 +103,20 @@ public class YukonLogManager {
      * @param hostname the IP address of the host
      * @param port the connection port number
      */
-    public static synchronized void initialize(RemoteLoginSession remoteSession) {
-        
-        //path to the servlet that has the logging config file
-        String path = remoteSession.getHost() + "/servlet/LoggingServlet";
-                
-        //URL to loggingServlet
-        URL url;
-
-        try { 
-            //gets the log4j configuration file from LoggingServlet
-            url = new URL(path);
-        } catch (MalformedURLException e) {
-            //If all else fails use BasicConfigurator, log to console
-            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
-            return;
-        }
-        
-        //try to configure logging
+    public static synchronized void initialize(RemoteLoginSession remoteLoginSession) {
+        // try to configure logging
         try {
-            DOMConfigurator.configure(url);
-        } catch (FactoryConfigurationError e) {
-            //If all else fails use BasicConfigurator, log to console
-            getMyLogger().error("Unbable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
+            InputStream inputStream = remoteLoginSession.getInputStreamForUrl("/servlet/LoggingServlet", false);
+            new DOMConfigurator().doConfigure(inputStream, LogManager.getLoggerRepository());
+        } catch (FactoryConfigurationError | IOException e) {
+            // If all else fails use BasicConfigurator, log to console
+            getMyLogger().error("Unable to configure logging, using BasicConfigurator to log to console, bad url. ", e);
             return;
         }
+
         // if that worked, setup YukonRemoteAppender 
-        YukonRemoteAppender.configureLogger();
-        getMyLogger().info("The remote logging config file was found under: " + path);
+        YukonRemoteAppender.configureLogger(remoteLoginSession);
+        getMyLogger().info("The remote logging config file was found under: /servlet/LoggingServlet");
     }
     
     

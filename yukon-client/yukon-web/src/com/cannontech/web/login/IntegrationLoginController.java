@@ -34,7 +34,7 @@ import com.cannontech.web.login.access.UrlAccessChecker;
 
 @Controller
 public class IntegrationLoginController {
-    private final Logger logger = YukonLogManager.getLogger(getClass());
+    private final static Logger logger = YukonLogManager.getLogger(IntegrationLoginController.class);
 
     private final static String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
     private final static String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
@@ -74,10 +74,9 @@ public class IntegrationLoginController {
         return new ModelAndView("redirect:" + redirect);
     }
 
-    @RequestMapping(value="/remoteLogin", method = RequestMethod.POST)
-    public @ResponseBody
-    Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response, String username,
-        String password) throws Exception {
+    @RequestMapping(value="/remoteLogin", method=RequestMethod.POST)
+    public @ResponseBody Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response,
+            String username, String password) throws Exception {
         Map<String, String> result = new HashMap<>();
         try {
             loginService.login(request, username, password);
@@ -104,15 +103,10 @@ public class IntegrationLoginController {
         return result;
     }
 
-    @RequestMapping(value="/checkConnection", method = RequestMethod.POST)
-    public @ResponseBody
-    Map<String, String> checkConnection(HttpServletRequest request) {
+    @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
+    public @ResponseBody Map<String, String> checkConnection(HttpServletRequest request) {
         Map<String, String> result = new HashMap<>();
-        if (request.getSession(false) == null) {
-            result.put("result", "failure");
-        } else {
-            result.put("result", "success");
-        }
+        result.put("result", "success");
         return result;
     }
 

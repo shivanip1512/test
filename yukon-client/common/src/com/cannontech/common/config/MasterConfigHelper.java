@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
-import org.springframework.aop.framework.ProxyFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.login.ClientSession;
@@ -64,7 +63,8 @@ public class MasterConfigHelper {
             try {
                 localConfig = new MasterConfigMap(masterCfg);
             } catch (CryptoException cae) {
-                log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be invalid or you may need to reset encrypted values in master.cfg to plaintext",cae);
+                log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be "
+                    + "invalid or you may need to reset encrypted values in master.cfg to plaintext", cae);
             } catch (IOException e) {
                 log.error("Severe Error while initializing configuration.",e);
             }
@@ -74,8 +74,8 @@ public class MasterConfigHelper {
 
     public static ConfigurationSource getRemoteConfiguration() {
         ConfigurationSource config =
-            ProxyFactory.getProxy(ConfigurationSource.class, ClientSession.getRemoteSession()
-                .getClientInterceptor("/remote/MasterConfig?noLoginRedirect=true"));
+                ClientSession.getRemoteLoginSession().getReconnectingInteceptorProxy(ConfigurationSource.class,
+                    "/remote/MasterConfig");
         log.debug("MasterConfigMap loaded");
         return config;
     }

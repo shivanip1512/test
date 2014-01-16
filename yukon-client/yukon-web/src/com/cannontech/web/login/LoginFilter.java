@@ -17,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -50,39 +49,42 @@ public class LoginFilter implements Filter {
     private LoginService loginService;
 
     // Setup ant-style paths that should be processed even if the user is not logged in.
-    // All paths should start with a slash because that's just the way it works
+    // All paths should start with a slash because that's just the way it works.
     private final static ImmutableList<String> excludedFilePaths =
         ImmutableList.of(LoginController.LOGIN_URL,
                          "/remoteLogin",
-                         "/checkConnection",
                          "/integrationLogin",
                          "/login/forgotPassword",
                          "/login/forgottenPassword",
                          "/login/changePassword",
                          "/login/checkPassword",
                          "/servlet/LoginController",
-                         "/servlet/LoggingServlet",
                          "/soap/**",
                          "/servlet/PWordRequest",
                          "/servlet/StarsPWordRequest",
-                         "/**/prototype.js",
-                         "/**/CtiMenu.js",
                          "/**/*.js",
                          "/**/*.css",
                          "/**/*.png",
                          "/**/*.gif",
                          "/**/*.jpg",
                          "/**/*.html",
-                         "/jws/*.jar", // jws is protected by custom ip filter. See JwsController
+                         // Web start jars are protected by custom token filter. See JwsController.
+                         "/jws/*.jar",
                          "/jws/bc.jnlp",
                          "/jws/client_libs.jnlp",
-                         "/remote/**",
                          "/common/images/*",
                          "/favicon.ico");
 
     private final static ImmutableList<String> excludedRedirectedPaths =
         ImmutableList.of("/servlet/SOAPClient/**",
-                         "/jws/*");
+                         "/jws/*",
+                         "/common/config/deviceDefinition",
+                         "/common/config/rfn",
+                         "/remote/MasterConfig",
+                         // URL to get remote logging configuration.
+                         "/servlet/LoggingServlet",
+                         // URL to actually do remote logging.
+                         "/remote/remoteLogin");
     
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
@@ -90,10 +92,10 @@ public class LoginFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
 
-        // Support accented chars in request params.
+        // Support accented chars in request parameters.
         req.setCharacterEncoding("UTF-8");
 
-        boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
+        boolean isAjaxRequest = ServletUtil.isAjaxRequest(req);
         boolean excludedRequest = ServletUtil.isExcludedRequest(request, excludedFilePaths);
 
         // For excluded requests, try to attach the userContext, but they may not be logged in.
@@ -122,12 +124,7 @@ public class LoginFilter implements Filter {
                 // If we got here, they couldn't be authenticated, send an error response.
                 log.debug("All login attempts failed, returning error");
 
-                boolean noRedirect = ServletRequestUtils.getBooleanParameter(request, "noLoginRedirect", false);
-                if (ajaxRequest || noRedirect) {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
-                } else {
-                    sendLoginRedirect(request, response);
-                }
+                doLoginRedirect(isAjaxRequest, request, response);
                 return;
             }
         }
@@ -137,11 +134,11 @@ public class LoginFilter implements Filter {
 
         // Check session timeout, update last activity time if successful, redirect to login page if expired.
         try {
-            checkSessionTimeout(request, ajaxRequest);
+            checkSessionTimeout(request, isAjaxRequest);
         } catch (SessionTimeoutException e) {
             log.info("User " + user.getUsername() + " logged out due to inactivity");
             loginService.invalidateSession(request, "TIMEOUT");
-            sendLoginRedirect(request, response);
+            doLoginRedirect(isAjaxRequest, request, response);
             return;
         }
 
@@ -195,29 +192,31 @@ public class LoginFilter implements Filter {
         }
     }
 
-    private String getRedirectedFrom(HttpServletRequest request) {
-        boolean isExcludedRedirectedFromRequest = ServletUtil.isExcludedRequest(request, excludedRedirectedPaths);
-        if (isExcludedRedirectedFromRequest) {
-            return "";
+    /**
+     * This method will do a redirect to the login page if the page is not an AJAX page or one of those listed
+     * in {@link #excludedRedirectedPaths}.  In those cases, it returns {@link HttpServletResponse#SC_FORBIDDEN}.
+     */
+    private void doLoginRedirect(boolean isAjaxRequest, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        boolean noRedirect = ServletUtil.isExcludedRequest(request, excludedRedirectedPaths);
+
+        if (isAjaxRequest || noRedirect) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Authenticated!");
+        } else {
+            String url = request.getRequestURL().toString();
+            String urlParams = request.getQueryString();
+            String unencodedNavUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+
+            // strip any unsafe navigation from the URL before it gets encoded.
+            String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, unencodedNavUrl);
+            String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
+
+            String redirectURL = LoginController.LOGIN_URL;
+            if (!StringUtils.isBlank(encodedNavUrl)) {
+                redirectURL += "?" + LoginController.REDIRECTED_FROM + "=" + encodedNavUrl;
+            }
+            response.sendRedirect(redirectURL);
         }
-
-        String url = request.getRequestURL().toString();
-        String urlParams = request.getQueryString();
-        String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
-
-        // strip any unsafe navigation from the URL before it gets encoded.
-        String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
-        String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
-        return encodedNavUrl;
-    }
-
-    private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String navUrl = getRedirectedFrom(request);
-        String redirectURL = LoginController.LOGIN_URL;
-        if (!StringUtils.isBlank(navUrl)) {
-            redirectURL += "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;
-        }
-        response.sendRedirect(redirectURL);
     }
 
     private boolean isLoggedIn(ServletRequest request) {

@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
 
 import org.apache.log4j.Logger;
 
@@ -34,18 +33,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         if (ClientSession.isRemoteSession()) {
             log.info("Loading deviceDefinition.xml for webstart client.");
             try {
-                RemoteLoginSession remoteSession = ClientSession.getRemoteSession();
-                URLConnection connection =
-                        remoteSession.openConnectionToLocation("/common/config/deviceDefinition");
-                long contentLength = connection.getContentLengthLong();
-                if (contentLength < 0) {
-                    throw new RuntimeException("content length not set properly in controller");
-                }
-                if (contentLength == 0) {
-                    log.info("No custom deviceDefinition.xml file.");
-                    return null;
-                }
-                return connection.getInputStream();
+                RemoteLoginSession remoteSession = ClientSession.getRemoteLoginSession();
+                InputStream inputStream = remoteSession.getInputStreamForUrl("/common/config/deviceDefinition", true);
+                return inputStream;
             } catch (IOException e) {
                 throw new RuntimeException("Unable to retrieve deviceDefinition.xml for java webstart client." , e);
             }

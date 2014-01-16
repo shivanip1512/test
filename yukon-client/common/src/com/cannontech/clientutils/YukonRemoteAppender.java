@@ -2,9 +2,8 @@ package com.cannontech.clientutils;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
-import org.springframework.aop.framework.ProxyFactory;
 
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 
@@ -52,8 +51,8 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      * Sets up spring interface and sets the client's application name
      * and clientID (IP address)
      */
-    public static void configureLogger() {
-        remoteLogger = ProxyFactory.getProxy(RemoteLogger.class, ClientSession.getRemoteSession().getClientInterceptor("/remote/RemoteLogger?noLoginRedirect=true"));
+    public static void configureLogger(RemoteLoginSession remoteLoginSession) {
+        remoteLogger = remoteLoginSession.getReconnectingInteceptorProxy(RemoteLogger.class, "/remote/RemoteLogger");
         applicationName = BootstrapUtils.getApplicationName();
         clientId = CtiUtilities.getIPAddress(); 
     } 

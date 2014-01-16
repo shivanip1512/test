@@ -51,7 +51,7 @@ import com.cannontech.user.YukonUserContext;
  */
 public class ClientSession {
     private static ClientSession instance;
-    private static RemoteLoginSession remoteSession;
+    private static RemoteLoginSession remoteLoginSession;
 
     private LiteYukonUser user;
 
@@ -234,8 +234,8 @@ public class ClientSession {
         CTILogger.debug("Starting login dialog loop");
         while (collectInfo(p, lp)) {
             try {
-                remoteSession = new RemoteLoginSession(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
-                if (remoteSession.isValid()) {
+                remoteLoginSession = new RemoteLoginSession(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                if (remoteLoginSession.login()) {
                     LiteYukonUser u = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(lp.getUsername());
                     CTILogger.debug("user: " + u);
 
@@ -254,10 +254,10 @@ public class ClientSession {
                     setPreferences(lp.getUsername(), lp.getPassword(), lp.isRememberMe(), rememberMeSetting);
 
                     // setup remote logging
-                    YukonLogManager.initialize(remoteSession);
+                    YukonLogManager.initialize(remoteLoginSession);
                     return true;
                 } else {
-                    displayMessage(p, remoteSession.getErrorMsg(), "Error");
+                    displayMessage(p, remoteLoginSession.getErrorMsg(), "Error");
                     YukonSpringHook.shutdownContext();
                 }
             } catch (RuntimeException e) {
@@ -373,12 +373,12 @@ public class ClientSession {
         JOptionPane.showMessageDialog(p, msg, title, JOptionPane.WARNING_MESSAGE);
     }
 
-    public static RemoteLoginSession getRemoteSession() {
-        return remoteSession;
+    public static RemoteLoginSession getRemoteLoginSession() {
+        return remoteLoginSession;
     }
 
     public static boolean isRemoteSession() {
-        if (getRemoteSession() == null) {
+        if (getRemoteLoginSession() == null) {
             return false;
         }
         return true;

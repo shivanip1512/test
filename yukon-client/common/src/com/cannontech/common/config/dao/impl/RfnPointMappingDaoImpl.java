@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLConnection;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,11 @@ public class RfnPointMappingDaoImpl implements RfnPointMappingDao {
     @Override
     public InputStream getPointMappingFile() {
         if (ClientSession.isRemoteSession()) {
-            log.info("Loading rfnPointMapping.xml for webstart client.");
+            log.info("Loading rfnPointMapping.xml in web start client.");
             try {
-                URLConnection connection =
-                        ClientSession.getRemoteSession().openConnectionToLocation("/common/config/rfn");
-                InputStream inputStream = connection.getInputStream();
-                return inputStream;
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to retrieve rfnPointMapping.xml for java webstart client." , e);
+                return ClientSession.getRemoteLoginSession().getInputStreamForUrl("/common/config/rfn", false);
+            } catch (IOException ioe) {
+                throw new RuntimeException("Unable to retrieve rfnPointMapping.xml for java webstart client." , ioe);
             }
         } else {
             // Check for a custom RFN point mapping file, use if there, otherwise use default.
@@ -50,10 +46,10 @@ public class RfnPointMappingDaoImpl implements RfnPointMappingDao {
             log.info("Loading rfnPointMapping.xml");
             try {
                 return loader.getResource(defaultPath).getInputStream();
-            } catch (IOException e) {
+            } catch (IOException ioe) {
                 // This should never happen.
-                log.error("could not open default rfnPointMapping.xml file", e);
-                throw new RuntimeException("could not open default rfnPointMapping.xml file", e);
+                log.error("could not open default rfnPointMapping.xml file", ioe);
+                throw new RuntimeException("could not open default rfnPointMapping.xml file", ioe);
             }
         }
     }
