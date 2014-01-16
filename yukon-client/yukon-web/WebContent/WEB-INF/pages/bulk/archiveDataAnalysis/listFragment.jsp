@@ -52,21 +52,21 @@
                     <td>
                         <div class="f-analysis-status">
                             <c:choose>
-                                <c:when test="${analysis.status == 'RUNNING'}">
+                                <c:when test="${analysis.running}">
                                     <cti:url var="analysisProgressUrl" value="/bulk/archiveDataAnalysis/home/processing">
                                         <cti:param name="resultsId" value="${analysis.statusId}"/>
                                         <cti:param name="analysisId" value="${analysis.analysisId}"/>
                                     </cti:url>
                                     <cti:link href="${analysisProgressUrl}" key="${analysis.status.formatKey}"/>
                                 </c:when>
-                                <c:when test="${analysis.status == 'READING'}">
+                                <c:when test="${analysis.reading}">
                                     <cti:url var="readProgressUrl" value="/bulk/archiveDataAnalysis/read/readResults">
                                         <cti:param name="resultId" value="${analysis.statusId}"/>
                                         <cti:param name="analysisId" value="${analysis.analysisId}"/>
                                     </cti:url>
                                     <cti:link href="${readProgressUrl}" key="${analysis.status.formatKey}"/>
                                 </c:when>
-                                <c:when test="${analysis.status == 'COMPLETE' || analysis.status == 'INTERRUPTED'}">
+                                <c:when test="${analysis.done}">
                                     <i:inline key="${analysis.status}"/>
                                 </c:when>
                             </c:choose>
@@ -78,13 +78,13 @@
                         </cti:url>
                         <div class="f-analysis-actions">
                             <c:choose>
-                                <c:when test="${analysis.status == 'RUNNING'}">
+                                <c:when test="${analysis.running}">
                                     <cti:button classes="f-results-button" nameKey="viewButtonAnalyzing" renderMode="image" href="${viewUrl}" disabled="true" icon="icon-application-view-columns"/>
                                 </c:when>
-                                <c:when test="${analysis.status == 'READING'}">
+                                <c:when test="${analysis.reading}">
                                     <cti:button classes="f-results-button" nameKey="viewButton" renderMode="image" href="${viewUrl}" icon="icon-application-view-columns"/>
                                 </c:when>
-                                <c:when test="${analysis.status == 'COMPLETE' || analysis.status == 'INTERRUPTED'}">
+                                <c:when test="${analysis.done}">
                                     <c:choose>
                                         <c:when test="${analysis.deviceCount == 0}">
                                             <cti:button classes="f-results-button" nameKey="viewButtonNoDevices" renderMode="image" disabled="true" icon="icon-application-view-columns"/>
@@ -99,7 +99,7 @@
                             <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
                         </div>
                     </td>
-                    <cti:dataUpdaterCallback function="Yukon.ArchiveDataAnalysis.changeStatus"
+                    <cti:dataUpdaterCallback function="Yukon.DataAnalysis.changeStatus"
                                 value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
                     
                 </tr>

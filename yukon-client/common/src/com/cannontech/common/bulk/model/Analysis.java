@@ -94,6 +94,18 @@ public class Analysis {
     public AdaStatus getStatus() {
         return status;
     }
+    
+    public boolean isDone() {
+        return status == AdaStatus.COMPLETE || status == AdaStatus.INTERRUPTED;
+    }
+    
+    public boolean isRunning() {
+        return status == AdaStatus.RUNNING;
+    }
+    
+    public boolean isReading() {
+        return status == AdaStatus.READING;
+    }
 
     public void setStatusId(String statusId) {
         this.statusId = statusId;
