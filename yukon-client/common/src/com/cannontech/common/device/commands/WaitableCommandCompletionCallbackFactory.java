@@ -40,7 +40,7 @@ public class WaitableCommandCompletionCallbackFactory {
         int resultsDelay = betweenResultsMaxDelay;
         int totalDelay = totalMaxDelay;
 
-        if (paoType.isRfn()) {
+        if (paoType != null && paoType.isRfn()) {
             resultsDelay = RFN_DELAY_MULTIPLIER * BETWEEN_RESULTS_MAX_DELAY_DEFAULT;
             totalDelay = RFN_DELAY_MULTIPLIER * TOTAL_MAX_DELAY_DEFAULT;
         }
