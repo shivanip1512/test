@@ -15,7 +15,6 @@ import com.cannontech.messaging.util.ListenerConnectionFactory;
 import com.cannontech.notif.outputs.OutputHandlerHelper;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.util.MBeanUtil;
 
 /**
  * The server used for accepting and creating notification messages.
@@ -38,8 +37,6 @@ public class NotificationServer implements NotificationServerMBean {
             YukonSpringHook.setDefaultContext(YukonSpringHook.NOTIFICATION_BEAN_FACTORY_KEY);
 
             NotificationServer ns = YukonSpringHook.getBean("notificationServer", NotificationServer.class);
-
-            MBeanUtil.tryRegisterMBean("type=notificationserver", ns);
 
             ns.start();
         }
@@ -144,9 +141,8 @@ public class NotificationServer implements NotificationServerMBean {
                 default:
                     // If the server is not null meaning we were not stopped report the error
                     if (server != null) {
-                        log.error("Failed to accept connection");
+                        log.error("Failed to connect to the broker.");
                     }
-                    server = null;
                     break;
             }
         }
