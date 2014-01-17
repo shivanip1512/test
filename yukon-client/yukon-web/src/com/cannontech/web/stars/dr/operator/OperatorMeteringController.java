@@ -32,7 +32,7 @@ public class OperatorMeteringController {
 	private CustomerGraphDao customerGraphDao;
 	
 	// VIEW TREND
-	@RequestMapping
+	@RequestMapping("viewTrend")
     public String viewTrend(Integer gdefid,
     						ModelMap modelMap, 
 	    					YukonUserContext userContext,
@@ -85,7 +85,7 @@ public class OperatorMeteringController {
 	}
 	
 	// SELECT TRENDS
-	@RequestMapping
+	@RequestMapping("selectTrends")
 	public String selectTrends(ModelMap modelMap, 
 								YukonUserContext userContext,
 								AccountInfoFragment accountInfoFragment) {
@@ -115,7 +115,7 @@ public class OperatorMeteringController {
 	}
 	
 	// SAVE SELECTED TRENDS
-	@RequestMapping
+	@RequestMapping("saveSelectedTrends")
 	public String saveSelectedTrends(Integer[] graphDefinitionId,
 									ModelMap modelMap, 
 									YukonUserContext userContext,

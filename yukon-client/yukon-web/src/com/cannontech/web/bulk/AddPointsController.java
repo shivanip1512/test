@@ -47,7 +47,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 	@Autowired private DeviceCollectionFactory deviceCollectionFactory;
 
 	// HOME
-	@RequestMapping
+	@RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
@@ -96,7 +96,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // EXECUTE ADD
-    @RequestMapping
+    @RequestMapping("execute")
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
     	
     	// device collection
@@ -230,7 +230,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     }
     
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("addPointsResults")
     public String addPointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // prepare mav with basic results data

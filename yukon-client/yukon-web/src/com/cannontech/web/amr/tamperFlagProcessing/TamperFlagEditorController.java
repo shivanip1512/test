@@ -42,7 +42,7 @@ public class TamperFlagEditorController {
 	private Logger log = YukonLogManager.getLogger(TamperFlagEditorController.class);
 
 	// EDIT
-	@RequestMapping
+	@RequestMapping("edit")
     public void edit(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
         
 		// pass through due to error
@@ -84,7 +84,7 @@ public class TamperFlagEditorController {
     }
 	
 	// UPDATE
-	@RequestMapping
+	@RequestMapping("update")
 	public String update(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
         
         String editError = null;
@@ -180,7 +180,7 @@ public class TamperFlagEditorController {
 	}
 	
 	// DELETE
-	@RequestMapping
+	@RequestMapping("delete")
 	public String delete(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
         
         int deleteTamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "deleteTamperFlagMonitorId");
@@ -196,7 +196,7 @@ public class TamperFlagEditorController {
 	}
 	
 	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
-	@RequestMapping
+	@RequestMapping("toggleEnabled")
 	public String toggleEnabled(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws Exception, ServletException {
         
 		int tamperFlagMonitorId = ServletRequestUtils.getIntParameter(request, "tamperFlagMonitorId", 0);

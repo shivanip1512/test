@@ -183,7 +183,7 @@ public class MeterEventsReportController {
         return reportJspPath;
     }
     
-    @RequestMapping
+    @RequestMapping("report")
     public String report(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, String attrNames, Integer jobId)
@@ -238,7 +238,7 @@ public class MeterEventsReportController {
         return reportJspPath;
 	}
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="schedule", method = RequestMethod.POST)
     public String schedule(@ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
     		String attrNames, ModelMap model, FlashScope flashScope, HttpServletRequest request,
     		@RequestParam(defaultValue="false") Boolean onlyLatestEvent, 
@@ -299,7 +299,7 @@ public class MeterEventsReportController {
     	return "redirect:jobs";
     }
     
-    @RequestMapping
+    @RequestMapping("jobs")
     public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
 		
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -307,7 +307,7 @@ public class MeterEventsReportController {
 		return "meterEventsReport/jobs.jsp";
 	}
     
-    @RequestMapping
+    @RequestMapping("delete")
 	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
 		YukonJob job = jobManager.getJob(jobId);
 		ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
@@ -320,7 +320,7 @@ public class MeterEventsReportController {
 		return "redirect:jobs";
 	}
     
-    @RequestMapping
+    @RequestMapping("reportAll")
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         
@@ -346,7 +346,7 @@ public class MeterEventsReportController {
         setupReportFromFilter(backingBean, userContext, model);
     }
 
-    @RequestMapping
+    @RequestMapping("reset")
     public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
@@ -354,7 +354,7 @@ public class MeterEventsReportController {
         return reportJspPath;
     }
     
-    @RequestMapping
+    @RequestMapping("csv")
     public void csv(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
                       ModelMap model, 
                       HttpServletRequest request, 

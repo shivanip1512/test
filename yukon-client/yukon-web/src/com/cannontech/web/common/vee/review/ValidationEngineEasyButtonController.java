@@ -35,12 +35,12 @@ public class ValidationEngineEasyButtonController {
         return validationTagsAsList;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="menu", method = RequestMethod.GET)
     public String menu() {
         return "vee/review/menu.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="resetValidationEngine", method = RequestMethod.POST)
     public String resetValidationEngine(YukonUserContext userContext, ModelMap model) {
         validationHelperService.resetValidationEngine(null);
         validationEventLogService.validationEngineReset(userContext.getYukonUser());
@@ -48,7 +48,7 @@ public class ValidationEngineEasyButtonController {
         return "redirect:menu";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="resetValidationEngineOneYear", method = RequestMethod.POST)
     public String resetValidationEngineOneYear(YukonUserContext userContext, ModelMap model) {
         Period oneYear = Period.years(1);
         DateTime now = new DateTime(userContext.getJodaTimeZone());
@@ -59,7 +59,7 @@ public class ValidationEngineEasyButtonController {
         return "redirect:menu";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="deleteAllTaggedRows", method = RequestMethod.POST)
     public String deleteAllTaggedRows(String[] selectedTags, YukonUserContext userContext,
             ModelMap model) {
         Set<RphTag> tagSet = ServletUtil.convertStringArrayToEnums(selectedTags, RphTag.class);
@@ -70,7 +70,7 @@ public class ValidationEngineEasyButtonController {
         return "redirect:menu";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="acceptAllTaggedRows", method = RequestMethod.POST)
     public String acceptAllTaggedRows(String[] selectedTags,
             YukonUserContext userContext, ModelMap model) {
         Set<RphTag> tagSet = ServletUtil.convertStringArrayToEnums(selectedTags, RphTag.class);

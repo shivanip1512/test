@@ -23,13 +23,13 @@ public class DeviceDataMonitorsWidget extends AdvancedWidgetControllerBase {
     @Autowired private DeviceDataMonitorCacheService deviceDataMonitorCacheService;
 	@Autowired private DeviceDataMonitorService deviceDataMonitorService;
 
-	@RequestMapping
+	@RequestMapping("render")
 	public String render(ModelMap model, HttpServletRequest request) throws Exception {
 		setupRenderModel(model);
 		return "deviceDataMonitorWidget/render.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("toggleEnabled")
 	public String toggleEnabled(int monitorId, ModelMap model, YukonUserContext userContext) throws Exception {
 		String widgetError = null;
 

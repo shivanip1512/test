@@ -134,7 +134,7 @@ public class SurveyController {
         }
     };
 
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
@@ -149,7 +149,7 @@ public class SurveyController {
         return "survey/list.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("listTable")
     public String listTable(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
@@ -164,7 +164,7 @@ public class SurveyController {
         return "survey/listTable.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping(" sampleXml")
     public void  sampleXml(HttpServletResponse response, Integer surveyId,
             YukonUserContext userContext) throws IOException {
         List<Survey> surveys = Lists.newArrayList();
@@ -221,7 +221,7 @@ public class SurveyController {
         return xmlBuilder.toString();
     }
 
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, int surveyId, FlashScope flashScope,
             YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
@@ -240,7 +240,7 @@ public class SurveyController {
         return "redirect:list";
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int surveyId,
             YukonUserContext userContext, FlashScope flashScope) {
         Survey survey = verifyEditable(surveyId, userContext);
@@ -255,7 +255,7 @@ public class SurveyController {
         return "survey/edit.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("editDetails")
     public String editDetails(ModelMap model, Integer surveyId,
             YukonUserContext userContext) {
         Survey survey;
@@ -280,7 +280,7 @@ public class SurveyController {
         return "survey/editDetails.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("saveDetails")
     public String saveDetails(HttpServletResponse response, ModelMap model,
             @ModelAttribute Survey survey, BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
@@ -324,7 +324,7 @@ public class SurveyController {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("addQuestion")
     public String addQuestion(ModelMap model, int surveyId,
             YukonUserContext userContext) {
         Question question = new Question();
@@ -333,7 +333,7 @@ public class SurveyController {
         return editQuestion(model, question, userContext);
     }
 
-    @RequestMapping
+    @RequestMapping("editQuestion")
     public String editQuestion(ModelMap model,
             int surveyQuestionId, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
@@ -358,7 +358,7 @@ public class SurveyController {
         return "survey/editQuestion.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("saveQuestion")
     public String saveQuestion(HttpServletResponse response, ModelMap model,
             @ModelAttribute Question question, BindingResult bindingResult,
             String[] answerKeys, YukonUserContext userContext, FlashScope flashScope) {
@@ -404,7 +404,7 @@ public class SurveyController {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("moveQuestion")
     public String moveQuestion(HttpServletResponse response, ModelMap model,
             int surveyQuestionId, String direction, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
@@ -418,7 +418,7 @@ public class SurveyController {
         return "redirect:edit?surveyId=" + question.getSurveyId();
     }
 
-    @RequestMapping
+    @RequestMapping("deleteQuestion")
     public String deleteQuestion(ModelMap model, int surveyQuestionId,
             FlashScope flashScope, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);

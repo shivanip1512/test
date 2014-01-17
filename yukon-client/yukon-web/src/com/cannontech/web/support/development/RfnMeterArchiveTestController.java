@@ -36,6 +36,7 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.Lists;
 
 @Controller("/development/rfn/*")
+@RequestMapping("/development/rfn/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class RfnMeterArchiveTestController {
 
@@ -44,27 +45,27 @@ public class RfnMeterArchiveTestController {
     
     private JmsTemplate jmsTemplate;
 
-    @RequestMapping
+    @RequestMapping("viewBase")
     public String viewBase() {
         return "development/rfn/viewBase.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("viewMeterReadArchiveRequest")
     public String viewMeterReadArchiveRequest() {
         return "development/rfn/viewMeterReadArchive.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
         return setupEventAlarmAttributes(model, new RfnTestEvent());
     }
     
-    @RequestMapping
+    @RequestMapping("viewLcrReadArchiveRequest")
     public String viewLcrReadArchiveRequest() {
         return "development/rfn/viewLcrReadArchive.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("viewLcrArchiveRequest")
     public String viewLcrArchiveRequest() {
         return "development/rfn/viewLcrArchive.jsp";
     }
@@ -125,7 +126,7 @@ public class RfnMeterArchiveTestController {
         return "redirect:viewLcrArchiveRequest";
     }
     
-    @RequestMapping
+    @RequestMapping("sendEvent")
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
         
@@ -140,12 +141,12 @@ public class RfnMeterArchiveTestController {
         return setupEventAlarmAttributes(model, event);
     }
     
-    @RequestMapping
+    @RequestMapping("calcStressTest")
     public void calcStressTest() {
         rfnEventTestingService.calculationStressTest();
     }
     
-    @RequestMapping
+    @RequestMapping("resendStartup")
     public void resendStartup() {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);

@@ -226,7 +226,7 @@ public class DynamicBillingController {
      * method calls the actual method to generate the file and the result is
      * then parsed to be html friendly and then sent to the page
      */
-    @RequestMapping
+    @RequestMapping("updatePreview")
     public @ResponseBody String updatePreview(int formatId, String formatName, String footer, String header,
                                               String delimiter, String fieldArray)
             throws JsonParseException, JsonMappingException, IOException {
@@ -251,7 +251,7 @@ public class DynamicBillingController {
         return returnString.toString().replaceAll(" ", "&nbsp;");
     }
 
-    @RequestMapping
+    @RequestMapping("updateFormatName")
     public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model, final YukonUserContext context) throws ServletException {
 
         DynamicFormat format = new DynamicFormat();

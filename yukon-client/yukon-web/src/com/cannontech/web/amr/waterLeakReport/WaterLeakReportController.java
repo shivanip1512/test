@@ -176,7 +176,7 @@ public class WaterLeakReportController {
             }
         };
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(@ModelAttribute("backingBean") WaterLeakReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, boolean initReport,
@@ -242,7 +242,7 @@ public class WaterLeakReportController {
         return "waterLeakReport/report.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="schedule", method = RequestMethod.GET)
     public String schedule(@ModelAttribute("fileExportData") ScheduledFileExportData scheduledFileExportData,
     		BindingResult bindingResult, 
     		@RequestParam(defaultValue="false") Boolean includeDisabledPaos,
@@ -292,7 +292,7 @@ public class WaterLeakReportController {
     	return "redirect:jobs";
     }
     
-    @RequestMapping
+    @RequestMapping("jobs")
     public String jobs(ModelMap model,Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -300,7 +300,7 @@ public class WaterLeakReportController {
 		return "waterLeakReport/jobs.jsp";
 	}
     
-    @RequestMapping
+    @RequestMapping("delete")
 	public String delete(ModelMap model, int jobId, FlashScope flashScope) {
 		YukonJob job = jobManager.getJob(jobId);
 		ScheduledWaterLeakFileExportTask task = (ScheduledWaterLeakFileExportTask) jobManager.instantiateTask(job);
@@ -313,7 +313,7 @@ public class WaterLeakReportController {
 		return "redirect:jobs";
 	}
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="intervalData", method = RequestMethod.GET)
     public String intervalData(@ModelAttribute("backingBean") WaterLeakReportFilterBackingBean backingBean,
                                ModelMap model, YukonUserContext userContext,
                                Integer[] selectedPaoIds)
@@ -323,7 +323,7 @@ public class WaterLeakReportController {
         return "waterLeakReport/intervalData.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="cisDetails", method = RequestMethod.GET)
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
         MspMeterAccountInfo mspMeterAccountInfo = mspMeterAccountInfoMap.getIfPresent(paoId);
         if (mspMeterAccountInfo == null) {
@@ -354,7 +354,7 @@ public class WaterLeakReportController {
         return "waterLeakReport/accountInfoAjax.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="csvWaterLeak", method = RequestMethod.GET)
     public String csvWaterLeak(@ModelAttribute WaterLeakReportFilterBackingBean backingBean,
                                ModelMap model, HttpServletRequest request,
                                HttpServletResponse response,
@@ -402,7 +402,7 @@ public class WaterLeakReportController {
         return "";
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="csvWaterLeakIntervalData", method = RequestMethod.GET)
     public String csvWaterLeakIntervalData(@ModelAttribute WaterLeakReportFilterBackingBean backingBean,
                                            ModelMap model, HttpServletRequest request,
                                            HttpServletResponse response,

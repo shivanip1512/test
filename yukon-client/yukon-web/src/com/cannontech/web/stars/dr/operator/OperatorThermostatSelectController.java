@@ -31,7 +31,7 @@ public class OperatorThermostatSelectController {
 	private OperatorThermostatHelper operatorThermostatHelper;
 	
 	// SELECT THERMOSTATS
-	@RequestMapping
+	@RequestMapping("select")
     public String select(String inventoryIds,
     					ModelMap modelMap, 
     					YukonUserContext userContext,
@@ -53,7 +53,7 @@ public class OperatorThermostatSelectController {
 	}
 	
 	// SELECT THERMOSTATS REDIRECT
-	@RequestMapping
+	@RequestMapping("selectRedirect")
     public String selectRedirect(String thermostatIds, 
     							 String schedule,
 						         ModelMap modelMap,

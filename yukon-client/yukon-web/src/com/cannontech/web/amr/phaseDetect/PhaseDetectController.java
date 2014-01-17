@@ -88,7 +88,7 @@ public class PhaseDetectController {
     private PhaseDetectResult resultCopy = null;
     private PhaseDetectData dataCopy = null;
 
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, String errorMsg) throws ServletException {
         try {
             phaseDetectService.getPhaseDetectData();
@@ -107,7 +107,7 @@ public class PhaseDetectController {
         return "phaseDetect/home.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("routes")
     public String routes(ModelMap model, int substationId, HttpServletResponse response) throws ServletException {
         try {
             Substation currentSubstation = substationDao.getById(substationId);
@@ -133,7 +133,7 @@ public class PhaseDetectController {
         return "phaseDetect/routes.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="saveSubstationAndReadMethod", method=RequestMethod.POST)
     public String saveSubstationAndReadMethod(String readPhasesWhen, Integer selectedSub, ModelMap model, HttpServletRequest request) throws ServletException {
         List<Route> routes = strmDao.getRoutesBySubstationId(selectedSub);
         List<Route> readRoutes = Lists.newArrayList();
@@ -163,13 +163,13 @@ public class PhaseDetectController {
         return "redirect:broadcastRouteSelection";
     }
     
-    @RequestMapping
+    @RequestMapping("broadcastRouteSelection")
     public String broadcastRouteSelection(ModelMap model){
         model.addAttribute("routes", phaseDetectService.getPhaseDetectData().getReadRoutes());
         return "phaseDetect/broadcastRouteSelection.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="saveBroadcastRoutes", method=RequestMethod.POST)
     public String saveBroadcastRoutes(ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
@@ -188,14 +188,14 @@ public class PhaseDetectController {
         return "redirect:clearPhaseData";
     }
     
-    @RequestMapping
+    @RequestMapping("clearPhaseData")
     public String clearPhaseData(ModelMap model) {
         model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
         return "phaseDetect/clearPhaseData.jsp";
     }
     
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="clear", method=RequestMethod.POST)
     public String clear(LiteYukonUser user, ModelMap model, HttpServletRequest request) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
@@ -218,13 +218,13 @@ public class PhaseDetectController {
         return "redirect:testSettings";
     }
     
-    @RequestMapping
+    @RequestMapping("testSettings")
     public String testSettings(ModelMap model, HttpServletRequest request) {
         model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
         return "phaseDetect/testSettings.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="saveTestSettings", method=RequestMethod.POST)
     public String saveTestSettings(int intervalLength, int deltaVoltage, int numIntervals, ModelMap model, HttpServletRequest request, LiteYukonUser user) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
@@ -240,7 +240,7 @@ public class PhaseDetectController {
         return "redirect:testPage";
     }
     
-    @RequestMapping
+    @RequestMapping("testPage")
     public String testPage(ModelMap model, YukonUserContext userContext) {
         List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectData().getSubstationId());
         if(phaseDetectService.getPhaseDetectState() == null){
@@ -283,7 +283,7 @@ public class PhaseDetectController {
         }
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="startTest", method=RequestMethod.POST)
     public View startTest(String phase, ModelMap model, LiteYukonUser user) {
         try {
             Phase phaseEnumValue = Phase.valueOf(phase);
@@ -366,7 +366,7 @@ public class PhaseDetectController {
         return "phaseDetect/readPhaseResults.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("cancelRead")
     public String cancelRead(ModelMap model, LiteYukonUser user){
         phaseDetectService.cancelReadPhaseDetect(user);
         phaseDetectService.getPhaseDetectState().setReadCanceled(true);
@@ -374,13 +374,13 @@ public class PhaseDetectController {
         return "redirect:testPage";
     }
     
-    @RequestMapping
+    @RequestMapping("cancelTest")
     public String cancelTest(ModelMap model, LiteYukonUser user){
         phaseDetectService.cancelTest(user);
         return "redirect:home";
     }
     
-    @RequestMapping
+    @RequestMapping("sendClearFromTestPage")
     public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response) throws ServletException {
         JSONObject jsonObject = new JSONObject();
         phaseDetectService.clearPhaseData(user);/* Will block until done */
@@ -397,7 +397,7 @@ public class PhaseDetectController {
         return "phaseDetect/testPageClearResult.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("phaseDetectResults")
     public String phaseDetectResults(ModelMap model, LiteYukonUser user, HttpServletRequest request) throws ServletException {
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
@@ -508,7 +508,7 @@ public class PhaseDetectController {
         return "phaseDetect/phaseDetectResults.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("chart")
     public @ResponseBody JSONObject chart() {
         Map<String, Integer> phaseResultsMap = getChartPhaseResults();
         JSONObject phaseDetectResults = flotChartService.getPieGraphData(phaseResultsMap);

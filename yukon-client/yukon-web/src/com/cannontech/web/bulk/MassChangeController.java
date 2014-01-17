@@ -37,7 +37,7 @@ public class MassChangeController {
      * @throws DeviceCollectionCreationException 
      * @throws ServletRequestBindingException 
      */
-    @RequestMapping
+    @RequestMapping("massChangeSelect")
     public String massChangeSelect(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, DeviceCollectionCreationException {
         
         // pass along deviceCollection
@@ -55,7 +55,7 @@ public class MassChangeController {
     }
     
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("massChangeResults")
     public String massChangeResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException  {
 
         // result info

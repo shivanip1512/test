@@ -90,7 +90,7 @@ public class ListController {
         }
     };
 
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model, YukonUserContext context, EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
@@ -103,7 +103,7 @@ public class ListController {
         return "list/list.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int listId, YukonUserContext context,
                        EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
@@ -119,7 +119,7 @@ public class ListController {
         return "list/view.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int listId, YukonUserContext context,
                        EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
@@ -143,7 +143,7 @@ public class ListController {
         return "list/edit.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("addItem")
     public String addItem(ModelMap model, int itemIndex, int listId, YukonUserContext context) {
         model.addAttribute("entryIndex", itemIndex);
 

@@ -155,7 +155,7 @@ public class CapControlImportController {
         }
 	}
 	
-	@RequestMapping(method=RequestMethod.GET)
+	@RequestMapping(value="view", method=RequestMethod.GET)
 	public String view(String cacheKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
 	    List<ImportResult> results = Lists.newArrayList();
 		
@@ -229,7 +229,7 @@ public class CapControlImportController {
 		}
 	}
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="cbcFile", method=RequestMethod.POST)
 	public String cbcFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
 		List<CbcImportResult> results = new ArrayList<CbcImportResult>();
 		
@@ -284,7 +284,7 @@ public class CapControlImportController {
         return "redirect:view";
 	}
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="regulatorFile", method=RequestMethod.POST)
 	public String regulatorFile(ModelMap model, HttpServletRequest request, FlashScope flashScope) throws IOException {
 	    //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
@@ -334,7 +334,7 @@ public class CapControlImportController {
         return "redirect:view";
 	}
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="pointmappingFile", method=RequestMethod.POST)
 	public String pointmappingFile(ModelMap model, HttpServletRequest request, FlashScope flashScope) throws IOException {
 	    //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
@@ -384,7 +384,7 @@ public class CapControlImportController {
         return "redirect:view";
 	}
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="hierarchyFile", method=RequestMethod.POST)
 	public String hierarchyFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
 		List<HierarchyImportResult> results = Lists.newArrayList();
 		

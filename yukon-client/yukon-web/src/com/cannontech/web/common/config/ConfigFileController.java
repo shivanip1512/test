@@ -19,14 +19,14 @@ public class ConfigFileController {
     @Autowired private RfnPointMappingDao rfnPointMappingDao;
     @Autowired private DeviceDefinitionDao deviceDefinitionDao;
 
-    @RequestMapping
+    @RequestMapping("rfn")
     public void rfn(HttpServletResponse resp) throws IOException {
         resp.setContentType("text/xml");
         // FileCopyUtils.copy closes both streams when finished.
         FileCopyUtils.copy(rfnPointMappingDao.getPointMappingFile(), resp.getOutputStream());
     }
 
-    @RequestMapping
+    @RequestMapping("deviceDefinition")
     public void deviceDefinition(HttpServletResponse resp) throws IOException {
         InputStream customConfigFile = deviceDefinitionDao.findCustomDeviceDefinitions();
         resp.setContentType("text/xml");

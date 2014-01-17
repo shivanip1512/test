@@ -56,6 +56,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 @Controller("/command/*")
+@RequestMapping("/command/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CommandController {
     
@@ -86,7 +87,7 @@ public class CommandController {
     }
     
     /* NORMAL COMMANDS */
-    @RequestMapping
+    @RequestMapping("system")
     public String system(HttpServletResponse response,
                          ModelMap model, 
                          YukonUserContext context, 
@@ -116,7 +117,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, commandType, null, model, success);
     }
     
-    @RequestMapping
+    @RequestMapping("itemCommand")
 	public String itemCommand(HttpServletResponse response, 
 	                          ModelMap model, 
 	                          YukonUserContext context, 
@@ -187,7 +188,7 @@ public class CommandController {
 	}
 
     /* SPECIAL COMMANDS */
-    @RequestMapping
+    @RequestMapping("changeOpState")
     public String changeOpState(HttpServletResponse response, 
                                        ModelMap model, 
                                        YukonUserContext context, 
@@ -228,7 +229,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, CommandType.CHANGE_OP_STATE, bankName, model, success);
     }
     
-    @RequestMapping
+    @RequestMapping("bankMove")
     public String bankMove(ModelMap model, 
                            LiteYukonUser user,
                            FlashScope flash,
@@ -299,7 +300,7 @@ public class CommandController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("returnBank")
     public String returnBank(ModelMap model, FlashScope flash, LiteYukonUser user, int bankId, boolean assignHere) {
         
         rolePropertyDao.verifyProperty(permissions.get(CapControlType.CAPBANK), user);
@@ -359,7 +360,7 @@ public class CommandController {
         return "redirect:/capcontrol/tier/feeders";
     }
     
-    @RequestMapping
+    @RequestMapping("manualStateChange")
 	public String manualStateChange(HttpServletResponse response, 
 	                                       ModelMap model, 
 	                                       YukonUserContext context, 
@@ -386,7 +387,7 @@ public class CommandController {
 	    return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
 	}
     
-    @RequestMapping
+    @RequestMapping("commandOneLine")
     public void commandOneLine(HttpServletResponse response, YukonUserContext context, int paoId, int cmdId) {
         LiteYukonUser user = context.getYukonUser();
         ItemCommand command = CommandHelper.buildItemCommand(cmdId, paoId, user);
@@ -399,7 +400,7 @@ public class CommandController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("commandOneLineTag")
     public String commandOneLineTag(HttpServletRequest request,
                                            HttpServletResponse response,
                                            ModelMap model,
@@ -492,7 +493,7 @@ public class CommandController {
         return "tier/popupmenu/statusMessage.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("resetBankOpCount")
     public String resetBankOpCount(HttpServletResponse response, ModelMap model, YukonUserContext context, int bankId, int newOpCount) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
@@ -513,7 +514,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bank.getCcName(), model, success);
     }
     
-    @RequestMapping
+    @RequestMapping("verifyBanks")
     public String verifyBanks(HttpServletResponse response, ModelMap model, YukonUserContext context, int commandId, int itemId, boolean disableOvUv) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);
@@ -529,7 +530,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success);
     }
     
-    @RequestMapping
+    @RequestMapping("verifyInactiveBanks")
     public String verifyInactiveBanks(HttpServletResponse response, ModelMap model, YukonUserContext context, int itemId, boolean disableOvUv, long inactivityTime) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);
@@ -545,7 +546,7 @@ public class CommandController {
         return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success); 
     }
     
-    @RequestMapping
+    @RequestMapping("verifySelectedBank")
     public String verifySelectedBank(HttpServletResponse response, ModelMap model, YukonUserContext context, int itemId, boolean disableOvUv, int bankId) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         StreamableCapObject streamable = cache.getObject(itemId);

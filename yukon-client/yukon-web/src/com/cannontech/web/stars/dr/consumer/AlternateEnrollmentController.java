@@ -37,7 +37,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
     
     private static final String VIEW = "consumer/alternateEnrollment.jsp";
        
-    @RequestMapping
+    @RequestMapping("view")
     public String view(@ModelAttribute CustomerAccount customerAccount, ModelMap model, YukonUserContext context) {
     	
         YukonEnergyCompany yec = yecService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
@@ -56,7 +56,7 @@ public class AlternateEnrollmentController extends AbstractConsumerController {
         return VIEW;
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="enroll", method = RequestMethod.POST)
     public String enroll(@ModelAttribute CustomerAccount customerAccount, 
     		ModelMap model, 
     		final Integer[] alternate, 

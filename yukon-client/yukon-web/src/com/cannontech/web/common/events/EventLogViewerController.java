@@ -530,7 +530,7 @@ public class EventLogViewerController {
         });
     }
     
-    @RequestMapping
+    @RequestMapping("testAll")
     public void testAll(ModelMap map) {
         Date now = new Date();
         List<ArgumentColumn> argumentColumns = eventLogDao.getArgumentColumns();

@@ -70,7 +70,7 @@ public class GeneralInfoController {
     @Autowired private CsrfTokenService csrfTokenService;
 
     /* View Page*/
-    @RequestMapping
+    @RequestMapping("view")
     public String view(YukonUserContext context, FlashScope flashScope, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
         energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
         

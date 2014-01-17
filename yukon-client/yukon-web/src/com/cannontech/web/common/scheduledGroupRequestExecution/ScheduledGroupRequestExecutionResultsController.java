@@ -74,7 +74,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         sorters = builder.build();
     }
 	
-    @RequestMapping
+    @RequestMapping("jobs")
     public String jobs(@ModelAttribute("scheduledJobsFilterBackingBean") ScheduledJobsFilterBackingBean backingBean,
                      BindingResult bindingResult, FlashScope flashScope,
                      YukonUserContext userContext, ModelMap model) {
@@ -83,12 +83,12 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		return "scheduledGroupRequestExecution/results/jobs.jsp";
 	}
 
-    @RequestMapping
+    @RequestMapping("clear")
     public String clear() {
         return "redirect:jobs";
     }
     
-    @RequestMapping
+    @RequestMapping("cancelJob")
     @ResponseBody
     public Map<String, Boolean> cancelJob(int jobId) {
         YukonJob job = jobManager.getJob(jobId);
@@ -96,7 +96,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         return Collections.singletonMap("isJobStopped", isJobStopped);
     }
     
-    @RequestMapping
+    @RequestMapping("toggleEnabled")
     @ResponseBody
     public Map<String, Boolean> toggleEnabled(YukonUserContext userContext, int jobId) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
@@ -111,7 +111,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         return Collections.singletonMap("jobEnabled", enabled);
     }
 
-    @RequestMapping
+    @RequestMapping("detail")
     public String detail(int jobId, ModelMap model, YukonUserContext userContext) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
@@ -126,7 +126,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	}
 
 	// Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
-    @RequestMapping
+    @RequestMapping("viewLastRun")
 	public String viewLastRun(int jobId, ModelMap model) {
 		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
 		model.addAttribute("commandRequestExecutionId", lastCre.getId());

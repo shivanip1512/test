@@ -81,7 +81,7 @@ public class OperatorEnrollmentController {
      * The main operator "enrollment" page. Lists all current enrollments and
      * has icons for adding, removing and editing these enrollments.
      */
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
@@ -106,7 +106,7 @@ public class OperatorEnrollmentController {
         return "operator/enrollment/list.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("history")
     public String history(ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
@@ -122,7 +122,7 @@ public class OperatorEnrollmentController {
      * chosen via a picker. Does the same thing as editing an enrollment with
      * different wording ("Add Enrollment" instead of "Edit Enrollment").
      */
-    @RequestMapping
+    @RequestMapping("add")
     public String add(ModelMap model, int assignedProgramId,
             HttpServletResponse response, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
@@ -134,7 +134,7 @@ public class OperatorEnrollmentController {
      * Edit a program enrollment.  Displays a dialog to the user allowing them
      * to change load group used and hardware used for the selected program.
      */
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int assignedProgramId,
             HttpServletResponse response, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
@@ -193,7 +193,7 @@ public class OperatorEnrollmentController {
         return "operator/enrollment/edit.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("confirmSave")
     public String confirmSave(ModelMap model, int assignedProgramId,
             boolean isAdd, @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
@@ -220,7 +220,7 @@ public class OperatorEnrollmentController {
         return "operator/enrollment/save.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("save")
     public @ResponseBody JSONObject save(HttpServletResponse resp, ModelMap model, int assignedProgramId, boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
@@ -277,7 +277,7 @@ public class OperatorEnrollmentController {
         return json;
     }
 
-    @RequestMapping
+    @RequestMapping("confirmUnenroll")
     public String confirmUnenroll(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
@@ -289,7 +289,7 @@ public class OperatorEnrollmentController {
         return "operator/enrollment/unenroll.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("unenroll")
     public @ResponseBody JSONObject unenroll(HttpServletResponse resp, ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {

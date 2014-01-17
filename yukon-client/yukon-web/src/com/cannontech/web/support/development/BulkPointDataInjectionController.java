@@ -73,7 +73,7 @@ public class BulkPointDataInjectionController {
         setupModelMap(model, userContext);
     }
 
-    @RequestMapping
+    @RequestMapping("sendBulkData")
     public String sendBulkData(@ModelAttribute("bulkInjection") BulkFakePointInjectionDto bulkInjection,
                                BindingResult bindingResult, YukonUserContext userContext,
                                FlashScope flashScope, ModelMap model) {

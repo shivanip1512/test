@@ -74,7 +74,7 @@ public class CommandRequestExecutionResultsController {
         public void setToDate(Instant toDate) {this.toDate = toDate;}
 	}
 
-	@RequestMapping
+	@RequestMapping("list")
 	public String list(ModelMap model, ListBackingBean listBackingBean, YukonUserContext userContext) {
 
         Instant fromDate = listBackingBean.getFromDate();
@@ -123,7 +123,7 @@ public class CommandRequestExecutionResultsController {
 		return "commandRequestExecution/list.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("detail")
 	public String detail(ModelMap model,
 			int commandRequestExecutionId,
 			@RequestParam(defaultValue = "0") int jobId) {
@@ -148,7 +148,7 @@ public class CommandRequestExecutionResultsController {
         return "commandRequestExecution/detail.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("detailsReport")
 	public String detailsReport(ModelMap model, 
 			@RequestParam int commandRequestExecutionId,
 			@RequestParam String resultsFilterType) {
@@ -159,7 +159,7 @@ public class CommandRequestExecutionResultsController {
         return "commandRequestExecution/detailsReport.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("failureStatsReport")
 	public String failureStatsReport(ModelMap model,
 			@RequestParam int commandRequestExecutionId) {
 
@@ -168,7 +168,7 @@ public class CommandRequestExecutionResultsController {
 		return "commandRequestExecution/failureStatsReport.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("processDevices")
 	public String processDevices(ModelMap model,
 			@RequestParam("commandRequestExecutionId") int commandRequestExecutionId,
 			CommandRequestExecutionUpdaterTypeEnum commandRequestExecutionUpdaterType) {

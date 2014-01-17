@@ -54,12 +54,12 @@ public class RoleGroupEditorController {
     @Autowired private CsrfTokenService csrfTokenService;
     
     /* Group Editor View Page*/
-    @RequestMapping
+    @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/userGroupHome.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int roleGroupId) {
         
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -142,7 +142,7 @@ public class RoleGroupEditorController {
     }
 
     /* User Groups */
-    @RequestMapping
+    @RequestMapping("userGroups")
     public String userGroups(ModelMap model, FlashScope flash, int roleGroupId) {
         LiteYukonGroup roleGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         List<LiteUserGroup> userGroups = userGroupDao.getLiteUserGroupsByRoleGroupId(roleGroupId);
@@ -155,7 +155,7 @@ public class RoleGroupEditorController {
     }
     
     /* Add User Group */
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="addUserGroups", method=RequestMethod.POST)
     public String addUserGroups(ModelMap model, FlashScope flash, int roleGroupId, String userGroupIds) throws SQLException {
         List<Integer> userGroupIdsList = parseIntStringForList(userGroupIds);
         
@@ -183,7 +183,7 @@ public class RoleGroupEditorController {
     }
 
     /* Remove User Group */
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="removeUserGroups", method=RequestMethod.POST)
     public String removeUserGroups(ModelMap model, FlashScope flash, int roleGroupId, int remove) {
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(remove);
 

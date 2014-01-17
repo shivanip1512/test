@@ -32,7 +32,7 @@ public class JobsController {
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private ScheduledOneTimeJobDao scheduledOneTimeJobDao;
 
-    @RequestMapping
+    @RequestMapping("active")
     public String active(ModelMap model) {
         Collection<YukonJob> scheduledJobs = jobManager.getCurrentlyExecuting();
         model.addAttribute("activeJobs", scheduledJobs);
@@ -40,7 +40,7 @@ public class JobsController {
         return "jobs/active.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("status")
     public String status(ModelMap model) {
         Date now = new Date();
         Date oneWeekAgo = DateUtils.addWeeks(now, -7);
@@ -51,7 +51,7 @@ public class JobsController {
         return "jobs/status.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("all")
     public String all(ModelMap model) {
 
         Set<ScheduledOneTimeJob> allOneTime = scheduledOneTimeJobDao.getAll();
@@ -63,7 +63,7 @@ public class JobsController {
         return "jobs/all.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("enableJob")
     public String enableJob(int jobId) throws ServletException {
         YukonJob job = yukonJobDao.getById(jobId);
         jobManager.enableJob(job);
@@ -71,7 +71,7 @@ public class JobsController {
         return "redirect:all";
     }
     
-    @RequestMapping
+    @RequestMapping("disableJob")
     public String disableJob( int jobId ) throws ServletException {
         YukonJob job = yukonJobDao.getById(jobId);
         jobManager.disableJob(job);
@@ -79,7 +79,7 @@ public class JobsController {
         return "redirect:all";
     }
     
-    @RequestMapping
+    @RequestMapping("abortJob")
     public String abortJob(int jobId) throws ServletException {
         YukonJob job = yukonJobDao.getById(jobId);
         jobManager.abortJob(job);

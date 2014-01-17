@@ -44,7 +44,7 @@ public class BankMoveController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     
-    @RequestMapping
+    @RequestMapping("bankMove")
     public String bankMove(ModelMap model, YukonUserContext context, int bankid, Boolean oneline) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         if (oneline == null) {
@@ -98,7 +98,7 @@ public class BankMoveController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("feederBankInfo")
     public String feederBankInfo(ModelMap model, LiteYukonUser user, int feederId) {
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
         Feeder feederobj = filterCapControlCache.getFeeder(feederId);
@@ -111,7 +111,7 @@ public class BankMoveController {
         return "move/feederBankInfo.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("movedCapBanks")
     public String movedCapBanks(@RequestParam(required=false) Integer itemsPerPage,
                                 @RequestParam(value="page", defaultValue="1") Integer currentPage,
                                 ModelMap model,

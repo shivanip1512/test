@@ -21,7 +21,7 @@ public class AlertController {
     
     @Autowired private AlertService alertService;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, LiteYukonUser user, @RequestParam(defaultValue="alertView") String style) {
         
         final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
@@ -33,7 +33,7 @@ public class AlertController {
         return "alert/" + style + ".jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="clear", method=RequestMethod.POST)
     @ResponseBody
     public void clear(LiteYukonUser user, @RequestBody int[] alertIds) {
         alertService.remove(alertIds, user);

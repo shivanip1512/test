@@ -67,7 +67,7 @@ public class HistoricalReadingsController {
     private static final String ONE_MONTH = "oneMonth";
     private static final String DISPLAY = "display";
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, HttpServletRequest request, Integer deviceId, String attribute,
                        @RequestParam(value="div_id", required=true) String dialogId, int pointId,
                        @RequestParam(value="sort", required=false) String sortBy,
@@ -112,7 +112,7 @@ public class HistoricalReadingsController {
         return "historicalReadings/home.jsp";
     }
      
-    @RequestMapping
+    @RequestMapping("download")
     public String download(ModelMap model,
                        HttpServletRequest request, 
                        HttpServletResponse response,

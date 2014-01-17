@@ -103,7 +103,7 @@ public class AddHardwareByRangeController {
         }
     }
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext context, int hardwareTypeId, String taskId) {
         YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId); 
         
@@ -195,7 +195,7 @@ public class AddHardwareByRangeController {
         return "redirect:../home";
     }
     
-    @RequestMapping
+    @RequestMapping("newOperation")
     public String newOperation(ModelMap model, String taskId, YukonUserContext context) {
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
         String description = resolver.getMessageSourceAccessor(context).getMessage("yukon.web.modules.operator.abr.successCollectionDescription");
@@ -205,7 +205,7 @@ public class AddHardwareByRangeController {
         return "redirect:../inventoryActions";
     }
     
-    @RequestMapping
+    @RequestMapping("viewFailed")
     public String viewFailed(ModelMap model, String taskId, YukonUserContext context) {
         AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
         model.addAttribute("failed", task.getFailed());

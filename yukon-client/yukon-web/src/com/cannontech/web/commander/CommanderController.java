@@ -48,7 +48,7 @@ public class CommanderController {
     @Autowired private DeviceSearchService deviceSearchService;
     @Autowired private CommandDao commandDao;
     
-    @RequestMapping
+    @RequestMapping("select")
     public String select(
             @RequestParam(value = "category", defaultValue = "MCT") DeviceSearchCategory category,
             @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,

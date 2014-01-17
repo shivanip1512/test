@@ -20,7 +20,7 @@ public class ConsumerFAQController extends AbstractConsumerController {
 
     private FaqDao faqDao;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="view", method = RequestMethod.GET)
     public String view(YukonUserContext yukonUserContext, ModelMap map) {
 
         Map<String, Map<String, String>> questions = faqDao.getQuestionMap(yukonUserContext);

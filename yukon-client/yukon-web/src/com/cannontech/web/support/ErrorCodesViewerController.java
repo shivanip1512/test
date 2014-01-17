@@ -16,7 +16,7 @@ public class ErrorCodesViewerController {
     
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException {
         

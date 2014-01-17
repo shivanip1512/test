@@ -43,7 +43,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
 	
 	// HOME
 	@Override
-	@RequestMapping
+	@RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
@@ -111,7 +111,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     
     // EXECUTE REMOVE
     @Override
-    @RequestMapping
+    @RequestMapping("execute")
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
     	
     	// device collection
@@ -185,7 +185,7 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
     }
     
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("removePointsResults")
     public String removePointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // prepare mav with basic results data

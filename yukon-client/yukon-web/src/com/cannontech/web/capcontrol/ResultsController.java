@@ -72,7 +72,7 @@ public class ResultsController {
     	;
     }
 
-    @RequestMapping
+    @RequestMapping("searchResults")
     public String searchResults(HttpServletRequest request, ModelMap model, YukonUserContext context, Integer itemsPerPage, Integer page) throws MissingSearchType {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         if(page == null){
@@ -237,7 +237,7 @@ public class ResultsController {
 		}
     }
     
-    @RequestMapping
+    @RequestMapping("recentEvents")
     public String recentEvents(ModelMap model, YukonUserContext context, String value, Integer dayCnt) {
         
         Integer MAX_DAYS_CNT = 7;

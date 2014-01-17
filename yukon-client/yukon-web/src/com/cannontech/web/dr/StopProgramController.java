@@ -67,7 +67,7 @@ public class StopProgramController extends ProgramControllerBase {
     }
     private final StopProgramValidator validator = new StopProgramValidator();
 
-    @RequestMapping
+    @RequestMapping("details")
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -94,7 +94,7 @@ public class StopProgramController extends ProgramControllerBase {
         return "dr/program/stopProgramDetails.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("constraints")
     public String constraints(ModelMap model,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -123,7 +123,7 @@ public class StopProgramController extends ProgramControllerBase {
         return "dr/program/stopProgramConstraints.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("stop")
     public String stop(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -176,7 +176,7 @@ public class StopProgramController extends ProgramControllerBase {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("multipleDetails")
     public String multipleDetails(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -258,7 +258,7 @@ public class StopProgramController extends ProgramControllerBase {
         return "dr/program/stopMultipleProgramsDetails.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("stopMultiple")
     public String stopMultiple(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -345,7 +345,7 @@ public class StopProgramController extends ProgramControllerBase {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("stopMultipleConstraints")
     public String stopMultipleConstraints(HttpServletResponse resp, ModelMap model,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,

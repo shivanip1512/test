@@ -40,7 +40,7 @@ public class ChangeDeviceStatusController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
         YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);

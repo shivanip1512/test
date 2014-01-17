@@ -26,7 +26,7 @@ public class AdaReadsController {
     private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     private RolePropertyDao rolePropertyDao;
     
-    @RequestMapping
+    @RequestMapping("readNow")
     public String readNow(ModelMap model, HttpServletRequest request, LiteYukonUser user, int analysisId) throws ServletRequestBindingException {
         if(!rolePropertyDao.checkProperty(YukonRoleProperty.PROFILE_COLLECTION, user)) {
             throw new NotAuthorizedException("User is not authorized for profile collection.");
@@ -39,7 +39,7 @@ public class AdaReadsController {
         return "redirect:readResults";
     }
     
-    @RequestMapping
+    @RequestMapping("readResults")
     public String readResults(ModelMap model, HttpServletRequest request, int analysisId, String resultId) {
         model.addAttribute("analysisId", analysisId);
         

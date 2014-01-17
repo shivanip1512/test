@@ -63,7 +63,7 @@ public class OperatorWorkOrderController {
     @Autowired private WorkOrderService workOrderService;
     
     // CALL LIST
-    @RequestMapping
+    @RequestMapping("workOrderList")
     public String workOrderList(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -84,7 +84,7 @@ public class OperatorWorkOrderController {
     }
 
     // Create Order Page
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -100,7 +100,7 @@ public class OperatorWorkOrderController {
     }
     
     // Edit Order Page
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         LiteYukonUser user = context.getYukonUser();
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
@@ -112,7 +112,7 @@ public class OperatorWorkOrderController {
     }
 
     // View Order Page
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
         
@@ -128,7 +128,7 @@ public class OperatorWorkOrderController {
     }
     
     // Update Order
-    @RequestMapping
+    @RequestMapping("updateWorkOrder")
     public String updateWorkOrder(@ModelAttribute("workOrderDto") WorkOrderDto workOrderDto,
                                   BindingResult bindingResult,
                                   ModelMap modelMap,
@@ -177,7 +177,7 @@ public class OperatorWorkOrderController {
     }
     
     // DELETE WORK ORDER
-    @RequestMapping
+    @RequestMapping("deleteWorkOrder")
     public String deleteWorkOrder(int deleteWorkOrderId,
                                   ModelMap modelMap,
                                   YukonUserContext userContext,
@@ -202,7 +202,7 @@ public class OperatorWorkOrderController {
     }
     
     // Generate Work Order PDF
-    @RequestMapping
+    @RequestMapping("generateWorkOrderReport")
     public void generateWorkOrderReport(int workOrderId,
                                           HttpServletResponse response,
                                           AccountInfoFragment accountInfoFragment,

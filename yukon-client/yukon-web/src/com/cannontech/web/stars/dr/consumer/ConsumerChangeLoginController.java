@@ -20,7 +20,7 @@ public class ConsumerChangeLoginController extends AbstractConsumerController {
     private static final String LOGIN_CHANGE_MESSAGE_PARAM = "loginChangeMsg";
     private static final String LOGIN_CHANGE_SUCCESS_PARAM = "success";
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="view", method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) throws Exception {
         
         String loginChangeMsgParam = ServletRequestUtils.getStringParameter(request, LOGIN_CHANGE_MESSAGE_PARAM);

@@ -29,7 +29,7 @@ public class ValidationMonitorEditorController {
     private ValidationMonitorService validationMonitorService;
     private Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
                        Double threshold, Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable){
         if(validationMonitorId == null) validationMonitorId = -1;
@@ -87,7 +87,7 @@ public class ValidationMonitorEditorController {
         return "vee/monitor/edit.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="update", method=RequestMethod.POST)
     public String update(ModelMap model, int validationMonitorId, String name, String deviceGroupName, Double threshold,
                          Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable) throws Exception, ServletException {
         
@@ -162,7 +162,7 @@ public class ValidationMonitorEditorController {
         }
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="delete", method=RequestMethod.POST)
     public String delete(ModelMap model, int deleteValidationMonitorId) throws Exception, ServletException {
         
         if(!validationMonitorDao.delete(deleteValidationMonitorId)){
@@ -173,7 +173,7 @@ public class ValidationMonitorEditorController {
         return "redirect:/meter/start";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="toggleEnabled", method=RequestMethod.POST)
     public String toggleEnabled(ModelMap model, int validationMonitorId) throws Exception, ServletException {
         try {
         	validationMonitorService.toggleEnabled(validationMonitorId);

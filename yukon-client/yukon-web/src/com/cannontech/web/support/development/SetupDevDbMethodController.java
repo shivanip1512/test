@@ -67,7 +67,7 @@ public class SetupDevDbMethodController {
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
 
-    @RequestMapping
+    @RequestMapping("main")
     public void main(ModelMap model) {
 
         model.addAttribute("devRoleProperties",new DevRoleProperties());
@@ -96,7 +96,7 @@ public class SetupDevDbMethodController {
         model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
     }
 
-    @RequestMapping
+    @RequestMapping("checkAvailability")
     @ResponseBody
     public Map<String, Object> checkAvailability() {
         Map<String, Object> json = Maps.newHashMapWithExpectedSize(8);
@@ -113,7 +113,7 @@ public class SetupDevDbMethodController {
         return json;
     }
     
-    @RequestMapping
+    @RequestMapping("setupRoleProperties")
     public String setupRoleProperties(DevRoleProperties devRoleProperties, FlashScope flashScope, ModelMap model) {
         if (!devRolePropUpdaterService.isRunning()) {
             try {
@@ -142,7 +142,7 @@ public class SetupDevDbMethodController {
         return "development/setupDatabase/rolePropertyWidget.jsp";
     }
 
-    @RequestMapping 
+    @RequestMapping("setupAMR") 
     public String setupAMR(DevAMR devAMR, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
         amrValidator.validate(devAMR, bindingResult);
 
@@ -165,7 +165,7 @@ public class SetupDevDbMethodController {
         return "development/setupDatabase/amrWidget.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("setupCapControl")
     public String setupCapControl(DevCapControl devCapControl, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
         capControlValidator.validate(devCapControl, bindingResult);
         
@@ -189,7 +189,7 @@ public class SetupDevDbMethodController {
         return "development/setupDatabase/capControlWidget.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("setupEventLog")
     public String setupEventLog(DevEventLog devEventLog, BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
         
         try {
@@ -206,7 +206,7 @@ public class SetupDevDbMethodController {
         return "development/setupDatabase/eventLogWidget.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("setupStars")
     public String setupStars(DevStars devStars, BindingResult bindingResult, LiteYukonUser user, FlashScope flashScope, ModelMap model) {
         starsValidator.validate(devStars, bindingResult);
 

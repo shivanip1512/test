@@ -37,7 +37,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     @Autowired private UpdatePointsProcessorFactory updatePointsProcessorFactory;
 
     // HOME
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws Exception, ServletException {
         
         // device collection
@@ -80,7 +80,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     }
     
     // EXECUTE ADD
-    @RequestMapping
+    @RequestMapping("execute")
     public String execute(ModelMap model, HttpServletRequest request) throws ServletException, Exception {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -182,7 +182,7 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
     }
 
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("updatePointsResults")
     public String updatePointsResults(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // prepare mav with basic results data

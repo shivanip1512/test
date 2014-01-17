@@ -71,7 +71,7 @@ public class DefaultThermostatScheduleController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);

@@ -57,7 +57,7 @@ public class ChangeDeviceTypeController {
     /**
      * CHOOSE DEVICE TYPE TO CHANGE TO
      */
-    @RequestMapping
+    @RequestMapping("chooseDeviceType")
     public String chooseDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -84,7 +84,7 @@ public class ChangeDeviceTypeController {
     /**
      * DO DEVICE TYPE CHANGE
      */
-    @RequestMapping
+    @RequestMapping("changeDeviceType")
     public String changeDeviceType(ModelMap model, HttpServletRequest request) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -124,7 +124,7 @@ public class ChangeDeviceTypeController {
     /**
      * CHANGE DEVICE TYPE RESULTS
      */
-    @RequestMapping
+    @RequestMapping("changeDeviceTypeResults")
     public String changeDeviceTypeResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // result info

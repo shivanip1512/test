@@ -65,7 +65,7 @@ public class ScheduledBillingFileExportController {
     private static final int MAX_GROUPS_DISPLAYED = 2;
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
-    @RequestMapping
+    @RequestMapping("showForm")
     public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
             @ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, Integer fileFormat, 
             Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
@@ -159,7 +159,7 @@ public class ScheduledBillingFileExportController {
         return jsonHelper.succeed(msgObj, accessor);
     }
     
-    @RequestMapping
+    @RequestMapping("jobs")
     public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
         
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -167,7 +167,7 @@ public class ScheduledBillingFileExportController {
         return "jobs.jsp";
     }
 
-    @RequestMapping (value = "delete.json")
+    @RequestMapping(value = "delete.json")
     public @ResponseBody JSONObject delete(ModelMap model, int jobId, YukonUserContext userContext) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);

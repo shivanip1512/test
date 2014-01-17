@@ -41,7 +41,7 @@ public class WaterMeterController {
     private PointUpdateBackingService pointUpdateBackingService = null;
     private PaoDefinitionDao paoDefinitionDao = null;
 
-    @RequestMapping
+    @RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
     throws ServletException {
         

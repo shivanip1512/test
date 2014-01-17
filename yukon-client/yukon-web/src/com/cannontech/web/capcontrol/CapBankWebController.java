@@ -39,7 +39,7 @@ public class CapBankWebController {
 	private CachingPointFormattingService cachingPointFormattingService;
 	private PointUpdateBackingService pointUpdateBackingService;
 	
-	@RequestMapping
+	@RequestMapping("capBankLocations")
 	public String capBankLocations(ModelMap model, LiteYukonUser user, int value, boolean specialArea) {
 		
 		//Page data
@@ -103,7 +103,7 @@ public class CapBankWebController {
 		return "capBankLocations.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("cbcPoints")
 	public String cbcPoints(ModelMap model, int cbcId) {
         Map<String, List<LitePoint>> pointTimestamps = capControlDao.getSortedCBCPointTimeStamps(cbcId);
         model.addAttribute("pointMap", pointTimestamps);

@@ -48,7 +48,7 @@ public class DeviceConfigurationController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext context) {
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllLightDeviceConfigurations();
 

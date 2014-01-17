@@ -132,7 +132,7 @@ public class OperatorHardwareConfigController {
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int inventoryId,
             YukonUserContext userContext, AccountInfoFragment accountInfo) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfo, model);
@@ -292,7 +292,7 @@ public class OperatorHardwareConfigController {
         return bindingResult;
     }
 
-    @RequestMapping
+    @RequestMapping("commit")
     public String commit(ModelMap model, HttpServletRequest request,
             int inventoryId, YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
@@ -373,7 +373,7 @@ public class OperatorHardwareConfigController {
             accountInfo.getAccountId() + "&inventoryId=" + inventoryId;
     }
 
-    @RequestMapping
+    @RequestMapping("disable")
     public String disable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
@@ -408,7 +408,7 @@ public class OperatorHardwareConfigController {
         return "redirect:/stars/operator/hardware/config/edit";
     }
 
-    @RequestMapping
+    @RequestMapping("enable")
     public String enable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
@@ -454,7 +454,7 @@ public class OperatorHardwareConfigController {
         }
     }
 
-    @RequestMapping
+    @RequestMapping("meterConfig")
     public String meterConfig(ModelMap model, int meterId,
                               YukonUserContext userContext,
                               AccountInfoFragment accountInfoFragment) {
@@ -473,7 +473,7 @@ public class OperatorHardwareConfigController {
         return "operator/hardware/config/meterConfig.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("updateMeterConfig")
     public String updateMeterConfig(@ModelAttribute("meter") PlcMeter meter, BindingResult bindingResult,
                                  ModelMap model,
                                  YukonUserContext userContext,
@@ -503,7 +503,7 @@ public class OperatorHardwareConfigController {
         return "redirect:/stars/operator/hardware/list";
     }
 
-    @RequestMapping(params="cancel")
+    @RequestMapping(value="cancel", params="cancel")
     public String cancel(ModelMap modelMap,
                           AccountInfoFragment accountInfoFragment,
                           YukonUserContext userContext,

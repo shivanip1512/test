@@ -109,7 +109,7 @@ public class EnergyCompanySettingsController {
                 }
             };
             
-    @RequestMapping
+    @RequestMapping("view")
     public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
         
         if (!energyCompanyService.canEditEnergyCompany(context.getYukonUser(), ecId)) {
@@ -130,7 +130,7 @@ public class EnergyCompanySettingsController {
         return energyCompanySettingsView(context, model, ecId, fragment, settingsBean);
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="save", method=RequestMethod.POST)
     public String save(HttpServletRequest request, 
                        @ModelAttribute("settingsBean") SettingsBean settingsBean,
                        BindingResult result, YukonUserContext context, 

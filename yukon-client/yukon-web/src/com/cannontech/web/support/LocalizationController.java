@@ -33,7 +33,7 @@ public class LocalizationController {
      * The results of these will be output to the page or dowloaded,
      * depending on the selected action.
      */
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, HttpServletResponse response, @ModelAttribute("localizationBackingBean") LocalizationBackingBean localizationBackingBean, BindingResult bindingResult, FlashScope flashScope) throws IOException {
         if(localizationBackingBean.getTask() == null){
             localizationBackingBean.setTask("");

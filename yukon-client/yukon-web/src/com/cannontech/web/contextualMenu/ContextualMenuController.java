@@ -46,7 +46,7 @@ public class ContextualMenuController {
     @Autowired private List<Menu> menus;
     private Map<String, Menu> menuBeanMap;
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="list", method = RequestMethod.GET)
     public @ResponseBody JSONArray list(YukonUserContext context, HttpServletRequest req) {
         
         String menuBeanId = req.getParameter("menuId"); // not including the word "Bean" as a security measure, i.e. menuBeanId

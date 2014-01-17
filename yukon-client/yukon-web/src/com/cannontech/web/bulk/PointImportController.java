@@ -59,7 +59,7 @@ public class PointImportController {
     @Autowired PointImportService pointImportService;
     @Autowired CalculationImportService calculationImportService;
 
-    @RequestMapping
+    @RequestMapping("upload")
     public String upload(ModelMap model) {
         model.addAttribute("importTypes", PointImportType.values());
         
@@ -73,7 +73,7 @@ public class PointImportController {
         return "pointImport/upload.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="submitImport", method=RequestMethod.POST)
     public String submitImport(ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                                PointImportType importType, YukonUserContext userContext) throws IOException {
         
@@ -158,7 +158,7 @@ public class PointImportController {
         return "redirect:results";
     }
     
-    @RequestMapping
+    @RequestMapping("results")
     public String results(ModelMap model, String resultId, String fileName, boolean ignoreInvalidColumns) {
         BackgroundProcessResultHolder result = recentResultsCache.getResult(resultId);
         
@@ -169,7 +169,7 @@ public class PointImportController {
         return "pointImport/results.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("downloadFailed")
     public String downloadFailed(HttpServletResponse response, String resultId) throws IOException {
         //get the required data
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
@@ -198,7 +198,7 @@ public class PointImportController {
         return null;
     }
     
-    @RequestMapping
+    @RequestMapping("updateLog")
     public String updateLog(HttpServletResponse response, String resultId) throws IOException {
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
         Integer index = result.getLogIndex();

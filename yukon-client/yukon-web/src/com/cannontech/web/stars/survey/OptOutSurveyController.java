@@ -76,7 +76,7 @@ public class OptOutSurveyController {
             }
         }};
 
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
@@ -101,7 +101,7 @@ public class OptOutSurveyController {
         return "optOutSurvey/list.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("programList")
     public String programList(ModelMap model, int optOutSurveyId,
             YukonUserContext userContext) {
         OptOutSurvey optOutSurvey =
@@ -119,7 +119,7 @@ public class OptOutSurveyController {
         return "optOutSurvey/programList.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("confirmDelete")
     public String confirmDelete(ModelMap model, int optOutSurveyId,
             YukonUserContext userContext) {
         OptOutSurvey optOutSurvey =
@@ -129,7 +129,7 @@ public class OptOutSurveyController {
         return "optOutSurvey/confirmDelete.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("delete")
     public @ResponseBody JSONObject delete(HttpServletResponse resp, ModelMap model, int optOutSurveyId, FlashScope flashScope,
             YukonUserContext userContext) throws IOException {
         OptOutSurvey optOutSurvey =
@@ -148,7 +148,7 @@ public class OptOutSurveyController {
         return json;
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, Integer optOutSurveyId,
             Integer surveyId, Integer[] programIds,
             YukonUserContext userContext) {
@@ -175,7 +175,7 @@ public class OptOutSurveyController {
         return "optOutSurvey/edit.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("save")
     public String save(HttpServletResponse resp, ModelMap model,
             @ModelAttribute OptOutSurveyDto optOutSurveyDto,
             BindingResult bindingResult, YukonUserContext userContext,

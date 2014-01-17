@@ -95,7 +95,7 @@ public class EstimatedLoadController {
         return "dr/estimatedLoad/home.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("listPageAjax")
     public String listPageAjax(ModelMap model, YukonUserContext userContext,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
@@ -219,7 +219,7 @@ public class EstimatedLoadController {
         return "dr/estimatedLoad/_gearFormulaPicker.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("gearAssignmentsPage")
     public String gearAssignmentsPage(ModelMap model, YukonUserContext context,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
@@ -260,7 +260,7 @@ public class EstimatedLoadController {
         return "dr/estimatedLoad/_appCatFormulaPicker.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("appCatAssignmentsPage")
     public String appCatAssignmentsPage(ModelMap model, YukonUserContext context,
                        @RequestParam(defaultValue="NAME") SortBy sort, final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 

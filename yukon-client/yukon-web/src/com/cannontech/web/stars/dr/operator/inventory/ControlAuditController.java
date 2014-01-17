@@ -102,7 +102,7 @@ public class ControlAuditController {
         }
     };
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String auditId, YukonUserContext context) throws ServletRequestBindingException {
         
         InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(request, model);
@@ -122,7 +122,7 @@ public class ControlAuditController {
         return "operator/inventory/controlAudit/view.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("runAudit")
     public String runAudit(@ModelAttribute("settings") AuditSettings settings, BindingResult result,
                            HttpServletRequest request,
                            YukonUserContext context, 
@@ -157,7 +157,7 @@ public class ControlAuditController {
         return "redirect:view";
     }
     
-    @RequestMapping
+    @RequestMapping("download")
     public void download(HttpServletResponse response, YukonUserContext context, String auditId, ResultType type) throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
@@ -200,7 +200,7 @@ public class ControlAuditController {
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "LmControlAudit_" + type + ".csv");
     }
     
-    @RequestMapping
+    @RequestMapping("newOperation")
     public String newOperation(ModelMap model, String auditId, YukonUserContext context, ResultType type) {
         ControlAuditResult result = resultsCache.getResult(auditId);
         String code = null;
@@ -237,7 +237,7 @@ public class ControlAuditController {
         this.resultsCache = resultsCache;
     }
     
-    @RequestMapping
+    @RequestMapping("chart")
     public @ResponseBody JSONObject chart(String auditId, YukonUserContext userContext) {
 
         MessageSourceAccessor msa = resolver.getMessageSourceAccessor(userContext);
@@ -258,7 +258,7 @@ public class ControlAuditController {
         return pieJSONData;
     }
 
-    @RequestMapping
+    @RequestMapping("page")
     public String page(ModelMap model, 
                        ResultType type,
                        String auditId,

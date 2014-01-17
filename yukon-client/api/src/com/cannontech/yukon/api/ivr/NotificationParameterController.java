@@ -28,7 +28,7 @@ public class NotificationParameterController {
     private INotifConnection notifClientConnection;
     private Logger log = YukonLogManager.getLogger(NotificationParameterController.class);
     
-    @RequestMapping
+    @RequestMapping("notifDocument")
     public void notifDocument(String callToken, Writer out) throws IOException {
         log.debug("received notifDocument request for " + callToken);
         // get all parameters as an XML document
@@ -36,7 +36,7 @@ public class NotificationParameterController {
         out.write(requestMessage);
     }
     
-    @RequestMapping
+    @RequestMapping("parameter")
     public void parameter(String callToken, String parameterName, Writer out) throws JDOMException, IOException {
         log.debug("received parameter request for " + callToken + " with parameterName=" + parameterName);
         // get named parameter as string
@@ -50,7 +50,7 @@ public class NotificationParameterController {
         out.write(parameterValue);
     }
 
-    @RequestMapping
+    @RequestMapping("template")
     public void template(String callToken, String template, Writer out) throws JDOMException, IOException {
         log.debug("received template request for " + callToken + " with template=" + template);
         // get parsed template value

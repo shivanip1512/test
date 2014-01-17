@@ -53,7 +53,7 @@ public class OperatorCallTrackingController {
     private StarsDatabaseCache starsDatabaseCache;
     
     // CALL LIST
-    @RequestMapping
+    @RequestMapping("callList")
     public String callList(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -76,7 +76,7 @@ public class OperatorCallTrackingController {
     }
 
     // CREATE CALL
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -93,7 +93,7 @@ public class OperatorCallTrackingController {
     }
     
     // VIEW CALL
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int callId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
 
@@ -103,7 +103,7 @@ public class OperatorCallTrackingController {
     }
     
     // EDIT CALL
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int callId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.EDIT);
         
@@ -119,7 +119,7 @@ public class OperatorCallTrackingController {
     }
     
     // UPDATE CALL
-    @RequestMapping
+    @RequestMapping("updateCall")
     public String updateCall(@ModelAttribute("callReport") CallReport callReport,
                             BindingResult bindingResult,
                             ModelMap modelMap,
@@ -169,7 +169,7 @@ public class OperatorCallTrackingController {
     }
     
     // DELETE CALL
-    @RequestMapping
+    @RequestMapping("deleteCall")
     public String deleteCall(int deleteCallId,
                             ModelMap modelMap,
                             YukonUserContext userContext,

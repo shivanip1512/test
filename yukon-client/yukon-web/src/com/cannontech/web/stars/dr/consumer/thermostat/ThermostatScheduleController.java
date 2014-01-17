@@ -384,7 +384,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return !optOutStatusService.getOptOutEnabled(user).isCommunicationEnabled();
     }
     
-    @RequestMapping
+    @RequestMapping("viewArchivedSchedule")
     public String viewArchivedSchedule(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
                                        String thermostatIds,
                                        Integer scheduleId,

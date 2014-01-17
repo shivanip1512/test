@@ -148,7 +148,7 @@ public class ApplianceCategoryController {
         }
     };
 
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model, YukonUserContext context,
                        EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
@@ -161,7 +161,7 @@ public class ApplianceCategoryController {
         return "applianceCategory/list.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("programs")
     public String programs(ModelMap model,
                            @ModelAttribute("backingBean") ListBackingBean backingBean,
                            YukonUserContext context,
@@ -208,7 +208,7 @@ public class ApplianceCategoryController {
         return "applianceCategory/programs.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean,
                        int applianceCategoryId, YukonUserContext context,
                        EnergyCompanyInfoFragment ecInfo) {
@@ -244,7 +244,7 @@ public class ApplianceCategoryController {
         return edit(PageEditMode.VIEW, model, applianceCategory, context, ecId);
     }
 
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext context,
                          EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
@@ -257,7 +257,7 @@ public class ApplianceCategoryController {
                     ecInfo.getEnergyCompanyId());
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean,
                        int applianceCategoryId, YukonUserContext context,
                        EnergyCompanyInfoFragment ecInfo) {
@@ -333,7 +333,7 @@ public class ApplianceCategoryController {
         return "redirect:list?ecId=" + ecId;
     }
 
-    @RequestMapping
+    @RequestMapping("assignProgram")
     public String assignProgram(ModelMap model, int ecId, int applianceCategoryId,
                                 Integer[] programsToAssign, YukonUserContext context) {
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), ecId);
@@ -356,7 +356,7 @@ public class ApplianceCategoryController {
                                    context, PageEditMode.CREATE);
     }
 
-    @RequestMapping
+    @RequestMapping("createVirtualProgram")
     public String createVirtualProgram(ModelMap model, int ecId, int applianceCategoryId,
             YukonUserContext context) {
         AssignProgramBackingBean backingBean =
@@ -365,7 +365,7 @@ public class ApplianceCategoryController {
                                    context, PageEditMode.CREATE);
     }
 
-    @RequestMapping
+    @RequestMapping("editAssignedProgram")
     public String editAssignedProgram(ModelMap model, 
                                       int ecId, 
                                       @RequestParam("applianceCategoryId") int acId, 
@@ -455,7 +455,7 @@ public class ApplianceCategoryController {
         return "applianceCategory/editAssignedProgram.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("saveAssignedProgram")
     public String saveAssignedProgram(HttpServletResponse response, ModelMap model, int ecId,
                                       @ModelAttribute("backingBean") AssignProgramBackingBean backingBean,
                                       BindingResult bindingResult, YukonUserContext context,
@@ -505,7 +505,7 @@ public class ApplianceCategoryController {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("confirmUnassignProgram")
     public String confirmUnassignProgram(ModelMap model, int applianceCategoryId,
                                          int assignedProgramId, YukonUserContext context) {
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
@@ -531,7 +531,7 @@ public class ApplianceCategoryController {
         return "applianceCategory/unassignProgram.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("unassignProgram")
     public @ResponseBody JSONObject unassignProgram(int applianceCategoryId, int assignedProgramId, YukonUserContext context) {
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
@@ -547,7 +547,7 @@ public class ApplianceCategoryController {
 
     public enum Direction {up,down}
     
-    @RequestMapping
+    @RequestMapping("moveProgram")
     public @ResponseBody JSONObject moveProgram(int applianceCategoryId,
                                                 int assignedProgramId, 
                                                 @RequestParam(required=true) Direction direction, 

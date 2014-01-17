@@ -11,9 +11,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
+import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
 import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorService;
-import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -30,13 +30,13 @@ public class StatusPointMonitorsWidget extends AdvancedWidgetControllerBase {
 	private StatusPointMonitorService statusPointMonitorService;
 	private OutageEventLogService outageEventLogService;
 	
-	@RequestMapping
+	@RequestMapping("render")
 	public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		setupRenderModel(model, request);
 		return "statusPointMonitorsWidget/render.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("toggleEnabled")
 	public String toggleEnabled(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         
 		int statusPointMonitorId = WidgetParameterHelper.getRequiredIntParameter(request, "statusPointMonitorId");

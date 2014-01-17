@@ -152,7 +152,7 @@ public class OperatorHardwareController {
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
     
     /* HARDWARE LIST PAGE */
-    @RequestMapping
+    @RequestMapping("list")
     public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment fragment) 
     throws ServletRequestBindingException {
         
@@ -168,7 +168,7 @@ public class OperatorHardwareController {
         return "operator/hardware/hardwareList.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("checkSerialNumberSwitch")
     public String checkSerialNumberSwitch(@ModelAttribute("serialNumberSwitch") SerialNumber serialNumber, BindingResult bindingResult,
                                           ModelMap model, 
                                           YukonUserContext context,
@@ -182,7 +182,7 @@ public class OperatorHardwareController {
                                  flashScope, fragment, hardwareTypeId);
     }
     
-    @RequestMapping
+    @RequestMapping("checkSerialNumberThermostat")
     public String checkSerialNumberThermostat(@ModelAttribute("serialNumberThermostat") SerialNumber serialNumber, BindingResult bindingResult,
                                           ModelMap model, 
                                           YukonUserContext context,
@@ -196,7 +196,7 @@ public class OperatorHardwareController {
                                  flashScope, fragment, hardwareTypeId);
     }
     
-    @RequestMapping
+    @RequestMapping("checkSerialNumberGateway")
     public String checkSerialNumberGateway(@ModelAttribute("serialNumberGateway") SerialNumber serialNumber, BindingResult bindingResult,
                                           ModelMap model, 
                                           YukonUserContext context,
@@ -309,7 +309,7 @@ public class OperatorHardwareController {
     }
     
     /* HARDWARE CREATE PAGE*/
-    @RequestMapping
+    @RequestMapping("createPage")
     public String createPage(YukonUserContext context, 
                              ModelMap model, 
                              AccountInfoFragment fragment, 
@@ -342,7 +342,7 @@ public class OperatorHardwareController {
     }
     
     /* HARDWARE VIEW PAGE*/
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, 
                        YukonUserContext context, 
                        AccountInfoFragment fragment,
@@ -385,7 +385,7 @@ public class OperatorHardwareController {
     }
     
     /* HARDWARE EDIT PAGE*/
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(HttpServletRequest request, ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int inventoryId) {
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
@@ -488,7 +488,7 @@ public class OperatorHardwareController {
         return "operator/hardware/hardware.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("create")
     public String create(@ModelAttribute("hardware") Hardware hardware, BindingResult result,
                                  ModelMap model, 
                                  YukonUserContext context,
@@ -544,7 +544,7 @@ public class OperatorHardwareController {
         return "operator/hardware/hardware.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, 
                          YukonUserContext context, 
                          HttpServletRequest request, 
@@ -574,7 +574,7 @@ public class OperatorHardwareController {
         return "redirect:list";
     }
     
-    @RequestMapping
+    @RequestMapping("serviceCompanyInfo")
     public String serviceCompanyInfo(ModelMap model, 
                                      YukonUserContext context, 
                                      int serviceCompanyId) 
@@ -591,7 +591,7 @@ public class OperatorHardwareController {
         return "operator/hardware/serviceCompanyInfo.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("addDeviceToAccount")
     public String addDeviceToAccount(ModelMap model, 
                                      YukonUserContext context, 
                                      AccountInfoFragment fragment, 
@@ -619,7 +619,7 @@ public class OperatorHardwareController {
         return "redirect:list";
     }
     
-    @RequestMapping
+    @RequestMapping("addMeter")
     public String addMeter(ModelMap model, 
                            YukonUserContext context, 
                            AccountInfoFragment fragment, 
@@ -642,7 +642,7 @@ public class OperatorHardwareController {
         return "redirect:list";
     }
 
-    @RequestMapping
+    @RequestMapping("changeOut")
     public String changeOut(ModelMap model, 
                             YukonUserContext context, 
                             AccountInfoFragment fragment, 

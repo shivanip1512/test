@@ -46,25 +46,25 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
     @Autowired protected DeviceDataMonitorDao deviceDataMonitorDao;
-    @Autowired protected DeviceDataMonitorService deviceDataMonitorService;
+    @Autowired private DeviceDataMonitorService deviceDataMonitorService;
     @Autowired protected OutageMonitorDao outageMonitorDao;
-    @Autowired protected OutageMonitorService outageMonitorService;
+    @Autowired private OutageMonitorService outageMonitorService;
     @Autowired protected TamperFlagMonitorDao tamperFlagMonitorDao;
-    @Autowired protected TamperFlagMonitorService tamperFlagMonitorService;
+    @Autowired private TamperFlagMonitorService tamperFlagMonitorService;
     @Autowired protected StatusPointMonitorDao statusPointMonitorDao;
-    @Autowired protected StatusPointMonitorService statusPointMonitorService;
+    @Autowired private StatusPointMonitorService statusPointMonitorService;
     @Autowired protected PorterResponseMonitorDao porterResponseMonitorDao;
-    @Autowired protected PorterResponseMonitorService porterResponseMonitorService;
+    @Autowired private PorterResponseMonitorService porterResponseMonitorService;
     @Autowired protected ValidationMonitorDao validationMonitorDao;
-    @Autowired protected ValidationMonitorService validationMonitorService;
-    @Autowired protected OutageEventLogService outageEventLogService;
-    
-    @RequestMapping
+    @Autowired private ValidationMonitorService validationMonitorService;
+    @Autowired private OutageEventLogService outageEventLogService;
+
+    @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext context) {
         putMonitorsInModel(model, context);
         return "allMonitorsWidget/render.jsp";
     }
-    
+
     protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
         List<DeviceDataMonitor> deviceDataMonitors = deviceDataMonitorDao.getAllMonitors();
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
@@ -88,7 +88,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("validationMonitors", validationMonitors);
     }
 
-    @RequestMapping
+    @RequestMapping("toggleEnabledDeviceData")
     public String toggleEnabledDeviceData(int monitorId, ModelMap model, YukonUserContext context) {
         
         String widgetError = null;
@@ -104,7 +104,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         return render(model, context);
     }
     
-    @RequestMapping
+    @RequestMapping("toggleEnabledOutage")
     public String toggleEnabledOutage(int outageMonitorId, ModelMap model, YukonUserContext context) {
         
         String outageMonitorsWidgetError = null;
@@ -120,7 +120,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         return render(model, context);
     }
     
-    @RequestMapping
+    @RequestMapping("toggleEnabledStatusPoint")
     public String toggleEnabledStatusPoint(int statusPointMonitorId, ModelMap model, YukonUserContext context) throws Exception {
         
         String statusPointMonitorsWidgetError = null;
@@ -136,7 +136,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         return render(model, context);
     }
     
-    @RequestMapping
+    @RequestMapping("toggleEnabledTamperFlag")
     public String toggleEnabledTamperFlag(int tamperFlagMonitorId, ModelMap model, YukonUserContext context) {
         
         String tamperFlagMonitorsWidgetError = null;
@@ -152,7 +152,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         return render(model, context);
     }
     
-    @RequestMapping
+    @RequestMapping("toggleEnabledPorterResponse")
     public String toggleEnabledPorterResponse(int monitorId, ModelMap model, YukonUserContext context) {
 
         MonitorEvaluatorStatus status = porterResponseMonitorDao.getMonitorById(monitorId).getEvaluatorStatus();
@@ -171,7 +171,8 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
         return render(model, context);
     }
-    @RequestMapping
+
+    @RequestMapping("toggleEnabledValidation")
     public String toggleEnabledValidation(int validationMonitorId, ModelMap model, YukonUserContext context) {
         
         String validationMonitorsWidgetError = null;

@@ -89,7 +89,7 @@ public class ScheduleController {
 	    periodFormatter = builder.toFormatter();
 	}
 	
-	@RequestMapping
+	@RequestMapping("scheduleAssignments")
 	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletRequestBindingException {
 	    
         boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
@@ -142,7 +142,7 @@ public class ScheduleController {
 		return "schedule/scheduleassignment.jsp";
     }
 	
-	@RequestMapping
+	@RequestMapping("schedules")
     public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) throws ServletRequestBindingException {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    mav.addAttribute("hasEditingRole", hasEditingRole);
@@ -214,7 +214,7 @@ public class ScheduleController {
 	 * Run multiple schedule assignment commands.  The schedule assignments are optionally 
 	 * filtered by command and/or schedule.
 	 */
-	@RequestMapping
+	@RequestMapping("startMultiple")
 	public String startMultiple(HttpServletRequest request, YukonUserContext context, ModelMap map) {
 	    String filterByCommand = ServletRequestUtils.getStringParameter(request, "startCommand", "");
 	    String filterBySchedule = ServletRequestUtils.getStringParameter(request, "startSchedule", "");
@@ -248,7 +248,7 @@ public class ScheduleController {
      * filtered by command and/or schedule.  This is only applicable to "verify" commands.  
      * Any other schedule assignment commands that match the filter criteria will be ignored. 
      */
-	@RequestMapping
+	@RequestMapping("stopMultiple")
     public String stopMultiple(HttpServletRequest request, YukonUserContext context, ModelMap map) {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "stopCommand", "");
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "stopSchedule", "");
@@ -306,7 +306,7 @@ public class ScheduleController {
 	/**
      * Run a single schedule assignment command.
      */
-	@RequestMapping
+	@RequestMapping("startSchedule")
 	public @ResponseBody JSONObject startSchedule(Integer eventId, String deviceName, YukonUserContext context, ModelMap map) {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    String result;
@@ -330,7 +330,7 @@ public class ScheduleController {
 	/**
      * Send a stop verify command to the specified subbus. 
      */
-	@RequestMapping
+	@RequestMapping("stopSchedule")
 	public @ResponseBody JSONObject stopSchedule(Integer deviceId, String deviceName, YukonUserContext context, ModelMap map) throws ServletException {
 	    MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 	    
@@ -351,7 +351,7 @@ public class ScheduleController {
 	    return json;
 	}
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="removePao", method=RequestMethod.POST)
     public String removePao(Integer eventId, Integer paoId, ModelMap map, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
@@ -372,7 +372,7 @@ public class ScheduleController {
         return "redirect:scheduleAssignments";
     }
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="deleteSchedule", method=RequestMethod.POST)
     public String deleteSchedule(int scheduleId, ModelMap map, FlashScope flash) {
 	    List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
 	    boolean success = paoScheduleDao.delete(scheduleId);
@@ -396,7 +396,7 @@ public class ScheduleController {
         return "redirect:schedules";
     }
 	
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="setOvUv", method = RequestMethod.POST)
     public @ResponseBody JSONObject setOvUv(Integer eventId, Integer ovuv, ModelMap map, YukonUserContext context) {
         boolean success = false;
         JSONObject json = new JSONObject();
@@ -413,7 +413,7 @@ public class ScheduleController {
         return json;
     }
 
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="addPao", method=RequestMethod.POST)
 	public String addPao(String addSchedule, String addCommand, String filterCommand, String filterSchedule, String paoIdList, ModelMap map, FlashScope flash) {
 		ScheduleCommand cmd = ScheduleCommand.valueOf(addCommand);
 		boolean success = true;
@@ -481,7 +481,7 @@ public class ScheduleController {
 	/**
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
-    @RequestMapping
+    @RequestMapping("startMultiScheduleAssignmentPopup")
     public String startMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
         String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
         String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
@@ -499,7 +499,7 @@ public class ScheduleController {
     /**
      * Returns the "Stop Multiple Schedule Assignment Commands" popup form.
      */
-    @RequestMapping
+    @RequestMapping("stopMultiScheduleAssignmentPopup")
     public String stopMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
         String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
         String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
@@ -517,7 +517,7 @@ public class ScheduleController {
     /**
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
-    @RequestMapping
+    @RequestMapping("newScheduleAssignmentPopup")
     public String newScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
         String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
         String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);

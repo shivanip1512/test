@@ -88,7 +88,7 @@ public class ZigBeeHardwareController {
     @Autowired private PaoDao paoDao;
     @Autowired private NextValueHelper nextValueHelper;
     
-    @RequestMapping
+    @RequestMapping("readNow")
     public @ResponseBody JSONObject readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
         final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         final ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
@@ -110,7 +110,7 @@ public class ZigBeeHardwareController {
         return json;
     }
     
-    @RequestMapping
+    @RequestMapping("refresh")
     public void refresh(HttpServletResponse resp, YukonUserContext context, int deviceId) throws NoSuchMessageException, IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceRefresh(context.getYukonUser(), pao.getPaoName(), EventSource.OPERATOR);
@@ -168,7 +168,7 @@ public class ZigBeeHardwareController {
         out.close();
     }
 
-    @RequestMapping
+    @RequestMapping("commission")
     public ModelAndView commission(HttpServletResponse resp,YukonUserContext context, int deviceId) throws IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceCommission(context.getYukonUser(), pao.getPaoName(), EventSource.OPERATOR);
@@ -187,7 +187,7 @@ public class ZigBeeHardwareController {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("decommission")
     public ModelAndView decommission(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
         LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
         zigbeeEventLogService.zigbeeDeviceDecommission(context.getYukonUser(), pao.getPaoName(), EventSource.OPERATOR);
@@ -346,7 +346,7 @@ public class ZigBeeHardwareController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("showTextMessage")
     public String showTextMessage(ModelMap model, int accountId, int inventoryId, int gatewayId) {
         
         ZigbeeTextMessageDto textMessage = new ZigbeeTextMessageDto();
@@ -383,7 +383,7 @@ public class ZigBeeHardwareController {
         return "operator/hardware/textMessage.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("sendTextMessage")
     public String sendTextMessage(ModelMap model, FlashScope flash, 
                                   @ModelAttribute("textMessage") ZigbeeTextMessageDto textMessage,
                                   BindingResult result,
@@ -465,7 +465,7 @@ public class ZigBeeHardwareController {
         return redirectView(model, accountId, inventoryId);
     }
     
-    @RequestMapping
+    @RequestMapping("removeDeviceFromGateway")
     public String removeDeviceFromGateway(YukonUserContext context, ModelMap model, FlashScope flash, int deviceId, int gatewayId, int accountId, int inventoryId) {
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         LiteYukonPAObject gateway = paoDao.getLiteYukonPAO(gatewayId);

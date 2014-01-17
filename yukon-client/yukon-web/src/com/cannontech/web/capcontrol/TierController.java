@@ -52,7 +52,7 @@ public class TierController {
 	@Autowired private SubstationDao substationDao;
 	@Autowired private CapControlWebUtilsService capControlWebUtilsService;
 	
-	@RequestMapping
+	@RequestMapping("areas")
 	public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap model) {
 		if (isSpecialArea == null) {
 			isSpecialArea = false;
@@ -93,7 +93,7 @@ public class TierController {
 		return "tier/areaTier.jsp";
     }
 		
-	@RequestMapping
+	@RequestMapping("substations")
 	public String substations(HttpServletRequest request, 
 	                          HttpSession session, 
 	                          ModelMap model,
@@ -167,7 +167,7 @@ public class TierController {
 		return "tier/substationTier.jsp";
     }
 	
-	@RequestMapping
+	@RequestMapping("feeders")
 	public String feeders(HttpServletRequest request, 
 	                      FlashScope flashScope,
 	                      HttpSession session,
@@ -273,7 +273,7 @@ public class TierController {
 		return "tier/substation.jsp";
     }
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="updateSession", method=RequestMethod.POST)
 	public void updateSession(HttpServletRequest request, CCSessionInfo info) throws ServletException, Exception {
 		if(info != null) {
 			info.updateState( request );

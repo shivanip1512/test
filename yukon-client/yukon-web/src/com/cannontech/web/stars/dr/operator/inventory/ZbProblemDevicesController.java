@@ -43,7 +43,7 @@ public class ZbProblemDevicesController {
     private CustomerAccountDao customerAccountDao;
     private PointFormattingService pointFormattingService;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String inWarehouseMsg = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse");
@@ -75,7 +75,7 @@ public class ZbProblemDevicesController {
         return "operator/inventory/zbProblemDevices.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("csv")
     public String csv(HttpServletResponse response, YukonUserContext context) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String inWarehouseMsg = accessor.getMessage("yukon.web.modules.operator.zbProblemDevices.inWarehouse");

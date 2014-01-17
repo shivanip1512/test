@@ -45,7 +45,7 @@ public class ImportController {
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new ConcurrentHashMap<>();
     
     // UPLOAD
-    @RequestMapping
+    @RequestMapping("upload")
     public String upload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
@@ -82,7 +82,7 @@ public class ImportController {
     
     
     // PARSE
-    @RequestMapping
+    @RequestMapping("parseUpload")
     public String parseUpload(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
@@ -117,7 +117,7 @@ public class ImportController {
     }
     
     // CONFIRM
-    @RequestMapping
+    @RequestMapping("importConfirm")
     public String importConfirm(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
@@ -147,7 +147,7 @@ public class ImportController {
     }
     
     // DO IMPORT
-    @RequestMapping
+    @RequestMapping("doImport")
     public String doImport(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
         
         BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
@@ -164,7 +164,7 @@ public class ImportController {
     }
     
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("importResults")
     public String importResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // result info

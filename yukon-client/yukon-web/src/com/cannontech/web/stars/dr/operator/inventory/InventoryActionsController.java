@@ -46,7 +46,7 @@ public class InventoryActionsController {
     private static final String JSP_DIRECTORY = "operator/inventory/";
 
     /* Inventory Actions */
-    @RequestMapping ("inventoryActions")
+    @RequestMapping("inventoryActions")
     public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
@@ -69,7 +69,7 @@ public class InventoryActionsController {
     }
     
     /* Inventory Configuration */
-    @RequestMapping ("inventoryConfiguration")
+    @RequestMapping("inventoryConfiguration")
     public String inventoryConfiguration(HttpServletRequest request,
     									 ModelMap modelMap,
     									 YukonUserContext userContext) throws ServletRequestBindingException {
@@ -89,7 +89,7 @@ public class InventoryActionsController {
     }
     
     /* Inventory Collection Popup Table */
-    @RequestMapping ("selectedInventoryTable")
+    @RequestMapping("selectedInventoryTable")
     public String selectedInventoryTable(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException, CollectionCreationException {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);

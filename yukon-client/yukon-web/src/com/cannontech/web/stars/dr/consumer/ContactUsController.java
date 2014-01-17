@@ -14,7 +14,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/consumer/contactus")
 public class ContactUsController extends AbstractConsumerController {
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount) {
         return "consumer/contactUs.jsp";
     }

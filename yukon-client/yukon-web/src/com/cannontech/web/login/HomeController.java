@@ -42,7 +42,7 @@ public class HomeController {
     @Autowired private UserSubscriptionDao userSubscriptionDao;
     @Autowired private UserPageService userPageService;
 
-    @RequestMapping({"/home", "/index.jsp"})
+    @RequestMapping(value = {"/home", "/index.jsp"})
     public String home(HttpServletRequest req) {
 
         final LiteYukonUser user = ServletUtil.getYukonUser(req);

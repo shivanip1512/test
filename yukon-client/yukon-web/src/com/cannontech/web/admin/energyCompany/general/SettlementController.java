@@ -36,7 +36,7 @@ public class SettlementController {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonListDao yukonListDao;
     
-    @RequestMapping
+    @RequestMapping("list")
     public String list(YukonUserContext userContext, ModelMap modelMap, int ecId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);

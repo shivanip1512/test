@@ -38,7 +38,7 @@ public class FileExportHistoryController {
 	@Autowired private FileExportHistoryService fileExportHistoryService;
 	@Autowired private FileExportHistoryDao fileExportHistoryDao;
 	
-	@RequestMapping
+	@RequestMapping("list")
 	public String list(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
 			FlashScope flashScope, String name, String initiator, Integer entryId, Integer itemsPerPage, 
 			@RequestParam(defaultValue="1") int page) {
@@ -70,7 +70,7 @@ public class FileExportHistoryController {
 		return "fileExportHistory/list.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("downloadArchivedCopy")
 	public String downloadArchivedCopy(ModelMap model, HttpServletResponse response, FlashScope flashScope, int entryId) {
 		ExportHistoryEntry historyEntry = fileExportHistoryDao.getEntry(entryId);
 		

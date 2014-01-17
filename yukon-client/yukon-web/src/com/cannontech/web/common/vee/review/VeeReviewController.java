@@ -56,7 +56,7 @@ public class VeeReviewController {
 		}
 	});
 	
-	@RequestMapping
+	@RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("vee/review/review.jsp");
@@ -145,7 +145,7 @@ public class VeeReviewController {
         return mav;
     }
 	
-	@RequestMapping
+	@RequestMapping("save")
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
         
         ModelAndView mav = new ModelAndView("redirect:home");

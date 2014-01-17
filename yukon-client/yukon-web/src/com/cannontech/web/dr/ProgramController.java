@@ -73,7 +73,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
 
-    @RequestMapping
+    @RequestMapping("list")
     public String list(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
             BindingResult bindingResult, FlashScope flashScope) {
@@ -85,7 +85,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/list.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("detail")
     public String detail(int programId, ModelMap model,
             @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -212,7 +212,7 @@ public class ProgramController extends ProgramControllerBase {
     }
     
 
-    @RequestMapping
+    @RequestMapping("getChangeGearValue")
     public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
@@ -227,7 +227,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/getChangeGearValue.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("changeGear")
     public @ResponseBody JSONObject changeGear(HttpServletResponse resp, ModelMap modelMap, int programId, int gearNumber, 
                              YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
@@ -248,7 +248,7 @@ public class ProgramController extends ProgramControllerBase {
         return json;
     }
     
-    @RequestMapping
+    @RequestMapping("changeGearMultiplePopup")
     public String changeGearMultiplePopup(ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
                                           BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
         UiFilter<DisplayablePao> filter = null;
@@ -323,7 +323,7 @@ public class ProgramController extends ProgramControllerBase {
       return "dr/program/changeMultipleProgramsGearsDetails.jsp";
   }
     
-    @RequestMapping
+    @RequestMapping("changeMultipleGears")
     public @ResponseBody JSONObject changeMultipleGears(HttpServletResponse resp, ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
@@ -365,7 +365,7 @@ public class ProgramController extends ProgramControllerBase {
         return json;
     }
     
-    @RequestMapping
+    @RequestMapping("sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext) {
         
@@ -380,7 +380,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/sendEnableConfirm.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("setEnabled")
     public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext, FlashScope flashScope) throws IOException {
         
@@ -406,7 +406,7 @@ public class ProgramController extends ProgramControllerBase {
         return json;
     }
     
-    @RequestMapping
+    @RequestMapping("sendEnableDisableProgramsConfirm")
     public String sendEnableDisableProgramsConfirm(ModelMap modelMap, YukonUserContext userContext,
                                              Integer controlAreaId, Integer scenarioId, boolean enable) {
         
@@ -480,7 +480,7 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @SuppressWarnings("null")
-    @RequestMapping
+    @RequestMapping("enableDisablePrograms")
     public @ResponseBody JSONObject enableDisablePrograms(HttpServletResponse resp, ModelMap modelMap, HttpServletRequest request, FlashScope flashScope,
                       Boolean supressRestoration, boolean enable) throws IOException {
         

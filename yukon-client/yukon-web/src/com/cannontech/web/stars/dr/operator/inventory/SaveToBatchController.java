@@ -49,7 +49,7 @@ public class SaveToBatchController {
     @Autowired private PaoDao paoDao;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
-    @RequestMapping
+    @RequestMapping("setup")
     public String setup(HttpServletRequest request, ModelMap model, String taskId, YukonUserContext userContext) throws ServletRequestBindingException, RemoteException {
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompany);

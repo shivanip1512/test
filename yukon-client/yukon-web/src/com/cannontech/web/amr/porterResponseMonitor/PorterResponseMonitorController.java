@@ -142,7 +142,7 @@ public class PorterResponseMonitorController {
 		return false;
 	}
 
-	@RequestMapping
+	@RequestMapping("viewPage")
 	public String viewPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope)
 			throws ServletRequestBindingException {
 
@@ -151,7 +151,7 @@ public class PorterResponseMonitorController {
 		return "porterResponseMonitor/view.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("editPage")
 	public String editPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope)
 			throws ServletRequestBindingException {
 
@@ -162,7 +162,7 @@ public class PorterResponseMonitorController {
 		return "porterResponseMonitor/edit.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("createPage")
 	public String createPage(ModelMap model, YukonUserContext userContext)
 			throws ServletRequestBindingException {
 
@@ -171,7 +171,7 @@ public class PorterResponseMonitorController {
 		return "porterResponseMonitor/create.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("create")
 	public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult, ModelMap modelMap,
 			YukonUserContext userContext, FlashScope flashScope, HttpServletRequest request) {
 
@@ -209,12 +209,12 @@ public class PorterResponseMonitorController {
 		return "redirect:editPage";
 	}
 
-    @RequestMapping(params = "cancel")
+    @RequestMapping(value="cancel", params = "cancel")
     public String cancel(ModelMap modelMap, HttpServletRequest request) {
         return "redirect:/meter/start";
     }
 
-	@RequestMapping
+	@RequestMapping("update")
 	public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto,
 					BindingResult bindingResult, Integer[] rulesToRemove,
 					HttpServletRequest request, ModelMap modelMap,
@@ -272,7 +272,7 @@ public class PorterResponseMonitorController {
         }
 	}
 
-	@RequestMapping(params = "delete")
+	@RequestMapping(value="delete", params = "delete")
 	public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext)
 					throws ServletRequestBindingException {
 
@@ -292,7 +292,7 @@ public class PorterResponseMonitorController {
 		return "redirect:/meter/start";
 	}
 
-	@RequestMapping(params = "toggleEnabled")
+	@RequestMapping(value="toggleEnabled", params = "toggleEnabled")
 	public String toggleEnabled(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, 
 	                YukonUserContext userContext)
 					throws ServletRequestBindingException {
@@ -311,7 +311,7 @@ public class PorterResponseMonitorController {
 		return "redirect:editPage";
 	}
 
-	@RequestMapping
+	@RequestMapping("addRule")
 	public String addRule(ModelMap model, LiteYukonUser user, int monitorId, int maxOrder) {
 
 		setupAddRule(model, monitorId, maxOrder);
@@ -329,7 +329,7 @@ public class PorterResponseMonitorController {
 		model.addAttribute("newMapKey", PorterResponseMonitorDto.getNextKey());
 	}
 
-    @RequestMapping
+    @RequestMapping("counts")
     public @ResponseBody JSONObject counts(int monitorId, YukonUserContext userContext) throws IOException {
         
     	try { // really?

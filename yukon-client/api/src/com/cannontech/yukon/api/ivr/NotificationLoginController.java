@@ -22,7 +22,7 @@ public class NotificationLoginController {
     private INotifConnection notifClientConnection;
     private Logger log = YukonLogManager.getLogger(NotificationLoginController.class);
 
-    @RequestMapping
+    @RequestMapping("pin")
     public void pin(String callToken, Writer out) throws IOException {
         log.debug("received pin request for " + callToken);
         int contactId = notifClientConnection.requestMessageContactId(callToken);

@@ -26,7 +26,7 @@ public class OperatorAlternateEnrollmentController {
     
     @Autowired private AlternateEnrollmentService aeService;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
@@ -43,7 +43,7 @@ public class OperatorAlternateEnrollmentController {
         return "operator/enrollment/view.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="enroll", method = RequestMethod.POST)
     public String enroll(ModelMap model, 
     		final Integer[] alternate, 
     		final Integer[] normal, 

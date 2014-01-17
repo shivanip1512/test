@@ -34,7 +34,7 @@ public class PickerController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ObjectFormattingService objectFormattingService;
 
-    @RequestMapping
+    @RequestMapping("build")
     public String build(Model model, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
             String mode, YukonUserContext userContext) {
         Picker<?> picker = pickerService.getPicker(type);
@@ -50,7 +50,7 @@ public class PickerController {
         return "inline".equals(mode) ? "inlinePicker" : "pickerDialog";
     }
 
-    @RequestMapping
+    @RequestMapping("idSearch")
     @ResponseBody
     public Map<String, ?> idSearch(String type, Integer[] initialIds, String extraArgs, YukonUserContext context) {
         Picker<?> picker = pickerService.getPicker(type);
@@ -62,7 +62,7 @@ public class PickerController {
         return Collections.singletonMap("hits", searchResult);
     }
 
-    @RequestMapping
+    @RequestMapping("search")
     @ResponseBody
     public Map<String, Object> search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,

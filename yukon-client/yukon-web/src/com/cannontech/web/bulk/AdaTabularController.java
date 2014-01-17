@@ -41,7 +41,7 @@ public class AdaTabularController {
     @Autowired private ArchiveDataAnalysisService archiveDataAnalysisService;
     @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int analysisId) {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         model.addAttribute("analysis", analysis);
@@ -57,7 +57,7 @@ public class AdaTabularController {
         return "archiveDataAnalysis/tabular.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("csv")
     public String csv(ModelMap model, HttpServletResponse response, YukonUserContext userContext, int analysisId) throws IOException {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);

@@ -78,18 +78,18 @@ public class DeviceConfigurationConfigController {
         }
     };
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(int configId, ModelMap model, FlashScope flashScope, YukonUserContext context) {
         return viewOrEdit(configId, model, flashScope, context, PageEditMode.VIEW);
     }
     
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(int configId, ModelMap model, FlashScope flashScope, YukonUserContext context) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_EDIT_CONFIG, context.getYukonUser());
         return viewOrEdit(configId, model, flashScope, context, PageEditMode.EDIT);
     }
     
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model) {
         setupModelMap(model, 
                       PageEditMode.CREATE, 
@@ -101,7 +101,7 @@ public class DeviceConfigurationConfigController {
         return "configuration.jsp";
     }
     
-    @RequestMapping 
+    @RequestMapping("save") 
     public String save(ModelMap model,
                        FlashScope flashScope,
                        @ModelAttribute DeviceConfigurationBackingBean deviceConfigurationBackingBean,
@@ -162,7 +162,7 @@ public class DeviceConfigurationConfigController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("swapCategory")
     public String swapCategory(ModelMap model,
                                FlashScope flashScope,
                                YukonUserContext context,
@@ -178,7 +178,7 @@ public class DeviceConfigurationConfigController {
         return viewOrEdit(configId, model, flashScope, context, PageEditMode.VIEW);
     }
     
-    @RequestMapping
+    @RequestMapping("processAddTypes")
     public String processAddTypes(ModelMap model, FlashScope flashScope, int configId, YukonUserContext context) {
         model.addAttribute("configId", configId);
         
@@ -186,7 +186,7 @@ public class DeviceConfigurationConfigController {
         return "setup.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("addSupportedTypes")
     public String addSupportedTypes(ModelMap model, 
                                     FlashScope flashScope, 
                                     YukonUserContext context, 
@@ -233,7 +233,7 @@ public class DeviceConfigurationConfigController {
         return "redirect:view?configId=" + configId;
     }
 
-    @RequestMapping
+    @RequestMapping("removeSupportedType")
     public String removeSupportedType(ModelMap model, 
                                       FlashScope flashScope, 
                                       YukonUserContext context, 
@@ -248,7 +248,7 @@ public class DeviceConfigurationConfigController {
         return "redirect:view?configId=" + configId;
     }
     
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, FlashScope flashScope, int configId) {
         deviceConfigurationService.deleteConfiguration(configId);
         

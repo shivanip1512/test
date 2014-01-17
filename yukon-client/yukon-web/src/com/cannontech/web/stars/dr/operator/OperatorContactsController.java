@@ -54,7 +54,7 @@ public class OperatorContactsController {
     @Autowired private RolePropertyDao rolePropertyDao;
     
     // CONTACTS LIST
-    @RequestMapping
+    @RequestMapping("contactList")
     public String contactList(int accountId,
                               YukonUserContext userContext,
                               ModelMap modelMap,
@@ -88,7 +88,7 @@ public class OperatorContactsController {
     
     
     // CONTACT VIEW
-    @RequestMapping
+    @RequestMapping("view")
     public String view(int contactId,ModelMap model,YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
         
@@ -102,7 +102,7 @@ public class OperatorContactsController {
     }
     
     // CONTACT CREATE
-    @RequestMapping
+    @RequestMapping("create")
     public String create(int contactId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -116,7 +116,7 @@ public class OperatorContactsController {
     }
     
     // CONTACT EDIT
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(int contactId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -131,7 +131,7 @@ public class OperatorContactsController {
     }
     
     // UPDATE CONTACT
-    @RequestMapping
+    @RequestMapping("contactUpdate")
     public String contactUpdate(@ModelAttribute("contactDto") ContactDto contactDto, 
                                 BindingResult bindingResult,
                                 Integer additionalBlankNotifications,
@@ -192,7 +192,7 @@ public class OperatorContactsController {
     }
     
     // ADD NOTIFICATION
-    @RequestMapping(params = "newNotification")
+    @RequestMapping(value="contactsAddNotification", params = "newNotification")
     public String contactsAddNotification(@ModelAttribute("contactDto") ContactDto contactDto, 
                                             ModelMap modelMap, 
                                             YukonUserContext userContext,
@@ -209,7 +209,7 @@ public class OperatorContactsController {
     }
     
     // DELETE ADDITIONAL CONTACT
-    @RequestMapping
+    @RequestMapping("deleteAdditionalContact")
     public String deleteAdditionalContact(int contactId,
                                           ModelMap modelMap, 
                                           YukonUserContext userContext,

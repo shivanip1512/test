@@ -52,7 +52,7 @@ public class MassDeleteController {
     /**
      * CONFIRM MASS DELETE
      */
-    @RequestMapping
+    @RequestMapping("massDelete")
     public String massDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // pass along deviceCollection
@@ -68,7 +68,7 @@ public class MassDeleteController {
     /**
      * DO MASS DELETE
      */
-    @RequestMapping
+    @RequestMapping("doMassDelete")
     public String doMassDelete(ModelMap model, HttpServletRequest request) throws ServletException {
 
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -115,7 +115,7 @@ public class MassDeleteController {
     /**
      * MASS DELETE RESULTS
      */
-    @RequestMapping
+    @RequestMapping("massDeleteResults")
     public String massDeleteResults(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // result info

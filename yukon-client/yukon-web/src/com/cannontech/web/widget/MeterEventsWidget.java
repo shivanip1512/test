@@ -27,15 +27,15 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     
-    @Autowired MeterDao meterDao;
-    @Autowired MeterEventLookupService meterEventLookupService;
-    @Autowired PaoPointValueService paoPointValueService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MeterEventLookupService meterEventLookupService;
+    @Autowired private PaoPointValueService paoPointValueService;
 
     private static Comparator<MeterPointValue> getDateComparator() {
         return MeterPointValue.getDateOrdering().compound(MeterPointValue.getPointNameOrdering().reverse());
     }
 
-    @RequestMapping
+    @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");

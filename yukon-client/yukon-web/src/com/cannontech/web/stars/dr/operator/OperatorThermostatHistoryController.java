@@ -29,7 +29,7 @@ public class OperatorThermostatHistoryController {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     
     // VIEW history for 1 or more thermostats
-    @RequestMapping
+    @RequestMapping("view")
     public String view(String thermostatIds, ModelMap modelMap, FlashScope flashScope, AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
 
         List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);

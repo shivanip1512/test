@@ -58,7 +58,7 @@ public class DeviceConfigurationCategoryController {
     // This will need to be updated if the schedules or rates/times can get to double digit values.
     private static final Pattern touPattern = Pattern.compile("^schedule[0-9](rate|time)[0-9]$");
     
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, String categoryType, YukonUserContext context) {
         Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
         
@@ -84,7 +84,7 @@ public class DeviceConfigurationCategoryController {
         return "category.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("createInPlace")
     public String createInPlace(ModelMap model, String categoryType, int configId, YukonUserContext context) {
         Category category = deviceConfigurationDao.getCategoryByType(CategoryType.fromValue(categoryType));
         
@@ -109,7 +109,7 @@ public class DeviceConfigurationCategoryController {
         return navigateToCategoryPopup(categoryEditBean, model, configId, context);
     }
     
-    @RequestMapping
+    @RequestMapping("editInPlace")
     public String editInPlace(ModelMap model, int categoryId, int configId, YukonUserContext context) {
         DeviceConfigCategory category = deviceConfigurationDao.getDeviceConfigCategory(categoryId);
         
@@ -118,18 +118,18 @@ public class DeviceConfigurationCategoryController {
         return navigateToCategoryPopup(categoryEditBean, model, configId, context);
     }
     
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, int categoryId, YukonUserContext context) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_EDIT_CONFIG, context.getYukonUser());
         return viewOrEdit(model, categoryId, context, PageEditMode.EDIT);
     }
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int categoryId, YukonUserContext context) {
         return viewOrEdit(model, categoryId, context, PageEditMode.VIEW);
     }
     
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, FlashScope flashScope, int categoryId) {
         deviceConfigurationService.deleteCategory(categoryId);
         
@@ -139,7 +139,7 @@ public class DeviceConfigurationCategoryController {
         return "redirect:/deviceConfiguration/home";
     }
 
-    @RequestMapping
+    @RequestMapping("save")
     public String save(ModelMap model, 
                        FlashScope flashScope, 
                        @ModelAttribute CategoryEditBean categoryEditBean, 
@@ -186,7 +186,7 @@ public class DeviceConfigurationCategoryController {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("saveInPlace")
     public String saveInPlace(HttpServletResponse response,
                               ModelMap model, 
                               FlashScope flashScope, 

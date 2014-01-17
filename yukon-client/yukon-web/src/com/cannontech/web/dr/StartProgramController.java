@@ -60,7 +60,7 @@ public class StartProgramController extends ProgramControllerBase {
     /**
      * Page one of the "start program" saga.
      */
-    @RequestMapping
+    @RequestMapping("details")
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -84,7 +84,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startProgramDetails.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("gearAdjustments")
     public String gearAdjustments(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -130,7 +130,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startProgramGearAdjustments.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("constraints")
     public String constraints(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, 
@@ -200,7 +200,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startProgramConstraints.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("start")
     public String start(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, Boolean overrideConstraints,
@@ -252,7 +252,7 @@ public class StartProgramController extends ProgramControllerBase {
         return null;
     }
 
-    @RequestMapping
+    @RequestMapping("multipleDetails")
     public String multipleDetails(ModelMap model,Boolean fromBack,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -322,7 +322,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startMultipleProgramsDetails.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("multipleGearAdjustments")
     public String multipleGearAdjustments(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
@@ -399,7 +399,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startProgramGearAdjustments.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("multipleConstraints")
     public String multipleConstraints(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -524,7 +524,7 @@ public class StartProgramController extends ProgramControllerBase {
         return "dr/program/startMultipleProgramsConstraints.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("multipleStart")
     public String multipleStart(HttpServletResponse resp, ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,

@@ -40,7 +40,7 @@ public class OperatorResidenceController {
 	private RolePropertyDao rolePropertyDao;
 	
 	// RESIDENCE VIEW PAGE
-	@RequestMapping
+	@RequestMapping("view")
 	public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
 	    model.addAttribute("mode", PageEditMode.VIEW);
 	    
@@ -50,7 +50,7 @@ public class OperatorResidenceController {
 	}
 	
 	// RESIDENCE EDIT PAGE
-	@RequestMapping
+	@RequestMapping("edit")
     public String edit(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
 	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
 	    model.addAttribute("mode", PageEditMode.EDIT);
@@ -75,7 +75,7 @@ public class OperatorResidenceController {
 	}
 	
 	// RESIDENCE UPDATE
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="residenceUpdate", method=RequestMethod.POST)
     public String residenceUpdate(@ModelAttribute("customerResidence") CustomerResidence customerResidence, 
     								BindingResult bindingResult,
 						    		int accountId,

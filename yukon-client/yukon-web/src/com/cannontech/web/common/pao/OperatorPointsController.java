@@ -23,7 +23,7 @@ public class OperatorPointsController extends PointsControllerBase {
      * @param orderBy - ordering criterion
      * @param descending - whether or not the sorting is in descending order
      */
-    @RequestMapping
+    @RequestMapping("points")
     public String points(ModelMap model, int deviceId, String orderBy, Boolean descending,
         AccountInfoFragment fragment) {
 
@@ -44,7 +44,7 @@ public class OperatorPointsController extends PointsControllerBase {
      * @param descending - whether or not the sorting is in descending order
      * @throws IOException if an error occurs writing the data to the CSV file
      */
-    @RequestMapping
+    @RequestMapping("download")
     public void download(HttpServletResponse response, YukonUserContext context, int deviceId, String orderBy, Boolean descending) throws IOException {
         super.download(response, context, deviceId, orderBy, descending);
     }

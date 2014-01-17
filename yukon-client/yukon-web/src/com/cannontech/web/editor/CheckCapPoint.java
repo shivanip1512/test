@@ -10,11 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller("/checkCapPoint/*")
+@RequestMapping("/checkCapPoint/*")
 public class CheckCapPoint {
     
     private JdbcTemplate jdbcTemplate;
     
-    @RequestMapping
+    @RequestMapping("checkPoint")
     public void checkPoint(HttpServletResponse response, int pointID) throws Exception {
         StringBuffer query  = new StringBuffer();
         query.append("select count(*) from capbank, point "); 

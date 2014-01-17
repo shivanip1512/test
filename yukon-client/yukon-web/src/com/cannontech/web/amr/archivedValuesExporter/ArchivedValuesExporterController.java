@@ -138,7 +138,7 @@ public class ArchivedValuesExporterController {
     private static final String DEFAULT_PAGES_STRING = "1";
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @ModelAttribute ArchivedValuesExporter archivedValuesExporter, Integer itemsPerPage, 
                        @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
@@ -182,7 +182,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/archiveDataExporterHome.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("deleteJob")
     public String deleteJob(ModelMap model, int jobId, FlashScope flashScope) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
@@ -195,21 +195,21 @@ public class ArchivedValuesExporterController {
         return "redirect:view";
     }
     
-    @RequestMapping
+    @RequestMapping("selectDevices")
     public String selectDevices(ModelMap model, HttpServletRequest request,
             @ModelAttribute ArchivedValuesExporter archivedValuesExporter) {
         model.addAttribute("archivedValuesExporter", archivedValuesExporter);
         return "archivedValuesExporter/selectDevices.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("selected")
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
                            throws DeviceCollectionCreationException, ServletException {
         return view(model, request, userContext, archivedValuesExporter, CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
     }
 
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext userContext, ArchivedValuesExportFormatType formatType) {
         ArchivedValuesExporterBackingBean backingBean = new ArchivedValuesExporterBackingBean();
         backingBean.getFormat().setFormatType(formatType);
@@ -224,7 +224,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("copy")
     public String copy(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int selectedFormatId) {
         
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
@@ -243,7 +243,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, HttpServletRequest request, YukonUserContext userContext, int selectedFormatId) {
 
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(selectedFormatId);
@@ -260,7 +260,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("removeAttribute")
     public String removeAttribute(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                                   @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -270,7 +270,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("addAttribute")
     public String addAttribute(ModelMap model, YukonUserContext userContext,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult) {
 
@@ -286,7 +286,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("ajaxEditAttribute")
     public String ajaxEditAttribute(ModelMap model, YukonUserContext userContext,
                                     @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -302,7 +302,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/editAttribute.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("addField")
     public String addField(ModelMap model, YukonUserContext userContext,
                            @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult) {
 
@@ -319,7 +319,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("removeField")
     public String removeField(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -329,7 +329,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("ajaxEditField")
     public String ajaxEditField(ModelMap model, YukonUserContext userContext,
                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -348,7 +348,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/editField.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("moveFieldUp")
     public String moveFieldUp(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                               @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -358,7 +358,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("moveFieldDown")
     public String moveFieldDown(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                                 @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -368,7 +368,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/exporter.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("saveFormat")
     public String saveFormat(FlashScope flashScope, ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                              @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean, BindingResult bindingResult) {
 
@@ -395,7 +395,7 @@ public class ArchivedValuesExporterController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("deleteFormat")
     public String deleteFormat(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flashScope,
                                @ModelAttribute("backingBean") ArchivedValuesExporterBackingBean backingBean) {
 
@@ -437,7 +437,7 @@ public class ArchivedValuesExporterController {
         binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", dayEndDateEditor);
     }
 
-    @RequestMapping
+    @RequestMapping("generateReport")
     public String generateReport(FlashScope flashScope, ModelMap model, HttpServletResponse response, HttpServletRequest request,
                                  @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult,
                                  YukonUserContext userContext)
@@ -466,7 +466,7 @@ public class ArchivedValuesExporterController {
         return  "";
     }
     
-    @RequestMapping
+    @RequestMapping("scheduleReport")
     public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, Integer jobId,
             @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
             throws ServletRequestBindingException {
@@ -534,7 +534,7 @@ public class ArchivedValuesExporterController {
         return "archivedValuesExporter/schedule.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("doSchedule")
     public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
             int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
             throws ServletRequestBindingException, IllegalArgumentException, ParseException {

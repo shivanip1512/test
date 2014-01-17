@@ -67,7 +67,7 @@ public class DeviceConfigController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
-    @RequestMapping
+    @RequestMapping("assignConfig")
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         // pass along deviceCollection
@@ -82,7 +82,7 @@ public class DeviceConfigController {
         return "config/assignConfig.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="doAssignConfig", method=RequestMethod.POST)
     public String doAssignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -116,13 +116,13 @@ public class DeviceConfigController {
         return "redirect:assignConfigResults";
     }
     
-    @RequestMapping
+    @RequestMapping("assignConfigResults")
     public String assignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         doConfigResultsCore(request, model, userContext);
         return "config/assignConfigResults.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("unassignConfig")
     public String unassignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
@@ -135,7 +135,7 @@ public class DeviceConfigController {
         return "config/unassignConfig.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="doUnassignConfig", method=RequestMethod.POST)
     public String doUnassignConfig(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         
@@ -174,7 +174,7 @@ public class DeviceConfigController {
         return "redirect:unassignConfigResults";
     }
     
-    @RequestMapping
+    @RequestMapping("unassignConfigResults")
     public String unassignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         doConfigResultsCore(request, model, userContext);
         return "config/unassignConfigResults.jsp";
@@ -199,7 +199,7 @@ public class DeviceConfigController {
      * @return
      * @throws ServletException
      */
-    @RequestMapping
+    @RequestMapping("sendConfig")
     public String sendConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
@@ -216,7 +216,7 @@ public class DeviceConfigController {
      * @return
      * @throws ServletException
      */
-    @RequestMapping
+    @RequestMapping("verifyConfig")
     public String verifyConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
@@ -232,7 +232,7 @@ public class DeviceConfigController {
      * @return
      * @throws ServletException
      */
-    @RequestMapping
+    @RequestMapping("readConfig")
     public String readConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
@@ -249,7 +249,7 @@ public class DeviceConfigController {
      * @param model
      * @return
      */
-    @RequestMapping
+    @RequestMapping("doVerifyConfigs")
     public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         
@@ -286,7 +286,7 @@ public class DeviceConfigController {
      * @return
      * @throws ServletException
      */
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="doReadConfig", method=RequestMethod.POST)
     public String doReadConfig(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
         // DO SEND
@@ -313,7 +313,7 @@ public class DeviceConfigController {
      * @return
      * @throws ServletException
      */
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="doSendConfig", method=RequestMethod.POST)
     public String doSendConfig(DeviceCollection deviceCollection, String method, LiteYukonUser user, ModelMap model) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
         // DO SEND

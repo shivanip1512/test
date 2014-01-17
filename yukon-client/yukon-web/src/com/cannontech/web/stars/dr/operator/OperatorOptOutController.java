@@ -92,7 +92,7 @@ public class OperatorOptOutController {
     @Autowired private SurveyDao surveyDao;
     @Autowired private OptOutControllerHelper helper;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap model,
             AccountInfoFragment accountInfoFragment) {
         setupOptOutModelMapBasics(accountInfoFragment, model, userContext);
@@ -162,7 +162,7 @@ public class OperatorOptOutController {
         return "operator/program/optOut/optOut.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("deviceSelection")
     public String deviceSelection(
             @ModelAttribute OptOutBackingBean optOutBackingBean,
             BindingResult bindingResult, ModelMap model,
@@ -214,7 +214,7 @@ public class OperatorOptOutController {
      * one opt out survey to complete. Because of this, it also handles
      * committing an opt out.
      */
-    @RequestMapping
+    @RequestMapping("optOutQuestions")
     public String optOutQuestions(
             @ModelAttribute OptOutBackingBean optOutBackingBean,
             BindingResult bindingResult, ModelMap model,
@@ -355,7 +355,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("optOutHistory")
     public String optOutHistory(ModelMap model,
             AccountInfoFragment accountInfoFragment,
             YukonUserContext yukonUserContext) {
@@ -399,7 +399,7 @@ public class OperatorOptOutController {
         return retVal;
     }
 
-    @RequestMapping
+    @RequestMapping("cancelOptOut")
     public String cancelOptOut(Integer eventId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) throws Exception {
@@ -428,7 +428,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("decrementAllowances")
     public String decrementAllowances(Integer inventoryId,
             FlashScope flashScope, ModelMap model,
             YukonUserContext userContext,
@@ -448,7 +448,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("allowAnother")
     public String allowAnother(Integer inventoryId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
@@ -473,7 +473,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("resend")
     public String resend(Integer inventoryId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) throws NotFoundException, CommandCompletionException {
@@ -502,7 +502,7 @@ public class OperatorOptOutController {
     }
 
 
-    @RequestMapping
+    @RequestMapping("resetToLimit")
     public String resetToLimit(Integer inventoryId, FlashScope flashScope,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
@@ -527,7 +527,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping(params="cancel")
+    @RequestMapping(value="cancel", params="cancel")
     public String cancel(ModelMap model,
             AccountInfoFragment accountInfoFragment,
             YukonUserContext userContext, HttpSession session) {

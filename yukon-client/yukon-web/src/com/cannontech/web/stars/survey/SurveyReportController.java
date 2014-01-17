@@ -109,7 +109,7 @@ public class SurveyReportController {
         }
     };
 
-    @RequestMapping
+    @RequestMapping("config")
     public String config(ModelMap model, int surveyId,
             @ModelAttribute ReportConfig reportConfig,
             YukonUserContext userContext) {
@@ -137,7 +137,7 @@ public class SurveyReportController {
         return "surveyReport/config.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("report")
     public String report(ModelMap model,
             @ModelAttribute ReportConfig reportConfig,
             BindingResult bindingResult, FlashScope flashScope,

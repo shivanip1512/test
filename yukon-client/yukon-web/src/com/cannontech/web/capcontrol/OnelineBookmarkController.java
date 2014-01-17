@@ -16,7 +16,7 @@ import com.cannontech.web.navigation.CtiNavObject;
 @RequestMapping("/onelineBookmark/*")
 public class OnelineBookmarkController {
 
-    @RequestMapping
+    @RequestMapping("mark")
     public void mark(HttpServletRequest request, HttpServletResponse response, Integer itemid) throws IOException {
         if (itemid != null) {
             String url = OnelineUtil.createEditLink(itemid);

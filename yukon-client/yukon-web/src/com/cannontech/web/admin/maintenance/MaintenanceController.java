@@ -69,7 +69,7 @@ public class MaintenanceController {
     private final static String WEATHER_DATA_UPDATE_CRON = "0 0/10 * * * ? *"; //every 10 minutes
     private final static String EXPORT_HISTORY_UPDATE_CRON = "0 45 21 ? * *"; // every night at 9:45pm
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext) {
         List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
@@ -85,7 +85,7 @@ public class MaintenanceController {
         return "maintenance/home.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, YukonUserContext userContext, int jobId) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         CronExpressionTagState expressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
@@ -97,7 +97,7 @@ public class MaintenanceController {
         return "maintenance/edit.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("update")
     public String update(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
                          FlashScope flashScope, int jobId, String cronUniqueId) {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
@@ -123,13 +123,13 @@ public class MaintenanceController {
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("toggleJobEnabled")
     public String toggleJobEnabled(int jobId) {
         toggle(jobId);
         return "redirect:view";
     }
 
-    @RequestMapping
+    @RequestMapping("toggleJobEnabledAjax")
     public @ResponseBody Boolean toggleJobEnabledAjax(int jobId) {
         return toggle(jobId);
     }

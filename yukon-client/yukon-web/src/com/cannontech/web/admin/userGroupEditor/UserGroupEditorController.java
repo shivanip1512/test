@@ -70,12 +70,12 @@ public class UserGroupEditorController {
     @Autowired private CsrfTokenService csrfTokenService;
     
     /* User Editor View Page */
-    @RequestMapping
+    @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/userGroupHome.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int userGroupId) throws SQLException {
         UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
@@ -100,7 +100,7 @@ public class UserGroupEditorController {
         return "userGroupEditor/userGroup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("permissions")
     public String permissions(ModelMap model, int userGroupId, YukonUserContext userContext) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
@@ -156,7 +156,7 @@ public class UserGroupEditorController {
     }
 
     /* User Group Associations */
-    @RequestMapping
+    @RequestMapping("association")
     public String association(ModelMap model) {
         
         List<YukonRole> yukonRoles = Arrays.asList(YukonRole.values());
@@ -166,7 +166,7 @@ public class UserGroupEditorController {
     }
     
     /* Role Groups Page */
-    @RequestMapping
+    @RequestMapping("roleGroups")
     public String roleGroups(ModelMap model, int userGroupId) {
         com.cannontech.database.db.user.UserGroup userGroup = userGroupDao.getDBUserGroup(userGroupId);
         List<LiteYukonGroup> roleGroups = yukonGroupDao.getRoleGroupsForUserGroupId(userGroupId);
@@ -183,7 +183,7 @@ public class UserGroupEditorController {
         return "userGroupEditor/groups.jsp";
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="addRoleGroups", method=RequestMethod.POST)
     public String addRoleGroups(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, String roleGroupIds) throws SQLException {
         csrfTokenService.validateToken(request);
         List<Integer> roleGroupIdsList = parseIntStringForList(roleGroupIds);
@@ -220,7 +220,7 @@ public class UserGroupEditorController {
         return "redirect:roleGroups";
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="removeRoleGroup", method=RequestMethod.POST)
     public String removeRoleGroup(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
         csrfTokenService.validateToken(request);
         userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);

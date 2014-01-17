@@ -50,7 +50,7 @@ public class BusViewController {
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="detail", method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
         setupDetails(model, userContext, isSpecialArea, subBusId);
         return "ivvc/busView.jsp";
@@ -85,7 +85,7 @@ public class BusViewController {
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
     }
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="chart", method = RequestMethod.GET)
     public @ResponseBody JSONObject chart(YukonUserContext userContext, int subBusId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService.
                 allZonesHaveRequiredRegulatorPointMapping(subBusId,

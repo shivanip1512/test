@@ -104,7 +104,7 @@ public class AssetDashboardController {
     @Autowired private EnergyCompanySettingDao ecSettingsDao;
 
     /* Home - Landing Page */
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext context) {
         
         LiteYukonUser user = context.getYukonUser();
@@ -183,7 +183,7 @@ public class AssetDashboardController {
     }
     
     /* Search Post */
-    @RequestMapping
+    @RequestMapping("search")
     public String search(HttpServletRequest request,
                          ModelMap model, 
                          YukonUserContext context, 
@@ -294,7 +294,7 @@ public class AssetDashboardController {
     }
     
     /* VIEW page for a particular hardware device */
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext context, int inventoryId) {
         model.addAttribute("mode", PageEditMode.VIEW);
         int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
@@ -309,7 +309,7 @@ public class AssetDashboardController {
     }
     
     /* EDIT page for a particular hardware device */
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(ModelMap model, YukonUserContext context, int inventoryId) {
         model.addAttribute("mode", PageEditMode.EDIT);
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
@@ -318,7 +318,7 @@ public class AssetDashboardController {
     }
     
     /* CREATION page for a hardware device */
-    @RequestMapping
+    @RequestMapping("creationPage")
     public String creationPage(ModelMap model, YukonUserContext context, int hardwareTypeId) {
         model.addAttribute("mode", PageEditMode.CREATE);
         rpDao.verifyProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, context.getYukonUser());
@@ -397,7 +397,7 @@ public class AssetDashboardController {
     }
     
     /* CREATE a hardware device */
-    @RequestMapping
+    @RequestMapping("create")
     public String create(@ModelAttribute Hardware hardware, BindingResult result,
                                  ModelMap model, 
                                  YukonUserContext context,
@@ -437,7 +437,7 @@ public class AssetDashboardController {
     }
     
     /* UPDATE a particular hardware device */
-    @RequestMapping
+    @RequestMapping("update")
     public String update(@ModelAttribute Hardware hardware, BindingResult result,
                          ModelMap model, 
                          YukonUserContext context,
@@ -524,7 +524,7 @@ public class AssetDashboardController {
     }
     
     /* DELETE */
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, YukonUserContext context, FlashScope flash, int inventoryId) 
     throws NotFoundException, PersistenceException, CommandCompletionException, SQLException {
         

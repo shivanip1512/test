@@ -75,7 +75,7 @@ public class ArchiveDataAnalysisController {
         intervalPeriods.add(Period.days(1));
     }
     
-    @RequestMapping
+    @RequestMapping("setup")
     public String setup(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         model.addAllAttributes(deviceCollection.getCollectionParameters());
@@ -90,7 +90,7 @@ public class ArchiveDataAnalysisController {
         return "archiveDataAnalysis/home.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("analyze")
     public String analyze(ModelMap model, HttpServletRequest request, @ModelAttribute("backingBean") ArchiveDataAnalysisBackingBean backingBean) throws ServletException {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         backingBean.setDeviceCollection(deviceCollection);
@@ -104,7 +104,7 @@ public class ArchiveDataAnalysisController {
         return "redirect:processing";
     }
     
-    @RequestMapping
+    @RequestMapping("reanalyze")
     public String reanalyze(ModelMap model, HttpServletRequest request, int oldAnalysisId) {
         int newAnalysisId = archiveDataAnalysisService.createAnalysis(oldAnalysisId);
         String resultsId = archiveDataAnalysisService.startAnalysis(oldAnalysisId, newAnalysisId);
@@ -115,7 +115,7 @@ public class ArchiveDataAnalysisController {
         return "redirect:processing";
     }
     
-    @RequestMapping
+    @RequestMapping("processing")
     public String processing(ModelMap model, HttpServletRequest request, int analysisId, String resultsId) throws ServletException {
         Analysis analysis = archiveDataAnalysisDao.getAnalysisById(analysisId);
         ArchiveDataAnalysisCallbackResult callbackResult = recentResultsCache.getResult(resultsId);

@@ -31,7 +31,7 @@ public class MultispeakDeviceGroupSyncController {
 	private MultispeakFuncs multispeakFuncs;
 	
 	// HOME
-	@RequestMapping
+	@RequestMapping("home")
     public String home(ModelMap modelMap) {
         
 		MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
@@ -55,7 +55,7 @@ public class MultispeakDeviceGroupSyncController {
     }
 	
 	// START
-	@RequestMapping
+	@RequestMapping("start")
     public String start(ModelMap modelMap, FlashScope flashScope, String deviceGroupSyncType, YukonUserContext userContext) {
         
 		int vendorId = multispeakFuncs.getPrimaryCIS();
@@ -72,7 +72,7 @@ public class MultispeakDeviceGroupSyncController {
     }
 	
 	// PROGRESS
-	@RequestMapping
+	@RequestMapping("progress")
     public String progress(ModelMap modelMap, FlashScope flashScope) {
 		
 		MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
@@ -90,7 +90,7 @@ public class MultispeakDeviceGroupSyncController {
 	}
 	
 	// CANCEL
-	@RequestMapping(params="cancel")
+	@RequestMapping(value="done", params="cancel")
     public String done(ModelMap modelMap, FlashScope flashScope) {
         
 		multispeakDeviceGroupSyncService.getProgress().cancel();
@@ -101,7 +101,7 @@ public class MultispeakDeviceGroupSyncController {
     }
 	
 	// BACK TO HOME
-	@RequestMapping(params="backToHome")
+	@RequestMapping(value="done", params="backToHome")
     public String done(ModelMap modelMap) {
 		
         return "redirect:home";

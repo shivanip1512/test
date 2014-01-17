@@ -41,6 +41,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller("/menu/*")
+@RequestMapping("/menu/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class MenuController {
     
@@ -57,7 +58,7 @@ public class MenuController {
         allowedOperationStates  = new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
     }
     
-    @RequestMapping
+    @RequestMapping("commandMenu")
     public String commandMenu(ModelMap model, int id, LiteYukonUser user) {
         StreamableCapObject object = cache.getObject(id);
         model.addAttribute("paoId", object.getCcId());
@@ -219,7 +220,7 @@ public class MenuController {
         model.addAttribute("commands", commands);
     }
 
-    @RequestMapping //TODO MOVE
+    @RequestMapping("regulatorPointList") //TODO MOVE
     public String regulatorPointList(ModelMap model, int regulatorId) {
         String regulatorName = paoDao.getYukonPAOName(regulatorId);
         List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regulatorId);
@@ -230,7 +231,7 @@ public class MenuController {
         return "tier/popupmenu/regulatorPointList.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("localControl")
     public String localControl(ModelMap model, int id, LiteYukonUser user) {
         StreamableCapObject capObject = cache.getCapControlPAO(id);
         
@@ -257,7 +258,7 @@ public class MenuController {
         return "tier/popupmenu/menu.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("capBankState")
     public String capBankState(ModelMap model, int id, LiteYukonUser user) {
         CapBankDevice capBank = cache.getCapBankDevice(id);
         model.addAttribute("paoId", id);
@@ -284,14 +285,14 @@ public class MenuController {
         return "tier/popupmenu/menu.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("resetBankOpCount")
     public String resetBankOpCount(ModelMap model, int bankId, LiteYukonUser user) {
         model.addAttribute("title", cache.getCapBankDevice(bankId).getCcName());
         model.addAttribute("bankId", bankId);
         return "tier/popupmenu/resetBankOpCountMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("opStateChange")
     public String opStateChange(ModelMap model, int bankId, LiteYukonUser user) {
         CapBankDevice capBank = cache.getCapBankDevice(bankId);
         String reason = ccCommentService.getReason(bankId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
@@ -314,7 +315,7 @@ public class MenuController {
         return "tier/popupmenu/opStateChangeMenu.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("movedBankMenu")
     public String movedBankMenu(HttpServletRequest request, ModelMap model, int id, YukonUserContext context) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         CapBankDevice capBank = cache.getCapBankDevice(id);
@@ -329,7 +330,7 @@ public class MenuController {
         return "tier/popupmenu/movedBankMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("create")
     public String create(ModelMap model, YukonUserContext context) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");

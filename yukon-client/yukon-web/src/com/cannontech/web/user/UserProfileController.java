@@ -115,7 +115,7 @@ public class UserProfileController {
      * @param context
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="profile", method = RequestMethod.GET)
     public String profile(ModelMap model, LiteYukonUser user, YukonUserContext context) {
 
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -200,7 +200,7 @@ public class UserProfileController {
      * Returns an empty {@link JSONObject} on success.
      * Failure may throw exception or return an empty {@link JSONObject}.
      */
-    @RequestMapping (value="/updatePreference.json")
+    @RequestMapping(value="/updatePreference.json")
     public @ResponseBody JSONObject updatePreference(Integer userId,
                                                      String prefName,
                                                      String prefValue,

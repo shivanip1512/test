@@ -63,7 +63,7 @@ public class FdrTranslationManagerController {
     @Autowired private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
     private RecentResultsCache<TranslationImportCallbackResult> recentResultsCache;
     
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext userContext) {
         List<FdrInterfaceDisplayable> displayables = fdrTranslationManagerService.getAllInterfaceDisplayables(userContext);
         model.addAttribute("displayableInterfaces", displayables);
@@ -76,7 +76,7 @@ public class FdrTranslationManagerController {
         return "fdrTranslationManager/home.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("report")
     public String report(ModelMap model, HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
         fdrTranslationManagerCsvHelper.addDefaultExportColumnsToList(formattedHeaders);
@@ -110,7 +110,7 @@ public class FdrTranslationManagerController {
         return null;
     }
     
-    @RequestMapping
+    @RequestMapping("submitImport")
     public ResponseEntity<Map<String, ? extends Object>> submitImport(HttpServletRequest request,  
                                                                       YukonUserContext userContext, 
                                                                       boolean ignoreInvalidColumns) throws IOException {
@@ -192,7 +192,7 @@ public class FdrTranslationManagerController {
         return new ResponseEntity<Map<String, ? extends Object>>(responseMap, responseHeaders, HttpStatus.CREATED);
     }
     
-    @RequestMapping
+    @RequestMapping("importResults")
     public String importResults(ModelMap model, String resultId, String fileName, boolean ignoreInvalidColumns) {
         BackgroundProcessResultHolder result = recentResultsCache.getResult(resultId);
         
@@ -204,7 +204,7 @@ public class FdrTranslationManagerController {
         return "fdrTranslationManager/import.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("downloadFailed")
     public String downloadFailed(ModelMap model, HttpServletResponse response, String resultId) throws IOException {
         TranslationImportCallbackResult result = recentResultsCache.getResult(resultId);
         List<String> headers = result.getHeaders();
@@ -251,7 +251,7 @@ public class FdrTranslationManagerController {
         return null;
     }
     
-    @RequestMapping
+    @RequestMapping("updateLog")
     public String updateLog(HttpServletResponse response, String resultId) throws IOException {
         TranslationImportCallbackResult result = recentResultsCache.getResult(resultId);
         

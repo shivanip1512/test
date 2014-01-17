@@ -58,14 +58,14 @@ public class ZoneWizardController {
     private ZoneDtoHelper zoneDtoHelper;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping
+    @RequestMapping("zoneCreationWizard")
     public String zoneCreationWizard(ModelMap model, LiteYukonUser user, int subBusId) {
         AbstractZone zoneDto = new ZoneGang();
         zoneDto.setSubstationBusId(subBusId);
         return getAndSetupParentSelectionPage(model, zoneDto);
     }
 
-    @RequestMapping
+    @RequestMapping("wizardSelectParent")
     public String wizardSelectParent(HttpServletRequest request, ModelMap model,
                                      YukonUserContext userContext, ZoneType zoneType) {
         AbstractZone zoneDto =
@@ -81,7 +81,7 @@ public class ZoneWizardController {
         return "ivvc/zoneWizardParent.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("wizardParentSelected")
     public String wizardParentSelected(HttpServletRequest request, ModelMap model,
                                        YukonUserContext userContext, ZoneType zoneType) {
         AbstractZone zoneDto =
@@ -112,7 +112,7 @@ public class ZoneWizardController {
         return "ivvc/zoneWizardType.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("wizardTypeSelected")
     public String wizardTypeSelected(HttpServletRequest request, ModelMap model,
                                      YukonUserContext userContext, ZoneType zoneType) {
         AbstractZone zoneDto =
@@ -155,7 +155,7 @@ public class ZoneWizardController {
         model.addAttribute("phaseC", Phase.C);
     }
     
-    @RequestMapping
+    @RequestMapping("createZone")
     public String createZone(HttpServletResponse resp, ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                              YukonUserContext userContext, ZoneType zoneType) throws IOException {
         AbstractZone zoneDto = AbstractZone.create(zoneType);
@@ -197,7 +197,7 @@ public class ZoneWizardController {
         return "ivvc/zoneWizardDetails.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("zoneEditor")
     public String zoneEditor(ModelMap model, LiteYukonUser user, int zoneId) {
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
         setupZoneEditor(model, user, zoneDto);
@@ -267,7 +267,7 @@ public class ZoneWizardController {
         return false;
     }
 
-    @RequestMapping
+    @RequestMapping("updateZone")
     public String updateZone(HttpServletResponse resp, ModelMap model, HttpServletRequest request, FlashScope flashScope, 
                              YukonUserContext userContext, ZoneType zoneType) throws IOException {
 
@@ -351,7 +351,7 @@ public class ZoneWizardController {
         return true;
     }
     
-    @RequestMapping
+    @RequestMapping("deleteZone")
     public String deleteZone(ModelMap modelMap, int zoneId, FlashScope flashScope) {
         Zone zone = zoneService.getZoneById(zoneId);
         try{
@@ -366,7 +366,7 @@ public class ZoneWizardController {
         return "redirect:/capcontrol/ivvc/bus/detail";
     }
     
-    @RequestMapping
+    @RequestMapping("addCapBank")
     public String addCapBank(ModelMap modelMap, LiteYukonUser user, int id, int itemIndex) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
@@ -380,7 +380,7 @@ public class ZoneWizardController {
         return "ivvc/addZoneCapBankRow.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("addVoltagePoint")
     public String addVoltagePoint(ModelMap modelMap, LiteYukonUser user, int id, String zoneType, String phase, int itemIndex) {
     	PointToZoneMapping pointToZone = new PointToZoneMapping();
     	pointToZone.setPointId(id);

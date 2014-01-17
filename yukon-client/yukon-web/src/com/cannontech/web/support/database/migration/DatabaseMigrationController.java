@@ -60,7 +60,7 @@ public class DatabaseMigrationController {
 	
     private boolean ALLOW_EXPORT_ALL = false;
     
-	@RequestMapping
+	@RequestMapping("home")
 	public String home(HttpServletRequest request, ModelMap map,
     		YukonUserContext userContext, FlashScope flashScope) {
         
@@ -102,7 +102,7 @@ public class DatabaseMigrationController {
         return "database/migration/home.jsp";
     }
 	
-	@RequestMapping
+	@RequestMapping("export")
     public String export(ModelMap map, String exportType, String exportIds, 
     		YukonUserContext userContext) throws ServletRequestBindingException, IOException {
 		
@@ -133,7 +133,7 @@ public class DatabaseMigrationController {
         return "redirect:exportProgress";
     }
 	
-	@RequestMapping
+	@RequestMapping("exportProgress")
     public String exportProgress(ModelMap map, String statusKey) 
 		throws ServletRequestBindingException {
 	
@@ -145,7 +145,7 @@ public class DatabaseMigrationController {
         return "database/migration/exportProgress.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("downloadExportFile")
     public void downloadExportFile(HttpServletResponse response, String fileKey) 
 		throws ServletException, IOException {
 
@@ -158,7 +158,7 @@ public class DatabaseMigrationController {
         FileCopyUtils.copy(resource.getInputStream(), response.getOutputStream());
 	}
 	
-	@RequestMapping
+	@RequestMapping("viewSelectedItems")
     public String viewSelectedItems(ModelMap map, String exportType, String exportItemIds, 
     		YukonUserContext userContext) throws ServletException {
 
@@ -179,7 +179,7 @@ public class DatabaseMigrationController {
         return "database/migration/popup/objectsViewPopup.jsp";
     }
 	
-	@RequestMapping
+	@RequestMapping("loadLocalFile")
     public String loadLocalFile(HttpServletRequest request, ModelMap map, 
     		@RequestParam MultipartFile dataFile, YukonUserContext userContext, FlashScope flashScope) {
 		
@@ -233,7 +233,7 @@ public class DatabaseMigrationController {
         return "redirect:validationProgress";
     }
 	
-	@RequestMapping
+	@RequestMapping("loadServerFile")
     public String loadServerFile(ModelMap map, String dataFilePath, YukonUserContext userContext, FlashScope flashScope) 
 		throws ServletException {
 		
@@ -267,7 +267,7 @@ public class DatabaseMigrationController {
 		return "redirect:validationProgress";
 	}
 	
-	@RequestMapping
+	@RequestMapping("validationProgress")
     public String validationProgress(ModelMap map, String statusKey) 
 		throws ServletRequestBindingException {
 	
@@ -277,7 +277,7 @@ public class DatabaseMigrationController {
         return "database/migration/validationProgress.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("importValidate")
     public String importValidate(ModelMap map, String statusKey) throws ServletRequestBindingException {
 	
 		ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(statusKey);
@@ -306,7 +306,7 @@ public class DatabaseMigrationController {
         return "database/migration/importValidate.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("importConfirm")
 	public String importConfirm(ModelMap map,
 								String fileKey,
 								String warningProcessingValue,
@@ -328,7 +328,7 @@ public class DatabaseMigrationController {
 		return "redirect:importProgress";
 	}
 	
-	@RequestMapping
+	@RequestMapping("importProgress")
     public String importProgress(ModelMap map, String statusKey) throws ServletRequestBindingException {
 	
 		ImportDatabaseMigrationStatus status = databaseMigrationService.getImportStatus(statusKey);
@@ -337,7 +337,7 @@ public class DatabaseMigrationController {
         return "database/migration/importProgress.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("objectsViewPopup")
     public String objectsViewPopup(ModelMap map, String fileKey) throws ServletException {
 		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
 			databaseMigrationService.getValidationStatus(fileKey);
@@ -348,7 +348,7 @@ public class DatabaseMigrationController {
 		return "database/migration/popup/objectsViewPopup.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("warningsViewPopup")
     public String warningsViewPopup(ModelMap map, String fileKey) throws ServletException {
         ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
         	databaseMigrationService.getValidationStatus(fileKey);
@@ -365,7 +365,7 @@ public class DatabaseMigrationController {
 		return "database/migration/popup/warningsViewPopup.jsp";
 	}
 	
-	@RequestMapping
+	@RequestMapping("errorsViewPopup")
     public String errorsViewPopup(ModelMap map, String fileKey) throws ServletException {
 	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
 	    	databaseMigrationService.getValidationStatus(fileKey);

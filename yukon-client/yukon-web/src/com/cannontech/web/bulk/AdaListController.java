@@ -30,21 +30,21 @@ public class AdaListController {
     @Resource(name="recentResultsCache") private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
                        @RequestParam(defaultValue="1") int page) {
         setUpList(model, page, itemsPerPage);
         return "archiveDataAnalysis/list.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("page")
     public String page(ModelMap model, @RequestParam(defaultValue="25") int itemsPerPage,
                        @RequestParam(defaultValue="1") int page) {
         setUpList(model, page, itemsPerPage);
         return "archiveDataAnalysis/listFragment.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(ModelMap model, FlashScope flashScope, int analysisId) {
         archiveDataAnalysisDao.deleteAnalysis(analysisId);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.analysis.list.deleted"));

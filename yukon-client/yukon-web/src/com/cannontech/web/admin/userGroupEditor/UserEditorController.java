@@ -69,12 +69,12 @@ public class UserEditorController {
     private UserValidator userValidator = new UserValidator();
 
     /* Group Editor View Page */
-    @RequestMapping
+    @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/userHome.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap model, int userId) {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
@@ -95,7 +95,7 @@ public class UserEditorController {
         return "userGroupEditor/user.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("permissions")
     public String permissions(ModelMap model, int userId, YukonUserContext userContext) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
@@ -109,7 +109,7 @@ public class UserEditorController {
         return "userGroupEditor/editUser.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="removeLoginWait", method = RequestMethod.POST)
     public String removeLoginWait(ModelMap model, int userId, YukonUserContext userContext) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
@@ -166,7 +166,7 @@ public class UserEditorController {
         return redirectToView(model, user.getUserId());
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="changePassword", method=RequestMethod.POST)
     public String changePassword(HttpServletRequest request, YukonUserContext userContext, ModelMap model,
                                 FlashScope flash, int userId, @ModelAttribute Password password, BindingResult result) {
         csrfTokenService.validateToken(request);

@@ -60,7 +60,7 @@ public class ComposedGroupController {
 
     private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
-    @RequestMapping
+    @RequestMapping("build")
     public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model)
                 throws ServletException, JsonProcessingException {
         

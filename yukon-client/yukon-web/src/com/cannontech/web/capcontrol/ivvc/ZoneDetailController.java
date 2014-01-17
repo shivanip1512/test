@@ -130,7 +130,7 @@ public class ZoneDetailController {
         }
     }
 
-    @RequestMapping
+    @RequestMapping("detail")
     public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context,
                          int zoneId, Boolean isSpecialArea) {
         setupDetails(model, request, context, zoneId, isSpecialArea);
@@ -142,7 +142,7 @@ public class ZoneDetailController {
         return "ivvc/zoneDetail.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("voltagePoints")
     public String voltagePoints(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) {
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
@@ -151,7 +151,7 @@ public class ZoneDetailController {
         return "ivvc/voltagePointsEdit.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("updateVoltagePoints")
     public String updateVoltagePoints(@ModelAttribute ZoneVoltagePointsHolder zoneVoltagePointsHolder,
                                       BindingResult bindingResult,
                                       ModelMap model, YukonUserContext context, int zoneId,
@@ -209,7 +209,7 @@ public class ZoneDetailController {
         model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
     }
 
-    @RequestMapping
+    @RequestMapping("voltageDeltas")
     public String voltageDeltas(ModelMap model, HttpServletRequest request,
                                 YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
         setupDeltas(model, request, zoneId);
@@ -221,7 +221,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltas.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("voltageDeltasTable")
     public String voltageDeltasTable(ModelMap model, HttpServletRequest request,
             YukonUserContext context, int zoneId, Boolean isSpecialArea) throws ServletRequestBindingException {
         setupDeltas(model, request, zoneId);
@@ -232,7 +232,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltasTable.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("deltaUpdate")
     public String deltaUpdate(@ModelAttribute ZoneVoltageDeltas zoneVoltageDeltas,
                               BindingResult bindingResult,
                               ModelMap model,
@@ -298,7 +298,7 @@ public class ZoneDetailController {
         return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
-    @RequestMapping
+    @RequestMapping("chart")
     public @ResponseBody JSONObject chart(YukonUserContext context, int zoneId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
@@ -420,7 +420,7 @@ public class ZoneDetailController {
         model.addAttribute("mostRecentDateTime", mostRecentDateTime);
     }
 
-    @RequestMapping
+    @RequestMapping("recentEvents")
     public @ResponseBody Map<String, Object> recentEvents( int zoneId, int subBusId, String mostRecent, YukonUserContext context ) {
         DateTime dt = new DateTime(mostRecent).toDateTime(context.getJodaTimeZone());
 

@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,24 +14,32 @@ import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.common.userpage.dao.UserSubscriptionDao;
 import com.cannontech.common.userpage.model.UserSubscription;
 import com.cannontech.common.validation.model.ValidationMonitor;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
+@CheckRoleProperty({YukonRoleProperty.DEVICE_DATA_MONITORING,
+    YukonRoleProperty.OUTAGE_PROCESSING,
+    YukonRoleProperty.TAMPER_FLAG_PROCESSING,
+    YukonRoleProperty.STATUS_POINT_MONITORING,
+    YukonRoleProperty.PORTER_RESPONSE_MONITORING,
+    YukonRoleProperty.VALIDATION_ENGINE,
+    })
 public class SubscribedMonitorsWidget extends AllMonitorsWidget {
-    
-    @Autowired private UserSubscriptionDao userSubscriptionDao;
-    
-    
-    @Override
-    protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
-        List<UserSubscription> subscribed = Lists.newArrayList(userSubscriptionDao.getSubscriptionsForUser(context.getYukonUser()));
 
-        List<DeviceDataMonitor> deviceDataMonitors = Lists.newArrayList();
-        List<OutageMonitor> outageMonitors = Lists.newArrayList();
-        List<TamperFlagMonitor> tamperFlagMonitors = Lists.newArrayList();
-        List<StatusPointMonitor> statusPointMonitors = Lists.newArrayList();
-        List<PorterResponseMonitor> porterResponseMonitors = Lists.newArrayList();
-        List<ValidationMonitor> validationMonitors = Lists.newArrayList();
+    @Autowired private UserSubscriptionDao userSubscriptionDao;
+
+    protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
+        List<UserSubscription> subscribed = 
+            Lists.newArrayList(userSubscriptionDao.getSubscriptionsForUser(context.getYukonUser()));
+
+        List<DeviceDataMonitor> deviceDataMonitors = new ArrayList<>();
+        List<OutageMonitor> outageMonitors = new ArrayList<>();
+        List<TamperFlagMonitor> tamperFlagMonitors = new ArrayList<>();
+        List<StatusPointMonitor> statusPointMonitors = new ArrayList<>();
+        List<PorterResponseMonitor> porterResponseMonitors = new ArrayList<>();
+        List<ValidationMonitor> validationMonitors = new ArrayList<>();
 
         for (UserSubscription monitor : subscribed) {
             switch (monitor.getType()) {

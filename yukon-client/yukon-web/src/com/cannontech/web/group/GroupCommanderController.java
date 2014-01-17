@@ -139,7 +139,7 @@ public class GroupCommanderController {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 
-    @RequestMapping
+    @RequestMapping("collectionProcessing")
     public void collectionProcessing(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model)
     throws ServletException {
         
@@ -150,7 +150,7 @@ public class GroupCommanderController {
         
     }
     
-    @RequestMapping
+    @RequestMapping("groupProcessing")
     public void groupProcessing(LiteYukonUser user, ModelMap model)
             throws ServletException {
 
@@ -158,7 +158,7 @@ public class GroupCommanderController {
         model.addAttribute("commands", commands);
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="executeGroupCommand", method=RequestMethod.POST)
     public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
@@ -170,7 +170,7 @@ public class GroupCommanderController {
         }
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="executeCollectionCommand", method=RequestMethod.POST)
     public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, final YukonUserContext userContext, ModelMap map)
     throws ServletException {
         boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, null, userContext, map);
@@ -311,7 +311,7 @@ public class GroupCommanderController {
         
     }
 
-    @RequestMapping
+    @RequestMapping("resultList")
     public void resultList(ModelMap map) {
         
         List<GroupCommandResult> completed = groupCommandExecutor.getCompleted();
@@ -324,14 +324,14 @@ public class GroupCommanderController {
         map.addAttribute("resultList", allResults);
     }
     
-    @RequestMapping
+    @RequestMapping("resultDetail")
     public void resultDetail(String resultKey, ModelMap map) throws ResultResultExpiredException {
         
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
         map.addAttribute("result", result);
     }
     
-    @RequestMapping
+    @RequestMapping("cancelCommands")
     public ModelAndView cancelCommands(String resultId, YukonUserContext userContext) {
         
         ModelAndView mav = new ModelAndView(new JsonView());
@@ -347,7 +347,7 @@ public class GroupCommanderController {
         return mav;
     }
     
-    @RequestMapping({"errorsList", "successList"})
+    @RequestMapping(value={"errorsList", "successList"})
     public void results(YukonUserContext userContext, String resultKey, ModelMap map) {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
 		

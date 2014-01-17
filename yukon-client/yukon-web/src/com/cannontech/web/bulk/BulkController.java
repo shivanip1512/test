@@ -67,7 +67,7 @@ public class BulkController {
     @Resource(name="recentResultsCache") private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     
     // BULK HOME
-    @RequestMapping
+    @RequestMapping("bulkHome")
     public String bulkHome(ModelMap model, LiteYukonUser user) {
 
         // INIT RESULT LISTS
@@ -106,7 +106,7 @@ public class BulkController {
     }
     
     // COLLECTION ACTIONS
-    @RequestMapping
+    @RequestMapping("collectionActions")
     public String collectionActions(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
 
         String view = "";
@@ -139,7 +139,7 @@ public class BulkController {
         return view;
     }
     
-    @RequestMapping
+    @RequestMapping("deviceSelection")
     public String deviceSelection(ModelMap model, HttpServletRequest request) {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
@@ -150,7 +150,7 @@ public class BulkController {
         return "deviceSelection.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("deviceSelectionGetDevices")
     public String deviceSelectionGetDevices(ModelMap model, HttpServletRequest request, @RequestParam(defaultValue="false") boolean isFileUpload) throws ServletRequestBindingException {
 
     	try {
@@ -162,7 +162,7 @@ public class BulkController {
     }
     
     // DEVICE COLLECTION REPORT
-    @RequestMapping
+    @RequestMapping("deviceCollectionReport")
     public String deviceCollectionReport(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -178,7 +178,7 @@ public class BulkController {
     }
 
     // SELECTED DEVICES POPUP TABLE
-    @RequestMapping
+    @RequestMapping("selectedDevicesTableForDeviceCollection")
     public String selectedDevicesTableForDeviceCollection(HttpServletRequest request, ModelMap model, YukonUserContext context) 
             throws ServletRequestBindingException {
 
@@ -187,7 +187,7 @@ public class BulkController {
         return "selectedDevicesPopup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("selectedDevicesTableForGroupName")
     public String selectedDevicesTableForGroupName(HttpServletRequest request, ModelMap model, YukonUserContext context) 
             throws ServletRequestBindingException {
 
@@ -199,7 +199,7 @@ public class BulkController {
         return "selectedDevicesPopup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("processingExceptionErrorsRefresh")
     public String processingExceptionErrorsRefresh(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
@@ -209,7 +209,7 @@ public class BulkController {
         return "processingExceptionErrorsList.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("processingExceptionFileDownload")
     public void processingExceptionFileDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");

@@ -64,7 +64,7 @@ public class TamperFlagProcessingController {
 	private static final String RESET_FLAGS_COMMAND = "putstatus reset";
 	
 	// EDIT
-	@RequestMapping
+	@RequestMapping("process")
     public void process(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
 		
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
@@ -116,7 +116,7 @@ public class TamperFlagProcessingController {
 	}
 	
 	// READ FLAGS
-	@RequestMapping
+	@RequestMapping("readFlags")
     public String readFlags(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
 		
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");
@@ -165,7 +165,7 @@ public class TamperFlagProcessingController {
 	}
 	
 	// RESET FLAGS
-	@RequestMapping
+	@RequestMapping("resetFlags")
     public String resetFlags(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
 		
 		String processError = null;
@@ -198,7 +198,7 @@ public class TamperFlagProcessingController {
 	}
 	
 	// CLEAR TAMPER FLAG GROUP
-	@RequestMapping
+	@RequestMapping("clearTamperFlagGroup")
 	public String clearTamperFlagGroup(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletException {
 		
 		int tamperFlagMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "tamperFlagMonitorId");

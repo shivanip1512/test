@@ -33,7 +33,7 @@ public class CapControlCommentController {
     private RolePropertyDao rolePropertyDao;
     private FilterCacheFactory filterCacheFactory;
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="add", method=RequestMethod.POST)
     public String add(int paoId, String comment, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADD_COMMENTS, user);
         
@@ -52,7 +52,7 @@ public class CapControlCommentController {
         return redirectValue;
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="update", method=RequestMethod.POST)
     public String update(int commentId, int paoId, String comment, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
@@ -66,7 +66,7 @@ public class CapControlCommentController {
         return redirectValue;
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="remove", method=RequestMethod.POST)
     public String remove(int commentId, int paoId, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         CapControlComment comment = new CapControlComment();
@@ -77,7 +77,7 @@ public class CapControlCommentController {
         return redirectValue;
     }
     
-    @RequestMapping
+    @RequestMapping("paoComments")
     public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
         setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", false);
@@ -85,7 +85,7 @@ public class CapControlCommentController {
         return "comments/commentsPage.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("paoCommentsForOneline")
     public String paoCommentsForOneline(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
         setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", true);

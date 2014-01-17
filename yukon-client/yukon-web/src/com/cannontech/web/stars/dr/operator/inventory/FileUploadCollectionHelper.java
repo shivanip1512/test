@@ -30,7 +30,7 @@ public class FileUploadCollectionHelper {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    @RequestMapping
+    @RequestMapping("fileUpload")
     public String fileUpload(HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext) throws ServletRequestBindingException {
         
         try {

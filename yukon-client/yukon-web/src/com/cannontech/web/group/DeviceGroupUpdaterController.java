@@ -54,7 +54,7 @@ public class DeviceGroupUpdaterController {
 	
 	private Logger log = YukonLogManager.getLogger(DeviceGroupUpdaterController.class);
 
-	@RequestMapping
+	@RequestMapping("upload")
     public void upload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException {
 
 		String error = ServletRequestUtils.getStringParameter(request, "error", null);
@@ -66,7 +66,7 @@ public class DeviceGroupUpdaterController {
 		model.addAttribute("deviceCount", deviceCount);
     }
 	
-	@RequestMapping
+	@RequestMapping("parseUpload")
     public String parseUpload(HttpServletRequest request, LiteYukonUser user, ModelMap model) throws ServletException, IOException {
 
 		boolean createGroups = ServletRequestUtils.getBooleanParameter(request, "createGroups", false);

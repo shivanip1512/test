@@ -59,7 +59,7 @@ public class OperatorThermostatManualController {
 	@Autowired private ThermostatService thermostatService;
 	
 	// VIEW
-	@RequestMapping
+	@RequestMapping("view")
     public String view(String thermostatIds, ModelMap modelMap, FlashScope flashScope, 
                        AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
 
@@ -130,7 +130,7 @@ public class OperatorThermostatManualController {
     }
 
 	   // VIEW
-    @RequestMapping
+    @RequestMapping("autoEnabledView")
     public String autoEnabledView(String thermostatIds, ModelMap modelMap, FlashScope flashScope, 
                        AccountInfoFragment accountInfoFragment, HttpServletRequest request) {
 
@@ -139,7 +139,7 @@ public class OperatorThermostatManualController {
     }
 	
 	// SAVE
-	@RequestMapping
+	@RequestMapping("save")
     public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double heatTemperature, Double coolTemperature,
                        YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
                        FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
@@ -163,7 +163,7 @@ public class OperatorThermostatManualController {
 	    return "redirect:view";
     }
 	
-	@RequestMapping
+	@RequestMapping("runProgram")
     public String runProgram(String thermostatIds, YukonUserContext userContext, ModelMap modelMap,
                              FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 	    List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);

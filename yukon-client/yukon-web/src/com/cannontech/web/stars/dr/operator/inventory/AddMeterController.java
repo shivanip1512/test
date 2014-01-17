@@ -32,7 +32,7 @@ public class AddMeterController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, LiteYukonUser user, FlashScope flash, Integer mctId) {
         String view = "redirect:../view";
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);

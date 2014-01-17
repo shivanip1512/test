@@ -52,7 +52,7 @@ public class RouteLocateController {
     private static final Logger log = YukonLogManager.getLogger(RouteLocateController.class);
     
     // HOME
-    @RequestMapping
+    @RequestMapping("home")
     public String home(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // DEVICE COLLECTION
@@ -85,7 +85,7 @@ public class RouteLocateController {
     }
     
     // EXECUTE
-    @RequestMapping
+    @RequestMapping("executeRouteLocation")
     public String executeRouteLocation(ModelMap model, HttpServletRequest request) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -137,7 +137,7 @@ public class RouteLocateController {
     }
     
     // CANCELS A CURRENTLY RUNNING ROUTE LOCATE
-    @RequestMapping
+    @RequestMapping("cancelCommands")
     public View cancelCommands(String resultId, YukonUserContext userContext) {
         
         routeLocateExecutor.cancelExecution(resultId,userContext.getYukonUser());
@@ -145,7 +145,7 @@ public class RouteLocateController {
     }
   
     // RESULTS
-    @RequestMapping
+    @RequestMapping("results")
     public String results(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // RESULTID
@@ -163,7 +163,7 @@ public class RouteLocateController {
     }
     
     // VIEW ROUTES
-    @RequestMapping
+    @RequestMapping("routeSettings")
     public String routeSettings(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // RESULT
@@ -195,7 +195,7 @@ public class RouteLocateController {
     }
     
     // SET SINGLE ROUTE
-    @RequestMapping
+    @RequestMapping("setRoute")
     public String setRoute(ModelMap model, HttpServletRequest request) throws ServletException {
         
         // get info

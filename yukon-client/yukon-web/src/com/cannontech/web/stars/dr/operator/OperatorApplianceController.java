@@ -73,7 +73,7 @@ public class OperatorApplianceController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
 
     // APPLIANCE LIST
-    @RequestMapping
+    @RequestMapping("applianceList")
     public String applianceList(ModelMap modelMap,
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) 
@@ -96,7 +96,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE NEW
-    @RequestMapping(params="new")
+    @RequestMapping(value="applianceNew", params="new")
     public String applianceNew(int applianceCategoryId, ModelMap modelMap,
                                YukonUserContext userContext,
                                AccountInfoFragment accountInfoFragment) 
@@ -125,7 +125,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE CREATE
-    @RequestMapping(params="create")
+    @RequestMapping(value="applianceCreate", params="create")
     public String applianceCreate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                   BindingResult bindingResult,
                                   ModelMap modelMap,
@@ -203,7 +203,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE VIEW
-    @RequestMapping
+    @RequestMapping("view")
     public String view(int applianceId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
         
@@ -213,7 +213,7 @@ public class OperatorApplianceController {
     }
     
     // APPLIANCE EDIT
-    @RequestMapping
+    @RequestMapping("edit")
     public String edit(int applianceId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.EDIT);
@@ -250,7 +250,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE UPDATE
-    @RequestMapping(params="update")
+    @RequestMapping(value="applianceUpdate", params="update")
     public String applianceUpdate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                    BindingResult bindingResult,
                                    ModelMap modelMap,
@@ -323,7 +323,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE DELETE
-    @RequestMapping(params="delete")
+    @RequestMapping(value="applianceDelete", params="delete")
     public String applianceDelete(int applianceId, 
                                    ModelMap modelMap,
                                    AccountInfoFragment accountInfoFragment,

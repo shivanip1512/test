@@ -28,7 +28,7 @@ public class DeleteInventoryController {
     @Autowired private DeleteInventoryHelper helper;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId) throws ServletRequestBindingException {
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
         

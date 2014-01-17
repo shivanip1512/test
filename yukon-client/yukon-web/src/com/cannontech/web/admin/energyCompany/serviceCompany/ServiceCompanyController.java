@@ -69,7 +69,7 @@ public class ServiceCompanyController {
     }
 
     /* Index */
-    @RequestMapping ("list")
+    @RequestMapping("list")
     public String index(YukonUserContext userContext, 
                         ModelMap modelMap, 
                         int ecId, 

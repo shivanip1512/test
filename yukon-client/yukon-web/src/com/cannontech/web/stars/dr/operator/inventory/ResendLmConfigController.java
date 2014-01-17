@@ -39,7 +39,7 @@ public class ResendLmConfigController {
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
         
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
@@ -77,14 +77,14 @@ public class ResendLmConfigController {
         return "redirect:../home";
     }
     
-    @RequestMapping
+    @RequestMapping("viewFailed")
     public String viewFailed(ModelMap model, String taskId, YukonUserContext context) {
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
         model.addAttribute("failed", task.getFailureReasons());
         return "operator/inventory/resendConfig/failed.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("newOperation")
     public String newOperation(ModelMap model, String taskId, YukonUserContext context, NewOperationType type) {
         ResendLmConfigTask task = (ResendLmConfigTask) resultsCache.getResult(taskId);
         String code;

@@ -81,7 +81,7 @@ public class StatusPointMonitorController {
         }
     };
     
-    @RequestMapping
+    @RequestMapping("viewPage")
     public String viewPage(int statusPointMonitorId, 
                           ModelMap model, 
                           YukonUserContext userContext,
@@ -91,7 +91,7 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/view.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("creationPage")
     public String creationPage(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         StatusPointMonitor statusPointMonitor = new StatusPointMonitor();
@@ -100,7 +100,7 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/create.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("editPage")
     public String editPage(Integer statusPointMonitorId, ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException {
         
         StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
@@ -109,12 +109,12 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/edit.jsp";
     }
     
-    @RequestMapping(params="cancel")
+    @RequestMapping(value="cancel", params="cancel")
     public String cancel(ModelMap modelMap, HttpServletRequest request) {
         return "redirect:/meter/start";
     }
     
-    @RequestMapping
+    @RequestMapping("create")
     public String create(@ModelAttribute StatusPointMonitor statusPointMonitor,
                                      BindingResult bindingResult,
                                      ModelMap modelMap, 
@@ -156,7 +156,7 @@ public class StatusPointMonitorController {
         return "redirect:/amr/statusPointMonitoring/editPage";
     }
     
-    @RequestMapping
+    @RequestMapping("update")
     public String update(@ModelAttribute StatusPointMonitor statusPointMonitor,
                                                   BindingResult bindingResult,
                                                   ModelMap modelMap, 
@@ -197,7 +197,7 @@ public class StatusPointMonitorController {
     }
     
 
-	@RequestMapping
+	@RequestMapping("confirmDelete")
     public String confirmDelete(StatusPointMonitor statusPointMonitor,
                                 ModelMap model,
                                 YukonUserContext userContext) {
@@ -206,7 +206,7 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/confirmDelete.jsp";
     }
 	
-	@RequestMapping
+	@RequestMapping("delete")
 	public String delete(Integer statusPointMonitorId,
                          ModelMap modelMap,
                          FlashScope flashScope,
@@ -230,7 +230,7 @@ public class StatusPointMonitorController {
         return "redirect:/meter/start";
 	}
 	
-	@RequestMapping
+	@RequestMapping("toggleEnabled")
 	public String toggleEnabled(int statusPointMonitorId,
 	                            ModelMap modelMap,
 	                            YukonUserContext userContext) throws ServletRequestBindingException {

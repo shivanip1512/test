@@ -25,14 +25,14 @@ public class AdditionalInfoController {
 	@Autowired private CapControlCache cache;
 	@Autowired private CapControlWebUtilsService capControlWebUtilsService; 
 	
-    @RequestMapping
+    @RequestMapping("bank")
     public String bank(ModelMap model, int bankId) {
         CapbankAdditional capBankAdd = capbankDao.getCapbankAdditional(bankId);
         model.addAttribute("capBankAdd", capBankAdd);
         return "capBankAddInfoPopup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("bus")
     public String bus(ModelMap model, int busId) {
         SubBus bus = cache.getSubBus(busId);
         ViewableSubBus viewable = capControlWebUtilsService.createViewableSubBus(Collections.singletonList(bus)).get(0);

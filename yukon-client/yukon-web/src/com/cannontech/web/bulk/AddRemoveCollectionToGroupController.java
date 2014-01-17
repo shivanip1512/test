@@ -25,7 +25,7 @@ public class AddRemoveCollectionToGroupController {
     @Autowired private DeviceCollectionDeviceGroupHelper deviceCollectionDeviceGroupHelper;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     
-    @RequestMapping
+    @RequestMapping("selectGroup")
     public String selectGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // pass through device collection
@@ -38,7 +38,7 @@ public class AddRemoveCollectionToGroupController {
         return "group/selectGroup.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("addToGroup")
     public String addToGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request
@@ -53,7 +53,7 @@ public class AddRemoveCollectionToGroupController {
         return "redirect:/group/editor/home";
     }
     
-    @RequestMapping
+    @RequestMapping("removeFromGroup")
     public String removeFromGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request

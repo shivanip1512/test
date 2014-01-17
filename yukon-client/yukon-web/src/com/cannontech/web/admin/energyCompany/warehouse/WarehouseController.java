@@ -48,7 +48,7 @@ public class WarehouseController {
     private final String baseUrl = "/adminSetup/energyCompany/warehouse";
     
     /* Main page */
-    @RequestMapping
+    @RequestMapping("home")
     public String home(YukonUserContext userContext, 
                        ModelMap modelMap,
                        int ecId,
@@ -62,7 +62,7 @@ public class WarehouseController {
     }
     
     /* Individual View */
-    @RequestMapping ("view")
+    @RequestMapping("view")
     public String viewWarehouse(YukonUserContext userContext, 
                                 ModelMap modelMap,
                                 int warehouseId, 
@@ -77,7 +77,7 @@ public class WarehouseController {
     }
     
     /* New */
-    @RequestMapping ("new")
+    @RequestMapping("new")
     public String newWarehouse(YukonUserContext userContext, 
                                ModelMap modelMap, 
                                int ecId, 
@@ -94,7 +94,7 @@ public class WarehouseController {
     }
     
     /* Create */
-    @RequestMapping (params="create")
+    @RequestMapping(params="create")
     public String createWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap, 
                                   int ecId,
@@ -124,7 +124,7 @@ public class WarehouseController {
     }
     
     /* Edit */
-    @RequestMapping ("edit")
+    @RequestMapping("edit")
     public String editWarehouse(YukonUserContext userContext, 
                                 ModelMap modelMap, 
                                 int ecId, 
@@ -139,7 +139,7 @@ public class WarehouseController {
     }
     
     /* Update */
-    @RequestMapping (params="update")
+    @RequestMapping(params="update")
     public String updateWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap,
                                  int ecId,
@@ -169,7 +169,7 @@ public class WarehouseController {
     }
     
     /* Delete */
-    @RequestMapping (params="delete")
+    @RequestMapping(params="delete")
     public String deleteWarehouse(YukonUserContext userContext, 
                                   ModelMap modelMap,
                                   int ecId,

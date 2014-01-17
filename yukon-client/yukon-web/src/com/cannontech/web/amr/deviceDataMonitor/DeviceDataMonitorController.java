@@ -643,7 +643,7 @@ public class DeviceDataMonitorController {
      * @param stateGroup
      * @return
      */
-    @RequestMapping
+    @RequestMapping("getDeviceListInViolation")
     public String getDeviceListInViolation(ModelMap model,
             YukonUserContext context, DeviceViolationEnum violationType,
             String groupName, BuiltInAttribute attribute, Integer stateGroup) {
@@ -731,7 +731,7 @@ public class DeviceDataMonitorController {
      * @param stateGroup
      * @return
      */
-    @RequestMapping
+    @RequestMapping("forwardToAddPoints")
     public String forwardToAddPoints(ModelMap model, YukonUserContext context,
             DeviceViolationEnum violationType, String groupName,
             BuiltInAttribute attribute, Integer stateGroup) {

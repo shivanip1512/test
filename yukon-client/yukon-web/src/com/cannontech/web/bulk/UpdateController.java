@@ -45,7 +45,7 @@ public class UpdateController {
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new ConcurrentHashMap<>();
     
     // UPLOAD
-    @RequestMapping
+    @RequestMapping("upload")
     public String upload(ModelMap model, HttpServletRequest request) throws ServletException {
 
         // column info
@@ -65,7 +65,7 @@ public class UpdateController {
     }
 
     // PARSE
-    @RequestMapping
+    @RequestMapping("parseUpload")
     public String parseUpload(ModelMap model, HttpServletRequest request) {
         
         // options 
@@ -99,7 +99,7 @@ public class UpdateController {
     }
     
     // CONFIRM
-    @RequestMapping
+    @RequestMapping("updateConfirm")
     public String updateConfirm(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get file info
@@ -130,7 +130,7 @@ public class UpdateController {
     }
     
     // DO UPDATE
-    @RequestMapping
+    @RequestMapping("doUpdate")
     public String doUpdate(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException, IOException {
         
         // open file as csv
@@ -146,7 +146,7 @@ public class UpdateController {
     }
     
     // VIEW RESULTS
-    @RequestMapping
+    @RequestMapping("updateResults")
     public String updateResults(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
 
         // result info

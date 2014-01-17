@@ -7,11 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/WebConfig/yukon/styles/")
 public class ThemeableResourceController {
 
     @Autowired ThemeableResourceCache cache;
 
-    @RequestMapping("/WebConfig/yukon/styles/layout.css")
+    @RequestMapping("layout.css")
     public void layout(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.LAYOUT_CSS).getValue();
@@ -21,7 +22,7 @@ public class ThemeableResourceController {
         resp.getWriter().write(css);
     }
     
-    @RequestMapping("/WebConfig/yukon/styles/yukon.css")
+    @RequestMapping("yukon.css")
     public void yukon(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.YUKON_CSS).getValue();
@@ -31,7 +32,7 @@ public class ThemeableResourceController {
         resp.getWriter().write(css);
     }
     
-    @RequestMapping("/WebConfig/yukon/styles/yukon.default.css")
+    @RequestMapping("yukon.default.css")
     public void yukonDefault(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.YUKON_DEFAULT_CSS).getValue();
@@ -41,7 +42,7 @@ public class ThemeableResourceController {
         resp.getWriter().write(css);
     }
     
-    @RequestMapping("/WebConfig/yukon/styles/buttons.css")
+    @RequestMapping("buttons.css")
     public void buttons(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.BUTTONS_CSS).getValue();
@@ -51,7 +52,7 @@ public class ThemeableResourceController {
         resp.getWriter().write(css);
     }
     
-    @RequestMapping("/WebConfig/yukon/styles/buttons.default.css")
+    @RequestMapping("buttons.default.css")
     public void buttonsDefault(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.BUTTONS_DEFAULT_CSS).getValue();
@@ -61,7 +62,7 @@ public class ThemeableResourceController {
         resp.getWriter().write(css);
     }
     
-    @RequestMapping("/WebConfig/yukon/styles/overrides.css")
+    @RequestMapping("overrides.css")
     public void overrides(HttpServletResponse resp) throws Exception {
         
         String css = cache.getResource(ThemeableResource.OVERRIDES_CSS).getValue();

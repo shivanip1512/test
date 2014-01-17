@@ -41,7 +41,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
     private RfnMeterDisconnectArming mode;
     
-    @RequestMapping
+    @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -51,22 +51,22 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
         return "rfnMeterDisconnectWidget/render.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("connect")
     public String connect(ModelMap model, HttpServletRequest request) throws Exception {
         return doCommand(model, request, RfnMeterDisconnectStatusType.RESUME, "connect");
     }
     
-    @RequestMapping
+    @RequestMapping("arm")
     public String arm(ModelMap model, HttpServletRequest request) throws Exception {
         return doCommand(model, request, RfnMeterDisconnectStatusType.ARM, "arm");
     }
     
-    @RequestMapping
+    @RequestMapping("disconnect")
     public String disconnect(ModelMap model, HttpServletRequest request) throws Exception {
         return doCommand(model, request, RfnMeterDisconnectStatusType.TERMINATE, "disconnect");
     }
     
-    @RequestMapping
+    @RequestMapping("query")
     public String query(ModelMap model, HttpServletRequest request) throws Exception {
         return doCommand(model, request, RfnMeterDisconnectStatusType.QUERY, "query");
     }

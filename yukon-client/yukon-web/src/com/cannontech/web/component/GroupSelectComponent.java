@@ -16,7 +16,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 public class GroupSelectComponent {
     private DeviceGroupProviderDao deviceGroupDao;
 
-    @RequestMapping
+    @RequestMapping("display")
     public void display() throws JspException {
     }
     

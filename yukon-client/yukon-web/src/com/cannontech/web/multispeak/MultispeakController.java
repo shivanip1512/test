@@ -58,7 +58,7 @@ public class MultispeakController {
     private static String RESULT_COLOR_ATT = "resultColor";
     
     // HOME
-    @RequestMapping
+    @RequestMapping("home")
     public String home(HttpServletRequest request, ModelMap map) throws Exception {
 
         MultispeakVendor mspVendor = defaultMspVendor;
@@ -114,7 +114,7 @@ public class MultispeakController {
     }
     
     // DELETE
-    @RequestMapping
+    @RequestMapping("delete")
     public String delete(HttpServletRequest request, FlashScope flashScope) throws Exception {
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
 
@@ -133,7 +133,7 @@ public class MultispeakController {
     }
 
     // PINGURL
-    @RequestMapping
+    @RequestMapping("pingURL")
     public String pingURL(HttpServletRequest request, ModelMap map) throws Exception {
         
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
@@ -166,7 +166,7 @@ public class MultispeakController {
     }
 
     // GETMETHODS
-    @RequestMapping
+    @RequestMapping("getMethods")
     public String getMethods(HttpServletRequest request, ModelMap map) throws Exception {
         
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());

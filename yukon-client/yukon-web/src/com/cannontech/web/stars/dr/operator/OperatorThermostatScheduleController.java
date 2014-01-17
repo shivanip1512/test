@@ -184,7 +184,7 @@ public class OperatorThermostatScheduleController {
         return "redirect:savedSchedules";
     }
 	
-    @RequestMapping
+    @RequestMapping("viewArchivedSchedule")
     public String viewArchivedSchedule(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
                                        Integer scheduleId,
                                        YukonUserContext userContext,
@@ -207,7 +207,7 @@ public class OperatorThermostatScheduleController {
     }
 	
 	// SAVED SCHEDULES
-	@RequestMapping
+	@RequestMapping("savedSchedules")
     public String savedSchedules(@RequestParam(value="thermostatIds", required=true) String thermostatIds,
                                  YukonUserContext userContext,
                                  ModelMap model,

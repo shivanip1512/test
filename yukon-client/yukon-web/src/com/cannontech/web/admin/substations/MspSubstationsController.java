@@ -35,7 +35,7 @@ public class MspSubstationsController {
     private MultispeakDao multispeakDao;
     private MspObjectDao mspObjectDao;
     
-    @RequestMapping
+    @RequestMapping("choose")
     public ModelAndView choose(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView mav = new ModelAndView("substations/mspSubstations.jsp");
@@ -72,7 +72,7 @@ public class MspSubstationsController {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("add")
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView mav = new ModelAndView("redirect:/adminSetup/substations/routeMapping/view");

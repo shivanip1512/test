@@ -37,6 +37,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 @Controller("/oneline/popupmenu/*")
+@RequestMapping("/oneline/popupmenu/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class OnelinePopupMenuController {
     
@@ -58,7 +59,7 @@ public class OnelinePopupMenuController {
                                                                  BankOpState.SWITCHED};
     }
 
-    @RequestMapping
+    @RequestMapping("subTagMenu")
     public String subTagMenu(ModelMap model, int id) {
         CapControlType type = CapControlType.SUBBUS;
         final SubBus subBus = cache.getSubBus(id);
@@ -89,7 +90,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("capInfoMenu")
     public String capInfoMenu(ModelMap model, int id) {
         CapBankDevice cap = cache.getCapBankDevice(id);
         model.addAttribute("paoName", cap.getCcName());
@@ -124,7 +125,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/capInfoMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("feederTagMenu")
     public String feederTagMenu(ModelMap model, int id) {
         CapControlType type = CapControlType.FEEDER;
         Feeder feeder = cache.getFeeder(id);
@@ -157,7 +158,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("capTagMenu")
     public String capTagMenu(ModelMap model, int id) {
         CapControlType type = CapControlType.CAPBANK;
         CapBankDevice capBank = cache.getCapBankDevice(id);
@@ -201,7 +202,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/tagMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("capBankMenu")
     public String capBankMenu(ModelMap model, int id) {
         model.addAttribute("controlType", CapControlType.CAPBANK);
         
@@ -234,7 +235,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/capBankMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("feederMenu")
     public String feederMenu(ModelMap model, int id) {
         Feeder feeder = cache.getFeeder(id);
 
@@ -275,7 +276,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/feederMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("subMenu")
     public String subMenu(ModelMap model, int id) {
         SubBus subBus = cache.getSubBus(id);
         
@@ -340,7 +341,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/subMenu.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("capBankMaint")
     public String capBankMaint(ModelMap model, int id) {
         CapBankDevice capBank = cache.getCapBankDevice(id);
         
@@ -369,7 +370,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/capBankMaint.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("capBankDBChange")
     public String capBankDBChange(ModelMap model, int id) {
         CapBankDevice capBank = cache.getCapBankDevice(id);
         
@@ -388,7 +389,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/capBankDBChange.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("pointTimestamp")
     public String pointTimestamp(ModelMap model, int cbcID) {
         String paoName = paoDao.getYukonPAOName(cbcID);
         model.addAttribute("paoName", paoName);
@@ -408,7 +409,7 @@ public class OnelinePopupMenuController {
         return "oneline/cbcPoints.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("varChangePopup")
     public String varChangePopup(ModelMap model, int id) {
         final CapBankDevice capBank = cache.getCapBankDevice(id);
         model.addAttribute("paoId", id);
@@ -492,7 +493,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/varChangePopup.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("moveBankBackPopup")
     public String moveBankBackPopup(ModelMap model, int id) {
     	int cmdId = CommandType.RETURN_CAP_TO_ORIGINAL_FEEDER.getCommandId();
         model.addAttribute("paoId", id);
@@ -500,7 +501,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/moveBankBackPopup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("warningInfoPopop")
     public String warningInfoPopop(ModelMap model, YukonUserContext context, int id) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         
@@ -520,7 +521,7 @@ public class OnelinePopupMenuController {
         return "oneline/popupmenu/warningInfoPopup.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("moveBankPopup")
     public String moveBankPopup(ModelMap model, YukonUserContext context, int id) {
         model.addAttribute("paoId", id);
         return "oneline/popupmenu/moveBankPopup.jsp";

@@ -41,7 +41,7 @@ public class ChartController {
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="chart", method = RequestMethod.GET)
     public @ResponseBody JSONObject chart(YukonUserContext userContext,
                         String pointIds,
                         ChartInterval interval,

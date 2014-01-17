@@ -95,7 +95,7 @@ public class EimTestController implements ApplicationContextAware {
         uris.add("http://www.weather.gov/forecasts/xml/SOAP_server/ndfdXMLserver.php");
     }
 
-    @RequestMapping
+    @RequestMapping("main")
     public void main(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("samplesByCategory", samplesByCategory);
         model.addAttribute("categories", categories);
@@ -103,7 +103,7 @@ public class EimTestController implements ApplicationContextAware {
         model.addAttribute("username", userContext.getYukonUser().getUsername());
     }
 
-    @RequestMapping
+    @RequestMapping("sampleXml")
     @ResponseBody
     public String sampleXml(int sampleId) throws IOException {
         SampleEimFile sample = samplesById.get(sampleId);
@@ -116,7 +116,7 @@ public class EimTestController implements ApplicationContextAware {
         return exampleXml;
     }
 
-    @RequestMapping
+    @RequestMapping("executeRequest")
     @ResponseBody
     public String executeRequest(String uri, String username, String xmlRequest) throws IOException {
         String response;

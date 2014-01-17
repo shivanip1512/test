@@ -52,7 +52,7 @@ public class ChangeDeviceTypeController {
    
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
-    @RequestMapping
+    @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
         YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
@@ -91,7 +91,7 @@ public class ChangeDeviceTypeController {
         return "redirect:view";
     }
     
-    @RequestMapping
+    @RequestMapping("newOperation")
     public String newOperation(ModelMap model, YukonUserContext context, String taskId, String type) {
         Status status = Status.valueOf(type);
         ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);

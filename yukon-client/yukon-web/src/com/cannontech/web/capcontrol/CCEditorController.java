@@ -10,11 +10,12 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller("/tier/cceditorpopup/*")
+@RequestMapping("/tier/cceditorpopup/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CCEditorController {
     private CapControlDao capControlDao;
     
-    @RequestMapping
+    @RequestMapping("orphans")
     public String orphans(ModelMap model) {
         model.addAttribute("orphans", capControlDao.getOrphanedCBCs());
         return "tier/popupmenu/orphanedCBCPopup.jsp";

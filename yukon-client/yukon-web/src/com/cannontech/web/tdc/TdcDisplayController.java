@@ -397,7 +397,7 @@ public class TdcDisplayController {
         return "altScanRatePopup.jsp";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value="altScanRateSend", method = RequestMethod.POST)
     public @ResponseBody JSONObject altScanRateSend(YukonUserContext context, ModelMap model,
                                @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 

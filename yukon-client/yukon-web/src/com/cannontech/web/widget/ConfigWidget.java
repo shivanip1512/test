@@ -81,7 +81,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return deviceDao.getYukonDevice(deviceId);
     }
     
-    @RequestMapping
+    @RequestMapping("assignConfig")
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonDevice device = getYukonDevice(request);
         
@@ -97,7 +97,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("unassignConfig")
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonDevice device = getYukonDevice(request);
         
@@ -107,7 +107,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("sendConfig")
     public ModelAndView sendConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
@@ -117,7 +117,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("readConfig")
     public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
@@ -127,7 +127,7 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
     
-    @RequestMapping
+    @RequestMapping("verifyConfig")
     public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");

@@ -40,7 +40,7 @@ public class AdaResultsController {
     @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     @Autowired private RolePropertyDao rolePropertyDao;
     
-    @RequestMapping
+    @RequestMapping("view")
     public String view(ModelMap model, int analysisId, Integer itemsPerPage, 
             @RequestParam(defaultValue="1") int page, 
             YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException, DeviceCollectionCreationException {

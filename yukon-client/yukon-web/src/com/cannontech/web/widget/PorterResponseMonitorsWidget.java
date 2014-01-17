@@ -29,13 +29,13 @@ public class PorterResponseMonitorsWidget extends AdvancedWidgetControllerBase {
 	private PorterResponseMonitorService porterResponseMonitorService;
 	private OutageEventLogService outageEventLogService;
 
-	@RequestMapping
+	@RequestMapping("render")
 	public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		setupRenderModel(model, request);
 		return "porterResponseMonitorsWidget/render.jsp";
 	}
 
-	@RequestMapping
+	@RequestMapping("toggleEnabled")
 	public String toggleEnabled(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		int monitorId = WidgetParameterHelper.getRequiredIntParameter(request, "monitorId");

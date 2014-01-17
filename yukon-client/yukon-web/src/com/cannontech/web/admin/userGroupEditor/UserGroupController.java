@@ -14,7 +14,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class UserGroupController {
     
     /* User Group Editor Home Page */
-    @RequestMapping
+    @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/home.jsp";
     }

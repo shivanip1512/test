@@ -53,7 +53,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         attributes = b.build();
     }
     
-    @RequestMapping
+    @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, NotFoundException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
@@ -69,7 +69,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         return "rfnOutagesWidget/render.jsp";
     }
     
-    @RequestMapping
+    @RequestMapping("outageData")
     public String outageData(ModelMap model, HttpServletRequest req, HttpServletResponse resp, YukonUserContext context) throws ServletRequestBindingException {
         YukonMeter meter = widgetHelper.getMeter(req);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> data = rphDao.getAttributeData(Collections.singleton(meter), 
@@ -129,7 +129,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         }
     }
     
-    @RequestMapping
+    @RequestMapping("read")
     public String read(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         YukonMeter meter = widgetHelper.getMeter(request);
         widgetHelper.initiateRead(request, meter, attributes, model, DeviceRequestType.METER_OUTAGES_WIDGET_ATTRIBUTE_READ);

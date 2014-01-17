@@ -139,7 +139,7 @@ public class OperatorAccountController {
     }
 	
 	// ACCOUNT IMPORT PAGE
-	@RequestMapping
+	@RequestMapping("accountImport")
 	public String accountImport(ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, String processedBeforeCancel) {
 	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
 	    setupAccountImportModelMap(modelMap);
@@ -152,7 +152,7 @@ public class OperatorAccountController {
 	}
 
 	// UPLOAD IMPORT FILES
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="uploadImportFiles", method=RequestMethod.POST)
     public String uploadImportFiles(HttpServletRequest request, @ModelAttribute("accountImportData") AccountImportData accountImportData, 
                                 BindingResult bindingResult,
                                 ModelMap modelMap, 
@@ -202,7 +202,7 @@ public class OperatorAccountController {
         return "operator/account/accountImportResults.jsp";
     }
 
-    @RequestMapping
+    @RequestMapping("importResult")
     @ResponseBody
     public BooleanNode importResult(String resultId) {
         AccountImportResult result = recentResultsCache.getResult(resultId);
@@ -210,7 +210,7 @@ public class OperatorAccountController {
     }
     
     // IMPORT ERRORS PAGE
-    @RequestMapping
+    @RequestMapping("importErrors")
     public String importErrors(ModelMap modelMap, String resultId) throws ServletException {
         AccountImportResult result = recentResultsCache.getResult(resultId);
         modelMap.addAttribute("importErrors", result.getErrors());
@@ -218,7 +218,7 @@ public class OperatorAccountController {
     }
     
     // CANCEL AN IMPORT
-    @RequestMapping(params="cancelImport")
+    @RequestMapping(value="cancelImport", params="cancelImport")
     public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult result = recentResultsCache.getResult(resultId);
@@ -231,7 +231,7 @@ public class OperatorAccountController {
     }
     
     // DO ACCOUNT IMPORT
-    @RequestMapping
+    @RequestMapping("doAccountImport")
     public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) throws ServletException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
@@ -255,7 +255,7 @@ public class OperatorAccountController {
     }
     
 	// SEARCH PAGE
-	@RequestMapping
+	@RequestMapping("search")
     public String search(HttpServletRequest request,
     					Integer itemsPerPage, 
     					Integer page,
@@ -317,7 +317,7 @@ public class OperatorAccountController {
 	}
 	
 	// NEW ACCOUNT PAGE
-	@RequestMapping
+	@RequestMapping("accountCreate")
     public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 	    if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
     	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
@@ -458,7 +458,7 @@ public class OperatorAccountController {
 	}
 	
 	// ACCOUNT VIEW PAGE
-	@RequestMapping
+	@RequestMapping("view")
 	public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
 	    model.addAttribute("mode", PageEditMode.VIEW);
 	    setupAccountPage(model, context, fragment, accountId);
@@ -467,7 +467,7 @@ public class OperatorAccountController {
 	    return "operator/account/account.jsp";
 	}
 	// ACCOUNT EDIT PAGE
-	@RequestMapping
+	@RequestMapping("edit")
     public String edit(HttpServletRequest request, int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
 	    csrfTokenService.validateToken(request);
 	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
@@ -551,7 +551,7 @@ public class OperatorAccountController {
     /*
      * The residentialLoginService authenticates the user for updating passwords on this account
      */
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="updatePassword", method=RequestMethod.POST)
     public @ResponseBody Map<String, ? extends Object> updatePassword(final @ModelAttribute LoginBackingBean loginBackingBean,
                                                      BindingResult bindingResult,
                                                      final int accountId,
@@ -749,7 +749,7 @@ public class OperatorAccountController {
 	}
 	
 	// DELETE LOGIN
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="deleteLogin", method=RequestMethod.POST)
     public String deleteLogin(HttpServletRequest request,
                                String loginMode,
                                ModelMap modelMap, 
@@ -772,7 +772,7 @@ public class OperatorAccountController {
     }
 	
 	// DELETE ACCOUNT
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(value="deleteAccount", method=RequestMethod.POST)
     public String deleteAccount(HttpServletRequest request, 
                                 int accountId,
     							ModelMap modelMap, 
@@ -788,7 +788,7 @@ public class OperatorAccountController {
 	}
 	
 	// ACCOUNT LOG
-	@RequestMapping
+	@RequestMapping("accountLog")
     public String accountLog(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());

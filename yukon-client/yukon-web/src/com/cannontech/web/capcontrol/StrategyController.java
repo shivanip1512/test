@@ -28,7 +28,7 @@ public class StrategyController {
     
     private StrategyDao strategyDao = null;
     
-    @RequestMapping
+    @RequestMapping("strategies")
     public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap mav) throws ServletRequestBindingException {
         List<ViewableStrategy> strategies = strategyDao.getAllViewableStrategies(userContext);
         
