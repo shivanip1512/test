@@ -10,10 +10,6 @@
 
     <context:component-scan base-package="com.cannontech.web.amr"/>
 
-	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="order" value="1"/>
-    </bean>
-    
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>

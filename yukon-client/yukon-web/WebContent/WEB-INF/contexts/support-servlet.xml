@@ -13,10 +13,6 @@
 
     <bean class="com.cannontech.web.support.LocalizationService"/>
 
-	<bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="order" value="1"/>
-    </bean>
-
 	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
         <property name="order" value="2"/>
     </bean>

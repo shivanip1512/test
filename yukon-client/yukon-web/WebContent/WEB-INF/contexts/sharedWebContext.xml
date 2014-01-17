@@ -3,15 +3,31 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-       
-       <!-- Do not wire beans in this file. -->
-       
-       <context:annotation-config/>
-       
-       <tx:annotation-driven transaction-manager="transactionManager"/>
-       
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- This is duplicated in all CannonDispatcherServlet contexts. -->
+    <mvc:annotation-driven>
+        <mvc:argument-resolvers>
+            <bean class="com.cannontech.web.bulk.model.DeviceCollectionHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.common.collection.InventoryCollectionHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.login.UserContextHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.login.EnumHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.common.flashScope.FlashScopeHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentHandlerMethodArgumentResolver" />
+            <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentHandlerMethodArgumentResolver" />
+        </mvc:argument-resolvers>
+        <mvc:message-converters>
+            <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <context:annotation-config/>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
 </beans>

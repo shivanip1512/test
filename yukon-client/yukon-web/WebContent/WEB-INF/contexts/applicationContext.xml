@@ -5,37 +5,25 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
-       
-    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-        <property name="cacheSeconds" value="0"/>
-        <property name="customArgumentResolvers">
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd 
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl" />
+    <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
+        <property name="collectionProducerList">
             <list>
-                <ref bean="deviceCollectionFactory"/>
-                <ref bean="inventoryCollectionFactory"/>
-                <ref bean="userContextArgumentResolver"/>
-                <ref bean="flashScopeArgumentResolver"/>
-                <ref bean="accountInfoFragmentArgumentResolver"/>
-                <ref bean="energyCompanyInfoFragmentArgumentResolver"/>
-                <ref bean="enumArgumentResolver"/>
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer" />
+                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer" />
+                <ref bean="memoryCollectionProducer"/>
             </list>
         </property>
-        <property name="order" value="1" />
-        <property name="messageConverters">
-           <list>
-             <!-- Message converters -->
-             <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
-            </list>
-         </property>
     </bean>
-    
-    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
-    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
     <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
 
@@ -47,8 +35,6 @@
         <property name="maxUploadSize" value="-1"/> <!-- no limit -->
     </bean>
     
-    <bean id="userContextArgumentResolver" class="com.cannontech.web.login.UserContextArgumentResolver"/>
-    <bean id="enumArgumentResolver" class="com.cannontech.web.login.EnumArgumentResolver"/>
     
     <!-- If we want the view resolver to continue to not jave the suffix, we'll need this. -->
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
@@ -258,58 +244,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
            </property>
-    </bean>
-    
-    <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-        <property name="roleAndPropertiesChecker">
-            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="METERING"/>
-            </bean>
-        </property>
-    </bean>
-    
-    <bean id="rfnOutagesWidget" class="com.cannontech.web.widget.RfnOutagesWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-        <property name="roleAndPropertiesChecker">
-            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="METERING"/>
-            </bean>
-        </property>
-    </bean>
-    
-    <bean id="rfnDeviceMetadataWidget" class="com.cannontech.web.widget.RfnDeviceMetadataWidget">
-        <property name="lazyLoad" value="true" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-    </bean>
-    
-    <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="lazyLoad" value="true" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-        <property name="roleAndPropertiesChecker">
-            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="METERING"/>
-            </bean>
-        </property>
     </bean>
     
     <bean id="meterOutagesWidget"
@@ -595,24 +529,6 @@
             </bean>
            </property>
     </bean>
-    
-    <bean id="statusPointMonitorsWidget" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="roleAndPropertiesChecker">
-            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="STATUS_POINT_MONITORING"/>
-            </bean>
-        </property>
-    </bean>
-    
-    <bean id="deviceDataMonitorsWidget" class="com.cannontech.web.widget.DeviceDataMonitorsWidget">
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="roleAndPropertiesChecker">
-            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                <constructor-arg value="DEVICE_DATA_MONITORING"/>
-            </bean>
-        </property>
-    </bean>
 
     <bean id="allMonitorsWidget" class="com.cannontech.web.widget.AllMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -632,11 +548,81 @@
         </property>
     </bean>
 
+    <bean id="deviceDataMonitorsWidget" class="com.cannontech.web.widget.DeviceDataMonitorsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="DEVICE_DATA_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="lazyLoad" value="true" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="PORTER_RESPONSE_MONITORING"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="rfnDeviceMetadataWidget" class="com.cannontech.web.widget.RfnDeviceMetadataWidget">
+        <property name="lazyLoad" value="true" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+    </bean>
+
+    <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="rfnOutagesWidget" class="com.cannontech.web.widget.RfnOutagesWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="statusPointMonitorsWidget" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="roleAndPropertiesChecker">
+            <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="STATUS_POINT_MONITORING"/>
             </bean>
         </property>
     </bean>
@@ -1497,7 +1483,6 @@
     
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"><qualifier value="filter"/></bean>
     
-    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl"/>
     
     <bean id="deviceCollectionDeviceGroupHelper" class="com.cannontech.web.group.DeviceCollectionDeviceGroupHelper">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
@@ -1505,17 +1490,7 @@
     </bean>
     
     <bean id="memoryCollectionProducer" class="com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer" />
-    
-    <bean id="inventoryCollectionFactory" class="com.cannontech.web.common.collection.InventoryCollectionFactoryImpl">
-        <property name="collectionProducerList">
-            <list>
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryIdListCollectionProducer" />
-                <bean class="com.cannontech.web.stars.dr.operator.inventory.model.collection.InventoryFileUploadCollectionProducer" />
-                <ref bean="memoryCollectionProducer"/>
-            </list>
-        </property>
-    </bean>
-    
+
     <bean id="inventoryOperationsFilterService" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.InventoryOperationsFilterServiceImpl"/>
     
     <bean id="zigbeeDeviceService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.ZigbeeDeviceServiceImpl"/>
@@ -1929,11 +1904,6 @@
 
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
     
-    <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
-    
-    <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
-    
-    <bean id="energyCompanyInfoFragmentArgumentResolver" class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
     <bean id="generalInfoService" class="com.cannontech.web.admin.energyCompany.general.service.GeneralInfoService"/>
     <bean id="generalInfoValidator" class="com.cannontech.web.admin.energyCompany.general.model.GeneralInfoValidator"/>
     <bean id="energyCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.model.EnergyCompanyDtoValidator"/>

@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <!--  This is a custom HandlerMapping that uses the path property from the 
           JnlpController classes to determine if the controller matches. -->
+
+    <context:component-scan base-package="com.cannontech.web.widget" />
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="cacheSeconds" value="0"/>
+        <property name="customArgumentResolvers">
+            <list>
+                <bean class="com.cannontech.web.bulk.model.DeviceCollectionWebArgumentResolver" />
+                <bean class="com.cannontech.web.common.collection.InventoryCollectionWebArgumentResolver" />
+                <bean class="com.cannontech.web.login.UserContextWebArgumentResolver" />
+                <bean class="com.cannontech.web.login.EnumWebArgumentResolver"/>
+                <bean class="com.cannontech.web.common.flashScope.FlashScopeWebArgumentResolver"/>
+                <bean class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentWebArgumentResolver"/>
+                <bean class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentWebArgumentResolver"/>
+            </list>
+        </property>
+        <property name="order" value="1" />
+        <property name="messageConverters">
+           <list>
+                <bean class="com.cannontech.web.spring.JacksonHttpMessageConverter"/>
+            </list>
+         </property>
+    </bean>
+
     <bean class="com.cannontech.web.widget.support.WidgetHandlerMapping">
       <property name="order" value="1"/>
       <property name="interceptors">
@@ -12,9 +39,8 @@
         </list>
       </property>
     </bean>
-    
+
     <bean id="otherHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
-    
 
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
