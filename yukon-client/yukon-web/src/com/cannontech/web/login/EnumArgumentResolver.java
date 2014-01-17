@@ -1,23 +1,19 @@
 package com.cannontech.web.login;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class EnumArgumentResolver implements WebArgumentResolver {
+public class EnumArgumentResolver {
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
-        throws Exception {
+    protected boolean supportsParameter(MethodParameter parameter) {
+        return parameter.getParameterType().isEnum();
+    }
+
+    protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
+        String parameter = webRequest.getParameter(methodParameter.getParameterName());
         Class parameterType = methodParameter.getParameterType();
-        if (parameterType.isEnum()) {
-            String parameter = webRequest.getParameter(methodParameter.getParameterName());
-            Object result = Enum.valueOf(parameterType, parameter);
-            return result;
-        }
-        
-        return UNRESOLVED;
+        Object result = Enum.valueOf(parameterType, parameter);
+        return result;
     }
 
 }

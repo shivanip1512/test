@@ -11,10 +11,11 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 public class InventoryCollectionFactoryImpl extends CollectionFactoryImpl<InventoryCollectionType, InventoryCollection> {
 
     public InventoryCollectionFactoryImpl() {
-        super(InventoryCollectionType.class, InventoryCollection.class);
+        super(InventoryCollectionType.class);
     }
-    
-    public InventoryCollection addCollectionToModelMap(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
+
+    public InventoryCollection addCollectionToModelMap(HttpServletRequest request, ModelMap modelMap)
+            throws ServletRequestBindingException {
         InventoryCollection yukonCollection = createCollection(request);
         modelMap.addAttribute("inventoryCollection", yukonCollection);
         modelMap.addAllAttributes(yukonCollection.getCollectionParameters());

@@ -6,22 +6,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.support.WebArgumentResolver;
-import org.springframework.web.context.request.NativeWebRequest;
 
 
-public class CollectionFactoryImpl<E extends Enum<E>, T> implements CollectionFactory<T>, WebArgumentResolver {
+public class CollectionFactoryImpl<E extends Enum<E>, T> implements CollectionFactory<T> {
+
     private Class<E> enumType;
-    private Class<T> returnType;
-    
-    
 
-    public CollectionFactoryImpl(Class<E> enumType, Class<T> returnType) {
+    public CollectionFactoryImpl(Class<E> enumType) {
         super();
         this.enumType = enumType;
-        this.returnType = returnType;
     }
 
     private Map<E, CollectionProducer<E, T>> collectionProducerMap = new HashMap<E, CollectionProducer<E, T>>();
@@ -46,15 +40,4 @@ public class CollectionFactoryImpl<E extends Enum<E>, T> implements CollectionFa
 
         throw new IllegalArgumentException("collectionType: " + type + " is not supported.");
     }
-
-    @Override
-    public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
-        Class<?> parameterType = methodParameter.getParameterType();
-        if (parameterType.isAssignableFrom(returnType)) {
-            HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
-            return createCollection(nativeRequest);
-        }
-        return UNRESOLVED;
-    }
-    
 }

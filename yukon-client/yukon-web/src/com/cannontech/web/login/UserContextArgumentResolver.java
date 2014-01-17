@@ -12,23 +12,27 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
-public class UserContextArgumentResolver implements WebArgumentResolver {
+public class UserContextArgumentResolver {
 
-    @Override
-    public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
-        throws Exception {
+    protected boolean supportsParameter(MethodParameter parameter) {
+        Class<?> parameterType = parameter.getParameterType();
+        return parameterType.isAssignableFrom(YukonUserContext.class)
+                || parameterType.isAssignableFrom(LiteYukonUser.class);
+    }
+
+    protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
         Class<?> parameterType = methodParameter.getParameterType();
         if (parameterType.isAssignableFrom(YukonUserContext.class)) {
             HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
             return YukonUserContextUtils.getYukonUserContext(nativeRequest);
         }
-        
+
         if (parameterType.isAssignableFrom(LiteYukonUser.class)) {
             ServletRequest nativeRequest = (ServletRequest) webRequest.getNativeRequest();
             return ServletUtil.getYukonUser(nativeRequest);
         }
-        
-        return UNRESOLVED;
+
+        return WebArgumentResolver.UNRESOLVED;
     }
 
 }
