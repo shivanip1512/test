@@ -69,7 +69,7 @@ public class JwsController {
             @RequestParam("version-id") String requestedVersion) throws IOException {
 
         if (jarDownloadTokens.getIfPresent(request.getRemoteHost()) == null) {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             return;
         }
 
