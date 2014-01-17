@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckEnergyCompanySetting {
     EnergyCompanySettingType value();

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import com.cannontech.core.roleproperties.YukonRole;
 
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckRole {
 

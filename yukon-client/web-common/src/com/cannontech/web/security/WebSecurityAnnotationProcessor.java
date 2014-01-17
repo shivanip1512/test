@@ -1,6 +1,7 @@
 package com.cannontech.web.security;
 
-import org.springframework.aop.support.AopUtils;
+import java.lang.reflect.Method;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -15,162 +16,71 @@ import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 
 public class WebSecurityAnnotationProcessor {
+
     @Autowired private WebSecurityChecker webSecurityChecker;
 
-    public void process(final Object bean) throws Exception {
-        final Class<?> clazz = getClass(bean);
-
-        boolean hasAuthorizeByCparm = hasAuthorizeByCparm(clazz);
-        if (hasAuthorizeByCparm) {
-            doHasAuthorizeByCparm(getAuthorizeByCparm(clazz));
-        }
-        
-        boolean hasCheckRole = hasCheckRole(clazz);
-        if (hasCheckRole) {
-            doHasCheckRole(getCheckRole(clazz));
-        }
-        
-        boolean hasCheckGlobalSetting = hasCheckGlobalSetting(clazz);
-        if (hasCheckGlobalSetting) {
-            doHasCheckGlobalSetting(getCheckGlobalSetting(clazz));
-        }
-        
-        boolean hasCheckEnergyCompanySetting = hasCheckEnergyCompanySetting(clazz);
-        if (hasCheckEnergyCompanySetting) {
-            doHasCheckEnergyCompanySetting(getCheckEnergyCompanySetting(clazz));
-        }
-        
-        boolean hasCheckRoleProperty = hasCheckRoleProperty(clazz);
-        if (hasCheckRoleProperty) {
-            doHasCheckRoleProperty(getCheckRoleProperty(clazz));
-        }
-        
-        boolean hasCheckFalseRoleProperty = hasCheckFalseRoleProperty(clazz);
-        if (hasCheckFalseRoleProperty) {
-            doHasCheckFalseRoleProperty(getCheckFalseRoleProperty(clazz));
-        }
-    }
-    
-    private Class<?> getClass(Object bean) {
-        if (isProxy(bean)) {
-            return AopUtils.getTargetClass(bean);
-        }
-        
-        if (bean instanceof WidgetMultiActionController) {
-            WidgetMultiActionController controller = (WidgetMultiActionController) bean;
-            Object widgetController = controller.getWidgetController();
-            return widgetController.getClass();
-        }
-        
-        return bean.getClass();
-    }
-    
-    private void doHasAuthorizeByCparm(AuthorizeByCparm authorizeByCparm) {
-        MasterConfigBooleanKeysEnum configKey = authorizeByCparm.value();
-        boolean expecting = authorizeByCparm.expecting();
-        webSecurityChecker.authorizeByCparm(configKey, expecting);
-    }
-    
-    private void doHasCheckRole(CheckRole checkRole) throws Exception {
-        YukonRole[] roles = checkRole.value();
-        webSecurityChecker.checkRole(roles);
+    public void processMethod(Method method) throws Exception {
+        check(AnnotationUtils.findAnnotation(method, AuthorizeByCparm.class));
+        check(AnnotationUtils.findAnnotation(method, CheckRole.class));
+        check(AnnotationUtils.findAnnotation(method, CheckGlobalSetting.class));
+        check(AnnotationUtils.findAnnotation(method, CheckEnergyCompanySetting.class));
+        check(AnnotationUtils.findAnnotation(method, CheckRoleProperty.class));
+        check(AnnotationUtils.findAnnotation(method, CheckFalseRoleProperty.class));
     }
 
-    private void doHasCheckGlobalSetting(CheckGlobalSetting checkGlobalSetting) {
-        GlobalSettingType setting = checkGlobalSetting.value();
-        webSecurityChecker.checkGlobalSetting(setting);
-    }
-    
-    private void doHasCheckEnergyCompanySetting(CheckEnergyCompanySetting checkEnergyCompanySetting) {
-        EnergyCompanySettingType setting = checkEnergyCompanySetting.value();
-        webSecurityChecker.checkEnergyCompanySetting(setting);
-    }
-
-    private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
-        YukonRoleProperty[] roleProperties = checkRoleProperty.value();
-        boolean requireAll = checkRoleProperty.requireAll();
-        webSecurityChecker.checkRoleProperty(requireAll,roleProperties);
-    }
-    
-    private void doHasCheckFalseRoleProperty(CheckFalseRoleProperty checkFalseRoleProperty) throws Exception {
-        YukonRoleProperty[] roleProperties = checkFalseRoleProperty.value();
-        webSecurityChecker.checkFalseRoleProperty(roleProperties);
-    }
-    
-    private AuthorizeByCparm getAuthorizeByCparm(Class<?> clazz) {
-        AuthorizeByCparm authorizeByCparm = AnnotationUtils.findAnnotation(clazz, AuthorizeByCparm.class);
-        return authorizeByCparm;
-    }
-    
-    private CheckRole getCheckRole(Class<?> clazz) {
-        CheckRole checkRole = AnnotationUtils.findAnnotation(clazz, CheckRole.class);
-        return checkRole;
-    }
-    
-    private CheckRoleProperty getCheckRoleProperty(Class<?> clazz) {
-        CheckRoleProperty checkRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckRoleProperty.class);
-        return checkRoleProperty;
-    }
-    
-    private CheckGlobalSetting getCheckGlobalSetting(Class<?> clazz) {
-        CheckGlobalSetting checkGlobalSetting = AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class);
-        return checkGlobalSetting;
-    }
-    
-    private CheckEnergyCompanySetting getCheckEnergyCompanySetting(Class<?> clazz) {
-        CheckEnergyCompanySetting checkEnergyCompanySetting = AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class);
-        return checkEnergyCompanySetting;
-    }
-    
-    private CheckFalseRoleProperty getCheckFalseRoleProperty(Class<?> clazz) {
-    	CheckFalseRoleProperty checkFalseRoleProperty = AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class);
-        return checkFalseRoleProperty;
-    }
-    
-    private boolean hasAuthorizeByCparm(Class<?> clazz) {
-        AuthorizeByCparm authorizeByCparm = getAuthorizeByCparm(clazz);
-        boolean hasAuthorizeByCparm = authorizeByCparm != null;
-        return hasAuthorizeByCparm;
-    }
-    
-    private boolean hasCheckRole(Class<?> clazz) {
-        CheckRole checkRole = getCheckRole(clazz);
-        boolean hasCheckRole = checkRole != null;
-        return hasCheckRole;
+    public void processClass(Class<?> clazz) throws Exception {
+        check(AnnotationUtils.findAnnotation(clazz, AuthorizeByCparm.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckRole.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckRoleProperty.class));
+        check(AnnotationUtils.findAnnotation(clazz, CheckFalseRoleProperty.class));
     }
 
-    private boolean hasCheckGlobalSetting(Class<?> clazz) {
-        CheckGlobalSetting checkGlobalSetting = AnnotationUtils.findAnnotation(clazz, CheckGlobalSetting.class);
-        return checkGlobalSetting != null;
-    }
-    
-    private boolean hasCheckEnergyCompanySetting(Class<?> clazz) {
-        CheckEnergyCompanySetting checkEnergyCompanySetting = AnnotationUtils.findAnnotation(clazz, CheckEnergyCompanySetting.class);
-        return checkEnergyCompanySetting != null;
-    }
-    
-    private boolean hasCheckRoleProperty(Class<?> clazz) {
-        CheckRoleProperty checkRoleProperty = getCheckRoleProperty(clazz);
-        boolean hasCheckRoleProperty = checkRoleProperty != null;
-        return hasCheckRoleProperty;
-    }
-    
-    private boolean hasCheckFalseRoleProperty(Class<?> clazz) {
-        CheckFalseRoleProperty checkFalseRoleProperty = getCheckFalseRoleProperty(clazz);
-        boolean hasCheckFalseRoleProperty = checkFalseRoleProperty != null;
-        return hasCheckFalseRoleProperty;
-    }
-
-    private boolean isProxy(Object bean) {
-        if (AopUtils.isAopProxy(bean) || 
-                AopUtils.isCglibProxy(bean) || 
-                AopUtils.isJdkDynamicProxy(bean)) {
-            return true;
+    private void check(AuthorizeByCparm annotation) {
+        if (annotation != null) {
+            MasterConfigBooleanKeysEnum configKey = annotation.value();
+            boolean expecting = annotation.expecting();
+            webSecurityChecker.authorizeByCparm(configKey, expecting);
         }
-        return false;
+    }
+
+    private void check(CheckRole annotation) {
+        if (annotation != null) {
+            YukonRole[] roles = annotation.value();
+            webSecurityChecker.checkRole(roles);
+        }
+    }
+
+    private void check(CheckGlobalSetting annotation) {
+        if (annotation != null) {
+            GlobalSettingType setting = annotation.value();
+            webSecurityChecker.checkGlobalSetting(setting);
+        }
+    }
+
+    private void check(CheckEnergyCompanySetting annotation) {
+        if (annotation != null) {
+            EnergyCompanySettingType setting = annotation.value();
+            webSecurityChecker.checkEnergyCompanySetting(setting);
+        }
+    }
+
+    private void check(CheckRoleProperty annotation) {
+        if (annotation != null) {
+            YukonRoleProperty[] roleProperties = annotation.value();
+            boolean requireAll = annotation.requireAll();
+            webSecurityChecker.checkRoleProperty(requireAll,roleProperties);
+        }
+    }
+
+    private void check(CheckFalseRoleProperty annotation) {
+        if (annotation != null) {
+            YukonRoleProperty[] roleProperties = annotation.value();
+            webSecurityChecker.checkFalseRoleProperty(roleProperties);
+         }
     }
 }

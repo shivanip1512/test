@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthorizeByCparm {
     MasterConfigBooleanKeysEnum value();
