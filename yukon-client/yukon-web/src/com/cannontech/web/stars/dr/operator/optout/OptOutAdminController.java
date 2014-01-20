@@ -70,32 +70,32 @@ public class OptOutAdminController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-	
+    
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
         
         final LiteYukonUser user = userContext.getYukonUser();
-    	rolePropertyDao.verifyAnyProperties(user, 
-        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
-        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
-        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
-        		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, 
-        		YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS); 
-    	
-    	if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
-        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        	model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        rolePropertyDao.verifyAnyProperties(user, 
+                YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_STATUS,
+                YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE,
+                YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS,
+                YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, 
+                YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS); 
+        
+        if(yukonEnergyCompanyService.isEnergyCompanyOperator(user)){
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+            model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
     
-        	ObjectNode optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
-        	model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
-        	model.addAttribute("currentOptOuts", optOutsJson.get("currentOptOuts"));
-        	model.addAttribute("scheduledOptOuts", optOutsJson.get("scheduledOptOuts"));
-        	model.addAttribute("alternateEnrollments", optOutsJson.get("alternateEnrollments"));
+            ObjectNode optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
+            model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
+            model.addAttribute("currentOptOuts", optOutsJson.get("currentOptOuts"));
+            model.addAttribute("scheduledOptOuts", optOutsJson.get("scheduledOptOuts"));
+            model.addAttribute("alternateEnrollments", optOutsJson.get("alternateEnrollments"));
 
-        	// programNameEnabledMap
-        	OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(user);
-        	Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
-        	    optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
+            // programNameEnabledMap
+            OptOutEnabled defaultOptOutEnabledSetting = optOutStatusService.getDefaultOptOutEnabled(user);
+            Map<Integer, OptOutEnabled> programSpecificEnabledOptOuts = 
+                optOutStatusService.getProgramSpecificEnabledOptOuts(energyCompany.getEnergyCompanyId()); 
     
             Map<String, OptOutEnabled> programNameEnabledMap = Maps.newLinkedHashMap();
             for (Entry<Integer, OptOutEnabled> programOptOutEnabledEntry : programSpecificEnabledOptOuts.entrySet()) {
@@ -109,37 +109,37 @@ public class OptOutAdminController {
     
             // programNameCountsMap
             OptOutCountsTemporaryOverride defaultOptOutCountsSetting = optOutStatusService.getDefaultOptOutCounts(user);
-    		List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
-    		
-    		Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
-    		for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
-    			
-    			int programId = setting.getAssignedProgramId();
-    			Program program = programDao.getByProgramId(programId);
-    			programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
-    		}
-        	model.addAttribute("programNameCountsMap", programNameCountsMap);
+            List<OptOutCountsTemporaryOverride> programSpecificOptOutCounts = optOutStatusService.getProgramSpecificOptOutCounts(user);
+            
+            Map<String, OptOutCounts> programNameCountsMap = Maps.newLinkedHashMap();
+            for (OptOutCountsTemporaryOverride setting : programSpecificOptOutCounts) {
+                
+                int programId = setting.getAssignedProgramId();
+                Program program = programDao.getByProgramId(programId);
+                programNameCountsMap.put(program.getProgramName(), setting.getOptOutCounts());
+            }
+            model.addAttribute("programNameCountsMap", programNameCountsMap);
             model.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
-        	
-        	// Get the customer search by list for search drop down box
-        	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
-        	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
-    		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
-    		for (YukonListEntry entry : yukonListEntries) {
-    			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
-    				customerSearchList.add(entry);
-    			}
-    		}
-    		model.addAttribute("customerSearchList", customerSearchList);
-    		
-    		model.addAttribute("emptyProgramName", emptyProgramName);
-    		model.addAttribute("programNotFound", programNotFound);
-    	}
-    	
-    	// Second column
-    	setupScheduledOptOuts(user, model);
-		
-		return "operator/optout/optOutAdmin.jsp";
+            
+            // Get the customer search by list for search drop down box
+            YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+            List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
+            List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
+            for (YukonListEntry entry : yukonListEntries) {
+                if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
+                    customerSearchList.add(entry);
+                }
+            }
+            model.addAttribute("customerSearchList", customerSearchList);
+            
+            model.addAttribute("emptyProgramName", emptyProgramName);
+            model.addAttribute("programNotFound", programNotFound);
+        }
+        
+        // Second column
+        setupScheduledOptOuts(user, model);
+        
+        return "operator/optout/optOutAdmin.jsp";
     }
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
@@ -162,7 +162,7 @@ public class OptOutAdminController {
     
     @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="disableOptOuts", method = RequestMethod.POST)
     public String disableOptOutsToday(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
-    	return toggleOptOutsToday(user, map, programName, OptOutEnabled.DISABLED_WITH_COMM, flashScope);
+        return toggleOptOutsToday(user, map, programName, OptOutEnabled.DISABLED_WITH_COMM, flashScope);
     }
     
     @RequestMapping(value = "/operator/optOut/admin/setDisabled", params="disableOptOutsAndComms", method = RequestMethod.POST)
@@ -201,7 +201,7 @@ public class OptOutAdminController {
 
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)
     public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
-    	
+        
         if (StringUtils.isNotBlank(programName)) {
             starsEventLogService.cancelCurrentOptOutsByProgramAttempted(user, programName, EventSource.OPERATOR);
         } else {
@@ -209,24 +209,24 @@ public class OptOutAdminController {
         }
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, user);
-    	
-		if (StringUtils.isNotBlank(programName)) {
-				
-			try {
-				
-				optOutService.cancelAllOptOutsByProgramName(programName, user);
-				flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts", programName));
-				
-			} catch (ProgramNotFoundException e) {
-				flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
-			}
+        
+        if (StringUtils.isNotBlank(programName)) {
+                
+            try {
+                
+                optOutService.cancelAllOptOutsByProgramName(programName, user);
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts", programName));
+                
+            } catch (ProgramNotFoundException e) {
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
+            }
 
-		} else {
-			optOutService.cancelAllOptOuts(user);
-			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
-		}
+        } else {
+            optOutService.cancelAllOptOuts(user);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
+        }
 
-    	return "redirect:/stars/operator/optOut/admin";
+        return "redirect:/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/setCounts", method = RequestMethod.POST)
@@ -249,110 +249,110 @@ public class OptOutAdminController {
                 starsEventLogService.doNotCountTowardOptOutLimitTodayAttempted(user, EventSource.OPERATOR);
             }
         }
-    	
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, user);
-    	
-    	if (StringUtils.isNotBlank(programName)) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, user);
+        
+        if (StringUtils.isNotBlank(programName)) {
 
-			try {
-				
-            	optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
-            	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts", programName));
-            	if (!countBool) {
-            		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts", programName));
-            	}
-            	
-			} catch (ProgramNotFoundException e) {
-				flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
-			}
+            try {
+                
+                optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts", programName));
+                if (!countBool) {
+                    flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts", programName));
+                }
+                
+            } catch (ProgramNotFoundException e) {
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
+            }
 
-		} else {
-			optOutService.changeOptOutCountStateForToday(user, countBool);
-			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms"));
-        	if (!countBool) {
-        		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms"));
-        	}
-		}
-    	
-    	return "redirect:/stars/operator/optOut/admin";
+        } else {
+            optOutService.changeOptOutCountStateForToday(user, countBool);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms"));
+            if (!countBool) {
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms"));
+            }
+        }
+        
+        return "redirect:/stars/operator/optOut/admin";
     }
 
     public void setupScheduledOptOuts(LiteYukonUser user, ModelMap map) throws Exception {
 
         // Only load these events when they have the property set
-    	if (rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user)) {
-    	
-        	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        	List<OptOutEvent> scheduledEvents = 
-        		optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
-        	
-        	List<ScheduledOptOutEventDto> events = new ArrayList<ScheduledOptOutEventDto>();
-        	for(OptOutEvent event : scheduledEvents) {
-        		
-        		ScheduledOptOutEventDto eventDto = new ScheduledOptOutEventDto();
-        		eventDto.setStartDate(event.getStartDate());
-        		eventDto.setStopDate(event.getStopDate());
-        		
-        		Integer accountId = event.getCustomerAccountId();
-        		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-        		eventDto.setAccountNumber(customerAccount.getAccountNumber());
-        		
-        		Integer inventoryId = event.getInventoryId();
-        		LiteLmHardwareBase inventory = 
-        			(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
-        		eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
-        		
-        		events.add(eventDto);
-        	}
-    	
-        	map.addAttribute("scheduledEvents", events);
-    	
-        	// Get the customer search by list for search drop down box
-        	YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
-        	List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
-    		List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
-    		for (YukonListEntry entry : yukonListEntries) {
-    			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
-    				customerSearchList.add(entry);
-    			}
-    		}
-    		map.addAttribute("customerSearchList", customerSearchList);
-    	}
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_VIEW_OPT_OUT_EVENTS, user)) {
+        
+            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+            List<OptOutEvent> scheduledEvents = 
+                optOutEventDao.getAllScheduledOptOutEvents(energyCompany);
+            
+            List<ScheduledOptOutEventDto> events = new ArrayList<ScheduledOptOutEventDto>();
+            for(OptOutEvent event : scheduledEvents) {
+                
+                ScheduledOptOutEventDto eventDto = new ScheduledOptOutEventDto();
+                eventDto.setStartDate(event.getStartDate());
+                eventDto.setStopDate(event.getStopDate());
+                
+                Integer accountId = event.getCustomerAccountId();
+                CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+                eventDto.setAccountNumber(customerAccount.getAccountNumber());
+                
+                Integer inventoryId = event.getInventoryId();
+                LiteLmHardwareBase inventory = 
+                    (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
+                eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
+                
+                events.add(eventDto);
+            }
+        
+            map.addAttribute("scheduledEvents", events);
+        
+            // Get the customer search by list for search drop down box
+            YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+            List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
+            List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
+            for (YukonListEntry entry : yukonListEntries) {
+                if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
+                    customerSearchList.add(entry);
+                }
+            }
+            map.addAttribute("customerSearchList", customerSearchList);
+        }
     }
     
     /**
      * Helper class to hold Scheduled opt out information for jsp
      */
     public static class ScheduledOptOutEventDto {
-    	
-    	private Instant startDate;
-    	private Instant stopDate;
-    	private String accountNumber;
-    	private String serialNumber;
-		
-    	public Instant getStartDate() {
-			return startDate;
-		}
-		public void setStartDate(Instant startDate) {
-			this.startDate = startDate;
-		}
-		public Instant getStopDate() {
-			return stopDate;
-		}
-		public void setStopDate(Instant stopDate) {
-			this.stopDate = stopDate;
-		}
-		public String getAccountNumber() {
-			return accountNumber;
-		}
-		public void setAccountNumber(String accountNumber) {
-			this.accountNumber = accountNumber;
-		}
-		public String getSerialNumber() {
-			return serialNumber;
-		}
-		public void setSerialNumber(String serialNumber) {
-			this.serialNumber = serialNumber;
-		}
+        
+        private Instant startDate;
+        private Instant stopDate;
+        private String accountNumber;
+        private String serialNumber;
+        
+        public Instant getStartDate() {
+            return startDate;
+        }
+        public void setStartDate(Instant startDate) {
+            this.startDate = startDate;
+        }
+        public Instant getStopDate() {
+            return stopDate;
+        }
+        public void setStopDate(Instant stopDate) {
+            this.stopDate = stopDate;
+        }
+        public String getAccountNumber() {
+            return accountNumber;
+        }
+        public void setAccountNumber(String accountNumber) {
+            this.accountNumber = accountNumber;
+        }
+        public String getSerialNumber() {
+            return serialNumber;
+        }
+        public void setSerialNumber(String serialNumber) {
+            this.serialNumber = serialNumber;
+        }
     }
 }
