@@ -5,9 +5,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:verifyRolesAndProperties value="CONSUMER_INFO"/>
-    
 <cti:standardPage module="dr" page="optOutAdmin">
+
     <cti:checkEnergyCompanyOperator showError="true" >
 
     <cti:url var="systemOptOutsUrl" value="/stars/operator/optOut/systemOptOuts" />
@@ -180,11 +179,11 @@
                                     </div>
                                 </div>
                                 <div class="box fl">
-	                                <ul class="button-stack">
-	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/></li>
-	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/></li>
-	                                    <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/></li>
-	                                </ul>
+                                    <ul class="button-stack">
+                                        <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsButton" type="submit" name="disableOptOuts" classes="button"/></li>
+                                        <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton" type="submit" name="disableOptOutsAndComms" classes="button"/></li>
+                                        <li><cti:button nameKey="disableOptOuts.currentDisabledPrograms.enableOptOutsButton" type="submit" name="enableOptOuts" classes="button"/></li>
+                                    </ul>
                                 </div>
                             </form>       
                         </tags:boxContainer2>
@@ -233,7 +232,7 @@
                                 <cti:button nameKey="cancelOptOuts.cancelAllOptOutsButton" type="submit" classes="f-blocker"/>
                             </form>    
                         </tags:boxContainer2>
-                    </cti:checkRolesAndProperties>  	
+                    </cti:checkRolesAndProperties>      
                     <!-- Opt Outs Count/Don't Count -->
                     <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS">
                         <tags:boxContainer2 nameKey="countOptOuts" hideEnabled="false">
@@ -312,8 +311,8 @@
                 </div>
                 <div class="column two nogutter">
                     <tags:widget bean="operatorAccountSearchWidget"/>
-					
-					<cti:checkRolesAndProperties value="ADMIN_VIEW_OPT_OUT_EVENTS">
+                    
+                    <cti:checkRolesAndProperties value="ADMIN_VIEW_OPT_OUT_EVENTS">
                     <tags:boxContainer2 nameKey="scheduledEvents" hideEnabled="false">
                         <c:choose>
                             <c:when test="${fn:length(scheduledEvents) > 0}">
