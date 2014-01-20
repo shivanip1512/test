@@ -65,6 +65,13 @@
         <c:set var="change">
             <i:inline key=".countOptOuts.byProgramName.instruction.change" />
         </c:set>
+
+        <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_SURVEY_EDIT">
+                <div id="f-page-buttons" class="dn">
+                    <cti:msg2 var="optOutPageName" key="yukon.web.modules.dr.surveyList.pageName"/>
+                    <cti:button icon="icon-link-go" href="/stars/optOutSurvey/list" label="${optOutPageName}"/>
+                </div>
+        </cti:checkRolesAndProperties>
         <div class="column-12-12">
             <div class="column one">
                 <!-- System Information -->
