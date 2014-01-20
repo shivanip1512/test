@@ -167,7 +167,7 @@ function loadTarget (form) {
 }
 
 function enableDates (value) {
-    var dateFieldNames = ['startCal', 'stopCal', 'stopHourID', 'stopMinuteID', 'startHourID', 'startHourID', 'startMinuteID'],
+    var dateFieldNames = ['startCal', 'stopCal'],
         dateElem;
 
     // do the following after the DOM is loaded
@@ -185,62 +185,14 @@ function enableDates (value) {
 }
 
 function checkDates () {
-    var good = false,
-        startDate = jQuery('#startCal').val(),
-        stopDate = jQuery('#stopCal').val(),
-        myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g,
-        p,
-        t,
-        realStartDate,
-        realStopDate,
-        startHour,
-        stopHour,
-        startMinute,
-        stopMinute;
-    if (startDate.match(myregex) && stopDate.match(myregex)) {
-        p = startDate.split("/");
-        t = stopDate.split("/");
-        realStartDate = new Date(p[2], (p[0]-1), p[1]);
-        realStopDate = new Date(t[2], t[0]-1, t[1]);
-
-        if (jQuery('#startCal')[0].disabled || jQuery('#stopCal')[0].disabled || realStartDate < realStopDate) {
-            loadTarget(document.reportForm);
-        } else {
-            if (document.getElementById('startHourID')) {    //Check that one of the time fields exists 
-                if (startDate == stopDate) {
-                    startHour = Number(jQuery('#startHourID').val());
-                    stopHour = Number(jQuery('#stopHourID').val());
-                    if (startHour < stopHour) {
-                        loadTarget(document.reportForm);
-                    } else if (startHour == stopHour) {
-                        startMinute = Number(jQuery('#startMinuteID').val());
-                        stopMinute = Number(jQuery('#stopMinuteID').val());
-                        if (startMinute >= stopMinute) {
-                            alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-                            document.getElementById('startCal').focus();
-                            return false;
-                        } else {
-                            loadTarget(document.reportForm);
-                        }
-                    } else {
-                        alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-                        document.getElementById('startCal').focus();
-                        return false;
-                    }
-                } else {
-                    alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-                    document.getElementById('startCal').focus();
-                    return false;
-                }
-            } else {
-                alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
-                document.getElementById('startCal').focus();
-                return false;
-            }
-        }
+    var startDate = jQuery('#startCal').datetimepicker('getDate'),
+        stopDate = jQuery('#stopCal').datetimepicker('getDate');
+    // start must be less than stop or call the whole deal off
+    if (startDate.getTime() < stopDate.getTime()) {
+        loadTarget(document.reportForm);
     } else {
-        alert("<cti:msg key="yukon.common.error.date.oneInvalid"/>");
-        document.getElementById('startCal').focus();
+        alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
+        jQuery('#startCal').focus();
         return false;
     }
 }
@@ -357,36 +309,13 @@ function makeFirstSelectedFilterValueVisible () {
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
                       <td valign="bottom">
-                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>
-                        <dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
+                        <%if( controller != null && controller.useStartStopTimes() ){ %>
+                            <BR>
+                            <dt:dateTime id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
+                        <%} else {%>
+                            <dt:date id="startCal" name="startDate" disabled="<%=(model != null && model.useStartDate() ? false : true)%>" value="${REPORT_BEAN.startDate}" />
+                        <%} %>
                       </td>
-                      <td valign="bottom">&nbsp</td>
-                         <%if( controller != null && controller.useStartStopTimes() ){%>
-                      <td align="center">
-                         <div class="fwb">
-                           <cti:msg key="yukon.common.time.hour"/>
-                         </div>
-                        <select name="startHour" id="startHourID">
-                        <% for (int i = 0; i < 24; i++) {
-                            String iStr = String.valueOf(i);
-                            if( i < 10)    { iStr = "0" + iStr;}%>
-                            <option value="<%=i%>"><%=iStr%></option>
-                          <%}%>
-                        </select>
-                      </td>
-                      <td width="100%" align="center">
-                        <div class="fwb">
-                            <cti:msg key="yukon.common.time.min"/>
-                        </div>
-                        <select name="startMinute" id="startMinuteID">
-                        <% for (int i = 0; i < 60; i=i+5) {
-                            String iStr = String.valueOf(i);
-                            if( i < 10)    { iStr = "0" + iStr;}%>
-                            <option value="<%=i%>"><%=iStr%></option>
-                          <%}%>
-                        </select>
-                       </td>
-                      <%}%>
                     </tr>
                   </table>
                 </td>
@@ -395,37 +324,13 @@ function makeFirstSelectedFilterValueVisible () {
                   <table width="100%" border="0" cellspacing="0" cellpadding="0">                
                     <tr>
                       <td valign="bottom">        
-                        <%if( controller != null && controller.useStartStopTimes() ){%><BR><%}%>    
-                          <dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
+                        <%if( controller != null && controller.useStartStopTimes() ){ %>
+                            <BR>
+                            <dt:dateTime id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
+                        <%} else { %>
+                            <dt:date id="stopCal" name="stopDate" disabled="<%=(model != null && model.useStopDate() ? false : true)%>" value="${REPORT_BEAN.stopDate}" />
+                        <%} %>
                       </td>
-                      <td valign="bottom">&nbsp</td>
-                      <% if( controller != null && controller.useStartStopTimes() ){%>
-
-                      <td align="center">
-                        <div class="fwb">
-                           <cti:msg key="yukon.common.time.hour"/>
-                        </div>
-                        <select name="stopHour" id="stopHourID">
-                        <% for (int i = 0; i < 24; i++) {
-                            String iStr = String.valueOf(i);
-                            if( i < 10)    { iStr = "0" + iStr;}%>
-                            <option value="<%=i%>"><%=iStr%></option>
-                          <%}%>
-                        </select>
-                      </td>
-                      <td width="100%" align="center">
-                        <div class="fwb">
-                           <cti:msg key="yukon.common.time.min"/>
-                        </div>
-                        <select name="stopMinute" id="stopMinuteID">
-                        <% for (int i = 0; i < 60; i=i+5) {
-                            String iStr = String.valueOf(i);
-                            if( i < 10)    { iStr = "0" + iStr;}%>
-                            <option value="<%=i%>"><%=iStr%></option>
-                          <%}%>
-                        </select>
-                       </td>
-                      <%}%>
                     </tr>
                   </table>
                 </td>
