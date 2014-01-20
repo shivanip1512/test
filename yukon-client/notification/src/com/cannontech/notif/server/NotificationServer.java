@@ -19,7 +19,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 /**
  * The server used for accepting and creating notification messages.
  */
-public class NotificationServer implements NotificationServerMBean {
+public class NotificationServer {
     private static final Logger log = YukonLogManager.getLogger(NotificationServer.class);
 
     // The servers listening connection
@@ -51,14 +51,10 @@ public class NotificationServer implements NotificationServerMBean {
                                                                                                               + "]";
     }
 
-    /**************************************************************************
-     * NotificationServerMBean interface implementation *
-     **************************************************************************/
     /**
      * Start the notification server. If this fails with an exception, no threads will have been started.
      * @throws IOException
      */
-    @Override
     public void start() {
         try {
             ListenerConnectionFactory notifListenerFactory = connFactorySvc.findListenerConnectionFactory("NotifListener");
@@ -95,7 +91,6 @@ public class NotificationServer implements NotificationServerMBean {
     /**
      * Shutdown the notification server
      */
-    @Override
     public void stop() {
         try {
 
@@ -113,7 +108,6 @@ public class NotificationServer implements NotificationServerMBean {
 
     }
 
-    @Override
     public boolean isRunning() {
         return server != null;
     }
