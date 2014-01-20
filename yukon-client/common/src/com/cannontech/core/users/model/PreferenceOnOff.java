@@ -8,11 +8,13 @@ public enum PreferenceOnOff implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.user.preferences."+ getParentName() +"."+ name();
-    }
-
-    public static String getParentName() {
-        return "ON_OFF";
+        if(this == ON){
+            return "yukon.web.defaults.on";            
+        }
+        else {
+            return "yukon.web.defaults.off";
+        }
+        
     }
 
 }

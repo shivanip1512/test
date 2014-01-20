@@ -67,7 +67,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
 
     @Override
     public boolean getDefaultNotificationAlertFlash(LiteYukonUser user) {
-        String notificationAlertFlash = this.getPreference(user, UserPreferenceName.NOTIFICATION_ALERT_FLASH);
+        String notificationAlertFlash = this.getPreference(user, UserPreferenceName.ALERT_FLASH);
         if(notificationAlertFlash.equalsIgnoreCase("on")) {
             return true;
         }
@@ -78,7 +78,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     
     @Override
     public boolean getDefaultNotificationAlertSound(LiteYukonUser user) {
-        String notificationAlertSound = this.getPreference(user, UserPreferenceName.NOTIFICATION_ALERT_SOUND);
+        String notificationAlertSound = this.getPreference(user, UserPreferenceName.ALERT_SOUND);
         if(notificationAlertSound.equalsIgnoreCase("on")) {
             return true;
         }

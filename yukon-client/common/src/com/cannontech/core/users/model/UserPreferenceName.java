@@ -16,12 +16,11 @@ public enum UserPreferenceName implements DisplayableEnum {
         PreferenceGraphTimeDurationOption.getDefault().name()),
     GRAPH_DISPLAY_VISUAL_TYPE(InputTypeFactory.enumType(PreferenceGraphVisualTypeOption.class),
         PreferenceGraphVisualTypeOption.getDefault().name()),
-    NOTIFICATION_ALERT_FLASH(InputTypeFactory.enumType(PreferenceOnOff.class),
+    ALERT_FLASH(InputTypeFactory.enumType(PreferenceOnOff.class),
             PreferenceOnOff.ON.name()),
-    NOTIFICATION_ALERT_SOUND(InputTypeFactory.enumType(PreferenceOnOff.class),
+    ALERT_SOUND(InputTypeFactory.enumType(PreferenceOnOff.class),
             PreferenceOnOff.ON.name());
-//    ERROR_PAGE_SHOW_DETAILS(InputTypeFactory.enumType(PreferenceShowHide.class), PreferenceShowHide.HIDE.name());
-//    HOME_URL(InputTypeFactory.stringType(), "/dashboard");
+
 
     final private InputType<?> valueType;
     final private String defaultValue;

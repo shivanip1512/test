@@ -10,9 +10,9 @@ var Yukon = (function (yukonMod) {
 })(Yukon || {});
 Yukon.namespace('Yukon.Alerts');
 Yukon.Alerts = (function () {
-        var initialized = false,
-        countInitialized = false,
-        oldCount = 0,
+        var _initialized = false,
+        _countInitialized = false,
+        _oldCount = 0,
         _alert_button = "#yukon-alert-button",
         _clear_button = "#yukon_clear_alerts_button",
         _viewAlertUrl = "/common/alert/view",
@@ -37,14 +37,13 @@ Yukon.Alerts = (function () {
             if (count > 0) {
                 button.addClass('red');
                 button.show();
-                button.removeClass('flash');
-                button.removeClass('animated');
-                if(countInitialized && oldCount < count) {
-                    if(jQuery('[data-alert-flash]').attr('data-alert-flash') === "true") {
+                button.removeClass('flash animated');
+                if (_countInitialized && _oldCount < count) {
+                    if(jQuery('[data-alert-flash]').attr('data-alert-flash') === 'true') {
                         button.addClass('flash');
                         button.addClass('animated');
                     }
-                    if(jQuery('[data-alert-sound]').attr('data-alert-sound') === "true") {
+                    if (jQuery('[data-alert-sound]').attr('data-alert-sound') === 'true') {
                         jQuery('#alert-audio')[0].play();
                     }
                 }
@@ -52,8 +51,8 @@ Yukon.Alerts = (function () {
                 button.removeClass('red');  
                 button.hide();
             }
-            oldCount = count;
-            countInitialized = true;
+            _oldCount = count;
+            _countInitialized = true;
         },
 
         _closeAlertWindow = function() {
@@ -69,7 +68,7 @@ Yukon.Alerts = (function () {
         /* public methods */
         /* -------------- */
         init: function() {
-            if (initialized) {
+            if (_initialized) {
                 return;
             }
             
@@ -78,7 +77,7 @@ Yukon.Alerts = (function () {
             
             jQuery("#yukon_alert_popup").dialog({autoOpen: false, width:"600", height: "auto", position: {my: "top", at: "bottom+3", of: ".outer"} });
             
-            initialized = true;
+            _initialized = true;
         },
 
         countUpdated : function (data) {

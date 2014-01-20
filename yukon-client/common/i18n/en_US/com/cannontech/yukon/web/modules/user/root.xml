@@ -69,10 +69,8 @@
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE">Graph Visual Type</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.BAR">Bar</entry>
     <entry key="yukon.web.modules.user.preferences.GRAPH_DISPLAY_VISUAL_TYPE.LINE">Line</entry>
-    <entry key="yukon.web.modules.user.preferences.NOTIFICATION_ALERT_FLASH">Notification Alert Flash</entry>
-    <entry key="yukon.web.modules.user.preferences.NOTIFICATION_ALERT_SOUND">Notification Alert Sound</entry>
-    <entry key="yukon.web.modules.user.preferences.ON_OFF.ON">On</entry>
-    <entry key="yukon.web.modules.user.preferences.ON_OFF.OFF">Off</entry>
+    <entry key="yukon.web.modules.user.preferences.ALERT_FLASH">Alert Flash</entry>
+    <entry key="yukon.web.modules.user.preferences.ALERT_SOUND">Alert Sound</entry>
     
     <entry key="yukon.web.modules.user.preferences.ERROR_PAGE_SHOW_DETAILS">Error Page Details</entry>
     <!-- Unfortunately these 2 are used when defaults.  See the enum strings below -->
