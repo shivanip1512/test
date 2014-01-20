@@ -14,7 +14,7 @@
         }
     </script>
     
-    <tags:boxContainer2 nameKey="groupsContainer" styleClass="groupsContainer">
+    <tags:sectionContainer2 nameKey="groupsContainer" styleClass="groupsContainer">
         <c:choose>
             <c:when test="${!empty groups}">
                 <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
@@ -61,6 +61,6 @@
                         linkType="button" nameKey="addGroups" multiSelectMode="true" endAction="addRoleGroups"/>
             </form>
         </div>
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
 </cti:standardPage>
