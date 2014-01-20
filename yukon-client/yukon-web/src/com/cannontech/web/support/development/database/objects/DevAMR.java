@@ -14,20 +14,28 @@ public class DevAMR extends DevObject {
     private Integer addressRangeMax = 999999999;
     private List<DevPaoType> meterTypes =
         Lists
-            .newArrayList(new DevPaoType(PaoType.MCT420CD),
-                          new DevPaoType(PaoType.MCT410CL),
+            .newArrayList(new DevPaoType(PaoType.MCT410CL),
                           new DevPaoType(PaoType.MCT410FL),
                           new DevPaoType(PaoType.MCT410IL),
+                          new DevPaoType(PaoType.MCT420CD),
                           new DevPaoType(PaoType.MCT420CL),
+                          new DevPaoType(PaoType.MCT420FD),
                           new DevPaoType(PaoType.MCT420FL),
                           new DevPaoType(PaoType.MCT430A),
+                          new DevPaoType(PaoType.MCT430A3),
                           new DevPaoType(PaoType.MCT430S4),
+                          new DevPaoType(PaoType.MCT430SL),
+                          new DevPaoType(PaoType.MCT440_2131B),
+                          new DevPaoType(PaoType.MCT440_2132B),
+                          new DevPaoType(PaoType.MCT440_2133B),
                           new DevPaoType(PaoType.MCT470),
-                          new DevPaoType(PaoType.RFN420FL),
-                          new DevPaoType(PaoType.RFN420FX),
+                          new DevPaoType(PaoType.RFN420CD),
+                          new DevPaoType(PaoType.RFN420CL),
                           new DevPaoType(PaoType.RFN420FD),
-                          new DevPaoType(PaoType.RFN420FRX),
+                          new DevPaoType(PaoType.RFN420FL),
                           new DevPaoType(PaoType.RFN420FRD),
+                          new DevPaoType(PaoType.RFN420FRX),
+                          new DevPaoType(PaoType.RFN420FX),
                           new DevPaoType(PaoType.RFWMETER));
     
     public boolean isCreateRfnTemplates() {
