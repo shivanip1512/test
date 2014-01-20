@@ -1,5 +1,7 @@
 package com.cannontech.web.support.development.database.service.impl;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,6 +26,9 @@ import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.BulkPointDataInjectionService;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingUpdateDao;
+import com.cannontech.user.UserUtils;
 import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
@@ -38,6 +43,7 @@ public class DevBuildDatabasePopulationService {
     private static BulkPointDataInjectionService bulkPointDataInjectionService;
     private static RfnEventTestingService rfnEventTestingService;
     private static DeviceGroupService deviceGroupService;
+    private static GlobalSettingUpdateDao globalSettingUpdateDao;
     
     private final static int RFN_SERIAL_FROM = 1000;
     private final static int RFN_SERIAL_TO = 1015;
@@ -55,6 +61,8 @@ public class DevBuildDatabasePopulationService {
             bulkPointDataInjectionService = YukonSpringHook.getBean(BulkPointDataInjectionService.class);
             rfnEventTestingService = YukonSpringHook.getBean(RfnEventTestingService.class);
             deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
+            globalSettingUpdateDao = YukonSpringHook.getBean(GlobalSettingUpdateDao.class);
+
             String groupName = deviceGroupService.getFullPath(SystemGroupEnum.DEVICE_TYPES)+ PaoType.RFWMETER.getPaoTypeName();
             insertInitialDatabaseData();
             insertRfnMetersAndEvents();
@@ -89,6 +97,13 @@ public class DevBuildDatabasePopulationService {
 
         log.info("executing initial database population...");
         devDatabasePopulationService.executeFullDatabasePopulation(task);
+
+        globalSettingUpdateDao.updateSettingValue(GlobalSettingType.GOOGLE_ANALYTICS_ENABLED, false, UserUtils.getYukonUser());
+        try {
+            globalSettingUpdateDao.updateSettingValue(GlobalSettingType.JMS_BROKER_HOST, Inet4Address.getLocalHost().getHostAddress(), UserUtils.getYukonUser());
+        } catch (UnknownHostException e) {
+            log.warn("Cannot resolve localhost IP address", e);
+        }
     }
     
     /**
