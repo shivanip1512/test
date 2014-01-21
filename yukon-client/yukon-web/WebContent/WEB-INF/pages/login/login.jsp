@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:noAuthPage module="login" page="login">
@@ -8,7 +9,7 @@
         <div class="login-content">
             <div class="column-12-12">
                 <div class="one column">
-                    <div><h1 class="tagline"><cti:msg2 key="yukon.web.login.tagline"/></h1></div>
+                    <div><h1 class="tagline"><i:inline key="yukon.web.login.tagline"/></h1></div>
                 </div>
                 <div class="two column nogutter">
                     <div class="faded-round-box login-form">
