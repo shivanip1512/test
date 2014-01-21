@@ -30,7 +30,7 @@ public enum SiteMapPage implements DisplayableEnum {
     BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing.schedules", "/billing/schedules",
             MatchStyle.all, YukonRole.APPLICATION_BILLING),
     REVIEW_FLAGGED_POINTS(SiteMapCategory.AMI, "yukon.web.widgets.validationMonitorsWidget.review", "/common/veeReview/home",
-            MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
+            MatchStyle.all, YukonRoleProperty.VALIDATION_ENGINE),
 
     DR_DASHBOARD(SiteMapCategory.DR, "yukon.web.modules.dr.home.pageName", "/dr/home",
             MatchStyle.all, YukonRoleProperty.DEMAND_RESPONSE),
