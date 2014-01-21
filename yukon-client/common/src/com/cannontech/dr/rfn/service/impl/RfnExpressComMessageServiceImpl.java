@@ -1,7 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -36,7 +35,6 @@ import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageService {
