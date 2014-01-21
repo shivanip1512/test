@@ -199,7 +199,7 @@
     <entry key="yukon.web.modules.tools.configs.category.demandProfile.profileInterval.description">Interval in minutes over which profile values are kept.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.title">Demand Freeze</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">Demand freeze settings for RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">Demand freeze settings for meters.</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay">Scheduled Demand Freeze Day</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay.description">The day of scheduled demand freeze/reset. 0 disables demand freeze. 32 indicates last day of month.</entry>
 
