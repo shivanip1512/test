@@ -43,7 +43,7 @@
                             </c:forEach>
                         </cti:dataGrid>
                         <div class="action-area">
-                            <cti:button id="reloadButton" nameKey="reload" type="button" onclick="Yukon.ui.veeReview.reloadForm();" busy="true"/>
+                            <cti:button id="reloadButton" nameKey="reload" type="button" onclick="Yukon.veeReview.reloadForm();" busy="true"/>
                         </div>
                     </tags:sectionContainer2>
                 </div>
@@ -77,11 +77,11 @@
                 <th><i:inline key=".next"/></th>
                 <th align="center">
                     <i:inline key=".delete"/>
-                    <cti:button renderMode="image" icon="icon-cross" onclick="Yukon.ui.veeReview.checkUncheckAll('DELETE');"/>
+                    <cti:button renderMode="image" icon="icon-cross" onclick="Yukon.veeReview.checkUncheckAll('DELETE');"/>
                 </th>
                 <th align="center" >
                     <i:inline key=".accept"/>
-                    <cti:button renderMode="image" icon="icon-tick" onclick="Yukon.ui.veeReview.checkUncheckAll('ACCEPT');"/>
+                    <cti:button renderMode="image" icon="icon-tick" onclick="Yukon.veeReview.checkUncheckAll('ACCEPT');"/>
                 </th>
             </tr>
 

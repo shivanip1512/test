@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.ui.veeReview');
+Yukon.namespace('Yukon.veeReview');
 
-Yukon.ui.veeReview = (function () {
+Yukon.veeReview = (function () {
     var _resetDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
             var elemToDisable = action === 'DELETE' ? deleteImgEl : acceptImgEl;
             jQuery(elemToDisable).addClass('disabled');
