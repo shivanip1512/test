@@ -1,7 +1,5 @@
 package com.cannontech.web.support.development.database.service.impl;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,11 +97,6 @@ public class DevBuildDatabasePopulationService {
         devDatabasePopulationService.executeFullDatabasePopulation(task);
 
         globalSettingUpdateDao.updateSettingValue(GlobalSettingType.GOOGLE_ANALYTICS_ENABLED, false, UserUtils.getYukonUser());
-        try {
-            globalSettingUpdateDao.updateSettingValue(GlobalSettingType.JMS_BROKER_HOST, Inet4Address.getLocalHost().getHostAddress(), UserUtils.getYukonUser());
-        } catch (UnknownHostException e) {
-            log.warn("Cannot resolve localhost IP address", e);
-        }
     }
     
     /**
