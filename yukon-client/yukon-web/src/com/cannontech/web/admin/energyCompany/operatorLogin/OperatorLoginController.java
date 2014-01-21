@@ -1,22 +1,19 @@
 package com.cannontech.web.admin.energyCompany.operatorLogin;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -308,9 +305,10 @@ public class OperatorLoginController {
     }
 
     @RequestMapping(value="toggleOperatorLoginStatus",
-                    method = {RequestMethod.POST, RequestMethod.HEAD},     
+                    method = {RequestMethod.POST, RequestMethod.HEAD},
                     headers = "x-requested-with=XMLHttpRequest")
-    public void toggleOperatorLoginStatus(YukonUserContext userContext,
+    @ResponseBody
+    public Map<String, String> toggleOperatorLoginStatus(YukonUserContext userContext,
                                             ModelMap modelMap,
                                             int operatorLoginId,
                                             HttpServletRequest request,
@@ -319,31 +317,28 @@ public class OperatorLoginController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-        JSONObject returnJSON = new JSONObject();
+        Map<String, String> jsonResponse = new HashMap<>();
         LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(operatorLoginId);
 
         if (userContext.getYukonUser().getUserID() == operatorLoginId) {
             // The UI shouldn't allow this but just in case they get here send back a message
-            returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser").toString());
+            jsonResponse.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.unableToDeleteCurrentUser").toString());
         } else {
             if(liteUser.getLoginStatus() == LoginStatusEnum.ENABLED) {
                 liteUser.setLoginStatus(LoginStatusEnum.DISABLED);
-                returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled").toString());
+                jsonResponse.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusDisabled").toString());
             } else {
                 liteUser.setLoginStatus(LoginStatusEnum.ENABLED);
-                returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
+                jsonResponse.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
             }
             LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(liteUser.getLiteID());
             
             // null here ensures password doesn't change
             StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(),null, liteUser.getLoginStatus(), userGroup);
         }
-        returnJSON.put("loginStatus", liteUser.getLoginStatus());
-        returnJSON.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-delete" : "icon-accept");
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        
-        writer.write(returnJSON.toString());
+        jsonResponse.put("loginStatus", liteUser.getLoginStatus().name());
+        jsonResponse.put("icon", liteUser.getLoginStatus() == LoginStatusEnum.DISABLED ? "icon-delete" : "icon-accept");
+        return jsonResponse;
     }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="delete")
@@ -367,44 +362,13 @@ public class OperatorLoginController {
     }
     
     @RequestMapping(value="/remove", method=RequestMethod.POST)
-    public @ResponseBody JSONObject removeOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId, int userId,
-                      EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-
+    public @ResponseBody Map<String, String> removeOperatorLogin(YukonUserContext userContext, ModelMap
+             modelMap, int ecId, int userId, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         ecMappingDao.deleteEnergyCompanyOperatorLoginListMapping(userId, ecId);
-        JSONObject result = new JSONObject();
-        result.put("success", "success");
-        return result;
+        return Collections.singletonMap("success", "success");
     }
-    
-    @RequestMapping(value="availableUsername",
-                    method = {RequestMethod.GET, RequestMethod.HEAD},     
-                    headers = "x-requested-with=XMLHttpRequest")
-    public void availableUsername (YukonUserContext userContext,
-                                     ModelMap modelMap,
-                                     HttpServletRequest request,
-                                     HttpServletResponse response) throws WebClientException, TransactionException, IOException {
-        StringWriter jsonDataWriter = new StringWriter();
-        FileCopyUtils.copy(request.getReader(), jsonDataWriter);
-        String jsonStr = jsonDataWriter.toString();
-        JSONObject data = JSONObject.fromObject(jsonStr);
-        String userName = data.getString("userName");
-        
-        JSONObject jsonUpdates = new JSONObject();
-        LiteYukonUser duplicate = yukonUserDao.findUserByUsername(userName);
-        if(duplicate != null) {
-            jsonUpdates.put("valid", false);
-        } else {
-            jsonUpdates.put("valid", true);
-        }
-        
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        
-        String responseJsonStr = jsonUpdates.toString();
-        writer.write(responseJsonStr);
-    }
-    
+
     @ModelAttribute("assignableGroups")
     public List<LiteUserGroup> getAssignableGroups(int ecId) {
         return ecMappingDao.getOperatorUserGroups(ecId);

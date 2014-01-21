@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -67,6 +65,7 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.util.ListBackingBean;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -89,6 +88,8 @@ public class ApplianceCategoryController {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     private final Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -496,12 +497,10 @@ public class ApplianceCategoryController {
         } else {
             throw new RuntimeException("invalid form values");
         }
-
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
         
+        String reloadJson = jsonObjectMapper.writeValueAsString(Collections.singletonMap("action", "reload"));
         response.setContentType("application/json");
-        response.getWriter().write(json.toString());
+        response.getWriter().write(reloadJson);
         return null;
     }
 
@@ -532,23 +531,20 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping("unassignProgram")
-    public @ResponseBody JSONObject unassignProgram(int applianceCategoryId, int assignedProgramId, YukonUserContext context) {
+    public @ResponseBody Map<String, String> unassignProgram(int applianceCategoryId, int assignedProgramId, YukonUserContext context) {
         verifyAssignedProgramAC(assignedProgramId, applianceCategoryId);
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   applianceCategory.getEnergyCompanyId());
         applianceCategoryService.unassignProgram(applianceCategoryId, assignedProgramId, context);
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     public enum Direction {up,down}
     
     @RequestMapping("moveProgram")
-    public @ResponseBody JSONObject moveProgram(int applianceCategoryId,
+    public @ResponseBody Map<String, String> moveProgram(int applianceCategoryId,
                                                 int assignedProgramId, 
                                                 @RequestParam(required=true) Direction direction, 
                                                 YukonUserContext context) {
@@ -557,7 +553,6 @@ public class ApplianceCategoryController {
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), applianceCategory.getEnergyCompanyId());
         
-        JSONObject json = new JSONObject();
 
         if (direction == Direction.up) {
             applianceCategoryService.moveAssignedProgramUp(applianceCategoryId, assignedProgramId, context);
@@ -565,9 +560,7 @@ public class ApplianceCategoryController {
             applianceCategoryService.moveAssignedProgramDown(applianceCategoryId, assignedProgramId, context);
         }
         
-        json.put("action", "reload");
-
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     /**
