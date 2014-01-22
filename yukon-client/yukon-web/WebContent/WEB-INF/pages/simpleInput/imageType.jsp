@@ -12,7 +12,7 @@
                 <cti:param name="selected" value="${status.value}" />
                 <cti:param name="category" value="${inputType.category}" />
             </cti:url>
-            <a data-image-picker="${param.id}" href="${url}">
+            <a data-image-picker="${param.id}" href="${url}" data-image-category="${inputType.category}">
                 <img alt="${status.value}" src="/common/images/${status.value}">
             </a>
             <!-- This div will be the popup -->

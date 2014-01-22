@@ -18,14 +18,7 @@
 <cti:msg2 key="yukon.common.cancel" var="cancelText"/>
 
 <cti:includeScript link="/JavaScript/yukon.themes.js"/>
-<script type="text/javascript">
-jQuery(function () {
-    Yukon.Themes.init({chooseText: '${chooseText}',
-                       okText: '${okText}',
-                       cancelText: '${cancelText}'});
-});
-</script>
-
+    <input id="argsInput" type="hidden" data-choose-text="${chooseText}" data-ok-text="${okText}" data-cancel-text="${cancelText}" type="text" />
     <div class="clearfix">
         <div class="category fl">
             <a href="theme" class="icon icon-32 fl icon-32-brush"></a>

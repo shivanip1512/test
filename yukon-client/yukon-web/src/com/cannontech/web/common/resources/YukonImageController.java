@@ -10,8 +10,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class YukonImageController {
@@ -40,6 +39,8 @@ public class YukonImageController {
     @Autowired ResourceLoader loader;
     @Autowired RolePropertyDao rpDao;
     @Autowired YukonUserContextMessageSourceResolver resolver;
+    
+    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
     public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
@@ -111,10 +112,8 @@ public class YukonImageController {
         }
         // content type must be text or html or IE will throw up a save/open dialog
         resp.setContentType("text/plain");
-        ServletOutputStream out = resp.getOutputStream();
-        JSONObject jsonData = JSONObject.fromObject(json);
-        out.print(jsonData.toString());
-        out.close();
+        String jsonString = jsonObjectMapper.writeValueAsString(json);
+        resp.getWriter().write(jsonString);
     }
     
     private enum YukonImage {

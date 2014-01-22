@@ -86,7 +86,8 @@ Yukon.Themes = (function () {
                     var buttons = [],
                         okButton = {'text' : _okText, 'click': function() { popup.trigger('yukon.image.selected'); }, 'class': 'primary action'},
                         cancelButton = {'text' : _cancelText, 'click' : function() { jQuery(this).dialog('close'); }};
-                    
+
+                    themeMod.initFileUpload(jQuery(link).closest('a').data('imageCategory'));
                     buttons.push(cancelButton);
                     buttons.push(okButton);
                     popup.dialog({ autoOpen: false,
@@ -128,14 +129,13 @@ Yukon.Themes = (function () {
             
             initialized = true;
         },
-        initFileUpload: function () {
-            var uploadBtn = jQuery('.b-upload'),
-                category = uploadBtn.closest('.image-picker').data('category');
+        initFileUpload: function (category) {
+            var uploadForm = jQuery('div[data-category="' + category + '"]').find('form');
 
-            jQuery('#file-upload').fileupload({
+            uploadForm.fileupload({
                 dataType: 'text',
                 start: function (e) {
-                    var bar = jQuery('#file-upload input').next();
+                    var bar = uploadForm.find('input').next();
                     if (typeof bar !== 'undefined') {
                         jQuery(bar).progressbar({max:100, value: 0});
                     }
@@ -145,8 +145,9 @@ Yukon.Themes = (function () {
                         uploadArea,
                         copy;
                     data.result = dataParsed;
+                    uploadForm.find('label.uploadLabel').css('display', 'none');
                     if (data.result.status === 'success') {
-                        uploadArea = jQuery('#file-upload input').closest('.section');
+                        uploadArea = uploadForm.find('input').closest('.section');
                         copy = uploadArea.next().clone();
 
                         uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
@@ -165,15 +166,24 @@ Yukon.Themes = (function () {
                 },
                 progressall: function (e, data) {
                     var progress = parseInt(data.loaded / data.total * 100, 10),
-                        button = jQuery('#file-upload input'),
+                        button = uploadForm.find('input'),
                         bar = jQuery(button.next()),
                         percent = jQuery(bar.next());
                     bar.progressbar("value", progress);
                     percent.text(progress + "%");
                 }
             });
-            jQuery('#file-upload').fileupload('option', 'formData', {'category': category});
+            uploadForm.fileupload('option', 'formData', {'category': category});
         }
     };
     return themeMod;
 }());
+
+jQuery(function () {
+    var argsInput = jQuery('#argsInput'),
+        chooseText = argsInput.data('chooseText'),
+        okText = argsInput.data('okText'),
+        cancelText = argsInput.data('cancelText');
+
+    Yukon.Themes.init({'chooseText': chooseText, 'okText': okText, 'cancelText': cancelText});
+});
