@@ -8,7 +8,7 @@
 
 <%@ attribute name="chartId" %>
 <%@ attribute name="classes" %>
-<%@ attribute name="url" required="true" description="Expected return data is a JSONObject. Specifically {datas: [{label: 'somelabel', data: somedata, tooltip: 'sometooltip'}], options: {nested objects of options}, type: 'line/bar/pie'}. See FlotChartServiceImpl.java for more specific examples"%>
+<%@ attribute name="url" required="true" description="Expected return data is json. Specifically {datas: [{label: 'somelabel', data: somedata, tooltip: 'sometooltip'}], options: {nested objects of options}, type: 'line/bar/pie'}. See FlotChartServiceImpl.java for more specific examples"%>
 
 <cti:default var="chartId" value="flotChartId"/>
 
@@ -21,6 +21,7 @@ jQuery(function() {
     var chartId = '${chartId}';
     jQuery.ajax({
         url: '${url}',
+        dataType : 'json',
         success: function(data) {
             Yukon.Flot.addChart({
                 chartId: chartId,

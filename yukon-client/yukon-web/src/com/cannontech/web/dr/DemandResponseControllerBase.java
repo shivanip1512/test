@@ -82,15 +82,14 @@ public abstract class DemandResponseControllerBase {
                     assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
             model.addAttribute("assetAvailabilitySummary", aaSummary);
             model.addAttribute("assetTotal", aaSummary.getAll().size());
-            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJSONPieData(aaSummary, userContext));
+            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
             model.addAttribute("colorMap", colorMap);
         } catch(DynamicDataAccessException e) {
             model.addAttribute("dispatchDisconnected", true);
         }
         return model;
     }
-    
-    
+
     protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, 
                                                             YukonUserContext userContext, 
                                                             JSONArray filters) {

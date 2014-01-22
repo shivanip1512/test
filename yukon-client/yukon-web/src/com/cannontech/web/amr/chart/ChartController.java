@@ -1,8 +1,7 @@
 package com.cannontech.web.amr.chart;
 
+import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONObject;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,7 @@ public class ChartController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value="chart", method = RequestMethod.GET)
-    public @ResponseBody JSONObject chart(YukonUserContext userContext,
+    public @ResponseBody Map<String, Object> chart(YukonUserContext userContext,
                         String pointIds,
                         ChartInterval interval,
                         long startDate,
@@ -52,30 +51,26 @@ public class ChartController {
                         @RequestParam(defaultValue = "LINE") GraphType graphType,
                         @RequestParam(defaultValue = "RAW") ConverterType converterType) {
         Set<Integer> ids = Sets.newHashSet(StringUtils.parseIntStringForList(pointIds));
-        
+
         LitePoint point = pointDao.getLitePoint(Iterables.get(ids, 0));
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
         String yLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));
-        
+
         Instant start = new Instant(startDate);
         Instant stop = new Instant(endDate);
-        JSONObject graphAsJSON
-            = flotChartService.getMeterGraphData(ids, start, stop, yMin, yMax, interval, converterType,
-                                                 graphType, yLabelUnits, userContext);
+        Map<String, Object> graphAsJSON = flotChartService.getMeterGraphData(ids, start, stop, yMin, yMax, interval,
+                                                                    converterType, graphType, yLabelUnits, userContext);
         
         return graphAsJSON;
     }
 
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        EnumPropertyEditor<ConverterType> converterTypeEditor =
-            new EnumPropertyEditor<ConverterType>(ConverterType.class);
-        EnumPropertyEditor<ChartInterval> chartIntervalEditor =
-                new EnumPropertyEditor<ChartInterval>(ChartInterval.class);
-        EnumPropertyEditor<GraphType> graphTypeEditor =
-                new EnumPropertyEditor<GraphType>(GraphType.class);
+        EnumPropertyEditor<ConverterType> converterTypeEditor = new EnumPropertyEditor<>(ConverterType.class);
+        EnumPropertyEditor<ChartInterval> chartIntervalEditor = new EnumPropertyEditor<>(ChartInterval.class);
+        EnumPropertyEditor<GraphType> graphTypeEditor = new EnumPropertyEditor<>(GraphType.class);
         binder.registerCustomEditor(ConverterType.class, converterTypeEditor);
         binder.registerCustomEditor(ChartInterval.class, chartIntervalEditor);
         binder.registerCustomEditor(GraphType.class, graphTypeEditor);

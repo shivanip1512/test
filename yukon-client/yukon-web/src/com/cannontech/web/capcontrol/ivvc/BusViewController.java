@@ -1,9 +1,8 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -86,17 +85,16 @@ public class BusViewController {
     }
     
     @RequestMapping(value="chart", method = RequestMethod.GET)
-    public @ResponseBody JSONObject chart(YukonUserContext userContext, int subBusId) {
+    public @ResponseBody Map<String, Object> chart(YukonUserContext userContext, int subBusId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService.
-                allZonesHaveRequiredRegulatorPointMapping(subBusId,
-                                                          userContext.getYukonUser());
-        JSONObject graphAsJSON = new JSONObject();
+                allZonesHaveRequiredRegulatorPointMapping(subBusId, userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
-            graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
-            return graphAsJSON;
+            Map<String, Object> graphAsJson = 
+                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
+            return graphAsJson;
         }
-        return graphAsJSON;
+        return Collections.emptyMap();
     }
 
     private VfGraph setupChart(ModelMap model, YukonUserContext userContext, int subBusId) {
@@ -106,7 +104,8 @@ public class BusViewController {
         VfGraph graph = null;
         if (zoneAttributesExist) {
             graph = voltageFlatnessGraphService.getSubBusGraph(userContext, subBusId);
-            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
+            Map<String, Object> graphAsJSON = 
+                    flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextBusGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

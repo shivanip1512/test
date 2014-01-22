@@ -11,8 +11,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
@@ -299,18 +296,17 @@ public class ZoneDetailController {
     }
     
     @RequestMapping("chart")
-    public @ResponseBody JSONObject chart(YukonUserContext context, int zoneId) {
+    public @ResponseBody Map<String, Object> chart(YukonUserContext context, int zoneId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService
                 .zoneHasRequiredRegulatorPointMapping(zoneId,
                                                       RegulatorPointMapping.VOLTAGE_Y,
                                                       context.getYukonUser());
-        JSONObject graphAsJSON = new JSONObject();
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(context, zoneId);
-            graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
             return graphAsJSON;
         }
-        return graphAsJSON;
+        return Collections.emptyMap();
     }
     
     private void setupDetails(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
@@ -373,7 +369,7 @@ public class ZoneDetailController {
         VfGraph graph = null;
         if (zoneAttributesExist) {
             graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            JSONObject graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
+            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

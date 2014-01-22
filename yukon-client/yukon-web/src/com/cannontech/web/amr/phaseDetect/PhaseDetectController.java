@@ -509,9 +509,9 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("chart")
-    public @ResponseBody JSONObject chart() {
+    public @ResponseBody Map<String, Object> chart() {
         Map<String, Integer> phaseResultsMap = getChartPhaseResults();
-        JSONObject phaseDetectResults = flotChartService.getPieGraphData(phaseResultsMap);
+        Map<String, Object> phaseDetectResults = flotChartService.getPieGraphData(phaseResultsMap);
         return phaseDetectResults;
     }
 

@@ -3,8 +3,6 @@ package com.cannontech.web.common.chart.service;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONObject;
-
 import org.joda.time.Instant;
 
 import com.cannontech.common.chart.model.ChartInterval;
@@ -17,7 +15,7 @@ import com.cannontech.web.common.chart.model.FlotPieDatas;
 public interface FlotChartService {
     
     /**
-     * This method returns a JSONObject to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
+     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
      * (if the format of this is changed, please update this comment)
@@ -48,12 +46,12 @@ public interface FlotChartService {
      *  
      *  @return JSONObject
      */
-    JSONObject getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
+    Map<String, Object> getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
                                 ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
                                 YukonUserContext userContext);
 
     /**
-     * This method returns a JSONObject for IVVC SubBus and Zone charts
+     * Returns a Map to be converted to json for IVVC SubBus and Zone charts
      * to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
@@ -107,13 +105,11 @@ public interface FlotChartService {
      *          }
      *      }
      *  }
-     *  
-     *  @return JSONObject
      */
-    JSONObject getIVVCGraphData(VfGraph graph, boolean includeTitles);
-    
+     Map<String, Object> getIVVCGraphData(VfGraph graph, boolean includeTitles);
+
     /**
-     * This method returns a JSONObject to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
+     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
      * (if the format of this is changed, please update this comment)
@@ -131,13 +127,11 @@ public interface FlotChartService {
      *      }],
      *      "type": "pie"
      *  }
-     * 
-     * @return JSONObject
      */
-    JSONObject getPieGraphData(Map<String, Integer> labelValueMap);
+     Map<String, Object> getPieGraphData(Map<String, Integer> labelValueMap);
 
     /**
-     * This method returns a JSONObject to be consumed by yukon.flot.js (our implementation of FlotCharts.js)
+     * Returns a Map to be converted to json and consumed by yukon.flot.js (our implementation of FlotCharts.js)
      * The format of this object is as follows:
      * 
      * radiusPercent is a decimal between 0 and 1.
@@ -159,8 +153,7 @@ public interface FlotChartService {
      *      }],
      *      "type": "pie"
      *  }
-     * 
-     * @return JSONObject
      */
-    JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend, boolean showLabels, double radiusPercent);
+     Map<String, Object> getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend,
+                                                  boolean showLabels, double radiusPercent);
 }

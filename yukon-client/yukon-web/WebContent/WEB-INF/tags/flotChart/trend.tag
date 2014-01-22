@@ -56,6 +56,7 @@
                 var chartId = '${chartId}';
                 jQuery.ajax({
                     url: '${chartUrl}',
+                    dataType : 'json',
                     success: function(data) {
                         Yukon.Flot.addChart({
                             chartId: chartId,

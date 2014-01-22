@@ -2,8 +2,6 @@ package com.cannontech.web.common.chart.service.impl;
 
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -20,9 +18,8 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
     @Autowired private FlotChartService flotChartService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-
     @Override
-    public JSONObject getJSONPieData(SimpleAssetAvailabilitySummary aaSummary, YukonUserContext userContext) {
+    public Map<String, Object> getJsonPieData(SimpleAssetAvailabilitySummary aaSummary, YukonUserContext userContext) {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         String runningStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.active");
@@ -36,7 +33,7 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
         labelDataColorMap.put(optedOutStr, new FlotPieDatas(aaSummary.getOptedOutSize(), "#888")); // .disabled
         labelDataColorMap.put(unavailableStr, new FlotPieDatas(aaSummary.getUnavailableSize(), "#d14836")); // .error
 
-        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, false, false, 0.9);
-        return pieJSONData;
+        Map<String, Object> pieJsonData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, false, false, 0.9);
+        return pieJsonData;
     }
 }

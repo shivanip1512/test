@@ -1,6 +1,6 @@
 <%@ attribute name="assetId" required="true" type="java.lang.Integer" %>
 <%@ attribute name="assetAvailabilitySummary" required="true" type="com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary" %>
-<%@ attribute name="pieJSONData" required="true" type="net.sf.json.JSONObject" %>
+<%@ attribute name="pieJSONData" required="true" type="java.util.Map" %>
 <%@ attribute name="showDetails" required="true" type="java.lang.Boolean" %>
 <%@ tag body-content="empty" %>
 

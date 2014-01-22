@@ -13,7 +13,7 @@
 <script>
 jQuery(function() {
     var chartId = '${chartId}',
-        jsonDataAndOptions = ${jsonDataAndOptions},
+        jsonDataAndOptions = ${cti:jsonString(jsonDataAndOptions)},
         choiceContainer = jQuery(".graph_phases");
 
     Yukon.Flot.addChart({

@@ -10,8 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -238,7 +236,7 @@ public class ControlAuditController {
     }
     
     @RequestMapping("chart")
-    public @ResponseBody JSONObject chart(String auditId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> chart(String auditId, YukonUserContext userContext) {
 
         MessageSourceAccessor msa = resolver.getMessageSourceAccessor(userContext);
         String controlledStr = msa.getMessage("yukon.web.modules.operator.controlAudit.controlled");
@@ -254,7 +252,7 @@ public class ControlAuditController {
         labelDataColorMap.put(unknownStr, new FlotPieDatas(result.getUnknown().getCount(), "#4d90fe")); // .unknown blue
         labelDataColorMap.put(unsupportedStr, new FlotPieDatas(result.getUnsupported().getCount(), "#888888")); // .unsupported gray
 
-        JSONObject pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, true, false, 1.0);
+        Map<String, Object> pieJSONData = flotChartService.getPieGraphDataWithColor(labelDataColorMap, true, false, 1.0);
         return pieJSONData;
     }
 

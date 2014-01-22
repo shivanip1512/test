@@ -8,7 +8,7 @@
 
 <%@ attribute name="chartId" %>
 <%@ attribute name="classes" %>
-<%@ attribute name="data" required="true" description="Expected data is a JSONObject. Specifically {datas: [{label: 'somelabel', data: somedata, tooltip: 'sometooltip'}], options: {nested objects of options}, type: 'line/bar/pie'}. See FlotChartServiceImpl.java for more specific examples"%>
+<%@ attribute name="data" type="java.util.Map" required="true" description="Expected data is a Map of string to object representing the json data. Specifically {datas: [{label: 'somelabel', data: somedata, tooltip: 'sometooltip'}], options: {nested objects of options}, type: 'line/bar/pie'}. See FlotChartServiceImpl.java for more specific examples"%>
 
 <cti:default var="chartId" value="flotChartId"/>
 
@@ -19,7 +19,7 @@
 <script>
 jQuery(function() {
     var chartId = '${chartId}';
-    var data = ${data};
+    var data = ${cti:jsonString(data)};
     Yukon.Flot.addChart({
         chartId: chartId,
         type: data.type,

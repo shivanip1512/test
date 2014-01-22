@@ -1,13 +1,13 @@
 package com.cannontech.web.common.chart.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
@@ -26,65 +26,54 @@ import com.cannontech.web.common.chart.model.FlotOptionKey;
 import com.cannontech.web.common.chart.model.FlotPieDatas;
 import com.cannontech.web.common.chart.service.ChartService;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.google.common.collect.Maps;
 
 public class FlotChartServiceImpl implements FlotChartService {
 
     @Autowired private ChartService chartService;
 
     @Override
-    public JSONObject getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin, Double yMax,
-                                       ChartInterval interval, ConverterType converterType, GraphType graphType, String yLabel,
-                                       YukonUserContext userContext) {
-        List<Graph<ChartValue<Double>>> graphs = chartService.getGraphs(pointIds,
-                                                    start.toDate(),
-                                                    stop.toDate(),
-                                                    interval,
-                                                    converterType,
-                                                    userContext);
+    public Map<String, Object> getMeterGraphData(Set<Integer> pointIds, Instant start, Instant stop, Double yMin,
+                                                 Double yMax,  ChartInterval interval, ConverterType converterType,
+                                                 GraphType graphType, String yLabel, YukonUserContext userContext) {
+        List<Graph<ChartValue<Double>>> graphs = 
+                chartService.getGraphs(pointIds, start.toDate(), stop.toDate(), interval, converterType, userContext);
+
         // datas
-        JSONObject dataAndOptions = new JSONObject();
-        JSONArray jsonDataContainer = new JSONArray();
+        List<Object> jsonDataContainer = new ArrayList<>();
         for (Graph<ChartValue<Double>> graph : graphs) {
-            JSONArray jsonArrayContainer = new JSONArray();
-            List<ChartValue<Double>> chartData = graph.getChartData();
-            buildUpChartValueJsonData(jsonArrayContainer, chartData);
-            JSONObject dataObj = new JSONObject();
-            dataObj.put("data", jsonArrayContainer);
-            jsonDataContainer.add(dataObj);
+            List<Object> dataArray = getDataArray(graph.getChartData());
+            jsonDataContainer.add(Collections.singletonMap("data", dataArray));
         }
-        /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
-        if (jsonDataContainer.isEmpty()) {
-            jsonDataContainer.add(new JSONArray());
+        // if we have no data, then add an empty array to jsonData so a blank graph is displayed properly
+        if (graphs.isEmpty()) {
+            jsonDataContainer.add(Collections.emptyList());
         }
-        
+
         // options
-        Integer xAxisDataCount = chartService.getXAxisDataCount(start.toDate(),
-                                                                stop.toDate(),
-                                                                interval);
+        int xAxisDataCount = chartService.getXAxisDataCount(start.toDate(), stop.toDate(), interval);
         int barWidthForTime = getBarWidthForTime(start, stop, xAxisDataCount);
-        
-        JSONObject options = new JSONObject();
 
-        JSONObject series = new JSONObject();
-        JSONObject bars = new JSONObject();
-        setFlotOption(bars, FlotOptionKey.SERIES_BARS_BARWIDTH, barWidthForTime);
-        setFlotOption(series, FlotOptionKey.SERIES_BARS, bars);
-        setFlotOption(options, FlotOptionKey.SERIES, series);
+        Map<String, ?> bars = Collections.singletonMap(FlotOptionKey.SERIES_BARS_BARWIDTH.getKey(), barWidthForTime);
+        Map<String, ?> series = Collections.singletonMap(FlotOptionKey.SERIES_BARS.getKey(), bars);
 
-        JSONObject yAxis = new JSONObject();
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_POSITION, "left");
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_AXISLABEL, yLabel);
-        
+        Map<String, Object> options = Maps.newHashMapWithExpectedSize(3);
+        options.put(FlotOptionKey.SERIES.getKey(), series);
+
+        Map<String, Object> yAxis = new HashMap<>();
+        yAxis.put(FlotOptionKey.YAXIS_POSITION.getKey(), "left");
+        yAxis.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), yLabel);
+
         if (yMin != null) {
-            setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, yMin);
+            yAxis.put(FlotOptionKey.YAXIS_MIN.getKey(), yMin);
         }
         if (yMax != null) {
-            setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, yMax);
+            yAxis.put(FlotOptionKey.YAXIS_MAX.getKey(), yMax);
         }
-        setFlotOption(options, FlotOptionKey.YAXIS, yAxis);
-        
-        JSONObject xAxis = new JSONObject();
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MODE, "time");
+        options.put(FlotOptionKey.YAXIS.getKey(), yAxis);
+
+        Map<String, Object> xAxis = new HashMap<>();
+        xAxis.put(FlotOptionKey.XAXIS_MODE.getKey(), "time");
 
         /*
          * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
@@ -93,40 +82,39 @@ public class FlotChartServiceImpl implements FlotChartService {
          */
         long xAxisMin = start.getMillis() + TimeZone.getDefault().getOffset(start.getMillis());
         long xAxisMax = stop.getMillis() + TimeZone.getDefault().getOffset(stop.getMillis());
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, xAxisMin);
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_MAX, xAxisMax);
+        xAxis.put(FlotOptionKey.XAXIS_MIN.getKey(), xAxisMin);
+        xAxis.put(FlotOptionKey.XAXIS_MAX.getKey(), xAxisMax);
 
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_AUTOSCALEMARGIN, 0.1);
-        setFlotOption(options, FlotOptionKey.XAXIS, xAxis);
-        
+        xAxis.put(FlotOptionKey.XAXIS_AUTOSCALEMARGIN.getKey(), 0.1);
+        options.put(FlotOptionKey.XAXIS.getKey(), xAxis);
+
+        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
         dataAndOptions.put("datas", jsonDataContainer);
         dataAndOptions.put("type", graphType.getFlotType());
         dataAndOptions.put("options", options);
-        
+
         return dataAndOptions;
     }
 
-    private void buildUpChartValueJsonData(JSONArray jsonArrayContainer, List<ChartValue<Double>> chartData) {
-        for (ChartValue<?> chartValue : chartData) {
-            JSONArray jsonArray = new JSONArray();
+    private List<Object> getDataArray(List<ChartValue<Double>> chartData) {
+        List<Object> jsonArrayContainer = new ArrayList<>();
+        for (ChartValue<Double> chartValue : chartData) {
+            List<Object> jsonArray = new ArrayList<>();
             jsonArray.add(chartValue.getId()); // x
-            jsonArray.add(chartValue.getValue());// y
-
-            JSONObject obj = new JSONObject();
-            obj.put("tooltip", chartValue.getDescription());
-            jsonArray.add(obj);
-
+            jsonArray.add(chartValue.getValue()); // y
+            jsonArray.add(Collections.singletonMap("tooltip", chartValue.getDescription()));
             jsonArrayContainer.add(jsonArray);
         }
+        return jsonArrayContainer;
     }
     
     @Deprecated /* use getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap) */
     @Override
-    public JSONObject getPieGraphData(Map<String, Integer> labelValueMap) {
-        JSONObject dataAndOptions = new JSONObject();
-        JSONArray jsonDataContainer = new JSONArray();
+    public Map<String, Object> getPieGraphData(Map<String, Integer> labelValueMap) {
+        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(2);
+        List<Object> jsonDataContainer = new ArrayList<>();
         for (Entry<String, Integer> labelValue : labelValueMap.entrySet()) {
-            JSONObject dataObj = new JSONObject();
+            Map<String, Object> dataObj = Maps.newHashMapWithExpectedSize(3);
             dataObj.put("label", labelValue.getKey());
             dataObj.put("data", labelValue.getValue());
             dataObj.put("tooltip", labelValue.getKey() + ": " + labelValue.getValue());
@@ -139,11 +127,11 @@ public class FlotChartServiceImpl implements FlotChartService {
     }
 
     @Override
-    public JSONObject getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend, boolean showLabels, double radiusPercent) {
-        JSONObject dataAndOptions = new JSONObject();
-        JSONArray jsonDataContainer = new JSONArray();
+    public Map<String, Object> getPieGraphDataWithColor(Map<String, FlotPieDatas> labelValueMap, boolean showLegend,
+                                                        boolean showLabels, double radiusPercent) {
+        List<Object> jsonDataContainer = new ArrayList<>();
         for (Entry<String, FlotPieDatas> labelValue : labelValueMap.entrySet()) {
-            JSONObject dataObj = new JSONObject();
+            Map<String, Object> dataObj = new HashMap<>();
             dataObj.put("label", labelValue.getKey());
             dataObj.put("data", labelValue.getValue().getData());
             dataObj.put("tooltip", labelValue.getKey() + ": " + labelValue.getValue().getData());
@@ -154,43 +142,36 @@ public class FlotChartServiceImpl implements FlotChartService {
             }
             jsonDataContainer.add(dataObj);
         }
-        
+
+        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
         dataAndOptions.put("datas", jsonDataContainer);
         dataAndOptions.put("type", GraphType.PIE.getFlotType());
-        
+
         /* Hide/show the labels and legend, and set the radius */
-        JSONObject pie = new JSONObject();
+        Map<String, Object> pie = Maps.newHashMapWithExpectedSize(2);
         pie.put("radius", radiusPercent);
-        JSONObject label = new JSONObject();
-        label.put("show", showLabels);
-        pie.put("label", label);
-        
-        JSONObject series = new JSONObject();
-        series.put("pie", pie);
-        
-        JSONObject legend = new JSONObject();
-        legend.put("show", showLegend);
-        
-        JSONObject options = new JSONObject();
-        options.put("series", series);
-        options.put("legend", legend);
-        
+        pie.put("label", Collections.singletonMap("show", showLabels));
+
+        Map<String, Object> options = Maps.newHashMapWithExpectedSize(2);
+        options.put("series", Collections.singletonMap("pie", pie));
+        options.put("legend", Collections.singletonMap("show", showLegend));
+
         dataAndOptions.put("options", options);
-        
+
         return dataAndOptions;
     }
 
     @Override
-    public JSONObject getIVVCGraphData(VfGraph graph, boolean includeTitles) {
-        JSONObject dataAndOptions = new JSONObject();
-        JSONArray jsonDataContainer = new JSONArray();
+    public Map<String, Object> getIVVCGraphData(VfGraph graph, boolean includeTitles) {
+        List<Object> jsonDataContainer = new ArrayList<>();
 
         /* data */
+        boolean noData = graph.getLines().isEmpty();
         for (VfLine line : graph.getLines()) {
-            JSONArray linesArray = new JSONArray();
+            List<Object> linesArray = new ArrayList<>();
             VfPoint labelPoint = null;
             for (VfPoint point : line.getPoints()) {
-                JSONArray pointArray = new JSONArray();
+                List<Object> pointArray = new ArrayList<>();
                 pointArray.add(point.getX());
                 pointArray.add(point.getY());
 
@@ -199,12 +180,10 @@ public class FlotChartServiceImpl implements FlotChartService {
                     labelPoint = point;
                 }
 
-                JSONObject obj = new JSONObject();
-                obj.put("tooltip", point.getDescription());
-                pointArray.add(obj);
+                pointArray.add(Collections.singletonMap("tooltip", point.getDescription()));
                 linesArray.add(pointArray);
             }
-            JSONObject dataObj = new JSONObject();
+            Map<String, Object> dataObj = new HashMap<>();
             if (includeTitles && labelPoint != null) {
                 dataObj.put("title", line.getZoneName());
                 dataObj.put("titleXPos", labelPoint.getX());
@@ -218,56 +197,55 @@ public class FlotChartServiceImpl implements FlotChartService {
             jsonDataContainer.add(dataObj);
         }
         /* if we have no data, then add an empty array to jsonData so a blank graph is displayed properly */
-        boolean noData = jsonDataContainer.isEmpty();
-        if (noData) jsonDataContainer.add(new JSONArray());
+        if (noData) {
+            jsonDataContainer.add(Collections.emptyList());
+        }
 
         /* options */
-        JSONObject options = new JSONObject();
-        
-        JSONObject xAxis = new JSONObject();
-        setFlotOption(xAxis, FlotOptionKey.XAXIS_AUTOSCALEMARGIN, 0.1);
-        
-        if (noData) setFlotOption(xAxis, FlotOptionKey.XAXIS_MIN, 0);
-        setFlotOption(options, FlotOptionKey.XAXIS, xAxis);
-        
-        JSONObject yAxis = new JSONObject();
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_POSITION, "left");
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_AXISLABEL, graph.getSettings().getYAxisLabel());
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_MIN, graph.getSettings().getyMin());
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_MAX, graph.getSettings().getyMax());
-        setFlotOption(yAxis, FlotOptionKey.YAXIS_AUTOSCALEMARGIN, 0.1);
-        setFlotOption(options, FlotOptionKey.YAXIS, yAxis);
-        
-        JSONObject markingsObj = new JSONObject();
-        JSONArray markingsArray = new JSONArray();
-        JSONObject markingStrategyHigh = new JSONObject();
-        JSONObject markingStrategyLow = new JSONObject();
+        Map<String, Object> xAxis = new HashMap<>();
+        xAxis.put(FlotOptionKey.XAXIS_AUTOSCALEMARGIN.getKey(), 0.1);
 
-        JSONObject yAxisFrom = new JSONObject();
-        JSONObject yAxisTo = new JSONObject();
-        setFlotOption(yAxisFrom, FlotOptionKey.GRID_MARKINGS_YAXIS_FROM, graph.getSettings().getYUpperBound());
-        setFlotOption(yAxisTo, FlotOptionKey.GRID_MARKINGS_YAXIS_TO, graph.getSettings().getYLowerBound());
+        if (noData) {
+            xAxis.put(FlotOptionKey.XAXIS_MIN.getKey(), 0);
+        }
+
+        Map<String, Object> options = Maps.newHashMapWithExpectedSize(2);
+        options.put(FlotOptionKey.XAXIS.getKey(), xAxis);
         
-        setFlotOption(markingStrategyHigh, FlotOptionKey.GRID_MARKINGS_COLOR, "#f1f1f1");
-        setFlotOption(markingStrategyHigh, FlotOptionKey.GRID_MARKINGS_YAXIS, yAxisFrom);
-        setFlotOption(markingStrategyLow, FlotOptionKey.GRID_MARKINGS_COLOR, "#f1f1f1");
-        setFlotOption(markingStrategyLow, FlotOptionKey.GRID_MARKINGS_YAXIS, yAxisTo);
+        Map<String, Object> yAxis = new HashMap<>();
+        yAxis.put(FlotOptionKey.YAXIS_POSITION.getKey(), "left");
+        yAxis.put(FlotOptionKey.YAXIS_AXISLABEL.getKey(), graph.getSettings().getYAxisLabel());
+        yAxis.put(FlotOptionKey.YAXIS_MIN.getKey(), graph.getSettings().getyMin());
+        yAxis.put(FlotOptionKey.YAXIS_MAX.getKey(), graph.getSettings().getyMax());
+        yAxis.put(FlotOptionKey.YAXIS_AUTOSCALEMARGIN.getKey(), 0.1);
+        options.put(FlotOptionKey.YAXIS.getKey(), yAxis);
         
+        Map<String, ?> yAxisFrom = Collections.singletonMap(FlotOptionKey.GRID_MARKINGS_YAXIS_FROM.getKey(),
+                                                            graph.getSettings().getYUpperBound());
+        Map<String, ?> yAxisTo = Collections.singletonMap(FlotOptionKey.GRID_MARKINGS_YAXIS_TO.getKey(),
+                                                          graph.getSettings().getYLowerBound());
+
+        List<Object> markingsArray = new ArrayList<>();
+
+        Map<String, Object> markingStrategyHigh = Maps.newHashMapWithExpectedSize(2);
+        markingStrategyHigh.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), "#f1f1f1");
+        markingStrategyHigh.put(FlotOptionKey.GRID_MARKINGS_YAXIS.getKey(), yAxisFrom);
         markingsArray.add(markingStrategyHigh);
+
+        Map<String, Object> markingStrategyLow = Maps.newHashMapWithExpectedSize(2);
+        markingStrategyLow.put(FlotOptionKey.GRID_MARKINGS_COLOR.getKey(), "#f1f1f1");
+        markingStrategyLow.put(FlotOptionKey.GRID_MARKINGS_YAXIS.getKey(), yAxisTo);
         markingsArray.add(markingStrategyLow);
-        
-        setFlotOption(markingsObj, FlotOptionKey.GRID_MARKINGS, markingsArray);
-        setFlotOption(options, FlotOptionKey.GRID, markingsObj);
-        
+
+        Map<String, ?> markingsObj = Collections.singletonMap(FlotOptionKey.GRID_MARKINGS.getKey(), markingsArray);
+        options.put(FlotOptionKey.GRID.getKey(), markingsObj);
+
+        Map<String, Object> dataAndOptions = Maps.newHashMapWithExpectedSize(3);
         dataAndOptions.put("datas", jsonDataContainer);
         dataAndOptions.put("type", GraphType.LINE.getFlotType());
         dataAndOptions.put("options", options);
-        
+
         return dataAndOptions;
-    }
-    
-    private void setFlotOption(JSONObject jsonObject, FlotOptionKey flotOptionKey, Object value) {
-        jsonObject.put(flotOptionKey.getKey(), value);
     }
 
     /**
@@ -282,36 +260,5 @@ public class FlotChartServiceImpl implements FlotChartService {
         long milliDiff = Math.abs(start.getMillis() - end.getMillis());
         int barWidth = (int) Math.ceil(milliDiff / numDataPoints);
         return barWidth;
-    }
-
-    /**
-     * The flotchart timeformat to use given a start and end date.
-     * 
-     * Specific format options: (from https://github.com/flot/flot/blob/master/API.md)
-     * 
-     * %a: weekday name (customizable)
-     * %b: month name (customizable)
-     * %d: day of month, zero-padded (01-31)
-     * %e: day of month, space-padded ( 1-31)
-     * %H: hours, 24-hour time, zero-padded (00-23)
-     * %I: hours, 12-hour time, zero-padded (01-12)
-     * %m: month, zero-padded (01-12)
-     * %M: minutes, zero-padded (00-59)
-     * %q: quarter (1-4)
-     * %S: seconds, zero-padded (00-59)
-     * %y: year (two digits)
-     * %Y: year (four digits)
-     * %p: am/pm
-     * %P: AM/PM (uppercase version of %p)
-     * %w: weekday as number (0-6, 0 being Sunday)
-     */
-    private String getTimeFormat(Instant start, Instant end) {
-        long milliDiff = Math.abs(start.getMillis() - end.getMillis());
-        int dayDiff = (int) Math.floor(milliDiff / 1000 / 60 / 60 / 24);
-
-        if (dayDiff <= 1) {
-            return "%h:%m";
-        }
-        return "%m/%d";
     }
 }
