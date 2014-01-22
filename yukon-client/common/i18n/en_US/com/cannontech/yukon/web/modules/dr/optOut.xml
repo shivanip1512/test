@@ -54,6 +54,12 @@
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramNames.instruction">Only {0} For Selected Programs</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.show">Show</entry>
     <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.change">Change</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.optOutSurveys.title">Opt Out Surveys</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.totalSurveys">Opt Out Surveys:</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.activeSurveys">Active Surveys:</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.lastWeek">Taken in last week:</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.last30Days">Taken in last 30 days:</entry>
+    <entry key="yukon.web.modules.dr.optOutAdmin.surveysLink">Opt Out Surveys</entry>
     
 	<entry key="yukon.web.modules.dr.chooseProgram">Choose Program</entry>
     

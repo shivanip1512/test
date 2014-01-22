@@ -1,11 +1,15 @@
 package com.cannontech.web.stars.dr.operator.optout;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,17 +44,22 @@ import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutCountsTemporaryOverride;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
+import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
+import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Controller for Manual thermostat operations
@@ -70,6 +79,8 @@ public class OptOutAdminController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private OptOutSurveyService optOutSurveyService;
     
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
@@ -139,6 +150,33 @@ public class OptOutAdminController {
         // Second column
         setupScheduledOptOuts(user, model);
         
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT, user)) {
+            int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+            Set<OptOutSurvey> surveys = new HashSet<>(optOutSurveyService.findSurveys(energyCompanyId, 0, Integer.MAX_VALUE).getResultList());
+            model.addAttribute("totalSurveys", surveys.size());
+            final Date now = new Date();
+
+           Predicate<OptOutSurvey> isActive = new Predicate<OptOutSurvey>() {
+               @Override public boolean apply(OptOutSurvey survey) {
+                   if (survey.getStartDate() != null && survey.getStartDate().after(now))
+                       return false;
+                   if (survey.getStopDate() != null && survey.getStopDate().before(now))
+                       return false;
+                   return true;
+               }
+           };
+           Set<OptOutSurvey> activeSurveys = Sets.filter(surveys, isActive);
+           model.addAttribute("activeSurveys", activeSurveys.size());
+
+           Instant lastWeek = Instant.now().minus(Duration.standardDays(7));
+           Instant last30Days = Instant.now().minus(Duration.standardDays(30));
+
+           int resultsInLastWeek = optOutSurveyService.countAllSurveyResultsBetween(lastWeek, null);
+           int resultsInLast30Days = optOutSurveyService.countAllSurveyResultsBetween(last30Days, Instant.now());
+           model.addAttribute("resultsInLastWeek", resultsInLastWeek);
+           model.addAttribute("resultsInLast30Days", resultsInLast30Days);
+        }
+
         return "operator/optout/optOutAdmin.jsp";
     }
 

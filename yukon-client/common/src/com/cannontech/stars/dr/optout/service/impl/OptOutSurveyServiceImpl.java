@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,5 +93,10 @@ public class OptOutSurveyServiceImpl implements OptOutSurveyService {
         }
 
         return retVal;
+    }
+
+    @Override
+    public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end) {
+        return optOutSurveyDao.countAllSurveyResultsBetween(begin, end);
     }
 }

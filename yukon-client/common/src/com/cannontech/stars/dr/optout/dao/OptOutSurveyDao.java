@@ -30,4 +30,6 @@ public interface OptOutSurveyDao {
             boolean includeScheduledSurveys,
             ReadableInstant begin, ReadableInstant end,
             String accountNumber, String serialNumber);
+
+    public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end);
 }

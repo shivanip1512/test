@@ -66,12 +66,6 @@
             <i:inline key=".countOptOuts.byProgramName.instruction.change" />
         </c:set>
 
-        <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_SURVEY_EDIT">
-                <div id="f-page-buttons" class="dn">
-                    <cti:msg2 var="optOutPageName" key="yukon.web.modules.dr.surveyList.pageName"/>
-                    <cti:button icon="icon-link-go" href="/stars/optOutSurvey/list" label="${optOutPageName}"/>
-                </div>
-        </cti:checkRolesAndProperties>
         <div class="column-12-12">
             <div class="column one">
                 <!-- System Information -->
@@ -318,6 +312,44 @@
                 </div>
                 <div class="column two nogutter">
                     <tags:widget bean="operatorAccountSearchWidget"/>
+
+                    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_SURVEY_EDIT">
+                        <tags:boxContainer2 nameKey="optOutSurveys">
+                            <div class="column-12-12 stacked">
+                                <div class="column one">
+                                    <div>
+                                        <span class="name">
+                                            <i:inline key=".totalSurveys"/>
+                                        </span>
+                                        ${totalSurveys}
+                                    </div>
+                                    <div>
+                                        <span class="name">
+                                            <i:inline key=".activeSurveys"/>
+                                        </span>
+                                        ${activeSurveys}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <span class="name">
+                                            <i:inline key=".lastWeek"/>
+                                        </span>
+                                        ${resultsInLastWeek}
+                                    </div>
+                                    <div>
+                                        <span class="name">
+                                            <i:inline key=".last30Days"/>
+                                        </span>
+                                        ${resultsInLast30Days}
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="/stars/optOutSurvey/list">
+                                <i:inline key=".surveysLink"/>
+                            </a>
+                        </tags:boxContainer2>
+                    </cti:checkRolesAndProperties>
                     
                     <cti:checkRolesAndProperties value="ADMIN_VIEW_OPT_OUT_EVENTS">
                     <tags:boxContainer2 nameKey="scheduledEvents" hideEnabled="false">

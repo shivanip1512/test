@@ -38,10 +38,25 @@
             <cti:msg2 var="noStopDate" key=".noStopDate"/>
             <tbody>
             
+            <cti:checkRolesAndProperties value="OPERATOR_SURVEY_EDIT">
+                <c:set var="surveyEditPermission" value="true" />
+            </cti:checkRolesAndProperties>
+
             <c:forEach var="optOutSurvey" items="${optOutSurveys.resultList}">
                 <c:set var="optOutSurveyId" value="${optOutSurvey.optOutSurveyId}"/>
                 <tr>
-                    <td>${fn:escapeXml(optOutSurvey.surveyName)}</td>
+                    <td>
+                        <c:if test="${not empty surveyEditPermission}">
+                            <cti:url var="surveyUrl" value="/stars/survey/edit">
+                                <cti:param name="surveyId" value="${optOutSurvey.surveyId}"/>
+                            </cti:url>
+                            <a href="${surveyUrl}">
+                        </c:if>
+                            ${fn:escapeXml(optOutSurvey.surveyName)}
+                        <c:if test="${not empty surveyEditPermission}">
+                            </a>
+                        </c:if>
+                    </td>
                     <td>
 					    <c:forEach var="programId" items="${optOutSurvey.programIds}" end="2">
                             ${fn:escapeXml(programNamesById[programId])}

@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.optout.service;
 
+import org.joda.time.ReadableInstant;
+
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 import com.google.common.collect.Multimap;
@@ -16,4 +18,6 @@ public interface OptOutSurveyService {
 
     SearchResults<OptOutSurvey> findSurveys(int energyCompanyId, int startIndex,
             int count);
+
+    public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end);
 }

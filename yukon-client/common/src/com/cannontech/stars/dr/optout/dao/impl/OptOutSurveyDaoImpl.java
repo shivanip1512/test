@@ -265,6 +265,24 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
         return retVal;
     }
 
+    public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(1)");;
+        sql.append("FROM SurveyResult r");
+
+        SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
+        if (begin != null) {
+            whereClause.add( new SqlStatementBuilder("r.whenTaken").gte(begin));
+        }
+        if (end != null) {
+            whereClause.add( new SqlStatementBuilder("r.whenTaken").gte(begin));
+        }
+        sql.append("WHERE").append(whereClause);
+
+        int retVal = yukonJdbcTemplate.queryForInt(sql);
+        return retVal;
+    }
+
 
     @PostConstruct
     public void init() {
