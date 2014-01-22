@@ -26,25 +26,28 @@ import com.google.common.collect.Ordering;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class HomeController {
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private PaoAuthorizationService paoAuthorizationService;
-    @Autowired private DemandResponseService demandResponseService;
+    
+    @Autowired private RolePropertyDao rpDao;
+    @Autowired private PaoAuthorizationService paoAuthService;
+    @Autowired private DemandResponseService drService;
     @Autowired private UserPageDao userPageDao;
 
     @RequestMapping("/home")
-    public String home(ModelMap model, YukonUserContext userContext,
-            String favSort, Boolean favDescending, String rvSort,
-            Boolean rvDescending) {
+    public String home(ModelMap model, 
+                    YukonUserContext userContext,
+                    String favSort, 
+                    Boolean favDescending, 
+                    String rvSort,
+                    Boolean rvDescending) {
+        
         LiteYukonUser user = userContext.getYukonUser();
-
         List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
-
-        favorites = paoAuthorizationService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
+        favorites = paoAuthService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
 
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
-            sorter = demandResponseService.getSorter(sortField, userContext);
+            sorter = drService.getSorter(sortField, userContext);
             if (favDescending != null && favDescending && sorter != null) {
                 sorter = Ordering.from(sorter).reverse();
             }
@@ -55,11 +58,11 @@ public class HomeController {
 
         List<DisplayablePao> recentlyViewed = userPageDao.getDrRecentViewed(user);
 
-        recentlyViewed = paoAuthorizationService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
+        recentlyViewed = paoAuthService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
         sorter = null;
         if (rvSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
-            sorter = demandResponseService.getSorter(sortField, userContext);
+            sorter = drService.getSorter(sortField, userContext);
             if (rvDescending != null && rvDescending && sorter != null) {
                 sorter = Ordering.from(sorter).reverse();
             }
@@ -74,13 +77,12 @@ public class HomeController {
     }
 
     @RequestMapping("/details")
-    public String details(ModelMap model, YukonUserContext userContext) {
-        LiteYukonUser user = userContext.getYukonUser();
-
+    public String details(ModelMap model, LiteYukonUser user) {
+        
         boolean showControlAreas = 
-            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
+            rpDao.checkProperty(YukonRoleProperty.SHOW_CONTROL_AREAS, user);
         boolean showScenarios = 
-            rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
+            rpDao.checkProperty(YukonRoleProperty.SHOW_SCENARIOS, user);
 
         // The Details link defaults to control area list, if control areas are hidden,
         // goes to scenarios, if they are hidden goes to programs
@@ -96,4 +98,5 @@ public class HomeController {
 
         return "redirect:" + link;
     }
+
 }
