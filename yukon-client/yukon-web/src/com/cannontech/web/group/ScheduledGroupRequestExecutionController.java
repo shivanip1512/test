@@ -1,4 +1,4 @@
-package com.cannontech.web.common.scheduledGroupRequestExecution;
+package com.cannontech.web.group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionService;
@@ -54,7 +55,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.AttributeSelectorHelperService;
 
 @CheckRoleProperty(YukonRoleProperty.MANAGE_SCHEDULES)
-public class ScheduledGroupRequestExecutionController extends MultiActionController {
+@RequestMapping("/scheduledGroupRequestExecution/*")
+@Controller
+public class ScheduledGroupRequestExecutionController {
 
     @Autowired private CommandDao commandDao;
     @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
@@ -70,7 +73,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	
 	private List<LiteCommand> meterCommands;
 	
-	// HOME
+	@RequestMapping("home")
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/home.jsp");
@@ -196,7 +199,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		return mav;
 	}
 	
-	// SCHEDULE
+	@RequestMapping("schedule")
 	public ModelAndView schedule(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -468,7 +471,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		return mav;
 	}
 	
-	// TOGGLE JOB ENABLED
+	@RequestMapping("toggleJobEnabled")
     public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:home");
@@ -489,7 +492,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         
     }
     
-    // DELETE JOB (not really a hard delete, but set Job.Disabled = 'D' to hide it)
+    /**
+     *  (not really a hard delete, but set Job.Disabled = 'D' to hide it)
+     */
+	@RequestMapping("deleteJob")
     public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
@@ -49,7 +49,8 @@ import com.cannontech.web.util.JsTreeNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class GroupEditorController extends MultiActionController {
+@RequestMapping("/editor/*")
+public class GroupEditorController {
 
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceGroupService deviceGroupService;
@@ -69,6 +70,7 @@ public class GroupEditorController extends MultiActionController {
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
     
+    @RequestMapping("home")
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
@@ -183,6 +185,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
+    @RequestMapping("getDevicesForGroup")
     public ModelAndView getDevicesForGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -211,6 +214,7 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
     }
 
+    @RequestMapping("updateGroupName")
     public ModelAndView updateGroupName(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         
@@ -251,6 +255,7 @@ public class GroupEditorController extends MultiActionController {
 
     }
 
+    @RequestMapping("addChild")
     public ModelAndView addChild(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -329,6 +334,7 @@ public class GroupEditorController extends MultiActionController {
         }
     }
 
+    @RequestMapping("showAddDevicesByCollection")
     public ModelAndView showAddDevicesByCollection(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, JsonProcessingException {
 
@@ -365,6 +371,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
 
+    @RequestMapping("addDevicesByCollection")
     public ModelAndView addDevicesByCollection(HttpServletRequest request,
                                                  HttpServletResponse response) throws ServletException {
         
@@ -386,6 +393,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
 
+    @RequestMapping("removeDevice")
     public ModelAndView removeDevice(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
         
@@ -415,6 +423,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
 
+    @RequestMapping("moveGroup")
     public ModelAndView moveGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -454,6 +463,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
+    @RequestMapping("copyContentsToGroup")
     public ModelAndView copyContentsToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -509,6 +519,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
+    @RequestMapping("removeGroup")
     public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -533,6 +544,7 @@ public class GroupEditorController extends MultiActionController {
         return mav;
     }
     
+    @RequestMapping("removeAllDevicesFromGroup")
     public ModelAndView removeAllDevicesFromGroup(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 

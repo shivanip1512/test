@@ -14,9 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
@@ -46,7 +47,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.AttributeSelectorHelperService;
 import com.google.common.collect.Maps;
 
-public class GroupMeterReadController extends MultiActionController {
+@RequestMapping("/groupMeterRead/*")
+@Controller
+public class GroupMeterReadController {
 
 	@Autowired private AlertService alertService;
 	@Autowired private DeviceGroupService deviceGroupService;
@@ -57,7 +60,7 @@ public class GroupMeterReadController extends MultiActionController {
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     private DeviceCollectionFactory deviceCollectionFactory;
 
-	// HOME (GROUP)
+	@RequestMapping("homeGroup")
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -79,7 +82,7 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
-	// HOME (COLLECTION)
+	@RequestMapping("homeCollection")
 	public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -103,7 +106,7 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
-	// READ GROUP
+	@RequestMapping("readGroup")
 	public ModelAndView readGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String errorPage = "homeGroup";
@@ -122,7 +125,7 @@ public class GroupMeterReadController extends MultiActionController {
 		return read(request, response, deviceCollection, errorPage, groupName);
 	}
 	
-	// READ COLLECTION
+	@RequestMapping("readCollection")
 	public ModelAndView readCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 	    DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -262,7 +265,7 @@ public class GroupMeterReadController extends MultiActionController {
 	}
 	
 	
-	// RESULT DETAIL
+	@RequestMapping("resultDetail")
 	public ModelAndView resultDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResultDetail.jsp");
@@ -281,6 +284,7 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
+	@RequestMapping("errorsList")
     public ModelAndView errorsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
@@ -292,6 +296,7 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
     }
 	
+	@RequestMapping("successList")
 	public ModelAndView successList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");

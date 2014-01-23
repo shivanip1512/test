@@ -1,4 +1,4 @@
-package com.cannontech.web.common.scheduledGroupRequestExecution;
+package com.cannontech.web.group;
 
 import java.beans.PropertyEditor;
 import java.util.Collections;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
@@ -40,6 +39,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.common.scheduledGroupRequestExecution.model.ScheduledJobsFilterBackingBean;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -51,15 +51,15 @@ import com.google.common.collect.Lists;
 
 @CheckRole(YukonRole.SCHEDULER)
 @Controller
-@RequestMapping("/scheduledGroupRequestExecution/results/*")
-public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
+@RequestMapping("/scheduledGroupRequestExecutionResults/*")
+public class ScheduledGroupRequestExecutionResultsController {
 	
-	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
-	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
-	private RolePropertyDao rolePropertyDao;
-	private DatePropertyEditorFactory datePropertyEditorFactory;
-	private JobManager jobManager;
+    @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private JobManager jobManager;
 	private Map<String, Comparator<ScheduledGroupRequestExecutionJobWrapper>> sorters;
 	
     @PostConstruct
@@ -213,37 +213,5 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoPendingFilter.class);
         EnumPropertyEditor.register(binder, ScheduleGroupRequestExecutionDaoOnetimeFilter.class);
         EnumPropertyEditor.register(binder, DeviceRequestType.class);
-    }
-    
-	@Autowired
-	public void setScheduledGroupRequestExecutionDao(
-			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
-		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-	}
-	
-	@Autowired
-	public void setScheduledRepeatingJobDao(
-			ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
-		this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
-		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-	
-	@Autowired
-	public void setJobManager(JobManager jobManager) {
-        this.jobManager = jobManager;
     }
 }
