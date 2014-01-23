@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -25,8 +24,6 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-@Controller
-@RequestMapping("/rfnDeviceMetadataWidget/*")
 public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
