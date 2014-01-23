@@ -399,14 +399,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>editor</servlet-name>
-        <servlet-class>
-            com.cannontech.web.spring.CannonDispatcherServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
         <servlet-name>amr</servlet-name>
         <servlet-class>
             com.cannontech.web.spring.CannonDispatcherServlet
