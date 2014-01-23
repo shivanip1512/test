@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<cti:standardPage module="survey" page="reportConfig">
+<cti:standardPage module="adminSetup" page="survey.reportConfig">
 
 <c:set var="baseKey" value="yukon.web.surveys.${survey.surveyKey}"/>
 <script type="text/javascript">
@@ -195,7 +195,7 @@ function updateFieldsFromBackingBean() {
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".programs">
             <tags:pickerDialog id="programPicker" type="lmProgramPicker"
-                destinationFieldName="programId" extraArgs="${energyCompanyId}"
+                destinationFieldName="programId" extraArgs="${ecId}"
                 endAction="programsChosen" multiSelectMode="true" linkType="selection"
                 allowEmptySelection="true"
                 selectionProperty="paoName" initialIds="${reportConfig.programIds}"/>

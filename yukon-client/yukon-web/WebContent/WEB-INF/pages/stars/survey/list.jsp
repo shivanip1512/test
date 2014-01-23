@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
 
-<cti:standardPage module="survey" page="list">
+<cti:standardPage module="adminSetup" page="survey.list">
     <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
     <cti:includeScript link="/JavaScript/yukon.surveys.list.js"/>
 

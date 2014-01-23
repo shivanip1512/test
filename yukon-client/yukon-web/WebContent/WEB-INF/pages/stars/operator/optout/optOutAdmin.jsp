@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="dr" page="optOutAdmin">
+<cti:standardPage module="operator" page="optOutAdmin">
 
     <cti:checkEnergyCompanyOperator showError="true" >
 
@@ -358,10 +358,10 @@
                                 <table class="compact-results-table">
                                     <thead>
                                     <tr>
-                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.startDateTime" /></th>
-                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.duration" /></th>
-                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.accountNumber" /></th>
-                                        <th><i:inline key="yukon.web.modules.dr.scheduledEvents.serialNumber" /></th>
+                                        <th><i:inline key=".scheduledEvents.startDateTime" /></th>
+                                        <th><i:inline key=".scheduledEvents.duration" /></th>
+                                        <th><i:inline key=".scheduledEvents.accountNumber" /></th>
+                                        <th><i:inline key=".scheduledEvents.serialNumber" /></th>
                                     </tr>
                                     </thead>
                                     <tfoot></tfoot>

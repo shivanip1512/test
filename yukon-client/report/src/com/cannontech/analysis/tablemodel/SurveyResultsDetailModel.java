@@ -39,9 +39,9 @@ public class SurveyResultsDetailModel extends SurveyResultsModelBase<SurveyResul
     @Autowired private InventoryDao inventoryDao;
 
     private final static MessageSourceResolvable noControlDuringOptOut =
-        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.noControlDuringOptOut");
+        new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.survey.report.noControlDuringOptOut");
     private final static MessageSourceResolvable hardwareNotFound =
-        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.hardwareNotFound");
+        new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.survey.report.hardwareNotFound");
 
     public static class ModelRow {
         public String accountNumber;

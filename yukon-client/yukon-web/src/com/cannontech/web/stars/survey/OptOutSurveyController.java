@@ -51,7 +51,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT)
 @RequestMapping("/optOutSurvey/*")
 public class OptOutSurveyController {
-    private final static String baseKey = "yukon.web.modules.dr.survey";
+    private final static String baseKey = "yukon.web.modules.operator.surveyList";
 
     private OptOutSurveyDao optOutSurveyDao;
     private OptOutSurveyService optOutSurveyService;
@@ -72,7 +72,7 @@ public class OptOutSurveyController {
             if (target.getStartDate() == null) {
                 errors.rejectValue("startDate", "yukon.web.error.required");
             } else if (target.getStopDate() != null && !target.getStartDate().before(target.getStopDate())) {
-                errors.rejectValue("stopDate", "yukon.web.modules.dr.surveyEdit.stopDateNotBeforeStart");
+                errors.rejectValue("stopDate", "yukon.web.modules.operator.surveyEdit.stopDateNotBeforeStart");
             }
         }};
 
@@ -139,7 +139,7 @@ public class OptOutSurveyController {
         Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
         MessageSourceResolvable confirmMsg =
             new YukonMessageSourceResolvable(baseKey +
-                                             "List.optOutSurveyDeleted",
+                                             ".optOutSurveyDeleted",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
@@ -197,7 +197,7 @@ public class OptOutSurveyController {
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
         MessageSourceResolvable confirmMsg =
             new YukonMessageSourceResolvable(baseKey +
-                                             "List.optOutSurveySaved",
+                                             ".optOutSurveySaved",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 

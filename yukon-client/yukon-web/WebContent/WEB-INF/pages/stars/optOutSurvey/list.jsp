@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dr" page="surveyList">
+<cti:standardPage module="operator" page="surveyList">
     <dt:pickerIncludes/>
 
     <tags:simpleDialog id="ajaxDialog"/>
@@ -96,7 +96,9 @@
             </tbody>
         </table>
     </c:if>
-    <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${optOutSurveys}" adjustPageCount="true"/>
+    <c:if test="${optOutSurveys.numberOfPages > 1}">
+        <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${optOutSurveys}" adjustPageCount="true"/>
+    </c:if>
 
     <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
     <form id="addForm" action="${addUrl}">

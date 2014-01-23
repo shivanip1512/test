@@ -48,11 +48,11 @@ import com.google.common.collect.Maps;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_SURVEY_EDIT)
 @RequestMapping("/surveyReport/*")
 public class SurveyReportController {
-    private SurveyDao surveyDao;
-    private EnergyCompanyDao energyCompanyDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
-    private SimpleReportService simpleReportService;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
+    @Autowired private SimpleReportService simpleReportService;
 
     public static class JsonSafeQuestion {
         private Question question;
@@ -123,9 +123,7 @@ public class SurveyReportController {
     }
 
     private String config(ModelMap model, Survey survey, YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
-        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
+        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
         List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
         model.addAttribute("questions", questions);
         Map<Integer, Object> questionsById = Maps.newHashMap();
@@ -134,6 +132,9 @@ public class SurveyReportController {
                               new JsonSafeQuestion(question));
         }
         model.addAttribute("questionsById", questionsById);
+        model.addAttribute("ecId", ecId);
+        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+
         return "surveyReport/config.jsp";
     }
 
@@ -175,6 +176,10 @@ public class SurveyReportController {
         List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
         model.addAttribute("data", data);
 
+        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        model.addAttribute("ecId", ecId);
+        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+
         return "surveyReport/report.jsp";
     }
 
@@ -192,7 +197,7 @@ public class SurveyReportController {
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         if (binder.getTarget() != null) {
             MessageCodesResolver msgCodesResolver =
-                new YukonMessageCodeResolver("yukon.web.modules.survey.reportConfig.");
+                new YukonMessageCodeResolver("yukon.web.modules.adminSetup.survey.reportConfig.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 
@@ -202,32 +207,5 @@ public class SurveyReportController {
             datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
         binder.registerCustomEditor(Date.class, "startDate", dayStartDateEditor);
         binder.registerCustomEditor(Date.class, "stopDate", dayEndDateEditor);
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setDatePropertyEditorFactory(
-            DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-
-    @Autowired
-    public void setReportDefinitionFactory(
-            YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
-        this.reportDefinitionFactory = reportDefinitionFactory;
-    }
-
-    @Autowired
-    public void setSimpleReportService(SimpleReportService simpleReportService) {
-        this.simpleReportService = simpleReportService;
     }
 }

@@ -2,172 +2,172 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.web.modules.survey.moduleName">Survey Administration</entry>
+<entry key="yukon.web.modules.adminSetup.survey.moduleName">Survey Administration</entry>
 
 <!-- SURVEY ADMINISTRATION -->
 
 <!-- List Page -->
+<entry key="yukon.web.modules.adminSetup.survey.list.navigationTitle">Surveys</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.pageName">Surveys</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.pageDescription">Surveys</entry>
 
-<entry key="yukon.web.modules.survey.list.pageName">Surveys</entry>
-<entry key="yukon.web.modules.survey.list.pageDescription">Surveys</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.surveys.title">Surveys</entry>
 
-<entry key="yukon.web.modules.survey.list.surveys.title">Surveys</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.noResults">No surveys currently exist.</entry>
 
-<entry key="yukon.web.modules.survey.list.noResults">No surveys currently exist.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.name">Name</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.key">Survey Key</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.actions">Actions</entry>
 
-<entry key="yukon.web.modules.survey.list.name">Name</entry>
-<entry key="yukon.web.modules.survey.list.key">Survey Key</entry>
-<entry key="yukon.web.modules.survey.list.actions">Actions</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.surveySaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.survey.list.surveySaved">Successfully saved {0}.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.delete.hoverText">Delete Survey</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.surveyInUse">{0} cannot be deleted because it is in use.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.surveyDeleted">Successfully deleted {0}.</entry>
 
-<entry key="yukon.web.modules.survey.list.delete.hoverText">Delete Survey</entry>
-<entry key="yukon.web.modules.survey.list.surveyInUse">{0} cannot be deleted because it is in use.</entry>
-<entry key="yukon.web.modules.survey.list.surveyDeleted">Successfully deleted {0}.</entry>
-
-<entry key="yukon.web.modules.survey.list.sampleXml.label">Sample XML</entry>
-<entry key="yukon.web.modules.survey.list.addTitle">Add Survey</entry>
-<entry key="yukon.web.modules.survey.list.details.title">Add Survey</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.sampleXml.label">Sample XML</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.addTitle">Add Survey</entry>
+<entry key="yukon.web.modules.adminSetup.survey.list.details.title">Add Survey</entry>
 
 <!-- Edit Page -->
 
-<entry key="yukon.web.modules.survey.create.pageName">Survey</entry>
-<entry key="yukon.web.modules.survey.create.pageDescription">Create</entry>
-<entry key="yukon.web.modules.survey.edit.pageName">Survey</entry>
-<entry key="yukon.web.modules.survey.edit.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.survey.create.pageName">Survey</entry>
+<entry key="yukon.web.modules.adminSetup.survey.create.pageDescription">Create</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.pageName">Survey</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.pageDescription">{0}</entry>
 
-<entry key="yukon.web.modules.survey.edit.info.title">Info</entry>
-<entry key="yukon.web.modules.survey.edit.actions.title">Actions</entry>
-<entry key="yukon.web.modules.survey.edit.questions.title">Questions</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.info.title">Info</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.actions.title">Actions</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.questions.title">Questions</entry>
 
-<entry key="yukon.web.modules.survey.edit.name">Name</entry>
-<entry key="yukon.web.modules.survey.edit.key">Survey Key</entry>
-<entry key="yukon.web.modules.survey.edit.hasBeenTaken">This survey has been taken and can no longer be changed.</entry>
-<entry key="yukon.web.modules.survey.edit.questionKey">Question Key</entry>
-<entry key="yukon.web.modules.survey.edit.answerRequired">Required</entry>
-<entry key="yukon.web.modules.survey.edit.answerIsRequired">Yes</entry>
-<entry key="yukon.web.modules.survey.edit.answerNotRequired">No</entry>
-<entry key="yukon.web.modules.survey.edit.answerRequiredDescription">This question must be answered.</entry>
-<entry key="yukon.web.modules.survey.edit.questionType">Question Type</entry>
-<entry key="yukon.web.modules.survey.edit.textAnswerAllowed">Text Answer Allowed</entry>
-<entry key="yukon.web.modules.survey.edit.textAnswerAllowedDescription">The user can manually enter an answer.</entry>
-<entry key="yukon.web.modules.survey.edit.actions">Actions</entry>
-<entry key="yukon.web.modules.survey.edit.answers.title">Answers</entry>
-<entry key="yukon.web.modules.survey.edit.answerKey">Key</entry>
-<entry key="yukon.web.modules.survey.edit.addAnswer.hoverText">Add an answer to the question.</entry>
-<entry key="yukon.web.modules.survey.edit.addAnswer.label">Add Answer</entry>
-<entry key="yukon.web.modules.survey.edit.addAnswer.title">Add Answer</entry>
-<entry key="yukon.web.modules.survey.edit.deleteAnswer.hoverText">Delete Answer</entry>
-<entry key="yukon.web.modules.survey.edit.deleteAnswer.title">Delete Answer</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.name">Name</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.key">Survey Key</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.hasBeenTaken">This survey has been taken and can no longer be changed.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.questionKey">Question Key</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerRequired">Required</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerIsRequired">Yes</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerNotRequired">No</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerRequiredDescription">This question must be answered.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.questionType">Question Type</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.textAnswerAllowed">Text Answer Allowed</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.textAnswerAllowedDescription">The user can manually enter an answer.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.actions">Actions</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answers.title">Answers</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerKey">Key</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addAnswer.hoverText">Add an answer to the question.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addAnswer.label">Add Answer</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addAnswer.title">Add Answer</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.deleteAnswer.hoverText">Delete Answer</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.deleteAnswer.title">Delete Answer</entry>
 
-<entry key="yukon.web.modules.survey.edit.edit.hoverText">Edit detailed information for this survey.</entry>
-<entry key="yukon.web.modules.survey.edit.edit.label">Edit Detail Information</entry>
-<entry key="yukon.web.modules.survey.edit.edit.title">Survey Details</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.edit.hoverText">Edit detailed information for this survey.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.edit.label">Edit Detail Information</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.edit.title">Survey Details</entry>
 
-<entry key="yukon.web.modules.survey.edit.addQuestion.hoverText">Add a question to the survey.</entry>
-<entry key="yukon.web.modules.survey.edit.addQuestion.label">Add Question</entry>
-<entry key="yukon.web.modules.survey.edit.addQuestion.title">Add Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addQuestion.hoverText">Add a question to the survey.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addQuestion.label">Add Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.addQuestion.title">Add Question</entry>
 
-<entry key="yukon.web.modules.survey.edit.sampleXml.hoverText">View sample XML for internationalizing the survey.</entry>
-<entry key="yukon.web.modules.survey.edit.sampleXml.label">Sample XML</entry>
-<entry key="yukon.web.modules.survey.edit.sampleXml.title">Sample XML</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.sampleXml.hoverText">View sample XML for internationalizing the survey.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.sampleXml.label">Sample XML</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.sampleXml.title">Sample XML</entry>
 
-<entry key="yukon.web.modules.survey.edit.report.hoverText">Generate a report.</entry>
-<entry key="yukon.web.modules.survey.edit.report.label">Report</entry>
-<entry key="yukon.web.modules.survey.edit.report.title">Report</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.report.hoverText">Generate a report.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.report.label">Report</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.report.title">Report</entry>
 
-<entry key="yukon.web.modules.survey.edit.noQuestions">This survey does not have any questions yet.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.noQuestions">This survey does not have any questions yet.</entry>
 
-<entry key="yukon.web.modules.survey.edit.editQuestion.hoverText">Edit question.</entry>
-<entry key="yukon.web.modules.survey.edit.editQuestion.title">Edit Survey Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.editQuestion.hoverText">Edit question.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.editQuestion.title">Edit Survey Question</entry>
 
-<entry key="yukon.web.modules.survey.edit.surveyQuestionSaved">Successfully saved {0}.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.surveyQuestionSaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.survey.edit.deleteQuestion.hoverText">Delete Question</entry>
-<entry key="yukon.web.modules.survey.edit.deleteQuestion.title">Delete Question</entry>
-<entry key="yukon.web.modules.survey.edit.confirmDeleteQuestion">Are you sure you want to delete {0}.</entry>
-<entry key="yukon.web.modules.survey.edit.surveyQuestionDeleted">Successfully deleted {0}.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.deleteQuestion.hoverText">Delete Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.deleteQuestion.title">Delete Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.confirmDeleteQuestion">Are you sure you want to delete {0}.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.surveyQuestionDeleted">Successfully deleted {0}.</entry>
 
-<entry key="yukon.web.modules.survey.edit.ok">OK</entry>
-<entry key="yukon.web.modules.survey.edit.cancel">Cancel</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.ok">OK</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.cancel">Cancel</entry>
 
 <!-- Validation -->
-<entry key="yukon.web.modules.survey.edit.invalidChars">Only letters, numbers and the underscore character are allowed.</entry>
-<entry key="yukon.web.modules.survey.edit.valueRequired">Cannot be empty.</entry>
-<entry key="yukon.web.modules.survey.edit.duplicate">Already in use.</entry>
-<entry key="yukon.web.modules.survey.edit.answerValueRequired">No answer key can be empty.</entry>
-<entry key="yukon.web.modules.survey.edit.answerTooLarge">Answer keys can be no more than 64 characters.</entry>
-<entry key="yukon.web.modules.survey.edit.answerHasInvalidChars">Only letters, numbers and the underscore character are allowed in answer keys.</entry>
-<entry key="yukon.web.modules.survey.edit.answerReserved">The words "other" and "pleaseChoose" are reserved for specific purpose and cannot be used for answer keys.</entry>
-<entry key="yukon.web.modules.survey.edit.answerKeysNotUnique">Answer keys must all be unique.</entry>
-<entry key="yukon.web.modules.survey.edit.notEnoughAnswers">At least two answers are required for drop down questions.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.invalidChars">Only letters, numbers and the underscore character are allowed.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.valueRequired">Cannot be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.duplicate">Already in use.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerValueRequired">No answer key can be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerTooLarge">Answer keys can be no more than 64 characters.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerHasInvalidChars">Only letters, numbers and the underscore character are allowed in answer keys.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerReserved">The words "other" and "pleaseChoose" are reserved for specific purpose and cannot be used for answer keys.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.answerKeysNotUnique">Answer keys must all be unique.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.edit.notEnoughAnswers">At least two answers are required for drop down questions.</entry>
 
 <!-- QuestionType displayable enum -->
 
-<entry key="yukon.web.modules.survey.questionType.DROP_DOWN">Drop Down</entry>
-<entry key="yukon.web.modules.survey.questionType.TEXT">Text</entry>
+<entry key="yukon.web.modules.adminSetup.survey.questionType.DROP_DOWN">Drop Down</entry>
+<entry key="yukon.web.modules.adminSetup.survey.questionType.TEXT">Text</entry>
 
 
 <!-- Survey Reporting -->
-<entry key="yukon.web.modules.survey.reportConfig.pageName">Report Configuration</entry>
-<entry key="yukon.web.modules.survey.reportConfig.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.pageName">Report Configuration</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.pageDescription">{0}</entry>
 
-<entry key="yukon.web.modules.survey.reportConfig.reportType">Report Type</entry>
-<entry key="yukon.web.modules.survey.reportConfig.summary">Summary</entry>
-<entry key="yukon.web.modules.survey.reportConfig.detail">Detail</entry>
-<entry key="yukon.web.modules.survey.reportConfig.startDate">Start Date</entry>
-<entry key="yukon.web.modules.survey.reportConfig.endDate">End Date</entry>
-<entry key="yukon.web.modules.survey.reportConfig.question">Question</entry>
-<entry key="yukon.web.modules.survey.reportConfig.answers">Answers</entry>
-<entry key="yukon.web.modules.survey.reportConfig.selectAll">Select All</entry>
-<entry key="yukon.web.modules.survey.reportConfig.includeOtherAnswers">Include Other Answers</entry>
-<entry key="yukon.web.modules.survey.reportConfig.includeUnanswered">Include Unanswered</entry>
-<entry key="yukon.web.modules.survey.reportConfig.programs">Programs</entry>
-<entry key="yukon.web.modules.survey.reportConfig.choosePrograms">Choose</entry>
-<entry key="yukon.web.modules.survey.reportConfig.noProgramsSelected">No programs have been selected.  No filtering will be done based on program.</entry>
-<entry key="yukon.web.modules.survey.reportConfig.accountNumber">Account Number</entry>
-<entry key="yukon.web.modules.survey.reportConfig.deviceSerialNumber">Device Serial Number</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.reportType">Report Type</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.summary">Summary</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.detail">Detail</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.startDate">Start Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.endDate">End Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.question">Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.answers">Answers</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.selectAll">Select All</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.includeOtherAnswers">Include Other Answers</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.includeUnanswered">Include Unanswered</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.programs">Programs</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.choosePrograms">Choose</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.noProgramsSelected">No programs have been selected.  No filtering will be done based on program.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.accountNumber">Account Number</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.deviceSerialNumber">Device Serial Number</entry>
 
-<entry key="yukon.web.modules.survey.reportConfig.showReport">Show Report</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.showReport">Show Report</entry>
 
-<entry key="yukon.web.modules.survey.reportConfig.atLeasteOneAnswerRequired">At least one answer is required.</entry>
-<entry key="yukon.web.modules.survey.reportConfig.startTimeNotBeforeStopTime">Start time must be before end time.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.atLeasteOneAnswerRequired">At least one answer is required.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.reportConfig.startTimeNotBeforeStopTime">Start time must be before end time.</entry>
 
-<entry key="yukon.web.modules.survey.report.pageName">Report</entry>
-<entry key="yukon.web.modules.survey.report.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.survey.report.configureReport.label">Reconfigure Report</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.pageName">Report</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.configureReport.label">Reconfigure Report</entry>
 
-<entry key="yukon.web.modules.survey.report.question">Question</entry>
-<entry key="yukon.web.modules.survey.report.startDate">Start Date</entry>
-<entry key="yukon.web.modules.survey.report.noStartDate">None</entry>
-<entry key="yukon.web.modules.survey.report.endDate">End Date</entry>
-<entry key="yukon.web.modules.survey.report.noEndDate">None</entry>
-<entry key="yukon.web.modules.survey.report.unanswered">Unanswered</entry>
-<entry key="yukon.web.modules.survey.report.noControlDuringOptOut">No Control</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.question">Question</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.startDate">Start Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.noStartDate">None</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.endDate">End Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.noEndDate">None</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.unanswered">Unanswered</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.noControlDuringOptOut">No Control</entry>
 <!-- This key is used in place of the serial number when a piece of hardware cannot be found
      (probably because it was deleted). -->
-<entry key="yukon.web.modules.survey.report.hardwareNotFound">N/A</entry>
-<entry key="yukon.web.modules.survey.report.export">Export:</entry>
-<entry key="yukon.web.modules.survey.report.csvReport.hoverText">Generate CSV report.</entry>
-<entry key="yukon.web.modules.survey.report.csvReport.label">CSV</entry>
-<entry key="yukon.web.modules.survey.report.pdfReport.hoverText">Generate PDF report.</entry>
-<entry key="yukon.web.modules.survey.report.pdfReport.label">PDF</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.hardwareNotFound">N/A</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.export">Export:</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.csvReport.hoverText">Generate CSV report.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.csvReport.label">CSV</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.pdfReport.hoverText">Generate PDF report.</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.pdfReport.label">PDF</entry>
 
 <!-- COLUMN HEADERS -->
 <!-- Survey Results Summary Report -->
-<entry key="yukon.web.modules.survey.report.controlBegin">Control Begin</entry>
-<entry key="yukon.web.modules.survey.report.controlEnd">Control End</entry>
-<entry key="yukon.web.modules.survey.report.reason">Reason</entry>
-<entry key="yukon.web.modules.survey.report.numDevicesOverridden"># Devices Overridden</entry>
-<entry key="yukon.web.modules.survey.report.loadProgram">Load Program</entry>
-<entry key="yukon.web.modules.survey.report.gear">Gear</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.controlBegin">Control Begin</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.controlEnd">Control End</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.reason">Reason</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.numDevicesOverridden"># Devices Overridden</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.loadProgram">Load Program</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.gear">Gear</entry>
 <!-- Survey Results Detail Report -->
-<entry key="yukon.web.modules.survey.report.accountNum">Account #</entry>
-<entry key="yukon.web.modules.survey.report.serialNum">Serial #</entry>
-<entry key="yukon.web.modules.survey.report.altTrackingNum">Alt. Tracking #</entry>
-<entry key="yukon.web.modules.survey.report.scheduledDate">Scheduled Date</entry>
-<entry key="yukon.web.modules.survey.report.startDate">Start Date</entry>
-<entry key="yukon.web.modules.survey.report.endDate">End Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.accountNum">Account #</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.serialNum">Serial #</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.altTrackingNum">Alt. Tracking #</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.scheduledDate">Scheduled Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.startDate">Start Date</entry>
+<entry key="yukon.web.modules.adminSetup.survey.report.endDate">End Date</entry>
 
 <!-- OPT OUT SURVEY ADMINISTRATION -->
 
@@ -175,47 +175,47 @@
 
 <!-- Opt Out Survey List Page -->
 
-<entry key="yukon.web.modules.dr.surveyList.pageName">Opt Out Surveys</entry>
-<entry key="yukon.web.modules.dr.surveyList.pageDescription">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.operator.surveyList.pageName">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.operator.surveyList.pageDescription">Opt Out Surveys</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.optOutSurveys">Opt Out Surveys</entry>
+<entry key="yukon.web.modules.operator.surveyList.optOutSurveys">Opt Out Surveys</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.noResults">No opt out surveys currently exist.</entry>
+<entry key="yukon.web.modules.operator.surveyList.noResults">No opt out surveys currently exist.</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.surveyName">Name</entry>
-<entry key="yukon.web.modules.dr.surveyList.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.surveyList.programs.title">Programs</entry>
-<entry key="yukon.web.modules.dr.surveyList.morePrograms">more</entry>
-<entry key="yukon.web.modules.dr.surveyList.programListTitle">Opt Out Survey Programs</entry>
-<entry key="yukon.web.modules.dr.surveyList.startDate">Start</entry>
-<entry key="yukon.web.modules.dr.surveyList.stopDate">End</entry>
-<entry key="yukon.web.modules.dr.surveyList.noStopDate">Open Ended</entry>
-<entry key="yukon.web.modules.dr.surveyList.actions">Actions</entry>
+<entry key="yukon.web.modules.operator.surveyList.surveyName">Name</entry>
+<entry key="yukon.web.modules.operator.surveyList.programs">Programs</entry>
+<entry key="yukon.web.modules.operator.surveyList.programs.title">Programs</entry>
+<entry key="yukon.web.modules.operator.surveyList.morePrograms">more</entry>
+<entry key="yukon.web.modules.operator.surveyList.programListTitle">Opt Out Survey Programs</entry>
+<entry key="yukon.web.modules.operator.surveyList.startDate">Start</entry>
+<entry key="yukon.web.modules.operator.surveyList.stopDate">End</entry>
+<entry key="yukon.web.modules.operator.surveyList.noStopDate">Open Ended</entry>
+<entry key="yukon.web.modules.operator.surveyList.actions">Actions</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.virtualProgramName">Virtual Program {0}</entry>
-<entry key="yukon.web.modules.dr.surveyList.programName">Name</entry>
+<entry key="yukon.web.modules.operator.surveyList.virtualProgramName">Virtual Program {0}</entry>
+<entry key="yukon.web.modules.operator.surveyList.programName">Name</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.addSurveyTitle">Add Opt Out Survey</entry>
-<entry key="yukon.web.modules.dr.surveyList.edit.hoverText">Edit Opt Out Survey.</entry>
-<entry key="yukon.web.modules.dr.surveyList.edit.title">Edit Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.addSurveyTitle">Add Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.edit.hoverText">Edit Opt Out Survey.</entry>
+<entry key="yukon.web.modules.operator.surveyList.edit.title">Edit Opt Out Survey</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.optOutSurveySaved">Successfully saved {0}.</entry>
+<entry key="yukon.web.modules.operator.surveyList.optOutSurveySaved">Successfully saved {0}.</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.delete.hoverText">Delete Opt Out Survey</entry>
-<entry key="yukon.web.modules.dr.surveyList.delete.title">Delete Opt Out Survey</entry>
-<entry key="yukon.web.modules.dr.surveyList.confirmDelete">Are you sure you want to delete {0}.</entry>
-<entry key="yukon.web.modules.dr.surveyList.optOutSurveyDeleted">Successfully deleted {0}.</entry>
+<entry key="yukon.web.modules.operator.surveyList.delete.hoverText">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.delete.title">Delete Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.confirmDelete">Are you sure you want to delete {0}.</entry>
+<entry key="yukon.web.modules.operator.surveyList.optOutSurveyDeleted">Successfully deleted {0}.</entry>
 
-<entry key="yukon.web.modules.dr.surveyList.add">Add</entry>
-<entry key="yukon.web.modules.dr.surveyList.addTitle">Add Opt Out Survey</entry>
-<entry key="yukon.web.modules.dr.surveyList.addDialogTitle">Add Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.add">Add</entry>
+<entry key="yukon.web.modules.operator.surveyList.addTitle">Add Opt Out Survey</entry>
+<entry key="yukon.web.modules.operator.surveyList.addDialogTitle">Add Opt Out Survey</entry>
 
-<entry key="yukon.web.modules.dr.surveyEdit.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.ellipsis">…</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.survey">Survey</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.startDate">Start</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.stopDate">End</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.specifyStopDate">Specify an end date</entry>
-<entry key="yukon.web.modules.dr.surveyEdit.stopDateNotBeforeStart">End date must be after start date.</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.programs">Programs</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.ellipsis">…</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.survey">Survey</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.startDate">Start</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.stopDate">End</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.specifyStopDate">Specify an end date</entry>
+<entry key="yukon.web.modules.operator.surveyEdit.stopDateNotBeforeStart">End date must be after start date.</entry>
 
 </properties>

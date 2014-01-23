@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="modules.survey.list">
+<cti:msgScope paths="modules.adminSetup.survey.list">
 <c:if test="${surveys.hitCount == 0}">
     <span class="empty-list"><i:inline key=".noResults"/></span>
 </c:if>

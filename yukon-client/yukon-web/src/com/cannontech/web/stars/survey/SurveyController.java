@@ -53,7 +53,7 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_SURVEY_EDIT)
 @RequestMapping("/survey/*")
 public class SurveyController {
-    private final static String baseKey = "yukon.web.modules.survey.";
+    private final static String baseKey = "yukon.web.modules.adminSetup.survey.";
     private final static Pattern validKeyPattern = Pattern.compile("^\\w*$");
     private final static Function<Answer, String> answerKeyTransformer =
         new Function<Answer, String>() {
@@ -63,9 +63,9 @@ public class SurveyController {
             }
         };
 
-    private SurveyDao surveyDao;
-    private SurveyService surveyService;
-    private EnergyCompanyDao energyCompanyDao;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private SurveyService surveyService;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
 
     private Validator detailsValidator = new SimpleValidator<Survey>(Survey.class) {
         @Override
@@ -136,15 +136,18 @@ public class SurveyController {
 
     @RequestMapping("list")
     public String list(ModelMap model,
-            @ModelAttribute("backingBean") ListBackingBean backingBean,
+            @ModelAttribute("backingBean") ListBackingBean backingBean, Integer ecId,
             YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        if (ecId == null) {
+            ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        }
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
+            surveyService.findSurveys(ecId,
                                  backingBean.getStartIndex(),
                                  backingBean.getItemsPerPage());
         model.addAttribute("surveys", surveys);
+        model.addAttribute("ecId", ecId);
+        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
 
         return "survey/list.jsp";
     }
@@ -251,7 +254,11 @@ public class SurveyController {
         
         List<MessageSourceResolvable> messages = surveyService.getKeyErrorsForQuestions(surveyId, userContext);
         flashScope.setMessage(messages, FlashScopeMessageType.WARNING);
-        
+
+        int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
+        model.addAttribute("ecId", ecId);
+        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+
         return "survey/edit.jsp";
     }
 
@@ -445,20 +452,5 @@ public class SurveyController {
         Survey survey = surveyDao.getSurveyById(surveyId);
         verifyEditable(survey, userContext);
         return survey;
-    }
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setSurveyService(SurveyService surveyService) {
-        this.surveyService = surveyService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
 }

@@ -54,7 +54,7 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
     protected List<T> data = Lists.newArrayList();
 
     private final static MessageSourceResolvable unansweredReason =
-        new YukonMessageSourceResolvable("yukon.web.modules.survey.report.unanswered");
+        new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.survey.report.unanswered");
 
     protected Set<Integer> getAuthorizedPrograms() {
         Iterable<PaoIdentifier> paos;
@@ -81,20 +81,20 @@ public abstract class SurveyResultsModelBase<T> extends BareDatedReportModelBase
 
         String startDate = null;
         if (getStartDate() == null) { 
-            startDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noStartDate");
+            startDate = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.survey.report.noStartDate");
         } else {
             startDate = dateFormattingService.format(getStartDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
         }
 
         String stopDate = null;
         if (getStopDate() == null) { 
-            stopDate = messageSourceAccessor.getMessage("yukon.web.modules.survey.report.noEndDate");
+            stopDate = messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.survey.report.noEndDate");
         } else {
             stopDate = dateFormattingService.format(getStopDate(), DateFormattingService.DateFormatEnum.BOTH, userContext);
         }
 
-        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.startDate"), startDate);
-        info.put(messageSourceAccessor.getMessage("yukon.web.modules.survey.report.endDate"), stopDate);
+        info.put(messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.survey.report.startDate"), startDate);
+        info.put(messageSourceAccessor.getMessage("yukon.web.modules.adminSetup.survey.report.endDate"), stopDate);
 
         return info;
     }

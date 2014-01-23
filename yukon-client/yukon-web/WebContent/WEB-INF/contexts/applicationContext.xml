@@ -1479,8 +1479,7 @@
     <bean id="optOutMenuOption" class="com.cannontech.web.menu.option.producer.OptOutMenuOptionProducer">
         <property name="optOutStatusService" ref="optOutStatusService" />
     </bean>
-    <bean id="drOptOutMenuOption" class="com.cannontech.web.menu.option.producer.DemandResponseOptOutMenuOptionProducer"/>
-    
+
     <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"><qualifier value="filter"/></bean>
     
     

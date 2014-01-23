@@ -13,7 +13,7 @@
     <c:set var="okAction" value="yukonDialogSubmit"/>
 </cti:displayForPageEditModes>
 
-<d:ajaxPage nameKey="editQuestion" module="survey" page="edit" okEvent="${okAction}">
+<d:ajaxPage nameKey="editQuestion" module="adminSetup" page="survey.edit" okEvent="${okAction}">
 
 <script type="text/javascript">
     jQuery(function() {

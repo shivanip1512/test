@@ -2,7 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="modules.dr.surveyList">
+<cti:msgScope paths="modules.operator.surveyList">
 
 <h4 class="dialogQuestion stacked">
     <cti:msg2 key=".confirmDelete" arguments="${optOutSurvey.surveyName}"/>

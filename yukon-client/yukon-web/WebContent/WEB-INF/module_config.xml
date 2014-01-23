@@ -494,45 +494,6 @@
           <page name="searchResults" type="BASIC" hideSearch="true">
             <link>/dr/search</link>
           </page>
-          <page name="optOutAdmin" type="BASIC">
-            <link>/stars/operator/optOut/admin</link>
-          </page>
-          <page name="optOutScheduledEvents" type="BASIC">
-            <link>/stars/operator/optOut/admin/viewScheduled</link>
-          </page>
-          <page name="surveyList" type="BASIC">
-            <link>/stars/optOutSurvey/list</link>
-          </page>
-        </pages>
-      </page>
-    </pages>
-  </module>
-
-  <module name="survey">
-    <skin name="STANDARD"/>
-    <pages>
-      <page name="list" type="BASIC">
-        <link>/stars/survey/list</link>
-        <pages>
-          <page name="add" type="BASIC">
-            <link>/stars/survey/create</link>
-          </page>
-          <page name="edit" type="DETAIL">
-            <link>/stars/survey/edit?surveyId=${survey.surveyId}</link>
-            <labelArgument>${survey.surveyName}</labelArgument>
-            <pages>
-              <page name="reportConfig" type="DETAIL_CHILD">
-                <link>/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
-                <labelArgument>${survey.surveyName}</labelArgument>
-                <pages>
-                  <page name="report" type="DETAIL_CHILD">
-                    <link>/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
-                    <labelArgument>${survey.surveyName}</labelArgument>
-                  </page>
-                </pages>
-              </page>
-            </pages>
-          </page>
         </pages>
       </page>
     </pages>
@@ -1005,6 +966,27 @@
                                     </page>
                                 </pages>
                             </page>
+                            <page name="survey.list" type="BASIC" contributeToMenu="true">
+                                <link>/stars/survey/list?ecId=${ecId}</link>
+                                <pages>
+                                    <page name="survey.edit" type="DETAIL">
+                                        <link>/stars/survey/edit?surveyId=${survey.surveyId}</link>
+                                        <labelArgument>${survey.surveyName}</labelArgument>
+                                        <pages>
+                                            <page name="survey.reportConfig" type="DETAIL_CHILD">
+                                                <link>/stars/surveyReport/config?surveyId=${survey.surveyId}</link>
+                                                <labelArgument>${survey.surveyName}</labelArgument>
+                                                <pages>
+                                                    <page name="survey.report" type="DETAIL_CHILD">
+                                                        <link>/stars/surveyReport/report?surveyId=${survey.surveyId}</link>
+                                                        <labelArgument>${survey.surveyName}</labelArgument>
+                                                    </page>
+                                                </pages>
+                                            </page>
+                                        </pages>
+                                    </page>
+                                </pages>
+                            </page>
                         </pages>
                     </page>
                 </pages>
@@ -1303,6 +1285,14 @@
                     </page>
                     <page name="deviceReconfigStatus" type="DETAIL_CHILD">
                         <labelArgument>${taskName}</labelArgument>
+                    </page>
+                    <page name="optOutAdmin" type="BASIC">
+                        <link>/stars/operator/optOut/admin</link>
+                        <pages>
+                            <page name="surveyList" type="BASIC">
+                                <link>/stars/optOutSurvey/list</link>
+                            </page>
+                        </pages>
                     </page>
                 </pages>
             </page>

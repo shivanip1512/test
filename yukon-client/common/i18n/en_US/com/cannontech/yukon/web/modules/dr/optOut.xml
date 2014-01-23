@@ -7,59 +7,59 @@
     <entry key="yukon.web.modules.dr.optOut.operationsHome">Operations Home</entry>
     <entry key="yukon.web.modules.dr.optOut.search">Search for existing customer:</entry>
     
-    <entry key="yukon.web.modules.dr.optOutAdmin.systemInfo.title">System Information: Opt Out</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.totalAccounts">Total Consumer Accounts</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.todaysOptOuts">Today's Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.futureOptOuts">Future Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.alternateEnrollments">Devices in Alternate Enrollment</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.systemInfo.title">System Information: Opt Out</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.totalAccounts">Total Consumer Accounts</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.todaysOptOuts">Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.futureOptOuts">Future Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.alternateEnrollments">Devices in Alternate Enrollment</entry>
 
-    <entry key="yukon.web.modules.dr.optOutAdmin.title">Opt Out Admin</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.title">Opt Out Admin</entry>
     
-    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.ENABLED">Enabled</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.DISABLED_WITH_COMM">Opt Outs Disabled, Communications Enabled</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.optOutEnabledEnum.DISABLED_WITHOUT_COMM">Opt Outs Disabled, Communications Disabled</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.optOutEnabledEnum.ENABLED">Enabled</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.optOutEnabledEnum.DISABLED_WITH_COMM">Opt Outs Disabled, Communications Enabled</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.optOutEnabledEnum.DISABLED_WITHOUT_COMM">Opt Outs Disabled, Communications Disabled</entry>
     
     
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.title">Disable Consumer Opt Out Ability for Today</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.label">Note</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.note.text">All program Opt Outs will be enabled/disabled unless a specific program is selected.</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms">Current Consumer Ability to Opt Out and Send Other Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.programName">Program Name</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.enabled">Consumer's Ability to Opt Out and Send Other Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.label">Prohibit Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.hoverText">Prohibits Opt Outs but Allows Other Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.label">Allow Opt Outs &amp; Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.hoverText">Allow both Opt Outs and Other Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.label">Prohibit Opt Outs &amp; Communications</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.hoverText">Prohibits both Opt Outs and Other Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.title">Disable Consumer Opt Out Ability for Today</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.note.label">Note</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.note.text">All program Opt Outs will be enabled/disabled unless a specific program is selected.</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms">Current Consumer Ability to Opt Out and Send Other Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.programName">Program Name</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.header.enabled">Consumer's Ability to Opt Out and Send Other Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.label">Prohibit Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsButton.hoverText">Prohibits Opt Outs but Allows Other Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.label">Allow Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.enableOptOutsButton.hoverText">Allow both Opt Outs and Other Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.label">Prohibit Opt Outs &amp; Communications</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.disableOptOuts.currentDisabledPrograms.disableOptOutsAndCommsButton.hoverText">Prohibits both Opt Outs and Other Communications</entry>
 
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.title">Cancel Current Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.label">Note:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.note.text">All program Opt Outs will be canceled unless a specific program is selected.</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelAllOptOutsButton.label">Reactivate Opted Out Devices</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="error">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.byProgramName.instruction.label">Optional:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.cancelOptOuts.byProgramName.instruction.text">Only Cancel Opt Outs For A Single Program</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.title">Cancel Current Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.note.label">Note:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.note.text">All program Opt Outs will be canceled unless a specific program is selected.</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.cancelAllOptOutsButton.label">Reactivate Opted Out Devices</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="error">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.byProgramName.instruction.label">Optional:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.cancelOptOuts.byProgramName.instruction.text">Only Cancel Opt Outs For A Single Program</entry>
 
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.title">Count Today Against Opt Out Limits</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.note.label">Note:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.note.text">All program limits will be changed unless a specific program is selected.</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.currentLimits">Current Limits</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.currentLimits.header.programName">Program Name</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.currentLimits.header.counts">Counts Against Today's Opt Out Limits</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.countOptOutsButton">Count Today's Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.dontCountOptOutsButton">Don't Count Today's Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.label">Optional:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction">Only {0} For A Single Program</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramNames.instruction">Only {0} For Selected Programs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.show">Show</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.countOptOuts.byProgramName.instruction.change">Change</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.optOutSurveys.title">Opt Out Surveys</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.totalSurveys">Opt Out Surveys:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.activeSurveys">Active Surveys:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.lastWeek">Taken in last week:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.last30Days">Taken in last 30 days:</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.surveysLink">Opt Out Surveys</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.title">Count Today Against Opt Out Limits</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.note.label">Note:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.note.text">All program limits will be changed unless a specific program is selected.</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.currentLimits">Current Limits</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.currentLimits.header.programName">Program Name</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.currentLimits.header.counts">Counts Against Today's Opt Out Limits</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.countOptOutsButton">Count Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.dontCountOptOutsButton">Don't Count Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.byProgramName.label">Optional:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.byProgramName.instruction">Only {0} For A Single Program</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.byProgramNames.instruction">Only {0} For Selected Programs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.byProgramName.instruction.show">Show</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.countOptOuts.byProgramName.instruction.change">Change</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.optOutSurveys.title">Opt Out Surveys</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.totalSurveys">Opt Out Surveys:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.activeSurveys">Active Surveys:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.lastWeek">Taken in last week:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.last30Days">Taken in last 30 days:</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.surveysLink">Opt Out Surveys</entry>
     
 	<entry key="yukon.web.modules.dr.chooseProgram">Choose Program</entry>
     
@@ -85,8 +85,8 @@
     <entry key="yukon.web.modules.dr.optOut.optOutCountsEnum.COUNT">Count</entry>
     <entry key="yukon.web.modules.dr.optOut.optOutCountsEnum.DONT_COUNT">Don't Count</entry>
     
-    <entry key="yukon.web.modules.dr.optOutAdmin.allPrograms">All Programs</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.otherPrograms">Other Programs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.allPrograms">All Programs</entry>
+    <entry key="yukon.web.modules.operator.optOutAdmin.otherPrograms">Other Programs</entry>
     
     <!-- Operator OptOut.jsp -->
     <entry key="yukon.dr.operator.optout.header">Opt Out</entry>
@@ -169,14 +169,14 @@
     <entry key="yukon.dr.operator.optoutError.ok">Ok</entry>
 
     <!--  scheduledEvents.jsp -->
-    <entry key="yukon.web.modules.dr.scheduledEvents.title">Scheduled Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.breadcrumb">Scheduled Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.operationsHome">Operations Home</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.startDateTime">Start date</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.duration">Duration</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.accountNumber">Account Number</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.dr.scheduledEvents.noScheduledEvents">There are currently no scheduled Opt Outs.</entry>
+    <entry key="yukon.web.modules.operator.scheduledEvents.title">Scheduled Opt Outs</entry>
+<!--     <entry key="yukon.web.modules.dr.scheduledEvents.breadcrumb">Scheduled Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.scheduledEvents.operationsHome">Operations Home</entry> -->
+    <entry key="yukon.web.modules.operator.scheduledEvents.startDateTime">Start date</entry>
+    <entry key="yukon.web.modules.operator.scheduledEvents.duration">Duration</entry>
+    <entry key="yukon.web.modules.operator.scheduledEvents.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.operator.scheduledEvents.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.scheduledEvents.noScheduledEvents">There are currently no scheduled Opt Outs.</entry>
     
 
 </properties>

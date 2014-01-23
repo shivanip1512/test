@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:standardPage module="survey" page="report">
+<cti:standardPage module="adminSetup" page="survey.report">
 
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".startDate">

@@ -165,12 +165,6 @@
         </permissions>
         <link>/operator/WorkOrder/WorkOrder.jsp</link>
       </option>
-      <option name="surveys">
-        <permissions>
-          <roleProperty name="OPERATOR_SURVEY_EDIT" />
-        </permissions>
-        <link>/stars/survey/list</link>
-      </option>
       <option name="import" section="true">
         <permissions>
           <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />

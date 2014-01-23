@@ -9,7 +9,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 
-<cti:msgScope paths="modules.dr.surveyEdit">
+<cti:msgScope paths="modules.operator.surveyEdit">
 
 <script type="text/javascript">
 specifyStopDateChecked = function () {

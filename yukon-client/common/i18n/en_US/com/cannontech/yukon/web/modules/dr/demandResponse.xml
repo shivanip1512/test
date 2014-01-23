@@ -75,10 +75,10 @@
 <entry key="yukon.web.modules.dr.searchResults.pageName">Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
 <!-- opt out -->
-<entry key="yukon.web.modules.dr.optOutAdmin.pageName">Opt Out Status</entry>
-<entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>    
-<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
-<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
+<entry key="yukon.web.modules.operator.optOutAdmin.pageName">Opt Out Status</entry>
+<entry key="yukon.web.modules.operator.optOutAdmin.pageDescription">Opt Out Status</entry>    
+<entry key="yukon.web.modules.operator.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
+<entry key="yukon.web.modules.operator.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
 
 <!--  Control Area Field Values -->
 <entry key="yukon.web.modules.dr.controlArea.value.STATE.ACTIVE">Active</entry>

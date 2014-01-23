@@ -13,7 +13,7 @@ public enum QuestionType implements DisplayableEnum {
     TEXT;
 
     private final static String keyPrefix =
-        "yukon.web.modules.survey.questionType.";
+        "yukon.web.modules.adminSetup.survey.questionType.";
 
     @Override
     public String getFormatKey() {

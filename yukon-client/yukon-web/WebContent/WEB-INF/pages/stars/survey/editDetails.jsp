@@ -8,7 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<dialog:ajaxPage nameKey="details" module="survey" page="list" okEvent="yukonDialogSubmit">
+<dialog:ajaxPage nameKey="details" module="adminSetup" page="survey.list" okEvent="yukonDialogSubmit">
 
 <cti:url var="submitUrl" value="saveDetails"/>
 <form:form id="inputForm" commandName="survey" action="${submitUrl}">

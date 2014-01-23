@@ -8,7 +8,7 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 
-<cti:msgScope paths="modules.dr.surveyList">
+<cti:msgScope paths="modules.operator.surveyList">
 
     <tags:nameValueContainer2 tableClass="stacked">
         <tags:nameValue2 nameKey=".surveyName">

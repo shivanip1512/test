@@ -14,7 +14,6 @@ public enum SiteModule implements DatabaseRepresentationSource {
     AMI("amr", SiteMapCategory.AMI),
     DR("dr", SiteMapCategory.DR),
     CAPCONTROL("capcontrol", SiteMapCategory.VV),
-    SURVEY("survey", SiteMapCategory.ASSETS),
     OPERATOR("operator", SiteMapCategory.ASSETS),
     TOOLS("tools", SiteMapCategory.TOOLS),
     ADMIN("adminSetup", SiteMapCategory.ADMIN),
