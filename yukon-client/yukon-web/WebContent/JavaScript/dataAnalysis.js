@@ -7,19 +7,16 @@ Yukon.namespace('Yukon.DataAnalysis');
 Yukon.DataAnalysis = (function() {
     var dataAnalysisModule = {
         changeStatus : function (msg) {
-            var data = jQuery.parseJSON(msg.value);
-            var status = data.status.trim();
-            
-            //find row to change
-            var row = jQuery('[data-analysis=' + data.analysisId + ']');
+            var data = jQuery.parseJSON(msg.value),
+                status = data.status.trim(),
+                row = jQuery('[data-analysis=' + data.analysisId + ']'),
+                viewButton = row.find('.f-results-button'),
+                statusDiv = row.find('.f-analysis-status');
             
             if (row.data('status') === status) {
                 //do nothing, status is unchanged
                 return;
             }
-            
-            var viewButton = row.find('.f-results-button'),
-            statusDiv = row.find('.f-analysis-status');
             
             if (status === 'COMPLETE' || status === 'INTERRUPTED') {
                 //set status string
