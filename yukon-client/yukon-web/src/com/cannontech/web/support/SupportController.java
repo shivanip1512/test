@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,8 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -62,6 +61,7 @@ import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.cannontech.web.support.logging.LogExplorerController;
 import com.cannontech.web.support.logging.LogExplorerController.LogFile;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -155,7 +155,7 @@ public class SupportController {
     /**
      * Adds names of manuals found in Yukon/Manuals to the model
      */
-    private void setUpManuals(ModelMap model){
+    private void setUpManuals(ModelMap model) {
         File folder = new File(manualsFolderName);
         List<String> fileNames = new ArrayList<>();
         if(folder.listFiles() != null){
@@ -169,24 +169,22 @@ public class SupportController {
         model.addAttribute("manuals", fileNames);
     }
 
-    private String supportBundle(ModelMap model, SupportBundle bundle, YukonUserContext context){
+    private String supportBundle(ModelMap model, SupportBundle bundle, YukonUserContext context) {
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
         setUpManuals(model);
         
-        List<JSONObject> previousBundles = Lists.newArrayList();
+        List<String> previousBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
-            previousBundles.add(simpleJsonForBundle(f));
+            previousBundles.add(f.getName());
         }
         model.addAttribute("supportBundle", bundle);
-        model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values() );
+        model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", bundleService.isInProgress());
         return "support.jsp";
     }
-
-
 
     private Validator detailsValidator = new SimpleValidator<SupportBundle>(SupportBundle.class) {
             @Override
@@ -248,11 +246,11 @@ public class SupportController {
     }
 
     @RequestMapping(value="bundleInProgress")
-    public @ResponseBody JSONObject bundleInProgress() {
-        JSONObject json = new JSONObject();
+    public @ResponseBody Map<String, Object> bundleInProgress() {
+        Map<String, Object> json = new HashMap<>();
         boolean inProgress = supportBundleService.isInProgress();
         json.put("inProgress", inProgress);
-        if(! inProgress){
+        if (!inProgress) {
             json.put("fileName", supportBundleService.getMostRecentBundle().getName());
         }
         return json;
@@ -269,28 +267,23 @@ public class SupportController {
     }
 
     @RequestMapping(value="infoOnBundle")
-    public @ResponseBody JSONObject infoOnBundle(String fileName, YukonUserContext context) {
+    public @ResponseBody Map<String, String> infoOnBundle(String fileName, YukonUserContext context) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        Map<String, String> json = Maps.newHashMapWithExpectedSize(3);
+
         File bundle = getBundleFileForFileName(fileName);
-        if(bundle == null){
-            JSONObject json = new JSONObject();
+        if (bundle == null){
             json.put("fileName", accessor.getMessage(baseKey + ".ftpUpload.failed.NO_FILE", ""));
             json.put("fileSize", "");
             json.put("fileDate", "");
             return json;
         }
 
-        JSONObject json = simpleJsonForBundle( bundle );
+        String fileSize = accessor.getMessage(BinaryPrefix.getCompactRepresentation(bundle.length()));
 
-        MessageSourceResolvable fileSize = BinaryPrefix.getCompactRepresentation(bundle.length());
-        json.put("fileSize", accessor.getMessage(fileSize.getCodes()[0], fileSize.getArguments()[0]));
-        json.put("fileDate", dateFormattingService.format(bundle.lastModified(), DateFormatEnum.DATE, context));
-        return json;
-    }
-
-    private JSONObject simpleJsonForBundle(File bundle) {
-        JSONObject json = new JSONObject();
         json.put("fileName", bundle.getName());
+        json.put("fileSize", fileSize);
+        json.put("fileDate", dateFormattingService.format(bundle.lastModified(), DateFormatEnum.DATE, context));
         return json;
     }
 
@@ -335,8 +328,8 @@ public class SupportController {
     }
 
     private File getBundleFileForFileName(String fileName){
-        for( File f : supportBundleService.getBundles()) {
-            if( fileName.equals(f.getName())) {
+        for(File f : supportBundleService.getBundles()) {
+            if(fileName.equals(f.getName())) {
                 return f;
             }
         }

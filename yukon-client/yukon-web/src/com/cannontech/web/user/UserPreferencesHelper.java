@@ -4,14 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
@@ -64,32 +60,4 @@ public class UserPreferencesHelper {
         map.put(UserPreferenceName.GRAPH_DISPLAY_VISUAL_TYPE.toString(), option1Args);
         model.addAttribute("userPreferencesNameToDisplayOptions", map);
     }
-
-    /**
-     * Returned object is an array of JSONObjects with:
-     *          "name" String
-     *          "prefType" String ["EnumType"|"StringType"|etc.]
-     *          "defaultVal" String, derived from the enum possibly with message key interpreted (if not EnumType)
-     */
-    public JSONArray setupPreferenceDefaults(MessageSourceAccessor accessor) {
-        JSONArray prefList = new JSONArray();
-        for (UserPreferenceName pref : UserPreferenceName.values() ) {
-            JSONObject jsonPref = new JSONObject();
-            jsonPref.put("name", pref.toString());
-            boolean isEnum = pref.getValueType().toString().startsWith("EnumType");
-            if (isEnum) {
-                jsonPref.put("prefType", "EnumType");
-                jsonPref.put("defaultVal", pref.getDefaultValue());
-            } else {
-                String value = pref.getDefaultValue();
-                // REQUIRED or JSON crashes with: JSONException: There is a cycle in the hierarchy!
-                String valueType = pref.getValueType().toString();
-                jsonPref.put("prefType", valueType);
-                jsonPref.put("defaultVal", value);
-            }
-            prefList.add(jsonPref);
-        }
-        return prefList;
-    }
-
 }

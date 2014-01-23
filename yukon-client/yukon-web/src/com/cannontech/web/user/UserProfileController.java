@@ -1,13 +1,14 @@
 package com.cannontech.web.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +24,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.events.loggers.AccountEventLogService;
-import com.cannontech.common.events.loggers.SystemEventLogService;
-import com.cannontech.common.events.service.EventLogService;
-import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -45,66 +39,42 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.dr.general.service.ContactNotificationService;
-import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.PasswordResetController;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
-import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
-import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.user.validator.ChangePasswordValidatorFactory;
 import com.cannontech.web.user.validator.ChangePasswordValidatorFactory.ChangePasswordValidator;
 import com.cannontech.web.user.validator.UserProfileValidator;
-import com.cannontech.web.util.JsonHelper;
+import com.cannontech.web.util.JsonUtils;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/*")
 public class UserProfileController {
-
-    private static final boolean ENABLE_CHANGE_USERNAME = false;
-    private static final int PAGE_EVENT_ROW_COUNT = 10;
-    /* package */ static final int PASSWORD_EXPIRE_DAYS_TO_WARN = 30; // Also used by the Helper in the same package
-    private static final int DEFAULT_RETRY_PASSWORD_IN_SECONDS = 10;
-    private static final String MSGKEY_BASE_PROFILE = "yukon.web.modules.user.profile.";
-    private static final String MSGKEY_PASSWORD_CHANGE_SUCCESS = MSGKEY_BASE_PROFILE +"changePassword.success";
-    private static final String MSGKEY_NOT_ALLOWED = MSGKEY_BASE_PROFILE +"changePassword.error.user.notAllowed";
-    private static final String MSGKEY_MISMATCHED_USERS = MSGKEY_BASE_PROFILE +"changePassword.error.user.mismatch";
-    private static final String MSGKEY_CHANGE_PASSWORD_SYSTEMERR = MSGKEY_BASE_PROFILE +"changePassword.error.system_save";
-    private static final String MSGKEY_PREF_BAD_URL = "yukon.web.modules.user.preferences.url.bad_format";
-
-
     private static final Logger log = YukonLogManager.getLogger(UserProfileController.class);
 
-    @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired AuthenticationService authenticationService;
+    @Autowired private AuthenticationService authenticationService;
     @Autowired private ContactDao contactDao;
-    @Autowired private ContactService contactService;
-    @Autowired private ContactNotificationService contactNotificationService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private EventLogService eventLogService;
-    @Autowired private EventLogUIService eventLogUIService;
-    @Autowired private JsonHelper jsonHelper;
-    @Autowired private LoginValidatorFactory loginValidatorFactory;
     @Autowired private OperatorAccountService operatorAccountService;
-    @Autowired private PaoPermissionService paoPermissionService;
-    @Autowired private PasswordPolicyService passwordPolicyService;
-    @Autowired private PasswordResetService passwordResetService;
-    @Autowired private RoleDao roleDao;
-    @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private UserPreferencesHelper prefHelper;
     @Autowired private UserProfileHelper profileHelper;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private UserPreferenceService prefService;
-
     @Autowired private UserProfileValidator userValidator;
     @Autowired private ChangePasswordValidatorFactory passwordValidatorFactory;
+
+    private static final boolean ENABLE_CHANGE_USERNAME = false;
+    private static final int PAGE_EVENT_ROW_COUNT = 10;
+    /* package */ static final int PASSWORD_EXPIRE_DAYS_TO_WARN = 30; // Also used by the Helper in the same package
+    private static final String baseKey = "yukon.web.modules.user.profile.";
 
     /**
      * Existing change password functionality requires: "k", "userGroupName", and more {@link PasswordResetController}
@@ -123,16 +93,13 @@ public class UserProfileController {
         prefHelper.setupUserPreferences(model, user);
         prefHelper.buildPreferenceOptions(model);
         profileHelper.setupRoleGroups(model, user.getUserGroupId());
-//        profileHelper.setupActivityStream(model, user, 0, PAGE_EVENT_ROW_COUNT);
         profileHelper.setupPasswordData(model, user);
 
         return "profile.jsp";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/activityStream/{startIndex}.html")
-    public String loadActivityStream(@PathVariable Integer startIndex,
-                                                   ModelMap model,
-                                                   LiteYukonUser user) {
+    public String loadActivityStream(@PathVariable Integer startIndex, ModelMap model, LiteYukonUser user) {
 
         startIndex = startIndex < 0 ? 0 : startIndex;
         profileHelper.setupActivityStream(model, user, startIndex, PAGE_EVENT_ROW_COUNT);
@@ -156,7 +123,7 @@ public class UserProfileController {
 
         // validate user permissions: so far, just verify that the current user is editing themself.
         if (user.getUserID() != profile.getUserId()) {
-            flash.setConfirm(new YukonMessageSourceResolvable(MSGKEY_BASE_PROFILE +"EDIT.FAIL.cannotEditOtherUser"));
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey +"EDIT.FAIL.cannotEditOtherUser"));
             return "redirect:/user/profile";
         }
         profile.setUsername(user.getUsername());
@@ -178,7 +145,7 @@ public class UserProfileController {
                 }
             } catch (IllegalArgumentException iae) {
                 // TODO FIXME REVISE catch block to something meaningful...
-                result.reject(MSGKEY_BASE_PROFILE +"EDIT.FAIL.databaseProblem");
+                result.reject(baseKey +"EDIT.FAIL.databaseProblem");
                 log.error("Problem while saving updates from user", iae);
             }
         }
@@ -197,44 +164,32 @@ public class UserProfileController {
     }
 
     /**
-     * Returns an empty {@link JSONObject} on success.
-     * Failure may throw exception or return an empty {@link JSONObject}.
+     * Failure may throw exception or return success:true json
      */
     @RequestMapping(value="/updatePreference.json")
-    public @ResponseBody JSONObject updatePreference(Integer userId,
-                                                     String prefName,
-                                                     String prefValue,
-                                                     LiteYukonUser user) {
-
+    @ResponseBody
+    public Map<String, Boolean> updatePreference(Integer userId, UserPreferenceName prefName,
+                                                 String prefValue, LiteYukonUser user) {
         profileHelper.isUserAuthorized(user, userId);
-        UserPreferenceName preference = UserPreferenceName.valueOf(prefName);
-        prefService.savePreference(user, preference, prefValue);
-
-        return jsonHelper.succeed();
+        prefService.savePreference(user, prefName, prefValue);
+        return Collections.singletonMap("success", true);
     }
 
-    /**
-     * 
-     * @param userId
-     * @param context
-     * @return              JSONObject [
-     *                              'preferences' : [
-     *                                      'name' : String,
-     *                                      'prefType' : 'EnumType' or YUPN,
-     *                                      'defaultVal' : String ] ]
-     */
     @RequestMapping(method = RequestMethod.POST, value="/updatePreferences/all/default.json")
-    public @ResponseBody JSONObject resetAllPreferences(Integer userId, LiteYukonUser user, YukonUserContext context) {
+    public @ResponseBody Map<String, ?> resetAllPreferences(Integer userId, LiteYukonUser user) {
 
         profileHelper.isUserAuthorized(user, userId);
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-
         prefService.deleteAllSavedPreferencesForUser(user);
 
-        JSONObject data = new JSONObject();
-        JSONArray prefList = prefHelper.setupPreferenceDefaults(accessor);
-        data.put("preferences", prefList);
-        return data;
+        List<Object> prefList = new ArrayList<>();
+        for (UserPreferenceName pref : UserPreferenceName.values() ) {
+            Map<String, Object> jsonPref = Maps.newHashMapWithExpectedSize(2);
+            jsonPref.put("name", pref);
+            jsonPref.put("defaultVal", pref.getDefaultValue());
+            prefList.add(jsonPref);
+        }
+
+        return Collections.singletonMap("preferences", prefList);
     }
 
     /**
@@ -256,7 +211,7 @@ public class UserProfileController {
      * @see inspiration: {@link ChangeLoginController.updatePassword()}
      */
     @RequestMapping(value = "/updatePassword.json", method = RequestMethod.POST)
-    public @ResponseBody JSONObject updatePassword(@ModelAttribute(value="changePassword") ChangePassword changePassword,
+    public @ResponseBody Map<String, Object> updatePassword(@ModelAttribute ChangePassword changePassword,
                                                    BindingResult bindingResult,
                                                    LiteYukonUser user,
                                                    YukonUserContext context,
@@ -265,41 +220,43 @@ public class UserProfileController {
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
 
-        JSONObject result = new JSONObject();
-        if (user.getUserID() != changePassword.getUserId().intValue()) {
-            bindingResult.reject(MSGKEY_MISMATCHED_USERS);
+        Map<String, Object> result = new HashMap<>();
+        if (user.getUserID() != changePassword.getUserId()) {
+            bindingResult.reject(baseKey +"changePassword.error.user.mismatch");
         } else {
             UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
             AuthenticationCategory authCat = userAuthenticationInfo.getAuthenticationCategory();
             if (!authenticationService.supportsPasswordSet(authCat)) {
-                bindingResult.reject(MSGKEY_NOT_ALLOWED);
+                bindingResult.reject(baseKey +"changePassword.error.user.notAllowed");
             }
         }
         if (bindingResult.hasErrors()) {
-            result.put("secondsToWait", DEFAULT_RETRY_PASSWORD_IN_SECONDS); // Not currently using this value...
-            return jsonHelper.failToJSON(result, bindingResult, accessor);
+            result.putAll(JsonUtils.getErrorJson(bindingResult, accessor));
+            return result;
         }
 
         // Validate: skip the no-match message since that's already done within the UI.
         ChangePasswordValidator validator = passwordValidatorFactory.getValidator();
         validator.setAddMessageConfirmPasswordDoesntMatch(false);
         validator.validate(changePassword, bindingResult);
-        result.put("secondsToWait", changePassword.getRetrySeconds() == null
-                ? DEFAULT_RETRY_PASSWORD_IN_SECONDS : changePassword.getRetrySeconds());
+        result.put("secondsToWait", changePassword.getRetrySeconds());
 
         if (!bindingResult.hasErrors()) {
             try {
                 authenticationService.setPassword(user, changePassword.getNewPassword()); // This cannot fail?
-                JSONObject json = jsonHelper.succeed(MSGKEY_PASSWORD_CHANGE_SUCCESS, accessor);
+                Map<String, Object> json = new HashMap<>();
+                json.put("success", true);
+                json.put("message", accessor.getMessage(new YukonMessageSourceResolvable(baseKey +"changePassword.success")));
                 json.put("new_date", dateFormattingService.format(new Date(), DateFormatEnum.DATE, context));
                 return json;
             } catch (NoSuchMessageException|UnsupportedOperationException e) {
                 log.info("Failed saving new password", e);
-                bindingResult.reject(MSGKEY_CHANGE_PASSWORD_SYSTEMERR, new Object[]{e}, e.toString());
+                bindingResult.reject(baseKey +"changePassword.error.system_save", new Object[]{e}, e.toString());
             }
         }
 
-        return jsonHelper.failToJSON(result, bindingResult, accessor);
+        result.putAll(JsonUtils.getErrorJson(bindingResult, accessor));
+        return result;
     }
 
 }

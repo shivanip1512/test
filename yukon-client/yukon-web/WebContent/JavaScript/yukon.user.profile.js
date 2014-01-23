@@ -238,20 +238,13 @@ Yukon.UserPreferences = (function () {
                 type: "POST",
                 url: _url_change_all_preferences,
                 data: {'userId': userId}
-            }).done(function(data) {
-                // Go through the data and turn on enums and set input[type='text']'s
-                for (var ii=0; ii < data.preferences.length; ii++) {
-                    var map = data.preferences[ii];
-                    var val = map.defaultVal;
-                    var name = map.name;
-                    var row = table.find('tr[data-type='+ name +']');
-                    if ('EnumType' === map.prefType) {
-                        row.find("button").removeClass("on");
-                        row.find('button[data-value='+ val +']:not(.f-pref-default)').addClass("on");
-                    } else {
-                        row.find('input[type="text"]').attr('value', val).attr('title', val).attr('prev-value', val);
-                    }
-                }
+            }).done(function(json) {
+                // Go through the data and turn on enums
+                json.preferences.forEach(function(preference, index, fullarray) {
+                    var row = table.find('tr[data-type='+ preference.name +']');
+                    row.find("button").removeClass("on");
+                    row.find('button[data-value='+ preference.defaultVal +']:not(.f-pref-default)').addClass("on");
+                });
             });
         },
 

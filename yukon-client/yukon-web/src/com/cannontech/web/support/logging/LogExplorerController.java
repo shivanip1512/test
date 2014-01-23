@@ -4,19 +4,18 @@ import java.beans.PropertyEditor;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -195,36 +194,33 @@ public class LogExplorerController {
 
     @RequestMapping(value = "/logging/view/update", method = RequestMethod.POST)
     @ResponseBody
-    public JSON tailUpdate(HttpServletRequest request,
-                             HttpServletResponse response, 
-                             @RequestBody JSONObject json,
-                             ModelMap map,
-                             YukonUserContext userContext) throws IOException {
+    public Map<String, Object> tailUpdate(@RequestBody LogUpdateRequest logupdateRequest, YukonUserContext userContext)
+            throws IOException {
 
-        long oldFileLength = json.getLong("fileLength");
-        int linesPerUpdate = json.getInt("numLines");
-        String fileName = json.getString("file");
+        long oldFileLength = logupdateRequest.getFileLength();
+        int linesPerUpdate = logupdateRequest.getNumLines();
+        String fileName = logupdateRequest.getFile();
 
-        // takes the data and checks to see if the log file has changed        
-        JSONObject jsonReturn = new JSONObject();
-        JSONArray jsonLogLines = new JSONArray();
-        jsonReturn.put("numLines", linesPerUpdate);
+        // takes the data and checks to see if the log file has changed
+        Map<String, Object> jsonResponse = new HashMap<>();
+        List<String> jsonLogLines = new ArrayList<>();
+        jsonResponse.put("numLines", linesPerUpdate);
 
         File logFile = sanitizeAndVerify(new File(localDir, fileName));
         Validate.isTrue(logFile.isFile());
 
-        if (logFile!= null && logFile.canRead()) {
+        if (logFile.canRead()) {
             // Setting up the last modified variable for the JSON
             String lastModStr = dateFormattingService.format(new Instant(logFile.lastModified()),
             						DateFormattingService.DateFormatEnum.LONG_DATE_TIME, userContext);
-        	jsonReturn.put("lastModified", lastModStr);
+            jsonResponse.put("lastModified", lastModStr);
 
         	String readableFileSize = messageSourceResolver
         			.getMessageSourceAccessor(userContext)
         			.getMessage(BinaryPrefix.getCompactRepresentation(logFile.length()));
         	
-            jsonReturn.put("readableFileSize", readableFileSize);
-            jsonReturn.put("fileSize", logFile.length());
+        	jsonResponse.put("readableFileSize", readableFileSize);
+        	jsonResponse.put("fileSize", logFile.length());
 
         	List<String> logLines = FileUtil.readLines(logFile, linesPerUpdate, oldFileLength);
         	if (logLines != null && logFile.length() != oldFileLength) {
@@ -238,9 +234,9 @@ public class LogExplorerController {
         	log.warn("Could not read log file: " + logFile);
         }
 
-        jsonReturn.put("logLines", jsonLogLines);
+        jsonResponse.put("logLines", jsonLogLines);
 
-        return jsonReturn;
+        return jsonResponse;
     }
 
     /**

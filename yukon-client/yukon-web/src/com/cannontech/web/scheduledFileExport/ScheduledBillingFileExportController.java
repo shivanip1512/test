@@ -3,11 +3,10 @@ package com.cannontech.web.scheduledFileExport;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -45,7 +44,7 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTa
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.util.JsonHelper;
+import com.cannontech.web.util.JsonUtils;
 
 @Controller
 @RequestMapping("/*")
@@ -55,7 +54,6 @@ public class ScheduledBillingFileExportController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private JobManager jobManager;
-    @Autowired private JsonHelper jsonHelper;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private GlobalSettingDao globalSettingDao;
@@ -119,14 +117,16 @@ public class ScheduledBillingFileExportController {
     }
 
     @RequestMapping(value="scheduleExport.json")
-    public @ResponseBody JSONObject scheduleExport(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
-                                 @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult,
-                                 String[] deviceGroups, int fileFormat, int demandDays, int energyDays, boolean removeMultiplier, Integer jobId)
-                                 throws ParseException, ServletRequestBindingException {
+    public @ResponseBody Map<String, Object> scheduleExport(ModelMap model, YukonUserContext userContext,
+            HttpServletRequest request, @ModelAttribute("exportData") ScheduledFileExportData exportData,
+            BindingResult bindingResult, String[] deviceGroups, int fileFormat, int demandDays, int energyDays,
+            boolean removeMultiplier, Integer jobId) {
 
         Set<? extends DeviceGroup> fullDeviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(deviceGroups));
 
-        BillingFileExportGenerationParameters billingParameters = new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups, demandDays, energyDays, removeMultiplier);
+        BillingFileExportGenerationParameters billingParameters = 
+                new BillingFileExportGenerationParameters(fileFormat, fullDeviceGroups,
+                                                          demandDays, energyDays, removeMultiplier);
         exportData.setParameters(billingParameters);
 
         scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
@@ -141,7 +141,7 @@ public class ScheduledBillingFileExportController {
         }
         
         if (bindingResult.hasErrors()) {
-            return jsonHelper.failToJSON(bindingResult, accessor);
+            return JsonUtils.getErrorJson(bindingResult, accessor);
         }
 
         MessageSourceResolvable msgObj = null;
@@ -156,7 +156,7 @@ public class ScheduledBillingFileExportController {
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
         }
 
-        return jsonHelper.succeed(msgObj, accessor);
+        return JsonUtils.getSuccessJson(msgObj, accessor);
     }
     
     @RequestMapping("jobs")
@@ -168,7 +168,7 @@ public class ScheduledBillingFileExportController {
     }
 
     @RequestMapping(value = "delete.json")
-    public @ResponseBody JSONObject delete(ModelMap model, int jobId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> delete(ModelMap model, int jobId, YukonUserContext userContext) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
@@ -176,11 +176,10 @@ public class ScheduledBillingFileExportController {
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
-        return jsonHelper.succeed(msgObj, accessor);
+        return JsonUtils.getSuccessJson(msgObj, accessor);
     }
 
     public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
-//    private String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
         String groupNames = "";
         int maxDisplayedGroupNames = deviceGroups.size() > MAX_GROUPS_DISPLAYED ? MAX_GROUPS_DISPLAYED : deviceGroups.size();
         Iterator<? extends DeviceGroup> iterator = deviceGroups.iterator();

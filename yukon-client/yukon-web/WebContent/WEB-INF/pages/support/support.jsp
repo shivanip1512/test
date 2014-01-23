@@ -155,11 +155,11 @@ jQuery(function() {
                         </c:if>
                         <c:if test="${not empty bundleList}">
                             <ul class="simple-list">
-                                <c:forEach var="bundle" varStatus="status" items="${bundleList}">
+                                <c:forEach var="bundleName" varStatus="status" items="${bundleList}">
                                     <li>
                                         <c:if test="${status.first}"><c:set var="checked">checked="checked"</c:set></c:if>
                                         <c:if test="${!status.first}"><c:set var="checked"></c:set></c:if>
-                                        <label><input type="radio" name="fileName"value="${bundle.fileName}" ${checked}>${fn:escapeXml(bundle.fileName)}</label>
+                                        <label><input type="radio" name="fileName" value="${bundleName}" ${checked}>${fn:escapeXml(bundleName)}</label>
                                     </li>
                                 </c:forEach>
                             </ul>

@@ -1,27 +1,20 @@
 package com.cannontech.web.user.model;
 
-
 /**
- * Four fields of actual user inputs.
- * RetrySeconds may or may not be set by validator.
+ * Default retry password seconds = 10
  */
 public class ChangePassword {
 
-    Integer userId;
-    String oldPassword;
-    String newPassword;
-    String confirmPassword;
+    private int userId;
+    private String oldPassword;
+    private String newPassword;
+    private String confirmPassword;
+    private long retrySeconds = 10;
 
-    /**
-     * This field may be set by the validator
-     */
-    Long retrySeconds;
-
-
-    public Integer getUserId() {
+    public int getUserId() {
         return userId;
     }
-    public void setUserId(Integer userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
     public String getOldPassword() {
@@ -54,11 +47,10 @@ public class ChangePassword {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
-
-    public Long getRetrySeconds() {
+    public long getRetrySeconds() {
         return retrySeconds;
     }
-    public void setRetrySeconds(Long retrySeconds) {
+    public void setRetrySeconds(long retrySeconds) {
         this.retrySeconds = retrySeconds;
     }
 }

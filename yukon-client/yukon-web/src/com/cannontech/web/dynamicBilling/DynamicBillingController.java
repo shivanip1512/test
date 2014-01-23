@@ -12,8 +12,6 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,7 +42,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonHelper;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +54,6 @@ public class DynamicBillingController {
     @Autowired private DynamicBillingFormatter dynamicFormatter;
     @Autowired private DynamicBillingFileDao dynamicBillingFileDao;
 	@Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private JsonHelper jsonHelper;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
     private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
@@ -92,7 +88,7 @@ public class DynamicBillingController {
     }
 
     @RequestMapping(value = "delete.json")
-    public @ResponseBody JSONObject delete(int availableFormat, ModelMap model) {
+    public @ResponseBody Map<String, ?> delete(int availableFormat, ModelMap model) {
         // delete the selected format
         dynamicBillingFileDao.delete(availableFormat);
         //delete jobs using this format
@@ -102,7 +98,7 @@ public class DynamicBillingController {
         List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
         model.addAttribute("allRows", allRows);
 
-        return jsonHelper.succeed(); // "redirect:overview.jsp";
+        return Collections.singletonMap("success", true);
     }
 
     @RequestMapping(value = "_edit.html")
@@ -205,7 +201,7 @@ public class DynamicBillingController {
     }
 
     @RequestMapping(value = "save.json")
-    public @ResponseBody JSONObject save(int formatId, String formatName, String footer,
+    public @ResponseBody Map<String, ?> save(int formatId, String formatName, String footer,
                                          String header, String delimiter, String fieldArray, ModelMap model)
             throws JsonParseException, JsonMappingException, IOException {
         // retrieve all information from the page and save it to db
@@ -217,7 +213,7 @@ public class DynamicBillingController {
 
         model.addAttribute("allRows", allRows);
 
-        return jsonHelper.succeed(); // "redirect:overview.jsp";
+        return Collections.singletonMap("success", true);
     }
 
     /**

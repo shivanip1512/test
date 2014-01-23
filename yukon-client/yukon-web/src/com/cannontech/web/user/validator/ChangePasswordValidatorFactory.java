@@ -74,7 +74,7 @@ public class ChangePasswordValidatorFactory {
     
         public void validate(ChangePassword input, Errors errors) {
     
-            final LiteYukonUser user = yukonUserDao.getLiteYukonUser(input.getUserId().intValue());
+            final LiteYukonUser user = yukonUserDao.getLiteYukonUser(input.getUserId());
     
             UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
             AuthenticationCategory authenticationCategory = userAuthenticationInfo.getAuthenticationCategory();

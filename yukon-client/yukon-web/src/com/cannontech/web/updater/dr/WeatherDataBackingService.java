@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -22,17 +20,22 @@ import com.cannontech.loadcontrol.weather.WeatherLocation;
 import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WeatherDataBackingService implements UpdateBackingService {
     private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
     private String baseKey = "yukon.web.modules.adminSetup.config.weather.weatherInput.";
 
-    // data should be less than 1 hour old, this gives us some wiggle room
-    private Duration weatherDataValidDuration = Duration.standardMinutes(90);
     @Autowired private WeatherDataService weatherDataService;
     @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private DateFormattingService dateFormattingService;
+
+    // data should be less than 1 hour old, this gives us some wiggle room
+    private Duration weatherDataValidDuration = Duration.standardMinutes(90);
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+
 
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
@@ -43,7 +46,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
 
         if (weatherLocation == null) {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
-                return JSONObject.fromObject(Collections.singletonMap("invalidPaoError", "true")).toString();
+                return getJson(Collections.singletonMap("invalidPaoError", "true"));
             }
             return messageAccessor.getMessage("yukon.web.defaults.na");
         }
@@ -53,7 +56,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
             weatherObs = weatherDataService.getCurrentWeatherObservation(weatherLocation);
         } catch(DynamicDataAccessException e) {
             if (Field.getFrom(identifier) == Field.JSON_META_DATA) {
-                return JSONObject.fromObject(Collections.singletonMap("dispatchError", "true")).toString();
+                return getJson(Collections.singletonMap("dispatchError", "true"));
             }
             return messageAccessor.getMessage("yukon.web.defaults.na");
         }
@@ -105,7 +108,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
                 metaData.put("timestamp", "valid");
             }
 
-            value = JSONObject.fromObject(metaData).toString();
+            value = getJson(metaData);
             break;
         default:
         case UNKNOWN_FIELD:
@@ -123,6 +126,15 @@ public class WeatherDataBackingService implements UpdateBackingService {
         return true;
     }
 
+    private String getJson(Map<String, String> map) {
+        try {
+            return jsonObjectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            log.error("jsonObjectMapper is unable to write json string from map", e);
+            throw new RuntimeException(e);
+        }
+    }
+    
     private int getPaoId(String identifier) {
         return Integer.valueOf(identifier.split("\\/")[0]);
     }
