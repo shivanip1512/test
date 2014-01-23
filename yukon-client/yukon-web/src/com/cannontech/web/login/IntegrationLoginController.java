@@ -31,6 +31,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
+import com.google.common.collect.ImmutableMap;
 
 @Controller
 public class IntegrationLoginController {
@@ -38,6 +39,7 @@ public class IntegrationLoginController {
 
     private final static String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
     private final static String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
+    private final static Map<String, String> successfulConnectionResults = ImmutableMap.of("result", "success");
 
     @Autowired private SimpleMessageDigestHasher simpleHasher;
     @Autowired private LoginService loginService;
@@ -105,9 +107,7 @@ public class IntegrationLoginController {
 
     @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
     public @ResponseBody Map<String, String> checkConnection(HttpServletRequest request) {
-        Map<String, String> result = new HashMap<>();
-        result.put("result", "success");
-        return result;
+        return successfulConnectionResults;
     }
 
     private LiteYukonUser validateLogin(HttpServletRequest request, HttpServletResponse response) throws IOException,
