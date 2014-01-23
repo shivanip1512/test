@@ -25,115 +25,115 @@ import com.cannontech.web.taglib.YukonTagSupport;
  * @author m_peterson
  *
  */
-public class CrumbLinkTag extends YukonTagSupport implements ParamParent
-{
-	private String url = null;
-	private String title = null;
-	private Map<String, String> encodedParameters = new HashMap<String, String>();
-	private Writer bodyContentWriter;
-	
-	public void doTag() throws JspException, IOException
-	{
-		// access to page writer and request
-		JspWriter out = getJspContext().getOut();
-		PageContext context = (PageContext)getJspContext();
-	    HttpServletRequest httpRequest = (HttpServletRequest)context.getRequest();
-		
-		// the containing BreadCrumbsTag
-		BreadCrumbsTag bc = (BreadCrumbsTag)
-			findAncestorWithClass( this, BreadCrumbsTag.class );
-		
-		JspFragment tagBody = getJspBody();
+public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
+    
+    private String url = null;
+    private String title = null;
+    private Map<String, String> encodedParameters = new HashMap<String, String>();
+    private Writer bodyContentWriter;
+    
+    public void doTag() throws JspException, IOException
+    {
+        // access to page writer and request
+        JspWriter out = getJspContext().getOut();
+        PageContext context = (PageContext)getJspContext();
+        HttpServletRequest httpRequest = (HttpServletRequest)context.getRequest();
+        
+        // the containing BreadCrumbsTag
+        BreadCrumbsTag bc = (BreadCrumbsTag)
+            findAncestorWithClass( this, BreadCrumbsTag.class );
+        
+        JspFragment tagBody = getJspBody();
         if (tagBody != null) {
             bodyContentWriter = new StringWriter();
             tagBody.invoke(bodyContentWriter);
         }
-		
-		if( bc == null ) {
+        
+        if( bc == null ) {
             throw new JspTagException("Unnested tag requires parent tag of type: "  + BreadCrumbsTag.class.toString() );
         }
-		
-		// this crumb is static text
-		if (getUrl() == null) {
-			
-			out.write((bc.isFirstLink() ? "" : bc.getSeperator()));
-			
-			// the link display name will be the title attribute and/or any body content
-			writeTitleIfAvailable();
-			writeBodyContentIfAvailable();
-			
-			bc.updateFirstLink();
-		}
-		
-		// this crumb is a link
-		else {
-			
-			// build the link
-			String url = getUrl();
-			url= ServletUtil.createSafeUrl(httpRequest, url);
-			url = StringEscapeUtils.escapeHtml(url);
-			
-			if (encodedParameters.size() > 0 && url.contains("?")) {
-			    throw new RuntimeException("CrumbLink url may not contain parameters when used with param tags.");
-			}
-			
-			if (encodedParameters.size() > 0) {
-			    String queryString = ServletUtil.buildQueryStringFromMap(encodedParameters);
-			    url += "?" + queryString;
-			}
-			
-			String link = (bc.isFirstLink() ? "" : bc.getSeperator()) 
-						+ "<a href=\"" 
-						+ url 
-						+ "\">";
-			
-			out.write(link);
-			
-			// the link display name will be the title attribute and/or any body content
-			writeTitleIfAvailable();
-			writeBodyContentIfAvailable();
-			
-			
-			out.write("</a>");
-			
-			// make sure the containing bread crumb set knows at least one crumb has been written now
-			bc.updateFirstLink();
-			
-		}
-	}
+        
+        // this crumb is static text
+        if (getUrl() == null) {
+            
+            out.write((bc.isFirstLink() ? "" : bc.getSeperator()));
+            
+            // the link display name will be the title attribute and/or any body content
+            writeTitleIfAvailable();
+            writeBodyContentIfAvailable();
+            
+            bc.updateFirstLink();
+        }
+        
+        // this crumb is a link
+        else {
+            
+            // build the link
+            String url = getUrl();
+            url= ServletUtil.createSafeUrl(httpRequest, url);
+            url = StringEscapeUtils.escapeHtml(url);
+            
+            if (encodedParameters.size() > 0 && url.contains("?")) {
+                throw new RuntimeException("CrumbLink url may not contain parameters when used with param tags.");
+            }
+            
+            if (encodedParameters.size() > 0) {
+                String queryString = ServletUtil.buildQueryStringFromMap(encodedParameters);
+                url += "?" + queryString;
+            }
+            
+            String link = (bc.isFirstLink() ? "" : bc.getSeperator()) 
+                        + "<a href=\"" 
+                        + url 
+                        + "\">";
+            
+            out.write(link);
+            
+            // the link display name will be the title attribute and/or any body content
+            writeTitleIfAvailable();
+            writeBodyContentIfAvailable();
+            
+            
+            out.write("</a>");
+            
+            // make sure the containing bread crumb set knows at least one crumb has been written now
+            bc.updateFirstLink();
+            
+        }
+    }
 
-	private void writeTitleIfAvailable() throws JspException, IOException {
-		
-		String title = getTitle() == null ? "" : getTitle();
-		getJspContext().getOut().write(title);
-	}
+    private void writeTitleIfAvailable() throws JspException, IOException {
+        
+        String title = getTitle() == null ? "" : getTitle();
+        getJspContext().getOut().write(title);
+    }
 
-	private void writeBodyContentIfAvailable() throws JspException, IOException {
-		
-	    if (bodyContentWriter != null) {
-	        getJspContext().getOut().write(bodyContentWriter.toString().trim());
-	    }
-	}
-	
-	@Override
+    private void writeBodyContentIfAvailable() throws JspException, IOException {
+        
+        if (bodyContentWriter != null) {
+            getJspContext().getOut().write(bodyContentWriter.toString().trim());
+        }
+    }
+    
+    @Override
     public void addParameter(String name, String value) {
         encodedParameters.put(name, value);
     }
-	
-	public String getTitle() {
-		return title;
-	}
+    
+    public String getTitle() {
+        return title;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setTitle(String string) {
-		title = string;
-	}
+    public void setTitle(String string) {
+        title = string;
+    }
 
-	public void setUrl(String string) {
-		url = string;
-	}
+    public void setUrl(String string) {
+        url = string;
+    }
 
 }
