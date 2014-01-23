@@ -25,10 +25,11 @@
        <jar jarfile="${yukon.lib}/logger.jar"
             basedir="build/" 
             manifest="resource/manifest.mf">
-           <manifest>
-               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-           </manifest>
+                <manifest>
+                   <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                   <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                   <attribute name="Permissions" value="all-permissions"/>
+               </manifest>
        	   <fileset dir="src">
        	       <exclude name="**/*.java"/>
        	   </fileset>
@@ -40,10 +41,11 @@
    		<jar jarfile="${yukon.client.bin}/logger.jar"
    			basedir="build/"
    			manifest="resource/manifest.mf">
-            <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            </manifest>
+	        <manifest>
+	           <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+	           <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+	           <attribute name="Permissions" value="all-permissions"/>
+	       </manifest>
    		</jar>   			 
    </target>
    

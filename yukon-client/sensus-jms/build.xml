@@ -28,9 +28,10 @@
        <jar jarfile="${yukon.lib}/sensus-jms.jar"
             basedir="build/" 
             manifest="resource/manifest.mf">
-           <manifest>
+            <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
            </manifest>
 		    <fileset dir="src">
 		        <include name="**/*.xml"/>
@@ -70,6 +71,11 @@
 		    <fileset dir="src">
 		        <include name="**/*.xml"/>
 			</fileset>
+            <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
+           </manifest>
         </jar>
    	
 	    <copy todir="dist">

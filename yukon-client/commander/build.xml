@@ -23,10 +23,11 @@
      	</javac>
 
 		<jar jarfile="${yukon.lib}/yc.jar" basedir="build/" manifest="resource/manifest.mf">
-	        <manifest>
-	            <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-	        	<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-	        </manifest>
+           <manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
+           </manifest>
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
 		 		<include name="**/*.ico"/>       	
@@ -42,9 +43,10 @@
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/yc.jar" basedir="build/" manifest="resource/manifest.mf">
             <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            </manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
+           </manifest>
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
 		 		<include name="**/*.ico"/>       	

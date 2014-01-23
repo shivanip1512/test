@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.esub.editor.Editor
-Permissions: all-permissions
 Trusted-Only: true
 Class-Path: ./ 
  esub.jar 

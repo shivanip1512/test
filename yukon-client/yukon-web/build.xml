@@ -26,6 +26,7 @@
                 <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                 <attribute name="Yukon-Details" value="${yukon.build.details}"/>
             	<attribute name="Build-Info" value="${build.info}"/>
+                <attribute name="Permissions" value="all-permissions"/>
             </manifest>
 		</jar>
         
@@ -79,9 +80,10 @@
 
 		<jar jarfile="${yukon.lib}/yukon-web.jar" basedir="${yukon.web.src_build}">
             <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            </manifest>    
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
+           </manifest>
 		    <fileset dir="src">
 		    	<exclude name="**/*.java"/>
 			</fileset>

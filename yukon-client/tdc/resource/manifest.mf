@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.tdc.TDCMainFrame
-Permissions: all-permissions
 Trusted-Only: true
 Class-Path: ./ 
  common.jar 

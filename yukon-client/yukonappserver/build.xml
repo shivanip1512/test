@@ -25,9 +25,10 @@
        
        <jar jarfile="${yukon.lib}/yukonappserver.jar"
             basedir="build/">
-           <manifest>
+            <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
            </manifest>
        	   <fileset dir="src">
        	       <exclude name="**/*.java"/>
@@ -40,9 +41,10 @@
    		<jar jarfile="${yukon.client.bin}/yukonappserver.jar"
    			basedir="build/">
             <manifest>
-                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
-                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
-            </manifest>
+               <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+               <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+               <attribute name="Permissions" value="all-permissions"/>
+           </manifest>
    		</jar>   			 
    </target>
    
