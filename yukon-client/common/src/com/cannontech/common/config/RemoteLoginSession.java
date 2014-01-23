@@ -185,12 +185,12 @@ public class RemoteLoginSession {
     }
 
     /**
-     * This method will attempt to create a new session.  If it succeeds the jsessionId will be set true is returned.
-     * If it fails it will set the error message and false is returned.
+     * This method will attempt to create a new session.  If it succeeds the jsessionId will be set and true is
+     * returned.  If it fails it will set the error message and false is returned.
      * 
      * This guy is synchronized to prevent multiple threads messing with it at the same time.  Technically, each
      * thread should synchronize on this object around its entire reconnect logic but the worst that will happen if
-     * we don't do that is that a two sessions will be created one right after the other with the first begin
+     * we don't do that is that a two sessions will be created one right after the other with the first being
      * garbage collected.
      */
     public synchronized boolean login() {
@@ -204,16 +204,16 @@ public class RemoteLoginSession {
         }
         boolean loggedIn = false;
 
-        Map<String, String> postData = new HashMap<>();
+        Map<String, String> postData = new HashMap<>(2);
         postData.put("username", username);
         postData.put("password", password);
         try {
             Map<String, String> json = readJsonFromUrl("/remoteLogin", postData, true);
-            if (json.get("result").equals("success")) {
+            if ("success".equals(json.get("result"))) {
                 jsessionId = json.get("jsessionId");
                 loggedIn = true;
                 log.debug("Succesfully retrieved jsessionId");
-            } else if (json.get("result").equals("failure")) {
+            } else if ("failure".equals(json.get("result"))) {
                 errorMsg = json.get("errorMsg");
                 log.debug("User failed to login: " + errorMsg);
             } else {
