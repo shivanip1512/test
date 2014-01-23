@@ -1845,7 +1845,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     }
 
     public Object getValue(Object val) {
-        deviceBase = (com.cannontech.database.data.device.DeviceBase) val;
+        deviceBase = (DeviceBase) val;
 
         deviceBase.setPAOName(getNameTextField().getText());
         int devType = PaoType.getPaoTypeId(deviceBase.getPAOType());
@@ -1855,41 +1855,34 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         // used to ensure the type string in the DB is the same as the code
         deviceBase.setDeviceType(PaoType.getPaoTypeString(devType));
 
-        if (getDisableFlagCheckBox().isSelected())
+        if (getDisableFlagCheckBox().isSelected()) {
             deviceBase.setDisableFlag(new Character('Y'));
-        else
+        } else {
             deviceBase.setDisableFlag(new Character('N'));
+        }
 
-        /*
-         * if( getControlInhibitCheckBox().isSelected() )
-         * d.getDevice().setControlInhibit( new Character( 'Y' ) );
-         * else
-         * d.getDevice().setControlInhibit( new Character( 'N' ) );
-         */
-        LiteYukonPAObject port2 = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
-
-        PaoPropertyDao propertyDao = YukonSpringHook.getBean(
-                                                             "paoPropertyDao",
-                                                             PaoPropertyDao.class);
+        PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao", PaoPropertyDao.class);
         propertyDao.removeAll(deviceBase.getPAObjectID());
 
-        if (port2 != null) {
-            if (PaoType.TCPPORT == port2.getPaoType()
-                && PaoType.isTcpPortEligible(deviceType)) {
-                int id = deviceBase.getPAObjectID();
-                PaoIdentifier identifier = new PaoIdentifier(
-                                                             id,
-                                                             PaoType.getForId(deviceType));
+        LiteYukonPAObject port = (LiteYukonPAObject) getPortComboBox().getSelectedItem();
+        if (port != null && PaoType.TCPPORT == port.getPaoType() && PaoType.isTcpPortEligible(deviceType)) {
+            String portNum = getTcpPortTextField().getText();
+            String ipAddress = getTcpIpAddressTextField().getText();
 
-                propertyDao.add(new PaoProperty(
-                                                identifier,
-                                                PaoPropertyName.TcpIpAddress,
-                                                getTcpIpAddressTextField().getText()));
-                propertyDao.add(new PaoProperty(identifier,
-                                                PaoPropertyName.TcpPort,
-                                                getTcpPortTextField().getText()));
+            if (val instanceof RemoteBase) {
+                // Set the values on the DBPersistent for it to persist when it saves.
+                RemoteBase remoteBase = (RemoteBase)val;
+                remoteBase.setPort(portNum);
+                remoteBase.setIpAddress(ipAddress);
+            } else {
+                // The DBPersistent doesn't track this info, write to PaoProperty for it.
+                PaoIdentifier identifier = new PaoIdentifier(deviceBase.getPAObjectID(), PaoType.getForId(deviceType));
+
+                propertyDao.add(new PaoProperty(identifier, PaoPropertyName.TcpIpAddress, ipAddress));
+                propertyDao.add(new PaoProperty(identifier, PaoPropertyName.TcpPort, portNum));
             }
         }
+
         // This is a little bit ugly
         // The address could be coming from three distinct
         // types of devices - yet all devices have an address
@@ -1954,8 +1947,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 
             Integer portID = null;
             Integer postCommWait = null;
-
-            LiteYukonPAObject port = ((LiteYukonPAObject) getPortComboBox().getSelectedItem());
 
             portID = new Integer(port.getYukonID());
             dDirect.setPortID(portID);
