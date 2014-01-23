@@ -103,7 +103,7 @@
     
     <bean class="com.cannontech.support.service.impl.SupportBundleFileSystemToCsvWriter"> 
         <property name="zipDirectory" value="Other"/>
-        <property name="zipFilename" value="Yukon File Sructure.csv"/>
+        <property name="zipFilename" value="Yukon File Structure.csv"/>
         <property name="name" value="yukonFileStructureCsvSource"/>
         <property name="optional" value="true"/>
     </bean>
