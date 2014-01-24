@@ -66,7 +66,7 @@ public class JsonUtils {
         ObjectMapper mapper = new ObjectMapper();
         // FAIL_ON_UNKNOWN_PROPERTIES tells jackson to ignore setters in POJOs for which properties arn't present in
         // the json string. We still need to add @JsonIgnore to any method (or field for all setters/getters) if there
-        // is multiple setters with the same name
+        // are multiple setters with the same name
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         reader = mapper.reader();
         writer = mapper.writer();
