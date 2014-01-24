@@ -1,13 +1,12 @@
 package com.cannontech.web.admin.energyCompany.general;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -17,7 +16,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.ui.context.Theme;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +49,8 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
+import com.cannontech.web.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -177,20 +177,19 @@ public class DefaultThermostatScheduleController {
     }
 
     @RequestMapping(value="save", method = RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
     public String save(@ModelAttribute("temperatureUnit") String temperatureUnit,
-                       @RequestParam(value="schedules", required=true) String scheduleString,
+                       @RequestParam(value="schedules", required=true) String schedulesJson,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment,
                        FlashScope flashScope,
                        YukonUserContext userContext,
-                       ModelMap modelMap) throws ServletRequestBindingException {
+                       ModelMap modelMap) throws JsonProcessingException, IOException {
 
+        AccountThermostatSchedule ats = 
+                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(schedulesJson);
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
 
-        JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
-        
-        AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
-        
         // determine if legacy schedule name should be changed 
         String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(ats, null, userContext);
         ats.setScheduleName(useScheduleName);

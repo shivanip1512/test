@@ -11,6 +11,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 
 /**
@@ -56,6 +60,32 @@ import com.google.common.collect.Maps;
  */
 public class JsonUtils {
 
+    private static final ObjectReader reader;
+    private static final ObjectWriter writer;
+    static {
+        ObjectMapper mapper = new ObjectMapper();
+        // FAIL_ON_UNKNOWN_PROPERTIES tells jackson to ignore setters in POJOs for which properties arn't present in
+        // the json string. We still need to add @JsonIgnore to any method (or field for all setters/getters) if there
+        // is multiple setters with the same name
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        reader = mapper.reader();
+        writer = mapper.writer();
+    }
+
+    /**
+     * Immutable, and thread safe
+     */
+    public static ObjectReader getObjectReader(Class<?> clazz) {
+        return reader.withType(clazz);
+    }
+    
+    /**
+     * Cached, immutable, and thread safe
+     */
+    public static ObjectWriter getObjectWriter() {
+        return writer;
+    }
+    
     /**
      * Sets json.success = true, and json.message = {your message}
      */

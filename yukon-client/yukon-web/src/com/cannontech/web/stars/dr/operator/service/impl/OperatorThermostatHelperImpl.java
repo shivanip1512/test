@@ -1,14 +1,8 @@
 package com.cannontech.web.stars.dr.operator.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +29,6 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
-import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -138,147 +129,12 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
         modelMap.addAttribute("searchResult", result);
         modelMap.addAttribute("moreResults", result.getHitCount() > numPerPage);
     }
-	
-	@Override
-    public JSONObject AccountThermostatScheduleToJSON(AccountThermostatSchedule schedule) {
 
-        JSONObject scheduleJSON = new JSONObject();
-        
-        scheduleJSON.put("accountId", schedule.getAccountId());
-        scheduleJSON.put("scheduleName", schedule.getScheduleName());
-        scheduleJSON.put("scheduleId", schedule.getAccountThermostatScheduleId());
-        
-        //number of time divisions available in a given day
-        scheduleJSON.put("supportedPeriods", schedule.getThermostatType().getPeriodStyle().getRealPeriods().size());
-        
-        //type details
-        JSONObject scheduleType = new JSONObject();
-        scheduleType.put("name", schedule.getThermostatScheduleMode());
-        scheduleType.put("periodStyle", schedule.getThermostatType().getPeriodStyle());
-        
-        scheduleJSON.put("type", scheduleType);
-        scheduleJSON.put("schedulalbleThermostatType", schedule.getThermostatType());
-        scheduleJSON.put("thermostatScheduleMode", schedule.getThermostatScheduleMode());
-        
-        List<AccountThermostatScheduleEntry> entries = schedule.getScheduleEntries();
-        schedule.getEntriesByTimeOfWeekMultimap();
-        
-        for(ThermostatSchedulePeriod period : schedule.getThermostatType().getPeriodStyle().getAllPeriods()){
-            AccountThermostatScheduleEntry entry = entries.get(period.getEntryIndex());
-            JSONObject periodJSON = new JSONObject();
-
-            if(period.isPsuedo()){
-                periodJSON.put("pseudo", true);
-            }else{
-                periodJSON.put("pseudo", false);
-            }
-            
-            periodJSON.put("timeOfWeek", entry.getTimeOfWeek().toString());
-            periodJSON.put("secondsFromMidnight", entry.getStartTime());
-            periodJSON.put("cool_F", entry.getCoolTemp().toFahrenheit().getValue());
-            periodJSON.put("heat_F", entry.getHeatTemp().toFahrenheit().getValue());
-            scheduleJSON.accumulate("periods", periodJSON);
-        }
-
-        return scheduleJSON;
-    }
-	
-	@Override
-    public AccountThermostatSchedule JSONtoAccountThermostatSchedule(JSONObject obj) {
-	    AccountThermostatSchedule ats = new AccountThermostatSchedule();
-	    
-	    //set params
-	    ats.setAccountThermostatScheduleId(obj.getInt("scheduleId"));
-	    ats.setScheduleName(obj.getString("scheduleName"));
-	    ats.setThermostatType(SchedulableThermostatType.valueOf(obj.getString("schedulableThermostatType")));
-	    ats.setThermostatScheduleMode(ThermostatScheduleMode.valueOf(obj.getString("thermostatScheduleMode")));
-	    
-	    //fixup COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
-        if (ats.getThermostatType().getPeriodStyle() == ThermostatSchedulePeriodStyle.TWO_TIMES) {
-            setToTwoTimeTemps(ats);
-        }
-	    
-	    //buildup the entries list.  The JSON object groups the entries into sensible days
-	    List<AccountThermostatScheduleEntry> entries = new ArrayList<AccountThermostatScheduleEntry>();
-	    JSONArray periods = obj.getJSONArray("periods");
-	    for(int i=0; i<periods.size(); i++) {
-	      JSONObject period = periods.getJSONObject(i);
-	      //synthesize the entry by hand
-          AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
-          entry.setAccountThermostatScheduleId(ats.getAccountThermostatScheduleId());
-          entry.setTimeOfWeek(TimeOfWeek.valueOf(period.getString("timeOfWeek")));
-          entry.setCoolTemp(Temperature.fromFahrenheit(period.getDouble("cool_F")));
-          entry.setHeatTemp(Temperature.fromFahrenheit(period.getDouble("heat_F")));
-          entry.setStartTime(period.getInt("secondsFromMidnight"));
-          entries.add(entry);
-	    }
-	    
-	    //add the entries to the schedule
-	    ats.setScheduleEntries(entries);
-	    return ats;
-	}
-	
-	@Override
-    public List<AccountThermostatScheduleEntry> getScheduleEntriesForJSON(String jsonString,
-                                                                          int accountThermostatScheduleId, 
-                                                                          SchedulableThermostatType schedulableThermostatType,
-                                                                          ThermostatScheduleMode thermostatMode, 
-                                                                          boolean isFahrenheit) {
-
-		JSONObject scheduleObject = JSONObject.fromObject(jsonString);
-        JSONObject seasonObject = scheduleObject.getJSONObject("season");
-
-        List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
-
-        Set<TimeOfWeek> associatedTimeOfWeeks = thermostatMode.getAssociatedTimeOfWeeks();
-
-        // Add the season entries (time/value pairs) for each of the
-        // TimeOfWeeks
-        for (TimeOfWeek timeOfWeek : associatedTimeOfWeeks) {
-
-        	JSONArray timeOfWeekArray;
-        	try {
-				timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
-        	} catch (JSONException e) {
-        		continue; // this time of week doesn't exist - continue to the next
-        	}
-
-        	for (ThermostatSchedulePeriod period : schedulableThermostatType.getPeriodStyle().getAllPeriods()) {
-
-        	    //synthesize the entry by hand
-                AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry();
-                entry.setAccountThermostatScheduleId(accountThermostatScheduleId);
-                entry.setTimeOfWeek(timeOfWeek);
-                if (!period.isPsuedo()) {
-                    JSONObject jsonObject = timeOfWeekArray.getJSONObject(period.getEntryIndex());
-
-                    int timeMinutes = jsonObject.getInt("time");
-                    int coolTemp = jsonObject.getInt("coolTemp");
-                    int heatTemp = jsonObject.getInt("heatTemp");
-
-                    // Convert celsius temp to fahrenheit if needed
-                    if (!isFahrenheit) {
-                        entry.setCoolTemp(Temperature.fromCelsius(coolTemp));
-                        entry.setHeatTemp(Temperature.fromCelsius(heatTemp));
-                    }else{
-                        entry.setCoolTemp(Temperature.fromFahrenheit(coolTemp));
-                        entry.setHeatTemp(Temperature.fromFahrenheit(heatTemp));
-                    }
-
-                    entry.setStartTime(timeMinutes * 60); // stored as seconds in DB
-                }
-
-                atsEntries.add(entry);
-            }
-        }
-        
-        return atsEntries;
-    }
-    
 	@Override
     public void setToTwoTimeTemps(AccountThermostatSchedule schedule) {
 
-		ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
+		ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap
+		    = schedule.getEntriesByTimeOfWeekMultimap();
 		
         for (TimeOfWeek timeOfWeek : entriesByTimeOfWeekMap.keySet()) {
 

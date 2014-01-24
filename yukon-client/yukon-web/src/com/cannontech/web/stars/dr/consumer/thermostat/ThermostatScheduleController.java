@@ -1,15 +1,15 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -33,7 +34,6 @@ import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -51,12 +51,12 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
+import com.cannontech.web.util.JsonUtils;
 
 /**
  * Controller for Consumer-side Thermostat schedule operations
@@ -265,35 +265,28 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         
         return "consumer/history.jsp";
     }
-    
-    //------AJAX METHODS -> we should switch these to use the Spring 3 json conventions
-    
+
     //ajax method to update the temperature preferences of the associated consumer
     @RequestMapping(value = "updateTemperaturePreference",
-                    method = {RequestMethod.POST, RequestMethod.HEAD},     
+                    method = {RequestMethod.POST, RequestMethod.HEAD}, 
                     headers = "x-requested-with=XMLHttpRequest")
-    public void updateTemperaturePreference(HttpServletRequest request,
+    @ResponseBody
+    public Map<String, ?> updateTemperaturePreference(HttpServletRequest request,
                                             HttpServletResponse response,
                                             @ModelAttribute("customerAccount") CustomerAccount account,
                                             @RequestParam("temperatureUnit") String temperatureUnit,
                                             LiteYukonUser user,
                                             FlashScope flashScope,
-                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException, IllegalArgumentException {
+                                            ModelMap map) throws NotAuthorizedException, IllegalArgumentException {
         
-        if(isCommunicationDisabled(user)){
+        if (isCommunicationDisabled(user)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            PrintWriter writer = response.getWriter();
-            writer.write("");
+            return Collections.emptyMap();
         }
-        
-        JSONObject returnJSON = new JSONObject();
+
         customerDao.setTemperatureUnit(account.getCustomerId(), temperatureUnit);
-        
-        returnJSON.put("temperatureUnit", customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit());
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        writer.write(returnJSON.toString());
+
+        return Collections.singletonMap("temperatureUnit", customerDao.getCustomerForUser(user.getUserID()).getTemperatureUnit());
     }
     
     
@@ -302,82 +295,81 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @RequestMapping(value = "save", 
                     method = {RequestMethod.POST, RequestMethod.HEAD},
                     headers = "x-requested-with=XMLHttpRequest")
-    public void saveJSON(HttpServletResponse response,
+    @ResponseBody
+    public Map<String, ?> saveJSON(HttpServletResponse response,
                            @ModelAttribute("customerAccount") CustomerAccount account,
                            @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-                           @RequestParam(value="schedules", required=true) String scheduleString,
+                           @RequestParam(value="schedules", required=true) String scheduleJson,
                            YukonUserContext yukonUserContext, 
                            FlashScope flashScope,
                            HttpServletRequest request) throws NotAuthorizedException, ServletRequestBindingException, IOException {
 
         if(isCommunicationDisabled(yukonUserContext.getYukonUser())){
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setContentType("application/json");
-            PrintWriter writer = response.getWriter();
-            writer.write("");
+            return Collections.emptyMap();
         }
-        
+
         LiteYukonUser user = yukonUserContext.getYukonUser();
-        
-        JSONObject returnJSON = new JSONObject();
-        JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
-        
-        AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
+
+        AccountThermostatSchedule ats = 
+                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(scheduleJson);
         ats.setAccountId(account.getAccountId());
 
-        //ensure this user can work with this schedule and thermostat
+        // ensure this user can work with this schedule and thermostat
         accountCheckerService.checkThermostatSchedule(user, ats.getAccountThermostatScheduleId());
         accountCheckerService.checkInventory(user, thermostatIds);
 
         //validate the schedule as posted
         DataBinder binder = new DataBinder(ats);
         AccountThermostatScheduleValidator accountThermostatScheduleValidator =
-            new AccountThermostatScheduleValidator(accountThermostatScheduleDao, messageSourceResolver.getMessageSourceAccessor(yukonUserContext));
+            new AccountThermostatScheduleValidator(accountThermostatScheduleDao,
+                                                   messageSourceResolver.getMessageSourceAccessor(yukonUserContext));
         binder.setValidator(accountThermostatScheduleValidator);
         binder.validate();
         BindingResult bindingResult = binder.getBindingResult();
         
-        if(bindingResult.hasErrors()){
-            JSONObject errorJSON = new JSONObject();
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> errorJson = new HashMap<>();
             for (Object object : bindingResult.getAllErrors()) {
-                if(object instanceof FieldError) {
+                if (object instanceof FieldError) {
                     FieldError fieldError = (FieldError) object;
-                    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
+                    MessageSourceAccessor messageSourceAccessor = 
+                            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+                    errorJson.put(fieldError.getField(),
+                                  messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
                 }
             }
-            
-            returnJSON.put("errors", errorJSON);
-            response.setStatus(HttpServletResponse.SC_CONFLICT);    //what is a 409 you ask? -> http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-        }else{
-            String oldScheduleName = "";
-            if(ats.getAccountThermostatScheduleId() >= 0) {
-                AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
-                oldScheduleName = oldAts.getScheduleName();
-            }
-            
-            // Log thermostat schedule save attempt
-            for (int thermostatId : thermostatIds) {
-                Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-                accountEventLogService.thermostatScheduleSavingAttempted(user, account.getAccountNumber(), thermostat.getSerialNumber(), ats.getScheduleName(), EventSource.CONSUMER);
-            }
-        
-            // Save the Schedule
-            accountThermostatScheduleDao.save(ats);
-            ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
-    
-            // Log schedule name change
-            if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
-                accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
-            }
-    
-            //flash messages - we will be navigating as a result of this response
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.single.send." + message, ats.getScheduleName()));
+
+            // SC_CONFLICT = 409 http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            return Collections.singletonMap("errors", errorJson);
+        }
+
+        String oldScheduleName = "";
+        if(ats.getAccountThermostatScheduleId() >= 0) {
+            AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
+            oldScheduleName = oldAts.getScheduleName();
         }
         
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        writer.write(returnJSON.toString());
+        // Log thermostat schedule save attempt
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            accountEventLogService.thermostatScheduleSavingAttempted(user, account.getAccountNumber(), thermostat.getSerialNumber(), ats.getScheduleName(), EventSource.CONSUMER);
+        }
+    
+        // Save the Schedule
+        accountThermostatScheduleDao.save(ats);
+        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+
+        // Log schedule name change
+        if (!oldScheduleName.equalsIgnoreCase(ats.getScheduleName())) {
+            accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
+        }
+
+        //flash messages - we will be navigating as a result of this response
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.consumer.thermostat.single.send." + message, ats.getScheduleName()));
+
+        return Collections.emptyMap();
     }
     
     private boolean isCommunicationDisabled(LiteYukonUser user){

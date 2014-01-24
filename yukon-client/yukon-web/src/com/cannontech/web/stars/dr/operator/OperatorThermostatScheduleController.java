@@ -1,16 +1,15 @@
 package com.cannontech.web.stars.dr.operator;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -22,6 +21,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -29,7 +29,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -45,7 +44,6 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -53,6 +51,7 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.cannontech.web.stars.dr.operator.validator.AccountThermostatScheduleValidator;
+import com.cannontech.web.util.JsonUtils;
 
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
@@ -71,26 +70,25 @@ public class OperatorThermostatScheduleController {
 	
 	// SAVE - ajaxy
 	//Try to save the schedule
-    //@returns JSONObject containing success or error messages
     @RequestMapping(value = "save", method = {RequestMethod.POST, RequestMethod.HEAD}, headers = "x-requested-with=XMLHttpRequest")
-    public void save(HttpServletResponse response,
+    @ResponseBody
+    public Map<String, ?> save(HttpServletResponse response,
                        @RequestParam(value="thermostatIds", required=true) String thermostatIds,
-                       @RequestParam(value="schedules", required=true) String scheduleString,
+                       @RequestParam(value="schedules", required=true) String schedulesJson,
                        YukonUserContext yukonUserContext,  
 					   ModelMap model, 
 					   FlashScope flash, 
 					   AccountInfoFragment fragment) throws IOException {
 
-        LiteYukonUser user = yukonUserContext.getYukonUser();
-        List<Integer> thermostatIdList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+        AccountThermostatSchedule ats = 
+                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(schedulesJson);
         CustomerAccount account = customerAccountDao.getById(fragment.getAccountId());
-        
-        JSONObject returnJSON = new JSONObject();
-        JSONObject scheduleJSON = JSONObject.fromObject(scheduleString);
-        
-        AccountThermostatSchedule ats = operatorThermostatHelper.JSONtoAccountThermostatSchedule(scheduleJSON);
         ats.setAccountId(account.getAccountId());
-        
+
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        List<Integer> thermostatIdList = 
+                operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, fragment, model);
+
         //validate the schedule as posted
         DataBinder binder = new DataBinder(ats);
         AccountThermostatScheduleValidator accountThermostatScheduleValidator =
@@ -100,50 +98,51 @@ public class OperatorThermostatScheduleController {
         BindingResult bindingResult = binder.getBindingResult();
         
         if(bindingResult.hasErrors()){
-            JSONObject errorJSON = new JSONObject();
+            Map<String, Object> errorJson = new HashMap<>();
             for (Object object : bindingResult.getAllErrors()) {
                 if(object instanceof FieldError) {
                     FieldError fieldError = (FieldError) object;
-                    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
+                    MessageSourceAccessor messageSourceAccessor = 
+                            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+                    errorJson.put(fieldError.getField(), 
+                                  messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
                 }
             }
             
-            returnJSON.put("errors", errorJSON);
-            response.setStatus(HttpServletResponse.SC_CONFLICT);    //what is a 409 you ask? -> http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-        }else{
-            String oldScheduleName = "";
-            if(ats.getAccountThermostatScheduleId() >= 0) {
-                AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
-                oldScheduleName = oldAts.getScheduleName();
-            }
-            
-            // Log thermostat schedule save attempt
-            for (int thermostatId : thermostatIdList) {
-                Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-                accountEventLogService.thermostatScheduleSavingAttempted(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName, EventSource.OPERATOR);
-            }
-            
-            //ensure this user can work with this schedule and thermostat
-            accountCheckerService.checkThermostatSchedule(user, ats.getAccountThermostatScheduleId());
-            accountCheckerService.checkInventory(user, thermostatIdList);
-            
-            // Save the Schedule
-            accountThermostatScheduleDao.save(ats);
-            ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
-            
-            // Log schedule name change
-            if (!oldScheduleName.equals(ats.getScheduleName())) {
-                accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
-            }
-            
-            //flash messages
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.single.send." + message, ats.getScheduleName()));
+            // SC_CONFLICT = 409 http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            return Collections.singletonMap("errors", errorJson);
+        }
+
+        String oldScheduleName = "";
+        if(ats.getAccountThermostatScheduleId() >= 0) {
+            AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(ats.getAccountThermostatScheduleId());
+            oldScheduleName = oldAts.getScheduleName();
         }
         
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        writer.write(returnJSON.toString());
+        // Log thermostat schedule save attempt
+        for (int thermostatId : thermostatIdList) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            accountEventLogService.thermostatScheduleSavingAttempted(user, fragment.getAccountNumber(), thermostat.getSerialNumber(), oldScheduleName, EventSource.OPERATOR);
+        }
+        
+        //ensure this user can work with this schedule and thermostat
+        accountCheckerService.checkThermostatSchedule(user, ats.getAccountThermostatScheduleId());
+        accountCheckerService.checkInventory(user, thermostatIdList);
+        
+        // Save the Schedule
+        accountThermostatScheduleDao.save(ats);
+        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_SUCCESS;
+        
+        // Log schedule name change
+        if (!oldScheduleName.equals(ats.getScheduleName())) {
+            accountEventLogService.thermostatScheduleNameChanged(user, oldScheduleName, ats.getScheduleName());
+        }
+        
+        //flash messages
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostat.single.send." + message, ats.getScheduleName()));
+
+        return Collections.emptyMap();
     }
 	
 	
@@ -338,24 +337,20 @@ public class OperatorThermostatScheduleController {
     @RequestMapping(value = "updateTemperaturePreference",
                     method = {RequestMethod.POST, RequestMethod.HEAD},     
                     headers = "x-requested-with=XMLHttpRequest")
-    public void updateTemperaturePreference(HttpServletRequest request,
+    @ResponseBody
+    public Map<String, ?> updateTemperaturePreference(HttpServletRequest request,
                                             HttpServletResponse response,
                                             @RequestParam("temperatureUnit") String temperatureUnit,
                                             LiteYukonUser user,
                                             FlashScope flashScope,
                                             AccountInfoFragment fragment,
-                                            ModelMap map) throws NotAuthorizedException, WebClientException, TransactionException, IOException, IllegalArgumentException {
-        
-        JSONObject returnJSON = new JSONObject();
+                                            ModelMap map) throws NotAuthorizedException, IllegalArgumentException {
         
         CustomerAccount customerAccount = customerAccountDao.getById(fragment.getAccountId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         
         customerDao.setTemperatureUnit(customerAccount.getCustomerId(), temperatureUnit);
         
-        returnJSON.put("temperatureUnit", customer.getTemperatureUnit());
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        writer.write(returnJSON.toString());
+        return Collections.singletonMap("temperatureUnit", customer.getTemperatureUnit());
     }
 }

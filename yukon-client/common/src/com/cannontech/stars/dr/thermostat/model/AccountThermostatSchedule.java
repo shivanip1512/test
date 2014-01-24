@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -19,11 +20,12 @@ public class AccountThermostatSchedule {
 	private ThermostatScheduleMode thermostatScheduleMode;
 	private boolean isArchived;
 	private List<AccountThermostatScheduleEntry> scheduleEntries = Lists.newArrayList();
-	
+
 	public int getAccountThermostatScheduleId() {
 		return accountThermostatScheduleId;
 	}
 
+	@JsonProperty("scheduleId")
 	public void setAccountThermostatScheduleId(int accountThermostatScheduleId) {
 		this.accountThermostatScheduleId = accountThermostatScheduleId;
 	}
@@ -48,6 +50,7 @@ public class AccountThermostatSchedule {
 		return thermostatType;
 	}
 
+	@JsonProperty("schedulableThermostatType")
 	public void setThermostatType(SchedulableThermostatType thermostatType) {
 		this.thermostatType = thermostatType;
 	}
@@ -71,7 +74,8 @@ public class AccountThermostatSchedule {
 	public List<AccountThermostatScheduleEntry> getScheduleEntries() {
 		return scheduleEntries;
 	}
-	
+
+	@JsonProperty("periods")
 	public void setScheduleEntries(List<AccountThermostatScheduleEntry> scheduleEntries) {
 		this.scheduleEntries = scheduleEntries;
 	}
