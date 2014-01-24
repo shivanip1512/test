@@ -11,7 +11,7 @@
 	
     <%-- SEACRH WIDGET --%>
     <tags:boxContainer2 nameKey="inventorySearch">
-        <form:form commandName="inventorySearch" action="search" method="post">
+        <form:form commandName="inventorySearch" action="search" method="get" >
             <div class="fl" style="width:33%;">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".serialNumber">
