@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +29,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 /**
  * Widget used to display basic device information
  */
-@Controller
 @RequestMapping("/configWidget/*")
 public class ConfigWidget extends WidgetControllerBase {
 
@@ -38,7 +36,7 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
-    
+
     /**
      * This method renders the default deviceGroupWidget
      * 
