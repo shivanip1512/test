@@ -12,24 +12,24 @@
 <%@ attribute name="titleLinkHtml" %>
 
 <cti:msgScope paths=".${nameKey},">
-	<c:choose>
-		<c:when test="${not empty argumentSeparator}">
-			<cti:msg2 var="title" key=".title" arguments="${arguments}" argumentSeparator="${argumentSeparator}"/>
-		</c:when>
-		<c:otherwise>
-			<cti:msg2 var="title" key=".title" arguments="${arguments}"/>
-		</c:otherwise>
-	</c:choose>
-	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
+    <c:choose>
+        <c:when test="${not empty argumentSeparator}">
+            <cti:msg2 var="title" key=".title" arguments="${arguments}" argumentSeparator="${argumentSeparator}"/>
+        </c:when>
+        <c:otherwise>
+            <cti:msg2 var="title" key=".title" arguments="${arguments}"/>
+        </c:otherwise>
+    </c:choose>
+    <cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
 </cti:msgScope>
 
 <tags:boxContainer title="${pageScope.title}" 
-				   id="${pageScope.id}" 
-				   styleClass="${pageScope.styleClass}" 
-				   hideEnabled="${pageScope.hideEnabled}" 
-				   showInitially="${pageScope.showInitially}"
+                   id="${pageScope.id}" 
+                   styleClass="${pageScope.styleClass}" 
+                   hideEnabled="${pageScope.hideEnabled}" 
+                   showInitially="${pageScope.showInitially}"
                    titleLinkHtml="${pageScope.titleLinkHtml}"
-				   helpText="${pageScope.helpText}">
-	<jsp:doBody/>
+                   helpText="${pageScope.helpText}">
+    <jsp:doBody/>
 
 </tags:boxContainer>
