@@ -2,7 +2,7 @@
 
 #include "utility.h"
 #include "dlldefs.h"
-#include "cparms.h"
+#include "amq_constants.h"
 #include "amq_connection.h"
 
 
@@ -38,8 +38,7 @@ namespace Cti {
 namespace Messaging {
 
 IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection(
-   new ActiveMQConnectionManager(
-      gConfigParms.getValueAsString("JMS_CLIENT_CONNECTION", "tcp://127.0.0.1:61616")));
+   new ActiveMQConnectionManager( ActiveMQ::Broker::defaultURI ));
 
 }
 }
