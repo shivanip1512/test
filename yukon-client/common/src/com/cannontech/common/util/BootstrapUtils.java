@@ -171,4 +171,8 @@ public class BootstrapUtils {
         String appName = System.getProperty("cti.app.name");
         return appName;
     }
+
+    public static boolean isWebStartClient() {
+        return StringUtils.isNotBlank(System.getProperty("jnlp.yukon.host"));
+    }
 }

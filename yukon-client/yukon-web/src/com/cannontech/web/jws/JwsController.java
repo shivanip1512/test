@@ -2,7 +2,6 @@ package com.cannontech.web.jws;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,10 +27,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -215,31 +214,12 @@ public class JwsController {
         addExtension(request, resourcesElem, JwsJnlp.BOUNCY_CASTLE);
         addExtension(request, resourcesElem, JwsJnlp.CLIENT_LIBS);
 
-        // add some properties to ease log in
-        Element userPropElem = new Element("property");
-        userPropElem.setAttribute("name", "jnlp.yukon.user");
-        userPropElem.setAttribute("value", user.getUsername());
-        resourcesElem.addContent(userPropElem);
-
-        Element serverBasePropElem = new Element("property");
-        serverBasePropElem.setAttribute("name", "jnlp.yukon.server.base");
-        serverBasePropElem.setAttribute("value", CtiUtilities.getYukonBase());
-        resourcesElem.addContent(serverBasePropElem);
-
-        // add server info
-        URL hostUrl = ServletUtil.getHostURL(request);
-        Element hostPropElem = new Element("property");
-        hostPropElem.setAttribute("name", "jnlp.yukon.host");
-        hostPropElem.setAttribute("value", hostUrl.toString());
-        resourcesElem.addContent(hostPropElem);
-
-        Element rememberMeSettingPropElem = new Element("property");
-        ClientApplicationRememberMe rememberMeSetting = 
-            globalSettingDao.getEnum(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME,
-                                     ClientApplicationRememberMe.class);
-        rememberMeSettingPropElem.setAttribute("name", "jnlp.yukon.rememberMe");
-        rememberMeSettingPropElem.setAttribute("value", rememberMeSetting.name());
-        resourcesElem.addContent(rememberMeSettingPropElem);
+        setJnlpProperty("user", user.getUsername(), resourcesElem);
+        setJnlpProperty("server.base", CtiUtilities.getYukonBase(), resourcesElem);
+        setJnlpProperty("host", ServletUtil.getHostURL(request).toString(), resourcesElem);
+        setJnlpProperty("rememberMe", globalSettingDao.getString(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME), resourcesElem);
+        setJnlpProperty("version", VersionTools.getYUKON_VERSION(), resourcesElem);
+        setJnlpProperty("version.details", VersionTools.getYukonDetails(), resourcesElem);
 
         Element appElem = new Element("application-desc");
         jnlpElem.addContent(appElem);
@@ -250,6 +230,13 @@ public class JwsController {
         out.output(body, responseOutStream);
     }
 
+    private void setJnlpProperty(String name, String value, Element element) {
+        Element propertyElement = new Element("property");
+        propertyElement.setAttribute("name", "jnlp.yukon." + name);
+        propertyElement.setAttribute("value",value);
+        element.addContent(propertyElement);
+    }
+    
     private long addJarToElement(String jarToAdd, Element element) throws IOException {
         Path jarFile = jarFileBase.resolve(jarToAdd);
         long versionNum = Files.getLastModifiedTime(jarFile).toMillis();

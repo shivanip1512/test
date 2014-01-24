@@ -15,6 +15,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
@@ -147,7 +148,13 @@ public final class VersionTools {
     }
 
     public synchronized final static String getYUKON_VERSION() {
-        if (yukonVersion == null) {
+        if (yukonVersion != null) {
+            return yukonVersion;
+        }
+
+        if (BootstrapUtils.isWebStartClient()) {
+            yukonVersion = System.getProperty("jnlp.yukon.version");
+        } else {
             ClassLoader classLoader = VersionTools.class.getClassLoader();
             Enumeration<URL> resources;
             try {
@@ -188,7 +195,13 @@ public final class VersionTools {
     }
 
     public synchronized static final String getYukonDetails() {
-        if (yukonDetails == null) {
+        if (yukonDetails != null) {
+            return yukonDetails;
+        }
+
+        if (BootstrapUtils.isWebStartClient()) {
+            yukonDetails = System.getProperty("jnlp.yukon.version.details");
+        } else {
             ClassLoader classLoader = VersionTools.class.getClassLoader();
             Enumeration<URL> resources;
             try {

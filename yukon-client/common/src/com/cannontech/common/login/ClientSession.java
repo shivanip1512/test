@@ -23,6 +23,7 @@ import com.cannontech.common.config.RemoteLoginSession;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -112,7 +113,7 @@ public class ClientSession {
 
         boolean success = false;
 
-        boolean isJws = StringUtils.isNotBlank(System.getProperty("jnlp.yukon.host"));
+        boolean isJws = BootstrapUtils.isWebStartClient();
         CTILogger.info("Java Web Start property found: " + isJws);
         // "getBoolean" has to be the oddest Java method ever, but it is exactly what I want
         boolean forceRemoteLogin = Boolean.getBoolean("com.cannontech.yukon.forceRemoteLogin");
