@@ -26,7 +26,6 @@ import com.google.common.collect.Lists;
 
 public class PageDetailProducer {
 
-    private static final String CRUMB_SEPERATOR = " &gt; ";
     private static final String MODULE_NAME = "moduleName";
     private static final String NAVIGATION_TITLE = "navigationTitle"; // used for left side menu
     private static final String CRUMB_TITLE = "crumbTitle";
@@ -55,9 +54,9 @@ public class PageDetailProducer {
         
         StringBuffer buf = new StringBuffer();
         // the following should replicate com.cannontech.web.taglib.nav.BreadCrumbsTag
-        buf.append("<div class=\"breadCrumbs\">");
+        buf.append("<ol class=\"breadcrumb\">");
         buf.append(crumbs);
-        buf.append("</div>");
+        buf.append("</ol>");
         buf.append("\n");
         
         pageDetail.setBreadCrumbText(buf.toString());
@@ -145,12 +144,11 @@ public class PageDetailProducer {
     public String renderCrumbsFinal(PageContext pageContext, HttpServletRequest req, MessageSourceAccessor accessor) {
         
         String previousCrumbs = renderCrumbs(pageContext.parent, req, accessor);
-        previousCrumbs += CRUMB_SEPERATOR;
-        
+
         String label = getPagePart(CRUMB_TITLE, pageContext, accessor);
         
         String thisCrumb = createLink(label, null);
-        String result = previousCrumbs + thisCrumb;
+        String result = previousCrumbs + "<li class=\"active\">" + thisCrumb + "</li>";
         return result;
     }
 
@@ -160,7 +158,6 @@ public class PageDetailProducer {
             return renderHomeCrumb(accessor);
         }
         String previousCrumbs = renderCrumbs(pageContext.parent, req, accessor);
-        previousCrumbs += CRUMB_SEPERATOR;
         
         String label = getPagePart(CRUMB_TITLE, pageContext, accessor);
         String link = null;
@@ -174,7 +171,7 @@ public class PageDetailProducer {
             
         String thisCrumb;
         thisCrumb = createLink(label, link);
-        String result = previousCrumbs + thisCrumb;
+        String result = previousCrumbs + "<li>" + thisCrumb + "</li>";
         return result;
     }
     
@@ -203,7 +200,7 @@ public class PageDetailProducer {
         String message = accessor.getMessage("yukon.web.menu.home");
         String link = "/home";
         
-        return createLink(message, link );
+        return "<li>" + createLink(message, link) + "</li>";
     }
 
     private String createLink(String label, String link) {

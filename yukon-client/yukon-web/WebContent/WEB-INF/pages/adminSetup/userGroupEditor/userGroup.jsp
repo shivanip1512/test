@@ -51,7 +51,7 @@
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer">
+                            <div>
                                 <c:forEach var="category" items="${roles}">
                                     <c:if test="${not empty category.key}">
                                         <ul class="grouped-list">

@@ -109,7 +109,7 @@ jQuery(function(){
                 <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
                 <div class="clearfix stacked">
                     <button type="submit" name="runProgram">
-                        <span class="label">${runProgramText}</span>
+                        <span class="b-label">${runProgramText}</span>
                     </button>
                 </div>
             </form>

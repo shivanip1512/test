@@ -22,19 +22,19 @@ jQuery(function(){
     <ul class="list clearfix">
         <li class="MIN_PASSWORD_LENGTH_NOT_MET MAX_PASSWORD_LENGTH_EXCEEDED clearfix">
             <i class="icon icon-blank"></i>
-            <span class="label"><i:inline key="yukon.web.modules.passwordPolicy.length.description" 
+            <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.length.description" 
                 arguments="${passwordPolicy.minPasswordLength}" /></span>
         </li>
         <c:if test="${passwordPolicy.passwordHistory > 0}">
             <li class="PASSWORD_USED_TOO_RECENTLY clearfix">
                 <i class="icon icon-blank"></i>
-                <span class="label"><i:inline key="yukon.web.modules.passwordPolicy.history.description" 
+                <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.history.description" 
                     arguments="${passwordPolicy.passwordHistory}" /></span>
             </li>
         </c:if>
         <li class="PASSWORD_DOES_NOT_MEET_POLICY_QUALITY clearfix">
             <i class="icon icon-blank"></i>
-            <span class="label"><i:inline key="yukon.web.modules.passwordPolicy.quality.description" 
+            <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.quality.description" 
                 arguments="${passwordPolicy.passwordQualityCheck}" /></span>
         </li>
         <li class="clearfix">
@@ -42,7 +42,7 @@ jQuery(function(){
                 <c:forEach items="${passwordPolicy.policyRules}" var="rule">
                     <li class="${rule} clearfix">
                         <i class="icon icon-blank"></i>
-                        <span class="label"><i:inline key="${rule.formatKey}.description" /></span>
+                        <span class="b-label"><i:inline key="${rule.formatKey}.description" /></span>
                     </li>
                 </c:forEach>
             </ul>

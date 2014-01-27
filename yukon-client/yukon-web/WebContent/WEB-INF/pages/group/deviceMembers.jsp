@@ -57,7 +57,7 @@
             <cti:msg2 var="confirmRemoveText" key=".membersContainer.confirmRemoveText" javaScriptEscape="true"/>
             <div class="action-area stacked">
                 <button id="removeAllDevicesButton" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
-                    <i class="icon icon-cross"></i><span class="label">${removeAllDevicesFromGroupLabel}</span>
+                    <i class="icon icon-cross"></i><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
                 <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
             </div>       

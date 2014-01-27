@@ -65,7 +65,7 @@
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer wsnw">
+                            <div class="wsnw">
                                 <c:forEach var="category" items="${categoryRoleMap}">
                                     <ul class="grouped-list">
                                         <li><span class="group"><cti:formatObject value="${category.key}"/></span>

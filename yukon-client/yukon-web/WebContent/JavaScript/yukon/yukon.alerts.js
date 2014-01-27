@@ -33,7 +33,7 @@ Yukon.Alerts = (function () {
 
         _updateCount = function (count) {
             var button = jQuery("#yukon-alert-button");
-            button.children(".label").html(count);
+            button.children(".b-label").html(count);
             if (count > 0) {
                 button.addClass('red');
                 button.show();

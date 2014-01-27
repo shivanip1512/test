@@ -53,7 +53,7 @@ function validateGroupIsSelected(btn, alertText) {
                             
             <div class="page-action-area">
                 <button name="addRemoveButton" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
-                    <span class="label">${buttonText}</span>
+                    <span class="b-label">${buttonText}</span>
                 </button>
             </div>
         </form>

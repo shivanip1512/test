@@ -42,18 +42,20 @@
 function open_${id}() {
     var dialogDiv = jQuery('#${id}');
     var buttons = [];
+    
+    <c:if test="${okEvent == 'none'}">
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    </c:if>
     <c:if test="${okEvent != 'none'}">
         var okButton = {'text' : '${okBtnMsg}', 'class': 'primary action'};
         <c:if test="${!empty pageScope.on}">
         dialogDiv.data('on', '${pageScope.on}');
         </c:if>
+        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
         okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
         buttons.push(okButton);
-        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
     </c:if>
-    <c:if test="${okEvent == 'none'}">
-        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
-    </c:if>
+    
     var dialogOpts = {
             'title' : '${titleMsg}',
             'position' : 'center',

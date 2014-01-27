@@ -26,13 +26,13 @@
             <div class="page-action-area stacked">
                 <strong class="fl">Filter:</strong>
                 <button data-filter="ACTIVE" class="left on">
-                    <span class="label green"><cti:msg2 key=".active"/></span></button>
+                    <span class="b-label green"><cti:msg2 key=".active"/></span></button>
                 <button data-filter="INACTIVE" class="middle on">
-                    <span class="label orange"><cti:msg2 key=".inactive"/></span></button>
+                    <span class="b-label orange"><cti:msg2 key=".inactive"/></span></button>
                 <button data-filter="OPTED_OUT" class="middle on">
-                    <span class="label grey"><cti:msg2 key=".optedOut"/></span></button>
+                    <span class="b-label grey"><cti:msg2 key=".optedOut"/></span></button>
                 <button data-filter="UNAVAILABLE" class="right on">
-                    <span class="label red"><cti:msg2 key=".unavailable"/></span></button>
+                    <span class="b-label red"><cti:msg2 key=".unavailable"/></span></button>
             </div>
         </div>
         <div class="column two nogutter">

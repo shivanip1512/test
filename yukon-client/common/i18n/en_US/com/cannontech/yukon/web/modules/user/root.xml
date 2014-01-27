@@ -37,7 +37,7 @@
 
     <entry key="yukon.web.modules.user.activityStream.title">Activity Stream</entry>
     <entry key="yukon.web.modules.user.additionContactInfo.title">Additional Contact Info</entry>
-    <entry key="yukon.web.modules.user.groups.title">User Group</entry>
+    <entry key="yukon.web.modules.user.groups.title">User Group: {0}</entry>
     <entry key="yukon.web.modules.user.preferences.title">Preferences</entry>
     <entry key="yukon.web.modules.user.userInfo.title">User Info</entry>
 

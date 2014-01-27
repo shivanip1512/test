@@ -172,7 +172,7 @@ jQuery(function() {
                                     <span class="empty-list"><i:inline key="yukon.web.defaults.noDevices"/></span>
                                 </c:if>
                                 <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                    <span class="label"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span><i class="icon icon-folder-edit"></i>
+                                    <span class="b-label"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span><i class="icon icon-folder-edit"></i>
                                 </c:if>
                             </a>
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">

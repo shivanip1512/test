@@ -1,5 +1,6 @@
 /* Variables */
 @primary-color: #06C;
+@font-color: #555;
 
 /* Functional Overrides */
 .box {overflow: hidden;display: block;position: relative;zoom: 1}
@@ -152,3 +153,12 @@ div.ui-tabs-header .ui-tabs-panel {
 .ui-menu .ui-menu-item a.ui-state-active { background-color: #eee; }
 .ui-progressbar {max-height: 26px; padding: 2px;}
 .ui-progressbar .ui-progressbar-value {background-color: #ddd;margin: 0;}
+
+/** Bootstrap Overrides */
+.progress {background-color: #e8e8e8;border-radius: 2px;height: 18px;margin-bottom: 0px;}
+.breadcrumb {
+    background-color: white;
+    margin: 0;
+    padding: 5px 0;
+    .active {color: @font-color;}
+}

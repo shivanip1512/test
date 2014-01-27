@@ -132,7 +132,7 @@
         <div class="action-area">
             <cti:msg2 var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
             <button id="sendSettingsSubmit" popup_id="confirmPopup_${event.eventId}" class="primary action">
-                <span class="label">${saveText}</span>
+                <span class="b-label">${saveText}</span>
             </button>
         </div>
     </div>

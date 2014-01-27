@@ -145,15 +145,15 @@
 					<%-- BASICS --%>
 					<table class="compact-results-table">
 					    <tr>
-					        <td width="15%" class="label"><i:inline key=".type"/></td>
+					        <td width="15%"><i:inline key=".type"/></td>
 					        <td>${deviceInfo.definition.type}</td>
 					    </tr>
 					    <tr>
-					        <td class="label"><i:inline key=".javaConstant"/></td>
+					        <td><i:inline key=".javaConstant"/></td>
 					        <td>${deviceInfo.definition.javaConstant}</td>
 					    </tr>
 					    <tr>
-					        <td class="label"><i:inline key=".changeGroup"/></td>
+					        <td><i:inline key=".changeGroup"/></td>
 					        <td>${deviceInfo.definition.changeGroup}</td>
 					    </tr>
 					</table>

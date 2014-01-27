@@ -10,6 +10,7 @@
 <%@ attribute name="title" required="true"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <div id="${id}" class="${pageScope.styleClass} dn" style="${pageScope.style}" role="dialog">
     <jsp:doBody/>
@@ -19,7 +20,7 @@ var windowHeight = jQuery(window).height(),
 position = {my: 'top', at: 'top+' + windowHeight/5 },
 defaults = { width: 'auto', 
              autoOpen: false,
-             title: '${title}',
+             title: '${cti:escapeJavaScript(title)}',
              position : position
 };
 

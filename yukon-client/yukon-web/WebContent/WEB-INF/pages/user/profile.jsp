@@ -1,18 +1,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="user" page="profile.${mode}">
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<dialog:confirm on="#reset_all_preferences" nameKey="preferences.confirmResetAll" argument=""/>
+<d:confirm on="#reset_all_preferences" nameKey="preferences.confirmResetAll" argument=""/>
 
 <div class="column-12-12">
     <div class="column one">
@@ -90,7 +88,7 @@
 
         <cti:displayForPageEditModes modes="VIEW">
             <c:if test="${canResetPassword}">
-                <dialog:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
+                <d:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
                     <div class="column-12-12">
                         <div class="column one">
                             <form id="loginBackingBean">
@@ -124,7 +122,7 @@
                             <tags:passwordHelper passwordPolicy="${passwordPolicy}"/>
                         </div>
                     </div>
-                </dialog:inline>
+                </d:inline>
             </c:if>
 
             <%-- PREFERENCES SECTION currently at the bottom of the first column --%>
@@ -161,7 +159,7 @@
                                                     <c:when test="${iconOnly}">
                                                         <c:set var="optMap" value='${prefDisplayOptMap.get("iconONLY")}'/><i class="icon ${optMap.get(prefOption.value)}"></i>
                                                     </c:when>
-                                                    <c:otherwise><span class="label">${prefText}</span></c:otherwise>
+                                                    <c:otherwise><span class="b-label">${prefText}</span></c:otherwise>
                                                 </c:choose>
                                             </button>
                                         </c:forEach>
@@ -190,14 +188,13 @@
     <div class="column two nogutter" id="column_two">
     <cti:displayForPageEditModes modes="VIEW">
     
-    <tags:sectionContainer2 nameKey="groups">
-        <h3>${fn:escapeXml(userGroupName)}</h3>
+    <tags:sectionContainer2 nameKey="groups" arguments="${userGroupName}">
         <c:choose>
             <c:when test="${empty categoryRoleMap}">
                 <i:inline key="yukon.web.defaults.na"/>
             </c:when>
             <c:otherwise>
-                <div class="rolesContainer wsnw">
+                <div class="wsnw">
                     <c:forEach var="category" items="${categoryRoleMap}">
                         <ul class="grouped-list">
                             <li><span class="group"><cti:formatObject value="${category.key}"/></span>

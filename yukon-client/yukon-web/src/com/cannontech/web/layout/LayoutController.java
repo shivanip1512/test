@@ -163,7 +163,7 @@ public class LayoutController {
             pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
         } else {
             // create dummy page detail for pre-2010 pages
-            //@TODO  consider delegating this functionality to the PageInfo object itself: new PageDetail(tagInfo)
+            // TODO  consider delegating this functionality to the PageInfo object itself: new PageDetail(tagInfo)
             pageDetailTemp = new PageDetail();
             pageDetailTemp.setBreadCrumbText("");
             if (StringUtils.isNotBlank(tagInfo.getTitle())) {

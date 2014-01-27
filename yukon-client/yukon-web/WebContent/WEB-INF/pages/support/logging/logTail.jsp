@@ -8,6 +8,8 @@
 
 <cti:standardPage module="support" page="logTail">
 
+<style>.logLine {white-space: pre-wrap;word-break: break-all}</style>
+
     <cti:includeScript link="/JavaScript/logUpdater.js"/>
     <input type="hidden" id="updateUrl" value="${updateUrl}"/>
     <input type="hidden" id="file" value="${file}"/>
@@ -24,9 +26,9 @@
     </tags:nameValueContainer2>
 
     <div class="stacked clearfix">
-        <cti:button nameKey="download" type="button" href="download?file=${file}"/>
-        <cti:button id="pauseBtn" type="button" nameKey="pause" />
-        <cti:button id="startBtn" type="button" nameKey="resume" />
+        <cti:button nameKey="download" type="button" href="download?file=${file}" icon="icon-download"/>
+        <cti:button id="pauseBtn" type="button" nameKey="pause" icon="icon-control-pause"/>
+        <cti:button id="startBtn" type="button" nameKey="resume" icon="icon-control-play"/>
     </div>
     <div id="logOutput" class="monospace lite-container" style="overflow: auto;"></div>
 

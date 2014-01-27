@@ -40,13 +40,13 @@
                     </cti:url>
                     <button class="naked" data-reload="${prevUrl}">
                         <i class="icon icon-resultset-previous"></i>
-                        <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
+                        <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
                 </c:when>
                 <c:otherwise>
                     <button class="naked" disabled="disabled">
                         <i class="icon icon-resultset-previous"></i>
-                        <span class="label"><i:inline key="yukon.common.paging.previous"/></span>
+                        <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
                 </c:otherwise>
             </c:choose>
@@ -69,13 +69,13 @@
                         <cti:param name="itemsPerPage" value="${result.count}"/>
                     </cti:url>
                     <button class="naked" data-reload="${nextUrl}">
-                        <span class="label"><i:inline key="yukon.common.paging.next"/></span>
+                        <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>
                 </c:when>
                 <c:otherwise>
                     <button class="naked" disabled="disabled">
-                        <span class="label"><i:inline key="yukon.common.paging.next"/></span>
+                        <span class="b-label"><i:inline key="yukon.common.paging.next"/></span>
                         <i class="icon icon-resultset-next"></i>
                     </button>
                 </c:otherwise>

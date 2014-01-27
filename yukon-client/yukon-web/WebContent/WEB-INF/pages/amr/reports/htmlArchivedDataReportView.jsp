@@ -6,23 +6,21 @@
 <%-- MODULE, MENU --%>
 <cti:standardPage title="${reportTitle}" module="amr">
 
-    <cti:standardMenu menuSelection="meters" />
-
     <cti:breadCrumbs>
-		<cti:crumbLink url="/dashboard" title="Home" />
-		<cti:crumbLink url="/meter/start" title="Metering" />
-		<c:if test="${searchResults != null}">
-			<cti:crumbLink url="${searchResults}" title="Search" />
-		</c:if>
-		<c:if test="${isWaterMeter}">
-	        <cti:crumbLink url="/meter/water/home?deviceId=${deviceId}">
-	            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-	        </cti:crumbLink>
+        <cti:crumbLink url="/dashboard" title="Home" />
+        <cti:crumbLink url="/meter/start" title="Metering" />
+        <c:if test="${searchResults != null}">
+            <cti:crumbLink url="${searchResults}" title="Search" />
+        </c:if>
+        <c:if test="${isWaterMeter}">
+            <cti:crumbLink url="/meter/water/home?deviceId=${deviceId}">
+                <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+            </cti:crumbLink>
         </c:if>
         <c:if test="${!isWaterMeter}">
-	        <cti:crumbLink url="/meter/home?deviceId=${deviceId}">
-	            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-	        </cti:crumbLink>
+            <cti:crumbLink url="/meter/home?deviceId=${deviceId}">
+                <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+            </cti:crumbLink>
         </c:if>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>

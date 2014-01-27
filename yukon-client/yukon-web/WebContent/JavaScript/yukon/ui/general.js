@@ -227,7 +227,7 @@ Yukon.modules.ui = function (mod) {
             btn.children(".icon").hide();
             btn.children(".icon.busy").show();
 
-            label = btn.children(".label");
+            label = btn.children(".b-label");
             busyText = btn.attr("data-busy");
             if (label.length > 0 && busyText.length > 0) {
                 originalText = label.html(); 
@@ -250,7 +250,7 @@ Yukon.modules.ui = function (mod) {
             btn.children(".icon").show();
             btn.children(".icon.busy").hide();
             
-            label = btn.children(".label");
+            label = btn.children(".b-label");
             originalText = btn.data("data-original-text");
             if (typeof originalText !== 'undefined' && label.length > 0 && originalText.length > 0) {
                 label.html(originalText);

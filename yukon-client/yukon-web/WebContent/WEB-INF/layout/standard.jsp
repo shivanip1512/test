@@ -22,6 +22,7 @@
         <title>${pageDetail.pageTitle}</title>
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/resources/css/lib/bootstrap.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/resources/css/lib/animate.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/layout.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" >
@@ -85,7 +86,6 @@
     <div class="outer">
         <div class="inner">
             <div class="toolbar">
-<%--                 <cti:outputContent writable="${searchRenderer}"/> --%>
                 <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
@@ -122,7 +122,7 @@
     </div>
     <div class="page-title-bar">
         <div class="inner clearfix">
-	        <c:if test="${not empty pageDetail.pageHeading}">
+            <c:if test="${not empty pageDetail.pageHeading}">
                 <c:if test="${canFavorite}">
                     <cti:button id="favButton" 
                         classes="b-favorite" 
@@ -132,23 +132,23 @@
                         data-name="${info.pageName}" 
                         data-label-args="${labelArgs}" />
                 </c:if>
-			    <h1 class="page-heading">
-			        ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
-			        <spring:escapeBody htmlEscape="true">
-			        ${pageDetail.pageHeading}
-			        </spring:escapeBody>
-			        ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
-			    </h1>
-			</c:if>
+                <h1 class="page-heading">
+                    ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
+                    <spring:escapeBody htmlEscape="true">
+                    ${pageDetail.pageHeading}
+                    </spring:escapeBody>
+                    ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
+                </h1>
+            </c:if>
             <div class="page-actions">
                 <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
                 <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
-		</div>
+        </div>
     </div>
 </header>
 
-<section id="content" role="main">
+<section id="content" role="main" <c:if test="${widePage}">class="wide"</c:if>>
 
 <c:set var="layout" value="${showContextualNavigation ? 'column-4-20' : 'column-24'}"/>
 <c:set var="columnNum" value="${showContextualNavigation ? 'two nogutter' : 'one nogutter'}"/>
@@ -184,7 +184,7 @@
 <tags:simplePopup title="${alertTitle}" id="yukon_alert_popup">
     <div id="alert_body" class="scroll-large"></div>
     <div class="action-area">
-        <button id="yukon_clear_alerts_button"><span class="label"><cti:msg2 key="yukon.web.alerts.clearall"/></span></button>
+        <button id="yukon_clear_alerts_button"><span class="b-label"><cti:msg2 key="yukon.web.alerts.clearall"/></span></button>
     </div>
 </tags:simplePopup>
 <tags:updatedWarning/>

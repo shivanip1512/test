@@ -338,7 +338,7 @@ a.pipe-selector.selected {color: @font-color; cursor: default;}
 ol.error{list-style-type: none;}
 .green, .success {color: @green !important;}
 .orange, .warning {color: @orange !important;}
-.grey, .disabled, .disabled a {color:#888 !important; cursor:default;}
+.gray, .grey, .disabled, .disabled a {color:#888 !important; cursor:default;}
 .disabled, .disabled a, .disabled:hover, .disabled a:hover {text-decoration: none;}
 .subtle, .setting .detail > span {color: @font-color;}
 
@@ -565,7 +565,13 @@ input.dateTimePicker {width: 150px;}
 .dropdown-container > a > .icon:nth-child(2) {margin-left: 0;}
 
 .has-actions .dropdown-container, .show-on-hover {visibility: hidden;}
-.has-actions tr:hover .dropdown-container, .has-actions li:hover .dropdown-container, .has-actions .dropdown-container.menu-open, tr:hover .show-on-hover, li:hover .show-on-hover {visibility: visible;}
+.has-actions tr:hover .dropdown-container, 
+.has-actions li:hover .dropdown-container, 
+.has-actions .dropdown-container.menu-open, 
+tr:hover .show-on-hover,
+.title-bar:hover .show-on-hover, 
+.has-show-on-hover:hover .show-on-hover,
+li:hover .show-on-hover {visibility: visible;}
 .has-actions .action-column {width:56px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
 
 .ui-datepicker::before,

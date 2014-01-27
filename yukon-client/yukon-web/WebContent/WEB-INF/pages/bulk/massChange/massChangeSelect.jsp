@@ -26,7 +26,7 @@ function submitForm(selectMassChangeField) {
           <c:forEach var="bulkField" items="${massChangableBulkFields}">
             <div class="page-action-area">
               <button id="massChangeTypeButton" onclick="submitForm('${bulkField.inputSource.field}');">
-                <span class="label"><cti:msg key="${bulkField.displayKey}"/></span>
+                <span class="b-label"><cti:msg key="${bulkField.displayKey}"/></span>
               </button>
               <span><i:inline key="${bulkField.displayKey}.description"/></span>
             </div>

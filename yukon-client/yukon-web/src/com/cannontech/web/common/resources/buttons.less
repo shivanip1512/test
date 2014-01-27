@@ -44,11 +44,11 @@ button.naked, .button.naked {
     margin-bottom: 0;
     padding: 0;
 }
-button.naked .label, .button.naked .label {color: @primary-color;font-weight: normal;}
-button.naked:not([disabled]):hover .label, .button.naked:not([disabled]):hover .label {color: @primary-color;text-decoration: underline}
+button.naked .b-label, .button.naked .b-label {color: @primary-color;font-weight: normal;}
+button.naked:not([disabled]):hover .b-label, .button.naked:not([disabled]):hover .b-label {color: @primary-color;text-decoration: underline}
 
 button[disabled], .button[disabled] {border-color: #d6d6d6}
-button[disabled] .label, .button[disabled] .label,
+button[disabled] .b-label, .button[disabled] .b-label,
 button[disabled] .ui-button-text, .button[disabled] .ui-button-text {color: #888;}
 button[disabled] .icon, .button[disabled] .icon {background-image: url(/WebConfig/yukon/Icons/icons-disabled.png);}
 
@@ -169,7 +169,7 @@ button.grey:active, .button.grey:active {
 }
 
 /* BUTTON LABEL */
-.label, .ui-button-text {
+.b-label, .ui-button-text {
     color: #444;
     display: inline-block;
     float: left;
@@ -180,78 +180,78 @@ button.grey:active, .button.grey:active {
     transition: color .20s;
 } 
 
-button:not([disabled]):hover .label, 
-.button:not([disabled]):hover .label,
+button:not([disabled]):hover .b-label, 
+.button:not([disabled]):hover .b-label,
 button:not([disabled]):hover .ui-button-text, 
 .button:not([disabled]):hover .ui-button-text {
     color: #333;
 }
-button:hover .label.red, .button:hover .label.red,
+button:hover .b-label.red, .button:hover .b-label.red,
 button:hover .ui-button-text.red, .button:hover .ui-button-text.red {
     color: #DB4A37;
 }
-button:hover .label.blue, .button:hover .label.blue,
+button:hover .b-label.blue, .button:hover .b-label.blue,
 button:hover .ui-button-text.blue, .button:hover .ui-button-text.blue {
     color: #7090C8;
 }
-button:hover .label.green, .button:hover .label.green,
+button:hover .b-label.green, .button:hover .b-label.green,
 button:hover .ui-button-text.green, .button:hover .ui-button-text.green {
     color: #42B449;
 }
-button:hover .label.yellow, .button:hover .label.yellow,
+button:hover .b-label.yellow, .button:hover .b-label.yellow,
 button:hover .ui-button-text.yellow, .button:hover .ui-button-text.yellow {
     color: #F7CB38;
 }
 
-button.blue .label, .button.blue .label,
+button.blue .b-label, .button.blue .b-label,
 button.blue .ui-button-text, .button.blue .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 #2F5BB7 !important;
 }
-button.green .label, .button.green .label,
+button.green .b-label, .button.green .b-label,
 button.green .ui-button-text, .button.green .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 #2D6200 !important;
 }
-button.red .label, .button.red .label,
+button.red .b-label, .button.red .b-label,
 button.red .ui-button-text, .button.red .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 #B0281A !important;
 }
-button.orange .label, .button.orange .label,
+button.orange .b-label, .button.orange .b-label,
 button.orange .ui-button-text, .button.orange .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 #EF8900 !important;
 }
-button.grey .label, .button.grey .label,
+button.grey .b-label, .button.grey .b-label,
 button.grey .ui-button-text, .button.grey .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 #777 !important;
 }
 
-button.action:active .label, .button.action:active .label,
+button.action:active .b-label, .button.action:active .b-label,
 button.action:active .ui-button-text, .button.action:active .ui-button-text {
     color: #333 !important;
 }
 
-button.blue:active .label, 
-button.green:active .label, 
-button.red:active .label, 
-button.orange:active .label, 
-button.grey:active .label, 
-button.primary:active .label, 
+button.blue:active .b-label, 
+button.green:active .b-label, 
+button.red:active .b-label, 
+button.orange:active .b-label, 
+button.grey:active .b-label, 
+button.primary:active .b-label, 
 button.blue:active .ui-button-text, 
 button.green:active .ui-button-text, 
 button.red:active .ui-button-text, 
 button.orange:active .ui-button-text, 
 button.grey:active .ui-button-text, 
 button.primary:active .ui-button-text, 
-.button.blue:active .label, 
-.button.green:active .label, 
-.button.red:active .label, 
-.button.orange:active .label, 
-.button.grey:active .label,
-.button.primary:active .label,
+.button.blue:active .b-label, 
+.button.green:active .b-label, 
+.button.red:active .b-label, 
+.button.orange:active .b-label, 
+.button.grey:active .b-label,
+.button.primary:active .b-label,
 .button.blue:active .ui-button-text, 
 .button.green:active .ui-button-text, 
 .button.red:active .ui-button-text, 
@@ -274,18 +274,18 @@ button.primary:active, .button.primary:active {
     box-shadow:0 0 10px #bbb;
 }
 
-button.primary .label, .button.primary .label, 
+button.primary .b-label, .button.primary .b-label, 
 button.primary .ui-button-text, .button.primary .ui-button-text {
     color: #FFF !important;
     text-shadow: 0 1px 0 @primary-button-color !important;
 }
 
 /* delete button */
-button.delete .label, .button.delete .label {color: #DB4A37;}
+button.delete .b-label, .button.delete .b-label {color: #DB4A37;}
 
 button .icon, .button .icon {margin: 0;}
-button .icon:not(.busy) + .label, .button .icon:not(.busy) + .label, 
-button.busy .label, .button.busy .label {margin-left: 5px;}
+button .icon:not(.busy) + .b-label, .button .icon:not(.busy) + .b-label, 
+button.busy .b-label, .button.busy .b-label {margin-left: 5px;}
 
 button .busy, .button .busy {background-image: url(/WebConfig/yukon/Icons/spinner.gif) !important; display: none;}
 button.action .busy, .button.action .busy {background-image: url(/WebConfig/yukon/Icons/spinner-white.gif) !important;}

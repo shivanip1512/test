@@ -50,7 +50,7 @@
             </tags:nameValueContainer2>
 
             <div class="action-area">
-                <button type="submit"><i class="icon icon-filter"></i><span class="label"><i:inline key=".filterButton"/></span></button>
+                <button type="submit"><i class="icon icon-filter"></i><span class="b-label"><i:inline key=".filterButton"/></span></button>
                 <c:choose>
                     <c:when test="${maxCsvRows > searchResult.hitCount}">
                         <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>

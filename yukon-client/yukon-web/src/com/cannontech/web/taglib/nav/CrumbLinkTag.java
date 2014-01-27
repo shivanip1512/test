@@ -32,16 +32,15 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
     private Map<String, String> encodedParameters = new HashMap<String, String>();
     private Writer bodyContentWriter;
     
-    public void doTag() throws JspException, IOException
-    {
+    public void doTag() throws JspException, IOException {
+        
         // access to page writer and request
         JspWriter out = getJspContext().getOut();
         PageContext context = (PageContext)getJspContext();
         HttpServletRequest httpRequest = (HttpServletRequest)context.getRequest();
         
         // the containing BreadCrumbsTag
-        BreadCrumbsTag bc = (BreadCrumbsTag)
-            findAncestorWithClass( this, BreadCrumbsTag.class );
+        BreadCrumbsTag bc = (BreadCrumbsTag)findAncestorWithClass(this, BreadCrumbsTag.class);
         
         JspFragment tagBody = getJspBody();
         if (tagBody != null) {
@@ -49,24 +48,19 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
             tagBody.invoke(bodyContentWriter);
         }
         
-        if( bc == null ) {
+        if (bc == null) {
             throw new JspTagException("Unnested tag requires parent tag of type: "  + BreadCrumbsTag.class.toString() );
         }
         
-        // this crumb is static text
-        if (getUrl() == null) {
-            
-            out.write((bc.isFirstLink() ? "" : bc.getSeperator()));
+        if (getUrl() == null) { // this crumb is static text
             
             // the link display name will be the title attribute and/or any body content
+            out.write("<li>");
             writeTitleIfAvailable();
             writeBodyContentIfAvailable();
+            out.write("</li>");
             
-            bc.updateFirstLink();
-        }
-        
-        // this crumb is a link
-        else {
+        } else { // this crumb is a link
             
             // build the link
             String url = getUrl();
@@ -82,22 +76,13 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
                 url += "?" + queryString;
             }
             
-            String link = (bc.isFirstLink() ? "" : bc.getSeperator()) 
-                        + "<a href=\"" 
-                        + url 
-                        + "\">";
-            
-            out.write(link);
+            out.write("<li><a href=\"" + url + "\">");
             
             // the link display name will be the title attribute and/or any body content
             writeTitleIfAvailable();
             writeBodyContentIfAvailable();
             
-            
-            out.write("</a>");
-            
-            // make sure the containing bread crumb set knows at least one crumb has been written now
-            bc.updateFirstLink();
+            out.write("</a></li>");
             
         }
     }

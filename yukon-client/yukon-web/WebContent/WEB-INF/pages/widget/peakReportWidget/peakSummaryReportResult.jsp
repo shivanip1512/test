@@ -23,31 +23,31 @@
 				</tr>
 		
 				<tr>
-					<td class="label"><i:inline key=".period"/></td>
+					<td><i:inline key=".period"/></td>
 					<td><cti:formatDate value="${peakResult.rangeStartDate}" type="DATE" /> - 
                         <cti:formatDate value="${peakResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
                     </td>
 				</tr>
 				
 				<tr>
-					<td class="label"><i:inline key=".avgDailyVsTotalUsage"/></td>
+					<td><i:inline key=".avgDailyVsTotalUsage"/></td>
 					<td>${avgVsTotal}</td>
 				</tr>
 				<tr>
 					<cti:msg2 key="${peakResult.peakType.formatKey}" var="peakType"/>
-					<td class="label"><i:inline key=".peak" arguments="${peakType}"/></td>
+					<td><i:inline key=".peak" arguments="${peakType}"/></td>
 					<td>${peakResult.peakValue}</td>
 				</tr>
 				<c:choose>
 					<c:when test="${peakResult.peakType == 'INTERVAL'}">
 						<tr>
-							<td class="label"><i:inline key=".peakInterval"/></td>
+							<td><i:inline key=".peakInterval"/></td>
 							<td><i:inline key=".kw" arguments="${peakResult.demand}"/></td>
 						</tr>
 					</c:when>
 					<c:otherwise>
 						<tr>
-							<td class="label"><i:inline key=".peakDay"/></td>
+							<td><i:inline key=".peakDay"/></td>
 							<td><i:inline key=".kwh" arguments="${peakResult.usage}"/></td>
 						</tr>
 					</c:otherwise>

@@ -13,22 +13,11 @@ import com.cannontech.web.taglib.StandardPageTag;
  *
  * @author: ryan
  */
-public class BreadCrumbsTag extends BodyTagSupport
-{
-	private String seperator = " &gt; ";
-	private boolean isFirstLink = true;
-    private String cssClass = "breadCrumbs";
-
-
-	/**
-	 * @return int
-	 * @exception JspException The exception description.
-	 */
-	public int doStartTag() throws JspException
-	{
-	    isFirstLink = true;
-		return EVAL_BODY_BUFFERED;
-	}
+public class BreadCrumbsTag extends BodyTagSupport {
+    
+    public int doStartTag() throws JspException {
+        return EVAL_BODY_BUFFERED;
+    }
     
     public void setBodyContent(BodyContent arg0) {
         super.setBodyContent(arg0);
@@ -38,16 +27,10 @@ public class BreadCrumbsTag extends BodyTagSupport
         return SKIP_BODY;
     }
 
-	/**
-	 * @return int
-	 * @exception JspException The exception description.
-	 */
-	public int doEndTag() throws JspException
-	{
-	    try {
+    public int doEndTag() throws JspException {
+        try {
             // if we are within the standardPage tag, send it our content, otherwise just output
-            StandardPageTag standardPageTag = 
-                (StandardPageTag) findAncestorWithClass(this, StandardPageTag.class);
+            StandardPageTag standardPageTag = (StandardPageTag) findAncestorWithClass(this, StandardPageTag.class);
             if (standardPageTag != null) {
                 standardPageTag.setBreadCrumbs(getWholeTag());
             } else {
@@ -56,47 +39,16 @@ public class BreadCrumbsTag extends BodyTagSupport
         } catch (IOException e) {
             throw new JspException("Unable to output bread crumbs.", e);
         }
-        seperator = " &gt; ";
-        cssClass = "breadCrumbs";
-		return EVAL_PAGE;
-	}
+        return EVAL_PAGE;
+    }
     
     private String getWholeTag() {
         StringBuffer buf = new StringBuffer();
-        buf.append("<div class=\"" + getCssClass() + "\">");
+        buf.append("<ol class=\"breadcrumb\">");
         buf.append(bodyContent.getString());
-        buf.append("</div>");
+        buf.append("</ol>");
         buf.append("\n");
         return buf.toString();
     }
-    
-	public String getSeperator()
-	{
-		return seperator;
-	}
 
-	public void setSeperator(String string)
-	{
-		seperator = string;
-	}
-
-	public boolean isFirstLink()
-	{
-		return isFirstLink;
-	}
-
-	protected void updateFirstLink()
-	{
-		isFirstLink = false;
-	}
-
-    public String getCssClass() {
-        return cssClass;
-    }
-
-    public void setCssClass(String cssClass) {
-        this.cssClass = cssClass;
-    }
-
-    
 }

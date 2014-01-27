@@ -40,7 +40,7 @@ jQuery(function () {
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
-                <td class="label"><i:inline key=".graphType"/></td>
+                <td><i:inline key=".graphType"/></td>
                 
                 <td>
                     <c:set var="notFirst" value="false" scope="page"></c:set>
@@ -55,7 +55,7 @@ jQuery(function () {
         
             <%-- PERIOD --%>
             <tr>
-                <td class="label"><i:inline key=".timePeriod"/></td>
+                <td><i:inline key=".timePeriod"/></td>
                 <cti:msg2 var="prev24Hours" key=".prev24HourData"/>
                 <cti:msg2 var="prevWeeksData" key=".prevWeeksData"/>
                 <cti:msg2 var="prevMonthsData" key=".prevMonthsData"/>
@@ -112,7 +112,7 @@ jQuery(function () {
         
             <%-- CHART STYLE --%>
             <tr>
-                <td class="label"><i:inline key=".chartStyle"/></td>
+                <td><i:inline key=".chartStyle"/></td>
             
                 <td class="last">
                     <cti:msg2 var="lineGraph" key=".lineGraph"/>
@@ -127,7 +127,7 @@ jQuery(function () {
         
             <%-- TABULAR DATA REPROTS --%>
             <tr>
-                <td class="label">
+                <td>
                     <c:choose>
                         <c:when test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
                             <i:inline key=".archivedUsageData"/>
@@ -148,7 +148,7 @@ jQuery(function () {
             
             <c:if test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
                 <tr>
-                    <td class="label"><b><i:inline key=".normalizedUsageData"/></b></td>
+                    <td><b><i:inline key=".normalizedUsageData"/></b></td>
                     
                     <td>
                         <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>

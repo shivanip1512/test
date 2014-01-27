@@ -70,10 +70,10 @@
                         <a id="showPopupButton" title="<cti:msg2 key=".eventLogTypeTreeSector.hoverText"/>" href="javascript:void(0);">
                         <c:choose>
                             <c:when test="${empty eventLogTypeBackingBean or empty eventLogTypeBackingBean.eventLogType}">
-                                <span class="label empty-list"><i:inline key=".noEventLogTypeSelected" /></span>
+                                <span class="b-label empty-list"><i:inline key=".noEventLogTypeSelected" /></span>
                             </c:when>
                             <c:otherwise>
-                                <span class="label">${eventLogTypeBackingBean.eventLogType}</span>
+                                <span class="b-label">${eventLogTypeBackingBean.eventLogType}</span>
                             </c:otherwise>
                         </c:choose>
                             <i class="icon icon-folder"></i>

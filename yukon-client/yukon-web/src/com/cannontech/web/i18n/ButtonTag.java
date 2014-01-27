@@ -220,7 +220,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (mode != RenderMode.IMAGE 
                     && mode != RenderMode.BUTTON_IMAGE
                     && !StringUtils.isBlank(labelText)) {
-                out.write("<span class=\"label\">");
+                out.write("<span class=\"b-label\">");
                 out.write(labelText);
                 out.write("</span>");
             }

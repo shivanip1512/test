@@ -26,10 +26,10 @@ jQuery(document).ready(function() {
         method="get" commandName="backingBean">
         <tags:sortFields backingBean="${backingBean}" />
 
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".filter.dateRange">
                 <dt:dateRange startPath="fromDate" endPath="toDate" >
-                    <i:inline key=".filter.dateTo"/>
+                    <span class="fl" style="margin-right: 5px;"><i:inline key=".filter.dateTo"/></span>
                 </dt:dateRange>
             </tags:nameValue2>
 
@@ -71,7 +71,7 @@ jQuery(document).ready(function() {
         </tags:nameValueContainer2>
 
         <div class="action-area">
-            <cti:button nameKey="filter" type="submit" classes="f-blocker" />
+            <cti:button nameKey="filter" type="submit" classes="f-blocker primary action"/>
             <cti:button nameKey="clear" href="clear" classes="f-blocker" />
         </div>
     </form:form>

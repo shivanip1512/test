@@ -16,13 +16,13 @@
 <li <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <a <c:if test="${not empty pageScope.href}">href="${href}"</c:if> <c:if test="${not empty pageScope.classes}">class="${classes}"</c:if>>
         <c:choose>
-            <c:when test="${pageScrope.displayable}">
+            <c:when test="${pageScope.displayable}">
                 <label class="criteria-option"><input type="checkbox" class="fl" value="${displayable}" <c:if test="${checked}">checked="checked"</c:if>><cti:formatObject value="${displayable}"/></label>
             </c:when>
-            <c:when test="${pageScrope.key}">
+            <c:when test="${pageScope.key}">
                 <label class="criteria-option"><input type="checkbox" class="fl" value="${value}" <c:if test="${checked}">checked="checked"</c:if>><cti:msg2 key="${key}"/></label>
             </c:when>
-            <c:when test="${pageScrope.label}">
+            <c:when test="${pageScope.label}">
                 <label class="criteria-option"><input type="checkbox" class="fl" value="${value}" <c:if test="${checked}">checked="checked"</c:if>>${fn:escapeXml(label)}</label>
             </c:when>
             <c:otherwise>

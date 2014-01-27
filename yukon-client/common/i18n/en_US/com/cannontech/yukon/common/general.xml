@@ -3,6 +3,8 @@
 
 <properties>
 
+<entry key="yukon.common.view">View</entry>
+
 <entry key="yukon.common.copyof">Copy of {0}</entry>
 
 <entry key="yukon.common.search">Search</entry>

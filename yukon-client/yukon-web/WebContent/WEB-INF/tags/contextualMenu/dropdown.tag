@@ -27,8 +27,8 @@
             <a class="button naked">
                 <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
                 <c:choose>
-                    <c:when test="${not empty pageScope.label}"><span class="label">${pageScope.label}</span></c:when>
-                    <c:otherwise><span class="label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
+                    <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
+                    <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
                 </c:choose>
                 <c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if>
             </a>
@@ -38,8 +38,8 @@
             <button role="button" class="button">
                 <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
                 <c:choose>
-                    <c:when test="${not empty pageScope.label}"><span class="label">${pageScope.label}</span></c:when>
-                    <c:otherwise><span class="label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
+                    <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
+                    <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
                 </c:choose>
                 <c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if>
             </button>

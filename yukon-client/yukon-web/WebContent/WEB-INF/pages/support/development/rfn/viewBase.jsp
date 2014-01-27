@@ -39,7 +39,7 @@ jQuery(function() {
         <div class="column two nogutter">
             <div class="action-area">
                 <button id="clearCache">Clear Cache</button>
-                <button id="calcStressTest" class="action red"><span class="label">Calc Stress Test, DO NOT CLICK</span></button>
+                <button id="calcStressTest" class="action red"><span class="b-label">Calc Stress Test, DO NOT CLICK</span></button>
                 <button id="startupNotif">Resend Startup Notif</button>
         </div>
 </div>

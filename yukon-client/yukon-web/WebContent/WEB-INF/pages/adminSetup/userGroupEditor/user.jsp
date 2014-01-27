@@ -151,7 +151,7 @@ jQuery(function() {
                             <i:inline key=".noRoles"/>
                         </c:when>
                         <c:otherwise>
-                            <div class="rolesContainer">
+                            <div>
                                 <c:forEach var="category" items="${roles}">
                                     <ul class="grouped-list">
                                         <li><span class="group"><cti:formatObject value="${category.key}"/></span>

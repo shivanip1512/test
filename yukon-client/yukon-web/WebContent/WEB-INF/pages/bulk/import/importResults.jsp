@@ -12,7 +12,7 @@
     <form id="importResultsForm" type="post" action="/bulk/import/upload">
       <div class="page-action-area">
         <button type="submit">
-          <span class="label"><i:inline key="yukon.common.device.bulk.importResults.backToUpload" /></span>
+          <span class="b-label"><i:inline key="yukon.common.device.bulk.importResults.backToUpload" /></span>
         </button>
       </div>
       <input type="hidden" name="ignoreInvalidCols" value="${ignoreInvalidCols}">

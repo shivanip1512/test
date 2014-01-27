@@ -165,7 +165,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                                    </tags:nameValueContainer>
 		                                    <div class="action-area">
 		                                        <button id="editGroupNameSaveButton" type="button" value="${changeNameButtonText}" onclick="checkAndSubmitNewName('newGroupName', 'editGroupNameForm', 'editGroupNameSaveButton');">
-		                                            <span class="label">${changeNameButtonText}</span>
+		                                            <span class="b-label">${changeNameButtonText}</span>
 		                                        </button>
 		                                    </div>
 		                                </form>
@@ -259,7 +259,7 @@ function confirmRemoveAllDevices(confirmText) {
 		                                        </tags:nameValueContainer>
 		                                        <div class="action-area">
 		                                            <button id="addSubGroupSaveButton" value="${subgroupNameSaveText}" onclick="checkAndSubmitNewName('childGroupName', 'addSubGroupForm', 'addSubGroupSaveButton');">
-		                                                <span class="label">${subgroupNameSaveText}</span>
+		                                                <span class="b-label">${subgroupNameSaveText}</span>
 		                                            </button>
 		                                        </div>
 		                                    </form>
@@ -451,7 +451,7 @@ function confirmRemoveAllDevices(confirmText) {
 	                                        <div class="action-area">
 	                                            <cti:msg2 var="showDevicesLimitText" key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/>
 	                                            <cti:msg2 var="showDeviceslabel" key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel"/>
-	                                            <button id="showDevicesButton" onclick="showDevices()" value="${showDeviceslabel}" title="${showDevicesLimitText}"><span class="label">${showDeviceslabel}</span></button>
+	                                            <button id="showDevicesButton" onclick="showDevices()" value="${showDeviceslabel}" title="${showDevicesLimitText}"><span class="b-label">${showDeviceslabel}</span></button>
 	                                        </div>
 	                                    </c:if>
 	                                </c:when>

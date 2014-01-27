@@ -56,7 +56,7 @@
                                      type="button"
                                      class="button naked f-drFormula-pointPicker f-drFormula-appendTableId">
                                      <span id="formulaPointPickerLbl_"
-                                         class="label f-drFormula-appendTableId">
+                                         class="b-label f-drFormula-appendTableId">
                                          <i:inline key=".noPointSelected"/>
                                      </span>
                                      <i class="icon icon-database-add"></i>
@@ -96,7 +96,7 @@
                                 <button id="formulaPointPickerBtn_${functionIndex}"
                                     role="button" type="button"
                                     class="button naked f-drFormula-pointPicker">
-                                    <span id="formulaPointPickerLbl_${functionIndex}" class="label">
+                                    <span id="formulaPointPickerLbl_${functionIndex}" class="b-label">
                                        <c:if test="${formulaBean.functions[functionIndex].pointType}">
                                            ${fn:escapeXml(pointNames[formulaBean.functions[functionIndex].inputPointId])}
                                        </c:if>

@@ -55,7 +55,7 @@
 		                </tags:nameValue2>
 
 						<tags:nameValue2 nameKey=".deviceGroupCount">
-                            <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-spinner"/><span class="label"><i:inline key=".calculating"/></span></span>
+                            <span id="canonicalCalculatingSpan" class="dn"><cti:icon icon="icon-spinner"/><span class="b-label"><i:inline key=".calculating"/></span></span>
                             <span class="f-device_group_count"><fmt:formatNumber type="number" value="${monitoringCount}" /></span>
 						</tags:nameValue2>
 						<tags:nameValue2 nameKey=".supportedDevices">

@@ -189,6 +189,8 @@ public class LogExplorerController {
         map.addAttribute("logFilePath", file);
         map.addAttribute("numLines", numLines);
         
+        map.addAttribute("widePage", true);
+        
         return "logging/logTail.jsp";
     }   
 
@@ -201,7 +203,7 @@ public class LogExplorerController {
         int linesPerUpdate = logupdateRequest.getNumLines();
         String fileName = logupdateRequest.getFile();
 
-        // takes the data and checks to see if the log file has changed
+        // takes the data and checks to see if the log file has changed        
         Map<String, Object> jsonResponse = new HashMap<>();
         List<String> jsonLogLines = new ArrayList<>();
         jsonResponse.put("numLines", linesPerUpdate);

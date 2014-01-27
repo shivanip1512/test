@@ -62,14 +62,14 @@
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
                             </cti:url>
-                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
+                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
                         </li>
                         <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="CONTROLLED"/>
                             </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="label"><i:inline key=".download"/></span></a>
+                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
                         </li>
                     </ul>
                 </div>
@@ -94,14 +94,14 @@
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
                             </cti:url>
-                            <a href="${newOperationUncontrolled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
+                            <a href="${newOperationUncontrolled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
                         </li>
                         <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNCONTROLLED"/>
                             </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="label"><i:inline key=".download"/></span></a>
+                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
                         </li>
                     </ul>
                 </div>
@@ -126,14 +126,14 @@
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNKNOWN"/>
                             </cti:url>
-                            <a href="${newOperationUnknown}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
+                            <a href="${newOperationUnknown}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
                         </li>
                         <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNKNOWN"/>
                             </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="label"><i:inline key=".download"/></span></a>
+                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
                         </li>
                     </ul>
                 </div>
@@ -158,14 +158,14 @@
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>
                             </cti:url>
-                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="label"><i:inline key=".newOperation"/></span></a>
+                            <a href="${newOperationControlled}" class="button naked"><i class="icon icon-cog-go"></i><span class="b-label"><i:inline key=".newOperation"/></span></a>
                         </li>
                         <li class="clearfix">
                             <cti:url var="download" value="download">
                                 <cti:param name="auditId" value="${audit.auditId}"/>
                                 <cti:param name="type" value="UNSUPPORTED"/>
                             </cti:url>
-                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="label"><i:inline key=".download"/></span></a>
+                            <a href="${download}" class="button naked"><i class="icon icon-page-excel"></i><span class="b-label"><i:inline key=".download"/></span></a>
                         </li>
                     </ul>
                 </div>

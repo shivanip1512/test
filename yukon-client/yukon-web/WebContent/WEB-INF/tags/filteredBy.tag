@@ -20,8 +20,8 @@
     <c:when test="${filteredByContainer}">
         <div class="dib wsnw">
 		<button class="button ${pageScope.cssClass}<c:if test="${pageScope.isReset}"> reset</c:if><c:if test="${pageScope.showClear}"> left</c:if>" style="margin-left:0;">
-			<span class="label" style="font-weight: normal;"><i:inline key="${pageScope.labelKey}"/></span>
-			<span class="label">${pageScope.value}</span>
+			<span class="b-label" style="font-weight: normal;"><i:inline key="${pageScope.labelKey}"/></span>
+			<span class="b-label">${pageScope.value}</span>
 		</button>
 		<c:if test="${pageScope.showClear}">
             <button class="f-clear-filter-option right ${pageScope.clearClass}">

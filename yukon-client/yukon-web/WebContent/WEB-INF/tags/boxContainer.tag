@@ -33,7 +33,7 @@
             </c:choose>
         </h3>
         <c:if test="${not empty pageScope.helpText}">
-            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp"/>
+            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp show-on-hover"/>
         </c:if>
         <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
             <div class="controls" id="${thisId}_control">

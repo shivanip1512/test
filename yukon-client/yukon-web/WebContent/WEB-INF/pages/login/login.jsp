@@ -34,13 +34,13 @@
                             <div class="clearfix">
                                 <input type="password" id="login_password" name="PASSWORD" autocomplete="off" placeholder="<cti:msg2 key="yukon.web.login.password"/>" class="fl">
                                 <cti:checkGlobalSetting setting="ENABLE_PASSWORD_RECOVERY">
-                                    <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
+                                    <button type="button" id="forgot-btn" class="fl" data-href="/login/forgottenPassword"><span class="b-label"><cti:msg2 key="yukon.web.login.forgot"/></span></button>
                                 </cti:checkGlobalSetting>
                             </div>
                             <div class="action-area">
                                 <label class="fl remember-me"><input type="checkbox" id="remember_me" name="rememberme"><cti:msg2 key="yukon.web.login.rememberMe"/></label>
                                 <button type="submit" name="login" class="action primary">
-                                    <span class="label"><cti:msg2 key="yukon.web.login.login"/></span>
+                                    <span class="b-label"><cti:msg2 key="yukon.web.login.login"/></span>
                                 </button>
                                 <input type="hidden" name="REDIRECTED_FROM" value="${fn:escapeXml(param.REDIRECTED_FROM)}">
                                 <input type="hidden" name="ACTION" value="LOGIN">
