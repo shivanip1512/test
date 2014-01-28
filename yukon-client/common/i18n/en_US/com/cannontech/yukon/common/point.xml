@@ -52,6 +52,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.DISCONNECT_STATUS">Disconnect Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KVAH">kVAh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAR">kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH">kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_A">kVArh Rate A</entry>
@@ -121,6 +122,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_RATE_E">Usage Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_A">Power Factor (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_B">Power Factor (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_C">Power Factor (Phase C)</entry>
@@ -241,6 +243,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KWH_RATE_E">Sum kWh Rate E</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVAH">Sum kVAh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KVARH">Sum kVArh</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA">Peak kVA</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVA_COIN">Peak kVA Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR">Peak kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_A">Peak kVAr Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_KVAR_RATE_B">Peak kVAr Rate B</entry>

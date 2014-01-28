@@ -7665,11 +7665,26 @@
             </point>
         </points>
         <attributes>
+            <attribute name="KVAH">
+                <basicLookup point="kVAh Delivered"/>
+            </attribute>
+            <attribute name="RECEIVED_KVAH">
+                <basicLookup point="kVAh Received"/>
+            </attribute>
             <attribute name="SUM_KVAH">
                 <basicLookup point="kVAh Sum"/>
             </attribute>
+            <attribute name="PEAK_KVA">
+                <basicLookup point="Peak kVA"/>
+            </attribute>
+            <attribute name="PEAK_KVA_COIN">
+                <basicLookup point="Coincident kVA"/>
+            </attribute>
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Avg Power Factor"/>
+            </attribute>
+            <attribute name="POWER_FACTOR_COIN">
+                <basicLookup point="Coincident Power Factor"/>
             </attribute>
             <attribute name="POWER_FACTOR_PHASE_A">
                 <basicLookup point="Phase A Power Factor"/>
