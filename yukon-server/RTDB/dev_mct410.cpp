@@ -1725,14 +1725,22 @@ int Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq, CtiComm
               static_cast<unsigned>(*connectMinutes),
               buttonRequired,
               getDemandInterval()));
-    }
-    else
-    {
-        // This is a read
-        disconnectCommand.reset(new Mct410DisconnectConfigurationCommand());
+
+        std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+
+        if( ! tryExecuteCommand(*om, disconnectCommand) )
+        {
+            return NoMethod;
+        }
+
+        outList.push_back(om.release());
     }
 
+    // This is a read
+    disconnectCommand.reset(new Mct410DisconnectConfigurationCommand());
+
     std::auto_ptr<OUTMESS> om(new OUTMESS(*OutMessage));
+    om->Priority -= 1;      //decrease for read. Only want read after a successful write.
 
     if( ! tryExecuteCommand(*om, disconnectCommand) )
     {
