@@ -60,7 +60,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 String internalMessageConnection;
                 
                 if (applicationName.equals("ServiceManager")) {
-                    internalMessageConnection = "vm://ServiceManager?create=false";
+                    internalMessageConnection = "vm://ServiceManager?create=false&waitForStart=120000"; // wait for the broker to start for 2 minutes
                 } else {
                     internalMessageConnection = 
                             configurationSource.getString(JMS_INTERNAL_MESSAGING_CONNECTION, serverListenConnection);

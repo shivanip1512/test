@@ -11,10 +11,15 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import com.cannontech.clientutils.YukonLogManager;
 
 public class ClientEmbeddedBroker {
-	private Logger log = YukonLogManager.getLogger(ClientEmbeddedBroker.class);
+	
+    private static final long DEFAULT_WAIT_FOR_START_MILLIS = 120000; // 2 minutes
+    
+    private Logger log = YukonLogManager.getLogger(ClientEmbeddedBroker.class);
 
     private final String name;
     private final String connectionString;
+    
+    private long waitForStartMillis = DEFAULT_WAIT_FOR_START_MILLIS;
     
     /**
      * @param name name used for the broker, mostly for debug
@@ -31,7 +36,7 @@ public class ClientEmbeddedBroker {
      */
     public ConnectionFactory getConnectionFactory() {
         // Create a ConnectionFactory
-        ConnectionFactory factory = new ActiveMQConnectionFactory("vm://" + name + "?create=false");
+        ConnectionFactory factory = new ActiveMQConnectionFactory("vm://" + name + "?create=false&waitForStart=" + waitForStartMillis);
         
         // if using Spring, create a CachingConnectionFactory
         CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
