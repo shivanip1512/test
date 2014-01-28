@@ -76,7 +76,10 @@
       </option>
       <option name="estimatedLoad">
         <permissions>
-          <masterConfig name="ENABLE_ESTIMATED_LOAD" />
+            <and>
+              <masterConfig name="ENABLE_ESTIMATED_LOAD" />
+              <role name="LM_DIRECT_LOADCONTROL" />
+            </and>
         </permissions>
         <link>/dr/estimatedLoad/home</link>
       </option>
@@ -182,9 +185,22 @@
   <menu name="tools">
     <options>
       <option name="bulkOperations">
+        <permissions>
+            <or>
+	          <roleProperty name="BULK_IMPORT_OPERATION" />
+	          <roleProperty name="ADD_REMOVE_POINTS" />
+	          <roleProperty name="FDR_TRANSLATION_MANAGER" />
+	          <roleProperty name="IMPORTER_ENABLED" />
+	          <roleProperty name="CAP_CONTROL_IMPORTER" />
+	          <roleProperty name="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+            </or>
+        </permissions>
         <link>/bulk/bulkHome</link>
       </option>
       <option name="collectionActions">
+        <permissions>
+            <role name="DEVICE_ACTIONS"/>
+        </permissions>
         <link>/bulk/deviceSelection</link>
       </option>
       <option name="commander">
@@ -213,7 +229,7 @@
       </option>
       <option name="deviceGroups">
         <permissions>
-          <roleProperty name="ADMIN_VIEW_CONFIG" />
+          <role name="DEVICE_ACTIONS" />
         </permissions>
         <link>/group/editor/home</link>
       </option>

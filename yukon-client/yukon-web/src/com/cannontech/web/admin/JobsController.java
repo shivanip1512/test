@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -22,7 +23,9 @@ import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.web.security.annotation.CheckRole;
 
+@CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
 @Controller
 @RequestMapping("/jobsscheduler/*")
 public class JobsController {

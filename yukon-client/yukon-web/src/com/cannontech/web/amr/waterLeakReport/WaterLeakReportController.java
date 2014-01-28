@@ -59,6 +59,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -87,6 +88,7 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTag
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
@@ -97,6 +99,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+@CheckRole({YukonRole.REPORTING, YukonRole.METERING})
 @Controller
 @RequestMapping("/waterLeakReport/*")
 public class WaterLeakReportController {

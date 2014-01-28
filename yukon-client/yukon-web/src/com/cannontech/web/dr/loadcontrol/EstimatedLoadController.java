@@ -32,6 +32,7 @@ import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.impl.LMGearDaoImpl;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -59,12 +60,14 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/estimatedLoad/*")
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD)
+@CheckRole(YukonRole.LM_DIRECT_LOADCONTROL)
 public class EstimatedLoadController {
 
     @Autowired private FormulaDao formulaDao;

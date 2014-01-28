@@ -82,7 +82,7 @@ public class EnergyCompanyController {
         }
 
         LiteYukonUser user = userContext.getYukonUser();
-        boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
+        boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
         
         if (superUser) {
             /* For super users show all energy companies. */

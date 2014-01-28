@@ -61,6 +61,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -88,6 +89,7 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTag
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -95,6 +97,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+@CheckRoleProperty(YukonRoleProperty.METER_EVENTS)
 @Controller
 @RequestMapping("/meterEventsReport/*")
 public class MeterEventsReportController {

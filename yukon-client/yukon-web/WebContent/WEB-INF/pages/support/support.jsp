@@ -102,6 +102,7 @@ jQuery(function() {
     </div>
 </div>
 
+<cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
 <div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="bundle">
@@ -192,6 +193,7 @@ jQuery(function() {
     </div>
 
     <div class="column two nogutter">
+        <cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS">
         <tags:sectionContainer2 nameKey="logs">
              <ul class="stacked simple-list">
                 <c:forEach var="logFile" items="${todaysLogs}">
@@ -201,6 +203,7 @@ jQuery(function() {
             </ul>
             <a href="/support/logging/menu?file=/&sortType=date"><i:inline key=".allLogs"/></a>
         </tags:sectionContainer2>
+        </cti:checkRolesAndProperties>
 
         <tags:sectionContainer2 nameKey="dbInfo">
                 <div><strong><i:inline key=".databaseInfo.dbConnection.jdbcUrl"/></strong></div>
@@ -211,4 +214,5 @@ jQuery(function() {
         </tags:sectionContainer2>
     </div>
 </div>
+</cti:checkRolesAndProperties>
 </cti:standardPage>
