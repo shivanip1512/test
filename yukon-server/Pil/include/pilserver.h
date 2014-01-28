@@ -76,6 +76,8 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, void *connectionHandle);
 
+   void validateConnections();
+
 protected:
 
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;

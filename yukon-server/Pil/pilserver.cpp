@@ -86,6 +86,22 @@ bool inmess_user_message_id_equal(const INMESS &in, int user_message_id);
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 
+namespace { // anonymous namespace
+
+/**
+ * checks if a connection is non-viable
+ *
+ * @param CM
+ * @param d
+ * @return true if non-viable, false otherwise
+ */
+bool NonViableConnection(CtiServer::ptr_type &CM, void* d)
+{
+    return ! CM->isViable();
+}
+
+} // anonymous namespace
+
 int PilServer::execute()
 {
     _broken = false;
@@ -452,6 +468,8 @@ void PilServer::connectionThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
                 }
+
+                validateConnections();
             }
         }
     }
@@ -477,6 +495,25 @@ void PilServer::connectionThread()
     _broken = true;
 }
 
+/**
+ * remove all non-viable connections
+ */
+void PilServer::validateConnections()
+{
+    CtiServerExclusion guard(_server_exclusion);
+
+    while( CtiServer::ptr_type CM = mConnectionTable.remove(NonViableConnection, NULL) )
+    {
+        {
+            CtiTime Now;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << Now << " ** INFO ** Vagrant connection detected. Removing it." << endl;
+            dout << Now << "   Connection: " << CM->getClientName() << " id " << CM->getClientAppId() << " on " << CM->getPeer() << " will be removed" << endl;
+        }
+
+        clientShutdown(CM);
+    }
+}
 
 void PilServer::copyReturnMessageToResponseMonitorQueue(const CtiReturnMsg &returnMsg, void *connectionHandle)
 {
@@ -659,7 +696,7 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
                     "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
                     IDNF,
                     InMessage->Return.RouteID,
-                    InMessage->Return.MacroOffset,
+                    InMessage->Return.RetryMacroOffset,
                     InMessage->Return.Attempt,
                     InMessage->Return.GrpMsgID,
                     InMessage->Return.UserID,
@@ -763,7 +800,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.commandResult.description,
                         result.status,
                         0,
-                        0,
+                        MacroOffset::none,
                         0,
                         result.request.groupMessageId,
                         result.request.userMessageId));
