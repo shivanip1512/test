@@ -185,8 +185,7 @@ public class DefaultThermostatScheduleController {
                        YukonUserContext userContext,
                        ModelMap modelMap) throws JsonProcessingException, IOException {
 
-        AccountThermostatSchedule ats = 
-                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(schedulesJson);
+        AccountThermostatSchedule ats = JsonUtils.fromJson(schedulesJson, AccountThermostatSchedule.class);
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
 

@@ -208,67 +208,66 @@ Yukon.DeviceDataMonitor = (function () {
             var same_point_violation_exists = false;
 
             newTable = jQuery(countSel).html("<table><tbody></tbody></table>");
-            for (var ii=0; ii < data.missingPointList.length; ii++) {
-                var procRowMsgs = data.missingPointList[ii];
-                for (var jj=0; jj < procRowMsgs.length; jj++) {
-                    var rowId       = procRowMsgs[jj][0];
-                    var itemType    = procRowMsgs[jj][1];
-//                    var itemId      = procRowMsgs[jj][2];     // Not currently used
-                    var itemName    = procRowMsgs[jj][3];
-                    var usedLimitQry= procRowMsgs[jj][4];
-                    var counts      = procRowMsgs[jj][5];
-                    var missingText = procRowMsgs[jj][6];
-                    var listTitle   = procRowMsgs[jj][7];
-                    var helpTitle   = procRowMsgs[jj][8];
-                    var helpText    = procRowMsgs[jj][9];
-                    var addPointsTxt= procRowMsgs[jj][10];
-                    var ctrl_attr   = jQuery('[name="processors['+ rowId +'].attribute"]');
-                    var attr_id     = ctrl_attr.find(':selected').val();
-                    var row         = ctrl_attr.closest('tr');
-                    var sg_id       = _get_state_group_value(row);
-
-                    var url_params    = 'violationType='+ encodeURIComponent(itemType) +'&groupName='+  encodeURIComponent(jQuery('#groupName').val())
-                                    +'&attribute='+ encodeURIComponent(attr_id)  +'&stateGroup='+ encodeURIComponent(sg_id);
-
-                    var the_list_url = _url_to_display_devices_in_violation +'?'+ url_params;
-                    var trId        = "violationRow"+ itemType + rowId;
-                    var output      = "<tr id='"+ trId +"'>";
-                    var popupListId = "violationListPopup"+ itemType + rowId;
-                    var popupHelpId = "violationHelpPopup"+ itemType + rowId;
-                    var countText   = ""+ counts;
-                    var postHref    = '';
-                    // If the device list is too large, show a warning instead of inaccurate numbers:
-                    if(usedLimitQry && _str_equal(""+ usedLimitQry, "true")) {
-                        countText = '';
-                        var pt_help_title = jQuery("#pointUnknownNumberHelp").attr('target-title');
-                        postHref = '<a class="f-showTooManyDevicesForPointHelp" href="javascript:void(0);" target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'"><i class="icon icon-warning">&nbsp;</i></span>';
-                    }
-                    output += "<td><a class='fl error f-showProblem' href='javascript:void(0);' data-url='" 
-                        + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ listTitle +"'><i class='icon icon-magnifier'></i>" 
-                        + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'></i><span class='label'>"+ countText +"</span></span>"
-                        + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId +"'/></td>";
-                    output += "<td>"+ missingText +"</td><td>"+ itemName +"</td>\n";
-                    // do not add add points functionality unless we are editing
-                    if(_check_row_type_is_point(itemType) && jQuery(_monitor_form).length !== 0) {
-                        var add_points_url = _url_to_add_points_to_display_devices +'?'+ url_params;
-                        output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"
-                            + add_points_url +"' style='margin-top: 2px;' target='_blank' data-add-key='"+ encodeURIComponent(attr_id) +"'><i class='icon icon-add'></i><span class='label'>"+ addPointsTxt +"</span></a></td>";
-                        if( refresh_key != null && _str_equal(attr_id, refresh_key))
-                            same_point_violation_exists = true;
-                    } else {
-                        output += "<td>&nbsp;</td>\n";
-                    }
-                    anyTrs = jQuery(newTable).find('tr');
-                    someHtml = output +"<td><a href='javascript:void(0);' class='f-showViolationHelp violation_help_link' target-id='"
-                            + popupHelpId +"' target-title='"+ helpTitle +"'><i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"+ helpText +"</div></td></td></tr>";
-                    if (0 < anyTrs.length) {
-                        jQuery(anyTrs[anyTrs.length-1]).after(someHtml);
-                    } else {
-                        jQuery(newTable).find('tbody').html(someHtml);
-                    }
-                }
-            }
             
+            data.missingPointList.forEach(function(missingPointViolation, index) {
+                var ctrl_attr   = jQuery('[name="processors['+ missingPointViolation.rowId +'].attribute"]');
+                var attr_id     = ctrl_attr.find(':selected').val();
+                var row         = ctrl_attr.closest('tr');
+                var sg_id       = _get_state_group_value(row);
+
+                var url_params  = 'violationType=' + encodeURIComponent(missingPointViolation.fieldType) + '&groupName='
+                                + encodeURIComponent(jQuery('#groupName').val())
+                                +'&attribute='+ encodeURIComponent(attr_id) + '&stateGroup='+ encodeURIComponent(sg_id);
+
+                var the_list_url = _url_to_display_devices_in_violation +'?'+ url_params;
+                var trId        = "violationRow" + missingPointViolation.fieldType + missingPointViolation.rowId;
+                var output      = "<tr id='"+ trId + "'>";
+                var popupListId = "violationListPopup"+ missingPointViolation.fieldType + missingPointViolation.rowId;
+                var popupHelpId = "violationHelpPopup"+ missingPointViolation.fieldType + missingPointViolation.rowId;
+                var countText   = "" + missingPointViolation.missingCount;
+                var postHref    = '';
+                // If the device list is too large, show a warning instead of inaccurate numbers:
+                if(missingPointViolation.useLimitedQuery && _str_equal(""+ missingPointViolation.useLimitedQuery, "true")) {
+                    countText = '';
+                    var pt_help_title = jQuery("#pointUnknownNumberHelp").attr('target-title');
+                    postHref = '<a class="f-showTooManyDevicesForPointHelp" href="javascript:void(0);"'
+                        + ' target-id="pointUnknownNumberHelp" target-title="'+ pt_help_title +'">'
+                        + '<i class="icon icon-warning">&nbsp;</i></span>';
+                }
+                output += "<td><a class='fl error f-showProblem' href='javascript:void(0);' data-url='" 
+                    + the_list_url + "' target-id='"+ popupListId +"' target-title='"+ missingPointViolation.listTitle 
+                    + "'><i class='icon icon-magnifier'></i>" 
+                    + countText + "</a><span class='fl f-loading dn'><i class='icon icon-spinner'>"
+                    + "</i><span class='b-label'>"+ countText +"</span></span>"
+                    + postHref +"<div class='f-problems_container problem_device_list dn' id='"+ popupListId
+                    + "'/></td>";
+                output += "<td>"+ missingPointViolation.missingText +"</td><td>"+ missingPointViolation.fieldDisplayName
+                +"</td>\n";
+                // do not add add points functionality unless we are editing
+                if(_check_row_type_is_point(missingPointViolation.fieldType) && jQuery(_monitor_form).length !== 0) {
+                    var add_points_url = _url_to_add_points_to_display_devices +'?'+ url_params;
+                    output += "<td class='fr' style='white-space:nowrap;padding-left:0.5em;'><a href='"
+                        + add_points_url +"' style='margin-top: 2px;' target='_blank' data-add-key='"
+                        + encodeURIComponent(attr_id) +"'><i class='icon icon-add'></i><span class='b-label'>"
+                        + missingPointViolation.addPointsTxt +"</span></a></td>";
+                    if( refresh_key != null && _str_equal(attr_id, refresh_key))
+                        same_point_violation_exists = true;
+                } else {
+                    output += "<td>&nbsp;</td>\n";
+                }
+                anyTrs = jQuery(newTable).find('tr');
+                someHtml = output +"<td><a href='javascript:void(0);' class='f-showViolationHelp violation_help_link'"
+                + " target-id='" + popupHelpId +"' target-title='"+ missingPointViolation.helpTitle +"'>"
+                + "<i class='icon icon-help'>&nbsp;</i></a><div class='dn' id='"+ popupHelpId +"'>"
+                + missingPointViolation.helpText +"</div></td></td></tr>";
+
+                if (0 < anyTrs.length) {
+                    jQuery(anyTrs[anyTrs.length-1]).after(someHtml);
+                } else {
+                    jQuery(newTable).find('tbody').html(someHtml);
+                }
+            });
+
             if(! same_point_violation_exists) {
                 ctrl_refresh.attr('data-add-key', '');
                 ctrl_refresh.hide();

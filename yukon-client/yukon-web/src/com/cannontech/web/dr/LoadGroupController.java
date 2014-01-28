@@ -2,15 +2,13 @@ package com.cannontech.web.dr;
 
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +123,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext userContext) {
+                               YukonUserContext userContext) throws IOException {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
@@ -170,12 +168,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) {
-
-        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
+                       String filter) throws IOException {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filter);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -208,7 +204,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(loadGroup, filter, request, response, userContext);
+        List<String[]> dataRows = getDownloadDataRows(loadGroup, filter, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
@@ -234,9 +230,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/loadGroup/sendShed")
-    public @ResponseBody JSONObject sendShed(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
-            int durationInSeconds, YukonUserContext userContext,
-            FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> sendShed(int loadGroupId, int durationInSeconds,
+                                                      YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -247,15 +242,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
         
         loadGroupService.sendShed(loadGroupId, durationInSeconds);
         
-        demandResponseEventLogService.threeTierLoadGroupShed(yukonUser, 
-                                                             loadGroup.getName(), 
-                                                             durationInSeconds);
+        demandResponseEventLogService.threeTierLoadGroupShed(yukonUser, loadGroup.getName(), durationInSeconds);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendShedConfirm.shedSent"));
         
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
     
     @RequestMapping("/loadGroup/sendRestoreConfirm")
@@ -273,8 +263,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/loadGroup/sendRestore")
-    public @ResponseBody JSONObject sendRestore(HttpServletResponse resp, ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
-                              FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> sendRestore(int loadGroupId, YukonUserContext userContext, 
+                                                         FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -287,11 +277,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         
         demandResponseEventLogService.threeTierLoadGroupRestore(yukonUser, loadGroup.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendRestoreConfirm.restoreSent"));
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
-        return json;
+
+        return Collections.singletonMap("action", "reload");
     }
 
     @RequestMapping("/loadGroup/sendEnableConfirm")
@@ -310,9 +297,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }
     
     @RequestMapping("/loadGroup/setEnabled")
-    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int loadGroupId,
-                             boolean isEnabled, YukonUserContext userContext,
-                             FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> setEnabled(int loadGroupId, boolean isEnabled,
+                                                        YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -331,10 +317,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendEnableConfirm.disabled"));
         }
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     @InitBinder

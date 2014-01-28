@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,6 @@ import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -101,6 +98,8 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -129,7 +128,6 @@ public class ArchivedValuesExporterController {
     @Autowired private AttributeService attributeService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private JobManager jobManager;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
@@ -142,7 +140,7 @@ public class ArchivedValuesExporterController {
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
                        @ModelAttribute ArchivedValuesExporter archivedValuesExporter, Integer itemsPerPage, 
                        @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
-                       throws ServletRequestBindingException, DeviceCollectionCreationException {
+                       throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
         ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
@@ -161,11 +159,11 @@ public class ArchivedValuesExporterController {
         model.addAttribute("dynamicAttribute", ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE);
         model.addAttribute("preview", generatePreview);
         
-        model.addAttribute("dataRangeTypes", createJSONArray(DataRangeType.values()));
-        model.addAttribute("fixedRunDataRangeTypes", createJSONArray(FIXED_RUN_DATA_RANGE_TYPES));
-        model.addAttribute("fixedScheduleDataRangeTypes", createJSONArray(FIXED_SCHEDULE_DATA_RANGE_TYPES));
-        model.addAttribute("dynamicRunDataRangeTypes", createJSONArray(DYNAMIC_RUN_DATA_RANGE_TYPES ));
-        model.addAttribute("dynamicScheduleDataRangeTypes", createJSONArray(DYNAMIC_SCHEDULE_DATA_RANGE_TYPES));
+        model.addAttribute("dataRangeTypes", JsonUtils.toJson(DataRangeType.values()));
+        model.addAttribute("fixedRunDataRangeTypes", JsonUtils.toJson((FIXED_RUN_DATA_RANGE_TYPES)));
+        model.addAttribute("fixedScheduleDataRangeTypes", JsonUtils.toJson((FIXED_SCHEDULE_DATA_RANGE_TYPES)));
+        model.addAttribute("dynamicRunDataRangeTypes", JsonUtils.toJson((DYNAMIC_RUN_DATA_RANGE_TYPES)));
+        model.addAttribute("dynamicScheduleDataRangeTypes", JsonUtils.toJson((DYNAMIC_SCHEDULE_DATA_RANGE_TYPES)));
 
         if (StringUtils.isNotBlank(request.getParameter("collectionType"))) {
             DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -205,8 +203,9 @@ public class ArchivedValuesExporterController {
     @RequestMapping("selected")
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
-                           throws DeviceCollectionCreationException, ServletException {
-        return view(model, request, userContext, archivedValuesExporter, CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
+                           throws DeviceCollectionCreationException, ServletException, JsonProcessingException {
+        return view(model, request, userContext, archivedValuesExporter,
+                    CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
     }
 
     @RequestMapping("create")
@@ -623,13 +622,7 @@ public class ArchivedValuesExporterController {
         
         return dataRange;
     }
-    
-    private <E> JSONArray createJSONArray(E[] objectArray) {
-        JSONArray jsonArray = new JSONArray();
-        jsonArray .addAll(Arrays.asList(objectArray));
-        return jsonArray;
-    }
-    
+
     private String getFileName(Date endDate, String formatName) {
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
         String fileNameDateFormatString = fileNameDateFormat.format(endDate);

@@ -3,13 +3,12 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.joda.time.Duration;
 import org.springframework.stereotype.Controller;
@@ -37,9 +36,12 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -167,12 +169,9 @@ public class StopProgramController extends ProgramControllerBase {
                                                                         stopDate);
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopRequested"));
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
+
         resp.setContentType("application/json");
-        resp.getWriter().write(json.toString());
+        resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
 
@@ -259,6 +258,7 @@ public class StopProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping("stopMultiple")
+    @CheckGlobalSetting(GlobalSettingType.GOOGLE_ANALYTICS_ENABLED)
     public String stopMultiple(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -336,12 +336,9 @@ public class StopProgramController extends ProgramControllerBase {
         if(backingBean.getScenarioId() != null){
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopRequested"));
         }
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
+
         resp.setContentType("application/json");
-        resp.getWriter().write(json.toString());
+        resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
 

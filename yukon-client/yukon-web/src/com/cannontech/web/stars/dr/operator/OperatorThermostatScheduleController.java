@@ -80,8 +80,7 @@ public class OperatorThermostatScheduleController {
 					   FlashScope flash, 
 					   AccountInfoFragment fragment) throws IOException {
 
-        AccountThermostatSchedule ats = 
-                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(schedulesJson);
+        AccountThermostatSchedule ats = JsonUtils.fromJson(schedulesJson, AccountThermostatSchedule.class);
         CustomerAccount account = customerAccountDao.getById(fragment.getAccountId());
         ats.setAccountId(account.getAccountId());
 

@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -68,6 +66,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Ordering;
@@ -87,7 +86,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private ProgramControllerHelper programControllerHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private TriggerFieldService triggerFieldService;
-    
+
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
         private IntegerRange priority = new IntegerRange();
@@ -245,7 +244,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext userContext) {
+                               YukonUserContext userContext) throws IOException {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
@@ -274,6 +273,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
     /**
      * Used for paging and filtering operations.
+     * @throws IOException 
+     * @throws  
      */
     @RequestMapping("/controlArea/page")
     public String page(ModelMap model, 
@@ -284,12 +285,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) {
+                       String filter) throws IOException {
 
-        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
-        
         DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filter);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -319,9 +318,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
-
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, request, response, userContext);
+        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
@@ -353,8 +351,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/controlArea/setEnabled")
-    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
-                             boolean isEnabled, YukonUserContext userContext, FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> setEnabled(int controlAreaId, boolean isEnabled, YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -375,9 +372,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendEnableConfirm.disabled"));
         }
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     @RequestMapping("/controlArea/sendResetPeakConfirm")
@@ -395,8 +390,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/controlArea/resetPeak")
-    public @ResponseBody JSONObject resetPeak(HttpServletResponse resp, ModelMap modelMap, int controlAreaId, 
-                            YukonUserContext userContext, FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> resetPeak(int controlAreaId, 
+                            YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -411,9 +406,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
                                                                     controlArea.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendResetPeakConfirm.peakReset"));
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     // TIME WINDOW - show
@@ -478,9 +471,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
     // TIME WINDOW - send
     @RequestMapping("/controlArea/changeTimeWindow")
-    public @ResponseBody JSONObject changeTimeWindow(HttpServletResponse resp, ModelMap modelMap, int controlAreaId,
-                                   String startTime, String stopTime, YukonUserContext userContext, 
-                                   FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> changeTimeWindow(int controlAreaId, String startTime, String stopTime,
+            YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -503,9 +495,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged"));
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
 
     // TRIGGER VALUES - show
@@ -573,11 +563,8 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged"));
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
         resp.setContentType("application/json");
-        resp.getWriter().write(json.toString());
+        resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
     

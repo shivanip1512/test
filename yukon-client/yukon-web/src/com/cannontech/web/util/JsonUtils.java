@@ -1,5 +1,6 @@
 package com.cannontech.web.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -64,7 +67,7 @@ public class JsonUtils {
     private static final ObjectWriter writer;
     static {
         ObjectMapper mapper = new ObjectMapper();
-        // FAIL_ON_UNKNOWN_PROPERTIES tells jackson to ignore setters in POJOs for which properties arn't present in
+        // disabling FAIL_ON_UNKNOWN_PROPERTIES tells jackson to ignore setters in POJOs for which properties arn't present in
         // the json string. We still need to add @JsonIgnore to any method (or field for all setters/getters) if there
         // are multiple setters with the same name
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -72,18 +75,25 @@ public class JsonUtils {
         writer = mapper.writer();
     }
 
+   /**
+   * Serialize JSON into a Java Object
+   */
+   public static <T> T fromJson(String json, TypeReference<T> type) throws IOException {
+       return reader.withType(type).readValue(json);
+   }
+
     /**
-     * Immutable, and thread safe
+     * Serialize JSON into a Java Object
      */
-    public static ObjectReader getObjectReader(Class<?> clazz) {
-        return reader.withType(clazz);
+    public static <T> T fromJson(String json, Class<T> type) throws IOException {
+        return reader.withType(type).readValue(json);
     }
-    
+
     /**
-     * Cached, immutable, and thread safe
+     * @return JSON representation of Object
      */
-    public static ObjectWriter getObjectWriter() {
-        return writer;
+    public static String toJson(Object object) throws JsonProcessingException {
+        return writer.writeValueAsString(object);
     }
     
     /**

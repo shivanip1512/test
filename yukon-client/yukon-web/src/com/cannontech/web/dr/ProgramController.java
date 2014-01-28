@@ -2,14 +2,12 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +117,7 @@ public class ProgramController extends ProgramControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext userContext) {
+                               YukonUserContext userContext) throws IOException {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao program = programService.getProgram(assetId);
@@ -154,6 +152,7 @@ public class ProgramController extends ProgramControllerBase {
 
     /**
      * Used for paging and filtering operations.
+     * @throws IOException 
      */
     @RequestMapping("/program/page")
     public String page(ModelMap model, 
@@ -164,12 +163,10 @@ public class ProgramController extends ProgramControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) {
-
-        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
+                       String filter) throws IOException {
 
         DisplayablePao program = programService.getProgram(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filter);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -192,7 +189,6 @@ public class ProgramController extends ProgramControllerBase {
     public void downloadToCsv(String assetId,
                               String filter,
                               String type,
-                              HttpServletRequest request,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
@@ -202,7 +198,7 @@ public class ProgramController extends ProgramControllerBase {
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(program, filter, request, response, userContext);
+        List<String[]> dataRows = getDownloadDataRows(program, filter, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
@@ -228,8 +224,8 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping("changeGear")
-    public @ResponseBody JSONObject changeGear(HttpServletResponse resp, ModelMap modelMap, int programId, int gearNumber, 
-                             YukonUserContext userContext, FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> changeGear(int programId, int gearNumber, YukonUserContext userContext,
+                                                        FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -243,9 +239,7 @@ public class ProgramController extends ProgramControllerBase {
         demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.gearChanged"));
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
     
     @RequestMapping("changeGearMultiplePopup")
@@ -324,9 +318,9 @@ public class ProgramController extends ProgramControllerBase {
   }
     
     @RequestMapping("changeMultipleGears")
-    public @ResponseBody JSONObject changeMultipleGears(HttpServletResponse resp, ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) throws IOException {
-        
+    public @ResponseBody Map<String, String> changeMultipleGears(ModelMap model,
+                @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean, BindingResult bindingResult,
+                YukonUserContext userContext, FlashScope flashScope) {
 
         if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
@@ -359,10 +353,8 @@ public class ProgramController extends ProgramControllerBase {
         if (gearChanged) {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.multipleGearChanged"));
         }
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+
+        return Collections.singletonMap("action", "reload");
     }
     
     @RequestMapping("sendEnableConfirm")
@@ -381,8 +373,8 @@ public class ProgramController extends ProgramControllerBase {
     }
     
     @RequestMapping("setEnabled")
-    public @ResponseBody JSONObject setEnabled(HttpServletResponse resp, ModelMap modelMap, int programId, boolean isEnabled,
-            YukonUserContext userContext, FlashScope flashScope) throws IOException {
+    public @ResponseBody Map<String, String> setEnabled(int programId, boolean isEnabled, YukonUserContext userContext,
+                                                        FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -401,9 +393,7 @@ public class ProgramController extends ProgramControllerBase {
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendEnableConfirm.disabled"));
         }
         
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
     
     @RequestMapping("sendEnableDisableProgramsConfirm")
@@ -481,19 +471,16 @@ public class ProgramController extends ProgramControllerBase {
     
     @SuppressWarnings("null")
     @RequestMapping("enableDisablePrograms")
-    public @ResponseBody JSONObject enableDisablePrograms(HttpServletResponse resp, ModelMap modelMap, HttpServletRequest request, FlashScope flashScope,
-                      Boolean supressRestoration, boolean enable) throws IOException {
+    public @ResponseBody Map<String, String> enableDisablePrograms(HttpServletRequest request, FlashScope flashScope,
+                Boolean supressRestoration, boolean enable) {
         
         String[] programIds = request.getParameterValues("disableProgram");
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
         
         if(programIds == null) {
             YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendDisableProgramsConfirm.noProgramsSelected");
             flashScope.setError(message);
 
-            return json;
+            return Collections.singletonMap("action", "reload");
         }
         
         for(String programIdString : programIds) {
@@ -514,7 +501,7 @@ public class ProgramController extends ProgramControllerBase {
         }
         flashScope.setConfirm(message);
         
-        return json;
+        return Collections.singletonMap("action", "reload");
     }
     
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,

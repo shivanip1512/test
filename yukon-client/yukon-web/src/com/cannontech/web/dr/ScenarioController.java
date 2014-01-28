@@ -6,10 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -133,7 +130,7 @@ public class ScenarioController extends DemandResponseControllerBase {
                                final boolean descending,
                                int assetId, 
                                ModelMap model, 
-                               YukonUserContext userContext) {
+                               YukonUserContext userContext) throws IOException {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao scenario = scenarioService.getScenario(assetId);
@@ -178,12 +175,10 @@ public class ScenarioController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) {
-
-        JSONArray filters = (filter == null || filter.length() == 0) ? null : JSONArray.fromObject(filter);
+                       String filter) throws IOException {
 
         DisplayablePao scenario = scenarioService.getScenario(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filter);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -205,7 +200,6 @@ public class ScenarioController extends DemandResponseControllerBase {
     public void downloadToCsv(String assetId,
                               String filter,
                               String type,
-                              HttpServletRequest request,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
@@ -215,7 +209,7 @@ public class ScenarioController extends DemandResponseControllerBase {
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(scenario, filter, request, response, userContext);
+        List<String[]> dataRows = getDownloadDataRows(scenario, filter, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);

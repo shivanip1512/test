@@ -10,8 +10,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -46,6 +44,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -173,11 +172,8 @@ public class StartProgramController extends ProgramControllerBase {
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            JSONObject json = new JSONObject();
-            json.put("action", "reload");
-            
             resp.setContentType("application/json");
-            resp.getWriter().write(json.toString());
+            resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
             return null;
         }
 
@@ -244,11 +240,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                                 startDate);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startProgram.programStartRequested"));
         
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
         resp.setContentType("application/json");
-        resp.getWriter().write(json.toString());
+        resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
 
@@ -424,9 +417,7 @@ public class StartProgramController extends ProgramControllerBase {
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
             DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
-            paoAuthorizationService.verifyAllPermissions(user,
-                                                         controlArea,
-                                                         Permission.LM_VISIBLE,
+            paoAuthorizationService.verifyAllPermissions(user, controlArea, Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             model.addAttribute("controlArea", controlArea);
         }
@@ -437,8 +428,7 @@ public class StartProgramController extends ProgramControllerBase {
                                                          Permission.LM_VISIBLE,
                                                          Permission.CONTROL_COMMAND);
             model.addAttribute("scenario", scenario);
-            scenarioPrograms =
-                scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
+            scenarioPrograms = scenarioDao.findScenarioProgramsForScenario(backingBean.getScenarioId());
         }
 
         boolean autoObserveConstraintsAllowed =
@@ -453,11 +443,8 @@ public class StartProgramController extends ProgramControllerBase {
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
-            JSONObject json = new JSONObject();
-            json.put("action", "reload");
-            
             resp.setContentType("application/json");
-            resp.getWriter().write(json.toString());
+            resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
             return null;
         }
 
@@ -611,11 +598,9 @@ public class StartProgramController extends ProgramControllerBase {
         if(backingBean.getControlAreaId() != null){
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStartRequested"));
         }
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
+
         resp.setContentType("application/json");
-        resp.getWriter().write(json.toString());
+        resp.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
 

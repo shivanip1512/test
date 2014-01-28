@@ -311,8 +311,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
 
-        AccountThermostatSchedule ats = 
-                JsonUtils.getObjectReader(AccountThermostatSchedule.class).readValue(scheduleJson);
+        AccountThermostatSchedule ats = JsonUtils.fromJson(scheduleJson, AccountThermostatSchedule.class);
         ats.setAccountId(account.getAccountId());
 
         // ensure this user can work with this schedule and thermostat
