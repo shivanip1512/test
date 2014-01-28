@@ -3,7 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="title" required="true" type="java.lang.String"%>
+<%@ attribute name="iconClass"%>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
-<cti:icon icon="icon-help" id="icon_${uniqueId}" classes="cp fn"/>
+<cti:icon icon="icon-help" id="icon_${uniqueId}" classes="cp fn ${iconClass}"/>
 <tags:simplePopup id="${uniqueId}" title="${title}" on="#icon_${uniqueId}" options="{'width': 600}"><jsp:doBody/></tags:simplePopup>
