@@ -11,7 +11,9 @@ public class EnumArgumentResolver {
 
     protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
         String parameter = webRequest.getParameter(methodParameter.getParameterName());
+        @SuppressWarnings("rawtypes")
         Class parameterType = methodParameter.getParameterType();
+        @SuppressWarnings("unchecked")
         Object result = Enum.valueOf(parameterType, parameter);
         return result;
     }
