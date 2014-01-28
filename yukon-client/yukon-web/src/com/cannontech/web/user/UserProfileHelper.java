@@ -54,6 +54,8 @@ public class UserProfileHelper {
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
 
+    private static final int passwordExpireDaysToWarn = 30;
+
     /**
      * Should be called early on in many methods.
      */
@@ -73,7 +75,7 @@ public class UserProfileHelper {
         PasswordPolicy pp = passwordPolicyService.getPasswordPolicy(user);
         model.addAttribute("passwordPolicy", pp);
         model.addAttribute("passwordWarning",
-                           authenticationService.doesPasswordExpireInDays(user, UserProfileController.PASSWORD_EXPIRE_DAYS_TO_WARN));
+                           authenticationService.doesPasswordExpireInDays(user, passwordExpireDaysToWarn));
         model.addAttribute("userGroupName", userGroupDao.getLiteUserGroup(user.getUserGroupId()).getUserGroupName());
         model.addAttribute("changePwdKey", passwordResetService.getPasswordKey(user));
     

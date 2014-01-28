@@ -71,9 +71,7 @@ public class UserProfileController {
     @Autowired private UserProfileValidator userValidator;
     @Autowired private ChangePasswordValidatorFactory passwordValidatorFactory;
 
-    private static final boolean ENABLE_CHANGE_USERNAME = false;
-    private static final int PAGE_EVENT_ROW_COUNT = 10;
-    /* package */ static final int PASSWORD_EXPIRE_DAYS_TO_WARN = 30; // Also used by the Helper in the same package
+    private static final int pageEventRowCount = 10;
     private static final String baseKey = "yukon.web.modules.user.profile.";
 
     /**
@@ -102,7 +100,7 @@ public class UserProfileController {
     public String loadActivityStream(@PathVariable Integer startIndex, ModelMap model, LiteYukonUser user) {
 
         startIndex = startIndex < 0 ? 0 : startIndex;
-        profileHelper.setupActivityStream(model, user, startIndex, PAGE_EVENT_ROW_COUNT);
+        profileHelper.setupActivityStream(model, user, startIndex, pageEventRowCount);
         return "activityStreamSection.jsp";
     }
 
@@ -137,12 +135,6 @@ public class UserProfileController {
             }
             try { // save all
                 operatorAccountService.saveContactDto(profile.getContact(), user);
-                if (ENABLE_CHANGE_USERNAME) {
-                    if (!user.getUsername().equals(profile.getUsername())) {
-                        user.setUsername(profile.getUsername());
-                        yukonUserDao.update(user);
-                    }
-                }
             } catch (IllegalArgumentException iae) {
                 // TODO FIXME REVISE catch block to something meaningful...
                 result.reject(baseKey +"EDIT.FAIL.databaseProblem");
