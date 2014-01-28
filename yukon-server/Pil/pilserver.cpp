@@ -468,7 +468,7 @@ void PilServer::connectionThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
                 }
-
+                
                 validateConnections();
             }
         }
@@ -696,7 +696,7 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
                     "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
                     IDNF,
                     InMessage->Return.RouteID,
-                    InMessage->Return.RetryMacroOffset,
+                    InMessage->Return.MacroOffset,
                     InMessage->Return.Attempt,
                     InMessage->Return.GrpMsgID,
                     InMessage->Return.UserID,
@@ -800,7 +800,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.commandResult.description,
                         result.status,
                         0,
-                        MacroOffset::none,
+                        0,
                         0,
                         result.request.groupMessageId,
                         result.request.userMessageId));
