@@ -336,6 +336,8 @@
     <entry key="yukon.common.setting.LAST_COMMUNICATION_HOURS.description">Maximum number of hours since last communication with device.</entry>
     <entry key="yukon.common.setting.LAST_RUNTIME_HOURS">Last Runtime Hours</entry>
     <entry key="yukon.common.setting.LAST_RUNTIME_HOURS.description">Maximum number of hours since last runtime from device.</entry>
+    <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE">RF Broadcast Performance</entry>
+    <entry key="yukon.common.setting.RF_BROADCAST_PERFORMANCE.description">Enables RF Broadcast performance.</entry>
 
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>

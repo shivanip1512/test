@@ -9,12 +9,9 @@ public enum PreferenceOnOff implements DisplayableEnum {
     @Override
     public String getFormatKey() {
         if(this == ON){
-            return "yukon.web.defaults.on";            
+            return "yukon.web.defaults.on";
         }
-        else {
-            return "yukon.web.defaults.off";
-        }
-        
+        return "yukon.web.defaults.off";
     }
 
 }

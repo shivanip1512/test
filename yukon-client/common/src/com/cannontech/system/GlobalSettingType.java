@@ -16,6 +16,7 @@ import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
+import com.cannontech.core.users.model.PreferenceOnOff;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
@@ -105,6 +106,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     OPT_OUTS_COUNT(GlobalSettingSubCategory.DR, booleanType(), true),
     LAST_COMMUNICATION_HOURS(GlobalSettingSubCategory.DR, integerType(), 60),
     LAST_RUNTIME_HOURS(GlobalSettingSubCategory.DR, integerType(), 168),
+    RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(PreferenceOnOff.class), PreferenceOnOff.OFF),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),

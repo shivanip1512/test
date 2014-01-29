@@ -365,6 +365,7 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
     <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>
+    <bean class="com.cannontech.dr.dao.impl.PerformanceVerificationDaoImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.service.impl.BulkPointDataInjectionServiceImpl"/>
     <bean class="com.cannontech.development.service.impl.RfnEventTestingServiceImpl"/>
