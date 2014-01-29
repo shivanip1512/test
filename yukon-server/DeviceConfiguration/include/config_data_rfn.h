@@ -36,6 +36,11 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string displayItem25;
     static const std::string displayItem26;
 
+    // centron lcd configuration parameters
+    static const std::string LcdCycleTime;
+    static const std::string DisconnectDisplayDisabled;
+    static const std::string DisplayDigits;
+
     // focus alphanumeric display items
     static const std::string displayAlphameric1;
     static const std::string displayAlphameric2;

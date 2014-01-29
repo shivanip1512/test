@@ -2,6 +2,7 @@
 
 #include "cmd_rfn_CentronLcdConfiguration.h"
 
+#include "cmd_rfn_helper.h"
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
@@ -66,12 +67,28 @@ const std::map<unsigned, std::string> MetricNames = boost::assign::map_list_of
     ( 0x23, "TOU Rate D Date of Peak Demand"              )
     ( 0x24, "TOU Rate D Time of Peak Demand"              );
 
+const std::map<unsigned, std::string> DisplayDigitNames = boost::assign::map_list_of
+    ( 0x00, "5x1" )
+    ( 0x01, "6x1" )
+    ( 0x02, "4x1" );
+
+const std::map<unsigned, std::string> DisconnectDisplayNames = boost::assign::map_list_of
+    ( 0x00, "Disabled" )
+    ( 0x01, "Enabled"  );
+
+typedef boost::optional<std::string> OptionalString;
+
 } // anonymous namespace
 
 
 //  Class constructor
-RfnCentronSetLcdConfigurationCommand::RfnCentronSetLcdConfigurationCommand(const metric_vector_t &display_metrics) :
-    display_metrics_to_send(display_metrics)
+RfnCentronSetLcdConfigurationCommand::RfnCentronSetLcdConfigurationCommand(
+        const metric_vector_t &display_metrics_, const DisconnectDisplayState disconnect_display_,
+        const DisplayDigits display_digits_, const unsigned char cycle_time_) :
+    display_metrics(display_metrics_),
+    disconnect_display(disconnect_display_),
+    display_digits(display_digits_),
+    cycle_time(cycle_time_)
 {
 }
 
@@ -94,7 +111,7 @@ void describeMetric(std::ostringstream &metric_description, unsigned metricIndex
 {
     metric_description << "\nDisplay metric " << ++metricIndex << ": ";
 
-    boost::optional<std::string> metricName = mapFind(MetricNames, metric);
+    OptionalString metricName = mapFind(MetricNames, metric);
 
     if( metricName )
     {
@@ -144,39 +161,23 @@ std::string describeMetrics(const RfnCentronLcdConfigurationCommand::metric_map_
 //  Decode a Lcd configuration response
 RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnCommandResult result;
+    std::ostringstream resultDescription;
 
-    if( response.size() < 3 )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Response too small - (" + CtiNumStr(response.size()) + ", expecting >=2)");
-    }
+    validate(Condition(response.size() >= 3, ErrorInvalidData)
+            << "Response too small - (" << response.size() << ", expecting >=3)");
 
-    if( response[0] != LcdConfiguration_CommandCode_Response )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid command code - (" + CtiNumStr(response[0]) + ", expecting LcdConfiguration_CommandCode_Response)");
-    }
+    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ErrorInvalidData)
+            << "Invalid command code - (" << response[0] << ", expecting LcdConfiguration_CommandCode_Response)");
 
-    const boost::optional<std::string> status = mapFind(StatusItems, response[1]);
+    const OptionalString status = mapFind(StatusItems, response[1]);
 
-    if( ! status )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid status code - (" + CtiNumStr(response[1]) + ")");
-    }
+    validate(Condition(status, ErrorInvalidData)
+            << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];
 
-    if( (metrics_nbr * 2) != (response.size() - 3) )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid display metric length - (" + CtiNumStr(response.size() - 3) + ", expecting " + CtiNumStr(metrics_nbr * 2)  + ")");
-    }
+    validate(Condition((metrics_nbr * 2) == (response.size() - 3), ErrorInvalidData)
+            << "Invalid display metric length - (" << (response.size() - 3) << ", expecting " << (metrics_nbr * 2)  + ")");
 
     for( unsigned i = 0; i < metrics_nbr; ++i )
     {
@@ -186,7 +187,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
         switch( slot )
         {
             case Slot_CycleDelay:
-                    _cycleDelay = metric;
+                    _cycleTime = metric;
                     break;
 
             case Slot_DigitConfiguration:
@@ -198,69 +199,110 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
                     break;
 
             default:
-                    _display_metrics_received[slot] = metric;
+                    _displayMetrics[slot] = metric;
                     break;
         }
     }
 
-    result.description = "Display metrics:" + describeMetrics(_display_metrics_received);
+    resultDescription << "Display metrics:" << describeMetrics(_displayMetrics);
 
-    if( _cycleDelay )
+    if( _cycleTime )
     {
-        result.description += "\nCycle delay        : " + CtiNumStr(*_cycleDelay);
+        resultDescription << "\nCycle delay        : ";
+
+        if( *_cycleTime )
+        {
+            resultDescription << *_cycleTime;
+        }
+        else
+        {
+            resultDescription << "(default)";
+        }
     }
     if( _digitConfiguration )
     {
-        result.description += "\nDigit configuration: " + CtiNumStr(*_digitConfiguration);
+        resultDescription << "\nDigit configuration: ";
+
+        if( OptionalString displayDigitName = mapFind(DisplayDigitNames, *_digitConfiguration) )
+        {
+            resultDescription << *displayDigitName;
+        }
+        else
+        {
+            resultDescription << "Unsupported display digit configuration [" << *_digitConfiguration << "]";
+        }
     }
     if( _disconnectDisplay )
     {
-        result.description += "\nDisconnect display : " + CtiNumStr(*_disconnectDisplay);
+        resultDescription << "\nDisconnect display : ";
+
+        if( OptionalString disconnectDisplayName = mapFind(DisconnectDisplayNames, *_disconnectDisplay) )
+        {
+            resultDescription << *disconnectDisplayName;
+        }
+        else
+        {
+            resultDescription << "Unsupported disconnect display configuration [" << *_disconnectDisplay << "]";
+        }
     }
 
-    return result;
+    return resultDescription.str();
 }
 
 //  Decode a Lcd configuration response
 RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
 {
-    RfnCommandResult result;
+    std::ostringstream resultDescription;
 
-    if( response.size() < 3 )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Response too small - (" + CtiNumStr(response.size()) + ", expecting >=2)");
-    }
+    validate(Condition(response.size() >= 3, ErrorInvalidData)
+            << "Response too small - (" << response.size() << ", expecting >= 3)");
 
-    if( response[0] != LcdConfiguration_CommandCode_Response )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid command code - (" + CtiNumStr(response[0]) + ", expecting LcdConfiguration_CommandCode_Response)");
-    }
+    validate(Condition(response[0] == LcdConfiguration_CommandCode_Response, ErrorInvalidData)
+            << "Invalid command code - (" << response[0] << ", expecting LcdConfiguration_CommandCode_Response)");
 
-    const boost::optional<std::string> status = mapFind(StatusItems, response[1]);
+    const OptionalString status = mapFind(StatusItems, response[1]);
 
-    if( ! status )
-    {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid status code - (" + CtiNumStr(response[1]) + ")");
-    }
+    validate(Condition(status, ErrorInvalidData)
+            << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];
 
-    if( metrics_nbr != 0 )
+    validate(Condition(metrics_nbr == 0, ErrorInvalidData)
+            << "Invalid number of display metrics - (" << metrics_nbr << ", expecting 0)");
+
+    resultDescription << "Display metrics successfully set" << describeMetrics(display_metrics);
+
+    resultDescription << "\nDisconnect display: ";
+    if( disconnect_display )
     {
-        throw CommandException(
-            ErrorInvalidData,
-            "Invalid number of display metrics - (" + CtiNumStr(metrics_nbr) + ", expecting 0)");
+        resultDescription << "enabled";
+    }
+    else
+    {
+        resultDescription << "disabled";
     }
 
-    result.description = "Display metrics successfully set" + describeMetrics(display_metrics_to_send);
+    resultDescription << "\nLCD cycle time: ";
+    if( cycle_time )
+    {
+        resultDescription << cycle_time;
+    }
+    else
+    {
+        resultDescription << "(default)";
+    }
 
-    return result;
+    resultDescription << "\nDisplay digits: ";
+    if( OptionalString displayDigitName = mapFind(DisplayDigitNames, display_digits) )
+    {
+        resultDescription << *displayDigitName;
+    }
+    else
+    {
+        resultDescription << "Unsupported display digit configuration [" << display_digits << "]";
+    }
+
+    return resultDescription.str();
 }
 
 //  returns the command code
@@ -286,15 +328,24 @@ RfnCommand::Bytes RfnCentronSetLcdConfigurationCommand::getCommandData()
 {
     Bytes data;
 
-    data.push_back(display_metrics_to_send.size());
+    data.push_back(display_metrics.size() + 3);  //  add 3 for the digit conig, cycle delay, and disconnect display
 
     unsigned metric_number = 0;
 
-    for each( unsigned char display_metric in display_metrics_to_send )
+    for each( unsigned char display_metric in display_metrics )
     {
         data.push_back(metric_number++);
         data.push_back(display_metric);
     }
+
+    data.push_back(Slot_DigitConfiguration);
+    data.push_back(display_digits);
+
+    data.push_back(Slot_CycleDelay);
+    data.push_back(cycle_time);
+
+    data.push_back(Slot_DisconnectDisplay);
+    data.push_back(disconnect_display);
 
     return data;
 }
@@ -306,9 +357,39 @@ RfnCommand::Bytes RfnCentronGetLcdConfigurationCommand::getCommandData()
 }
 
 
-RfnCentronGetLcdConfigurationCommand::metric_map_t RfnCentronGetLcdConfigurationCommand::getReceivedMetrics() const
+RfnCentronGetLcdConfigurationCommand::metric_map_t RfnCentronGetLcdConfigurationCommand::getDisplayMetrics() const
 {
-    return _display_metrics_received;
+    return _displayMetrics;
+}
+
+boost::optional<bool> RfnCentronGetLcdConfigurationCommand::getDisconnectDisplayDisabled() const
+{
+    if( _disconnectDisplay )
+    {
+        return *_disconnectDisplay == 0;
+    }
+
+    return boost::none;
+}
+
+boost::optional<unsigned char>  RfnCentronGetLcdConfigurationCommand::getDigitConfiguration() const
+{
+    if( _digitConfiguration )
+    {
+        switch( *_digitConfiguration )
+        {
+            case DisplayDigits4x1:  return 4;
+            case DisplayDigits5x1:  return 5;
+            case DisplayDigits6x1:  return 6;
+        }
+    }
+
+    return boost::none;
+}
+
+boost::optional<unsigned char> RfnCentronGetLcdConfigurationCommand::getLcdCycleTime() const
+{
+    return _cycleTime;
 }
 
 

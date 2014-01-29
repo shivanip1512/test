@@ -317,6 +317,10 @@ public:
         Key_RFN_OvUvAlarmReportingInterval,
         Key_RFN_OvUvAlarmRepeatInterval,
         Key_RFN_OvUvRepeatCount,
+
+        Key_RFN_LcdCycleTime,
+        Key_RFN_LcdDisconnectDisplayDisabled,
+        Key_RFN_LcdDisplayDigits,
     };
 
 protected:

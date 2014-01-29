@@ -31,6 +31,9 @@ class RfnSetOvUvSetUnderVoltageThresholdCommand;
 
 struct RfnCommandResult
 {
+    RfnCommandResult() {}
+    RfnCommandResult(const std::string &desc) : description(desc) {}
+
     std::string description;
     std::vector<DeviceCommand::point_data> points;
 };

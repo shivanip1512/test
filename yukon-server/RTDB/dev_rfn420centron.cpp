@@ -4,6 +4,10 @@
 
 #include "config_data_rfn.h"
 
+#include "MissingConfigDataException.h"
+
+#include "std_helper.h"
+
 #include <boost/assign/list_of.hpp>
 #include <boost/make_shared.hpp>
 
@@ -67,6 +71,25 @@ const std::vector<std::string> displayMetricConfigKeys = boost::assign::list_of
     ( Config::RfnStrings::displayItem24 )
     ( Config::RfnStrings::displayItem25 )
     ( Config::RfnStrings::displayItem26 );
+
+const std::map<unsigned, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits> displayDigitLookup = boost::assign::map_list_of
+    ( 4, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits4x1 )
+    ( 5, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits5x1 )
+    ( 6, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits6x1 );
+
+template <typename T>
+T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
+{
+    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
+
+    if( ! val )
+    {
+        throw MissingConfigDataException( configKey );
+    }
+
+    return *val;
+}
+
 }
 
 RfnDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
@@ -95,76 +118,124 @@ int Rfn420CentronDevice::executeGetConfigDisplay(CtiRequestMsg *pReq, CtiCommand
 
 int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-
-    if( ! deviceConfig )
+    try
     {
-        return NoConfigData;
-    }
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    Commands::RfnCentronLcdConfigurationCommand::metric_vector_t config_display_metrics;
-
-    std::vector<unsigned char> paoinfo_metrics;
-
-    for each( const std::string configKey in displayMetricConfigKeys )
-    {
-        const boost::optional<long> configValue = deviceConfig->findValue<long>(configKey);
-
-        if( ! configValue  )
+        if( ! deviceConfig )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
-
             return NoConfigData;
         }
 
-        if( *configValue < 0x00 ||
-            *configValue > 0xff )
+        Commands::RfnCentronLcdConfigurationCommand::metric_vector_t config_display_metrics;
+
+        std::vector<unsigned char> paoinfo_metrics;
+
+        for each( const std::string configKey in displayMetricConfigKeys )
+        {
+            long configValue = getConfigValue<long>(deviceConfig, configKey);
+
+            if( configValue < 0x00 ||
+                configValue > 0xff )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                return ErrorInvalidConfigData;
+            }
+
+            config_display_metrics.push_back(configValue);
+        }
+
+        const long config_cycle_delay                 = getConfigValue<long>(deviceConfig, Config::RfnStrings::LcdCycleTime);
+        const long config_display_digits              = getConfigValue<long>(deviceConfig, Config::RfnStrings::DisplayDigits);
+        const bool config_disconnect_display_disabled = getConfigValue<bool>(deviceConfig, Config::RfnStrings::DisconnectDisplayDisabled);
+
+        if( config_cycle_delay < 0x00 ||
+            config_cycle_delay > 0x0f )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_cycle_delay << ") for config key \"" << Config::RfnStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
             }
 
             return ErrorInvalidConfigData;
         }
 
-        config_display_metrics.push_back(*configValue);
-    }
-
-    for each( const PaoInfoKeys paoKey in displayMetricPaoKeys )
-    {
-        long pao_value;
-
-        if( ! getDynamicInfo(paoKey, pao_value) )
+        if( config_display_digits < 4 ||
+            config_display_digits > 6 )
         {
-            break;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return ErrorInvalidConfigData;
         }
 
-        paoinfo_metrics.push_back(pao_value);
-    }
-
-    if( config_display_metrics.size() == paoinfo_metrics.size() && std::equal(config_display_metrics.begin(), config_display_metrics.end(), paoinfo_metrics.begin()) )
-    {
-        if( ! parse.isKeyValid("force") )
+        for each( const PaoInfoKeys paoKey in displayMetricPaoKeys )
         {
-            return ConfigCurrent;
+            long pao_value;
+
+            if( ! getDynamicInfo(paoKey, pao_value) )
+            {
+                break;
+            }
+
+            paoinfo_metrics.push_back(pao_value);
         }
-    }
-    else
-    {
-        if( parse.isKeyValid("verify") )
+
+        bool configMatches = true;
+
+        configMatches &= config_display_metrics.size() == paoinfo_metrics.size() && std::equal(config_display_metrics.begin(), config_display_metrics.end(), paoinfo_metrics.begin());
+        configMatches &= config_display_digits              == getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits);
+        configMatches &= config_disconnect_display_disabled == (getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled) == 1);
+        configMatches &= config_cycle_delay                 == getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime);
+
+        if( configMatches )
         {
-            return ConfigNotCurrent;
+            if( ! parse.isKeyValid("force") )
+            {
+                return ConfigCurrent;
+            }
         }
+        else
+        {
+            if( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+        }
+
+        const boost::optional<Commands::RfnCentronLcdConfigurationCommand::DisplayDigits> displayDigits = mapFind(displayDigitLookup, config_display_digits);
+
+        if( ! displayDigits )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for display digit lookup " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+            return ErrorInvalidConfigData;
+        }
+
+        const Commands::RfnCentronLcdConfigurationCommand::DisconnectDisplayState disconnectDisplay =
+            config_disconnect_display_disabled
+                ? Commands::RfnCentronLcdConfigurationCommand::DisconnectDisplayDisabled  //  note that the key is disconnect display DISABLED if the config value is TRUE
+                : Commands::RfnCentronLcdConfigurationCommand::DisconnectDisplayEnabled;
+
+        rfnRequests.push_back(
+            boost::make_shared<Commands::RfnCentronSetLcdConfigurationCommand>(
+                    config_display_metrics,
+                    disconnectDisplay,
+                    *displayDigits,
+                    config_cycle_delay));
+
+        return NoError;
     }
+    catch( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                 __FUNCTION__, __FILE__, __LINE__ );
 
-    rfnRequests.push_back(
-       boost::make_shared<Commands::RfnCentronSetLcdConfigurationCommand>(config_display_metrics));
-
-    return NoError;
+        return NoConfigData;
+    }
 }
 
 
@@ -173,13 +244,17 @@ void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronSetLcdCo
     typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_vector_t metric_vector_t;
 
     std::vector<PaoInfoKeys>::const_iterator pao_itr = displayMetricPaoKeys.begin();
-    metric_vector_t::const_iterator sent_itr = cmd.display_metrics_to_send.begin();
+    metric_vector_t::const_iterator sent_itr = cmd.display_metrics.begin();
 
-    while( sent_itr != cmd.display_metrics_to_send.end()
+    while( sent_itr != cmd.display_metrics.end()
            && pao_itr != displayMetricPaoKeys.end() )
     {
         setDynamicInfo(*pao_itr++, *sent_itr++);
     }
+
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime,                 cmd.cycle_time);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled, cmd.disconnect_display == Commands::RfnCentronGetLcdConfigurationCommand::DisconnectDisplayDisabled);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits,             cmd.display_digits);
 }
 
 
@@ -187,7 +262,7 @@ void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronGetLcdCo
 {
     typedef Commands::RfnCentronGetLcdConfigurationCommand::metric_map_t metric_map_t;
 
-    const metric_map_t received_metrics = cmd.getReceivedMetrics();
+    const metric_map_t received_metrics = cmd.getDisplayMetrics();
 
     for each( const metric_map_t::value_type &metric in received_metrics )
     {
@@ -195,6 +270,21 @@ void Rfn420CentronDevice::handleCommandResult(const Commands::RfnCentronGetLcdCo
         {
             setDynamicInfo(displayMetricPaoKeys[metric.first], metric.second);
         }
+    }
+
+    if( const boost::optional<bool> disconnectDisabled = cmd.getDisconnectDisplayDisabled() )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled, *disconnectDisabled);
+    }
+
+    if( const boost::optional<unsigned char> displayDigits = cmd.getDigitConfiguration() )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits, *displayDigits);
+    }
+
+    if( const boost::optional<unsigned char> lcdCycleDelay = cmd.getLcdCycleTime() )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime, *lcdCycleDelay);
     }
 }
 

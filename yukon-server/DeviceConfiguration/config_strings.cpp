@@ -204,6 +204,10 @@ const string RfnStrings::displayItem24 = "displayItem24";
 const string RfnStrings::displayItem25 = "displayItem25";
 const string RfnStrings::displayItem26 = "displayItem26";
 
+const string RfnStrings::LcdCycleTime = "lcdCycleTime";
+const string RfnStrings::DisconnectDisplayDisabled = "disconnectDisplayDisabled";
+const string RfnStrings::DisplayDigits = "displayDigits";
+
 // focus display alphanumeric items
 const string RfnStrings::displayAlphameric1    = "displayAlphameric1";
 const string RfnStrings::displayAlphameric2    = "displayAlphameric2";

@@ -13,11 +13,31 @@ public:
     typedef std::vector<unsigned char> metric_vector_t;
     typedef std::map<unsigned char, unsigned char> metric_map_t;
 
+    enum DisconnectDisplayState
+    {
+        DisconnectDisplayDisabled,
+        DisconnectDisplayEnabled
+    };
+
+    enum DisplayDigits
+    {
+        DisplayDigits4x1 = 2,
+        DisplayDigits5x1 = 0,
+        DisplayDigits6x1 = 1,
+    };
+
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const = 0;
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
 
 protected:
+
+    enum
+    {
+        Slot_DisconnectDisplay  = 0xff,
+        Slot_CycleDelay         = 0xfe,
+        Slot_DigitConfiguration = 0xfd,
+    };
 
     virtual unsigned char getCommandCode() const;
     virtual unsigned char getOperation() const = 0;
@@ -29,11 +49,18 @@ public:
 
     virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
 
-    RfnCentronSetLcdConfigurationCommand(const metric_vector_t &display_metrics);
+    RfnCentronSetLcdConfigurationCommand(
+            const metric_vector_t &display_metrics,
+            const DisconnectDisplayState disconnect_display,
+            const DisplayDigits display_digits,
+            const unsigned char cycle_time);
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
 
-    const metric_vector_t display_metrics_to_send;
+    const metric_vector_t display_metrics;
+    const DisconnectDisplayState disconnect_display;
+    const DisplayDigits display_digits;
+    const unsigned char cycle_time;
 
 protected:
 
@@ -52,23 +79,19 @@ public:
 
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response);
 
-    metric_map_t getReceivedMetrics() const;
+    metric_map_t getDisplayMetrics() const;
+    boost::optional<bool> getDisconnectDisplayDisabled() const;
+    boost::optional<unsigned char> getDigitConfiguration() const;
+    boost::optional<unsigned char> getLcdCycleTime() const;
 
 protected:
-
-    enum
-    {
-        Slot_DisconnectDisplay  = 0xff,
-        Slot_CycleDelay         = 0xfe,
-        Slot_DigitConfiguration = 0xfd,
-    };
 
     virtual unsigned char getOperation() const;
     virtual Bytes         getCommandData();
 
-    metric_map_t _display_metrics_received;
+    metric_map_t _displayMetrics;
     boost::optional<unsigned char> _disconnectDisplay;
-    boost::optional<unsigned char> _cycleDelay;
+    boost::optional<unsigned char> _cycleTime;
     boost::optional<unsigned char> _digitConfiguration;
 };
 

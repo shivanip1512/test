@@ -251,15 +251,15 @@
         </tags>
     </pao>
     
-    <pao id="CENTRON_DISPLAY_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+    <pao id="LCD_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
         <configuration>
-            <category type="centronDisplayItems"/>
+            <category type="meterParameters"/>
         </configuration>
     </pao>
     
-    <pao id="MCT_420_CONFIGURATION" abstract="true" inherits="SUPPORTS_DEVICE_CONFIGURATION">
+    <pao id="CENTRON_DISPLAY_CONFIGURATION" abstract="true" inherits="LCD_CONFIGURATION">
         <configuration>
-            <category type="meterParameters"/>
+            <category type="centronDisplayItems"/>
         </configuration>
     </pao>
     
@@ -1598,7 +1598,7 @@
     </pao>
 	
 	<!-- MCT 420 BASE -->
-	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT, MCT_420_CONFIGURATION" />
+	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT, LCD_CONFIGURATION" />
     
 	<!-- MCT 420s -->
 	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
