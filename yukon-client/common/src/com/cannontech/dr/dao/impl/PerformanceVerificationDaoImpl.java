@@ -1,5 +1,9 @@
 package com.cannontech.dr.dao.impl;
 
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUCCESS;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,7 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class PerformanceVerificationDaoImpl implements PerformanceVerificationDao {
     @Autowired private NextValueHelper nextValueHelper;
@@ -64,21 +69,25 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     public PerformanceVerificationEventStats getAverageReport(Duration duration, Instant stop) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        sql.append("SELECT Result");
+        sql.append("SELECT Result, Count(*) as count");
         sql.append("FROM RfBroadcastEventDevice rbed");
         sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
         sql.append("WHERE SendTime").gt(stop.minus(duration));
         sql.append("AND SendTime").lt(stop);
+        sql.append("GROUP BY Result");
 
-        final MutablePerformanceVerificationEventStats eventStats = new MutablePerformanceVerificationEventStats();
+        final Map<PerformanceVerificationMessageStatus, Integer> counts =
+                Maps.newHashMapWithExpectedSize(PerformanceVerificationMessageStatus.values().length);
+        for (PerformanceVerificationMessageStatus status : PerformanceVerificationMessageStatus.values()) {
+            counts.put(status, 0);
+        }
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                PerformanceVerificationMessageStatus result = 
-                        rs.getEnum("Result", PerformanceVerificationMessageStatus.class);
-                eventStats.addStatus(result);
+                counts.put(rs.getEnum("Result", PerformanceVerificationMessageStatus.class), rs.getInt("count"));
             }
         });
-        return eventStats.getImmutableStats();
+
+        return new PerformanceVerificationEventStats(counts.get(SUCCESS), counts.get(UNSUCCESS), counts.get(UNKNOWN));
     }
 }
