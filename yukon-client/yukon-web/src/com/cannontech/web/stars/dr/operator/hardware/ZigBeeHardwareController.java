@@ -3,12 +3,12 @@ package com.cannontech.web.stars.dr.operator.hardware;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -63,8 +63,10 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @RequestMapping("/operator/hardware/zb/*")
@@ -89,18 +91,17 @@ public class ZigBeeHardwareController {
     @Autowired private NextValueHelper nextValueHelper;
     
     @RequestMapping("readNow")
-    public @ResponseBody JSONObject readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
+    public @ResponseBody Map<String, Object> readNow(YukonUserContext context, int deviceId) {
         final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         final ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-        final JSONObject json = new JSONObject();
-        
+
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(2);
         try {
             zigbeeWebService.readLoadGroupAddressing(device); // TODO this should take a callback similar to rf and support timeout
             
             log.debug("Read now initiated for " + device);
             json.put("success", true);
             json.put("message", accessor.getMessage(keyPrefix + "readNowSuccess"));
-            
         } catch (DigiWebServiceException e) {
             log.debug("Read now failed for " + device);
             json.put("success", false);
@@ -158,13 +159,13 @@ public class ZigBeeHardwareController {
     }
     
     private void returnJson(HttpServletResponse response, boolean success, String message) throws IOException {
-        JSONObject object = new JSONObject();
-        object.put("success", success);
-        object.put("message", message);
+        Map<String, Object> jsonMap = Maps.newHashMapWithExpectedSize(2);
+        jsonMap.put("success", success);
+        jsonMap.put("message", message);
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        out.print(object.toString());
+        out.print(JsonUtils.toJson(jsonMap));
         out.close();
     }
 
@@ -220,17 +221,11 @@ public class ZigBeeHardwareController {
             zigbeeStateUpdaterService.activateSmartPolling(device);
 
             zigbeeEventLogService.zigbeeDeviceCommissioned(device.getName());
-        } catch (DigiNotConfiguredException e) {
+        } catch (ZigbeeCommissionException | DigiNotConfiguredException |DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
-        } catch (DigiWebServiceException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        } catch (ZigbeeCommissionException e2) {
-            messageFailed = true;
-            errorResolvable = e2.getDescription();            
         }
-        
+
         if (messageFailed) {
             if (errorResolvable != null) {
                 errorMessage = accessor.getMessage(errorResolvable);
@@ -436,12 +431,9 @@ public class ZigBeeHardwareController {
             String gatewaySerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(textMessage.getGatewayId());
             flash.setConfirm(new YukonMessageSourceResolvable(keyPrefix + "messageSent", gatewaySerialNumber));
         }
-        
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
+
         resp.setContentType("application/json");
-        resp.getWriter().print(json.toString());
+        resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         resp.getWriter().close();
         return null;
     }

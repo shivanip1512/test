@@ -11,8 +11,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -38,8 +36,10 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -126,21 +126,21 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private List<DeviceGroup> getCurrentGroups(YukonDevice device){
         
         Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(device);
-        final List<DeviceGroup> currentGroups = new ArrayList<DeviceGroup>(currentGroupsSet);
+        final List<DeviceGroup> currentGroups = new ArrayList<>(currentGroupsSet);
         Collections.sort(currentGroups);
         
         return currentGroups;
     }
     
-    private String getGroupDataJson(YukonUserContext userContext, DeviceGroupHierarchy groupHierarchy, NodeAttributeSettingCallback<DeviceGroup> callback) {
+    private String getGroupDataJson(YukonUserContext userContext, DeviceGroupHierarchy groupHierarchy,
+                                    NodeAttributeSettingCallback<DeviceGroup> callback)
+                                            throws JsonProcessingException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         String groupsLabel = accessor.getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, callback);
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.accumulateAll(root.toMap());
         
-        return jsonObj.toString();
+        return JsonUtils.toJson(root.toMap());
     }
     
     /**

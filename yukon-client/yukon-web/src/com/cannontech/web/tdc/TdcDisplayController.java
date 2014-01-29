@@ -3,14 +3,12 @@ package com.cannontech.web.tdc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -70,6 +67,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.updater.point.PointDataRegistrationService;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
@@ -142,7 +140,7 @@ public class TdcDisplayController {
     }
 
     @RequestMapping(value = "/enableDisableSend", method = RequestMethod.POST)
-    public @ResponseBody JSONObject enableDisableSend(YukonUserContext context,
+    public @ResponseBody Map<String, String> enableDisableSend(YukonUserContext context,
                                  @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 
         int tags = dynamicDataSource.getTags(backingBean.getPointId());
@@ -172,7 +170,7 @@ public class TdcDisplayController {
                                                  context.getYukonUser());
             }
         }
-        return getJSONSuccess();
+        return Collections.singletonMap("success", "success");
     }
 
     @RequestMapping(value = "/unacknowledged", method = RequestMethod.POST)
@@ -195,20 +193,20 @@ public class TdcDisplayController {
     }
 
     @RequestMapping(value = "/acknowledgeAlarm", method = RequestMethod.POST)
-    public @ResponseBody
-    JSONObject acknowledgeAlarm(YukonUserContext context, ModelMap model, int pointId, int condition) {
+    @ResponseBody
+    public Map<String, String> acknowledgeAlarm(YukonUserContext context, int pointId, int condition) {
 
         if(condition == 0 && tdcService.getUnackAlarmCountForPoint(pointId) == 1){
             tdcService.acknowledgeAlarmsForPoint(pointId, context.getYukonUser());
         }else{
             tdcService.acknowledgeAlarm(pointId, condition, context.getYukonUser());
         }
-        return getJSONSuccess();
+        return Collections.singletonMap("success", "success");
     }
 
     @RequestMapping(value = "/acknowledgeAlarmsForDisplay", method = RequestMethod.POST)
-    public @ResponseBody
-    JSONObject acknowledgeAlarmsForDisplay(YukonUserContext context, ModelMap model, int displayId) {
+    @ResponseBody
+    public Map<String, String> acknowledgeAlarmsForDisplay(YukonUserContext context, int displayId) {
 
         Display display = displayDao.getDisplayById(displayId);
         int alarms = tdcService.acknowledgeAlarmsForDisplay(display, context.getYukonUser());
@@ -218,8 +216,8 @@ public class TdcDisplayController {
     }
 
     @RequestMapping(value = "/acknowledgeAlarmsForPoint", method = RequestMethod.POST)
-    public @ResponseBody
-    JSONObject acknowledgeAlarmsForPoint(YukonUserContext context, ModelMap model, int pointId) {
+    @ResponseBody
+    public Map<String, String> acknowledgeAlarmsForPoint(YukonUserContext context, int pointId) {
 
         int alarms = tdcService.acknowledgeAlarmsForPoint(pointId, context.getYukonUser());
         YukonMessageSourceResolvable successMsg =
@@ -309,16 +307,14 @@ public class TdcDisplayController {
                                      newPointValue,
                                      context.getYukonUser());
         }
-        JSONObject json = new JSONObject();
-        json.put("action", "close");
-        
+
         response.setContentType("application/json");
-        response.getWriter().write(json.toString());
+        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
         return null;
     }
 
     @RequestMapping(value = "/manualControl", method = RequestMethod.POST)
-    public String manualControl(YukonUserContext context, ModelMap model, int pointId, int deviceId) {
+    public String manualControl(ModelMap model, int pointId, int deviceId) {
         
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setPointId(pointId);
@@ -378,16 +374,14 @@ public class TdcDisplayController {
                                                 context.getYukonUser());
             }
         }
-        JSONObject json = new JSONObject();
-        json.put("action", "close");
-        
+
         response.setContentType("application/json");
-        response.getWriter().write(json.toString());
+        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
         return null;
     }
 
     @RequestMapping(value = "/altScanRate", method = RequestMethod.POST)
-    public String altScanRate(YukonUserContext context, ModelMap model, int deviceId, String deviceName) {
+    public String altScanRate(ModelMap model, int deviceId, String deviceName) {
 
         DisplayBackingBean backingBean = new DisplayBackingBean();
         backingBean.setDeviceId(deviceId);
@@ -398,13 +392,13 @@ public class TdcDisplayController {
     }
 
     @RequestMapping(value="altScanRateSend", method = RequestMethod.POST)
-    public @ResponseBody JSONObject altScanRateSend(YukonUserContext context, ModelMap model,
+    public @ResponseBody Map<String, String> altScanRateSend(YukonUserContext context, ModelMap model,
                                @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
 
         commandService.sendAltScanRate(backingBean.getDeviceId(),
                                    backingBean.getAltScanRate(),
                                    context.getYukonUser());
-        return getJSONSuccess();
+        return Collections.singletonMap("success", "success");
     }
 
     @RequestMapping(value = "/tags", method = RequestMethod.POST)
@@ -440,7 +434,7 @@ public class TdcDisplayController {
     }
     
     @RequestMapping(value = "/tagsSave", method = RequestMethod.POST)
-    public @ResponseBody JSONObject tagsSave(YukonUserContext context,
+    public @ResponseBody Map<String, String> tagsSave(YukonUserContext context,
                         @ModelAttribute("backingBean") DisplayBackingBean backingBean)
             throws Exception {
         List<Tag> tags = tagService.getTags(backingBean.getPointId());
@@ -499,11 +493,11 @@ public class TdcDisplayController {
                                                    true,
                                                    context.getYukonUser()); 
         }
-        return getJSONSuccess();
+        return Collections.singletonMap("success", "success");
     }
 
     @RequestMapping(value = "/tagRemove", method = RequestMethod.POST)
-    public String tagRemove(YukonUserContext context, ModelMap model,
+    public String tagRemove(ModelMap model,
                            @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
@@ -516,10 +510,9 @@ public class TdcDisplayController {
     }
 
     @RequestMapping(value = "/{displayId}/download", method = RequestMethod.GET)
-    public String download(HttpServletRequest request,
-                           HttpServletResponse response, @PathVariable int displayId,
+    public String download(HttpServletResponse response, @PathVariable int displayId,
                            YukonUserContext context)
-            throws ServletRequestBindingException, IOException {
+            throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> displayData =
@@ -539,25 +532,17 @@ public class TdcDisplayController {
     }
 
     @InitBinder
-    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+    public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(AltScanRate.class,
                                     new EnumPropertyEditor<>(AltScanRate.class));
         binder.registerCustomEditor(EnabledStatus.class,
                                     new EnumPropertyEditor<>(EnabledStatus.class));
     }
 
-    private JSONObject getJSONSuccess(MessageSourceResolvable successMsg,
+    private Map<String, String> getJSONSuccess(MessageSourceResolvable successMsg,
                                       YukonUserContext context) {
-        JSONObject result = new JSONObject();
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        result.put("success", accessor.getMessage(successMsg));
-        return result;
-    }
-
-    private JSONObject getJSONSuccess() {
-        JSONObject result = new JSONObject();
-        result.put("success", "success");
-        return result;
+        return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
 
     /*

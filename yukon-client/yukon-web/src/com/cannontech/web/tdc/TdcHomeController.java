@@ -1,11 +1,10 @@
 package com.cannontech.web.tdc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -91,23 +90,20 @@ public class TdcHomeController {
      
     
     @RequestMapping(value="/acknowledgeAll", method=RequestMethod.POST)
-    public @ResponseBody JSONObject acknowledgeAll(YukonUserContext context) {
+    public @ResponseBody Map<String, String> acknowledgeAll(YukonUserContext context) {
         
         int alarms = tdcService.acknowledgeAllAlarms(context.getYukonUser());
-        JSONObject result = new JSONObject();
         MessageSourceResolvable successMsg =
                 new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        result.put("success", accessor.getMessage(successMsg));
-        return result;
+        return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
     
     @RequestMapping(value="/acknowledge", method=RequestMethod.POST)
-    public @ResponseBody JSONObject acknowledge(YukonUserContext context, int pointId, int condition) {
+    public @ResponseBody Map<String, String> acknowledge(YukonUserContext context, int pointId, int condition) {
         
         tdcService.acknowledgeAlarm(pointId, condition, context.getYukonUser());
-        JSONObject result = new JSONObject();
-        result.put("success", "success");
-        return result;
+        return Collections.singletonMap("success", "success");
+
     }
 }

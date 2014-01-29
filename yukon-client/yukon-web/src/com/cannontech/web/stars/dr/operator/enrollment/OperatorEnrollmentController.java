@@ -1,10 +1,9 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,7 +209,7 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("save")
-    public @ResponseBody JSONObject save(int assignedProgramId, boolean isAdd,
+    public @ResponseBody Map<String, String> save(int assignedProgramId, boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
@@ -220,7 +219,7 @@ public class OperatorEnrollmentController {
                             userContext, accountInfoFragment, flashScope);
     }
 
-    private @ResponseBody JSONObject save(int assignedProgramId,
+    private @ResponseBody Map<String, String> save(int assignedProgramId,
             @ModelAttribute ProgramEnrollment programEnrollment,
             String saveTypeKey,
             YukonUserContext userContext,
@@ -260,10 +259,8 @@ public class OperatorEnrollmentController {
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e2.getKey()));
             flashScope.setError(message);
         }
-     
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+
+        return Collections.singletonMap("action", "reload");
     }
 
     @RequestMapping("confirmUnenroll")
@@ -278,7 +275,7 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("unenroll")
-    public @ResponseBody JSONObject unenroll(ModelMap model, int assignedProgramId,
+    public @ResponseBody Map<String, String> unenroll(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =

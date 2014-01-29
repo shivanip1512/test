@@ -191,9 +191,6 @@
         <dependent-module archiveName="wsdl4j.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/wsdl4j.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="json-lib-2.4-jdk15.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/json-lib-2.4-jdk15.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="jloox30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jloox30.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>

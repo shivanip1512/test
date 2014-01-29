@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -17,6 +15,7 @@ import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.group.HighlightSelectedGroupNodeAttributeSettingCallback;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.JsonUtils;
 
 @Configurable("deviceGroupHierarchyJsonPrototype")
 public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
@@ -53,8 +52,6 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         }
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.accumulateAll(root.toMap());
 
         String extSelectedNodePath = null;
         if (nodeCallback != null) {
@@ -65,9 +62,9 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         }
         
         if (var == null) {
-            jsonObj.write(getJspContext().getOut());
+            getJspContext().getOut().write(JsonUtils.toJson(root.toMap()));
         } else {
-            this.getJspContext().setAttribute(var, jsonObj.toString());
+            this.getJspContext().setAttribute(var, JsonUtils.toJson(root.toMap()));
         }
     }
     

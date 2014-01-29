@@ -2,14 +2,13 @@ package com.cannontech.web.stars.survey;
 
 import java.beans.PropertyEditor;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -44,6 +43,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Sets;
 
@@ -130,22 +130,16 @@ public class OptOutSurveyController {
     }
 
     @RequestMapping("delete")
-    public @ResponseBody JSONObject delete(HttpServletResponse resp, ModelMap model, int optOutSurveyId, FlashScope flashScope,
-            YukonUserContext userContext) throws IOException {
-        OptOutSurvey optOutSurvey =
-            optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
+    public @ResponseBody Map<String, String> delete(int optOutSurveyId, FlashScope flashScope, YukonUserContext userContext) {
+        OptOutSurvey optOutSurvey = optOutSurveyDao.getOptOutSurveyById(optOutSurveyId);
         verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
         optOutSurveyDao.deleteOptOutSurvey(optOutSurveyId);
         Survey survey = surveyDao.getSurveyById(optOutSurvey.getSurveyId());
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey +
-                                             ".optOutSurveyDeleted",
-                                             survey.getSurveyName());
+            new YukonMessageSourceResolvable(baseKey + ".optOutSurveyDeleted", survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        return json;
+        return Collections.singletonMap("action", "relad");
     }
 
     @RequestMapping("edit")
@@ -165,13 +159,11 @@ public class OptOutSurveyController {
             optOutSurveyDto = new OptOutSurveyDto(optOutSurvey);
             verifyEditable(optOutSurvey.getEnergyCompanyId(), userContext);
         }
-        return edit(model, optOutSurveyDto, userContext);
+        return edit(model, optOutSurveyDto);
     }
 
-    private String edit(ModelMap model, OptOutSurveyDto optOutSurveyDto,
-            YukonUserContext userContext) {
+    private String edit(ModelMap model, OptOutSurveyDto optOutSurveyDto) {
         model.addAttribute("optOutSurveyDto", optOutSurveyDto);
-
         return "optOutSurvey/edit.jsp";
     }
 
@@ -191,21 +183,16 @@ public class OptOutSurveyController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return edit(model, optOutSurveyDto, userContext);
+            return edit(model, optOutSurveyDto);
         }
 
         Survey survey = surveyDao.getSurveyById(optOutSurveyDto.getSurveyId());
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey +
-                                             ".optOutSurveySaved",
-                                             survey.getSurveyName());
+            new YukonMessageSourceResolvable(baseKey + ".optOutSurveySaved", survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        JSONObject json = new JSONObject();
-        json.put("action", "reload");
-        
         resp.setContentType("application/json");
-        resp.getWriter().print(json.toString());
+        resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "relad")));
         resp.getWriter().close();
         return null;
     }
