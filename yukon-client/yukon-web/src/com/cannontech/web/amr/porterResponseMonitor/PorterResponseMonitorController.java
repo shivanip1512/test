@@ -1,14 +1,11 @@
 package com.cannontech.web.amr.porterResponseMonitor;
 
 import java.beans.PropertyEditorSupport;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONObject;
 
@@ -21,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -143,8 +139,7 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping("viewPage")
-    public String viewPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope)
-            throws ServletRequestBindingException {
+    public String viewPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
 
         setupViewPageModelMap(monitorId, model, userContext, flashScope);
 
@@ -152,35 +147,33 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping("editPage")
-    public String editPage(int monitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope)
-            throws ServletRequestBindingException {
+    public String editPage(int monitorId, ModelMap model) {
 
         PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
         PorterResponseMonitorDto monitorDto = new PorterResponseMonitorDto(monitor);
-        setupEditPageModelMap(monitorDto, model, userContext);
+        setupEditPageModelMap(monitorDto, model);
 
         return "porterResponseMonitor/edit.jsp";
     }
 
     @RequestMapping("createPage")
-    public String createPage(ModelMap model, YukonUserContext userContext)
-            throws ServletRequestBindingException {
+    public String createPage(ModelMap model) {
 
-        setupCreatePageModelMap(model, userContext);
+        setupCreatePageModelMap(model);
 
         return "porterResponseMonitor/create.jsp";
     }
 
     @RequestMapping("create")
     public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult, ModelMap modelMap,
-            YukonUserContext userContext, FlashScope flashScope, HttpServletRequest request) {
+            YukonUserContext userContext, FlashScope flashScope) {
 
         nameValidator.validate(monitor, bindingResult);
 
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCreatePageModelMap(modelMap, userContext);
+            setupCreatePageModelMap(modelMap);
             return "porterResponseMonitor/create.jsp";
         }
 
@@ -190,7 +183,7 @@ public class PorterResponseMonitorController {
             bindingResult.rejectValue("name", baseKey + ".alreadyExists");
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupCreatePageModelMap(modelMap, userContext);
+            setupCreatePageModelMap(modelMap);
             return "porterResponseMonitor/create.jsp";
         }
 
@@ -210,14 +203,14 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping(value="cancel", params = "cancel")
-    public String cancel(ModelMap modelMap, HttpServletRequest request) {
+    public String cancel() {
         return "redirect:/meter/start";
     }
 
     @RequestMapping("update")
     public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto,
                     BindingResult bindingResult, Integer[] rulesToRemove,
-                    HttpServletRequest request, ModelMap modelMap,
+                    ModelMap modelMap,
                     YukonUserContext userContext, FlashScope flashScope) {
 
         removeRulesFromMap(monitorDto.getRules(), rulesToRemove);
@@ -228,14 +221,14 @@ public class PorterResponseMonitorController {
             monitor = new PorterResponseMonitor(monitorDto);
         } catch (NumberFormatException e) {
             bindingResult.reject(baseKey + ".rulesTable.errorCodesFormat");
-            setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
+            setupErrorEditPageModelMap(monitorDto, modelMap, bindingResult, flashScope);
             return "porterResponseMonitor/edit.jsp";
         }
 
         nameAndRulesValidator.validate(monitor, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
+            setupErrorEditPageModelMap(monitorDto, modelMap, bindingResult, flashScope);
             return "porterResponseMonitor/edit.jsp";
         }
 
@@ -243,7 +236,7 @@ public class PorterResponseMonitorController {
             porterResponseMonitorDao.save(monitor);
         } catch (DuplicateException e) {
             bindingResult.rejectValue("name", baseKey + ".alreadyExists");
-            setupErrorEditPageModelMap(monitorDto, modelMap, userContext, bindingResult, flashScope);
+            setupErrorEditPageModelMap(monitorDto, modelMap, bindingResult, flashScope);
             return "porterResponseMonitor/edit.jsp";
         }
 
@@ -273,8 +266,8 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping(value="delete", params = "delete")
-    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext)
-                    throws ServletRequestBindingException {
+    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, FlashScope flashScope,
+                         YukonUserContext userContext) {
 
         porterResponseMonitorService.delete(monitorDto.getMonitorId());
 
@@ -294,8 +287,7 @@ public class PorterResponseMonitorController {
 
     @RequestMapping(value="toggleEnabled", params = "toggleEnabled")
     public String toggleEnabled(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, 
-                    YukonUserContext userContext)
-                    throws ServletRequestBindingException {
+                    YukonUserContext userContext) {
 
         MonitorEvaluatorStatus status = monitorDto.getEvaluatorStatus();
 
@@ -312,7 +304,7 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping("addRule")
-    public String addRule(ModelMap model, LiteYukonUser user, int monitorId, int maxOrder) {
+    public String addRule(ModelMap model, int monitorId, int maxOrder) {
 
         setupAddRule(model, monitorId, maxOrder);
 
@@ -330,7 +322,7 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping("counts")
-    public @ResponseBody JSONObject counts(int monitorId, YukonUserContext userContext) throws IOException {
+    public @ResponseBody JSONObject counts(int monitorId, YukonUserContext userContext) {
         
         try { // really?
             Thread.sleep(2000);
@@ -375,7 +367,7 @@ public class PorterResponseMonitorController {
         return object;
     }
 
-    private void setupCreatePageModelMap(ModelMap model, YukonUserContext userContext) {
+    private void setupCreatePageModelMap(ModelMap model) {
         PorterResponseMonitor monitor = new PorterResponseMonitor();
         LiteStateGroup outageStatusStageGroup = stateDao.getLiteStateGroup("Outage Status");
         monitor.setStateGroup(outageStatusStageGroup);
@@ -416,13 +408,13 @@ public class PorterResponseMonitorController {
     }
 
     private void setupErrorEditPageModelMap(PorterResponseMonitorDto monitorDto, ModelMap model, 
-                            YukonUserContext userContext, BindingResult bindingResult, FlashScope flashScope) {
+                            BindingResult bindingResult, FlashScope flashScope) {
         List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
         flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-        setupEditPageModelMap(monitorDto, model, userContext);
+        setupEditPageModelMap(monitorDto, model);
     }
 
-    private void setupEditPageModelMap(PorterResponseMonitorDto monitorDto, ModelMap model, YukonUserContext userContext) {
+    private void setupEditPageModelMap(PorterResponseMonitorDto monitorDto, ModelMap model) {
         Set<Attribute> allAttributes = attributeService.getReadableAttributes();
         model.addAttribute("allAttributes", allAttributes);
         List<PorterResponseMonitorMatchStyle> matchStyleChoices = getMatchStyleChoices();
