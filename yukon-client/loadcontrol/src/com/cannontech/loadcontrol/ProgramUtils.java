@@ -82,7 +82,7 @@ public class ProgramUtils {
         
         if (program instanceof IGearProgram) {
             IGearProgram gearProgram = (IGearProgram)program;
-            for(LMProgramDirectGear gear : (Vector<LMProgramDirectGear>)gearProgram.getDirectGearVector()) {
+            for(LMProgramDirectGear gear : gearProgram.getDirectGearVector()) {
                 if (gearProgram.getCurrentGearNumber().intValue() == gear.getGearNumber().intValue() ) {
                     return gear.getGearName();
                 }           
