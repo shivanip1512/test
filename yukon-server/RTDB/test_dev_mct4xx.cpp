@@ -2,6 +2,8 @@
 
 #include "dev_mct4xx.h"
 
+#include <boost/assign/list_of.hpp>
+
 using namespace Cti::Protocols;
 
 BOOST_AUTO_TEST_SUITE( test_dev_mct4xx )
@@ -54,6 +56,7 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
         return Inherited::getData(buf, len, Mct4xxDevice::ValueType_FrozenAccumulator);
     }
 
+    using Mct4xxDevice::executePutConfig;
     using Mct4xxDevice::isProfileTablePointerCurrent;
     using MctDevice::getOperation;
 };
@@ -310,6 +313,81 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
         BOOST_CHECK_EQUAL(false, dev.isProfileTablePointerCurrent(31, t,  300));
     }
 }
+
+struct putConfig_helper
+{
+    test_Mct4xxDevice mct;
+
+    test_Mct4xxDevice::CtiMessageList vgList, retList;
+    test_Mct4xxDevice::OutMessageList outList;
+    CtiRequestMsg request;
+    OUTMESS *om;
+
+    putConfig_helper()
+    {
+        om = new OUTMESS;
+    }
+    ~putConfig_helper()
+    {
+        delete om;
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE(test_dev_mct4xx_tou, putConfig_helper) 
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+    BOOST_AUTO_TEST_CASE(test_midnight_only_schedules)
+    {
+        const std::vector<unsigned char> expectedMsg1 = boost::assign::list_of
+                (0xff)(0xff)(0xff)(0xff)(0xff)
+                (0x00)(0x00)(0xff)(0xff)(0xff)
+                (0xff)(0xff)(0x00)(0x00)(0x00);
+
+        const std::vector<unsigned char> expectedMsg2 = boost::assign::list_of
+                (0x40)(0x00)(0xff)(0xff)(0xff)
+                (0xff)(0xff)(0x00)(0x00)(0xff)
+                (0xff)(0xff)(0xff)(0xff)(0x03);
+
+        CtiCommandParser parse("putconfig tou 11111112 schedule 1 a/0:00 schedule 2 d/0:00 default a");
+
+        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL( 2, outList.size());
+
+        // First out message (rates and durations for schedules 1 and 2.
+        {
+            OUTMESS *msg = outList.front();
+            outList.pop_front();
+
+            BOOST_REQUIRE( msg );
+            BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
+
+            const unsigned char *results_begin = msg->Buffer.BSt.Message;
+            const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(expectedMsg1.begin(), expectedMsg1.end(),
+                                          results_begin, results_end);
+        }
+
+        // Second out message (rates and durations for schedules 3 and 4.
+        {
+            OUTMESS *msg = outList.front();
+            outList.pop_front();
+
+            BOOST_REQUIRE( msg );
+            BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
+
+            const unsigned char *results_begin = msg->Buffer.BSt.Message;
+            const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(expectedMsg2.begin(), expectedMsg2.end(),
+                                          results_begin, results_end);
+        }
+    }
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
 
 struct getOperation_helper
 {
