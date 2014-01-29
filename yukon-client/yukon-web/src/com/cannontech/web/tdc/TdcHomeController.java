@@ -39,12 +39,12 @@ public class TdcHomeController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
     @RequestMapping("/")
-    public String redirect(ModelMap modelMap) {
+    public String redirect() {
         return "redirect:/tdc";
     }
     
     @RequestMapping("/tdc")
-    public String home(ModelMap model, YukonUserContext context) {
+    public String home(ModelMap model) {
         
        List<Display> custom = displayDao.getDisplayByType(DisplayType.CUSTOM_DISPLAYS);
        List<Display> events = displayDao.getDisplayByType(DisplayType.ALARMS_AND_EVENTS);
@@ -60,16 +60,16 @@ public class TdcHomeController {
                 topEvents.add(display);
                 it.remove();
             }
-        }       
+        }
         model.addAttribute("customEvents", custom);
         model.addAttribute("events", events);
-        model.addAttribute("topEvents", topEvents);  
+        model.addAttribute("topEvents", topEvents);
         return "home.jsp";
     }
     
     
     @RequestMapping("/refresh")
-    public String refresh(ModelMap model, YukonUserContext context) {
+    public String refresh(ModelMap model) {
         
         // unacknowledged alarms
         List<DisplayData> unackAlarms = tdcService.getAlarms(false);
@@ -78,6 +78,7 @@ public class TdcHomeController {
         model.addAttribute("alarms", alarms);
         Map<DisplayData, DisplayData> mappedAlarms =
             Maps.uniqueIndex(unackAlarms, new Function<DisplayData, DisplayData>() {
+                @Override
                 public DisplayData apply(DisplayData data) {
                     return data;
                 }
