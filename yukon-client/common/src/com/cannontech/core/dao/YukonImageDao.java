@@ -52,4 +52,9 @@ public interface YukonImageDao {
      */
     public List<LiteYukonImage> getImagesForCategory(String category);
 
+    /**
+     * Deletes the image with the id provided, sends db change message for delete
+     */
+    public void delete(int id);
+
 }

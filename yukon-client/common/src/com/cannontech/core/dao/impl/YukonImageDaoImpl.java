@@ -20,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.util.FileCopyUtils;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonImageDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -141,7 +142,16 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         return getLiteYukonImage(id);
     }
     
-    
+    @Override
+    public void delete(int id) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from YukonImage where ImageID").eq(id);
+        template.update(sql);
+        
+        DBChangeMsg dbChange = new DBChangeMsg(id, DBChangeMsg.CHANGE_YUKON_IMAGE, DBChangeMsg.CAT_STATEGROUP, DBChangeMsg.CAT_STATEGROUP, DbChangeType.DELETE);
+        dbChangeManager.processDbChange(dbChange);
+    }
     
     @Override
     public LiteYukonImage add(final String category, final String name, final Resource resource) throws IOException {

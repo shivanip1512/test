@@ -1181,7 +1181,7 @@ private synchronized LiteBase handleYukonImageChange( DbChangeType dbChangeType,
 			}
 			break;
 	  default:
-			releaseAllAlarmCategories();
+			releaseAllYukonImages();
 			break;
    }
 
