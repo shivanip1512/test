@@ -3,6 +3,7 @@ package com.cannontech.web.stars.dr.operator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,8 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
@@ -554,8 +553,6 @@ public class OperatorAccountController {
     @RequestMapping(value="updatePassword", method=RequestMethod.POST)
     public @ResponseBody Map<String, ? extends Object> updatePassword(final @ModelAttribute LoginBackingBean loginBackingBean,
                                                      BindingResult bindingResult,
-                                                     final int accountId,
-                                                     ModelMap modelMap,
                                                      final YukonUserContext userContext,
                                                      final AccountInfoFragment accountInfoFragment,
                                                      HttpServletRequest request,
@@ -596,18 +593,18 @@ public class OperatorAccountController {
             /* tell the browser this action passed */
             response.setStatus(HttpServletResponse.SC_OK);
             return Collections.singletonMap("flash", messageSourceAccessor.getMessage("yukon.web.changelogin.message.LOGIN_PASSWORD_CHANGED"));
-        }else{
-            /* tell the browser there was a problem */
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            JSONObject errorJSON = new JSONObject();
-            for (Object object : bindingResult.getAllErrors()) {
-                if(object instanceof FieldError) {
-                    FieldError fieldError = (FieldError) object;
-                    errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
-                }
-            }
-            return Collections.singletonMap("fieldErrors", errorJSON);
         }
+
+        /* tell the browser there was a problem */
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        Map<String, String> errorJSON = new HashMap<>();
+        for (Object object : bindingResult.getAllErrors()) {
+            if(object instanceof FieldError) {
+                FieldError fieldError = (FieldError) object;
+                errorJSON.put(fieldError.getField(), messageSourceAccessor.getMessage(fieldError.getCode(), fieldError.getArguments()));
+            }
+        }
+        return Collections.singletonMap("fieldErrors", errorJSON);
     }
     
 	// UPDATE ACCOUNT

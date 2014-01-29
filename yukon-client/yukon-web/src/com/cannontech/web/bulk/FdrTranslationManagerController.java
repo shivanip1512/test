@@ -1,17 +1,15 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -77,7 +76,7 @@ public class FdrTranslationManagerController {
     }
     
     @RequestMapping("report")
-    public String report(ModelMap model, HttpServletResponse response, String reportInterface) throws IOException {
+    public String report(HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
         fdrTranslationManagerCsvHelper.addDefaultExportColumnsToList(formattedHeaders);
         
@@ -250,9 +249,10 @@ public class FdrTranslationManagerController {
         
         return null;
     }
-    
+
     @RequestMapping("updateLog")
-    public String updateLog(HttpServletResponse response, String resultId) throws IOException {
+    @ResponseBody
+    public Map<String, String> updateLog(String resultId) {
         TranslationImportCallbackResult result = recentResultsCache.getResult(resultId);
         
         Integer index = result.getLogIndex(); //must get this before getNewLogLines()!
@@ -263,22 +263,19 @@ public class FdrTranslationManagerController {
         List<String> logLines = result.getNewLogLines();
         List<Integer> failedLines = result.getFailedRowNumbers();
         
-        JSONObject jsonObject = new JSONObject();
+        Map<String, String> jsonObject = new HashMap<>();
         
         for(String line : logLines) {
-            String quality = "success"; //these match red and green text CSS classes
-            if(failedLines.contains(index)) quality = "errorMessage";
+           //these match red and green text CSS classes
+            String quality = failedLines.contains(index) ? "errorMessage" : "success";
             jsonObject.put(line, quality);
             index++;
-            if(index >= CtiUtilities.MAX_LOGGED_LINES){
+            if (index >= CtiUtilities.MAX_LOGGED_LINES) {
                 break;
             }
         }
         
-        PrintWriter writer = response.getWriter();
-        String responseJsonStr = jsonObject.toString();
-        writer.write(responseJsonStr);
-        return null;
+        return jsonObject;
     }
     
     private ResponseEntity<Map<String, ? extends Object>> prepareErrorReturn(YukonUserContext userContext, MessageSourceResolvable resolvable) {

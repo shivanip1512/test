@@ -1,14 +1,13 @@
 package com.cannontech.web.amr.phaseDetect;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,7 +57,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -316,7 +317,8 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(method=RequestMethod.POST, value="readPhase")
-    public String readPhase(String phase, ModelMap model, LiteYukonUser user, HttpServletResponse response) {
+    public String readPhase(String phase, ModelMap model, LiteYukonUser user, HttpServletResponse response)
+            throws JsonProcessingException {
         phaseDetectService.getPhaseDetectState().setReadCanceled(false);
         List<SimpleDevice> devicesOnSub = Lists.newArrayList();
         for(Route route : phaseDetectService.getPhaseDetectData().getReadRoutes()){
@@ -338,9 +340,9 @@ public class PhaseDetectController {
             phaseDetectService.getPhaseDetectResult().setErrorMsg(e.getMessage());
         }
         
-        JSONObject jsonObject = new JSONObject();
+        Map<String, Object> json = new HashMap<>();
         Boolean success = StringUtils.isBlank(phaseDetectService.getPhaseDetectResult().getErrorMsg());
-        jsonObject.put("success", success);
+        json.put("success", success);
         Boolean complete = phaseDetectService.getPhaseDetectState().isPhaseReadComplete();
         
         if(success){
@@ -354,11 +356,10 @@ public class PhaseDetectController {
         }
         
         if(!phaseDetectService.getPhaseDetectData().isReadAfterAll()){
-            jsonObject.put("phase", phase);
-            jsonObject.put("complete", complete);
+            json.put("phase", phase);
+            json.put("complete", complete);
         }
-        String jsonStr = jsonObject.toString();
-        response.addHeader("X-JSON", jsonStr);
+        response.addHeader("X-JSON", JsonUtils.toJson(json));
 
         model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
         model.addAttribute("id", phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier().getCommandRequestExecutionId());
@@ -375,14 +376,14 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("cancelTest")
-    public String cancelTest(ModelMap model, LiteYukonUser user){
+    public String cancelTest(LiteYukonUser user){
         phaseDetectService.cancelTest(user);
         return "redirect:home";
     }
     
     @RequestMapping("sendClearFromTestPage")
-    public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response) throws ServletException {
-        JSONObject jsonObject = new JSONObject();
+    public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response)
+            throws JsonProcessingException {
         phaseDetectService.clearPhaseData(user);/* Will block until done */
         String errorReason = phaseDetectService.getPhaseDetectResult().getErrorMsg();
         Boolean success = StringUtils.isBlank(errorReason);
@@ -390,9 +391,7 @@ public class PhaseDetectController {
             phaseDetectService.getPhaseDetectState().setTestStep("send");
             phaseDetectService.getPhaseDetectResult().setCommandRequestExecutionIdentifier(null);
         }
-        jsonObject.put("success", success);
-        String jsonStr = jsonObject.toString();
-        response.addHeader("X-JSON", jsonStr);
+        response.addHeader("X-JSON", JsonUtils.toJson(Collections.singletonMap("success", success)));
         model.addAttribute("errorReason", errorReason);
         return "phaseDetect/testPageClearResult.jsp";
     }

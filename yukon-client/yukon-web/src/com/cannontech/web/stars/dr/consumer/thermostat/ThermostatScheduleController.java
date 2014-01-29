@@ -271,13 +271,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                     method = {RequestMethod.POST, RequestMethod.HEAD}, 
                     headers = "x-requested-with=XMLHttpRequest")
     @ResponseBody
-    public Map<String, ?> updateTemperaturePreference(HttpServletRequest request,
-                                            HttpServletResponse response,
+    public Map<String, String> updateTemperaturePreference(HttpServletResponse response,
                                             @ModelAttribute("customerAccount") CustomerAccount account,
                                             @RequestParam("temperatureUnit") String temperatureUnit,
-                                            LiteYukonUser user,
-                                            FlashScope flashScope,
-                                            ModelMap map) throws NotAuthorizedException, IllegalArgumentException {
+                                            LiteYukonUser user) throws NotAuthorizedException, IllegalArgumentException {
         
         if (isCommunicationDisabled(user)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

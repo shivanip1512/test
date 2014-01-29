@@ -1,15 +1,13 @@
 package com.cannontech.web.bulk;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -199,7 +198,8 @@ public class PointImportController {
     }
     
     @RequestMapping("updateLog")
-    public String updateLog(HttpServletResponse response, String resultId) throws IOException {
+    @ResponseBody
+    public Map<String, String> updateLog(String resultId) {
         PointImportCallbackResult result = recentResultsCache.getResult(resultId);
         Integer index = result.getLogIndex();
         if(index >= CtiUtilities.MAX_LOGGED_LINES){
@@ -209,24 +209,18 @@ public class PointImportController {
         List<String> logLines = result.getNewLogLines();
         List<Integer> failedLines = result.getFailedRowNumbers();
         
-        JSONObject jsonObject = new JSONObject();
+        Map<String, String> json = new HashMap<>();
         
         for(String line : logLines) {
-            String quality = "success";
-            if(failedLines.contains(index)) {
-                quality = "error";
-            }
-            jsonObject.put(line, quality);
+            String quality = failedLines.contains(index) ? "error" : "success";
+            json.put(line, quality);
             index++;
             if(index >= CtiUtilities.MAX_LOGGED_LINES){
                 break;
             }
         }
         
-        PrintWriter writer = response.getWriter();
-        String responseJsonStr = jsonObject.toString();
-        writer.write(responseJsonStr);
-        return null;
+        return json;
     }
     
 }

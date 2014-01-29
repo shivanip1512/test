@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,9 +42,8 @@ public class HomeController {
     @Autowired private UserPageService userPageService;
 
     @RequestMapping(value = {"/home", "/index.jsp"})
-    public String home(HttpServletRequest req) {
+    public String home(HttpServletRequest req, LiteYukonUser user) {
 
-        final LiteYukonUser user = ServletUtil.getYukonUser(req);
         String homeUrl = ServletUtil.createSafeUrl(req,
             rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
 
@@ -68,6 +66,11 @@ public class HomeController {
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
 
         return "dashboard.jsp";
+    }
+
+    @RequestMapping("/operator/Operations.jsp")
+    public String operations() {
+        return "redirect:/dashboard";
     }
 
     private Multimap<SiteMapCategory, UserPage> setupDisplayableFavorites(List<UserPage> pages,
@@ -98,87 +101,57 @@ public class HomeController {
         return favoritesMap;
     }
 
-    @RequestMapping("/operator/Operations.jsp")
-    public String operations(HttpServletRequest req) {
-        return "redirect:/dashboard";
-    }
-
     @RequestMapping("/toggleFavorite")
-    public @ResponseBody JSONObject toggleFavorite(
-            String module, 
-            String name, 
-            String labelArgs, 
-            String path, 
-            YukonUserContext context) {
-
+    public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs,
+                                                             String path, YukonUserContext context) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
-
-        UserPage page = new UserPage (context.getYukonUser().getUserID(), path, true, SiteModule.getByName(module),
-            name, arguments);
-
-        boolean isFavorite = userPageDao.toggleFavorite(page);
-
-        JSONObject result = new JSONObject();
-        result.put( "isFavorite", isFavorite );
-        return result;
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, true, SiteModule.getByName(module),
+                                     name, arguments);
+        return Collections.singletonMap("isFavorite", userPageDao.toggleFavorite(page));
     }
 
     @RequestMapping("/isFavorite")
-    public @ResponseBody JSONObject isFavorite(String path, YukonUserContext context) {
-
+    public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext context) {
         UserPage page = new UserPage(context.getYukonUser().getUserID(), path, true);
-
-        boolean isFavorite = userPageDao.isFavorite(page);
-
-        JSONObject result = new JSONObject();
-        result.put( "isFavorite", isFavorite );
-        return result;
+        return Collections.singletonMap("isFavorite", userPageDao.isFavorite(page));
     }
 
     @RequestMapping("/addToHistory")
-    public @ResponseBody JSONObject addToHistory(
-            String module, 
-            String name, 
-            String labelArgs, 
-            String path, 
+    public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path, 
             YukonUserContext context) {
 
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
         UserPage page = new UserPage(context.getYukonUser().getUserID(), path, false, SiteModule.getByName(module),
-            name, arguments);
+                                     name, arguments);
         userPageDao.updateHistory(page);
 
-        return new JSONObject();
+        return Collections.emptyMap();
     }
 
     @RequestMapping("/toggleSubscribed")
-    public @ResponseBody JSONObject toggleSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(),
-            SubscriptionType.valueOf(subscriptionType), refId, null);
+    public @ResponseBody Map<String, Boolean> toggleSubscribed(SubscriptionType subscriptionType, Integer refId,
+                                                               YukonUserContext context) {
+        UserSubscription monitor = 
+                new UserSubscription (context.getYukonUser().getUserID(), subscriptionType, refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
-        if( isSubscribed ) {
+        if(isSubscribed) {
             userSubscriptionDao.delete(monitor);
         } else {
             userSubscriptionDao.save(monitor);
         }
 
-        JSONObject result = new JSONObject();
-        result.put( "isSubscribed", ! isSubscribed );
-        return result;
+        return Collections.singletonMap("isSubscribed", !isSubscribed);
     }
 
     @RequestMapping("/isSubscribed")
-    public @ResponseBody JSONObject isSubscribed(String subscriptionType, Integer refId, YukonUserContext context) {
-        UserSubscription monitor = new UserSubscription (context.getYukonUser().getUserID(),
-            SubscriptionType.valueOf(subscriptionType), refId, null);
+    public @ResponseBody Map<String, Boolean> isSubscribed(SubscriptionType subscriptionType, Integer refId,
+                                                           YukonUserContext context) {
+        UserSubscription monitor = 
+                new UserSubscription(context.getYukonUser().getUserID(), subscriptionType, refId, null);
 
-        boolean isSubscribed = userSubscriptionDao.contains(monitor);
-
-        JSONObject result = new JSONObject();
-        result.put( "isSubscribed", isSubscribed );
-        return result;
+        return Collections.singletonMap("isSubscribed", userSubscriptionDao.contains(monitor));
     }
 
     private final static Comparator<UserPage> byModuleAsc = Ordering.natural().onResultOf(
@@ -188,4 +161,5 @@ public class HomeController {
                 return userPage.getModule().getSiteMapCategory();
             }
         });
+
 }

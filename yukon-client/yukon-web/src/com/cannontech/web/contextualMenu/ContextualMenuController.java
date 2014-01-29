@@ -1,13 +1,11 @@
 package com.cannontech.web.contextualMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +45,15 @@ public class ContextualMenuController {
     private Map<String, Menu> menuBeanMap;
     
     @RequestMapping(value="list", method = RequestMethod.GET)
-    public @ResponseBody JSONArray list(YukonUserContext context, HttpServletRequest req) {
+    public @ResponseBody List<Object> list(YukonUserContext context, HttpServletRequest req) {
         
         String menuBeanId = req.getParameter("menuId"); // not including the word "Bean" as a security measure, i.e. menuBeanId
         Menu menu = menuBeanMap.get(menuBeanId);
         
-        JSONArray array = null;
+        List<Object> array = null;
 
         if (menu instanceof ContextualMenu) {
-            array = getMenu((ContextualMenu) menu, req, context);
+            array = getMenuJsonArray((ContextualMenu) menu, req, context);
         } else {
             throw new RuntimeException("Couldn't find menu with beanId " + menuBeanId);
         }
@@ -63,17 +61,17 @@ public class ContextualMenuController {
         return array;
     }
     
-    private JSONArray getMenu(ContextualMenu menu, HttpServletRequest req, YukonUserContext context) {
+    private List<Object> getMenuJsonArray(ContextualMenu menu, HttpServletRequest req, YukonUserContext context) {
         
         LiteYukonUser user = context.getYukonUser();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         List<MenuEntry> menuEntries = menu.getMenuEntries();
-        JSONArray array = new JSONArray();
-        
+        List<Object> array = new ArrayList<>();
+
         for (MenuEntry menuEntry : menuEntries) {
             String url = null;
             if (menuEntry instanceof MenuSeparator) {
-                addMenuSeperator(array);
+                array.add(getMenuEntryJson(StringUtils.EMPTY, StringUtils.EMPTY, true));
                 continue;
             } else if (menuEntry instanceof SingleDeviceMenuAction) {
                 SingleDeviceMenuAction singleDeviceMenuEntry = (SingleDeviceMenuAction) menuEntry;
@@ -87,11 +85,10 @@ public class ContextualMenuController {
             
             DeviceMenuAction deviceMenuEntry = (DeviceMenuAction) menuEntry;
             checkMenuEntrySupports(menu, deviceMenuEntry, ServletUtil.getParameterMap(req));
-            if (!canViewMenuEntry(deviceMenuEntry, user)) continue;
-            
-            String text = accessor.getMessage(deviceMenuEntry.getFormatKey());
-            
-            addMenuEntry(array, url, text);
+            if (canViewMenuEntry(deviceMenuEntry, user)) {
+                String text = accessor.getMessage(deviceMenuEntry.getFormatKey());
+                array.add(getMenuEntryJson(url, text, false));
+            }
         }
         return array;
     }
@@ -115,23 +112,15 @@ public class ContextualMenuController {
             }
         }
     }
-    
-    private void addMenuEntry(JSONArray jsonArray, String url, String text, boolean divider) {
-        JSONObject obj = new JSONObject();
+
+    private Map<String, Object> getMenuEntryJson(String url, String text, boolean divider) {
+        Map<String, Object> obj = Maps.newHashMapWithExpectedSize(3);
         obj.put("url", url);
         obj.put("text", text);
         obj.put("divider", divider);
-        jsonArray.add(obj);
+        return obj;
     }
-    
-    private void addMenuEntry(JSONArray jsonArray, String url, String text) {
-        addMenuEntry(jsonArray, url, text, false);
-    }
-    
-    private void addMenuSeperator(JSONArray jsonArray) {
-        addMenuEntry(jsonArray, StringUtils.EMPTY, StringUtils.EMPTY, true);
-    }
-    
+
     @PostConstruct
     private void init() {
         menuBeanMap = Maps.newHashMapWithExpectedSize(menus.size());

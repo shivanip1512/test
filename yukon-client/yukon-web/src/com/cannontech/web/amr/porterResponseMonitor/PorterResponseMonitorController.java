@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONObject;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -67,6 +65,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/porterResponseMonitor/*")
@@ -322,7 +321,7 @@ public class PorterResponseMonitorController {
     }
 
     @RequestMapping("counts")
-    public @ResponseBody JSONObject counts(int monitorId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> counts(int monitorId, YukonUserContext userContext) {
         
         try { // really?
             Thread.sleep(2000);
@@ -359,7 +358,7 @@ public class PorterResponseMonitorController {
                     monitor.getGroupName(), monitor.getName());
         }
         
-        JSONObject object = new JSONObject();
+        Map<String, Object> object = Maps.newHashMapWithExpectedSize(3);
         object.put("totalGroupCount", totalGroupCount);
         object.put("supportedDevicesMessage", supportedDevicesMessage);
         object.put("missingPointCount", missingPointCount);

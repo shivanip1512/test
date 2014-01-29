@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol;
 
-import net.sf.json.JSONObject;
+import java.util.Collections;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,18 +17,16 @@ public class PageExpireController {
     private WebUpdatedDAO<Integer> webUpdatedDAO;
 
     @RequestMapping("/pageExpire")
-    public @ResponseBody JSONObject pageExpire( @RequestParam("paoIds[]") String[] paoIds) {
-
-        boolean expired = false;
+    public @ResponseBody Map<String, Boolean> pageExpire(@RequestParam("paoIds[]") String[] paoIds) {
 
         for (String strPaoId : paoIds) {
             int paoId = Integer.parseInt(strPaoId);
-            expired = ! webUpdatedDAO.containsKey(paoId);
-            if (expired) break;
+            if (!webUpdatedDAO.containsKey(paoId)) {
+                return Collections.singletonMap("expired", true);
+            }
         }
-        JSONObject result = new JSONObject();
-        result.put("expired", expired);
-        return result;
+
+        return Collections.singletonMap("expired", false);
     }
 
     @Autowired

@@ -1,12 +1,11 @@
 package com.cannontech.web.capcontrol.ivvc;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -46,18 +45,19 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.ivvc.validators.ZoneDtoValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/ivvc/wizard/*")
 @Controller
 public class ZoneWizardController {
-    
-    private ZoneService zoneService;
-    private ZoneDtoValidator zoneDtoValidator;
-    private FilterCacheFactory filterCacheFactory;
-    private ZoneDtoHelper zoneDtoHelper;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+
+    @Autowired private ZoneService zoneService;
+    @Autowired private ZoneDtoValidator zoneDtoValidator;
+    @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private ZoneDtoHelper zoneDtoHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     @RequestMapping("zoneCreationWizard")
     public String zoneCreationWizard(ModelMap model, LiteYukonUser user, int subBusId) {
         AbstractZone zoneDto = new ZoneGang();
@@ -177,23 +177,18 @@ public class ZoneWizardController {
         }
 
         if (noErrors) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            JSONObject json = new JSONObject();
-            json.put("action", "reload");
             resp.setContentType("application/json");
-            resp.getWriter().print(json.toString());
-            resp.getWriter().close();
+            resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
             return null; 
-        } else {
-            setupZoneCreation(model, userContext, zoneDto);
-            
-            //Add Errors to flash scope
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
         }
+
+        setupZoneCreation(model, userContext, zoneDto);
+        
+        //Add Errors to flash scope
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
         return "ivvc/zoneWizardDetails.jsp";
     }
     
@@ -292,23 +287,20 @@ public class ZoneWizardController {
         if (noErrors) {
             //Close normally
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneWizard.success.saved"));
-            JSONObject json = new JSONObject();
-            json.put("action", "reload");
             resp.setContentType("application/json");
-            resp.getWriter().print(json.toString());
-            resp.getWriter().close();
+            resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
             return null; 
-        } else {
-            bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
+        }
 
-            setupZoneEditor(model, userContext.getYukonUser(), zoneDto);
-            
-            //Add Errors to flash scope
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            
-            return "ivvc/zoneWizardDetails.jsp";
-        }        
+        bindingResult.reject("yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone");
+
+        setupZoneEditor(model, userContext.getYukonUser(), zoneDto);
+        
+        //Add Errors to flash scope
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        
+        return "ivvc/zoneWizardDetails.jsp";        
     }
 
     private BindingResult bind(ModelMap model, HttpServletRequest request,
@@ -401,30 +393,5 @@ public class ZoneWizardController {
         modelMap.addAttribute("phaseUneditable", phaseUneditable);
         
         return "ivvc/addZoneVoltagePointRow.jsp";
-    }
-    
-    @Autowired
-    public void setZoneService(ZoneService zoneService) {
-        this.zoneService = zoneService;
-    }
-    
-    @Autowired
-    public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
-        this.filterCacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setZoneDtoValidator(ZoneDtoValidator zoneDtoValidator) {
-        this.zoneDtoValidator = zoneDtoValidator;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setZoneDtoHelper(ZoneDtoHelper zoneDtoHelper) {
-        this.zoneDtoHelper = zoneDtoHelper;
     }
 }

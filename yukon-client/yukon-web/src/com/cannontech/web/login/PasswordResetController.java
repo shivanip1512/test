@@ -3,12 +3,12 @@ package com.cannontech.web.login;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
 import net.tanesha.recaptcha.ReCaptchaException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +50,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.YukonUserContextResolver;
+import com.google.common.collect.Maps;
 
 @Controller
 public class PasswordResetController {
@@ -134,7 +135,7 @@ public class PasswordResetController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
-    public String changePassword(ModelMap model, FlashScope flashScope, String k) {
+    public String changePassword(ModelMap model, String k) {
 
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if (passwordResetUser == null) {
@@ -161,7 +162,8 @@ public class PasswordResetController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model) {
+    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult,
+                                       FlashScope flashScope, String k, ModelMap model) {
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
@@ -197,9 +199,8 @@ public class PasswordResetController {
     }
     
     @RequestMapping(value="/checkPassword", method=RequestMethod.POST)
-    public @ResponseBody JSONObject checkPassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, 
-    																	FlashScope flashScope, String k,  ModelMap model,
-    																	HttpServletResponse response,  HttpServletRequest request) {
+    public @ResponseBody Map<String, Object> checkPassword(@ModelAttribute LoginBackingBean loginBackingBean, String k, 
+            HttpServletResponse response) {
 
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
     	LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
@@ -215,16 +216,21 @@ public class PasswordResetController {
     	//login validator is not appropriate for checking the password.  I wish it was
         //but we need information on specific rules not met
         //check password policies
-        Set<PasswordPolicyError> errantPasswordPolicies = passwordPolicyService.getPasswordPolicyErrors(loginBackingBean.getPassword1(), passwordResetUser, liteUserGroup);
-        Set<PasswordPolicyError> validPasswordPolicies = new HashSet<PasswordPolicyError>(Arrays.asList(PasswordPolicyError.values()));
+        Set<PasswordPolicyError> errantPasswordPolicies = 
+                passwordPolicyService.getPasswordPolicyErrors(loginBackingBean.getPassword1(),
+                                                              passwordResetUser,
+                                                              liteUserGroup);
+        Set<PasswordPolicyError> validPasswordPolicies = new HashSet<>(Arrays.asList(PasswordPolicyError.values()));
         validPasswordPolicies.removeAll(errantPasswordPolicies); //separate out the validations
         
         //check policy rules
-        Set<PolicyRule> validPolicyRules = passwordPolicyService.getValidPolicyRules(loginBackingBean.getPassword1(), passwordResetUser, liteUserGroup);
-        Set<PolicyRule> errantPolicyRules = new HashSet<PolicyRule>(Arrays.asList(PolicyRule.values()));
+        Set<PolicyRule> validPolicyRules = passwordPolicyService.getValidPolicyRules(loginBackingBean.getPassword1(),
+                                                                                     passwordResetUser,
+                                                                                     liteUserGroup);
+        Set<PolicyRule> errantPolicyRules = new HashSet<>(Arrays.asList(PolicyRule.values()));
         errantPolicyRules.removeAll(validPolicyRules);
 
-        JSONObject result = new JSONObject();
+        Map<String, Object> result = Maps.newHashMapWithExpectedSize(4);
         result.put("policy_errors", errantPasswordPolicies);
         result.put("rule_errors", errantPolicyRules);
         result.put("policy_validations", validPasswordPolicies);
@@ -235,7 +241,7 @@ public class PasswordResetController {
             /* tell the browser this password is good*/
             response.setStatus(HttpServletResponse.SC_OK);
         } else if (passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
-        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             /* tell the browser there was a problem */
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

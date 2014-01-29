@@ -15,9 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -89,7 +86,9 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.WebFileUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
@@ -166,13 +165,13 @@ public class MeterEventsReportController {
             };
     
     @RequestMapping("selectDevices")
-    public String selectDevices(YukonUserContext userContext, ModelMap model) {
+    public String selectDevices() {
         return "meterEventsReport/selectDevices.jsp";
     }
     
     @RequestMapping("selected")
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
-    throws ServletRequestBindingException, DeviceCollectionCreationException {
+    throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         model.addAttribute("exportData", exportData);
@@ -188,7 +187,8 @@ public class MeterEventsReportController {
     public String report(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, String attrNames, Integer jobId)
-                                 throws ServletRequestBindingException, DeviceCollectionCreationException {
+                                 throws ServletRequestBindingException, DeviceCollectionCreationException,
+                                     JsonProcessingException {
         
         CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
         ScheduledFileExportData exportData = new ScheduledFileExportData();
@@ -246,7 +246,8 @@ public class MeterEventsReportController {
             @RequestParam(defaultValue="false") Boolean onlyAbnormalEvents, 
             @RequestParam(defaultValue="false") Boolean includeDisabledDevices, 
             YukonUserContext userContext, Integer jobId) 
-            throws ServletRequestBindingException, DeviceCollectionCreationException, ParseException {
+            throws ServletRequestBindingException, DeviceCollectionCreationException, ParseException,
+                JsonProcessingException {
         
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
@@ -322,8 +323,9 @@ public class MeterEventsReportController {
     }
     
     @RequestMapping("reportAll")
-    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext,
+                            boolean includeDisabledPaos)
+            throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         model.addAttribute("exportData", exportData);
@@ -338,10 +340,9 @@ public class MeterEventsReportController {
     }
 
     private void setupModelMap(MeterEventsReportFilterBackingBean backingBean,
-                               HttpServletRequest request, ModelMap model,
-                               BindingResult bindingResult, FlashScope flashScope,
-                               YukonUserContext userContext, String attrNames)
-                                       throws ServletRequestBindingException, DeviceCollectionCreationException {
+            HttpServletRequest request, ModelMap model, BindingResult bindingResult, FlashScope flashScope,
+            YukonUserContext userContext, String attrNames)
+                    throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         setupBackingBean(backingBean, request, attrNames, userContext);
         setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
         setupReportFromFilter(backingBean, userContext, model);
@@ -349,7 +350,7 @@ public class MeterEventsReportController {
 
     @RequestMapping("reset")
     public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+            throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
         setupModelMap(new MeterEventsReportFilterBackingBean(userContext), request, model, null, null, userContext, null);
         model.addAttribute("exportData", new ScheduledFileExportData());
         return reportJspPath;
@@ -357,7 +358,6 @@ public class MeterEventsReportController {
     
     @RequestMapping("csv")
     public void csv(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
-                      ModelMap model, 
                       HttpServletRequest request, 
                       HttpServletResponse response,
                       YukonUserContext context, String attrNames) 
@@ -531,18 +531,20 @@ public class MeterEventsReportController {
         return resultsDeviceCollection;
     }
 
-    private JSONObject getJSONObject(Map<BuiltInAttribute, Boolean> meterEventsMap, YukonUserContext context) {
-        JSONObject retVal = new JSONObject();
+    private String getJsonObject(Map<BuiltInAttribute, Boolean> meterEventsMap, YukonUserContext context)
+            throws JsonProcessingException {
+        Map<String, Boolean> retVal = Maps.newHashMapWithExpectedSize(meterEventsMap.entrySet().size());
         String attrName;
         for (Entry<BuiltInAttribute, Boolean> entry : meterEventsMap.entrySet()) {
             attrName = objectFormatingService.formatObjectAsString(entry.getKey().getMessage(),context);
             retVal.put(attrName, entry.getValue());
         }
-        return retVal;
+        return JsonUtils.toJson(retVal);
     }
 
-    private void setupCommonPageAttributes(MeterEventsReportFilterBackingBean backingBean, BindingResult bindingResult, FlashScope flashScope,
-                                               YukonUserContext userContext, ModelMap model) throws DeviceCollectionCreationException {
+    private void setupCommonPageAttributes(MeterEventsReportFilterBackingBean backingBean, BindingResult bindingResult,
+            FlashScope flashScope, YukonUserContext userContext, ModelMap model)
+                    throws DeviceCollectionCreationException, JsonProcessingException {
         if (bindingResult != null && flashScope != null) {
             boolean hasFilterErrors = false;
             if (bindingResult.hasErrors()) {
@@ -555,27 +557,22 @@ public class MeterEventsReportController {
         }
         
         model.addAttribute("backingBean", backingBean);
-        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap(),userContext));
+        model.addAttribute("meterEventTypesMap", getJsonObject(backingBean.getMeterEventTypesMap(),userContext));
         
-        model.addAttribute("generalEvents", getJSONArray(MeterEventStatusTypeGroupings.getGeneral(), userContext));
-        model.addAttribute("hardwareEvents", getJSONArray(MeterEventStatusTypeGroupings.getHardware(), userContext));
-        model.addAttribute("tamperEvents", getJSONArray(MeterEventStatusTypeGroupings.getTamper(), userContext));
-        model.addAttribute("outageEvents", getJSONArray(MeterEventStatusTypeGroupings.getOutage(), userContext));
-        model.addAttribute("meteringEvents", getJSONArray(MeterEventStatusTypeGroupings.getMetering(), userContext));
+        model.addAttribute("generalEvents", getJsonArray(MeterEventStatusTypeGroupings.getGeneral(), userContext));
+        model.addAttribute("hardwareEvents", getJsonArray(MeterEventStatusTypeGroupings.getHardware(), userContext));
+        model.addAttribute("tamperEvents", getJsonArray(MeterEventStatusTypeGroupings.getTamper(), userContext));
+        model.addAttribute("outageEvents", getJsonArray(MeterEventStatusTypeGroupings.getOutage(), userContext));
+        model.addAttribute("meteringEvents", getJsonArray(MeterEventStatusTypeGroupings.getMetering(), userContext));
     }
     
-    private JSONArray getJSONArray(Set<BuiltInAttribute> originalSet, YukonUserContext context) {
+    private String getJsonArray(Set<BuiltInAttribute> originalSet, YukonUserContext context) throws JsonProcessingException {
         List<String> strList = Lists.newArrayList();
         for (BuiltInAttribute attr: originalSet) {
             strList.add(objectFormatingService.formatObjectAsString(attr.getMessage(),context));
         }
         Collections.sort(strList);
-        
-        JSONArray array = new JSONArray();
-        for (String str : strList) {
-            array.add(str);
-        }
-        return array;
+        return JsonUtils.toJson(strList);
     }
 
     @InitBinder
