@@ -1,12 +1,14 @@
 package com.cannontech.services.rfn.endpoint;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -95,6 +97,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 
                 /** Handle addressing data */
                 rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+                
+                /** Handle Broadcast Verification Messages*/
+                Map<Long, Instant> verificationMsgs =
+                    rfnLcrDataMappingService.mapBroadcastVerificationMessages(decodedPayload);
+               
     
                 incrementProcessedArchiveRequest();
                 

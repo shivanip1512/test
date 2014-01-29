@@ -1,7 +1,9 @@
 package com.cannontech.dr.rfn.service;
 
 import java.util.List;
+import java.util.Map;
 
+import org.joda.time.Instant;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -29,5 +31,10 @@ public interface RfnLcrDataMappingService {
      * @see {@link ExpressComReportedAddress#isEquivalent}
      */
     public void storeAddressingData(JmsTemplate jmsTemplate, SimpleXPathTemplate data, RfnDevice device);
+
+    /**
+     * This method extracts message id and the time the message was received by LCR.
+     */
+    public Map<Long, Instant> mapBroadcastVerificationMessages(SimpleXPathTemplate decodedPayload);
 
 }

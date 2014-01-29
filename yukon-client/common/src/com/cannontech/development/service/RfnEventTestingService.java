@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.development.model.RfnTestEvent;
+import com.cannontech.development.service.impl.DRReport;
 
 public interface RfnEventTestingService {
     
@@ -20,8 +21,8 @@ public interface RfnEventTestingService {
                                  boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
                                  boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative);
     
-    int sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) throws IOException;
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
+    public int sendLcrReadArchive(int serialFrom, int serialTo, DRReport drReport) throws IOException;
 
     void calculationStressTest();
 }

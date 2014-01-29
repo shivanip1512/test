@@ -26,6 +26,7 @@ import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
+import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -61,7 +62,8 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("viewLcrReadArchiveRequest")
-    public String viewLcrReadArchiveRequest() {
+    public String viewLcrReadArchiveRequest(ModelMap model) {
+        model.addAttribute("drReports", DRReport.values());
         return "development/rfn/viewLcrReadArchive.jsp";
     }
     
@@ -115,8 +117,8 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) throws IOException {
-        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, manufacturer, model);
+    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String drReport) throws IOException {
+        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }
     

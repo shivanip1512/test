@@ -49,9 +49,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-    
-    private static final String lcrPayloadClasspath = "classpath:com/cannontech/dr/rfn/service/DRReport.exi";
-    
+        
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
@@ -203,7 +201,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) throws IOException {
+    public int sendLcrReadArchive(int serialFrom, int serialTo, DRReport drReport) throws IOException {
         if (serialTo < serialFrom) {
             serialTo = serialFrom;
         }
@@ -215,14 +213,14 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             
             // Read test encoded EXI file from classpath, assign it to payload.
             byte[] payload;
-            Resource payloadResource = loader.getResource(lcrPayloadClasspath);
+            Resource payloadResource = loader.getResource(drReport.getClasspath());
             if (payloadResource.exists()) {
                 payload = FileCopyUtils.copyToByteArray(payloadResource.getInputStream());
             } else {
                 payload = new byte[64];
             }
             long timeStamp = new Instant().getMillis();
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), manufacturer, model);
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), drReport.getManufacturer(), drReport.getModel());
             
             // Set all data
             data.setPayload(payload);
