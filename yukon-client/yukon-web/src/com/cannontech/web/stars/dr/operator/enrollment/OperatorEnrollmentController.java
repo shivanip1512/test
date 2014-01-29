@@ -1,11 +1,8 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
@@ -82,8 +79,7 @@ public class OperatorEnrollmentController {
      * has icons for adding, removing and editing these enrollments.
      */
     @RequestMapping("list")
-    public String list(ModelMap model, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
+    public String list(ModelMap model, AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
         int accountId = accountInfoFragment.getAccountId();
@@ -107,8 +103,7 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("history")
-    public String history(ModelMap model, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
+    public String history(ModelMap model, AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         int accountId = accountInfoFragment.getAccountId();
         List<HardwareConfigAction> hardwareConfigActions =
@@ -123,11 +118,9 @@ public class OperatorEnrollmentController {
      * different wording ("Add Enrollment" instead of "Edit Enrollment").
      */
     @RequestMapping("add")
-    public String add(ModelMap model, int assignedProgramId,
-            HttpServletResponse response, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        return edit(model, assignedProgramId, response, userContext,
-                    accountInfoFragment, true, flashScope);
+    public String add(ModelMap model, int assignedProgramId, YukonUserContext userContext,
+                      AccountInfoFragment accountInfoFragment) {
+        return edit(model, assignedProgramId, userContext, accountInfoFragment, true);
     }
 
     /**
@@ -135,17 +128,14 @@ public class OperatorEnrollmentController {
      * to change load group used and hardware used for the selected program.
      */
     @RequestMapping("edit")
-    public String edit(ModelMap model, int assignedProgramId,
-            HttpServletResponse response, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        return edit(model, assignedProgramId, response, userContext,
-                    accountInfoFragment, false, flashScope);
+    public String edit(ModelMap model, int assignedProgramId, YukonUserContext userContext,
+                       AccountInfoFragment accountInfoFragment) {
+        return edit(model, assignedProgramId, userContext, accountInfoFragment, false);
     }
 
     private String edit(ModelMap model, int assignedProgramId,
-            HttpServletResponse response, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, boolean isAdd,
-            FlashScope flashScope) {
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment, boolean isAdd) {
 
         validateAccountEditing(userContext);
 
@@ -183,8 +173,7 @@ public class OperatorEnrollmentController {
         model.addAttribute("loadGroups", loadGroups);
 
         Map<Integer, DisplayableEnrollmentInventory> inventoryById = Maps.newHashMap();
-        for (DisplayableEnrollmentInventory item
-                : displayableEnrollmentProgram.getInventory()) {
+        for (DisplayableEnrollmentInventory item : displayableEnrollmentProgram.getInventory()) {
             inventoryById.put(item.getInventoryId(), item);
         }
         model.addAttribute("inventoryById", inventoryById);
@@ -205,7 +194,7 @@ public class OperatorEnrollmentController {
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(model, accountInfoFragment.getAccountId(), assignedProgramId, userContext);
+            getConflictingEnrollments(accountInfoFragment.getAccountId(), assignedProgramId, userContext);
 
         // For confirmation, we just need a list of conflicting programs.
         Set<Integer> conflictingAssignedProgramIds = Sets.newHashSet();
@@ -221,22 +210,22 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("save")
-    public @ResponseBody JSONObject save(HttpServletResponse resp, ModelMap model, int assignedProgramId, boolean isAdd,
+    public @ResponseBody JSONObject save(int assignedProgramId, boolean isAdd,
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         
-        return save(resp, model, assignedProgramId, programEnrollment,
+        return save(assignedProgramId, programEnrollment,
                     isAdd ? "enrollCompleted" : "enrollmentUpdated",
                             userContext, accountInfoFragment, flashScope);
     }
 
-    private @ResponseBody JSONObject save(HttpServletResponse resp, ModelMap model, int assignedProgramId,
+    private @ResponseBody JSONObject save(int assignedProgramId,
             @ModelAttribute ProgramEnrollment programEnrollment,
             String saveTypeKey,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment,
-            FlashScope flashScope) throws IOException {
+            FlashScope flashScope) {
         
         // Log enrollment/unenrollment attempts
         accountEventLogService.enrollmentModificationAttempted(userContext.getYukonUser(), 
@@ -247,7 +236,7 @@ public class OperatorEnrollmentController {
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
-        programEnrollments.addAll(getConflictingEnrollments(model, accountInfoFragment.getAccountId(),
+        programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
                                                             assignedProgramId, userContext));
         try {
             enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
@@ -279,8 +268,7 @@ public class OperatorEnrollmentController {
 
     @RequestMapping("confirmUnenroll")
     public String confirmUnenroll(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
+            YukonUserContext userContext) {
         validateAccountEditing(userContext);
 
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
@@ -290,9 +278,9 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping("unenroll")
-    public @ResponseBody JSONObject unenroll(HttpServletResponse resp, ModelMap model, int assignedProgramId,
+    public @ResponseBody JSONObject unenroll(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) throws IOException {
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         DisplayableEnrollmentProgram displayableEnrollmentProgram =
             displayableEnrollmentDao.getProgram(accountInfoFragment.getAccountId(), assignedProgramId);
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
@@ -302,12 +290,12 @@ public class OperatorEnrollmentController {
             enrollment.setEnrolled(false);
         }
 
-        return save(resp, model, assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
+        return save(assignedProgramId, programEnrollment, "unenrollCompleted", userContext, 
                     accountInfoFragment, flashScope);
     }
 
-    private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(ModelMap model,
-            int accountId, int assignedProgramId, YukonUserContext userContext) {
+    private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(int accountId, 
+                int assignedProgramId, YukonUserContext userContext) {
         boolean multiplePerCategory =
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
                                           userContext.getYukonUser());
