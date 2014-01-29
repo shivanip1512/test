@@ -1411,22 +1411,28 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             return;
         }
 
-        Cti::ServerSockets listeningSockets;
-
         try
         {
+            CtiLockGuard<CtiMutex> lock(_listenerMux);
+
+            if( isListenerShutdown() )
+            {
+                // listener sockets have already shutdown 
+                return;
+            }
+
             // create sockets from the addrinfo
-            listeningSockets.createSockets(pAddrInfo.get());
+            _listenerSockets.createSockets(pAddrInfo.get());
 
             // set sockets options to allows socket to bind to an address and port already in use
             BOOL ka = TRUE;
-            listeningSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
+            _listenerSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
 
             // bind the socket
-            listeningSockets.bind(pAddrInfo.get());
+            _listenerSockets.bind(pAddrInfo.get());
 
             // set sockets in listening state
-            listeningSockets.listen(SOMAXCONN);
+            _listenerSockets.listen(SOMAXCONN);
         }
         catch( Cti::SocketException& e )
         {
@@ -1451,14 +1457,14 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
 
             // accept a new socket connection
-            tmpConnection = listeningSockets.accept( returnAddr );
+            tmpConnection = _listenerSockets.accept( returnAddr );
 
             if( tmpConnection == INVALID_SOCKET )
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Accept call failed in FDRInet with error code: " << listeningSockets.getLastError() << endl;
+                    dout << CtiTime() << " Accept call failed in FDRInet with error code: " << _listenerSockets.getLastError() << endl;
                 }
                 continue;
             }

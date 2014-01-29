@@ -24,42 +24,26 @@ CtiFDRSocketInterface::CtiFDRSocketInterface(string & interfaceType, int aPortNu
     iTimestampReasonabilityWindow(aWindow),
     iPointTimeVariation(0),
     iRegistered(true),
-    iLinkTimeout(60)
-
+    iLinkTimeout(60),
+    _listenerShutdown(false)
 {
-    iListener = new CtiFDRSocketConnection();
 }
-
 
 CtiFDRSocketInterface::~CtiFDRSocketInterface()
 {
-    if (iListener->getConnectionStatus () == CtiFDRSocketConnection::Ok)
-    {
-        shutdownListener();
-    }
-}
-
-CtiMutex & CtiFDRSocketInterface::getListenerMux ()
-{
-    return iListenerMux;
-}
-
-CtiFDRSocketConnection * CtiFDRSocketInterface::getListener()
-{
-    return iListener;
-}
-
-CtiFDRSocketInterface& CtiFDRSocketInterface::setListener(CtiFDRSocketConnection * aSocket)
-{
-    iListener = aSocket;
-    return *this;
+    shutdownListener();
 }
 
 void CtiFDRSocketInterface::shutdownListener()
 {
-    CtiLockGuard<CtiMutex> destGuard(getListenerMux());
-    iListener->closeAndFailConnection();
-    delete iListener;
+    CtiLockGuard<CtiMutex> lock(_listenerMux);
+    _listenerShutdown = true;
+    _listenerSockets.shutdownAndClose();
+}
+
+bool CtiFDRSocketInterface::isListenerShutdown()
+{
+    return _listenerShutdown;
 }
 
 int CtiFDRSocketInterface::getPortNumber () const

@@ -9,6 +9,7 @@
 #include "dlldefs.h"
 #include "queues.h"
 #include "fdrinterface.h"
+#include "socket_helper.h"
 
 class CtiFDRSocketConnection;
 class CtiTime;
@@ -60,14 +61,17 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         CtiFDRSocketInterface &setRegistered (bool aFlag=true);
         virtual bool CtiFDRSocketInterface::isClientConnectionValid (void);
 
-        CtiMutex & getListenerMux ();
         void shutdownListener();
-        CtiFDRSocketConnection * getListener ();
-        CtiFDRSocketInterface & setListener (CtiFDRSocketConnection *aListener);
 
         static FLOAT   ntohieeef (LONG NetLong);
         static LONG    htonieeef (FLOAT  HostFloat);
 
+    protected:
+
+        Cti::ServerSockets _listenerSockets;
+        CtiMutex           _listenerMux;
+
+        bool isListenerShutdown();
 
     private:
 
@@ -75,9 +79,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         int     iTimestampReasonabilityWindow;
         bool    iRegistered;
         int     iPointTimeVariation;
-
-        CtiMutex                    iListenerMux;
-        CtiFDRSocketConnection      *iListener;
+        bool    _listenerShutdown;
 
         std::string _ipMask;
 

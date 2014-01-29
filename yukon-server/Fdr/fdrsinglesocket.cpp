@@ -615,23 +615,28 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                     continue;
                 }
 
-                // listening sockets will shutdown and close when they are out of scope
-                Cti::ServerSockets listeningSockets;
-
                 try
                 {
+                    CtiLockGuard<CtiMutex> lock(_listenerMux);
+
+                    if( isListenerShutdown() )
+                    {
+                        // go back to the beginning to service cancellation
+                        continue;
+                    }
+
                     // create sockets from the addrinfo
-                    listeningSockets.createSockets(pAddrInfo.get());
+                    _listenerSockets.createSockets(pAddrInfo.get());
 
                     // set sockets options to allows socket to bind to an address and port already in use
                     BOOL ka = TRUE;
-                    listeningSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
+                    _listenerSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
 
                     // bind the socket
-                    listeningSockets.bind(pAddrInfo.get());
+                    _listenerSockets.bind(pAddrInfo.get());
 
                     // set sockets in listening state
-                    listeningSockets.listen(SOMAXCONN);
+                    _listenerSockets.listen(SOMAXCONN);
                 }
                 catch( Cti::SocketException& e )
                 {
@@ -670,7 +675,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
 
                 // new socket
-                tmpConnection = listeningSockets.accept( returnAddr );
+                tmpConnection = _listenerSockets.accept( returnAddr );
 
                 if( tmpConnection == INVALID_SOCKET )
                 {

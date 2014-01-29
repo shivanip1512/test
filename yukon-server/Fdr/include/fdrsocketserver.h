@@ -83,15 +83,9 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
         virtual CtiFDRClientServerConnectionSPtr findConnectionForDestination(const CtiFDRDestination destination) const;
 
-        ConnectionList  _connectionList;
-
-        CtiMutex _socketMutex;
-
-        typedef std::map<unsigned short, Cti::ServerSockets*> PortSocketMap;
-        typedef PortSocketMap::iterator PortSocketMap_itr;
-
-        PortSocketMap _socketConnections;
+        ConnectionList   _connectionList;
         mutable CtiMutex _connectionListMutex;
+
     private:
 
         bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
@@ -111,5 +105,12 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         bool _singleListeningPort;
 
         HANDLE _shutdownEvent;
+
+        typedef boost::shared_ptr<Cti::ServerSockets>      SocketsSharedPtr;
+        typedef std::map<unsigned short, SocketsSharedPtr> PortSocketsMap;
+
+        PortSocketsMap _socketConnections;
+        CtiMutex       _socketMutex;
+        bool           _socketShutdown;
 };
 

@@ -43,7 +43,8 @@ CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
     _timestampReasonabilityWindow(0),
     _linkTimeout(0),
     _shutdownEvent(0),
-    _singleListeningPort(true)
+    _singleListeningPort(true),
+    _socketShutdown(false)
 {
     // init these lists so they have something
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_RECEIVE));
@@ -144,9 +145,10 @@ BOOL CtiFDRSocketServer::stop( void )
 {
     {
         CtiLockGuard<CtiMutex> guard(_socketMutex);
-        for (PortSocketMap_itr iter = _socketConnections.begin(); iter != _socketConnections.end(); iter++)
+        _socketShutdown = true;
+        for( PortSocketsMap::iterator itr = _socketConnections.begin(); itr != _socketConnections.end(); itr++)
         {
-            iter->second->shutdownAndClose();
+            itr->second->shutdownAndClose();
         }
     }
 
@@ -363,7 +365,6 @@ void CtiFDRSocketServer::threadFunctionSendHeartbeat( void )
 void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort, int startupDelaySeconds )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    Cti::ServerSockets listeningSockets;
 
     try {
 
@@ -380,6 +381,8 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
             logNow() << "threadFunctionConnection initializing now." << endl;
         }
 
+        SocketsSharedPtr listeningSockets( new Cti::ServerSockets );
+
         while (true) {
             // We may have gotten to this point because of a socket being closed on
             // shutdown. Check to see if we're supposed to be exiting, otherwise
@@ -394,7 +397,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
             // just in case
             pSelf.serviceCancellation( );
 
-            if( !createBoundListener( listeningPort, listeningSockets ))
+            if( ! createBoundListener( listeningPort, *listeningSockets ))
             {
                 if (getDebugLevel() & CONNECTION_HEALTH_DEBUGLEVEL)
                 {
@@ -413,8 +416,15 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                 // Keep track of the socket.
                 {
                     CtiLockGuard<CtiMutex> guard(_socketMutex);
+
+                    if( _socketShutdown )
+                    {
+                        // go back to the beginning to service cancellation or check for a shutdown event
+                        continue;
+                    }
+
                     _socketConnections.erase(listeningPort); // Remove the last guy if we had a bad connection.
-                    _socketConnections.insert(std::make_pair(listeningPort, &listeningSockets));
+                    _socketConnections.insert(make_pair(listeningPort, listeningSockets));
                 }
 
                 while (true) {
@@ -422,7 +432,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
                     // new socket
-                    SOCKET tmpConnection = listeningSockets.accept(addr);
+                    SOCKET tmpConnection = listeningSockets->accept(addr);
 
                     // when this thread is to be shutdown, requestCancellation()
                     // will be called, then the listener socket will be shutdown
@@ -433,7 +443,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Accept call failed " << " (Error: " << listeningSockets.getLastError() << ")" << endl;
+                            logNow() << "Accept call failed " << " (Error: " << listeningSockets->getLastError() << ")" << endl;
                         }
                         // go back to outer loop (will create new listener)
                         break;
@@ -466,7 +476,7 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     }
                 } // accept loop
 
-                listeningSockets.shutdownAndClose();
+                listeningSockets->shutdownAndClose();
 
             } // else listener != null
         } // thread loop
