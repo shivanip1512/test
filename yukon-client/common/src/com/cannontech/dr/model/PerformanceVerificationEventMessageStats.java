@@ -4,23 +4,21 @@ import org.joda.time.Instant;
 
 public final class PerformanceVerificationEventMessageStats {
 
-    private final int messageId;
-    private final Instant messageSent;
+    private final PerformanceVerificationEventMessage eventMessage;
     private final PerformanceVerificationEventStats eventStats;
 
     public PerformanceVerificationEventMessageStats(int messageId, Instant messageSent, int success, 
                                                     int failed, int unknown) {
-        this.messageId = messageId;
-        this.messageSent = messageSent;
+        eventMessage = new PerformanceVerificationEventMessage(messageId, messageSent);
         eventStats = new PerformanceVerificationEventStats(success, failed, unknown);
     }
 
     public int getMessageId() {
-        return messageId;
+        return eventMessage.getMessageId();
     }
 
     public Instant getMessageSent() {
-        return messageSent;
+        return eventMessage.getMessageSent();
     }
 
     public int getSuccess() {
