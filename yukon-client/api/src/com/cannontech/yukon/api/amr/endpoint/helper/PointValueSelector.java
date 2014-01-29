@@ -27,7 +27,7 @@ public class PointValueSelector {
     private String label;
 
     public static PointValueSelector fromNode(Node pointValueNode) {
-        SelectorType type = SelectorType.getByName(pointValueNode.getNodeName());
+        SelectorType type = SelectorType.getByName(pointValueNode.getLocalName());
         return type.parseValueSelector(pointValueNode);
     }
 

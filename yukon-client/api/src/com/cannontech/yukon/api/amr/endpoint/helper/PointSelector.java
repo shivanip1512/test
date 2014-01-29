@@ -49,7 +49,7 @@ public class PointSelector {
 
     public PointSelector(SimpleXPathTemplate pointNodeTemplate) {
         Node pointSelectorNode = pointNodeTemplate.evaluateAsNode("*[1]");
-        type = PointSelector.Type.getByElementName(pointSelectorNode.getNodeName());
+        type = PointSelector.Type.getByElementName(pointSelectorNode.getLocalName());
         if (type == Type.TYPE_AND_OFFSET) {
             String typeStr = pointNodeTemplate.evaluateAsString("*[1]/@type");
             pointType = PointType.getForString(typeStr);
