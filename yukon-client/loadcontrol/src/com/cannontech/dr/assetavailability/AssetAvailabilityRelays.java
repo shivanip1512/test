@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class AssetAvailabilityRelays {
     public static final int MAX_RELAY = 4; //highest relay supported by asset availability
-    private static final ImmutableMap<Integer, ? extends Attribute> RELAY_ATTRIBUTES =
+    public static final ImmutableMap<Integer, ? extends Attribute> RELAY_ATTRIBUTES =
             ImmutableMap.of(
                 1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
                 2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG,

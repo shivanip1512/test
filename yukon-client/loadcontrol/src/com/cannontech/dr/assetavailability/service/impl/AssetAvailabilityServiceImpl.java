@@ -1,6 +1,7 @@
 package com.cannontech.dr.assetavailability.service.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -24,11 +25,14 @@ import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.AssetAvailabilityRelays;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityTotals;
+import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
+import com.cannontech.dr.assetavailability.dao.LcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
@@ -51,12 +55,14 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     private final DynamicDataSource dynamicDataSource;
     private final PointDao pointDao;
     private final GlobalSettingDao globalSettingDao;
+    private final LcrCommunicationsDao lcrCommunicationsDao;
     
     @Autowired
     public AssetAvailabilityServiceImpl(OptOutEventDao optOutEventDao, RawPointHistoryDao rawPointHistoryDao,
                                         LMHardwareConfigurationDao lmHardwareConfigurationDao, InventoryDao inventoryDao,
                                         DRGroupDeviceMappingDao drGroupDeviceMappingDao, PointDao pointDao,
-                                        DynamicDataSource dynamicDataSource, GlobalSettingDao globalSettingDao) {
+                                        DynamicDataSource dynamicDataSource, GlobalSettingDao globalSettingDao,
+                                        LcrCommunicationsDao lcrCommunicationsDao) {
         this.optOutEventDao = optOutEventDao;
         this.rawPointHistoryDao = rawPointHistoryDao;
         this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
@@ -65,6 +71,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         this.dynamicDataSource = dynamicDataSource;
         this.pointDao = pointDao;
         this.globalSettingDao = globalSettingDao;
+        this.lcrCommunicationsDao = lcrCommunicationsDao;
     }
     
     @Override
@@ -276,9 +283,87 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public SimpleAssetAvailability getAssetAvailability(int inventoryIds) throws DynamicDataAccessException {
-        Map<Integer, SimpleAssetAvailability> singleValueMap = getAssetAvailability(Sets.newHashSet(inventoryIds));
-        return singleValueMap.get(inventoryIds);
+    public SimpleAssetAvailability getAssetAvailability(int inventoryId) throws DynamicDataAccessException {
+        Map<Integer, SimpleAssetAvailability> singleValueMap = getAssetAvailability(Sets.newHashSet(inventoryId));
+        return singleValueMap.get(inventoryId);
+    }
+    
+    @Override
+    public AssetAvailabilityTotals getAssetAvailabilityTotal(Iterable<Integer> inventoryIds) {
+        Map<Integer, Integer> inventoryAndDevices = inventoryDao.getDeviceIds(inventoryIds);
+        Set<Integer> deviceIds = getTwoWayInventoryDevices(inventoryAndDevices);
+        
+        //Get one-way inventory
+        int oneWayInventory = getOneWayInventory(inventoryAndDevices).size();
+        
+        //Get communications window
+        Instant now = Instant.now();
+        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, null);
+        //Get runtime window
+        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
+        Range<Instant> runtimeWindow = Range.inclusive(runtimeWindowEnd, null);
+        
+        //Get asset availability of two-way devices
+        Map<Integer, DeviceCommunicationTimes> timesMap = lcrCommunicationsDao.getTimes(deviceIds);
+        int active = oneWayInventory; //one-way devices are always considered active
+        int inactive = 0;
+        int unavailable = 0;
+        for(DeviceCommunicationTimes times : timesMap.values()) {
+            if(times != null && communicatingWindow.intersects(times.getLastCommunicationTime())) {
+                if (runtimeWindow.intersects(times.getLastNonZeroRuntime())) {
+                    active++;
+                } else {
+                    inactive++;
+                }
+            } else {
+                unavailable++;
+            }
+        }
+        return new AssetAvailabilityTotals(active, inactive, unavailable);
+    }
+    
+    @Override
+    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Iterable<Integer> inventoryIds) {
+        Map<Integer, AssetAvailabilityStatus> results = new HashMap<>();
+        //Get one-way inventory
+        Map<Integer, Integer> inventoryAndDevices = inventoryDao.getDeviceIds(inventoryIds);
+        Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
+        
+        //Get communications window
+        Instant now = Instant.now();
+        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
+        Range<Instant> communicatingWindow = Range.inclusive(communicatingWindowEnd, null);
+        //Get runtime window
+        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
+        Range<Instant> runtimeWindow = Range.inclusive(runtimeWindowEnd, null);
+        
+        //Get two-way inventory statuses
+        Set<Integer> deviceIds = getTwoWayInventoryDevices(inventoryAndDevices);
+        Map<Integer, DeviceCommunicationTimes> deviceTimesMap = lcrCommunicationsDao.getTimes(deviceIds);
+        
+        //Add all statuses to the inventory map
+        for(Integer inventoryId : inventoryIds) {
+            AssetAvailabilityStatus aaStatus = AssetAvailabilityStatus.UNAVAILABLE;
+            if (oneWayInventory.contains(inventoryId)) {
+                aaStatus = AssetAvailabilityStatus.ACTIVE;
+            } else {
+                int deviceId = inventoryAndDevices.get(inventoryId);
+                DeviceCommunicationTimes times = deviceTimesMap.get(deviceId);
+                if (times == null) {
+                    //Device has never communicated
+                    aaStatus = null;
+                } else if (communicatingWindow.intersects(times.getLastCommunicationTime())) {
+                    if (runtimeWindow.intersects(times.getLastNonZeroRuntime())) {
+                        aaStatus = AssetAvailabilityStatus.ACTIVE;
+                    } else {
+                        aaStatus = AssetAvailabilityStatus.INACTIVE;
+                    }
+                }
+            }
+            results.put(inventoryId, aaStatus);
+        }
+        return results;
     }
     
     @Override

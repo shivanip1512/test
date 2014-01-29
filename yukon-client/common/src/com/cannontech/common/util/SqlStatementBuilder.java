@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -288,7 +289,37 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         addString("not ");
         return in(list);
     }
-
+    
+    /**
+     * Takes a Map of column names to values, and creates the SET clause.
+     * For example, a map with
+     * 
+     * "UserId" -> 17,
+     * "UserName" -> "Yukon"
+     * 
+     * would produce the SQL fragment
+     * 
+     * set UserId=17, UserName='Yukon'
+     */
+    public SqlStatementBuilder set(Map<String, Object> valueMap) {
+        if (valueMap.isEmpty()) {
+            throw new IllegalArgumentException("Value map must not be empty.");
+        }
+        append("set");
+        for(Iterator<Map.Entry<String, Object>> iterator = valueMap.entrySet().iterator(); iterator.hasNext();) {
+            Map.Entry<String, Object> entry = iterator.next();
+            String columnName = entry.getKey();
+            Object value = entry.getValue();
+            append(columnName);
+            append("=");
+            appendArgument(value);
+            if (iterator.hasNext()) {
+                append(", ");
+            }
+        }
+        return this;
+    }
+    
     public SqlStatementBuilder set(String columnName, Object value, Object... remaining) {
         if (remaining.length % 2 != 0) {
             throw new IllegalArgumentException("Must specify column names and values in pairs.");

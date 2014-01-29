@@ -14,6 +14,7 @@ import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
 import com.cannontech.core.dynamic.impl.MockDynamicDataSource;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.dao.MockDrGroupDeviceMappingDao;
+import com.cannontech.dr.assetavailability.dao.MockLcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
 import com.cannontech.stars.dr.hardware.dao.MockInventoryDao;
@@ -87,6 +88,10 @@ public class AssetAvailabilityServiceBuilder {
             globalSettingDao.addValue(GlobalSettingType.LAST_RUNTIME_HOURS, runtimeHours);
         }
         
+        //LCR Communications
+        MockLcrCommunicationsDao lcrCommunicationsDao = new MockLcrCommunicationsDao();
+        
+        
         AssetAvailabilityServiceImpl assetAvailabilityService = new AssetAvailabilityServiceImpl(optOutEventDao, 
                                                                                                  rawPointHistoryDao,
                                                                                                  lmHardwareConfigurationDao, 
@@ -94,7 +99,8 @@ public class AssetAvailabilityServiceBuilder {
                                                                                                  drGroupDeviceMappingDao, 
                                                                                                  pointDao,
                                                                                                  dynamicDataSource, 
-                                                                                                 globalSettingDao);
+                                                                                                 globalSettingDao,
+                                                                                                 lcrCommunicationsDao);
         return assetAvailabilityService;
     }
     

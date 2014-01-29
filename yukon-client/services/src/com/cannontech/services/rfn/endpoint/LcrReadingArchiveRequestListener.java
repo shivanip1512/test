@@ -20,6 +20,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.dr.assetavailability.service.LcrCommunicationsService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -55,6 +56,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired LmHardwareCommandService commandService;
     @Autowired InventoryBaseDao inventoryBaseDao;
+    @Autowired LcrCommunicationsService lcrCommunicationsService;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
@@ -85,6 +87,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 /** Handle point data */
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
                 messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
+                //this should be uncommented once YUK-12961 is complete
+                //lcrCommunicationsService.processPointData(messagesToSend);
                 dynamicDataSource.putValues(messagesToSend);
                 archivedReadings.addAndGet(messagesToSend.size());
                 LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
