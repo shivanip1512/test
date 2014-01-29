@@ -170,6 +170,7 @@ public class GroupEditorController {
         
         // COPY GROUPS TREE JSON
         Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
+            @Override
             public boolean evaluate(DeviceGroup receivingGroup) {
                 return !receivingGroup.isEqualToOrDescendantOf(selectedDeviceGroup) && receivingGroup.isModifiable();
             }
@@ -354,6 +355,7 @@ public class GroupEditorController {
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class DisableCurrentGroup implements NodeAttributeSettingCallback<DeviceGroup> {
+            @Override
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 
                 if (group.equals(deviceGroup)) {
@@ -538,7 +540,7 @@ public class GroupEditorController {
 
         // Make sure we can remove the group
         if (removeGroup.isEditable()) {
-            deviceGroupEditorDao.removeGroup(removeGroup);
+            deviceGroupEditorDao.removeGroup(removeGroup, false);
         } else {
             mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
         }

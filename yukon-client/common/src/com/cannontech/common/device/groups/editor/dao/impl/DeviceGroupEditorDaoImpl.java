@@ -447,15 +447,18 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
 
     @Override
     @Transactional
-    public void removeGroup(StoredDeviceGroup group) {
-        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be deleted.");
+    public void removeGroup(StoredDeviceGroup group, boolean deleteNonEditable) {
         Validate.isTrue(group.getParent() != null, "The root group cannot be deleted.");
+        if (!deleteNonEditable) {
+            Validate.isTrue(group.isEditable(), "Non-editable groups cannot be deleted.");
+        }
         
         List<StoredDeviceGroup> childGroups = getChildGroups(group);
         for(StoredDeviceGroup childGroup : childGroups){
-            removeGroup(childGroup);
+            removeGroup(childGroup, deleteNonEditable);
         }
         
+        log.trace("Deleting device group with id " + group.getId());
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM DeviceGroup");
         sql.append("WHERE DeviceGroupId").eq(group.getId());

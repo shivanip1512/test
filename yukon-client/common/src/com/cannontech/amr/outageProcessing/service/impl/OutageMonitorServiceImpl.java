@@ -42,7 +42,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         // delete outage group
         try {
 			StoredDeviceGroup outageGroup = getOutageGroup(outageMonitor.getOutageMonitorName());
-			deviceGroupEditorDao.removeGroup(outageGroup);
+			deviceGroupEditorDao.removeGroup(outageGroup, false);
 		} catch (NotFoundException e) {
 			// may have been deleted? who cares
 		}

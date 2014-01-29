@@ -68,11 +68,13 @@ public interface DeviceGroupEditorDao {
     public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName, DeviceGroupPermission permission) throws IllegalGroupNameException;
 
     /**
-     * Method to remove a stored device group and all of its children and
-     * dependencies.
-     * @param group - Group to remove
+     * Method to remove a stored device group and all of its children and dependencies.
+     * @param deleteNonEditable This must be set to true to delete a non-editable group. This is not normally
+     * something you'd want to do, so be sure you know what you're doing!
+     * @throws IllegalArgumentException If the specified group is the root group, or if a non-editable group was
+     * specified for deletion, without having deleteNonEditable set to true.
      */
-    public void removeGroup(StoredDeviceGroup group);
+    public void removeGroup(StoredDeviceGroup group, boolean deleteNonEditable);
 
     public StoredDeviceGroup getGroupById(int groupId);
     

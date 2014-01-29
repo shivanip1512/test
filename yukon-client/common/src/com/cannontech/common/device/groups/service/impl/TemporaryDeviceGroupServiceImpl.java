@@ -44,20 +44,27 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
     @Override
     public void scheduleTempGroupsDeletion() {
        scheduledExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
             public void run() {
-                deleteTemporaryGroups();
+                try {
+                    deleteTemporaryGroups();
+                } catch (Exception e) {
+                    log.error("Error occurred during scheduled deletion of temporary groups.", e);
+                }
             }
             
         }, 0, 1, TimeUnit.DAYS);
         log.info("Scheduled a task to delete temporary device groups once a day.");
     }
     
-    /* Delete temp groups older then the number of days specified in the Global Settings*/
+    /**
+     * Delete temp groups older then the number of days specified in the Global Settings
+     */
     private void deleteTemporaryGroups() {
-        
         int days = globalSettingDao.getInteger(GlobalSettingType.TEMP_DEVICE_GROUP_DELETION_IN_DAYS);
         Instant now = new Instant();
         Instant earliestDate = now.minus(Duration.standardDays(days));
+        log.info("Deleting temporary device groups older than " + earliestDate + "(" + days + " days)");
         
         int groupsDeleted = 0;
         
@@ -65,7 +72,7 @@ public class TemporaryDeviceGroupServiceImpl implements TemporaryDeviceGroupServ
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(parentGroup);
         for (StoredDeviceGroup childGroup : childGroups) {
             if(childGroup.getCreatedDate().isBefore(earliestDate)){
-                deviceGroupEditorDao.removeGroup(childGroup);
+                deviceGroupEditorDao.removeGroup(childGroup, true);
                 groupsDeleted++;
             }
         }

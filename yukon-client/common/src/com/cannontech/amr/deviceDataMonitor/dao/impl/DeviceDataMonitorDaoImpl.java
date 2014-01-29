@@ -154,7 +154,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         /* remove the violation device group */
         DeviceGroup monitorViolationGroup = deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICE_DATA, monitor.getViolationsDeviceGroupName());
         StoredDeviceGroup monitorViolationStoredGroup = deviceGroupEditorDao.getStoredGroup(monitorViolationGroup);
-        deviceGroupEditorDao.removeGroup(monitorViolationStoredGroup);
+        deviceGroupEditorDao.removeGroup(monitorViolationStoredGroup, false);
         log.info("Deleted device data monitor violations group: " + monitorViolationStoredGroup.getFullName());
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
