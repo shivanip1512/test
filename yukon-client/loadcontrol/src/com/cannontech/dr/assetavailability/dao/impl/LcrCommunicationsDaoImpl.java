@@ -39,7 +39,7 @@ import com.google.common.collect.Sets;
 
 public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     private static final Logger log = YukonLogManager.getLogger(LcrCommunicationsDaoImpl.class);
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ChunkingMappedSqlTemplate chunkingMappedSqlTemplate;
     private static final Function<Integer, Integer> integerIdentity = Functions.identity();
     
@@ -52,7 +52,7 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     
     @PostConstruct
     public void init() {
-        chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
     }
     
     @Override
@@ -97,7 +97,7 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     @Transactional
     public boolean updateComms(PaoIdentifier paoIdentifier, Instant newTimestamp) {
         Instant lastCommunication = null;
-        lastCommunication = getLastCommunicationTime(paoIdentifier.getPaoId());
+        lastCommunication = findLastCommunicationTime(paoIdentifier.getPaoId());
         if(lastCommunication == null) {
             //No row exists - create a new one with this communication time
             return insertCommunicationTime(paoIdentifier.getPaoId(), newTimestamp);
@@ -134,15 +134,15 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     }
     
     /**
-     * Retrieves the last communication time for the specified device.
-     * @throws EmptyResultDataAccessException when no data row has been inserted yet for the device.
+     * Retrieves the last communication time for the specified device. If the device has never communicated, null is
+     * returned.
      */
-    private Instant getLastCommunicationTime(int deviceId) {
+    private Instant findLastCommunicationTime(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LastCommunication");
         sql.append("FROM LcrCommunications");
         sql.append("WHERE DeviceId").eq(deviceId);
-        List<Instant> list = yukonJdbcTemplate.query(sql, RowMapper.INSTANT_NULLABLE);
+        List<Instant> list = jdbcTemplate.query(sql, RowMapper.INSTANT_NULLABLE);
         if(list.size() == 0) {
             return null;
         }
@@ -158,7 +158,7 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         sql.append("SELECT LastCommunication, LastNonZeroRuntime,").append(RELAY_COLUMNS.get(relay));
         sql.append("FROM LcrCommunications");
         sql.append("WHERE DeviceId").eq(deviceId);
-        DeviceRelayCommunicationTimes oldTimes = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<DeviceRelayCommunicationTimes>() {
+        DeviceRelayCommunicationTimes oldTimes = jdbcTemplate.queryForObject(sql, new YukonRowMapper<DeviceRelayCommunicationTimes>() {
             @Override
             public DeviceRelayCommunicationTimes mapRow(YukonResultSet rs) throws SQLException {
                 Instant lastCommunication = rs.getInstant("LastCommunication");
@@ -182,8 +182,8 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         sink.addValue("DeviceId", deviceId);
         sink.addValue("LastCommunication", lastCommunicationTimestamp);
         //all other values are null
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        if(rowsAffected > 0) {
+        int rowsAffected = jdbcTemplate.update(sql);
+        if(rowsAffected == 0) {
             log.error("Failed to insert row in LcrCommunications for device" + deviceId + ", timestamp: " 
                       + lastCommunicationTimestamp);
         }
@@ -204,8 +204,8 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         sink.addValue("LastNonZeroRuntime", newTimestamp);
         sink.addValue(RELAY_COLUMNS.get(relay), newTimestamp);
         //other runtime values are null
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        if(rowsAffected > 0) {
+        int rowsAffected = jdbcTemplate.update(sql);
+        if(rowsAffected == 0) {
             log.error("Failed to insert row in LcrCommunications for device" + deviceId + ", timestamp: " 
                       + newTimestamp + ", relay: " + relay);
         }
@@ -226,8 +226,8 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         sql.append("UPDATE LcrCommunications");
         sql.set("LastCommunication", lastCommunicationTimestamp); 
         sql.append("WHERE DeviceId").eq(deviceId);
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        if (rowsAffected > 0) {
+        int rowsAffected = jdbcTemplate.update(sql);
+        if (rowsAffected == 0) {
             log.error("Failed to update row in LcrCommunications for device " + deviceId + ", timestamp: "
                     + lastCommunicationTimestamp);
         }
@@ -247,8 +247,8 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         sql.append("UPDATE LcrCommunications");
         sql.set(setValues);
         sql.append("WHERE DeviceId").eq(deviceId);
-        int rowsAffected = yukonJdbcTemplate.update(sql);
-        if (rowsAffected > 0) {
+        int rowsAffected = jdbcTemplate.update(sql);
+        if (rowsAffected == 0) {
             log.error("Failed to update row in LcrCommunications for device " + deviceId);
         }
         return rowsAffected > 0;
@@ -300,10 +300,10 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
      * A simple data object representing the result of a comparison between DeviceRelayCommunicationTimes from the
      * database, and a new timestamp.
      */
-    private final class LcrCommunicationsComparison {
-        private boolean isCommNewer;
-        private boolean isRuntimeNewer;
-        private boolean isRelayRuntimeNewer;
+    private static final class LcrCommunicationsComparison {
+        private final boolean isCommNewer;
+        private final boolean isRuntimeNewer;
+        private final boolean isRelayRuntimeNewer;
         
         public LcrCommunicationsComparison(boolean isCommNewer, boolean isRuntimeNewer, boolean isRelayRuntimeNewer) {
             this.isCommNewer = isCommNewer;
