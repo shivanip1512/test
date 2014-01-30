@@ -18,6 +18,9 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory> {
+    
+    private static final long DEFAULT_WAIT_FOR_START_MILLIS = 120000; // 2 minutes - forces the VM transport to wait till the broker is started.
+    
     private static final Logger log = YukonLogManager.getLogger(YukonJmsConnectionFactory.class);
 
     public enum ConnectionType {
@@ -60,7 +63,8 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 String internalMessageConnection;
                 
                 if (applicationName.equals("ServiceManager")) {
-                    internalMessageConnection = "vm://ServiceManager?create=false&waitForStart=120000"; // wait for the broker to start for 2 minutes
+                    long waitForStartMillis = DEFAULT_WAIT_FOR_START_MILLIS;
+                    internalMessageConnection = "vm://ServiceManager?create=false&waitForStart=" + waitForStartMillis;
                 } else {
                     internalMessageConnection = 
                             configurationSource.getString(JMS_INTERNAL_MESSAGING_CONNECTION, serverListenConnection);
