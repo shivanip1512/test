@@ -1,35 +1,41 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="amr" page="meterDetail.water">
     <dt:pickerIncludes/>
-    
-    <div id="f-page-buttons">
-        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-            <cti:param name="collectionType" value="idList" />
-            <cti:param name="idList.ids" value="${deviceId}" />
-        </cti:url>
-        <cti:button icon="icon-cog" href="${collectionActionsUrl}" nameKey="otherActions"/> 
+
+    <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+        <cti:param name="collectionType" value="idList" />
+        <cti:param name="idList.ids" value="${deviceId}" />
+    </cti:url>
+    <cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report">
+        <cti:param name="collectionType" value="idList" />
+        <cti:param name="idList.ids" value="${deviceId}" />
+    </cti:url>
+    <div id="f-page-actions" class="dn">
+        <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
+        <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" />
     </div>
 
-	<ct:widgetContainer deviceId="${deviceId}" identify="false">
+	<tags:widgetContainer deviceId="${deviceId}" identify="false">
 
         <div class="column-12-12">
             <div class="column one">
-				    <ct:widget bean="meterInformationWidget" />
+				    <tags:widget bean="meterInformationWidget" />
 	
-					<ct:widget bean="waterMeterReadingsWidget" />
+					<tags:widget bean="waterMeterReadingsWidget" />
                     
                     <c:if test="${showRfMetadata}">
-                        <ct:widget bean="rfnDeviceMetadataWidget"/>
+                        <tags:widget bean="rfnDeviceMetadataWidget"/>
                     </c:if>
                     
 					<c:if test="${cisInfoWidgetName != null}">
-						<ct:widget bean="${cisInfoWidgetName}" />
+						<tags:widget bean="${cisInfoWidgetName}" />
 					</c:if>
 	
 					<!-- Including deviceGroupWidget's resources here since this particular
@@ -39,15 +45,15 @@
 					<cti:includeScript link="JQUERY_TREE" />
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
 					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
-	                <ct:widget bean="deviceGroupWidget"/>
+	                <tags:widget bean="deviceGroupWidget"/>
             </div>
             <div class="column two nogutter">
                 <c:set var="whatsThis" value="<div id='trendWidgetWhatsThisText'></div>"/>
                 <div id="trendWidget">
-                   <ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
+                   <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
                 </div>
             </div>
         </div>
-    </ct:widgetContainer>
+    </tags:widgetContainer>
 
 </cti:standardPage>

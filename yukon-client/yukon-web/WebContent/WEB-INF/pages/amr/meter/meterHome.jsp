@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -29,12 +30,8 @@
                 <cti:url var="moveOutUrl" value="/meter/moveOut">
                     <cti:param name="deviceId" value="${deviceId}" />
                 </cti:url>
-                <li>
-                    <a href="${moveInUrl}"><i:inline key=".moveIn"/></a>
-                </li>
-                <li>
-                    <a href="${moveOutUrl}"><i:inline key=".moveOut"/></a>
-                </li>
+                <cm:dropdownOption key=".moveIn" href="${moveInUrl}" />
+                <cm:dropdownOption key=".moveOut" href="${moveOutUrl}" />
             </c:if>
 
             <!-- Actions: High Bill Complaint -->
@@ -43,9 +40,7 @@
                     <cti:url var="highBillUrl" value="/meter/highBill/view">
                         <cti:param name="deviceId" value="${deviceId}" />
                     </cti:url>
-                    <li>
-                        <a href="${highBillUrl}"><i:inline key=".highBill"/></a>
-                    </li>
+                    <cm:dropdownOption key=".highBill" href="${highBillUrl}" />
                 </c:if>
             </cti:checkRolesAndProperties>
 
@@ -55,9 +50,7 @@
                 <cti:url var="profileUrl" value="/amr/profile/home">
                     <cti:param name="deviceId" value="${deviceId}" />
                 </cti:url>
-                <li>
-                    <a href="${profileUrl}"><i:inline key=".profile"/></a>
-                </li>
+                <cm:dropdownOption key=".profile" href="${profileUrl}" />
             </c:if >
 
             <!-- Actions: Voltage & TOU -->
@@ -65,9 +58,7 @@
                 <cti:url var="voltageTouUrl" value="/amr/voltageAndTou/home">
                     <cti:param name="deviceId" value="${deviceId}" />
                 </cti:url>
-                <li>
-                    <a href="${voltageTouUrl}"><i:inline key=".voltageAndTou"/></a>
-                </li>
+                <cm:dropdownOption key=".voltageAndTou" href="${voltageTouUrl}" />
             </c:if>
 
             <!-- Actions: Manual Commander -->
@@ -75,9 +66,7 @@
                     <cti:url var="commanderUrl" value="/amr/manualCommand/home">
                         <cti:param name="deviceId" value="${deviceId}" />
                     </cti:url>
-                    <li>
-                        <a href="${commanderUrl}"><i:inline key=".manualCommander"/></a>
-                    </li>
+                    <cm:dropdownOption key=".manualCommander" href="${commanderUrl}" />
             </cti:checkRolesAndProperties>
 
             <!-- Actions: Locate Route -->
@@ -87,9 +76,7 @@
                         <cti:param name="collectionType" value="idList" />
                         <cti:param name="idList.ids" value="${deviceId}" />
                     </cti:url>
-                    <li>
-                        <a href="${routeLocateUrl}"><i:inline key=".locateRoute"/></a>
-                    </li>
+                    <cm:dropdownOption key=".locateRoute" href="${routeLocateUrl}" />
                 </c:if>
             </cti:checkRolesAndProperties>
 
@@ -99,9 +86,7 @@
                 <cti:param name="idList.ids" value="${deviceId}" />
             </cti:url>
             <li class="divider"/>
-            <li>
-                <a href="${collectionActionsUrl}"><i:inline key=".otherActions.label"/></a>
-            </li>
+            <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" />
         </div>
     </c:if>
 
