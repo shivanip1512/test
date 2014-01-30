@@ -217,7 +217,7 @@ public class OperatorAccountController {
     }
     
     // CANCEL AN IMPORT
-    @RequestMapping(value="cancelImport", params="cancelImport")
+    @RequestMapping(value="doAccountImport", params="cancelImport")
     public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult result = recentResultsCache.getResult(resultId);
