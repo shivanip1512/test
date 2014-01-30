@@ -355,7 +355,7 @@ BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper )
                 (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 1 Durations
                 (0x00)(0x00)                    // Schedule 1 & 2 Rates
                 (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 2 Durations
-                (0x03);                         // Schedule 2 Rates
+                (0x0f);                         // Schedule 2 Rates
 
         CtiCommandParser parse( "putconfig tou 11111112 schedule 1 a/0:00 schedule 2 d/0:00 default a" );
 

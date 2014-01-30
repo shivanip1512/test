@@ -1585,14 +1585,14 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                             durations[rc.schedule][offset - 1] = (rc.time - time_offset) / 300;
                             rates[rc.schedule][offset] = rc.rate;
 
-                            if( (offset + 1) <= 5 )
-                            {
-                                //  this is to work around the 255 * 5 min limitation for switches - this way it doesn't
-                                //    jump back to the default rate if only a midnight rate is specified
-                                rates[rc.schedule][offset + 1] = rc.rate;
-                            }
-
                             time_offset = rc.time - (rc.time % 300);  //  make sure we don't miss the 5-minute marks
+                        }
+
+                        if( (offset + 1) <= 5 )
+                        {
+                            //  this is to work around the 255 * 5 min limitation for switches - this way it doesn't
+                            //    jump back to the default rate if only a midnight rate is specified
+                            rates[rc.schedule][offset + 1] = rc.rate;
                         }
                     }
 
