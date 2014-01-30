@@ -125,7 +125,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE CREATE
-    @RequestMapping(value="applianceCreate", params="create")
+    @RequestMapping(value={"applianceCreate", "applianceUpdate"}, params="create")
     public String applianceCreate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                   BindingResult bindingResult,
                                   ModelMap modelMap,
@@ -323,17 +323,14 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE DELETE
-    @RequestMapping(value="applianceDelete", params="delete")
+    @RequestMapping(value="applianceUpdate", params="delete")
     public String applianceDelete(int applianceId, 
                                    ModelMap modelMap,
                                    AccountInfoFragment accountInfoFragment,
                                    YukonUserContext userContext,
                                    FlashScope flashScope,
-                                   HttpSession session)
-            throws ServletRequestBindingException {
+                                   HttpSession session) {
 
-        
-        
         // Log appliance deletion attempt
         LiteStarsAppliance liteStarsAppliance = 
             starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId,
