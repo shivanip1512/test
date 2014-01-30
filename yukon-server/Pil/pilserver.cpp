@@ -468,9 +468,9 @@ void PilServer::connectionThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
                 }
-                
-                validateConnections();
             }
+
+            validateConnections();
         }
     }
     catch( RWxmsg& msg )

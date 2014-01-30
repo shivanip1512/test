@@ -633,9 +633,9 @@ void CtiVanGogh::VGConnectionHandlerThread()
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " New connection established." << endl;
                 }
-
-                validateConnections();
             }
+
+            validateConnections();
 
             reportOnThreads();
         }
@@ -3624,24 +3624,18 @@ CtiServer::ptr_type CtiVanGogh::getScannerConnection()
 
 void CtiVanGogh::validateConnections()
 {
-
-    CtiServer::ptr_type CM;
-
     CtiServerExclusion guard(_server_exclusion);
 
-    if(MainQueue_.entries() == 0)
+    while( CtiServer::ptr_type CM = mConnectionTable.remove(NonViableConnection, NULL) )
     {
-        while( (CM = mConnectionTable.remove(NonViableConnection, NULL)) )
         {
-            {
-                CtiTime Now;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << Now << " ** INFO ** Vagrant connection detected. Removing it." << endl;
-                dout << Now << "   Connection: " << CM->getClientName() << " id " << CM->getClientAppId() << " on " << CM->getPeer() << " will be removed" << endl;
-            }
-
-            clientShutdown(CM);
+            CtiTime Now;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << Now << " ** INFO ** Vagrant connection detected. Removing it." << endl;
+            dout << Now << "   Connection: " << CM->getClientName() << " id " << CM->getClientAppId() << " on " << CM->getPeer() << " will be removed" << endl;
         }
+
+        clientShutdown(CM);
     }
 
     return;
