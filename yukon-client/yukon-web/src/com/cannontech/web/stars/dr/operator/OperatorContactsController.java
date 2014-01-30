@@ -192,11 +192,10 @@ public class OperatorContactsController {
     }
     
     // ADD NOTIFICATION
-    @RequestMapping(value="contactsAddNotification", params = "newNotification")
+    @RequestMapping(value="contactUpdate", params = "newNotification")
     public String contactsAddNotification(@ModelAttribute("contactDto") ContactDto contactDto, 
                                             ModelMap modelMap, 
                                             YukonUserContext userContext,
-                                            FlashScope flashScope,
                                             AccountInfoFragment accountInfoFragment) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
