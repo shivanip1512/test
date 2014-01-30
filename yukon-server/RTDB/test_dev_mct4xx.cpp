@@ -320,46 +320,54 @@ struct putConfig_helper
 
     test_Mct4xxDevice::CtiMessageList vgList, retList;
     test_Mct4xxDevice::OutMessageList outList;
+
     CtiRequestMsg request;
+
     OUTMESS *om;
 
     putConfig_helper()
     {
         om = new OUTMESS;
     }
+
     ~putConfig_helper()
     {
         delete om;
-        delete_container(vgList);
-        delete_container(retList);
-        delete_container(outList);
+        delete_container( vgList );
+        delete_container( retList );
+        delete_container( outList );
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(test_dev_mct4xx_tou, putConfig_helper) 
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct4xx_tou, putConfig_helper ) 
 //{  Brace matching for BOOST_FIXTURE_TEST_SUITE
-    BOOST_AUTO_TEST_CASE(test_midnight_only_schedules)
+    BOOST_AUTO_TEST_CASE( test_midnight_only_schedules )
     {
         const std::vector<unsigned char> expectedMsg1 = boost::assign::list_of
-                (0xff)(0xff)(0xff)(0xff)(0xff)
-                (0x00)(0x00)(0xff)(0xff)(0xff)
-                (0xff)(0xff)(0x00)(0x00)(0x00);
+                (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 3 Durations
+                (0x00)(0x00)                    // Schedule 3 Rates
+                (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 4 Durations
+                (0x00)(0x00)                    // Schedule 4 Rates
+                (0x00);                         // Default Rate
 
         const std::vector<unsigned char> expectedMsg2 = boost::assign::list_of
-                (0x40)(0x00)(0xff)(0xff)(0xff)
-                (0xff)(0xff)(0x00)(0x00)(0xff)
-                (0xff)(0xff)(0xff)(0xff)(0x03);
+                (0x40)(0x00)                    // Day Table
+                (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 1 Durations
+                (0x00)(0x00)                    // Schedule 1 & 2 Rates
+                (0xff)(0xff)(0xff)(0xff)(0xff)  // Schedule 2 Durations
+                (0x03);                         // Schedule 2 Rates
 
-        CtiCommandParser parse("putconfig tou 11111112 schedule 1 a/0:00 schedule 2 d/0:00 default a");
+        CtiCommandParser parse( "putconfig tou 11111112 schedule 1 a/0:00 schedule 2 d/0:00 default a" );
 
-        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList));
+        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
 
-        BOOST_REQUIRE_EQUAL( 2, outList.size());
+        BOOST_REQUIRE_EQUAL( 2, outList.size() );
 
-        // First out message (rates and durations for schedules 1 and 2.
+        test_Mct4xxDevice::OutMessageList::const_iterator om_itr = outList.begin();
+
+        // First out message (rates and durations for schedules 3 and 4).
         {
-            OUTMESS *msg = outList.front();
-            outList.pop_front();
+            const OUTMESS *msg = *om_itr++;
 
             BOOST_REQUIRE( msg );
             BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
@@ -367,14 +375,13 @@ BOOST_FIXTURE_TEST_SUITE(test_dev_mct4xx_tou, putConfig_helper)
             const unsigned char *results_begin = msg->Buffer.BSt.Message;
             const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(expectedMsg1.begin(), expectedMsg1.end(),
-                                          results_begin, results_end);
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectedMsg1.begin(), expectedMsg1.end(),
+                                           results_begin,        results_end );
         }
 
-        // Second out message (rates and durations for schedules 3 and 4.
+        // Second out message (rates and durations for schedules 1 and 2).
         {
-            OUTMESS *msg = outList.front();
-            outList.pop_front();
+            const OUTMESS *msg = *om_itr++;
 
             BOOST_REQUIRE( msg );
             BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
@@ -382,8 +389,66 @@ BOOST_FIXTURE_TEST_SUITE(test_dev_mct4xx_tou, putConfig_helper)
             const unsigned char *results_begin = msg->Buffer.BSt.Message;
             const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(expectedMsg2.begin(), expectedMsg2.end(),
-                                          results_begin, results_end);
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectedMsg2.begin(), expectedMsg2.end(),
+                                           results_begin,        results_end );
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE( test_varied_tou_schedule_conditions )
+    {
+        const std::vector<unsigned char> expectedMsg1 = boost::assign::list_of
+                (0x48)(0x48)(0x48)(0xff)(0xff)  // Schedule 3 Durations
+                (0x01)(0x4e)                    // Schedule 3 Rates
+                (0x60)(0x60)(0xff)(0xff)(0xff)  // Schedule 4 Durations
+                (0x00)(0x53)                    // Schedule 4 Rates
+                (0x00);                         // Default Rate
+
+        const std::vector<unsigned char> expectedMsg2 = boost::assign::list_of
+                (0x40)(0x00)                    // Day Table
+                (0x01)(0xff)(0xff)(0xff)(0xff)  // Schedule 1 Durations
+                (0x00)(0x14)                    // Schedule 1 & 2 Rates
+                (0x0c)(0xff)(0xff)(0xff)(0xff)  // Schedule 2 Durations
+                (0x29);                         // Schedule 2 Rates
+
+        CtiCommandParser parse( "putconfig tou 11111112 "
+                                "schedule 1 a/0:00 b/0:05 "
+                                "schedule 2 b/0:00 c/1:00 "
+                                "schedule 3 c/0:00 d/6:00 a/12:00 b/18:00 "
+                                "schedule 4 d/0:00 a/8:00 b/16:00 "
+                                "default a" );
+
+        BOOST_CHECK_EQUAL( NoError, mct.executePutConfig(&request, parse, om, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( 2, outList.size() );
+
+        test_Mct4xxDevice::OutMessageList::const_iterator om_itr = outList.begin();
+
+        // First out message (rates and durations for schedules 3 and 4).
+        {
+            const OUTMESS *msg = *om_itr++;
+
+            BOOST_REQUIRE( msg );
+            BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
+
+            const unsigned char *results_begin = msg->Buffer.BSt.Message;
+            const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectedMsg1.begin(), expectedMsg1.end(),
+                                           results_begin,        results_end );
+        }
+
+        // Second out message (rates and durations for schedules 1 and 2).
+        {
+            const OUTMESS *msg = *om_itr++;
+
+            BOOST_REQUIRE( msg );
+            BOOST_CHECK_EQUAL( msg->Buffer.BSt.Length, 15 );
+
+            const unsigned char *results_begin = msg->Buffer.BSt.Message;
+            const unsigned char *results_end   = msg->Buffer.BSt.Message + msg->Buffer.BSt.Length;
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectedMsg2.begin(), expectedMsg2.end(),
+                                           results_begin,        results_end );
         }
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
