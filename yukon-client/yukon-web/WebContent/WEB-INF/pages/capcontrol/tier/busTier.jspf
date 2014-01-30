@@ -21,7 +21,7 @@
 
 <tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear ${styleClass}">
 
-    <table id="subBusTable" class="compact-results-table row-highlighting has-actions">
+    <table id="subBusTable" class="compact-results-table has-actions">
         <thead>
             <tr>
                 <th width="16px"></th>
@@ -188,7 +188,7 @@
 </tags:boxContainer2>
 <c:if test="${fn:length(subBusList) > 1}">
     <tags:boxContainerFooter>
-        <i class="icon icon-filter"></i>
+        <cti:icon icon="icon-filter" classes="fn vatt"/>
         <select id='subBusFilter' class="f-bus-filter">
             <option value="0"><cti:msg2 key=".allBuses"/></option>
             <c:forEach var="sub" items="${subBusList}" >

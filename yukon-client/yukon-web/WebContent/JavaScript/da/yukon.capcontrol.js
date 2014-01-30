@@ -65,6 +65,7 @@ Yukon.CapControl = (function () {
         },
 
         initBankTier: function() {
+            
             var banks = jQuery('[data-bank-id]');
             banks.each( function(index, item){
                 var row = jQuery(item),
@@ -73,11 +74,12 @@ Yukon.CapControl = (function () {
                     moveBankTitle = row.attr('data-move-bank-title'),
                     cbcInfoTitle = row.attr('data-cbc-info-title'),
                     bankInfoTitle = row.attr('data-bank-info-title'),
-                    moveBankOpener = row.find('.f-move-bank'),
-                    bankCommandOpener = row.find('.f-bank-command'),
-                    stateMenuOpener = row.find('.f-bank-state'),
-                    bankInfoOpener = row.find('.f-bank-info'),
-                    cbcInfoOpener = row.find('.f-cbc-info');
+                    menu = row.find('.dropdown-container').data('menu'),
+                    moveBankOpener = menu.find('.f-move-bank'),
+                    bankCommandOpener = menu.find('.f-bank-command'),
+                    stateMenuOpener = menu.find('.f-bank-state'),
+                    bankInfoOpener = menu.find('.f-bank-info'),
+                    cbcInfoOpener = menu.find('.f-cbc-info');
 
                 if( moveBankOpener.is('.warning') ){
                     moveBankOpener.click( function(event) {

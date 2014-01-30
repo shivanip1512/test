@@ -151,7 +151,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-play-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.start" />
                                         </span>
                                     </a>
@@ -159,7 +159,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.stop" />
                                         </span>
                                     </a>
@@ -168,7 +168,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.triggersChange" />
                                         </span>
                                     </a>
@@ -176,7 +176,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-time" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.dailyTimeChange" />
                                         </span>
                                     </a>
@@ -184,7 +184,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-delete" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.disable" />
                                         </span>
                                     </a>
@@ -193,7 +193,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-accept" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.enablePrograms" />
                                         </span>
                                     </a>
@@ -201,7 +201,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-delete" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.disablePrograms" />
                                         </span>
                                     </a>
@@ -209,7 +209,7 @@
                                 <li>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.resetPeak" />
                                         </span>
                                     </a>
@@ -252,7 +252,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -320,7 +320,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -365,7 +365,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -433,7 +433,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -478,7 +478,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -538,7 +538,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -553,7 +553,7 @@
                                     <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-play-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.start" />
                                         </span>
                                     </a>
@@ -584,7 +584,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -644,7 +644,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -667,7 +667,7 @@
                                     <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.stop" />
                                         </span>
                                     </a>
@@ -690,7 +690,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -750,7 +750,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -773,7 +773,7 @@
                                     <cti:msg var="disabledMessage" key="yukon.web.modules.dr.controlAreaDetail.inactive"/>
                                     <a class="clearfix" title="${disabledMessage}"> 
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
-                                        <span class="fl dib disabled">
+                                        <span class="dib disabled">
                                             <cti:msg2 key=".actions.stop" />
                                         </span>
                                     </a>
@@ -796,7 +796,7 @@
                                                 <cti:msg2 var="triggersChangeDisabled" key=".actions.triggersChange.disabled"/>
                                                 <a class="clearfix" title="${triggersChangeDisabled}"> 
                                                     <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                                    <span class="fl dib disabled">
+                                                    <span class="dib disabled">
                                                         <cti:msg2 key=".actions.triggersChange" />
                                                     </span>
                                                 </a>
@@ -856,7 +856,7 @@
                                             <cti:msg2 var="resetDisabled" key=".actions.resetPeak.disabled"/>
                                             <a class="clearfix" title="${resetDisabled}"> 
                                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                                <span class="fl dib disabled">
+                                                <span class="dib disabled">
                                                     <cti:msg2 key=".actions.resetPeak" />
                                                 </span>
                                             </a>
@@ -873,7 +873,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-control-play-blue" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.start" />
                                 </span>
                             </a>
@@ -881,7 +881,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.stop" />
                                 </span>
                             </a>
@@ -890,7 +890,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-wrench" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.triggersChange" />
                                 </span>
                             </a>
@@ -898,7 +898,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-time" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.dailyTimeChange" />
                                 </span>
                             </a>
@@ -906,7 +906,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-delete" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.disable" />
                                 </span>
                             </a>
@@ -914,7 +914,7 @@
                         <li>
                             <a class="clearfix" title="${noAssignedPrograms}"> 
                                 <cti:icon icon="icon-control-repeat-blue" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.resetPeak" />
                                 </span>
                             </a>

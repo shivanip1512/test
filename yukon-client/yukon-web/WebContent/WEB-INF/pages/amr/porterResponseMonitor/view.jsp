@@ -70,92 +70,87 @@ jQuery(function () {
         </div>
     </i:simplePopup>
     
-    <div class="column-10-14 clearfix">
-        <div class="column one">
-            <%-- MAIN DETAILS --%>
-            <tags:sectionContainer2 nameKey="sectionHeader">
-                <tags:nameValueContainer2>
-        
-                    <%-- monitor name --%>
-                    <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitorDto.name)}</tags:nameValue2>
-        
-                    <tags:nameValue2 nameKey=".deviceGroup">
-                        <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${monitorDto.groupName}</cti:param>
-                        </cti:url>
-                        <a href="${deviceGroupUrl}">${monitorDto.groupName}</a>
-                    </tags:nameValue2>
-        
-                    <%-- Device Count --%>
-                    <tags:nameValue2 nameKey=".deviceCount">
-                        <span id="totalGroupCount"></span>
-                    </tags:nameValue2>
-        
-                    <%-- Supported Devices --%>
-                    <tags:nameValue2 nameKey=".supportedDevices">
-                        <span id="supportedDevicesMsg"></span>
-                        <span id="addPointsSpan" style="display: none;">
-                        <c:if test="${deviceCollection != null}">
-                            <cti:url value="/bulk/addPoints/home" var="addPointsLink">
-                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                            </cti:url>
-                            <span> - </span>
-                            <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
-                        </c:if>
-                        </span>
-                        <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help" classes="fn cp"/>
-                    </tags:nameValue2>
-        
-                    <%-- enable/disable monitoring --%>
-                    <tags:nameValue2 nameKey=".monitoring">
-                        <i:inline key="${monitorDto.evaluatorStatus}"/>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </tags:sectionContainer2>
-        </div>
-        <div class="column two nogutter">
-            <c:choose>
-                <c:when test="${not empty monitorDto.rules}">
-                    <tags:sectionContainer2 nameKey="rulesTable" id="rulesTable">
-                        <table class="compact-results-table dashed">
-                            <thead>
-                                <tr>
-                                    <th><i:inline key=".rulesTable.header.ruleOrder" /></th>
-                                    <th><i:inline key=".rulesTable.header.outcome" /></th>
-                                    <th><i:inline key=".rulesTable.header.errors" />
-                                        <cti:icon id="errorHelp" nameKey="help" icon="icon-help" classes="fn cp"/>
-                                    </th>
-                                    <th><i:inline key=".rulesTable.header.matchStyle" /></th>
-                                    <th><i:inline key=".rulesTable.header.state" /></th>
-                                </tr>
-                            </thead>
-                            <tfoot></tfoot>
-                            <tbody>
-                                <c:forEach items="${monitorDto.rules}" var="rule">
-                                    <tr>
-                                        <td>${rule.value.ruleOrder}</td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${rule.value.success}">
-                                                    <span class="success"><i:inline key=".rule.success"/></span>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <span class="error"><i:inline key=".rule.failure"/></span>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>${rule.value.errorCodes}</td>
-                                        <td><i:inline key="${rule.value.matchStyle.formatKey}"/></td>
-                                        <td>${states[rule.value.state].stateText}</td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </tags:sectionContainer2>
-                </c:when>
-            </c:choose>
-        </div>
-    </div>
+    <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked">
+        <tags:nameValueContainer2>
+
+            <%-- monitor name --%>
+            <tags:nameValue2 nameKey=".name">${fn:escapeXml(monitorDto.name)}</tags:nameValue2>
+
+            <tags:nameValue2 nameKey=".deviceGroup">
+                <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                    <cti:param name="groupName">${monitorDto.groupName}</cti:param>
+                </cti:url>
+                <a href="${deviceGroupUrl}">${monitorDto.groupName}</a>
+            </tags:nameValue2>
+
+            <%-- Device Count --%>
+            <tags:nameValue2 nameKey=".deviceCount">
+                <span id="totalGroupCount"></span>
+            </tags:nameValue2>
+
+            <%-- Supported Devices --%>
+            <tags:nameValue2 nameKey=".supportedDevices">
+                <span id="supportedDevicesMsg"></span>
+                <span id="addPointsSpan" style="display: none;">
+                <c:if test="${deviceCollection != null}">
+                    <cti:url value="/bulk/addPoints/home" var="addPointsLink">
+                        <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                    </cti:url>
+                    <span> - </span>
+                    <a href="${addPointsLink}"><i:inline key=".addPoints"/></a>
+                </c:if>
+                </span>
+                <cti:icon id="supportedDevicesHelpIcon" nameKey="help" icon="icon-help" classes="fn cp vatt show-on-hover"/>
+            </tags:nameValue2>
+
+            <%-- enable/disable monitoring --%>
+            <c:if test="${monitorDto.enabled}"><c:set var="clazz" value="success"/></c:if>
+            <c:if test="${!monitorDto.enabled}"><c:set var="clazz" value="error"/></c:if>
+            <tags:nameValue2 nameKey=".monitoring" valueClass="${clazz}">
+                <i:inline key="${monitorDto.evaluatorStatus}"/>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+    </tags:sectionContainer2>
+    
+    <c:if test="${not empty monitorDto.rules}">
+        <tags:sectionContainer2 nameKey="rulesTable" id="rulesTable">
+            <table class="compact-results-table dashed">
+                <thead>
+                    <tr>
+                        <th><i:inline key=".rulesTable.header.ruleOrder" /></th>
+                        <th><i:inline key=".rulesTable.header.outcome" /></th>
+                        <th>
+                            <i:inline key=".rulesTable.header.errors" />
+                            <cti:icon id="errorHelp" nameKey="help" icon="icon-help" classes="fn cp vatt show-on-hover"/>
+                        </th>
+                        <th><i:inline key=".rulesTable.header.matchStyle" /></th>
+                        <th><i:inline key=".rulesTable.header.state" /></th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach items="${monitorDto.rules}" var="rule">
+                        <tr>
+                            <td>${rule.ruleOrder}</td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${rule.success}">
+                                        <span class="success"><i:inline key=".rule.success"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="error"><i:inline key=".rule.failure"/></span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td>${rule.errorCodes}</td>
+                            <td><i:inline key="${rule.matchStyle.formatKey}"/></td>
+                            <td>${states[rule.state].stateText}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </tags:sectionContainer2>
+    </c:if>
     
     <div class="page-action-area">
         <form id="editMonitorForm" action="/amr/porterResponseMonitor/editPage" method="get">

@@ -28,7 +28,7 @@
                         <cti:icon icon="${icon}"/>
                     </c:otherwise>
                 </c:choose>
-                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
+                <span class="dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
                     <cti:formatObject value="${displayable}"/>
                 </span>
             </c:when>
@@ -41,7 +41,7 @@
                         <cti:icon icon="${icon}"/>
                     </c:otherwise>
                 </c:choose>
-                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
+                <span class="dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
                     <cti:msg2 key="${key}"/>
                 </span>
             </c:when>
@@ -54,7 +54,7 @@
                         <cti:icon icon="${icon}"/>
                     </c:otherwise>
                 </c:choose>
-                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">${fn:escapeXml(label)}</span>
+                <span class="dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">${fn:escapeXml(label)}</span>
             </c:when>
             <c:otherwise>
                 <c:choose>
@@ -65,7 +65,7 @@
                         <cti:icon icon="${icon}"/>
                     </c:otherwise>
                 </c:choose>
-                <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>"><jsp:doBody/></span>
+                <span class="dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>"><jsp:doBody/></span>
             </c:otherwise>
         </c:choose>
     </a>

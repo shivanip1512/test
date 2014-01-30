@@ -26,7 +26,7 @@
             </c:otherwise>
         </c:choose>
     </c:if>
-    <span class="fl dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
+    <span class="dib <c:if test="${not empty pageScope.disabled && disabled == 'true'}">disabled</c:if>">
         <c:choose>
             <c:when test="${not empty pageScope.labelKey}">
                 <cti:msg2 key="${pageScope.labelKey}" />

@@ -2,13 +2,14 @@
  * JavaScript for the dropdown.tag, ajaxDropdown.tag, and criteria.tag
  */
 jQuery(function() {
+    
     jQuery(document).on("click", ".dropdown-container", function(e) {
         var target,
             menu;
         jQuery(".dropdown-container").removeClass("menu-open");
         target = jQuery(this);
 
-        menu = target.find('.dropdown-menu').eq(0);
+        menu = target.data('menu');
 
         if (menu.is(":visible")) {
             jQuery("ul.dropdown-menu").hide();
@@ -32,31 +33,27 @@ jQuery(function() {
         return false;
     });
 
-    function positionDropdownMenu(menu, dropdown_container) {
-        var left,
-            menu_offset,
-            width;
-        dropdown_container.addClass("menu-open");
+    /**
+     * Reposition when showing to ensure the menu follows the element even
+     * if the page changed since the last time it was shown.
+     */
+    function positionDropdownMenu(menu, container) {
+        
+        var left = jQuery(window).scrollLeft(),
+            offset = container.offset(),
+            width = menu.width();
+        
+        container.addClass("menu-open");
 
-        //reposition when showing to ensure the menu follows the element even
-        //if the page changed since the last time it was shown
         menu.removeAttr("style");
-        var men_opts = {top: dropdown_container.height() + 7, left: dropdown_container.width() - menu.width() + 6};
-        menu.css(men_opts);
+        menu.css({top: offset.top + container.height() + 2, right: (jQuery(window).width() - offset.left - container.width())});
 
         menu.toggle();
 
-        left = jQuery(window).scrollLeft();
-        menu_offset = menu.offset();
-        width = menu.width();
-        if (left >= menu_offset.left) {
-            // our menu is spilling off the left side of the screen. Lets fix this by switching it to instead be positioned to the right
-            menu.css({top: dropdown_container.height() + 7, left: 0});
-            menu.removeClass("menu-left");
-            menu.addClass("menu-right");
-        } else {
-            menu.removeClass("menu-right");
-            menu.addClass("menu-left");
+        if (left >= menu.offset().left) {
+            // Our menu is spilling off the left side of the screen. 
+            // Lets fix this by switching it to instead be positioned to the right
+            menu.css({top: offset.top + container.height() + 2, left: offset.left});
         }
     }
     
@@ -107,22 +104,22 @@ jQuery(function() {
     });
     
     /* update text for criteria buttons */
-    /* listening on the inner checkbox input since labels cause two click events */
-    jQuery(document).on("click", ".criteria-menu .criteria-option input", function(e) {
+    jQuery(document).on("click", ".criteria-menu .criteria-option", function(e) {
         
-        var option = jQuery(e.target);
-        var menu = option.closest('.criteria-menu');
+        var option = jQuery(e.target),
+            menu = option.closest('.criteria-menu');
         
         updateCriteriaButton(menu);
         
         positionDropdownMenu(menu, menu.data('button').closest('.dropdown-container'));
+        return false;
     });
     
     function updateCriteriaButton(menu) {
-        var button = menu.prev();
-        var allOptions = menu.find('.criteria-option input');
-        var checkedOptions = allOptions.filter(':checked');
-        var buttonText = ''; 
+        var button = menu.prev(),
+            allOptions = menu.find('.criteria-option input'),
+            checkedOptions = allOptions.filter(':checked'),
+            buttonText = ''; 
         
         if (allOptions.length === checkedOptions.length) {
             button.find('.criteria-value').text(button.data('allText'));
@@ -148,9 +145,12 @@ jQuery(function() {
     });
     
     jQuery('.dropdown-container').each(function(idx, container) {
-        container = jQuery(container);
-        var menu = container.find('.dropdown-menu');
-
+        var container = jQuery(container),
+            menu = container.find('.dropdown-menu');
+        
+        container.data('menu', menu);
+        jQuery('body').prepend(menu); // prepend will move...not clone
+        
         if (menu.is('.criteria-menu')) {
             updateCriteriaButton(menu);
         }

@@ -46,20 +46,20 @@
         <tbody>
             <c:forEach var="row" items="${displayData}">
                 <c:set var="dataVar" value=""/>
-                <c:if test="${display.acknowledgable}">
-                    <c:choose>
-                        <c:when test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                            <c:set var="bgColor" value="data-class-updater='TDC/BG_COLOR_POINT/${row.pointId}/0'" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="bgColor" value="data-class-updater='TDC/BG_COLOR_POINT/${row.pointId}/${row.condition}'" />
-                        </c:otherwise>
-                    </c:choose>
-                </c:if>
                 <tr id="row-${row.pointId}">
-                    <td><c:if test="${display.acknowledgable}">
-                            <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" ${bgColor}</span>
-                        </c:if></td>
+                    <td>
+                        <c:if test="${display.acknowledgable}">
+                            <c:choose>
+                                <c:when test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
+                                    <c:set var="alarmIndicator" value="TDC/BG_COLOR_POINT/${row.pointId}/0"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:set var="alarmIndicator" value="TDC/BG_COLOR_POINT/${row.pointId}/${row.condition}"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <span class="${colorStateBoxes.get(row.pointId).get(row.condition)}" data-class-updater="${alarmIndicator}"></span>
+                        </c:if>
+                    </td>
                     <c:forEach var="column" items="${display.columns}">
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_ID')}">
                             <td>${fn:escapeXml(row.pointId)}</td>
@@ -86,9 +86,11 @@
                             <td>${row.device.deviceId}</td>
                         </c:if>
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_VALUE')}">
-                            <td class="state-indicator tar"><c:if test="${row.pointType.status}">
+                            <td class="state-indicator tar">
+                                <c:if test="${row.pointType.status}">
                                     <cti:pointStatusColor pointId="${row.pointId}" styleClass="box state-box" background="true">&nbsp;</cti:pointStatusColor>
-                                </c:if></td>
+                                </c:if>
+                            </td>
                             <td><cti:pointValue pointId="${row.pointId}" format="VALUE_UNIT" /></td>
                         </c:if>
                         <c:if test="${column.type == cti:constantValue('com.cannontech.common.tdc.model.ColumnType.POINT_QUALITY')}">
@@ -123,18 +125,20 @@
                         </c:if>
                     </c:forEach>
                     <c:if test="${display.acknowledgable && display.type != cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                        <td><tags:dynamicChoose updaterString="TDC/ALARM_POINT_CONDITION/${row.pointId}/${row.condition}" suffix="${row.pointId}">
+                        <td>
+                            <tags:dynamicChoose updaterString="TDC/ALARM_POINT_CONDITION/${row.pointId}/${row.condition}" suffix="${row.pointId}">
                                 <tags:dynamicChooseOption optionId="ONE_ALARM">
                                     <cti:button nameKey="alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="f-one-alarm-ack-b fr" renderMode="buttonImage" />
                                 </tags:dynamicChooseOption>
-                            </tags:dynamicChoose></td>
+                            </tags:dynamicChoose>
+                        </td>
                     </c:if>
                     <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                        <td style="width: 56px;">
+                        <td class="">
                             <cm:dropdown id="dropdown_${row.pointId}" containerCssClass="fr vh">
                                 <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" suffix="${row.pointId}">
                                     <tags:dynamicChooseOption optionId="ONE_ALARM">
-                                        <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix f-one-alarm-ack"></cm:dropdownOption>
+                                        <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" condition="${row.condition}" classes="clearfix f-one-alarm-ack"/>
                                         <li class="divider"></li>
                                     </tags:dynamicChooseOption>
                                     <tags:dynamicChooseOption optionId="MULT_ALARMS">

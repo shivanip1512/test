@@ -133,25 +133,25 @@
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-delete" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
                                     </a>
                                 </li>
                             </tags:dynamicChooseOption>
@@ -161,7 +161,7 @@
                                 <li>
                                     <a class="clearfix" title="${alreadyRunning}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
                                 <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
@@ -212,7 +212,7 @@
                                     <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
                                     <a class="clearfix" title="${changeGearsDisabled}">
                                         <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                                     </a>
                                 </li>
                                 <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
@@ -239,14 +239,14 @@
                                     <cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
                                     <a class="clearfix" title="${notRunning}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
                                     <a class="clearfix" title="${changeGearsDisabled}">
                                         <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                                     </a>
                                 </li>
                                 <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
@@ -265,7 +265,7 @@
                                 <li>
                                     <a class="clearfix" title="${alreadyRunning}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
 
@@ -321,7 +321,7 @@
                                     <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
                                     <a class="clearfix" title="${changeGearsDisabled}">
                                         <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                                     </a>
                                 </li>
                                 
@@ -350,7 +350,7 @@
                                     <cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
                                     <a class="clearfix" title="${notRunning}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
                                     </a>
                                 </li>
 
@@ -358,7 +358,7 @@
                                     <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
                                     <a class="clearfix" title="${changeGearsDisabled}">
                                         <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                                     </a>
                                 </li>
 
@@ -381,25 +381,25 @@
                         <li>
                             <a class="clearfix" title="${noProgramControl}">
                                 <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noProgramControl}">
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noProgramControl}">
                                 <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noProgramControl}">
                                 <cti:icon icon="icon-delete" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
                             </a>
                         </li>
 

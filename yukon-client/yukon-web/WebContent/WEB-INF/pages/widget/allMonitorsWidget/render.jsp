@@ -468,12 +468,12 @@
         <c:if test="${not empty validationMonitors}">
             <cti:msgScope paths="widgets.validationMonitorsWidget">
                 <cti:url var="reviewUrl" value="/common/veeReview/home"/>
-                <a href="${reviewUrl}" class="notes"><i:inline key=".review"/></a>
+                <a href="${reviewUrl}"><i:inline key=".review"/></a>
             </cti:msgScope>
         </c:if>
     </cti:checkRolesAndProperties>
     <c:if test="${not isSubscribedWidget}">
-        <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" containerCssClass="fr">
+        <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" containerCssClass="fr" menuCssClass="no-icons">
             <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
                 <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
             </cti:checkRolesAndProperties>

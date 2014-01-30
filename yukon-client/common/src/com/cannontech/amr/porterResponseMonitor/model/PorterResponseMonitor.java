@@ -34,7 +34,7 @@ public class PorterResponseMonitor {
 	    stateGroup = monitorDto.getStateGroup();
 	    attribute = monitorDto.getAttribute();
 	    evaluatorStatus = monitorDto.getEvaluatorStatus();
-	    Collection<PorterResponseMonitorRuleDto> values = monitorDto.getRules().values();
+	    Collection<PorterResponseMonitorRuleDto> values = monitorDto.getRules();
 	    // sort those values
 	    List<PorterResponseMonitorRuleDto> sortedCopy = Ordering.natural().sortedCopy(values);
 	    int order = 1;

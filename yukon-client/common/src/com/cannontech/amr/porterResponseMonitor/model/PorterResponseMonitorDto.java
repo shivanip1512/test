@@ -1,25 +1,23 @@
 package com.cannontech.amr.porterResponseMonitor.model;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.util.LazyLinkedHashMap;
+import com.cannontech.common.util.LazyList;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
 public class PorterResponseMonitorDto {
+    
     private Integer monitorId;
     private String name;
     private String groupName;
     private LiteStateGroup stateGroup;
     private Attribute attribute;
     private MonitorEvaluatorStatus evaluatorStatus;
-    private final Map<Integer, PorterResponseMonitorRuleDto> rules = 
-        new LazyLinkedHashMap<Integer, PorterResponseMonitorRuleDto>(Integer.class, PorterResponseMonitorRuleDto.class);
-    private static final AtomicInteger nextKey = new AtomicInteger();
+    private List<PorterResponseMonitorRuleDto> rules = LazyList.ofInstance(PorterResponseMonitorRuleDto.class); 
 
     public PorterResponseMonitorDto() {
         groupName = DeviceGroupService.ROOT;
@@ -35,9 +33,8 @@ public class PorterResponseMonitorDto {
         attribute = monitor.getAttribute();
         evaluatorStatus = monitor.getEvaluatorStatus();
         for (PorterResponseMonitorRule rule : monitor.getRules()) {
-            Integer nextMapKey = nextKey.getAndIncrement();
             PorterResponseMonitorRuleDto ruleDto = new PorterResponseMonitorRuleDto(rule);
-            rules.put(nextMapKey, ruleDto);
+            rules.add(ruleDto);
         }
     }
 
@@ -89,11 +86,12 @@ public class PorterResponseMonitorDto {
         this.evaluatorStatus = evaluatorStatus;
     }
 
-    public Map<Integer, PorterResponseMonitorRuleDto> getRules() {
+    public List<PorterResponseMonitorRuleDto> getRules() {
         return rules;
     }
 
-    public static Integer getNextKey() {
-        return nextKey.getAndIncrement();
+    public boolean isEnabled() {
+        return evaluatorStatus == MonitorEvaluatorStatus.ENABLED;
     }
+    
 }

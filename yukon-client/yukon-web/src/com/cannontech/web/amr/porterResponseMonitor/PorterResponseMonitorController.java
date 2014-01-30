@@ -31,7 +31,6 @@ import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorDto;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorErrorCode;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatchStyle;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRule;
-import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorRuleDto;
 import com.cannontech.amr.porterResponseMonitor.service.PorterResponseMonitorService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -98,18 +97,27 @@ public class PorterResponseMonitorController {
     private Validator nameAndRulesValidator = new SimpleValidator<PorterResponseMonitor>(PorterResponseMonitor.class) {
         @Override
         public void doValidation(PorterResponseMonitor monitor, Errors errors) {
+            
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.required");
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", monitor.getName(), 50);
-
+            
             // --- uniqueness checks ---
 
             List<Integer> orderList = Lists.newArrayList();
-            for (PorterResponseMonitorRule rule : monitor.getRules()) {
+            List<PorterResponseMonitorRule> rules = monitor.getRules();
+            for (int i = 0; i < rules.size(); i++) {
+                PorterResponseMonitorRule rule = rules.get(i);
+                List<PorterResponseMonitorErrorCode> errorCodes = rule.getErrorCodes();
+                if (errorCodes.isEmpty()) {
+                    errors.rejectValue("rules[" + i + "].errorCodes", "yukon.web.error.required");
+                }
+                
+                
                 orderList.add(rule.getRuleOrder());
 
                 // Error Code Uniqueness
                 List<Integer> errorsList = Lists.newArrayList();
-                for (PorterResponseMonitorErrorCode errorCode : rule.getErrorCodes()) {
+                for (PorterResponseMonitorErrorCode errorCode : errorCodes) {
                     errorsList.add(errorCode.getErrorCode());
                 }
                 if (containsDuplicates(errorsList)) {
@@ -201,18 +209,12 @@ public class PorterResponseMonitorController {
         return "redirect:editPage";
     }
 
-    @RequestMapping(value="cancel", params = "cancel")
-    public String cancel() {
-        return "redirect:/meter/start";
-    }
-
     @RequestMapping("update")
     public String update(@ModelAttribute("monitorDto") PorterResponseMonitorDto monitorDto,
-                    BindingResult bindingResult, Integer[] rulesToRemove,
+                    BindingResult bindingResult,
                     ModelMap modelMap,
-                    YukonUserContext userContext, FlashScope flashScope) {
-
-        removeRulesFromMap(monitorDto.getRules(), rulesToRemove);
+                    YukonUserContext userContext, 
+                    FlashScope flashScope) {
 
         PorterResponseMonitor monitor = null;
 
@@ -255,18 +257,8 @@ public class PorterResponseMonitorController {
         return "redirect:viewPage";
     }
 
-    private void removeRulesFromMap(Map<Integer, PorterResponseMonitorRuleDto> rulesMap, Integer[] rulesToRemove) {
-        if (rulesToRemove == null) {
-            return;
-        }
-        for (Integer integer : rulesToRemove) {
-            rulesMap.remove(integer);
-        }
-    }
-
-    @RequestMapping(value="delete", params = "delete")
-    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, FlashScope flashScope,
-                         YukonUserContext userContext) {
+    @RequestMapping(value="update", params = "delete")
+    public String delete(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, FlashScope flashScope, LiteYukonUser user) {
 
         porterResponseMonitorService.delete(monitorDto.getMonitorId());
 
@@ -279,12 +271,12 @@ public class PorterResponseMonitorController {
                                                            monitorDto.getAttribute().getKey(),
                                                            monitorDto.getStateGroup().toString(),
                                                            monitorDto.getEvaluatorStatus().getDescription(),
-                                                           userContext.getYukonUser());
+                                                           user);
 
         return "redirect:/meter/start";
     }
 
-    @RequestMapping(value="toggleEnabled", params = "toggleEnabled")
+    @RequestMapping(value="update", params = "toggleEnabled")
     public String toggleEnabled(@ModelAttribute PorterResponseMonitorDto monitorDto, ModelMap modelMap, 
                     YukonUserContext userContext) {
 
@@ -300,24 +292,6 @@ public class PorterResponseMonitorController {
         outageEventLogService.porterResponseMonitorEnableDisable(monitorDto.getMonitorId(), status.name(), userContext.getYukonUser());
 
         return "redirect:editPage";
-    }
-
-    @RequestMapping("addRule")
-    public String addRule(ModelMap model, int monitorId, int maxOrder) {
-
-        setupAddRule(model, monitorId, maxOrder);
-
-        return "porterResponseMonitor/addRuleTableRow.jsp";
-    }
-
-    private void setupAddRule(ModelMap model, int monitorId, int maxOrder) {
-        PorterResponseMonitor monitor = porterResponseMonitorDao.getMonitorById(monitorId);
-        List<PorterResponseMonitorMatchStyle> matchStyleChoices = getMatchStyleChoices();
-        model.addAttribute("matchStyleChoices", matchStyleChoices);
-        List<LiteState> statesList = monitor.getStateGroup().getStatesList();
-        model.addAttribute("statesList", statesList);
-        model.addAttribute("nextOrder", ++maxOrder);
-        model.addAttribute("newMapKey", PorterResponseMonitorDto.getNextKey());
     }
 
     @RequestMapping("counts")

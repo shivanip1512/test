@@ -80,7 +80,7 @@
          The group of devices whose porter responses will be monitored.
          <br><br>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesVerboseMsg">*A more detailed version of this table can be found here:</entry>
+    <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesVerboseMsg">A more detailed version of this table can be found here:</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesSupportLink">Error Codes Support Page</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.errorCodesPopup">Error Codes</entry>
     <entry key="yukon.web.modules.amr.porterResponseMonitor.supportedDevicesHelpPopup">Supported Devices</entry>

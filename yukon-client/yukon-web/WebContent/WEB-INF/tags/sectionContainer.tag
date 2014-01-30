@@ -42,7 +42,7 @@
         </c:choose>
         
         <c:if test="${not empty pageScope.helpText}">
-            <cti:icon icon="icon-help" id="help_icon_${thisId}"/>
+            <cti:icon icon="icon-help" id="help_icon_${thisId}" classes="cp show-on-hover"/>
     	</c:if>
     	<div class="controls">${controls}</div>
     </div>

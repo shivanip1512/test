@@ -95,19 +95,19 @@
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${programUnknown}">
                                         <cti:icon icon="icon-delete" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
                                     </a>
                                 </li>
                             </tags:dynamicChooseOption>
@@ -162,19 +162,19 @@
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.sendShed"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.sendRestore"/></span>
                             </a>
                         </li>
                         <li>
                             <a class="clearfix" title="${noLoadGroupControl}">
                                 <cti:icon icon="icon-delete" classes="disabled"/>
-                                <span class="fl dib disabled"><cti:msg2 key=".actions.disable"/></span>
+                                <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
                             </a>
                         </li>
                     </cti:checkPaoAuthorization>

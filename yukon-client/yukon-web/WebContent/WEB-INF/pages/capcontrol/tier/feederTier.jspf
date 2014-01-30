@@ -21,7 +21,7 @@
     <c:set var="styleClass" value="with-footer"/>
 </c:if>
 <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="true" showInitially="true" styleClass="${styleClass}">
-    <table id="fdrTable" class="compact-results-table row-highlighting has-actions">
+    <table id="fdrTable" class="compact-results-table has-actions">
         <thead>
             <tr>
                 <th width="16px">&nbsp;</th>
@@ -193,7 +193,7 @@
 
 <c:if test="${fn:length(feederList) > 1}">
     <tags:boxContainerFooter>
-        <i class="icon icon-filter"></i>
+        <cti:icon icon="icon-filter" classes="fn vatt"/>
         <select id='feederFilter' class="f-feeder-filter">
             <option value="0"><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">

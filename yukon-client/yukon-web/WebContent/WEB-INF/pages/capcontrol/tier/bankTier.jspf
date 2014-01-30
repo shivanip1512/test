@@ -25,7 +25,7 @@ margin: 0px;
 
     <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
 
-    <table id="capBankTable" class="compact-results-table row-highlighting has-actions">
+    <table id="capBankTable" class="compact-results-table has-actions">
         <thead>
             <tr>
                 <th width="16px"></th>

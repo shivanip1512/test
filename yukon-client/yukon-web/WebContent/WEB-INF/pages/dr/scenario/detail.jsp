@@ -101,13 +101,13 @@
                                 <li>
                                     <a class="clearfix" title="${scenarioHasNoAssignedPrograms}">
                                         <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.start"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="clearfix" title="${scenarioHasNoAssignedPrograms}">
                                         <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="fl dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
                                     </a>
                                 </li>
                             </tags:dynamicChooseOption>
@@ -165,7 +165,7 @@
                         <li>
                             <a class="clearfix" title="${noScenarioControl}"> 
                                 <cti:icon icon="icon-control-play-blue" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.start" />
                                 </span>
                             </a>
@@ -173,7 +173,7 @@
                         <li>
                             <a class="clearfix" title="${noScenarioControl}"> 
                                 <cti:icon icon="icon-control-stop-blue" classes="disabled" /> 
-                                <span class="fl dib disabled">
+                                <span class="dib disabled">
                                     <cti:msg2 key=".actions.stop" />
                                 </span>
                             </a>

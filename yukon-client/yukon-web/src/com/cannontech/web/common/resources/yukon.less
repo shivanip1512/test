@@ -181,7 +181,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .undo-row .undo {float: right;}
 .table-thirds th {width: 33%;}
 
-/*Use the class when there will be elements before the first icon in a row */
+/*Use this class when there will be elements before the first icon in a row */
 .row-icon, .compact-results-table tr td:first-child i.icon:first-child {margin: 0px;}
 
 .has-alerts td:first-child {width: 24px;}
@@ -574,17 +574,11 @@ tr:hover .show-on-hover,
 li:hover .show-on-hover {visibility: visible;}
 .has-actions .action-column {width:56px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
 
-.ui-datepicker::before,
-.dropdown-menu::before {position: absolute; top: -7px; display: inline-block; border-right: 7px solid transparent; border-bottom: 7px solid #ccc; border-left: 7px solid transparent; border-bottom-color: rgba(0, 0, 0, 0.2); content: '';}
-.ui-datepicker::after, .dropdown-menu::after {position: absolute; top: -6px; display: inline-block; border-right: 6px solid transparent; border-bottom: 6px solid #ffffff; border-left: 6px solid transparent; content: '';}
-.dropdown-menu.menu-left::before {right: 14px; left: auto;}
-.ui-datepicker::after, .dropdown-menu.menu-left::after {right: 15px; left: auto;}
-.dropdown-menu.menu-right::before {left: 14px; right: auto;}
-.dropdown-menu.menu-right::after {left: 15px; right: auto;}
-.ui-datepicker::before {left:3.5em;right:auto;border-bottom-color: #999;}
-.dropdown-menu {display: none;position: absolute;left: auto;top: 100%;text-align: left;z-index: 1000;float: left;min-width: 200px;padding: 4px 0;margin: 1px 0 0;list-style: none;background-color: #fff;border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);background-clip: padding-box;font-size: 13px;}
+.dropdown-menu {display: none;position: absolute;left: auto;top: 100%;text-align: left;z-index: 1000;float: left;min-width: 130px;padding: 4px 0;margin: 1px 0 0;list-style: none;background-color: #fff;border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);background-clip: padding-box;font-size: 13px;}
 .dropdown-menu.long-menu-list {font-size: 11px;}
+.dropdown-menu.no-icons .icon {display: none;}
 .dropdown-menu li {margin-top: 3px;}
+.dropdown-menu li .icon {float: none;vertical-align: text-top;margin-left: 0;}
 .dropdown-menu a, .dropdown-menu .button.naked {display: block; padding: 0 15px; clear: both; font-weight: normal; line-height: 18px; color: @font-color; white-space: nowrap; text-decoration: none; cursor: pointer;}
 .dropdown-menu li a:hover, .dropdown-menu li .button.naked:hover, .dropdown-menu .active a, .dropdown-menu .active .button.naked, .dropdown-menu .active a:hover, .dropdown-menu .active .button.naked:hover {color: @primary-color; text-decoration: none; background-color: whiteSmoke;}
 .dropdown-menu .divider {height: 1px; margin: 3px 1px; overflow: hidden; background-color: #E5E5E5; border-bottom: 1px solid white;}
