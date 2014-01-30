@@ -1567,22 +1567,29 @@ public class GraphClient extends JPanel
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    CTILogger.info(" ## DBChangeMsg ##\n" + msg);
-
-                    // Refreshes the device trees in the createGraphPanel if
-                    // that's the panel that is open panel.
-                    if (createPanel != null) {
-                        ((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
-                    }
-
-                    // Refreshes the device tree panel in the GraphClient. (Main
-                    // Frame)
-                    Object sel = getTreeViewPanel().getSelectedItem();
-                    getTreeViewPanel().refresh();
-
-                    if (sel != null) {
-                        getTreeViewPanel().selectByString(sel.toString());
-                    }
+                	// limit to only refresh device/point tree on create/edit panel for paos and points
+                	if (msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ||
+                			msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+                		
+	                    CTILogger.info(" ## DBChangeMsg ##\n" + msg);
+	
+	                    // Refreshes the device trees in the createGraphPanel if
+	                    // that's the panel that is open panel.
+	                    if (createPanel != null) {
+	                        ((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
+	                    }
+                	}
+                	// limit to only refresh trend tree for trend db changes.
+                	if (msg.getDatabase() == DBChangeMsg.CHANGE_GRAPH_DB ) {
+	                    // Refreshes the device tree panel in the GraphClient. (Main
+	                    // Frame)
+	                    Object sel = getTreeViewPanel().getSelectedItem();
+	                    getTreeViewPanel().refresh();
+	
+	                    if (sel != null) {
+	                        getTreeViewPanel().selectByString(sel.toString());
+	                    }
+                	}
                 }
             });
         }
