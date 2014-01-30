@@ -94,7 +94,7 @@ public class WarehouseController {
     }
     
     /* Create */
-    @RequestMapping(params="create")
+    @RequestMapping(value="update", params="create")
     public String createWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap, 
                                   int ecId,
@@ -139,7 +139,7 @@ public class WarehouseController {
     }
     
     /* Update */
-    @RequestMapping(params="update")
+    @RequestMapping(value="update", params="update")
     public String updateWarehouse(YukonUserContext userContext,
                                   ModelMap modelMap,
                                  int ecId,
@@ -169,7 +169,7 @@ public class WarehouseController {
     }
     
     /* Delete */
-    @RequestMapping(params="delete")
+    @RequestMapping(value="update", params="delete")
     public String deleteWarehouse(YukonUserContext userContext, 
                                   ModelMap modelMap,
                                   int ecId,
