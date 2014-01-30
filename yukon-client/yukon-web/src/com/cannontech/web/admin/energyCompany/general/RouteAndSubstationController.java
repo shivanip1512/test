@@ -117,7 +117,7 @@ public class RouteAndSubstationController {
     /**
      * This method adds a route to the given energy company.
      */
-    @RequestMapping(value="addRoute", params="addRoute")
+    @RequestMapping(value="edit", params="addRoute")
     public String addRoute(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                            int routeId, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
@@ -134,7 +134,7 @@ public class RouteAndSubstationController {
     /**
      * This method removes a route from the given energy company.
      */
-    @RequestMapping(value="String", params="removeRoute")
+    @RequestMapping(value="edit", params="removeRoute")
     public String removeRoute(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                               int removeRoute, EnergyCompanyInfoFragment energyCompanyInfoFragment){
         // Validate Access
@@ -155,7 +155,7 @@ public class RouteAndSubstationController {
     /**
      * This method adds a substation to the given energy company.
      */
-    @RequestMapping(value="addSubstation", params="addSubstation")
+    @RequestMapping(value="edit", params="addSubstation")
     public String addSubstation(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
                                 int substationId, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
@@ -179,7 +179,7 @@ public class RouteAndSubstationController {
     /**
      * This method adds a route to the given energy company.
      */
-    @RequestMapping(value="removeSubstation", params="removeSubstation")
+    @RequestMapping(value="edit", params="removeSubstation")
     public String removeSubstation(YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap, 
                               int removeSubstation, EnergyCompanyInfoFragment energyCompanyInfoFragment){
 
