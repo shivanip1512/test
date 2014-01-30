@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -302,20 +304,14 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
      * set UserId=17, UserName='Yukon'
      */
     public SqlStatementBuilder set(Map<String, Object> valueMap) {
-        if (valueMap.isEmpty()) {
-            throw new IllegalArgumentException("Value map must not be empty.");
-        }
+        checkArgument(valueMap != null && !valueMap.isEmpty(), "Value map must not be empty.");
         append("set");
-        for(Iterator<Map.Entry<String, Object>> iterator = valueMap.entrySet().iterator(); iterator.hasNext();) {
-            Map.Entry<String, Object> entry = iterator.next();
+        String separator = "";
+        for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
             String columnName = entry.getKey();
             Object value = entry.getValue();
-            append(columnName);
-            append("=");
-            appendArgument(value);
-            if (iterator.hasNext()) {
-                append(", ");
-            }
+            append(separator).append(columnName).append("=").appendArgument(value);
+            separator = ", ";
         }
         return this;
     }
