@@ -134,7 +134,7 @@
                         </td>
                     </c:if>
                     <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                        <td class="">
+                        <td class="action-column">
                             <cm:dropdown id="dropdown_${row.pointId}" containerCssClass="fr vh">
                                 <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" suffix="${row.pointId}">
                                     <tags:dynamicChooseOption optionId="ONE_ALARM">
