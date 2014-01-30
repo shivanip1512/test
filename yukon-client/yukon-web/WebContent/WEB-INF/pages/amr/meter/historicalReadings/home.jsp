@@ -9,6 +9,7 @@
 <dialog:ajaxPage nameKey="popup" title="${title}" module="amr"
     page="widgetClasses.MeterReadingsWidget.historicalReadings" id="${dialogId}" okEvent="none"
     options="{height: 400, 
+              width: 450,
               modal:false,
               buttons: [{text: '${oneMonth}', click: function(){window.location='${oneMonthUrl}';}},
                         {text: '${all}', click: function(){window.location='${allUrl}';}}]}">
