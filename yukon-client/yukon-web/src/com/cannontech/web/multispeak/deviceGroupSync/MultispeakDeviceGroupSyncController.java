@@ -91,7 +91,7 @@ public class MultispeakDeviceGroupSyncController {
 	
 	// CANCEL
 	@RequestMapping(value="done", params="cancel")
-    public String done(ModelMap modelMap, FlashScope flashScope) {
+    public String done(FlashScope flashScope) {
         
 		multispeakDeviceGroupSyncService.getProgress().cancel();
 		
@@ -102,7 +102,7 @@ public class MultispeakDeviceGroupSyncController {
 	
 	// BACK TO HOME
 	@RequestMapping(value="done", params="backToHome")
-    public String done(ModelMap modelMap) {
+    public String done() {
 		
         return "redirect:home";
     }
