@@ -527,7 +527,7 @@ public class OperatorOptOutController {
         return "redirect:view";
     }
 
-    @RequestMapping(value="cancel", params="cancel")
+    @RequestMapping(value="optOutQuestions", params="cancel")
     public String cancel(ModelMap model,
             AccountInfoFragment accountInfoFragment,
             YukonUserContext userContext, HttpSession session) {
