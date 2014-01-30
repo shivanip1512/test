@@ -109,8 +109,8 @@ public class StatusPointMonitorController {
         return "statusPointMonitoring/edit.jsp";
     }
     
-    @RequestMapping(value="cancel", params="cancel")
-    public String cancel(ModelMap modelMap, HttpServletRequest request) {
+    @RequestMapping(value="create", params="cancel")
+    public String cancel() {
         return "redirect:/meter/start";
     }
     
