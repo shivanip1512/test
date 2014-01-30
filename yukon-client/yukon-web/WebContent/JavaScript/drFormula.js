@@ -339,11 +339,6 @@ Yukon.DrFormula = (function() {
         });
     },
 
-    _sortBtnClick = function(event) {
-        jQuery(event.target).parents(".f-drFormula-replaceViaAjax").load(this.href);
-        return false;
-    },
-
     drFormulaModule = {
         init: function () {
             if (_initialized) {
@@ -367,7 +362,6 @@ Yukon.DrFormula = (function() {
                 .on("change", ".f-drFormula-formulaInputSelect", _formulaInputSelectChangeTable)
                 .on("click", ".f-drFormula-newEntryButton", _addTableEntryBtnClick);
             jQuery("#formulaForm").submit(_beforeFormSubmit);
-            jQuery(".f-drFormula-replaceViaAjax").on('click', ".f-drFormula-sortLink", _sortBtnClick);
 
             _initialized = true;
         },

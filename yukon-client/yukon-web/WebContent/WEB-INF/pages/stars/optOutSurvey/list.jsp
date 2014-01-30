@@ -96,9 +96,7 @@
             </tbody>
         </table>
     </c:if>
-    <c:if test="${optOutSurveys.numberOfPages > 1}">
-        <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${optOutSurveys}" adjustPageCount="true"/>
-    </c:if>
+    <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${optOutSurveys}" adjustPageCount="true"/>
 
     <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
     <form id="addForm" action="${addUrl}">

@@ -107,8 +107,6 @@
         </c:forEach>
     </tbody>
 </table>
-<c:if test="${pageMe}">
-    <cti:url value="page" var="baseUrl"/>
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
-</c:if>
+<cti:url value="page" var="baseUrl"/>
+<tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
 </cti:msgScope>

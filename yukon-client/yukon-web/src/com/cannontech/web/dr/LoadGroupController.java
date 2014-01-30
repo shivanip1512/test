@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.LocalDateTime;
@@ -143,8 +142,6 @@ public class LoadGroupController extends DemandResponseControllerBase {
         model.addAttribute("type", "loadGroup");
         model.addAttribute("result", result);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
     }
@@ -162,16 +159,15 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @RequestMapping("/loadGroup/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
-                       String type,
                        String assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) throws IOException {
+                       @RequestParam(value="filter[]", required=false) String[] filters) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filter);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -179,36 +175,32 @@ public class LoadGroupController extends DemandResponseControllerBase {
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
-        model.addAttribute("type", type);
+        model.addAttribute("type", "loadGroup");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetTable.jsp";
     }
 
 
     @RequestMapping("/loadGroup/downloadToCsv")
-    public void downloadToCsv(String assetId,
-                              String filter,
-                              String type,
-                              HttpServletRequest request,
+    public void downloadToCsv(int assetId,
+                              @RequestParam(value="filter[]", required=false) String[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
 
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(loadGroup, filter, userContext);
+        List<String[]> dataRows = getDownloadDataRows(loadGroup, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
-        String fileName = type + "_" + loadGroup.getName() + "_" + dateStr + ".csv";
+        String fileName = "loadGroup_" + loadGroup.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             
     }

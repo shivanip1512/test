@@ -45,9 +45,7 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <c:if test="${pagedAppCats.hitCount > pagedAppCats.count}">
-                <tags:pagingResultsControls baseUrl="${sortUrl}" result="${pagedAppCats}"/>
-            </c:if>
+            <tags:pagingResultsControls baseUrl="${sortUrl}" result="${pagedAppCats}"/>
         </c:otherwise>
     </c:choose>
 </cti:msgScope>

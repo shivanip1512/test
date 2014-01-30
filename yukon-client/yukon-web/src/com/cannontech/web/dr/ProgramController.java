@@ -137,8 +137,6 @@ public class ProgramController extends ProgramControllerBase {
         model.addAttribute("type", "program");
         model.addAttribute("result", result);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
     }
@@ -157,16 +155,15 @@ public class ProgramController extends ProgramControllerBase {
     @RequestMapping("/program/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
-                       String type,
-                       String assetId,
+                       int assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) throws IOException {
+                       @RequestParam(value="filter[]", required=false) String[] filters) {
 
-        DisplayablePao program = programService.getProgram(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filter);
+        DisplayablePao program = programService.getProgram(assetId);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -174,7 +171,7 @@ public class ProgramController extends ProgramControllerBase {
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
-        model.addAttribute("type", type);
+        model.addAttribute("type", "program");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
@@ -186,23 +183,22 @@ public class ProgramController extends ProgramControllerBase {
 
 
     @RequestMapping("/program/downloadToCsv")
-    public void downloadToCsv(String assetId,
-                              String filter,
-                              String type,
+    public void downloadToCsv(int assetId,
+                              @RequestParam(value="filter[]", required=false)String[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
-        DisplayablePao program = programService.getProgram(Integer.parseInt(assetId));
+        DisplayablePao program = programService.getProgram(assetId);
 
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(program, filter, userContext);
+        List<String[]> dataRows = getDownloadDataRows(program, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
-        String fileName = type + "_" + program.getName() + "_" + dateStr + ".csv";
+        String fileName = "program_" + program.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             
     }

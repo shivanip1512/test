@@ -1,7 +1,6 @@
 <%@ tag body-content="empty" %>
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
-<%@ attribute name="type" required="true" %>
 <%@ attribute name="assetId" required="true" %>
 <%@ attribute name="itemsPerPage" required="true" %>
 
@@ -11,7 +10,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<c:set var="pageMe" value="${result.hitCount > itemsPerPage}"/>
 <cti:url var="sortUrl" value="page" />
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
@@ -51,14 +49,7 @@
         </tbody>
         <tfoot></tfoot>
     </table>
-    <c:if test="${pageMe}">
-        <cti:url value="page" var="baseUrl">
-            <cti:param name="type" value="${type}"/>
-            <cti:param name="assetId" value="${assetId}"/>
-            <cti:param name="sortBy" value="${assetDetailsSortBy}" />
-            <cti:param name="descending" value="${assetDetailsSortDesc}" />
-        </cti:url>
-        <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
-    </c:if>
+    <cti:url value="page" var="baseUrl" />
+    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
 </div>
 </cti:msgScope>

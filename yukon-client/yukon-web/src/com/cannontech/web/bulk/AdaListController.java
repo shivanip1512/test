@@ -91,6 +91,5 @@ public class AdaListController {
         SearchResults<AnalysisWithDeviceCount> result = SearchResults.pageBasedForSublist(analysisSublist, page, 
                                                                                           itemsPerPage, analyses.size());
         model.addAttribute("result", result);
-        model.addAttribute("pageMe", analyses.size() > itemsPerPage);
     }
 }

@@ -25,7 +25,7 @@
                         <cti:param name="pointId" value="${pointId}" />
                         <cti:param name="attribute" value="${attribute}" />
                     </cti:url>
-                    <a class="f-ajaxPage pv_history" 
+                    <a class="f-ajaxPage" 
                         data-selector="#${uid}" 
                         href="${showHistoricalReadingsUrl}">
                         <cti:pointValue pointId="${pointId}"/>

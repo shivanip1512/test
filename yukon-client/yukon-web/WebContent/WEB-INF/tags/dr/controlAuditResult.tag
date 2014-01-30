@@ -14,7 +14,6 @@
     <c:set var="controlled" value="true"/>
 </c:if>
 
-<c:set var="pageMe" value="${result.hitCount > 10}"/>
 <div id="${type}_Content box">
     <table class="compact-results-table row-highlighting">
         <thead>
@@ -55,10 +54,9 @@
         </tbody>
     </table>
 </div>
-<c:if test="${pageMe}">
-    <cti:url value="page" var="baseUrl">
+<cti:url value="page" var="baseUrl">
+    <c:if test="${empty param.type}">
         <cti:param name="type" value="${type}"/>
-        <cti:param name="auditId" value="${auditId}"/>
-    </cti:url>
-    <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
-</c:if>
+    </c:if>
+</cti:url>
+<tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>

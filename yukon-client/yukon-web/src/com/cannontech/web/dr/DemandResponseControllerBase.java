@@ -1,16 +1,14 @@
 package com.cannontech.web.dr;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -38,7 +36,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 import com.cannontech.web.common.chart.service.AssetAvailabilityChartService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -91,15 +88,11 @@ public abstract class DemandResponseControllerBase {
         return model;
     }
 
-    protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao,
-            YukonUserContext userContext, String filterJsonArray) throws IOException {
-
-        Set<AssetAvailabilityCombinedStatus> filterSet;
-        if (StringUtils.isBlank(filterJsonArray)) {
-            filterSet = EnumSet.allOf(AssetAvailabilityCombinedStatus.class);
-        } else {
-            filterSet = JsonUtils.fromJson(filterJsonArray, assetAvailStatusType);
-        }
+    protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, 
+                                                            YukonUserContext userContext, 
+                                                            String[] filters) {
+        
+        Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
 
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
         
@@ -160,6 +153,38 @@ public abstract class DemandResponseControllerBase {
             }
         }
         return resultList;
+    }
+
+
+    private Set<AssetAvailabilityCombinedStatus> getFilterSet(String[] filterArray) {
+        // Create a HashSet for the filtered AssetAvailabilityCombinedStatus values.
+        // Either null or an empty JSONArray will display all data values.
+        List<String> filters = Collections.emptyList();
+        if (filterArray != null) {
+            filters = Arrays.asList(filterArray);
+        }
+
+        Set<AssetAvailabilityCombinedStatus> filterSet = Sets.newHashSet();
+        if (filters.isEmpty()) {
+            filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
+            filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
+            filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+            filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        } else {
+            if (filters.contains("ACTIVE")) {
+                filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
+            }
+            if (filters.contains("INACTIVE")) {
+                filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
+            }
+            if (filters.contains("OPTED_OUT")) {
+                filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+            }
+            if (filters.contains("UNAVAILABLE")) {
+                filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+            }
+        }
+        return filterSet;
     }
 
     /*
@@ -269,11 +294,10 @@ public abstract class DemandResponseControllerBase {
      * Used as part of the downloadToCsv feature in the controllers.
      */
     protected List<String[]> getDownloadDataRows(DisplayablePao dispPao,
-                                                 String filterJsonArray,
-                                                 YukonUserContext userContext) throws IOException {
+                                                 String[] filters,
+                                                 YukonUserContext userContext) {
 
-        Set<AssetAvailabilityCombinedStatus> filterSet = JsonUtils.fromJson(filterJsonArray, assetAvailStatusType);
-
+        Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         Map<Integer, SimpleAssetAvailability> resultMap = 

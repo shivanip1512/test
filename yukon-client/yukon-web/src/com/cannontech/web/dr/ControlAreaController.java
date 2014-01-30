@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
@@ -264,8 +263,6 @@ public class ControlAreaController extends DemandResponseControllerBase {
         model.addAttribute("type", "controlArea");
         model.addAttribute("result", result);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
     }
@@ -279,16 +276,15 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @RequestMapping("/controlArea/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
-                       String type,
-                       String assetId,
+                       int assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) throws IOException {
+                       @RequestParam(value="filter[]", required=false) String[] filters) {
 
-        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filter);
+        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -296,34 +292,30 @@ public class ControlAreaController extends DemandResponseControllerBase {
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
-        model.addAttribute("type", type);
+        model.addAttribute("type", "controlArea");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetTable.jsp";
     }
     
     @RequestMapping("/controlArea/downloadToCsv")
-    public void downloadToCsv(String assetId,
-                              String filter,
-                              String type,
-                              HttpServletRequest request,
+    public void downloadToCsv(int assetId,
+                              @RequestParam(value="filter[]", required=false) String[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
-        DisplayablePao controlArea = controlAreaService.getControlArea(Integer.parseInt(assetId));
+        DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
 
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(controlArea, filter, userContext);
+        List<String[]> dataRows = getDownloadDataRows(controlArea, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
-        String fileName = type + "_" + controlArea.getName() + "_" + dateStr + ".csv";
+        String fileName = "controlArea_" + controlArea.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             
     }

@@ -10,7 +10,7 @@
     <cti:tabbedContentSelector mode="section">
         <cti:msg2 var="formulasTab" key='.formulas'/>
         <cti:tabbedContentSelectorContent selectorName="${formulasTab}">
-            <div class="f-drFormula-replaceViaAjax" data-reloadable>
+            <div data-reloadable>
                <%@ include file="_formulasTable.jsp" %>
             </div>
             <div class="action-area">
@@ -21,12 +21,12 @@
         <cti:msg2 var="assignmentsTab" key='.assignments'/>
         <cti:tabbedContentSelectorContent selectorName="${assignmentsTab}">
            <tags:sectionContainer2 nameKey="applianceCategories">
-                <div class="f-drFormula-replaceViaAjax" data-reloadable>
+                <div data-reloadable>
                    <%@ include file="_appCatAssignmentsTable.jsp" %>
                 </div>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="gears">
-                <div class="f-drFormula-replaceViaAjax" data-reloadable>
+                <div data-reloadable>
                    <%@ include file="_gearAssignmentsTable.jsp" %>
                 </div>
             </tags:sectionContainer2>

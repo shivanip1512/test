@@ -150,8 +150,6 @@ public class ScenarioController extends DemandResponseControllerBase {
         model.addAttribute("type", "scenario");
         model.addAttribute("result", result);
         model.addAttribute("itemsPerPage", itemsPerPage);
-        model.addAttribute("assetDetailsSortBy", sortBy);
-        model.addAttribute("assetDetailsSortDesc", descending);
         
         return "dr/assetDetails.jsp";
     }
@@ -169,16 +167,15 @@ public class ScenarioController extends DemandResponseControllerBase {
     @RequestMapping("/scenario/page")
     public String page(ModelMap model, 
                        YukonUserContext userContext,
-                       String type,
-                       String assetId,
+                       int assetId,
                        @RequestParam(defaultValue="SERIAL_NUM") AssetDetailsColumn sortBy,
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       String filter) throws IOException {
+                       @RequestParam(value="filter[]", required=false) String[] filters) throws IOException {
 
-        DisplayablePao scenario = scenarioService.getScenario(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filter);
+        DisplayablePao scenario = scenarioService.getScenario(assetId);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
         sortAssetDetails(resultsList, sortBy, descending, userContext);
 
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
@@ -186,7 +183,7 @@ public class ScenarioController extends DemandResponseControllerBase {
                 SearchResults.pageBasedForWholeList(page, itemsPerPage, resultsList);
         
         model.addAttribute("result", result);
-        model.addAttribute("type", type);
+        model.addAttribute("type", "scenario");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("itemsPerPage", itemsPerPage);
@@ -197,23 +194,22 @@ public class ScenarioController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/scenario/downloadToCsv")
-    public void downloadToCsv(String assetId,
-                              String filter,
-                              String type,
+    public void downloadToCsv(int assetId,
+                              @RequestParam(value="filter[]", required=false)String[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
-        DisplayablePao scenario = scenarioService.getScenario(Integer.parseInt(assetId));
+        DisplayablePao scenario = scenarioService.getScenario(assetId);
 
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
 
         // get the data rows
-        List<String[]> dataRows = getDownloadDataRows(scenario, filter, userContext);
+        List<String[]> dataRows = getDownloadDataRows(scenario, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
                                                       DateFormatEnum.BOTH, userContext);
-        String fileName = type + "_" + scenario.getName() + "_" + dateStr + ".csv";
+        String fileName = "scenario_" + scenario.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
             
     }

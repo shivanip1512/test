@@ -62,7 +62,5 @@
             </c:forEach>
         </tbody>
     </table>
-    <c:if test="${searchResult.hitCount >= 10}">
-        <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${searchResult}" adjustPageCount="true"/>
-    </c:if>
+    <tags:pagingResultsControls baseUrl="${baseUrl}"  result="${searchResult}" adjustPageCount="true"/>
 </cti:msgScope>

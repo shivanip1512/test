@@ -60,7 +60,7 @@ attribute to true on the field which is the default sort field.
 <c:if test="${isSorted}">
     <c:set var="sortMsg" value="${currentDescending ? descendingMsg : ascendingMsg}"/>
     <c:set var="sortClass" value="sorted ${currentDescending ? 'desc' : 'asc'}"/>
-    <a href="${sortUrl}" class="${sortClass} ${styleClass}" ${moreAttributes}>
+    <a href="javascript:void(0)" data-reload="${sortUrl}" class="${sortClass} ${styleClass}" ${moreAttributes}>
         <span title="${sortMsg}" class="fl">${linkTextMsg}</span>
 
         <i title="" class="icon ${sortIcon}"></i>
@@ -68,7 +68,7 @@ attribute to true on the field which is the default sort field.
 </c:if>
 
 <c:if test="${!isSorted}">
-    <a href="${sortUrl}" class="${styleClass}" ${moreAttributes}>
+    <a href="javascript:void(0)" data-reload="${sortUrl}" class="${styleClass}" ${moreAttributes}>
         <span class="fl">${linkTextMsg}</span>
     </a>
 </c:if>

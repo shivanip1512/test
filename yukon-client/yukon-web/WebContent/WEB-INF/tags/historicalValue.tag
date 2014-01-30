@@ -22,11 +22,11 @@
                     <cti:param name="pointId" value="${pointId}" />
                     <cti:param name="deviceId" value="${deviceId}" />
                 </cti:url>
-                <a class="f-ajaxPage pv_history" data-selector="#${uid}" href="${historyUrl}">
+                <a class="f-ajaxPage" data-selector="#${uid}" href="${historyUrl}">
                     <cti:pointValue pointId="${pointId}" format="DATE" cssClass="fl"/>
                 </a>
             </c:if>
         </span>
     </c:otherwise>
 </c:choose>
-<div id="${uid}"></div>
+<div id="${uid}" data-reloadable></div>

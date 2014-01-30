@@ -129,7 +129,7 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         SearchResults<Page> getSearchResults() {
             SearchResults<Page> results = new SearchResults<>();
             results.setResultList(matches);
-            results.setBounds(0, numWanted, totalHits - numDisallowed);
+            results.setBounds(startIndex, numWanted, totalHits - numDisallowed);
             return results;
         }
     }

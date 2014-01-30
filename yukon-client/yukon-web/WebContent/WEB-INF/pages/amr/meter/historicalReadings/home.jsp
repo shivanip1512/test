@@ -30,17 +30,13 @@
                                 baseUrl="${viewUrl}" 
                                 fieldName="TIMESTAMP"
                                 isDefault="${points.size() > 0}" 
-                                styleClass="f-ajaxPage" 
-                                descendingByDefault="true"
-                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                                descendingByDefault="true"/>
                         </th>
                         <th>
                             <tags:sortLink nameKey="tableHeader.value" 
                                 baseUrl="${viewUrl}" 
                                 fieldName="VALUE"
-                                isDefault="false" 
-                                styleClass="f-ajaxPage" 
-                                moreAttributes="data-selector=\"#${dialogId}\""/>
+                                isDefault="false"/>
                         </th>
                     </tr>
                 </thead>

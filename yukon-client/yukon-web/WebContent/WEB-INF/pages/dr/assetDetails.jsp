@@ -10,7 +10,6 @@
 <cti:standardPage module="dr" page="${type}.assetDetails">
 
 <input id="assetId" type="hidden" value="${assetId}"/>
-<input id="assetType" type="hidden" value="${type}"/>
 <input id="itemsPerPage" type="hidden" value="${itemsPerPage}"/>
 
 <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
@@ -49,7 +48,7 @@
     <%-- Paged results table goes here... --%>
     <div class="clear device-detail-table">
         <h2><cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.devices"/></h2>
-        <dr:assetDetailsResult result="${result}" type="${type}" assetId="${assetId}" itemsPerPage="${itemsPerPage}"/>
+        <dr:assetDetailsResult result="${result}" assetId="${assetId}" itemsPerPage="${itemsPerPage}"/>
     </div>
 
 </cti:standardPage>
