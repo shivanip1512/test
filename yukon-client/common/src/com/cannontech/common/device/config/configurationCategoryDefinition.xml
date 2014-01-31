@@ -271,8 +271,8 @@
 
     <category type="rfnOvUv">
         <boolean field="ovuvEnabled" default="false"/>
-        <float field="ovThreshold" default="126.0" minValue="100.0" maxValue="1000.0"/>
-        <float field="uvThreshold" default="114.0" minValue="100.0" maxValue="1000.0"/>
+        <float field="ovThreshold" default="126.0" minValue="115.0" maxValue="138.0"/>
+        <float field="uvThreshold" default="114.0" minValue="106.0" maxValue="125.0"/>
         <integer field="alarmReportingInterval" default="15" minValue="2" maxValue="30"/>
         <integer field="alarmRepeatInterval" default="60" minValue="60" maxValue="240"/>
         <integer field="ovuvRepeats" default="2" minValue="1" maxValue="3"/>
