@@ -51,10 +51,10 @@
                             <div class="f-tooltip dn">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
                                         <div class="detail fwb">${station.name}</div>
-                                        <ul class="detail simple-list">
-                                            <li class="fl" style="margin-left:10px;"><i:inline key=".feeders" arguments="${station.feederCount}"/></li>
-                                            <li class="fl" style="margin-left:10px;"><i:inline key=".banks" arguments="${station.capBankCount}"/></li>
-                                        </ul>
+                                        <div class="detail wsnw">
+                                            &nbsp;&nbsp;<i:inline key=".feeders" arguments="${station.feederCount}"/>
+                                            &nbsp;&nbsp;<i:inline key=".banks" arguments="${station.capBankCount}"/>
+                                        </div>
                                 </c:forEach>
                             </div>
 	        				<a href="${substationUrl}" class="f-has-tooltip">${fn:escapeXml(viewableArea.area.ccName)}</a>
