@@ -1,4 +1,4 @@
-package com.cannontech.core.users.model;
+package com.cannontech.system;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

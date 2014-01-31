@@ -16,7 +16,6 @@ import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.core.users.model.PreferenceOnOff;
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;

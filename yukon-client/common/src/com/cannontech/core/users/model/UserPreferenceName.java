@@ -3,6 +3,7 @@ package com.cannontech.core.users.model;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.system.PreferenceOnOff;
 import com.cannontech.web.input.type.InputType;
 
 /**
