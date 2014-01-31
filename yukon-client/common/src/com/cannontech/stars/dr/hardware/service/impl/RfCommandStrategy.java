@@ -109,11 +109,14 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     @Override
     public boolean canBroadcast(LmCommand command) {
-        if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            return true;
+        switch (command.getType()) {
+            case CANCEL_TEMP_OUT_OF_SERVICE:
+            case PERFORMANCE_VERIFICATION:
+                return true;
+            default:
+                // No other broadcast commands are implemented for the RF command strategy.
+                return false;
         }
-        // No other broadcast commands are implemented for the RF command strategy.
-        return false;
     }
     
     
@@ -125,19 +128,24 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         if (rfnEcName != null) {
             log.debug("Sending RFN ExpressCom broadcast command: " + command.getType().toString());
 
-            if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+            if (canBroadcast(command)) {
                 RfnExpressComBroadcastRequest request = new RfnExpressComBroadcastRequest();
                 request.setRfnMessageClass(RfnMessageClass.NONE);
                 request.setExpirationDuration(-1); // Messages will not expire.
                 int commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_LM_HARDWARE_COMMAND", 
                         CommandRequestExecutionDefaults.getPriority(DeviceRequestType.LM_HARDWARE_COMMAND));
                 request.setMessagePriority(commandPriority);
-                Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
-                request.setPayload(rawExpressComCommandBuilder.getBroadcastCancelAllTempOutOfServiceCommand(spid));
-            
+                
+                if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
+                    Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
+                    request.setPayload(rawExpressComCommandBuilder.getBroadcastCancelAllTempOutOfServiceCommand(spid));
+                } else if (command.getType() == LmHardwareCommandType.PERFORMANCE_VERIFICATION) {
+                    Long messageId = (Long) command.getParams().get(LmHardwareCommandParam.UNIQUE_MESSAGE_ID);
+                    request.setPayload(rawExpressComCommandBuilder.getPerformanceVerificationCommand(messageId));
+                }
+                
                 rfnExpressComMessageService.sendBroadcastRequest(request);
             }
-            
         }
     }
     

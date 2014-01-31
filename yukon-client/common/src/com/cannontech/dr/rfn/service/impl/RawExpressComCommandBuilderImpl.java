@@ -15,6 +15,7 @@ import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.dr.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -39,6 +40,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private LMGroupDao lmGroupDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private PerformanceVerificationDao performanceVerificationDao;
 
     @Override
     public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand)
@@ -129,6 +131,19 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
         outputBuffer.putShort((short) spid); 
         getTempOutOfServiceInnerBytes(outputBuffer);
+        
+        ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
+        trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
+        
+        return wrapAndConvertToAscii(trimmedOutput);
+    }
+    
+    @Override
+    public byte[] getPerformanceVerificationCommand(long messageId) {
+        ByteBuffer outputBuffer = ByteBuffer.allocate(32);
+        outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
+        outputBuffer.putShort((short) 0); // Use SPID 0 (per Karl Slingsby and Ryan Brager)
+        outputBuffer.putInt((int) messageId);
         
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
         trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());

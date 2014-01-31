@@ -37,6 +37,15 @@ public interface RawExpressComCommandBuilder {
     public byte[] getBroadcastCancelAllTempOutOfServiceCommand(int spid);
     
     /**
+     * Builds a raw ExpressCom command which will broadcast a command that contains a unique 
+     * message id used for performance verification of enrolled devices.
+     * 
+     * @param messageId The unique message id broadcast to the devices that Yukon expects to receive back
+     *      to confirm the performance verification message.
+     */
+    public byte[] getPerformanceVerificationCommand(long messageId);
+    
+    /**
      * This method determines if the SPID passed in is within the range of
      * valid values for the SPID address level.  The ExpressCom documentation
      * states that the valid SPID address range is 1-65534.

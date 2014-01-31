@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -115,5 +117,38 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
         return eventMessages;
+    }
+    
+    @Override
+    public PerformanceVerificationEventMessage createVerificationEvent() {
+        int nextId = nextValueHelper.getNextValue("RfBroadcastEvent");
+        Instant now = Instant.now();
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params = sql.insertInto("RfBroadcastEvent");
+        
+        params.addValue("RfBroadcastEventId", nextId);
+        params.addValue("SendTime", now);
+        
+        jdbcTemplate.update(sql);
+        
+        return new PerformanceVerificationEventMessage(nextId, now);
+    }
+    
+    @Override
+    public void writeVerificationEventForDevices(long messageId, Set<Integer> deviceIds) {
+        for (Integer deviceId : deviceIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
+            
+            int rowId = nextValueHelper.getNextValue("RfBroadcastEventDevice");
+            
+            params.addValue("RfBroadcastEventDeviceId", rowId);
+            params.addValue("DeviceId", deviceId);
+            params.addValue("RfBroadcastEventId", messageId);
+            params.addValue("Result", UNKNOWN);
+            
+            jdbcTemplate.update(sql);
+        }
     }
 }

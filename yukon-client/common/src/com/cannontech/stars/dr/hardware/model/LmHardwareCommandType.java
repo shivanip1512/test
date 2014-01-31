@@ -6,5 +6,6 @@ public enum LmHardwareCommandType {
     OUT_OF_SERVICE,
     TEMP_OUT_OF_SERVICE,
     CANCEL_TEMP_OUT_OF_SERVICE,
-    READ_NOW
+    READ_NOW,
+    PERFORMANCE_VERIFICATION,
 }

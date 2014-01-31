@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,9 +18,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.InstantRowMapper;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -353,6 +356,25 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append(  "AND hcg.inventoryId").eq(inventoryId);
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
+	
+	@Override
+	public Set<Integer> getEnrolledDevicesByTypes(Set<PaoType> paoTypes) {
+	    Set<Integer> identifiers = new HashSet<>();
+	    
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DISTINCT PAO.PAObjectID");
+	    sql.append("FROM LMHardwareControlGroup LM");
+	    sql.append("   JOIN InventoryBase IB ON IB.InventoryID = LM.InventoryID");
+	    sql.append("   JOIN YukonPAObject PAO ON PAO.PAObjectID = IB.DeviceID");
+	    sql.append("WHERE PAO.PAObjectID != 0");
+	    sql.append("   AND LM.GroupEnrollStart IS NOT NULL");
+	    sql.append("   AND LM.GroupEnrollStop IS NULL");
+	    sql.append("   AND PAO.Type").in(paoTypes);
+	    
+	    identifiers.addAll(yukonJdbcTemplate.query(sql, RowMapper.INTEGER));
+	    
+	    return identifiers;
+	}
 
     private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
         @Override

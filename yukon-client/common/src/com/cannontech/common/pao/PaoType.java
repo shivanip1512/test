@@ -251,6 +251,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> lmProgramTypes;
     private final static ImmutableSet<PaoType> directProgramTypes;
     private final static ImmutableSet<PaoType> twoWayLcrTypes;
+    private final static ImmutableSet<PaoType> rfLcrTypes;
     private final static ImmutableSet<PaoType> capControlTypes;
 
     public final static int INVALID = -1;
@@ -461,6 +462,10 @@ public enum PaoType implements DatabaseRepresentationSource {
             LCR3102,
             LCR6200_RFN,
             LCR6600_RFN);
+        
+        rfLcrTypes = ImmutableSet.of(
+            LCR6200_RFN,
+            LCR6600_RFN);
 
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
@@ -668,6 +673,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRtuTypes() {
         return rtuTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRfLcrTypes() {
+        return rfLcrTypes;
     }
     
     /**
