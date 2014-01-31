@@ -138,9 +138,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             Instant firstIntervalTimestamp = new Instant(intervalStartTime * 1000);
             
             int minutes = new Duration(firstIntervalTimestamp, timeOfReading).toStandardMinutes().getMinutes();
-            //int recordedIntervals = (minutes / intervalLengthMinutes);
-            int recordedIntervals = 8;
-            //if (recordedIntervals <= 0) continue;
+            int recordedIntervals = (minutes / intervalLengthMinutes);
+            if (recordedIntervals <= 0) continue;
             
             int minutesToAdd = recordedIntervals * intervalLengthMinutes;
             
