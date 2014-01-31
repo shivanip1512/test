@@ -540,7 +540,7 @@ public class GroupEditorController {
 
         // Make sure we can remove the group
         if (removeGroup.isEditable()) {
-            deviceGroupEditorDao.removeGroup(removeGroup, false);
+            deviceGroupEditorDao.removeGroup(removeGroup);
         } else {
             mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
         }

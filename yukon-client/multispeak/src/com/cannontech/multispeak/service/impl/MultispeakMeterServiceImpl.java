@@ -1423,7 +1423,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor) {
     	try {
     		StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-    		deviceGroupEditorDao.removeGroup(storedGroup, false);
+    		deviceGroupEditorDao.removeGroup(storedGroup);
     	} catch (NotFoundException e) {
 			ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
 			return errorObject;

@@ -38,7 +38,7 @@ public class TamperFlagMonitorServiceImpl implements TamperFlagMonitorService {
         // delete tamper flag group
         try {
 			StoredDeviceGroup tamperFlagGroup = getTamperFlagGroup(tamperFlagMonitor.getTamperFlagMonitorName());
-			deviceGroupEditorDao.removeGroup(tamperFlagGroup, false);
+			deviceGroupEditorDao.removeGroup(tamperFlagGroup);
 		} catch (NotFoundException e) {
 			// may have been deleted? who cares
 		}

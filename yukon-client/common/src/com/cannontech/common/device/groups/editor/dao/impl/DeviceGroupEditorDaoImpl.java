@@ -444,7 +444,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             throw new DuplicateException("Cannot change group name to the same name as an existing group with the same parent.", e);
         }
     }
-
+    
+    @Override
+    public void removeGroup(StoredDeviceGroup group) {
+        removeGroup(group, false);
+    }
+    
     @Override
     @Transactional
     public void removeGroup(StoredDeviceGroup group, boolean deleteNonEditable) {
