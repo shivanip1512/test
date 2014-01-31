@@ -2,6 +2,7 @@ package com.cannontech.dr.rfn.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -18,6 +19,8 @@ import org.openexi.proc.common.EXIOptionsException;
 import org.openexi.proc.common.GrammarOptions;
 import org.openexi.proc.grammars.GrammarCache;
 import org.openexi.sax.EXIReader;
+import org.openexi.sax.Transmogrifier;
+import org.openexi.sax.TransmogrifierException;
 import org.openexi.schema.EXISchema;
 import org.openexi.scomp.EXISchemaFactory;
 import org.openexi.scomp.EXISchemaFactoryException;
@@ -31,6 +34,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class ExiParsingServiceImpl implements ExiParsingService {
     
@@ -182,6 +186,30 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }
         log.debug("Retrieved schema version: " + version);
         return schema;
+    }
+
+    @Override
+    public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException {
+        EXISchema schema = getLcrReadingSchema("0.0.2");
+        short defaultOptions = GrammarOptions.DEFAULT_OPTIONS;
+        GrammarCache grammarCache = new GrammarCache(schema, defaultOptions);
+        
+        Transmogrifier transmogrifier = new Transmogrifier();
+        transmogrifier.setEXISchema(grammarCache);
+        
+        ByteOutputStream outputStream = new ByteOutputStream();
+        transmogrifier.setOutputStream(outputStream);
+
+        StringReader input = new StringReader(xmlPayload);
+        InputSource inputSource = new InputSource(input);
+        transmogrifier.encode(inputSource);
+        
+        ByteBuffer buffer = ByteBuffer.allocate(outputStream.getCount());
+        buffer.put(outputStream.getBytes(), 0, outputStream.getCount());
+        buffer.rewind();
+        byte[] output = new byte[outputStream.getCount()];
+        buffer.get(output, 0, outputStream.getCount());
+        return output;
     }
 
 }

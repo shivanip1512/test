@@ -1,5 +1,10 @@
 package com.cannontech.dr.rfn.service;
 
+import java.io.IOException;
+
+import org.openexi.proc.common.EXIOptionsException;
+import org.openexi.sax.TransmogrifierException;
+
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 
@@ -15,4 +20,5 @@ public interface ExiParsingService {
      */
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) throws ParseExiException;
 
+    public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException;
 }
