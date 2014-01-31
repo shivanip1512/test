@@ -36,16 +36,16 @@
         </c:otherwise>
     </c:choose>
     <div class="action-area">
-    	<cti:url value="/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
-    		<cti:param name="collectionType" value="idList"/>
-    		<cti:param name="idList.ids" value="${deviceId}"/>
-    		<cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
-    	</cti:url>
-		<c:if test="${not empty valueMap}">
-	    	<a href="${meterEventsReportUrl}" class="showAll fl">
-	    		<i:inline key=".allEvents"/>
-	   		</a>
-   		</c:if>
+        <cti:url value="/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
+            <cti:param name="collectionType" value="idList"/>
+            <cti:param name="idList.ids" value="${deviceId}"/>
+            <cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
+        </cti:url>
+        <c:if test="${not empty valueMap}">
+            <a href="${meterEventsReportUrl}" class="showAll fl">
+                <i:inline key=".allEvents"/>
+               </a>
+           </c:if>
         <tags:widgetActionUpdate hide="false" method="render" nameKey="refresh" container="${widgetParameters.widgetId}_events"/>
     </div>
 </div>
