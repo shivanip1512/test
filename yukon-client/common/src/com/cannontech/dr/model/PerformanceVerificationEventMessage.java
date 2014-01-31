@@ -4,15 +4,15 @@ import org.joda.time.Instant;
 
 public final class PerformanceVerificationEventMessage {
 
-    private final int messageId;
+    private final long messageId;
     private final Instant messageSent;
 
-    public PerformanceVerificationEventMessage(int messageId, Instant messageSent) {
+    public PerformanceVerificationEventMessage(long messageId, Instant messageSent) {
         this.messageId = messageId;
         this.messageSent = messageSent;
     }
 
-    public int getMessageId() {
+    public long getMessageId() {
         return messageId;
     }
 

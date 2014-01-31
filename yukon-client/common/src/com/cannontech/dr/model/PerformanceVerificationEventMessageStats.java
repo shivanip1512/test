@@ -7,13 +7,13 @@ public final class PerformanceVerificationEventMessageStats {
     private final PerformanceVerificationEventMessage eventMessage;
     private final PerformanceVerificationEventStats eventStats;
 
-    public PerformanceVerificationEventMessageStats(int messageId, Instant messageSent, int success, 
+    public PerformanceVerificationEventMessageStats(long messageId, Instant messageSent, int success, 
                                                     int failed, int unknown) {
         eventMessage = new PerformanceVerificationEventMessage(messageId, messageSent);
         eventStats = new PerformanceVerificationEventStats(success, failed, unknown);
     }
 
-    public int getMessageId() {
+    public long getMessageId() {
         return eventMessage.getMessageId();
     }
 
