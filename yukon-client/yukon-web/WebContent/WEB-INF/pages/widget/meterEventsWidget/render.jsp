@@ -36,10 +36,13 @@
         </c:otherwise>
     </c:choose>
     <div class="action-area">
-        <cti:url value="/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
+        <cti:url value="/amr/meterEventsReport/report" var="meterEventsReportUrl">
             <cti:param name="collectionType" value="idList"/>
             <cti:param name="idList.ids" value="${deviceId}"/>
             <cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
+            <cti:param name="sort" value="DATE"/>
+            <cti:param name="fromInstant" value="${defaultStartInstant}"/>
+            <cti:param name="descending" value="true"/>
         </cti:url>
         <c:if test="${not empty valueMap}">
             <a href="${meterEventsReportUrl}" class="showAll fl">

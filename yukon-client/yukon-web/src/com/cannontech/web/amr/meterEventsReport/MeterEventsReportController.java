@@ -322,23 +322,6 @@ public class MeterEventsReportController {
         return "redirect:jobs";
     }
     
-    @RequestMapping("reportAll")
-    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext,
-                            boolean includeDisabledPaos)
-            throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
-        
-        ScheduledFileExportData exportData = new ScheduledFileExportData();
-        model.addAttribute("exportData", exportData);
-        
-        MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean(userContext);
-        backingBean.setFromInstant(backingBean.getFromInstant().minus(Duration.standardDays(30)));
-        backingBean.setIncludeDisabledPaos(includeDisabledPaos);
-        backingBean.setOnlyAbnormalEvents(false);
-        backingBean.setOnlyLatestEvent(false);
-        setupModelMap(backingBean, request, model, null, null, userContext, null);
-        return reportJspPath;
-    }
-
     private void setupModelMap(MeterEventsReportFilterBackingBean backingBean,
             HttpServletRequest request, ModelMap model, BindingResult bindingResult, FlashScope flashScope,
             YukonUserContext userContext, String attrNames)

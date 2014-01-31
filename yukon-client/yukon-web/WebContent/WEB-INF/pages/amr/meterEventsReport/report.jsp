@@ -387,8 +387,12 @@
     </c:if>
 
     <cti:url var="filteredUrl" value="report">
-        <cti:param name="fromInstant" value="${param.fromInstant}"/>
-        <cti:param name="toInstant" value="${param.toInstant}"/>
+        <c:if test="${not empty param.fromInstant}">
+            <cti:param name="fromInstant" value="${param.fromInstant}"/>
+        </c:if>
+        <c:if test="${not empty param.toInstant}">
+            <cti:param name="toInstant" value="${param.toInstant}"/>
+        </c:if>
         <c:if test="${not empty param.onlyLatestEvent}">
             <cti:param name="onlyLatestEvent" value="${param.onlyLatestEvent}"/>
         </c:if>
@@ -439,49 +443,48 @@
     </cti:url>
 
     <tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="${sortedUrl}" titleLinkHtml="${linkHeaderHtml}" overrideParams="true">
-        <table id="eventsTable" class="compact-results-table f-traversable has-actions sortable-table">
-            <thead>
-                <tr>
-                    <th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="${filteredUrl}" fieldName="NAME" isDefault="false" overrideParams="true"/></th>
-                    <th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="${filteredUrl}" fieldName="METER_NUMBER" isDefault="false" overrideParams="true"/></th>
-                    <th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="${filteredUrl}" fieldName="TYPE" overrideParams="true"/></th>
-                    <th><tags:sortLink nameKey="tableHeader.date" baseUrl="${filteredUrl}" fieldName="DATE" isDefault="true" overrideParams="true"/></th>
-                    <th><tags:sortLink nameKey="tableHeader.event" baseUrl="${filteredUrl}" fieldName="EVENT" overrideParams="true"/></th>
-                    <th><tags:sortLink nameKey="tableHeader.value" baseUrl="${filteredUrl}" fieldName="VALUE" overrideParams="true"/></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tfoot></tfoot>
-            <tbody>
-                <c:forEach var="event" items="${filterResult.resultList}">
-                    <tr>
-                        <td>
-                            <cti:paoDetailUrl  yukonPao="${event.meter}" >
-                                ${fn:escapeXml(event.meter.name)}
-                            </cti:paoDetailUrl>
-                        </td>
-                        <td>${event.meter.meterNumber}</td>
-                        <td><tags:paoType yukonPao="${event.meter}"/></td>
-                        <td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
-                        <td>${fn:escapeXml(event.pointName)}</td>
-                        <cti:pointColor pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}" var="color"/>
-                        <td class="${color}">
-                            <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
-                        </td>
-                        <td class="contextual-menu">
-                            <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-                
-                <c:if test="${fn:length(filterResult.resultList) == 0}">
-                    <tr>
-                        <td class="empty-list" colspan="7">
-                            <i:inline key=".noEvents"/>
-                        </td>
-                    </tr>
-                </c:if>
-            </tbody>
-        </table>
+        <c:choose>
+            <c:when test="${fn:length(filterResult.resultList) == 0}">
+                <span class="empty-list"><i:inline key=".noEvents" /></span>
+            </c:when>
+            <c:otherwise>
+                <table id="eventsTable" class="compact-results-table f-traversable has-actions sortable-table">
+                    <thead>
+                        <tr>
+                            <th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="${filteredUrl}" fieldName="NAME" isDefault="false" overrideParams="true"/></th>
+                            <th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="${filteredUrl}" fieldName="METER_NUMBER" isDefault="false" overrideParams="true"/></th>
+                            <th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="${filteredUrl}" fieldName="TYPE" overrideParams="true"/></th>
+                            <th><tags:sortLink nameKey="tableHeader.date" baseUrl="${filteredUrl}" fieldName="DATE" isDefault="true" overrideParams="true"/></th>
+                            <th><tags:sortLink nameKey="tableHeader.event" baseUrl="${filteredUrl}" fieldName="EVENT" overrideParams="true"/></th>
+                            <th><tags:sortLink nameKey="tableHeader.value" baseUrl="${filteredUrl}" fieldName="VALUE" overrideParams="true"/></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="event" items="${filterResult.resultList}">
+                            <tr>
+                                <td>
+                                    <cti:paoDetailUrl  yukonPao="${event.meter}" >
+                                        ${fn:escapeXml(event.meter.name)}
+                                    </cti:paoDetailUrl>
+                                </td>
+                                <td>${event.meter.meterNumber}</td>
+                                <td><tags:paoType yukonPao="${event.meter}"/></td>
+                                <td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
+                                <td>${fn:escapeXml(event.pointName)}</td>
+                                <cti:pointColor pointId="${event.pointValueHolder.id}" rawState="${event.pointValueHolder.value}" var="color"/>
+                                <td class="${color}">
+                                    <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
+                                </td>
+                                <td class="contextual-menu">
+                                    <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:otherwise>
+        </c:choose>
     </tags:pagedBox2>
 </cti:standardPage>
