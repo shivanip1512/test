@@ -149,33 +149,7 @@ public class OptOutAdminController {
         
         // Second column
         setupScheduledOptOuts(user, model);
-        
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT, user)) {
-            int energyCompanyId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
-            Set<OptOutSurvey> surveys = new HashSet<>(optOutSurveyService.findSurveys(energyCompanyId, 0, Integer.MAX_VALUE).getResultList());
-            model.addAttribute("totalSurveys", surveys.size());
-            final Date now = new Date();
-
-           Predicate<OptOutSurvey> isActive = new Predicate<OptOutSurvey>() {
-               @Override public boolean apply(OptOutSurvey survey) {
-                   if (survey.getStartDate() != null && survey.getStartDate().after(now))
-                       return false;
-                   if (survey.getStopDate() != null && survey.getStopDate().before(now))
-                       return false;
-                   return true;
-               }
-           };
-           Set<OptOutSurvey> activeSurveys = Sets.filter(surveys, isActive);
-           model.addAttribute("activeSurveys", activeSurveys.size());
-
-           Instant lastWeek = Instant.now().minus(Duration.standardDays(7));
-           Instant last30Days = Instant.now().minus(Duration.standardDays(30));
-
-           int resultsInLastWeek = optOutSurveyService.countAllSurveyResultsBetween(lastWeek, null);
-           int resultsInLast30Days = optOutSurveyService.countAllSurveyResultsBetween(last30Days, Instant.now());
-           model.addAttribute("resultsInLastWeek", resultsInLastWeek);
-           model.addAttribute("resultsInLast30Days", resultsInLast30Days);
-        }
+        setUpOptOutSurveys(user, model);
 
         return "operator/optout/optOutAdmin.jsp";
     }
@@ -357,7 +331,36 @@ public class OptOutAdminController {
             map.addAttribute("customerSearchList", customerSearchList);
         }
     }
-    
+
+    private void setUpOptOutSurveys(LiteYukonUser user, ModelMap model) {
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_SURVEY_EDIT, user)) {
+            int energyCompanyId = energyCompanyDao.getEnergyCompany(user).getEnergyCompanyID();
+            Set<OptOutSurvey> surveys = new HashSet<>(optOutSurveyService.findSurveys(energyCompanyId, 0, Integer.MAX_VALUE).getResultList());
+            model.addAttribute("totalSurveys", surveys.size());
+            final Date now = new Date();
+
+           Predicate<OptOutSurvey> isActive = new Predicate<OptOutSurvey>() {
+               @Override public boolean apply(OptOutSurvey survey) {
+                   if (survey.getStartDate() != null && survey.getStartDate().after(now))
+                       return false;
+                   if (survey.getStopDate() != null && survey.getStopDate().before(now))
+                       return false;
+                   return true;
+               }
+           };
+           Set<OptOutSurvey> activeSurveys = Sets.filter(surveys, isActive);
+           model.addAttribute("activeSurveys", activeSurveys.size());
+
+           Instant lastWeek = Instant.now().minus(Duration.standardDays(7));
+           Instant last30Days = Instant.now().minus(Duration.standardDays(30));
+
+           int resultsInLastWeek = optOutSurveyService.countAllSurveyResultsBetween(lastWeek, null);
+           int resultsInLast30Days = optOutSurveyService.countAllSurveyResultsBetween(last30Days, Instant.now());
+           model.addAttribute("resultsInLastWeek", resultsInLastWeek);
+           model.addAttribute("resultsInLast30Days", resultsInLast30Days);
+        }
+    }
+
     /**
      * Helper class to hold Scheduled opt out information for jsp
      */

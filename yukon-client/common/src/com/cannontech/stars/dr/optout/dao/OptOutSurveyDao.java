@@ -31,5 +31,9 @@ public interface OptOutSurveyDao {
             ReadableInstant begin, ReadableInstant end,
             String accountNumber, String serialNumber);
 
+    /**
+     * Counts the total number of survey results added between 2 instants
+     * @return
+     */
     public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end);
 }

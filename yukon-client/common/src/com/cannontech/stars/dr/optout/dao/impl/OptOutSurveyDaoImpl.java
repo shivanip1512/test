@@ -267,7 +267,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
 
     public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(1)");;
+        sql.append("SELECT COUNT(1)");
         sql.append("FROM SurveyResult r");
 
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
@@ -275,7 +275,7 @@ public class OptOutSurveyDaoImpl implements OptOutSurveyDao {
             whereClause.add( new SqlStatementBuilder("r.whenTaken").gte(begin));
         }
         if (end != null) {
-            whereClause.add( new SqlStatementBuilder("r.whenTaken").gte(begin));
+            whereClause.add( new SqlStatementBuilder("r.whenTaken").lte(end));
         }
         sql.append("WHERE").append(whereClause);
 

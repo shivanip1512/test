@@ -19,5 +19,8 @@ public interface OptOutSurveyService {
     SearchResults<OptOutSurvey> findSurveys(int energyCompanyId, int startIndex,
             int count);
 
+    /**
+     * Counts the total number of survey results added between 2 instants
+     */
     public int countAllSurveyResultsBetween(ReadableInstant begin, ReadableInstant end);
 }
