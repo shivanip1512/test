@@ -37,6 +37,7 @@ public class CryptoServiceImpl implements CryptoService {
         
     }
     
+    @Override
     public String encrypt(final String input) throws GeneralSecurityException {
         byte[] raw = getEncryptCipher().doFinal(input.getBytes()); 
         byte[] encodedBytes = codec.encode(raw);
@@ -44,6 +45,7 @@ public class CryptoServiceImpl implements CryptoService {
         return toString;
     }
     
+    @Override
     public String decrypt(String input) throws GeneralSecurityException {
         byte[] raw = codec.decode(input.getBytes());
         byte[] output = getDecryptCipher().doFinal(raw);
