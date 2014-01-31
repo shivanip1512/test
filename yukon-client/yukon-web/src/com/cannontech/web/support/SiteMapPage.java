@@ -141,7 +141,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
 
     BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
-            MatchStyle.all),
+            MatchStyle.any, YukonRoleProperty.BULK_IMPORT_OPERATION, YukonRoleProperty.ADD_REMOVE_POINTS, YukonRoleProperty.FDR_TRANSLATION_MANAGER,
+                            YukonRoleProperty.IMPORTER_ENABLED, YukonRoleProperty.CAP_CONTROL_IMPORTER, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT),
     COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.select.pageName", "/commander/select",
             MatchStyle.all, YukonRoleProperty.ENABLE_WEB_COMMANDER),
     CREATE_BILLING_SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.tools.schedules.home.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
@@ -161,7 +162,7 @@ public enum SiteMapPage implements DisplayableEnum {
     POINT_IMPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.pointImport.pageName", "/bulk/pointImport/upload",
             MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
     COLLECTION_ACTIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.collectionActions.pageName", "/bulk/deviceSelection",
-            MatchStyle.all),
+            MatchStyle.all, YukonRole.DEVICE_ACTIONS),
     FDR_TRANSLATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
             MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
     MSP_TO_LM_MAPPING(SiteMapCategory.TOOLS, "yukon.web.menu.portal.analysis.visualDisplays", "/multispeak/visualDisplays/loadManagement/home",

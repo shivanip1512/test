@@ -1403,8 +1403,6 @@
                 <!-- Deny Capacitor Control to all except CBCSettingsRole role -->
                 <value>DENY|/capcontrol/**|!CBC_SETTINGS</value>            
                 
-                <value>DENY|/support/**|!OPERATOR_ADMINISTRATOR</value>
-                
                 <!-- Allow explicit access to each Admin page.  Default DENY to all pages unless ADMIN_EDIT_ENERGY_COMPANY -->
                 <!-- These should be removed with the rewrite of Energy Company configuration pages. -->
                 <!-- Authorization should be handled on the controller side (with the rewrite). -->
