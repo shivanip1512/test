@@ -20,7 +20,7 @@ public enum UserPreferenceName implements DisplayableEnum {
     ALERT_FLASH(InputTypeFactory.enumType(PreferenceOnOff.class),
             PreferenceOnOff.ON.name()),
     ALERT_SOUND(InputTypeFactory.enumType(PreferenceOnOff.class),
-            PreferenceOnOff.ON.name());
+            PreferenceOnOff.OFF.name());
 
 
     final private InputType<?> valueType;

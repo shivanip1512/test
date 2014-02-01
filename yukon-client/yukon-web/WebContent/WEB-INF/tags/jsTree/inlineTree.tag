@@ -129,9 +129,9 @@
             <cti:msg2 var="collapse" key="yukon.common.collapseAll"/>
             <cti:msg2 var="search" key="yukon.web.components.button.search.label"/>
             <cti:msg2 var="tooltip" key="yukon.web.components.jstree.input.search.tooltip"/>
-            <input type="text" class="searchTree default fr" data-tree-id="${id}" data-default-value="${search}" value="${search}" title="${tooltip}"/>
             <a href="javascript:void(0);" class="open_all fl" data-tree-id="${id}" title="${expand}">${expand}</a>
             <a href="javascript:void(0);" class="close_all fl" data-tree-id="${id}" title="${collapse}">${collapse}</a>
+            <input type="text" class="searchTree default fl" data-tree-id="${id}" data-default-value="${search}" value="${search}" title="${tooltip}" style="margin-left:20px;"/>
         </div>
     </c:if>
 

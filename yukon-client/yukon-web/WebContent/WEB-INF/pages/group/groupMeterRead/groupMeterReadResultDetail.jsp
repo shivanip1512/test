@@ -22,7 +22,7 @@
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/dashboard" title="Operations Home"/>
+        <cti:crumbLink url="/dashboard" title="Home"/>
         
         <%-- results list --%>
         <cti:crumbLink url="/group/groupMeterRead/resultsList">${recentResultsTitle}</cti:crumbLink>

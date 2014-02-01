@@ -1,14 +1,12 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-
 <cti:standardPage module="tools" page="deviceGroupsCommander">
+
 <cti:linkTabbedContainer mode="section">
     <cti:linkTab selectorKey="yukon.web.deviceGroups.editor.tab.title">
         <c:url value="/group/editor/home" />
@@ -27,75 +25,69 @@
     </cti:linkTab>
 </cti:linkTabbedContainer>
 
-        <script type="text/javascript">
-        	
-            function validateGroupIsSelected(btn, alertText) {
-        
-                if (jQuery('#groupName').val() === '') {
-                    alert(alertText);
-                    return false;
-                }
-                
-                jQuery('#submitGroupCommanderButton').prop('disabled', true);
-                jQuery('#waitImg').show();
-                jQuery('#groupCommanderForm').submit();
-            }
+<script type="text/javascript">
+function validateGroupIsSelected(btn, alertText) {
+    
+    if (jQuery('#groupName').val() === '') {
+        alert(alertText);
+        return false;
+    }
+    
+    jQuery('#submitGroupCommanderButton').prop('disabled', true);
+    jQuery('#waitImg').show();
+    jQuery('#groupCommanderForm').submit();
+}
+</script>
 
-        </script>
+    <%-- ERROR MSG --%>
+    <c:if test="${not empty param.errorMsg}">
+        <div class="error stacked">${param.errorMsg}</div>
+        <c:set var="errorMsg" value="" scope="request"/>
+    </c:if>
+    
+    <form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
 
-    	<%-- ERROR MSG --%>
-        <c:if test="${not empty param.errorMsg}">
-            <br>
-        	<div class="error">${param.errorMsg}</div>
-        	<c:set var="errorMsg" value="" scope="request"/>
-        	<br>
-        </c:if>
-	
-    	<div style="width: 700px;">
-        
-            <form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
+    <%-- SELECT DEVICE GROUP TREE INPUT --%>
+    <div><strong><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></strong></div>
 
-            <%-- SELECT DEVICE GROUP TREE INPUT --%>
-            <div class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></div>
+    <div class="half-width stacked">
+        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${param.groupName}" selectedNodePathVar="selectedNodePath"/>
+        <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
+                                            fieldName="groupName"
+                                            nodeValueName="groupName" 
+                                            multiSelect="false"
+                                            id="selectGroupTree" 
+                                            dataJson="${dataJson}" 
+                                            maxHeight="400" 
+                                            highlightNodePath="${selectedNodePath}"
+                                            includeControlBar="true"/>
+    </div>
 
-            <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" selectGroupName="${param.groupName}" selectedNodePathVar="selectedNodePath"/>
-            <jsTree:nodeValueSelectingInlineTree fieldId="groupName" 
-                                                fieldName="groupName"
-                                                nodeValueName="groupName" 
-                                                multiSelect="false"
-                                                id="selectGroupTree" 
-                                                dataJson="${dataJson}" 
-                                                maxHeight="400" 
-                                                highlightNodePath="${selectedNodePath}"
-                                                includeControlBar="true"/>
+    <%-- SELECT COMMAND --%>
+    <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+    <div>${selectCommandLabel}:</div>
+    <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}" includeDummyOption="true" />
 
-            <br><br>
+    <br><br>
+    <%-- EMAIL --%>
+    <div class="stacked">
+        <div><i:inline key="yukon.web.deviceGroups.commander.emailLabel"/></div>
+        <input type="text" name="emailAddress" value="" size="40">
+    </div>
 
-            <%-- SELECT COMMAND --%>
-            <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-            <div class="largeBoldLabel">${selectCommandLabel}:</div>
-            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}" includeDummyOption="true" />
-
-            <br><br>
-            <%-- EMAIL --%>
-            <div class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.emailLabel"/></div>
-            <input type="text" name="emailAddress" value="" size="40">
-            <br><br>
-
-
-            <%-- EXECUTE BUTTON --%>
-            <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
-            <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
-            
-            <cti:msg2 var="executeButtonLabel" key="yukon.web.deviceGroups.commander.executeButton"/>
-            <input type="button" id="submitGroupCommanderButton" value="${executeButtonLabel}" onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');">
-            <img id="waitImg" src="${waitImgUrl}" style="display:none;">
-            
-            <br><br>
-            <span class="largeBoldLabel"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/></span> 
-            <a href="/group/commander/resultList"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLink"/></a>
-    			 
-    		</form>
-    	</div>
-	
+    <%-- EXECUTE BUTTON --%>
+    <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+    <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />
+    
+    <div class="page-action-area stacked half-width">
+        <cti:button nameKey="execute" 
+            classes="primary action"
+            id="submitGroupCommanderButton" 
+            onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');"/>
+        <img id="waitImg" src="${waitImgUrl}" style="display:none;">
+        <a href="/group/commander/resultList" class="fr"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/></a>
+    </div>
+    
+    </form>
+    
 </cti:standardPage>

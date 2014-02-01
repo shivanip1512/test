@@ -346,36 +346,36 @@
             </cti:tabbedContentSelector>
             <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
                 <input type="hidden" value="${mostRecentDateTime}" id="mostRecentDateTime">
-                        <div class="historyContainer">
-                            <c:if test="${empty events}">
-                                <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
-                                <c:set var="tableClass" value="dn" />
-                            </c:if>
-                            <div>
-                                <div>
-                                    <span class="notes"
-                                </div>
-                            </div>
-                            <table id="recentEventsTable" class="compactResultsTable ${tableClass}">
-                                <thead>
-                                <tr id="recentEventsHeaderRow">
-                                    <th><i:inline key=".ivvcEvents.deviceName"/></th>
-                                    <th><i:inline key=".ivvcEvents.description"/></th>
-                                    <th><i:inline key=".attributes.timestamp"/></th>
-                                </tr>
-                                </thead>
-                                <tfoot></tfoot>
-                                <tbody>
-                                   <c:forEach var="ccEvent" items="${events}">
-                                        <tr>
-                                            <td class="deviceName">${fn:escapeXml(ccEvent.deviceName)}</td>
-                                            <td class="description">${fn:escapeXml(ccEvent.text)}</td>
-                                            <td class="formattedTime"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
-                                        </tr>
-                                   </c:forEach>
-                               </tbody>
-                            </table>
+                <div class="scroll-large">
+                    <c:if test="${empty events}">
+                        <span class="empty-list"> <i:inline key=".ivvcEvents.none"/> </span>
+                        <c:set var="tableClass" value="dn" />
+                    </c:if>
+                    <div>
+                        <div>
+                            <span class="notes"
                         </div>
+                    </div>
+                    <table id="recentEventsTable" class="compact-results-table ${tableClass}">
+                        <thead>
+                            <tr id="recentEventsHeaderRow">
+                                <th><i:inline key=".ivvcEvents.deviceName"/></th>
+                                <th><i:inline key=".ivvcEvents.description"/></th>
+                                <th><i:inline key=".attributes.timestamp"/></th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                           <c:forEach var="ccEvent" items="${events}">
+                                <tr>
+                                    <td class="deviceName">${fn:escapeXml(ccEvent.deviceName)}</td>
+                                    <td class="description">${fn:escapeXml(ccEvent.text)}</td>
+                                    <td class="formattedTime"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
+                                </tr>
+                           </c:forEach>
+                       </tbody>
+                    </table>
+                </div>
             </tags:boxContainer2>
         </div>
     </div>

@@ -23,29 +23,34 @@
     </c:if>
     <c:if test="${!empty list.yukonListEntries}">
         <table class="compact-results-table row-highlighting">
-            <c:if test="${usesType}">
-                <tr>
-                    <th><i:inline key=".entryText"/></th>
-                    <th><i:inline key=".definition"/></th>
-                </tr>
-            </c:if>
-            <c:forEach var="entry" varStatus="status" items="${list.yukonListEntries}">
-                <tr>
-                    <td>
-                        <c:if test="${empty entry.entryText}">
-                            <i:inline key=".noEntryText"/>
-                        </c:if>
-                        <c:if test="${!empty entry.entryText}">
-                            <i:inline key="${entry.entryTextMsr}"/>
-                        </c:if>
-                    </td>
-                    <c:if test="${usesType}">
+            <thead>
+                <c:if test="${usesType}">
+                    <tr>
+                        <th><i:inline key=".entryText"/></th>
+                        <th><i:inline key=".definition"/></th>
+                    </tr>
+                </c:if>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="entry" varStatus="status" items="${list.yukonListEntries}">
+                    <tr>
                         <td>
-                            <i:inline key="${entry.definition}"/>
+                            <c:if test="${empty entry.entryText}">
+                                <i:inline key=".noEntryText"/>
+                            </c:if>
+                            <c:if test="${!empty entry.entryText}">
+                                <i:inline key="${entry.entryTextMsr}"/>
+                            </c:if>
                         </td>
-                    </c:if>
-                </tr>
-            </c:forEach>
+                        <c:if test="${usesType}">
+                            <td>
+                                <i:inline key="${entry.definition}"/>
+                            </td>
+                        </c:if>
+                    </tr>
+                </c:forEach>
+            </tbody>
         </table>
     </c:if>
 </tags:sectionContainer2>

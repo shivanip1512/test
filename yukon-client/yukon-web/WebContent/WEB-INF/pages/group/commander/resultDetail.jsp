@@ -11,7 +11,7 @@
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
     
-        <cti:crumbLink url="/dashboard" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Home" />
         
         <%-- commander from location --%>
         <cti:crumbLink url="/group/commander/resultList" title="Recent Group Command Processing Results" />
@@ -72,38 +72,37 @@
                                 statusClassKey="COMMANDER/${result.key}/STATUS_CLASS"
                                 isAbortedKey="COMMANDER/${result.key}/IS_ABORTED"/>
                     
-            <%-- cancel commands --%>
-            <div id="cancelCommandsDiv">
-                <br>
-                <c:url var="cancelUrl" value="/group/commander/cancelCommands" />
-                <cti:msg var="cancelText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.cancelLocateButtonLabel" />
-                <tags:cancelCommands resultId="${result.key}" 
-                                     cancelUrl="${cancelUrl}"
-                                     cancelButtonText="${cancelText}"/>
-            </div>
+        <%-- CANCEL COMMANDS --%>
+        <div id="cancelCommandsDiv" class="clearfix">
+            <c:url var="cancelUrl" value="/group/commander/cancelCommands" />
+            <cti:msg var="cancelText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.cancelLocateButtonLabel" />
+            <tags:cancelCommands resultId="${result.key}" 
+                                 cancelUrl="${cancelUrl}"
+                                 cancelButtonText="${cancelText}"/>
+        </div>
+        
+        <%-- DEVICE COLLECTION ACTION --%>
+        <div id="allDevicesActionsDiv" style="display:none;">
+            <br>
+            <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
+                <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
+            </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+        </div>
+        
+        <%-- CRE ACTION --%>
+        <div id="creResultsDiv" style="display:none;">
+            <br>
             
-            <%-- device collection action --%>
-            <div id="allDevicesActionsDiv" style="display:none;">
-                <br>
-                <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
-                    <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
-                </cti:link>
-                <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
-            </div>
+            <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
             
-            <%-- cre action --%>
-            <div id="creResultsDiv" style="display:none;">
-                <br>
-                
-                <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
-                
-                <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
-                    <cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
-                </cti:url>
-                
-                <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
-                
-            </div>
+            <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
+                <cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+            </cti:url>
+            
+            <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
+            
+        </div>
                                 
         <%-- SUCCESS --%>
         <br>
@@ -123,8 +122,6 @@
             <div id="successResultsDiv${result.key}" style="display:none;"></div>
             
         </div>
-    
-    
     
         <%-- PROCESSING EXCEPTION --%>
         <br>

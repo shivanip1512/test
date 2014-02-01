@@ -18,7 +18,7 @@
     <entry key="yukon.web.modules.amr.meteringStart.pageName">AMI Dashboard</entry>
     <entry key="yukon.web.modules.amr.meteringStart.contextualPageName">AMI</entry>
     <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>
-
+    
     <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceGroupUpload.tab.title">Upload</entry>
     <entry key="yukon.web.modules.tools.deviceGroupUpload.autoCreate">Auto Create Groups</entry>

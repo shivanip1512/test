@@ -179,7 +179,14 @@
           </page>
         </pages>
       </page>
-      <page name="deviceGroups" type="BASIC" />
+      <page name="deviceGroups" type="BASIC">
+        <link>/group/editor/home</link>
+        <pages>
+          <page name="deviceGroups.addDevices" type="DETAIL">
+            <labelArgument>${groupName}</labelArgument>
+          </page>
+        </pages>
+      </page>
       <page name="deviceGroupsCommander" type="BASIC"/>
       <page name="groupMeterReadHome" type="BASIC">
         <link>/group/groupMeterRead/homeGroup</link>

@@ -128,12 +128,10 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             boolean override = false;
             /* Allow localizers to override the complete button text for any specific button.
              * This means the dialogButton attribute's appending of ellipsis feature will not be respected. */
-            MessageSourceResolvable overrideLabelTextResolvable = scope.generateResolvable(".label.override", arguments);
-            labelText = getLocalMessage(overrideLabelTextResolvable, false);
+            labelText = getLocalMessage(scope, ".label.override");
 
             if (StringUtils.isBlank(labelText)) {
-                MessageSourceResolvable labelTextResolvable = scope.generateResolvable(".label", arguments);
-                labelText = getLocalMessage(labelTextResolvable, false);
+                labelText = getLocalMessage(scope, ".label");
                 if (StringUtils.isNotBlank(labelText)) {
                     labelText = StringEscapeUtils.escapeHtml(labelText);
                 }
@@ -154,8 +152,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             /* Busy Text */
-            MessageSourceResolvable busyTextResolvable = scope.generateResolvable(".labelBusy", arguments);
-            String busyText = getLocalMessage(busyTextResolvable, false);
+            String busyText = getLocalMessage(scope, ".labelBusy");
             if (StringUtils.isNotBlank(busyText)) {
                 busyText = StringEscapeUtils.escapeHtml(busyText);
             }
@@ -171,8 +168,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (StringUtils.isNotBlank(title)) {
                 hoverText = title;
             } else {
-                MessageSourceResolvable hoverTextResolvable = scope.generateResolvable(".hoverText", arguments);
-                hoverText = getLocalMessage(hoverTextResolvable, false);
+                hoverText = getLocalMessage(scope, ".hoverText");
                 if (StringUtils.isNotBlank(hoverText)) {
                     hoverText = StringEscapeUtils.escapeHtml(hoverText);
                 }
@@ -232,14 +228,12 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
         }
     }
 
-    private String getLocalMessage(MessageSourceResolvable resolvable, boolean required) {
+    private String getLocalMessage(MessageScope scope, String key) {
         String retVal;
         try {
+            MessageSourceResolvable resolvable = scope.generateResolvable(key, arguments);
             retVal = getMessageSource().getMessage(resolvable);
-        } catch (NoSuchMessageException e) {
-            if (required) {
-                throw e;
-            }
+        } catch (NoSuchMessageException | IllegalArgumentException e) {
             return null;
         }
         return retVal;

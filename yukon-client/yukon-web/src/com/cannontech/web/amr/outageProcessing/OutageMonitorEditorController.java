@@ -41,23 +41,23 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.OUTAGE_PROCESSING)
 public class OutageMonitorEditorController extends MultiActionController {
-	
-	private OutageMonitorDao outageMonitorDao;
-	private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
-	private OutageMonitorService outageMonitorService;
-	private CronExpressionTagService cronExpressionTagService;
-	private RolePropertyDao rolePropertyDao;
-	@Autowired private DeviceGroupService deviceGroupService;
-	
-	private static final String CRON_TAG_ID = "outageMonitor";
-	private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
-	private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
-	
-	private int DEFAULT_NUMBER_OF_OUTAGES = 2;
-	private int DEFAULT_TIME_PERIOD = 28;
-	
-	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+    
+    @Autowired private OutageMonitorDao outageMonitorDao;
+    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
+    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired private OutageMonitorService outageMonitorService;
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    
+    private static final String CRON_TAG_ID = "outageMonitor";
+    private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
+    private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
+    
+    private int DEFAULT_NUMBER_OF_OUTAGES = 2;
+    private int DEFAULT_TIME_PERIOD = 28;
+    
+    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("outageProcessing/edit.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -75,29 +75,29 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         OutageMonitor outageMonitor = null;
         try {
-        	
-	        // existing outage processor
-	        if (outageMonitorId > 0) {
-	            mav.addObject("mode", PageEditMode.EDIT);
-	        	outageMonitor = outageMonitorDao.getById(outageMonitorId);
-	        	
-	        	// use entered values instead of existing value if error
-	        	if (editError == null) {
-	        		name = outageMonitor.getOutageMonitorName();
-	        		deviceGroupName = outageMonitor.getGroupName();
-	        		numberOfOutages = outageMonitor.getNumberOfOutages();
-	        		timePeriod = outageMonitor.getTimePeriodDays();
-	        		
-	        	}
-	        }
-	        else {
+            
+            // existing outage processor
+            if (outageMonitorId > 0) {
+                mav.addObject("mode", PageEditMode.EDIT);
+                outageMonitor = outageMonitorDao.getById(outageMonitorId);
+                
+                // use entered values instead of existing value if error
+                if (editError == null) {
+                    name = outageMonitor.getOutageMonitorName();
+                    deviceGroupName = outageMonitor.getGroupName();
+                    numberOfOutages = outageMonitor.getNumberOfOutages();
+                    timePeriod = outageMonitor.getTimePeriodDays();
+                    
+                }
+            }
+            else {
                 mav.addObject("mode", PageEditMode.CREATE);
             }
-	        
+            
         } catch (OutageMonitorNotFoundException e) {
-        	mav = new ModelAndView("redirect:edit");
-        	mav.addObject("editError", e.getMessage());
-        	return mav;
+            mav = new ModelAndView("redirect:edit");
+            mav.addObject("editError", e.getMessage());
+            return mav;
         }
         
                 
@@ -120,9 +120,9 @@ public class OutageMonitorEditorController extends MultiActionController {
         mav.addObject("cronExpressionTagState", cronExpressionTagState);
         
         return mav;
-	}
-	
-	public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+    }
+    
+    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:edit");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -139,56 +139,56 @@ public class OutageMonitorEditorController extends MultiActionController {
         
         // new processor?
         boolean isNewMonitor = true;
-    	OutageMonitor outageMonitor;
+        OutageMonitor outageMonitor;
         try {
-        	if (outageMonitorId <= 0) {
-        		outageMonitor = new OutageMonitor();
-        	} else {
-        		outageMonitor = outageMonitorDao.getById(outageMonitorId);
-        		isNewMonitor = false;
-        	}
+            if (outageMonitorId <= 0) {
+                outageMonitor = new OutageMonitor();
+            } else {
+                outageMonitor = outageMonitorDao.getById(outageMonitorId);
+                isNewMonitor = false;
+            }
         } catch (OutageMonitorNotFoundException e) {
-        	mav.addObject("editError", e.getMessage());
-        	return mav;
+            mav.addObject("editError", e.getMessage());
+            return mav;
         }
         
         
         // schedule errors
         if (isNewMonitor && scheduleGroupCommand) {
-	        try {
-	        	expression = cronExpressionTagService.build(CRON_TAG_ID, request, userContext);
-	        } catch (Exception e) {
-	        	editError = "Invalid Schedule Time.";
-	        	expression = null;
-	        }
-	        
-	        if (StringUtils.isBlank(scheduleName)) {
-	        	editError = "Schedule Must Have Name.";
-	        }
+            try {
+                expression = cronExpressionTagService.build(CRON_TAG_ID, request, userContext);
+            } catch (Exception e) {
+                editError = "Invalid Schedule Time.";
+                expression = null;
+            }
+            
+            if (StringUtils.isBlank(scheduleName)) {
+                editError = "Schedule Must Have Name.";
+            }
         }
         
         // monitor errors
         if (StringUtils.isBlank(name)) {
-        	editError = "Name required.";
+            editError = "Name required.";
         } else if (!DeviceGroupUtil.isValidName(name)) {
-        	editError = "Name may not contain slashes.";
+            editError = "Name may not contain slashes.";
         } else if (isNewMonitor && outageMonitorDao.processorExistsWithName(name)) { // new monitor, check name
-        	editError = "Outage Monitor with name \"" + name + "\" already exists.";
+            editError = "Outage Monitor with name \"" + name + "\" already exists.";
         } else if (!isNewMonitor && !outageMonitor.getOutageMonitorName().equals(name) && outageMonitorDao.processorExistsWithName(name)) { // existing monitor, new name, check name
-        	editError = "Outage Monitor with name \"" + name + "\" already exists.";
+            editError = "Outage Monitor with name \"" + name + "\" already exists.";
         } else if (StringUtils.isBlank(deviceGroupName)) {
-        	editError = "Device group required.";
+            editError = "Device group required.";
         } else if (numberOfOutages < 1) {
-        	editError= "Number of outages must be greater than or equal to 1.";
+            editError= "Number of outages must be greater than or equal to 1.";
         } else if (timePeriod < 0) {
-        	editError = "Time period must be greater than or equal to 0.";
+            editError = "Time period must be greater than or equal to 0.";
         } 
         
         // editError. redirect to edit page with error
         if (editError != null) {
-        	
-        	mav.addObject("editError", editError);
-        	mav.addObject("outageMonitorId", outageMonitorId);
+            
+            mav.addObject("editError", editError);
+            mav.addObject("outageMonitorId", outageMonitorId);
             mav.addObject("name", name);
             mav.addObject("deviceGroupName", deviceGroupName);
             mav.addObject("numberOfOutages", numberOfOutages);
@@ -197,126 +197,96 @@ public class OutageMonitorEditorController extends MultiActionController {
             mav.addObject("scheduleName", scheduleName);
             mav.addObject("expression", expression);
             return mav;
-        	
+            
         // ok. save or update
         } else {
-        	
-        	// SCHEDULED BLINK COUNT REQUEST JOB
-        	if (isNewMonitor && scheduleGroupCommand) {
+            
+            // SCHEDULED BLINK COUNT REQUEST JOB
+            if (isNewMonitor && scheduleGroupCommand) {
 
-        		rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
-            	scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
-        	}
-        	
-        	// OUTAGE GROUP
-        	if (isNewMonitor) {
-        		
-        		// create new group
-        		outageMonitorService.getOutageGroup(name);
-        		
-        	} else {
-        		
-        		// outage group needs new name 
-        		String currentProcessorName = outageMonitor.getOutageMonitorName();
-        		if (!currentProcessorName.equals(name)) {
-        			
-        			// try to retrieve group by new name (possible it could exist)
-        			// if does not exist, get old group, give it new name
-        			try {
-        				
-        				deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, name, false);
-        				
-        			} catch (NotFoundException e) {
-						
-        				// ok, it doesn't yet exist
-        				StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(currentProcessorName);
-    	        		outageGroup.setName(name);
-    	        		deviceGroupEditorDao.updateGroup(outageGroup);
-					}
-        		}
-        	}
-        	
-        	// ENABLE MONITORING
-        	if (isNewMonitor) {
-        		
-        		outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-        	}
-        	
-        	// finish processor setup, save/update
-        	outageMonitor.setOutageMonitorName(name);
-    		outageMonitor.setGroupName(deviceGroupName);
-    		outageMonitor.setNumberOfOutages(numberOfOutages);
-    		outageMonitor.setTimePeriodDays(timePeriod);
-    		
-    		log.debug("Saving outageMonitor: isNewMonitor=" + isNewMonitor + ", outageMonitor=" + outageMonitor.toString());
-    		outageMonitorDao.saveOrUpdate(outageMonitor);
-    		outageMonitorId = outageMonitor.getOutageMonitorId();
-        	
-    		// redirect to edit page with processor
-    		return new ModelAndView("redirect:/meter/start");
+                rolePropertyDao.verifyProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
+                scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, Collections.singleton(BLINK_COUNT_ATTRIBUTE), DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, expression, userContext, RetryStrategy.noRetryStrategy());
+            }
+            
+            // OUTAGE GROUP
+            if (isNewMonitor) {
+                
+                // create new group
+                outageMonitorService.getOutageGroup(name);
+                
+            } else {
+                
+                // outage group needs new name 
+                String currentProcessorName = outageMonitor.getOutageMonitorName();
+                if (!currentProcessorName.equals(name)) {
+                    
+                    // try to retrieve group by new name (possible it could exist)
+                    // if does not exist, get old group, give it new name
+                    try {
+                        
+                        deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.OUTAGE, name, false);
+                        
+                    } catch (NotFoundException e) {
+                        
+                        // ok, it doesn't yet exist
+                        StoredDeviceGroup outageGroup = outageMonitorService.getOutageGroup(currentProcessorName);
+                        outageGroup.setName(name);
+                        deviceGroupEditorDao.updateGroup(outageGroup);
+                    }
+                }
+            }
+            
+            // ENABLE MONITORING
+            if (isNewMonitor) {
+                
+                outageMonitor.setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
+            }
+            
+            // finish processor setup, save/update
+            outageMonitor.setOutageMonitorName(name);
+            outageMonitor.setGroupName(deviceGroupName);
+            outageMonitor.setNumberOfOutages(numberOfOutages);
+            outageMonitor.setTimePeriodDays(timePeriod);
+            
+            log.debug("Saving outageMonitor: isNewMonitor=" + isNewMonitor + ", outageMonitor=" + outageMonitor.toString());
+            outageMonitorDao.saveOrUpdate(outageMonitor);
+            outageMonitorId = outageMonitor.getOutageMonitorId();
+            
+            // redirect to edit page with processor
+            return new ModelAndView("redirect:/meter/start");
         }
-	}
-	
-	// DELETE
-	public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+    }
+    
+    // DELETE
+    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "deleteOutageMonitorId");
         
         try {
-        	outageMonitorService.deleteOutageMonitor(outageMonitorId);
-        	return new ModelAndView("redirect:/meter/start");
+            outageMonitorService.deleteOutageMonitor(outageMonitorId);
+            return new ModelAndView("redirect:/meter/start");
         } catch (OutageMonitorNotFoundException e) {
-        	ModelAndView mav = new ModelAndView("redirect:edit");
-        	mav.addObject("editError", e.getMessage());
-        	return mav;
+            ModelAndView mav = new ModelAndView("redirect:edit");
+            mav.addObject("editError", e.getMessage());
+            return mav;
         }
-	}
-	
-	// TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
-	public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+    }
+    
+    // TOGGLE MONITOR EVALUATION SERVICE ENABLED/DISABLED
+    public ModelAndView toggleEnabled(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:edit");
         
         int outageMonitorId = ServletRequestUtils.getRequiredIntParameter(request, "outageMonitorId");
         
         try {
-	        outageMonitorService.toggleEnabled(outageMonitorId);
-        	mav.addObject("outageMonitorId", outageMonitorId);
+            outageMonitorService.toggleEnabled(outageMonitorId);
+            mav.addObject("outageMonitorId", outageMonitorId);
         } catch (OutageMonitorNotFoundException e) {
-        	mav.addObject("editError", e.getMessage());
+            mav.addObject("editError", e.getMessage());
         }
         
         return mav;
-	}
-	
-	@Autowired
-	public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
-		this.outageMonitorDao = outageMonitorDao;
-	}
-	
-	@Autowired
-	public void setScheduledGroupRequestExecutionService(
-			ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService) {
-		this.scheduledGroupRequestExecutionService = scheduledGroupRequestExecutionService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
-	}
-	
-	@Autowired
-	public void setOutageMonitorService(OutageMonitorService outageMonitorService) {
-		this.outageMonitorService = outageMonitorService;
-	}
-	
-	@Autowired
-	public void setCronExpressionTagService(CronExpressionTagService cronExpressionTagService) {
-        this.cronExpressionTagService = cronExpressionTagService;
     }
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
+    
 }

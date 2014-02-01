@@ -8,17 +8,17 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
-	
-	<cti:includeScript link="/JavaScript/tableCreation.js" />
-	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
-	<cti:includeScript link="/JavaScript/picker.js" />
+    
+    <cti:includeScript link="/JavaScript/tableCreation.js" />
+    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
+    <cti:includeScript link="/JavaScript/picker.js" />
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>
-	
-	<%@include file="/capcontrol/capcontrolHeader.jspf"%>
+    
+    <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
     
     <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
-    	<cti:param name="subBusId" value="${subBusId}"/>
+        <cti:param name="subBusId" value="${subBusId}"/>
     </cti:url>
 
     <cti:msg2 key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title" var="zoneCreationWizardTitle"/>
@@ -28,21 +28,21 @@
     <tags:simpleDialog id="zoneWizardPopup"/>
 
     <script type="text/javascript">
-    	function showZoneCreationWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, 'get');
-		}
+        function showZoneCreationWizard(url) {
+            openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, 'get');
+        }
 
-    	function showZoneEditorWizard(url) {
-			openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, 'get');
-		}
-    	
-		function selectZone(event) {
-			var span = event.target;
-			jQuery('.selectedZone').removeClass('selectedZone');
-			jQuery(span).addClass('selectedZone');
-		}
-		
-		function ivvcAnalysisMessageRecieved(msgDivId) {
+        function showZoneEditorWizard(url) {
+            openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, 'get');
+        }
+        
+        function selectZone(event) {
+            var span = event.target;
+            jQuery('.selectedZone').removeClass('selectedZone');
+            jQuery(span).addClass('selectedZone');
+        }
+        
+        function ivvcAnalysisMessageRecieved(msgDivId) {
             return function(data) {
                 var msg = data.value;
                 
@@ -56,12 +56,12 @@
                     jQuery(msgDivId + " span:last").hide();
                 }
             };
-		}
+        }
 
-		if (${hasSubBusControl}) {
-		    addCommandMenuBehavior('a[id^="subbusState"]');
-		}
- 	</script>
+        if (${hasSubBusControl}) {
+            addCommandMenuBehavior('a[id^="subbusState"]');
+        }
+     </script>
     
     <c:if test="${hasEditingRole}">
         <div class="f-page-additional-actions dn">
@@ -76,66 +76,71 @@
     <div class="column-12-12">
         <div class="column one">
         
-			<tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
+            <tags:boxContainer2 nameKey="zoneList" hideEnabled="true" showInitially="true">
                 <table class="zoneListTable compact-results-table">
-                    <tr>
-                        <th class="zoneName"><i:inline key=".zoneList.name" /></th>
-                        <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
-                        <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
-                    </tr>
-    				<cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
-    					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
-    				    	<cti:param name="zoneId" value="${zone.zoneId}"/>
-    				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-    				    </cti:url>
+                    <thead>
                         <tr>
-                            <td class="zoneName">
-                                <c:if test="${depth > 0}">
-                                    <c:forEach begin="0" end="${depth-1}">
-                                        <span class="leftIndent"></span>
-                                    </c:forEach>
-                                </c:if>
-                                <a href="${zoneDetailUrl}">${fn:escapeXml(zone.name)}</a>
-                            </td>
-                            <td class="zoneType">
-                                <c:choose>
-                                    <c:when test="${zone.zoneType == singlePhaseZone}">
-                                        <i:inline key="${zone.zoneType}"/>:&nbsp;<i:inline key="${zone.regulator.phase}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <i:inline key="${zone.zoneType}"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td class="lastOperation">
-                                <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR" phaseMap="${phaseMap}"/>
-                            </td>
+                            <th class="zoneName"><i:inline key=".zoneList.name" /></th>
+                            <th class="zoneType"><i:inline key="modules.capcontrol.zoneType"/></th>
+                            <th class="lastOperation"><i:inline key="modules.capcontrol.lastOperation"/></th>
                         </tr>
-    				</cti:navigableHierarchy>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
+                            <cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
+                                <cti:param name="zoneId" value="${zone.zoneId}"/>
+                                <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+                            </cti:url>
+                            <tr>
+                                <td class="zoneName">
+                                    <c:if test="${depth > 0}">
+                                        <c:forEach begin="0" end="${depth-1}">
+                                            <span class="leftIndent"></span>
+                                        </c:forEach>
+                                    </c:if>
+                                    <a href="${zoneDetailUrl}">${fn:escapeXml(zone.name)}</a>
+                                </td>
+                                <td class="zoneType">
+                                    <c:choose>
+                                        <c:when test="${zone.zoneType == singlePhaseZone}">
+                                            <i:inline key="${zone.zoneType}"/>:&nbsp;<i:inline key="${zone.regulator.phase}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i:inline key="${zone.zoneType}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="lastOperation">
+                                    <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR" phaseMap="${phaseMap}"/>
+                                </td>
+                            </tr>
+                        </cti:navigableHierarchy>
+                    </tbody>
                 </table>
 
-				<c:if test="${hasEditingRole}">
-					<div class="action-area">
-        				<c:if test="${unassignedBanksExist}">
-        					<span class="warning fl"><i:inline key=".zoneList.unassignedBanks"/></span>
-        				</c:if>
-						<cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
-					</div>
-				</c:if>
-				
-			</tags:boxContainer2>
+                <c:if test="${hasEditingRole}">
+                    <div class="action-area">
+                        <c:if test="${unassignedBanksExist}">
+                            <span class="warning fl"><i:inline key=".zoneList.unassignedBanks"/></span>
+                        </c:if>
+                        <cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
+                    </div>
+                </c:if>
+                
+            </tags:boxContainer2>
 
-			<tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
-					
-				<table class="compact-results-table">
-					<thead>
-						<tr>
-							<th><i:inline key=".busDetail.table.point"/></th>
-							<th><i:inline key=".busDetail.table.value"/></th>
-						</tr>
-					</thead>
-					<tr>
-						<td><i:inline key=".busDetail.table.state"/>:&nbsp;</td>
+            <tags:boxContainer2 nameKey="busDetail" hideEnabled="true" showInitially="true">
+                    
+                <table class="compact-results-table">
+                    <thead>
+                        <tr>
+                            <th><i:inline key=".busDetail.table.point"/></th>
+                            <th><i:inline key=".busDetail.table.value"/></th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td><i:inline key=".busDetail.table.state"/>:&nbsp;</td>
                         <%-- State --%>
                         <td class="wsnw">
                             <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);" class="subtle-link"></c:if>
@@ -148,34 +153,34 @@
                             <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_box_${subBusId}')"
                                 initialize="true" value="SUBBUS/${subBusId}/STATE"/>
                         </td>
-					</tr>
-					<tr>
-						<td><i:inline key=".busDetail.table.volts"/>:&nbsp;</td>
-						<td>
-						    <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
-						    <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
-						    	<cti:icon icon="icon-bullet-red"/>
-						    </cti:classUpdater>
-						</td>
-					</tr>
-					<tr>
-						<td><i:inline key=".busDetail.table.kvar"/>:&nbsp;</td>
-						<td>
-							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
-							<cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
-								<cti:icon icon="icon-bullet-red"/>
-							</cti:classUpdater>
-						</td>
-					</tr>
-					<tr>
-						<td><i:inline key=".busDetail.table.kw"/>:&nbsp;</td>
-						<td>
-							<cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
-                        	<cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
-                        		<cti:icon icon="icon-bullet-red"/>
-                        	</cti:classUpdater>
+                    </tr>
+                    <tr>
+                        <td><i:inline key=".busDetail.table.volts"/>:&nbsp;</td>
+                        <td>
+                            <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
+                            <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
+                                <cti:icon icon="icon-bullet-red"/>
+                            </cti:classUpdater>
                         </td>
-					</tr>
+                    </tr>
+                    <tr>
+                        <td><i:inline key=".busDetail.table.kvar"/>:&nbsp;</td>
+                        <td>
+                            <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
+                            <cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
+                                <cti:icon icon="icon-bullet-red"/>
+                            </cti:classUpdater>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><i:inline key=".busDetail.table.kw"/>:&nbsp;</td>
+                        <td>
+                            <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
+                            <cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
+                                <cti:icon icon="icon-bullet-red"/>
+                            </cti:classUpdater>
+                        </td>
+                    </tr>
                     <c:forEach items="${allSubBusPoints}" var="point">
                         <tr>
                             <td>${point.pointName}:&nbsp;</td>
@@ -186,13 +191,13 @@
                             </td>
                         </tr>
                     </c:forEach>
-				</table>
-	                <div class="action-area">
+                </table>
+                    <div class="action-area">
                     <a href="javascript:void(0);" class="f-show-strategy-details">Strategy Details</a>
                 </div>
-			</tags:boxContainer2>
-			
-			<cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
+            </tags:boxContainer2>
+            
+            <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
             <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".f-show-strategy-details">
                 <table class="compact-results-table" >
                     <thead>
@@ -230,37 +235,37 @@
         
         <div class="column two nogutter">
         
-			<cti:tabbedContentSelector>
-				<cti:msg2 var="tabName" key=".voltageProfile.title" />
-				<cti:tabbedContentSelectorContent selectorName="${tabName}">
-					<c:set var="chartId" value="sub_${subBusId}_chart" />
-					<cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart">
-						<cti:param name="subBusId" value="${subBusId}" />
-					</cti:url>
-					<flot:ivvcChart chartId="${chartId}"
-						jsonDataAndOptions="${graphAsJSON}"
-						title="${graphSettings.graphTitle}" />
+            <cti:tabbedContentSelector>
+                <cti:msg2 var="tabName" key=".voltageProfile.title" />
+                <cti:tabbedContentSelectorContent selectorName="${tabName}">
+                    <c:set var="chartId" value="sub_${subBusId}_chart" />
+                    <cti:url var="chartJsonDataUrl" value="/capcontrol/ivvc/bus/chart">
+                        <cti:param name="subBusId" value="${subBusId}" />
+                    </cti:url>
+                    <flot:ivvcChart chartId="${chartId}"
+                        jsonDataAndOptions="${graphAsJSON}"
+                        title="${graphSettings.graphTitle}" />
 
-					<cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
-				</cti:tabbedContentSelectorContent>
-				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
-				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
-					<div class="scroll-large">
-						<c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
-							<c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
-	    					<cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
-	    				    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
-	    				    </cti:url>
-							<cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
-						    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
-						    </cti:url>
-							<%@ include file="voltagePoints.jspf" %>
-							<br>
-						</c:forEach>
-					</div>
-				</cti:tabbedContentSelectorContent>
-			</cti:tabbedContentSelector>
+                </cti:tabbedContentSelectorContent>
+                <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
+                <cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
+                    <div class="scroll-large">
+                        <c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
+                            <c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
+                            <cti:url var="zoneDetailUrl" value="/capcontrol/ivvc/zone/detail">
+                                <cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
+                            </cti:url>
+                            <cti:url var="zoneVoltagePointsUrl" value="/capcontrol/ivvc/zone/voltagePoints">
+                                <cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
+                            </cti:url>
+                            <%@ include file="voltagePoints.jspf" %>
+                            <br>
+                        </c:forEach>
+                    </div>
+                </cti:tabbedContentSelectorContent>
+            </cti:tabbedContentSelector>
             
             <tags:boxContainer2 nameKey="ivvcAnalysisContainer">
                 <div id="ivvcAnalysisMsg" class="wsn">

@@ -217,7 +217,7 @@
                         <tags:dynamicTable items="${zoneDto.bankAssignments}" nameKey="dynamicTable"
                             id="bankTable" addButtonClass="bankAddItem" noBlockOnAdd="true">
                         <div class="zoneWizardTableScrollArea">
-                        <table class="compactResultsTable">
+                        <table class="compact-results-table">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".table.bank.name"/></th>
@@ -277,7 +277,7 @@
                         id="pointTable" addItemParameters="${addItemParameters}" addButtonClass="pointAddItem"  
                         noBlockOnAdd="true">
                     <div class="zoneWizardTableScrollArea">
-                    <table class="compactResultsTable">
+                    <table class="compact-results-table">
                         <thead>
                             <tr>
                                 <th><i:inline key=".table.point.name"/></th>

@@ -1,16 +1,12 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-
 <%@ tag body-content="empty" description="Use inside a table inside :dynamicTable." %>
+
 <%@ attribute name="tableId" required="true" %>
 <%@ attribute name="isFirst" type="java.lang.Boolean" required="true" %>
 <%@ attribute name="isLast" type="java.lang.Boolean" required="true" %>
 <%@ attribute name="skipMoveButtons" type="java.lang.Boolean" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <cti:includeScript link="/JavaScript/dynamicTable.js"/>
 
@@ -19,11 +15,11 @@
 </c:if>
 
 <td class="actions">
+    <cti:button renderMode="buttonImage" nameKey="remove" classes="removeBtn fr" icon="icon-cross"/>
     <c:if test="${!skipMoveButtons}">
-        <cti:button renderMode="image" nameKey="up.disabled" disabled="true" classes="disabledMoveUpBtn" icon="icon-bullet-go-up"/>
-        <cti:button renderMode="image" nameKey="up" classes="moveUpBtn" icon="icon-bullet-go-up"/> 
-        <cti:button renderMode="image" nameKey="down.disabled" disabled="true" classes="disabledMoveDownBtn" icon="icon-bullet-go-down"/>
-        <cti:button renderMode="image" nameKey="down" classes="moveDownBtn" icon="icon-bullet-go-down"/>
+        <cti:button renderMode="buttonImage" nameKey="up.disabled" disabled="true" classes="disabledMoveUpBtn right fr" icon="icon-bullet-go-up"/>
+        <cti:button renderMode="buttonImage" nameKey="up" classes="moveUpBtn right fr" icon="icon-bullet-go-up"/> 
+        <cti:button renderMode="buttonImage" nameKey="down.disabled" disabled="true" classes="disabledMoveDownBtn left fr" icon="icon-bullet-go-down"/>
+        <cti:button renderMode="buttonImage" nameKey="down" classes="moveDownBtn left fr" icon="icon-bullet-go-down"/>
     </c:if>
-    <cti:button renderMode="image" nameKey="remove" classes="removeBtn" icon="icon-cross"/>
 </td>

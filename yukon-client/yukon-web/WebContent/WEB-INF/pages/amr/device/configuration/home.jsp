@@ -8,7 +8,7 @@
 <cti:standardPage title="Device Configuration Page" module="amr">
 <cti:standardMenu/>
 <cti:breadCrumbs>
-	<cti:crumbLink url="/dashboard" title="Operations Home"  />
+	<cti:crumbLink url="/dashboard" title="Home"  />
     &gt; Device Configuration Home
 </cti:breadCrumbs>
 

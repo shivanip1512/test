@@ -122,7 +122,9 @@
                 
                 <%-- enable/disable monitoring --%>
                 <c:if test="${outageMonitorId > 0}">
-                    <tags:nameValue2 nameKey=".label.outageMonitoring">
+                    <c:if test="${outageMonitor.enabled}"><c:set var="clazz" value="success"/></c:if>
+                    <c:if test="${!outageMonitor.enabled}"><c:set var="clazz" value="error"/></c:if>
+                    <tags:nameValue2 nameKey=".label.outageMonitoring" valueClass="${clazz}">
                         ${outageMonitor.evaluatorStatus.description}
                     </tags:nameValue2>
                 </c:if>

@@ -1,9 +1,7 @@
-<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
 
@@ -43,7 +41,7 @@ jQuery('#viewCommentsOption').click(function(event) {
 <cti:getProperty var="warnOnCommands" property='CONTROL_WARNING'/>
 
 <div id="menuPopupBoxContainer">
-	<input type="hidden" id="dialogTitle" value="${paoName}">
+	<input type="hidden" id="dialogTitle" value="${fn:escapeXml(paoName)}">
     <div class="notes stacked"><i:inline key=".capBankState.note"/></div>
    
     <ul class="capcontrolMenu detail simple-list">

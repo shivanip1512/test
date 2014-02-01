@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -63,7 +64,10 @@ public class MenuController {
         StreamableCapObject object = cache.getObject(id);
         model.addAttribute("paoId", object.getCcId());
         String paoName = object.getCcName();
-        model.addAttribute("paoName", paoName);
+        
+        // Need to escape this here AND in the jsp since jquery ui dialog call
+        // will unescape it. Double escaping solves this.
+        model.addAttribute("paoName", StringEscapeUtils.escapeXml(paoName));
         
         model.addAttribute("showChangeOpState", false);
         model.addAttribute("showComments", true);

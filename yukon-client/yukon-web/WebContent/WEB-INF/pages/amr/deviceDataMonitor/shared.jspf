@@ -9,20 +9,20 @@
 <c:set var="processors_section_class" value="f-processors_section"/>
 
 <dialog:inline okEvent="none" nameKey="settings.helpDialog" on=".f-open_settings_help" options="{width: 550}">
-	<tags:nameValueContainer2>
+    <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceGroup"><i:inline key=".deviceGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".deviceGroupCount"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".supportedDevices"><i:inline key=".supportedDevices.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".violationsGroup"><i:inline key=".violationsGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".violationsCount"><i:inline key=".violationsCount.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".monitoring"><i:inline key=".monitoring.help"/></tags:nameValue2>
-	</tags:nameValueContainer2>
+    </tags:nameValueContainer2>
 </dialog:inline>
 
 <dialog:inline okEvent="none" nameKey="processors.helpDialog" on=".f-open_processors_help" options="{width: 550}">
-	<h3><i:inline key=".processors.helpDialog.findingViolations.title"/></h3>
-	<p class="stacked"><i:inline key=".processors.helpDialog.findingViolations.body"/></p>
-	<h3><i:inline key=".processors.helpDialog.addingRemoving.title"/></h3>
+    <h3><i:inline key=".processors.helpDialog.findingViolations.title"/></h3>
+    <p class="stacked"><i:inline key=".processors.helpDialog.findingViolations.body"/></p>
+    <h3><i:inline key=".processors.helpDialog.addingRemoving.title"/></h3>
     <p><i:inline key=".processors.helpDialog.addingRemoving.body"/></p>
 </dialog:inline>
 
@@ -65,9 +65,9 @@
     </div>
 </c:set>
 <c:set var="supportedDevices">
-	<span class="f-supported_devices_count">
+    <span class="f-supported_devices_count">
         ${supportedDevicesInner}
-	</span>
+    </span>
 </c:set>
 <c:set var="supportedDevicesAreYouSure">
     <span class="f-supported_devices_count_check">
@@ -77,51 +77,51 @@
 
 <cti:displayForPageEditModes modes="VIEW,EDIT">
 <c:set var="violationsGroup">
-	<cti:url var="deviceGroupUrl" value="/group/editor/home">
-		<cti:param name="groupName">${violationsDeviceGroupPath}</cti:param>
-	</cti:url>
-	<a href="${deviceGroupUrl}">${fn:escapeXml(violationsDeviceGroupPath)}</a>
+    <cti:url var="deviceGroupUrl" value="/group/editor/home">
+        <cti:param name="groupName">${violationsDeviceGroupPath}</cti:param>
+    </cti:url>
+    <a href="${deviceGroupUrl}">${fn:escapeXml(violationsDeviceGroupPath)}</a>
 </c:set>
 
 <c:set var="violationReportLinks">
-	<cti:url value="/amr/reports/groupDevicesReport" var="htmlReportUrl">
-	    <cti:param name="groupName" value="${violationsDeviceGroupPath}" />
-	</cti:url>
-	(<a href="${htmlReportUrl}">
-	    <cti:msg key="yukon.web.modules.amr.fileFormatHtml" />
-	</a>
-	|<cti:simpleReportLinkFromNameTag
-	    definitionName="deviceGroupDefinition"
-	    viewType="csvView"
-	    deviceGroup="${violationsDeviceGroup}">
-	    <cti:msg key="yukon.web.modules.amr.fileFormatCsv" />
-	</cti:simpleReportLinkFromNameTag>
-	|<cti:simpleReportLinkFromNameTag
-	    definitionName="deviceGroupDefinition"
-	    viewType="pdfView"
-	    deviceGroup="${violationsDeviceGroup}">
-	    <cti:msg key="yukon.web.modules.amr.fileFormatPdf" />
-	</cti:simpleReportLinkFromNameTag>)
+    <cti:url value="/amr/reports/groupDevicesReport" var="htmlReportUrl">
+        <cti:param name="groupName" value="${violationsDeviceGroupPath}" />
+    </cti:url>
+    (<a href="${htmlReportUrl}">
+        <cti:msg key="yukon.web.modules.amr.fileFormatHtml" />
+    </a>
+    |<cti:simpleReportLinkFromNameTag
+        definitionName="deviceGroupDefinition"
+        viewType="csvView"
+        deviceGroup="${violationsDeviceGroup}">
+        <cti:msg key="yukon.web.modules.amr.fileFormatCsv" />
+    </cti:simpleReportLinkFromNameTag>
+    |<cti:simpleReportLinkFromNameTag
+        definitionName="deviceGroupDefinition"
+        viewType="pdfView"
+        deviceGroup="${violationsDeviceGroup}">
+        <cti:msg key="yukon.web.modules.amr.fileFormatPdf" />
+    </cti:simpleReportLinkFromNameTag>)
 </c:set>
 
 <span class="f-violation_report_links dn">&nbsp;${violationReportLinks}</span>
 
 <c:set var="violationsCount">
-	<c:choose>
-		<c:when test="${areViolationsBeingCalculated}">
-			<span>
+    <c:choose>
+        <c:when test="${areViolationsBeingCalculated}">
+            <span>
                 <i class="icon icon-spinner f-violations_loading">&nbsp;</i><i:inline key=".calculating"/>
-			</span>
-		</c:when>
-		<c:when test="${not empty violationsCount && violationsCount > 0}">
+            </span>
+        </c:when>
+        <c:when test="${not empty violationsCount && violationsCount > 0}">
             ${violationsCount}
             ${violationReportLinks}
         </c:when>
         <c:when test="${!monitor.enabled}">
             <i:inline key="yukon.web.defaults.na"/>
         </c:when>
-		<c:otherwise>0</c:otherwise>
-	</c:choose>
+        <c:otherwise>0</c:otherwise>
+    </c:choose>
 </c:set>
 
 <c:set var="monitoringEnabled">

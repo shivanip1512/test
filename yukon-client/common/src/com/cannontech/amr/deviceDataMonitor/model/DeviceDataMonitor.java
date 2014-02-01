@@ -8,13 +8,13 @@ import java.util.Set;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
 
 public class DeviceDataMonitor implements PointMonitor, Serializable {
+    
     private static final long serialVersionUID = 1L;
 
     private Integer id;
@@ -23,12 +23,13 @@ public class DeviceDataMonitor implements PointMonitor, Serializable {
     private boolean enabled = true;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
 
-    public DeviceDataMonitor() {
-        /* for use by Spring */
-    }
+    public DeviceDataMonitor() {/* for use by Spring */}
 
-    public DeviceDataMonitor(Integer id, String name, String groupName, boolean enabled,
-                             List<DeviceDataMonitorProcessor> processors) {
+    public DeviceDataMonitor(Integer id, 
+                                String name, 
+                                String groupName, 
+                                boolean enabled,
+                                List<DeviceDataMonitorProcessor> processors) {
         this.id = id;
         this.groupName = groupName;
         this.name = name;

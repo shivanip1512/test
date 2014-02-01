@@ -9,7 +9,7 @@
     <cti:standardMenu menuSelection="meters" />
 
     <cti:breadCrumbs>
-        <cti:crumbLink url="/dashboard" title="Operations Home" />
+        <cti:crumbLink url="/dashboard" title="Home" />
         <cti:crumbLink url="/amr/bulkimporter/home" title="Bulk Importer" />
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
