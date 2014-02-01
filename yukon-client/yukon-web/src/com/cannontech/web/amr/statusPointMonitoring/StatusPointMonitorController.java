@@ -18,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,23 +55,24 @@ import com.google.common.collect.Lists;
 @RequestMapping("/statusPointMonitoring/*")
 @CheckRoleProperty(YukonRoleProperty.STATUS_POINT_MONITORING)
 public class StatusPointMonitorController {
-	
-    private final static String baseKey = "yukon.web.modules.amr.statusPointMonitorEditor";
-	private StatusPointMonitorDao statusPointMonitorDao;
-	private StatusPointMonitorService statusPointMonitorService;
-	private AttributeService attributeService;
-	private StateDao stateDao;
-	private OutageEventLogService outageEventLogService;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-	private Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
+    private final static String baseKey = "yukon.web.modules.amr.statusPointMonitorEditor";
+    
+    @Autowired private StatusPointMonitorDao statusPointMonitorDao;
+    @Autowired private StatusPointMonitorService statusPointMonitorService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private StateDao stateDao;
+    @Autowired private OutageEventLogService outageEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    private Validator createValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
         @Override
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "statusPointMonitorName", baseKey + ".empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "statusPointMonitorName", statusPointMonitor.getStatusPointMonitorName(), 50);
         }
     };
-	
+    
     private Validator updateValidator = new SimpleValidator<StatusPointMonitor>(StatusPointMonitor.class) {
         @Override
         public void doValidation(StatusPointMonitor statusPointMonitor, Errors errors) {
@@ -85,14 +85,14 @@ public class StatusPointMonitorController {
     public String viewPage(int statusPointMonitorId, 
                           ModelMap model, 
                           YukonUserContext userContext,
-                          FlashScope flashScope) throws ServletRequestBindingException {
+                          FlashScope flashScope) {
         
         setupViewPageModelMap(statusPointMonitorId, model, userContext, flashScope);
         return "statusPointMonitoring/view.jsp";
     }
     
     @RequestMapping("creationPage")
-    public String creationPage(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+    public String creationPage(ModelMap modelMap, YukonUserContext userContext) {
         
         StatusPointMonitor statusPointMonitor = new StatusPointMonitor();
         setupCreationPageModelMap(statusPointMonitor, modelMap);
@@ -101,7 +101,7 @@ public class StatusPointMonitorController {
     }
     
     @RequestMapping("editPage")
-    public String editPage(Integer statusPointMonitorId, ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) throws ServletRequestBindingException {
+    public String editPage(Integer statusPointMonitorId, ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope) {
         
         StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
         setupEditPageModelMap(statusPointMonitor, modelMap, userContext);
@@ -193,28 +193,29 @@ public class StatusPointMonitorController {
                                                         statusPointMonitor.getEvaluatorStatus().getDescription(), 
                                                         userContext.getYukonUser());
         
-        return "redirect:/meter/start";
+        modelMap.addAttribute("statusPointMonitorId", statusPointMonitor.getStatusPointMonitorId());
+        return "redirect:viewPage";
     }
     
 
-	@RequestMapping("confirmDelete")
+    @RequestMapping("confirmDelete")
     public String confirmDelete(StatusPointMonitor statusPointMonitor,
                                 ModelMap model,
                                 YukonUserContext userContext) {
-	    
+        
         model.addAttribute("statusPointMonitor", statusPointMonitor);
         return "statusPointMonitoring/confirmDelete.jsp";
     }
-	
-	@RequestMapping("delete")
-	public String delete(Integer statusPointMonitorId,
+    
+    @RequestMapping("delete")
+    public String delete(Integer statusPointMonitorId,
                          ModelMap modelMap,
                          FlashScope flashScope,
-                         YukonUserContext userContext) throws ServletRequestBindingException {
+                         YukonUserContext userContext) {
 
-	    StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
-	    
-	    statusPointMonitorService.delete(statusPointMonitorId);
+        StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
+        
+        statusPointMonitorService.delete(statusPointMonitorId);
         
         MessageSourceResolvable deleteMessage = new YukonMessageSourceResolvable("yukon.web.modules.amr.statusPointMonitor.deleted", statusPointMonitor.getStatusPointMonitorName());
         flashScope.setConfirm(deleteMessage);
@@ -228,19 +229,19 @@ public class StatusPointMonitorController {
                                                         userContext.getYukonUser());
         
         return "redirect:/meter/start";
-	}
-	
-	@RequestMapping("toggleEnabled")
-	public String toggleEnabled(int statusPointMonitorId,
-	                            ModelMap modelMap,
-	                            YukonUserContext userContext) throws ServletRequestBindingException {
-	    
-	    StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
-	    MonitorEvaluatorStatus status = statusPointMonitor.getEvaluatorStatus();
-	    
+    }
+    
+    @RequestMapping("toggleEnabled")
+    public String toggleEnabled(int statusPointMonitorId,
+                                ModelMap modelMap,
+                                YukonUserContext userContext) {
+        
+        StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
+        MonitorEvaluatorStatus status = statusPointMonitor.getEvaluatorStatus();
+        
         try {
             status = statusPointMonitorService.toggleEnabled(statusPointMonitorId);
-	        modelMap.addAttribute("statusPointMonitorId", statusPointMonitorId);
+            modelMap.addAttribute("statusPointMonitorId", statusPointMonitorId);
         } catch (NotFoundException e) {
             return "redirect:/meter/start";
         }
@@ -250,9 +251,9 @@ public class StatusPointMonitorController {
                                                               userContext.getYukonUser());
         
         return "redirect:editPage";
-	}
-	
-	private void setupViewPageModelMap(int statusPointMonitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
+    }
+    
+    private void setupViewPageModelMap(int statusPointMonitorId, ModelMap model, YukonUserContext userContext, FlashScope flashScope) {
         
         StatusPointMonitor statusPointMonitor = statusPointMonitorDao.getStatusPointMonitorById(statusPointMonitorId);
         model.addAttribute("statusPointMonitor", statusPointMonitor);
@@ -321,10 +322,10 @@ public class StatusPointMonitorController {
         eventTypes.add(OutageActionType.Restoration.name());
         modelMap.addAttribute("eventTypes", eventTypes);
     }
-	
-	@InitBinder
-	public void setupBinder(WebDataBinder binder) {
-	    binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
+    
+    @InitBinder
+    public void setupBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Attribute.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String attr) throws IllegalArgumentException {
                 Attribute attribute = attributeService.resolveAttributeName(attr);
@@ -348,35 +349,6 @@ public class StatusPointMonitorController {
                 return String.valueOf(stateGroup.getStateGroupName());
             }
         });
-	}
-	
-	@Autowired
-	public void setStatusPointMonitorDao(StatusPointMonitorDao statusPointMonitorDao) {
-		this.statusPointMonitorDao = statusPointMonitorDao;
-	}
-	
-	@Autowired
-	public void setStatusPointMonitorService(StatusPointMonitorService statusPointMonitorService) {
-		this.statusPointMonitorService = statusPointMonitorService;
-	}
-	
-	@Autowired
-	public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
     }
-	
-	@Autowired
-	public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-	
-	@Autowired
-	public void setOutageEventLogService(OutageEventLogService outageEventLogService) {
-        this.outageEventLogService = outageEventLogService;
-    }
-	
-	@Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
+    
 }

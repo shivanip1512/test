@@ -41,7 +41,6 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.prevState">Previous State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.nextState">Next State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.action">Action</entry>
-    <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.delete">Delete</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.state.dontCare">Don't Care</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.state.difference">Difference</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitorEditor.stateActionsTable.helpText"><![CDATA[

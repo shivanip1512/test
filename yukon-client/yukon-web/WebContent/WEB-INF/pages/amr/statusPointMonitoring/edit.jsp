@@ -1,33 +1,47 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="statusPointMonitorEditor">
 
-    <cti:includeScript link="/JavaScript/statusPointMonitorActions.js"/>
+    <cti:includeScript link="/JavaScript/yukon/yukon.status.point.monitor.js"/>
     
     <cti:msg2 var="deviceGroupTitle" key=".popupInfo.deviceGroup.title"/>
     
-    <span id="templateHtml" style="display: none">
-        <select name="states">
-            <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
-                <option value="${state.liteID}">${state.stateText}</option>
-            </c:forEach>
-            <option value="${dontCare}"><i:inline key=".state.dontCare"/></option>
-            <option value="${difference}"><i:inline key=".state.difference"/></option>
-        </select>
-        <select name="eventTypes">
-            <c:forEach items="${eventTypes}" var="eventType">
-                <option value="${eventType}"/>${eventType}</option>
-            </c:forEach>
-        </select>
-        <cti:icon nameKey="deleteAction" icon="icon-cross" href="#"/>
-    </span>
+    <table class="dn">
+        <tr class="f-template-row" data-row="0">
+            <td>
+                <select name="processors[?].prevState" class="f-row-prev-state">
+                    <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
+                        <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
+                    </c:forEach>
+                    <option value="${dontCare}"><cti:msg2 key=".state.dontCare"/></option>
+                    <option value="${difference}"><cti:msg2 key=".state.difference"/></option>
+                </select>
+            </td>
+            <td>
+                <select name="processors[?].nextState" class="f-row-next-state">
+                    <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
+                        <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
+                    </c:forEach>
+                    <option value="${dontCare}"><cti:msg2 key=".state.dontCare"/></option>
+                    <option value="${difference}"><cti:msg2 key=".state.difference"/></option>
+                </select>
+            </td>
+            <td>
+                <select name="processors[?].actionType" class="f-row-action-type">
+                    <c:forEach items="${eventTypes}" var="eventType">
+                        <option value="${eventType}">${eventType}</option>
+                    </c:forEach>
+                </select>
+                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="f-remove fr"/>
+            </td>
+        </tr>
+    </table>
     
     <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
     <form id="deleteStatusPointMonitor" action="${submitUrl}" method="post">
@@ -90,7 +104,9 @@
                 </tags:nameValue2>
                 
                 <%-- enable/disable monitoring --%>
-                <tags:nameValue2 nameKey=".statusPointMonitoring">
+                <c:if test="${statusPointMonitor.enabled}"><c:set var="clazz" value="success"/></c:if>
+                <c:if test="${!statusPointMonitor.enabled}"><c:set var="clazz" value="error"/></c:if>
+                <tags:nameValue2 nameKey=".statusPointMonitoring" valueClass="${clazz}">
                     <i:inline key="${statusPointMonitor.evaluatorStatus}"/>
                 </tags:nameValue2>
                 
@@ -98,22 +114,50 @@
         </tags:sectionContainer2>
         
         <tags:sectionContainer2 id="actionsBox" nameKey="stateActionsTable">
-            <div class="scroll-large stacked">
-                <table id="actionsTable" class="compact-results-table dashed">
-                    <thead>
+            <table id="processors-table" class="compact-results-table dashed">
+                <thead>
                     <tr>
                         <th><i:inline key=".stateActionsTable.prevState"/></th>
                         <th><i:inline key=".stateActionsTable.nextState"/></th>
                         <th><i:inline key=".stateActionsTable.action"/></th>
-                        <th><i:inline key=".stateActionsTable.delete"/></th>
                     </tr>
-                    </thead>
-                    <tfoot></tfoot>
-                    <tbody></tbody>
-                </table>
-            </div>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="row" items="${statusPointMonitor.processors}" varStatus="status">
+                        <tr data-row="${status.index}">
+                            <td>
+                                <form:select path="processors[${status.index}].prevState" cssClass="f-row-prev-state">
+                                    <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
+                                        <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
+                                    </c:forEach>
+                                    <form:option value="${dontCare}"><cti:msg2 key=".state.dontCare"/></form:option>
+                                    <form:option value="${difference}"><cti:msg2 key=".state.difference"/></form:option>
+                                </form:select>
+                            </td>
+                            <td>
+                                <form:select path="processors[${status.index}].nextState" cssClass="f-row-next-state">
+                                    <c:forEach items="${statusPointMonitor.stateGroup.statesList}" var="state">
+                                        <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
+                                    </c:forEach>
+                                    <form:option value="${dontCare}"><cti:msg2 key=".state.dontCare"/></form:option>
+                                    <form:option value="${difference}"><cti:msg2 key=".state.difference"/></form:option>
+                                </form:select>
+                            </td>
+                            <td>
+                                <form:select path="processors[${status.index}].actionType" cssClass="f-row-action-type">
+                                    <c:forEach items="${eventTypes}" var="eventType">
+                                        <form:option value="${eventType}">${eventType}</form:option>
+                                    </c:forEach>
+                                </form:select>
+                                <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="f-remove fr"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
             <div class="action-area">
-                <cti:button nameKey="addAction" onclick="Yukon.StatusPointMonitor.addAction()" icon="icon-add"/>
+                <cti:button nameKey="addAction" icon="icon-add" classes="f-add"/>
             </div>
         </tags:sectionContainer2>
         
@@ -135,8 +179,4 @@
         </div>
     </form:form>
     
-    <script type="text/javascript">
-        Yukon.StatusPointMonitor.initWithProcessors(${cti:jsonString(statusPointMonitor.processors)});
-    </script>
-        
 </cti:standardPage>

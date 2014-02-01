@@ -12,48 +12,48 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 
 public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointMonitor> {
 
-	private Integer statusPointMonitorId;
-	private String statusPointMonitorName;
-	private String groupName;
-	private Attribute attribute;
-	private LiteStateGroup stateGroup;
-	private MonitorEvaluatorStatus evaluatorStatus;
-	private List<StatusPointMonitorProcessor> processors = LazyList.ofInstance(StatusPointMonitorProcessor.class);
-	
-	public StatusPointMonitor() {
-	    setGroupName(DeviceGroupService.ROOT);
+    private Integer statusPointMonitorId;
+    private String statusPointMonitorName;
+    private String groupName;
+    private Attribute attribute;
+    private LiteStateGroup stateGroup;
+    private MonitorEvaluatorStatus evaluatorStatus;
+    private List<StatusPointMonitorProcessor> processors = LazyList.ofInstance(StatusPointMonitorProcessor.class);
+    
+    public StatusPointMonitor() {
+        setGroupName(DeviceGroupService.ROOT);
         setAttribute(BuiltInAttribute.FAULT_STATUS);
         setEvaluatorStatus(MonitorEvaluatorStatus.ENABLED);
-	}
-	
-	public Integer getStatusPointMonitorId() {
-		return statusPointMonitorId;
-	}
-	
-	public void setStatusPointMonitorId(Integer statusPointMonitorId) {
-		this.statusPointMonitorId = statusPointMonitorId;
-	}
-	
-	public String getStatusPointMonitorName() {
-		return statusPointMonitorName;
-	}
-	
-	public void setStatusPointMonitorName(String name) {
-		this.statusPointMonitorName = name;
-	}
-	
-	public String getGroupName() {
-		return groupName;
-	}
-	
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
-	
-	public void setAttribute(Attribute attribute) {
+    }
+    
+    public Integer getStatusPointMonitorId() {
+        return statusPointMonitorId;
+    }
+    
+    public void setStatusPointMonitorId(Integer statusPointMonitorId) {
+        this.statusPointMonitorId = statusPointMonitorId;
+    }
+    
+    public String getStatusPointMonitorName() {
+        return statusPointMonitorName;
+    }
+    
+    public void setStatusPointMonitorName(String name) {
+        this.statusPointMonitorName = name;
+    }
+    
+    public String getGroupName() {
+        return groupName;
+    }
+    
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+    
+    public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
-	
+    
     public Attribute getAttribute() {
         return attribute;
     }
@@ -67,19 +67,23 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     }
     
     public MonitorEvaluatorStatus getEvaluatorStatus() {
-		return evaluatorStatus;
-	}
+        return evaluatorStatus;
+    }
     
-	public void setEvaluatorStatus(MonitorEvaluatorStatus evaluatorStatus) {
-		this.evaluatorStatus = evaluatorStatus;
-	}
-	
-	public void setProcessors(List<StatusPointMonitorProcessor> processors) {
+    public void setEvaluatorStatus(MonitorEvaluatorStatus evaluatorStatus) {
+        this.evaluatorStatus = evaluatorStatus;
+    }
+    
+    public void setProcessors(List<StatusPointMonitorProcessor> processors) {
         this.processors = processors;
     }
-	
+    
     public List<StatusPointMonitorProcessor> getProcessors() {
         return processors;
+    }
+    
+    public boolean isEnabled() {
+        return evaluatorStatus == MonitorEvaluatorStatus.ENABLED;
     }
     
     @Override
@@ -92,7 +96,8 @@ public class StatusPointMonitor implements PointMonitor, Comparable<StatusPointM
     }
     
     @Override
-	public int compareTo(StatusPointMonitor o) {
-		return this.getStatusPointMonitorName().compareToIgnoreCase(o.getStatusPointMonitorName());
-	}
+    public int compareTo(StatusPointMonitor o) {
+        return this.getStatusPointMonitorName().compareToIgnoreCase(o.getStatusPointMonitorName());
+    }
+    
 }
