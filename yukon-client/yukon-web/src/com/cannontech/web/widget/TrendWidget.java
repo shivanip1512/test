@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -123,9 +122,9 @@ public class TrendWidget extends WidgetControllerBase {
             String stopDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
 
             if (startDateParam != null) {
-            	try {
-            		startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
-            	} catch(ParseException e) {}
+                try {
+                    startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                } catch(ParseException e) {}
             }
             if (stopDateParam != null) {
                 try {
@@ -169,7 +168,6 @@ public class TrendWidget extends WidgetControllerBase {
         String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
 
         // SET MAV
-        mav.addObject("keepSettingsOpen", chartPeriod == ChartPeriod.NOPERIOD);
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
@@ -179,27 +177,27 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("graphType", graphType);
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		if (chartPeriod != ChartPeriod.NOPERIOD) {
-        	MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
-        	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
-        	MessageSourceResolvable attributeResolvable = attribute.getMessage();
-        	
-        	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.hasPeriod", 
-        			accessor.getMessage(chartPeriodResolvable),
-        			accessor.getMessage(converterTypeResolvable),
-        			accessor.getMessage(attributeResolvable));
-        	
-			mav.addObject("title", title);
+        if (chartPeriod != ChartPeriod.NOPERIOD) {
+            MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
+            MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+            MessageSourceResolvable attributeResolvable = attribute.getMessage();
+            
+            String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.hasPeriod", 
+                    accessor.getMessage(chartPeriodResolvable),
+                    accessor.getMessage(converterTypeResolvable),
+                    accessor.getMessage(attributeResolvable));
+            
+            mav.addObject("title", title);
         } else {
-        	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
-        	MessageSourceResolvable attributeResolvable = attribute.getMessage();
-        	
-        	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
-        			accessor.getMessage(converterTypeResolvable),
-        			accessor.getMessage(attributeResolvable),
-        			startDateStr,
-        			stopDateStr);
-        	
+            MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+            MessageSourceResolvable attributeResolvable = attribute.getMessage();
+            
+            String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
+                    accessor.getMessage(converterTypeResolvable),
+                    accessor.getMessage(attributeResolvable),
+                    startDateStr,
+                    stopDateStr);
+            
             mav.addObject("title", title);
         }
         
@@ -234,6 +232,6 @@ public class TrendWidget extends WidgetControllerBase {
     
     @Required
     public void setDefaultAttribute(BuiltInAttribute defaultAttribute) {
-		this.defaultAttribute = defaultAttribute;
-	}
+        this.defaultAttribute = defaultAttribute;
+    }
 }

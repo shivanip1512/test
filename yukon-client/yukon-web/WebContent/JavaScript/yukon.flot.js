@@ -291,7 +291,8 @@ Yukon.Flot = (function () {
                         show: false
                     },
                     lines: { 
-                        show: true
+                        show: true,
+                        fill: true
                     },
                     points: { 
                         show: true

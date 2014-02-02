@@ -7,20 +7,13 @@
 
 <script type="text/javascript"> 
 jQuery(function () {
-    jQuery(".trend-settings-anchor").click(function(e) {
-        jQuery(".trend-settings").toggle();
-        e.stopPropagation();
-        return true;
-    });
-
     jQuery("#trendWidget").find(".icon-help").click(function() {
         jQuery("#trendWidgetWhatsThisText")
             .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
     });
-
-        // init for a specific DOM element and its children
-        Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
-    });
+    // init for a specific DOM element and its children
+    Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
+});
 </script>
 
 <c:choose>
@@ -35,8 +28,7 @@ jQuery(function () {
             graphType="${graphType}"
             ymin="0"/>
 
-        <div class="fr"><a href="javascript:void(0);" class="trend-settings-anchor"><i class="icon icon-cog"></i></a></div>
-        <table class="compact-results-table trend-settings ${keepSettingsOpen ? '' : 'dn'}">
+        <table class="compact-results-table trend-settings">
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>
@@ -90,12 +82,9 @@ jQuery(function () {
             
                 <c:when test="${period == 'NOPERIOD'}">
                     <tr id="optionalDateFields" name="optionalDateFields">
-                        <td>&nbsp;</td>
-                        <td>
-                            <div class="fl">
-                                <dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}"/>
-                            </div>
-                            <tags:widgetActionRefreshImage nameKey="reloadUsingCustomDates" method="render" icon="icon-arrow-refresh"/>
+                        <td colspan="2">
+                            <tags:widgetActionRefresh nameKey="reloadUsingCustomDates" method="render" icon="icon-arrow-refresh" renderMode="buttonImage" classes="fr"/>
+                            <div class="fr"><dt:dateRange startName="startDateParam" startValue="${startDate}" endName="stopDateParam" endValue="${stopDate}"/></div>
                         </td>
                     </tr>
                 </c:when>
