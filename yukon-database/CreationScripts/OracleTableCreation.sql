@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/13/2014 2:42:15 PM                         */
+/* Created on:     2/3/2014 12:41:10 PM                         */
 /*==============================================================*/
 
 
@@ -8112,8 +8112,8 @@ create table UserPage  (
    UserPageId           NUMBER                          not null,
    UserId               NUMBER                          not null,
    PagePath             VARCHAR2(2048)                  not null,
-   Module               VARCHAR2(32)                    not null,
-   PageName             VARCHAR2(32)                    not null,
+   Module               VARCHAR2(64)                    not null,
+   PageName             VARCHAR2(255)                   not null,
    Favorite             CHAR(1)                         not null,
    LastAccess           DATE,
    constraint PK_UserPage primary key (UserPageId)
