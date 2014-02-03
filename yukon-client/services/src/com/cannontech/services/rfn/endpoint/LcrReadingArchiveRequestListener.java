@@ -171,6 +171,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             RfnLcrReadingArchiveRequest readRequest = (RfnLcrReadingArchiveRequest) archiveRequest;
             RfnLcrReadingArchiveResponse response = new RfnLcrReadingArchiveResponse();
             response.setDataPointId(readRequest.getDataPointId());
+            response.setType(readRequest.getType());
             return response;
         } else {
             RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
