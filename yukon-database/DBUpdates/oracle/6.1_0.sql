@@ -105,6 +105,14 @@ DELETE FROM YukonGroupRole WHERE RolePropertyID = -10821;
 DELETE FROM YukonRoleProperty WHERE RolePropertyID = -10821;
 /* End YUK-12791 */
 
+/* Start YUK-12951 */
+ALTER TABLE UserPage
+MODIFY Module VARCHAR2(64);
+
+ALTER TABLE UserPage
+MODIFY PageName VARCHAR2(255);
+/* End YUK-12951 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
