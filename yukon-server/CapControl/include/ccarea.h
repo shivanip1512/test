@@ -42,7 +42,7 @@ public:
     CtiCCArea& setAreaUpdatedFlag(bool flag);
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
-    CtiCCArea& checkAndUpdateChildVoltReductionFlags();
+    void checkAndUpdateChildVoltReductionFlags();
 
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);

@@ -291,30 +291,24 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
     }
 }
 
-CtiCCArea& CtiCCArea::checkAndUpdateChildVoltReductionFlags()
+
+void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    CtiCCSubstationPtr currentStation = NULL;
+    bool isChildSubstationReducing = false;
 
-    int numberOfStationsVoltReducting = 0;
-
-    for each (long paoId in getSubstationIds())
+    for each (const long paoId in getSubstationIds())
     {
-        currentStation = store->findSubstationByPAObjectID(paoId);
+        CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(paoId);
 
-        if (currentStation->getVoltReductionFlag())
+        if (currentStation->getVoltReductionFlag() || currentStation->getChildVoltReductionFlag())
         {
-            setChildVoltReductionFlag(true);
-            numberOfStationsVoltReducting += 1;
+            isChildSubstationReducing = true;
         }
     }
-    if (numberOfStationsVoltReducting == 0)
-    {
-        setChildVoltReductionFlag(false);
-    }
 
-    return *this;
+    setChildVoltReductionFlag( isChildSubstationReducing );
 }
 
