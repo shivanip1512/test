@@ -27,7 +27,11 @@ Yukon.Themes = (function () {
     themeMod = {
             
         init: function(cfg) {
-            
+            var pmo = jQuery('#palette-map').data('paletteMap'),
+                pmoObj,
+                tcols,
+                colors;
+
             _chooseText = cfg.chooseText;
             _okText = cfg.okText;
             _cancelText = cfg.cancelText;
@@ -85,19 +89,30 @@ Yukon.Themes = (function () {
                 popup.load(href, function() {
                     var buttons = [],
                         okButton = {'text' : _okText, 'click': function() { popup.trigger('yukon.image.selected'); }, 'class': 'primary action'},
-                        cancelButton = {'text' : _cancelText, 'click' : function() { jQuery(this).dialog('close'); }};
+                        cancelButton = {'text' : _cancelText, 'click' : function() { jQuery(this).dialog('close'); }},
+                        titleBar,
+                        imagePicker,
+                        selected,
+                        first;
 
                     themeMod.initFileUpload(jQuery(link).closest('a').data('imageCategory'));
                     buttons.push(cancelButton);
                     buttons.push(okButton);
                     popup.dialog({ autoOpen: false,
-                                   height: 400, 
-                                   width:600,
+                                   height: 500, 
+                                   width: 700,
                                    modal : false,
                                    buttons : buttons });
                     popup.dialog('open');
+                    titleBar = jQuery(popup).prev();
+                    // TODO: will break if only one image in the list
+                    // move selected image to beginning of list
+                    imagePicker = titleBar.parent().find('.image-picker');
+                    selected = imagePicker.find('.selected').parent().remove();
+                    first = jQuery(imagePicker.find('.image')[0]).parent();
+                    selected.insertBefore(first);
                 });
-                
+
                 return false;
             });
 
@@ -107,10 +122,10 @@ Yukon.Themes = (function () {
             });
             
             jQuery(document).on('click', '.image-picker .image', function(e) {
-                e.preventDefault();
                 var selected = jQuery(e.currentTarget),
                     imagePicker = selected.closest('.image-picker');
-                
+
+                e.preventDefault();
                 imagePicker.find('.image').removeClass('selected');
                 selected.addClass('selected');
             });
@@ -126,7 +141,54 @@ Yukon.Themes = (function () {
                 link.attr('href', '/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected);
                 link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected);
             });
-            
+
+            for (pmoObj in pmo) {
+                tcols = jQuery('table[data-theme="' + pmoObj + '"] td');
+                colors = pmo[pmoObj];
+                tcols.each(function (index, el) {
+                    jQuery(el).css('backgroundColor', colors[index]);
+                });
+            }
+
+            jQuery(document).on('click', '.delete-image', function (e) {
+                var button = jQuery(e.currentTarget),
+                    imageUrl = button.closest('.image').find('a img').attr('src'),
+                    okcancel;
+
+                e.preventDefault();
+                okcancel = button.closest('.page-action-area').find('.f-delete-confirm');
+                okcancel.removeClass('dn');
+            });
+
+            jQuery(document).on('click', '.ok', function (e) {
+                var button = jQuery(e.currentTarget),
+                    imageParent = button.closest('.section'),
+                    imageUrl = imageParent.find('a img').attr('src');
+
+                e.preventDefault();
+                if ('undefined' !== typeof imageUrl) {
+                    jQuery.ajax({
+                      url: imageUrl,
+                      type: 'post',
+                      data: { _method: 'DELETE'}
+                    }).done(function (data, textStatus, jqXHR) {
+                        var deleteConfirm = jQuery('.f-delete-confirm');
+                        if (data.success === true) {
+                            imageParent.toggle('fade', function() {
+                                imageParent.remove();
+                            });
+                        } else {
+                            deleteConfirm.html(data.message);
+                            deleteConfirm.find('.button').addClass('dn');
+                        }
+                    });
+                }
+            });
+            jQuery(document).on('click', '.cancel', function (e) {
+                var button = jQuery(e.currentTarget);
+                e.preventDefault();
+                button.closest('.f-delete-confirm').addClass('dn');
+            });
             initialized = true;
         },
         initFileUpload: function (category) {
@@ -180,10 +242,5 @@ Yukon.Themes = (function () {
 }());
 
 jQuery(function () {
-    var argsInput = jQuery('#argsInput'),
-        chooseText = argsInput.data('chooseText'),
-        okText = argsInput.data('okText'),
-        cancelText = argsInput.data('cancelText');
-
-    Yukon.Themes.init({'chooseText': chooseText, 'okText': okText, 'cancelText': cancelText});
+    Yukon.Themes.init(jQuery('#button-keys').data('buttonKeys'));
 });

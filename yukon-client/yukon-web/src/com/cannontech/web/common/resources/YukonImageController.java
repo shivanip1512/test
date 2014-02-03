@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -16,29 +19,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.dao.impl.YukonImage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.admin.theme.dao.ThemeDao;
+import com.cannontech.web.admin.theme.model.Theme;
+import com.cannontech.web.admin.theme.model.ThemePropertyType;
 import com.cannontech.web.util.JsonUtils;
 
 @Controller
 public class YukonImageController {
 
     @Autowired private YukonImageDao yid;
+    @Autowired private ThemeDao themeDao;
     @Autowired private ResourceLoader loader;
     @Autowired private RolePropertyDao rpDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+
+    private final static String keyBase = "yukon.common.imagePicker.";
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
     public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
@@ -67,6 +79,40 @@ public class YukonImageController {
         ServletOutputStream out = resp.getOutputStream();
         out.write(image.getImageValue());
         out.close();
+    }
+
+    @RequestMapping(value="/images/{id}", method=RequestMethod.DELETE)
+    public @ResponseBody Map<String, Object> delete(ModelMap model, YukonUserContext context, @PathVariable int id) {
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        try {
+            List<Theme> themes = themeDao.getThemes();
+            Set<Integer> nonDeletableImages = new HashSet<>();
+            for (Theme theme : themes) {
+                Integer backgroundId = Integer.parseInt((String) theme.getProperties().get(ThemePropertyType.LOGIN_BACKGROUND));
+                Integer logoId = Integer.parseInt((String) theme.getProperties().get(ThemePropertyType.LOGO));
+                nonDeletableImages.add(backgroundId);
+                nonDeletableImages.add(logoId);
+            }
+            if (id == YukonImage.DEFAULT_BACKGROUND.getId()
+                || id == YukonImage.DEFAULT_LOGO.getId()) {
+                throw new IllegalArgumentException(accessor.getMessage(keyBase + "delete.default"));
+            } else if (nonDeletableImages.contains(id)) {
+                throw new IllegalArgumentException(accessor.getMessage(keyBase + "delete.inuse"));
+            }
+            
+            yid.delete(id);
+            
+        } catch (Exception e) {
+            Map<String, Object> message = new HashMap<>();
+            message.put("success", false);
+            message.put("message", e.getMessage());
+            return message;
+        }
+        
+        Map<String, Object> message = new HashMap<>();
+        message.put("success", true);
+        return message;
     }
     
     @RequestMapping(value="/images", method=RequestMethod.POST)
@@ -112,39 +158,6 @@ public class YukonImageController {
         resp.setContentType("text/plain");
         String jsonString = JsonUtils.toJson(json);
         resp.getWriter().write(jsonString);
-    }
-    
-    private enum YukonImage {
-        DEFAULT_LOGO (1, "logos", "eaton_logo.png", "classpath:com/cannontech/web/common/resources/eaton_logo.png"),
-        DEFAULT_BACKGROUND (2, "backgrounds", "yukon_background.jpg", "classpath:com/cannontech/web/common/resources/yukon_background.jpg");
-        
-        private int id;
-        private String category;
-        private String name;
-        private String path;
-        
-        private YukonImage(int id, String category, String name, String path) {
-            this.id = id;
-            this.category = category;
-            this.name = name;
-            this.path = path;
-        }
-        
-        public int getId() {
-            return id;
-        }
-        
-        public String getCategory() {
-            return category;
-        }
-        
-        public String getName() {
-            return name;
-        }
-        
-        public String getPath() {
-            return path;
-        }
     }
     
 }

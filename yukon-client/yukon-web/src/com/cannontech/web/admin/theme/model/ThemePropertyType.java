@@ -56,4 +56,11 @@ public enum ThemePropertyType implements DisplayableEnum {
         return "yukon.common.themePropertyType." + name();
     }
     
+    public boolean isColor() {
+        if (inputType instanceof ColorType) {
+            return true;
+        }
+        
+        return false;
+    }
 }

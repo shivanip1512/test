@@ -181,7 +181,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .undo-row .undo {float: right;}
 .table-thirds th {width: 33%;}
 
-/*Use this class when there will be elements before the first icon in a row */
+/*Use the class when there will be elements before the first icon in a row */
 .row-icon, .compact-results-table tr td:first-child i.icon:first-child {margin: 0px;}
 
 .has-alerts td:first-child {width: 24px;}
@@ -534,8 +534,9 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
 .image-picker {
     .image {
         border: 2px solid transparent;
-        &.selected, &:hover {cursor: pointer; border-color: #bbb}
+        &.selected, &:hover {cursor: pointer; border-color: @primary-color}
     }
+    .simple-input-image {border-color: transparent;}
     .upload-percent, .upload-progress {display: inline-block; float: left;}
     .upload-progress {width: 200px;}
     .upload-percent {line-height: @form-control-height; margin-left: 15px;}

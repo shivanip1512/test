@@ -67,6 +67,10 @@
     <entry key="yukon.common.imagePicker.category">Category</entry>
     <entry key="yukon.common.imagePicker.size">Size</entry>
     <entry key="yukon.common.imagePicker.uploadNew">Upload New Image</entry>
+    <entry key="yukon.common.imagePicker.currentlySelected">Currently Selected</entry>
+    <entry key="yukon.common.imagePicker.delete">This will permanently delete this image.</entry>
+    <entry key="yukon.common.imagePicker.delete.default">Default logo or background images cannot be deleted.</entry>
+    <entry key="yukon.common.imagePicker.delete.inuse">Image is used by another theme.</entry>
 
     <entry key="yukon.web.modules.adminSetup.config.weather.pageName">Weather</entry>
     <entry key="yukon.web.modules.adminSetup.config.weather.createWeatherLocation.label">New Weather Location</entry>

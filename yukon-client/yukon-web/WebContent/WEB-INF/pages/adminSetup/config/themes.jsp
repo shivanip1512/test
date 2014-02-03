@@ -11,6 +11,21 @@
 <cti:includeScript link="JQUERY_IFRAME_TRANSPORT"/>
 <cti:includeScript link="JQUERY_FILE_UPLOAD"/>
 
+<style>
+.theme-palette {
+    border: 1px solid #bbb;
+    border-collapse: separate;
+    border-spacing: 2px;
+    background-color: #eee;
+    border-radius: 2px;
+}
+.theme-palette td {
+    padding: 0;
+    width: 3px;
+    height: 3px;
+}
+</style>
+
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:msg2 key="yukon.common.choose" var="chooseText"/>
@@ -18,7 +33,13 @@
 <cti:msg2 key="yukon.common.cancel" var="cancelText"/>
 
 <cti:includeScript link="/JavaScript/yukon.themes.js"/>
-    <input id="argsInput" type="hidden" data-choose-text="${chooseText}" data-ok-text="${okText}" data-cancel-text="${cancelText}" type="text" />
+    <input id="button-keys" type="hidden"
+        data-button-keys='{
+            "chooseText" : "${cti:escapeJavaScript(chooseText)}",
+            "okText" : "${cti:escapeJavaScript(okText)}",
+            "cancelText" : "${cti:escapeJavaScript(cancelText)}"
+        }'
+    />
     <div class="clearfix">
         <div class="category fl">
             <a href="theme" class="icon icon-32 fl icon-32-brush"></a>
@@ -36,10 +57,39 @@
                 <ul class="side-tabs">
                     <c:forEach var="theme" items="${themes}">
                         <li class="<c:if test="${theme.currentTheme}">current</c:if> <c:if test="${command.themeId == theme.themeId}">selected</c:if>">
-                            <div><a href="/adminSetup/config/themes/${theme.themeId}">${fn:escapeXml(theme.name)}</a></div>
-                            <c:if test="${theme.currentTheme}">
-                                <div class="detail"><i:inline key=".current"/></div>
-                            </c:if>
+                            <div class="clearfix">
+                                <div class="fl dib" style="margin-right: 10px;">
+                                    <table data-theme="${theme.themeId}" class="theme-palette">
+                                        <tbody>
+                                            <tr>
+                                                <td style="background-color: red;"></td>
+                                                <td style="background-color: green;"></td>
+                                                <td style="background-color: blue;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: blue;"></td>
+                                                <td style="background-color: red;"></td>
+                                                <td style="background-color: green;"></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="background-color: red;"></td>
+                                                <td style="background-color: green;"></td>
+                                                <td style="background-color: blue;"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="dib fl">
+                                    <div>
+                                        <a class="dib" href="/adminSetup/config/themes/${theme.themeId}">${fn:escapeXml(theme.name)}</a>
+                                    </div>
+                                    <div>
+                                        <c:if test="${theme.currentTheme}">
+                                            <div class="detail"><i:inline key=".current"/></div>
+                                        </c:if>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </c:forEach>
                     <li>
@@ -235,5 +285,5 @@
         </div>
     
     </div>
-        
+    <input id="palette-map" type="hidden" data-palette-map='${colorMap}' />
 </cti:standardPage>

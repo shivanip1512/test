@@ -17,24 +17,38 @@
             <div class="upload-progress"></div><div class="upload-percent"></div>
         </form>
     </div>
-    <c:forEach var="image" items="${images}">
-        <div class="section">
-            
-            <div class="column-12-12 clearfix image<c:if test="${not empty selected and image.imageID == selected}"> selected</c:if>" data-image-id="${image.imageID}">
-                <div class="column one">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".name" valueClass="f-name-value">${fn:escapeXml(image.imageName)}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".category" valueClass="f-category-value">${fn:escapeXml(image.imageCategory)}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".size" valueClass="f-size-value">
-                            <i:inline key="yukon.common.prefixedByteValue.kibi" arguments="${fn:length(image.imageValue) * .001}"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </div>
-                <div class="column two nogutter">
-                    <div class="simple-input-image fr">
-                        <a href="javascript:void(0);"><img alt="${fn:escapeXml(image.imageName)}" src="/common/images/${image.imageID}"></a>
+    <c:forEach var="pickerImage" items="${pickerImages}">
+        <div class="section has-show-on-hover">
+            <div class="image well<c:if test="${not empty selected and pickerImage.image.imageID == selected}"> selected</c:if>" data-image-id="${pickerImage.image.imageID}">
+                <div class="column-12-12 clearfix">
+                    <div class="column one">
+                        <c:if test="${not empty selected and pickerImage.image.imageID == selected}">
+                            <div><strong><em><i:inline key=".currentlySelected"/></em></strong></div>
+                        </c:if>
+                        <tags:nameValueContainer2>
+                            <tags:nameValue2 nameKey=".name" valueClass="f-name-value">${fn:escapeXml(pickerImage.image.imageName)}</tags:nameValue2>
+                            <tags:nameValue2 nameKey=".category" valueClass="f-category-value">${fn:escapeXml(pickerImage.image.imageCategory)}</tags:nameValue2>
+                            <tags:nameValue2 nameKey=".size" valueClass="f-size-value">
+                                <i:inline key="yukon.common.prefixedByteValue.kibi" arguments="${fn:length(pickerImage.image.imageValue) * .001}"/>
+                            </tags:nameValue2>
+                        </tags:nameValueContainer2>
+                    </div>
+                    <div class="column two nogutter">
+                        <div class="simple-input-image fr">
+                            <a href="javascript:void(0);"><img alt="${fn:escapeXml(pickerImage.image.imageName)}" src="/common/images/${pickerImage.image.imageID}"></a>
+                        </div>
                     </div>
                 </div>
+                <c:if test="${pickerImage.deletable and pickerImage.image.imageID != selected}">
+                    <div class="page-action-area">
+                        <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
+                        <div class="dn dib fr f-delete-confirm">
+                            <span class="fl f-confirm-message"><i:inline key=".delete"/></span>
+                            <cti:button nameKey="cancel" classes="cancel"/>
+                            <cti:button nameKey="ok" classes="action primary ok"/>
+                        </div>
+                    </div>
+                </c:if>
             </div>
         </div>
     </c:forEach>

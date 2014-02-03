@@ -1,8 +1,13 @@
 package com.cannontech.web.admin.theme;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.dao.impl.YukonImage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -34,7 +40,10 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ThemeableResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
@@ -45,6 +54,8 @@ public class ThemeController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
     @Autowired private YukonImageDao yid;
+    
+    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
     
     private SimpleValidator<Theme> validator = new SimpleValidator<Theme>(Theme.class) {
         @Override
@@ -170,26 +181,79 @@ public class ThemeController {
     @RequestMapping("/config/themes/imagePicker")
     public String imagePicker(ModelMap model, String category, Integer selected) {
         
+        List<ImagePickerImage> pickerImages = new ArrayList<>();
+        Set<Integer> nonDeletableImages = Sets.newHashSet(YukonImage.DEFAULT_BACKGROUND.getId(), YukonImage.DEFAULT_LOGO.getId());
+        
+        List<Theme> themes = themeDao.getThemes();
+        for (Theme theme : themes) {
+            Integer backgroundId = Integer.parseInt((String) theme.getProperties().get(ThemePropertyType.LOGIN_BACKGROUND));
+            Integer logoId = Integer.parseInt((String) theme.getProperties().get(ThemePropertyType.LOGO));
+            nonDeletableImages.add(backgroundId);
+            nonDeletableImages.add(logoId);
+        }
+        
         List<LiteYukonImage> images = yid.getImagesForCategory(category);
-        model.addAttribute("images", images);
+        for (LiteYukonImage image : images) {
+            pickerImages.add(new ImagePickerImage(!nonDeletableImages.contains(image.getImageID()), image));
+        }
+        model.addAttribute("pickerImages", pickerImages);
         model.addAttribute("selected", selected);
         model.addAttribute("category", category);
         
         return "/config/_imagePicker.jsp";
     }
     
+    public class ImagePickerImage {
+        private boolean deletable;
+        private LiteYukonImage image;
+        public ImagePickerImage(boolean deletable, LiteYukonImage image) {
+            this.deletable = deletable;
+            this.image = image;
+        }
+        public boolean isDeletable() {
+            return deletable;
+        }
+        public void setDeletable(boolean deletable) {
+            this.deletable = deletable;
+        }
+        public LiteYukonImage getImage() {
+            return image;
+        }
+        public void setImage(LiteYukonImage image) {
+            this.image = image;
+        }
+    }
+    
     private void buildModel(ModelMap model, YukonUserContext context, Theme theme, PageEditMode mode) {
         
         List<Theme> themes = themeDao.getThemes();
+        Map<Integer, List<String>> colorMap = new HashMap<>();
         for (Theme i : themes) {
+            
+            // build color map
+            List<String> colors = new ArrayList<>();
+            colorMap.put(i.getThemeId(), colors);
+            for (ThemePropertyType type : i.getProperties().keySet()) {
+                if (type.isColor()) {
+                    String color = (String)i.getProperties().get(type);
+                    colorMap.get(i.getThemeId()).add(color);
+                }
+            }
+            
+            // find current theme
             if (theme == null) {
                 if (i.isCurrentTheme()) {
                     theme = i;
-                    break;
                 }
             }
         }
+        
         model.addAttribute("themes", themes);
+        try {
+            model.addAttribute("colorMap", jsonObjectMapper.writeValueAsString(colorMap));
+        } catch (JsonProcessingException e) {
+            // if this blows up just don't bother with the cute color icons
+        }
         model.addAttribute("command", theme);
         model.addAttribute("mode", mode);
         

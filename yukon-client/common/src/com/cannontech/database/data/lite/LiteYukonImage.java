@@ -101,4 +101,11 @@ public class LiteYukonImage extends LiteBase {
         return getImageName();
     }
 
+    public boolean isDeletable() {
+        if (getImageID() == com.cannontech.core.dao.impl.YukonImage.DEFAULT_BACKGROUND.getId()
+                || getImageID() == com.cannontech.core.dao.impl.YukonImage.DEFAULT_LOGO.getId()) {
+            return false;
+        }
+        return true;
+    }
 }
