@@ -101,15 +101,13 @@ public class ScenarioController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/scenario/detail")
-    public String detail(int scenarioId, ModelMap model,
+    public String detail(int scenarioId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         
         DisplayablePao scenario = scenarioDao.getScenario(scenarioId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
-                                                     scenario, 
-                                                     Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(user, scenario, Permission.LM_VISIBLE);
         model.addAttribute("scenario", scenario);
 
         UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
@@ -118,7 +116,9 @@ public class ScenarioController extends DemandResponseControllerBase {
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        model = getAssetAvailabilityInfo(scenario, model, userContext);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+            getAssetAvailabilityInfo(scenario, model, userContext);
+        }
         
         return "dr/scenario/detail.jsp";
     }

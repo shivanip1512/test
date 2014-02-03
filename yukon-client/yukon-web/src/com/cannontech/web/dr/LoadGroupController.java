@@ -91,14 +91,12 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }    
 
     @RequestMapping("/loadGroup/detail")
-    public String detail(int loadGroupId, ModelMap model,
+    public String detail(int loadGroupId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
-                                                     loadGroup, 
-                                                     Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(user, loadGroup, Permission.LM_VISIBLE);
         model.addAttribute("loadGroup", loadGroup);
 
         model.addAttribute("parentPrograms",
@@ -109,8 +107,10 @@ public class LoadGroupController extends DemandResponseControllerBase {
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
-
-        model = getAssetAvailabilityInfo(loadGroup, model, userContext);
+        
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+            getAssetAvailabilityInfo(loadGroup, model, userContext);
+        }
 
         return "dr/loadGroup/detail.jsp";
     }

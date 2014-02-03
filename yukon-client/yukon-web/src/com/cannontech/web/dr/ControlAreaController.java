@@ -212,16 +212,12 @@ public class ControlAreaController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/controlArea/detail")
-    public String detail(int controlAreaId, ModelMap model,
-                         YukonUserContext userContext,
+    public String detail(int controlAreaId, ModelMap model,YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-                         BindingResult bindingResult, 
-                         FlashScope flashScope) {
+            BindingResult bindingResult, FlashScope flashScope, LiteYukonUser user) {
         
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
-                                                     controlArea,
-                                                     Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(user, controlArea, Permission.LM_VISIBLE);
 
         model.addAttribute("controlArea", controlArea);
         UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
@@ -230,7 +226,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        model = getAssetAvailabilityInfo(controlArea, model, userContext);
+        
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+            getAssetAvailabilityInfo(controlArea, model, userContext);
+        }
         
         return "dr/controlArea/detail.jsp";
     }

@@ -84,15 +84,13 @@ public class ProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping("detail")
-    public String detail(int programId, ModelMap model,
+    public String detail(int programId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
-                                                     program, 
-                                                     Permission.LM_VISIBLE);
+        paoAuthorizationService.verifyAllPermissions(user, program, Permission.LM_VISIBLE);
         model.addAttribute("program", program);
 
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
@@ -105,7 +103,9 @@ public class ProgramController extends ProgramControllerBase {
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         model.addAttribute("parentScenarios", parentScenarios);
         
-        model = getAssetAvailabilityInfo(program, model, userContext);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+            getAssetAvailabilityInfo(program, model, userContext);
+        }
         
         return "dr/program/detail.jsp";
     }
