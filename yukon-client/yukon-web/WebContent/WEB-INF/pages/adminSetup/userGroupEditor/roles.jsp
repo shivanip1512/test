@@ -22,11 +22,11 @@
         <tags:sectionContainer title="${title}" controls="${legend}">
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
                 <div class="setting">
-                    <div class="column-6-12-6 clearfix">
+                    <div class="column-6-18 clearfix">
                         <div class="column one">
                             <label for="${prop.extra.yukonRoleProperty}"><i:inline key="${prop.extra.key}"/></label>
                         </div>
-                        <div class="column two">
+                        <div class="column two nogutter">
                             <div class="default-indicator">
                                 <c:if test="${!empty prop.extra.defaultValue}">
                                     <c:if test="${command.values[prop.extra.yukonRoleProperty] != prop.extra.defaultValue}">
@@ -39,7 +39,7 @@
                                     <tags:simpleInputType id="${prop.extra.yukonRoleProperty}" input="${prop.valueType}" path="${prop.path}"/>
                                 </div>
                                 <div class="description">
-                                    <p>
+                                    <p class="wrbw">
                                         <i:inline key="${prop.extra.description}"/>
                                         <c:if test="${!empty prop.extra.defaultValue}">
                                             <span class="default"><i:inline key=".default"/>:&nbsp;(${fn:escapeXml(prop.extra.defaultValue)})</span>
@@ -48,9 +48,6 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
-                        <div class="column three nogutter comments">
-                            <!-- Empty -->
                         </div>
                     </div>
                 </div>
