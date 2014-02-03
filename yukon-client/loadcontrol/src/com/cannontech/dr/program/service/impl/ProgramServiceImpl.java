@@ -288,7 +288,7 @@ public class ProgramServiceImpl implements ProgramService {
             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
                     throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException {
 
-        boolean stopScheduled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
+        boolean stopScheduled = stopTime!= null && rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
 
         LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         ProgramStatus programStatus = new ProgramStatus(program);
@@ -349,7 +349,8 @@ public class ProgramServiceImpl implements ProgramService {
                                                List<GearAdjustment> gearAdjustments, boolean block) throws TimeoutException {
 
         Date programStartDate = datePlusOffset(startDate, startOffset);
-        Date programStopDate = datePlusOffset(stopDate, stopOffset);
+        Date programStopDate = stopScheduled ? datePlusOffset(stopDate, stopOffset)
+                                             : CtiUtilities.get2035GregCalendar().getTime();
 
         if (log.isDebugEnabled()) {
             log.debug("starting program " + programId + " using gear " + gearNumber +
@@ -761,7 +762,7 @@ public class ProgramServiceImpl implements ProgramService {
     private LMManualControlRequest getManualControlMessage(
             int programId, int gearNumber, Date startDate, Date stopDate, int constraintId) {
         if (stopDate == null) {
-            throw new IllegalArgumentException("startDate cannot be null");
+            throw new IllegalArgumentException("stopDate cannot be null");
         }
 
         LMProgramBase program = loadControlClientConnection.getProgram(programId);
