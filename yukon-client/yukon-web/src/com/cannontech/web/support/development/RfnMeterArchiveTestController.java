@@ -117,7 +117,7 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String drReport) throws IOException {
+    public String sendLcrReadArchive(int serialFrom, int serialTo, String drReport) throws IOException {
         rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }

@@ -257,8 +257,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         List<Node> events = data.evaluateAsNodeList("/DRReport/BroadcastVerificationMessages/Event");
         for (Node event : events) {
             Element elem = (Element) event;
-            Long messageId = Long.parseLong(elem.getElementsByTagName("UniqueIdentifier").item(0).getTextContent());
-            Long timeInSec = Long.parseLong(elem.getElementsByTagName("ReceivedTimestamp").item(0).getTextContent());
+            long messageId = Long.parseLong(elem.getElementsByTagName("UniqueIdentifier").item(0).getTextContent());
+            long timeInSec = Long.parseLong(elem.getElementsByTagName("ReceivedTimestamp").item(0).getTextContent());
             Instant receivedTimestamp = new Instant(timeInSec * 1000);
             msgMap.put(messageId, receivedTimestamp);
         }

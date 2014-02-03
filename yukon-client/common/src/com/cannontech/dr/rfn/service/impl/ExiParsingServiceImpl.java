@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +43,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         SCHEMA_0_0_2("0.0.2", "rfnLcrExiMessageSchema_v0_0_2.xsd"),
         SCHEMA_0_0_3("0.0.3", "rfnLcrExiMessageSchema_v0_0_3.xsd");
        
-        private String version;
-        private String schema;
+        private final String version;
+        private final String schema;
         private static final String classpath = "classpath:com/cannontech/dr/rfn/endpoint/";
 
         private SchemaLocation(String version, String schema) {
@@ -60,33 +61,22 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }  
     }
     
+    private final static byte payloadType = (byte) 0xE2;
+    
     @Autowired ResourceLoader loader;
     private static final Logger log = YukonLogManager.getLogger(ExiParsingService.class);
     
     private Map<String, EXISchema> schemas = new HashMap<String, EXISchema>();
     
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
-        // This removes the 4-byte header from the payload.
-        // This will need to be handled differently to allow handling of multiple schema versions.
-        ByteBuffer trimmedPayloadBuffer = ByteBuffer.allocate(payload.length-4);
-        trimmedPayloadBuffer.put(payload, 4, payload.length-4);
-        byte[] trimmedPayload = new byte[payload.length-4];
-        trimmedPayloadBuffer.rewind();
-        trimmedPayloadBuffer.get(trimmedPayload);
-        
-        // Set up input and output streams.
-        ByteArrayInputStream bis = new ByteArrayInputStream(trimmedPayload);
-        StringWriter xmlWriter = new StringWriter();
-        StreamResult output = new StreamResult(xmlWriter);
-
-        // Set up standard SAX objects for XML parsing.
-        SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
-        saxParserFactory.setNamespaceAware(true);
-        
+    	
+    	if(payload[0] == payloadType){
+    		// Trim 3-byte Expresscom header from the payload
+    		payload = Arrays.copyOfRange(payload, 3, payload.length);
+    	}
+    	
         //Get the schema version from the header
-        ByteBuffer header = ByteBuffer.allocate(4);
-        header.put(payload, 0, 4);
+        byte[] header = Arrays.copyOfRange(payload, 0, 4);
         String schemaVersion = getSchemaVersion(header);
         EXISchema exiSchema = getLcrReadingSchema(schemaVersion);
         
@@ -101,6 +91,19 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         } catch (EXIOptionsException e) {
             throw new RuntimeException("Cannot create EXI schema from .xsd file.", e);
         }
+        
+        // Get report without 4-byte header
+        byte[] report = Arrays.copyOfRange(payload, 4, payload.length);
+        
+        // Set up input and output streams.
+        ByteArrayInputStream bis = new ByteArrayInputStream(report);
+        StringWriter xmlWriter = new StringWriter();
+        StreamResult output = new StreamResult(xmlWriter);
+
+        // Set up standard SAX objects for XML parsing.
+        SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+        saxParserFactory.setNamespaceAware(true);
         
         try {
             // Set up output StreamResult.
@@ -134,7 +137,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     /**
      * This method is used to parse the schema version from the header and return a schema version in X.X.X format.
      */
-    private String getSchemaVersion(ByteBuffer header){
+    private String getSchemaVersion(byte[] exiHeader){
+    	ByteBuffer header = ByteBuffer.wrap(exiHeader);
         StringBuilder version = new StringBuilder();
         ByteBuffer majorMinorBuffer = ByteBuffer.allocate(1);
         majorMinorBuffer.put(header.array(), 2, 1);
