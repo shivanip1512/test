@@ -30,17 +30,15 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cannontech.web.util.JsonUtils;
 
 @Controller
 public class YukonImageController {
 
-    @Autowired YukonImageDao yid;
-    @Autowired ResourceLoader loader;
-    @Autowired RolePropertyDao rpDao;
-    @Autowired YukonUserContextMessageSourceResolver resolver;
-    
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
+    @Autowired private YukonImageDao yid;
+    @Autowired private ResourceLoader loader;
+    @Autowired private RolePropertyDao rpDao;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
     public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
@@ -112,7 +110,7 @@ public class YukonImageController {
         }
         // content type must be text or html or IE will throw up a save/open dialog
         resp.setContentType("text/plain");
-        String jsonString = jsonObjectMapper.writeValueAsString(json);
+        String jsonString = JsonUtils.toJson(json);
         resp.getWriter().write(jsonString);
     }
     

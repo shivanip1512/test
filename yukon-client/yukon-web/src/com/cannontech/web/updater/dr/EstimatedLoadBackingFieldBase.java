@@ -1,5 +1,8 @@
 package com.cannontech.web.updater.dr;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -11,8 +14,8 @@ import com.cannontech.dr.estimatedload.EstimatedLoadSummary;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.cannontech.web.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBackingField {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -22,9 +25,8 @@ public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBack
 
     protected String createSummaryJson(PaoIdentifier pao, EstimatedLoadSummary summary, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode summaryNode = mapper.createObjectNode();
+
+        Map<String, Object> summaryNode = new HashMap<>();
         summaryNode.put("paoId", pao.getPaoId());
         if (summary.getContributing() == 0) {
             summaryNode.put("status", "error");
@@ -90,6 +92,10 @@ public abstract class EstimatedLoadBackingFieldBase implements EstimatedLoadBack
                 }
             }
         }
-        return summaryNode.toString();
+        try {
+            return JsonUtils.toJson(summaryNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("unable to convert map to json", e);
+        }
     }
 }

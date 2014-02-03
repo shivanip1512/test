@@ -64,8 +64,8 @@ import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFra
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.ListBackingBean;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -88,8 +88,6 @@ public class ApplianceCategoryController {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ProgramToAlternateProgramDao ptapDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     private final Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
@@ -497,10 +495,9 @@ public class ApplianceCategoryController {
         } else {
             throw new RuntimeException("invalid form values");
         }
-        
-        String reloadJson = jsonObjectMapper.writeValueAsString(Collections.singletonMap("action", "reload"));
+
         response.setContentType("application/json");
-        response.getWriter().write(reloadJson);
+        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         return null;
     }
 

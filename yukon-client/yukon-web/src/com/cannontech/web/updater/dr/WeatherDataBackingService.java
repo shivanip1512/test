@@ -20,8 +20,8 @@ import com.cannontech.loadcontrol.weather.WeatherLocation;
 import com.cannontech.loadcontrol.weather.WeatherObservation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WeatherDataBackingService implements UpdateBackingService {
     private Logger log = YukonLogManager.getLogger(WeatherDataBackingService.class);
@@ -34,8 +34,6 @@ public class WeatherDataBackingService implements UpdateBackingService {
 
     // data should be less than 1 hour old, this gives us some wiggle room
     private Duration weatherDataValidDuration = Duration.standardMinutes(90);
-    private ObjectMapper jsonObjectMapper = new ObjectMapper();
-
 
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
@@ -128,7 +126,7 @@ public class WeatherDataBackingService implements UpdateBackingService {
 
     private String getJson(Map<String, String> map) {
         try {
-            return jsonObjectMapper.writeValueAsString(map);
+            return JsonUtils.toJson(map);
         } catch (JsonProcessingException e) {
             log.error("jsonObjectMapper is unable to write json string from map", e);
             throw new RuntimeException(e);

@@ -67,9 +67,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.WebFileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -94,8 +94,6 @@ public class EventLogViewerController {
     @Autowired private EventLogUIService eventLogUIService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
-
-    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping(value="viewByCategory", params="!export")
     public void viewByCategory(@ModelAttribute("eventLogCategoryBackingBean") EventLogCategoryBackingBean backingBean, 
@@ -380,7 +378,7 @@ public class EventLogViewerController {
         String extSelectedNodePath = callback.getjsTreeSelectedNodePath();
         model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
-        String allGroupsDataJson = jsonObjectMapper.writeValueAsString(allGroupsRoot.toMap());
+        String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
         model.addAttribute("allEventCategoriesDataJson", allGroupsDataJson);
     }
     

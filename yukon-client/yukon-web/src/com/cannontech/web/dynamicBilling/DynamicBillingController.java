@@ -42,9 +42,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cannontech.web.util.JsonUtils;
 
 @Controller
 @RequestMapping(value = "/*")
@@ -55,7 +53,6 @@ public class DynamicBillingController {
     @Autowired private DynamicBillingFileDao dynamicBillingFileDao;
 	@Autowired private GlobalSettingDao globalSettingDao;
 	@Autowired private ScheduledFileExportService scheduledFileExportService;
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping(value = "_create.html")
     public String create(ModelMap model, final YukonUserContext context) {
@@ -203,7 +200,7 @@ public class DynamicBillingController {
     @RequestMapping(value = "save.json")
     public @ResponseBody Map<String, ?> save(int formatId, String formatName, String footer,
                                          String header, String delimiter, String fieldArray, ModelMap model)
-            throws JsonParseException, JsonMappingException, IOException {
+            throws IOException {
         // retrieve all information from the page and save it to db
         DynamicFormat savedFormat = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
         dynamicBillingFileDao.save(savedFormat);
@@ -225,7 +222,7 @@ public class DynamicBillingController {
     @RequestMapping("updatePreview")
     public @ResponseBody String updatePreview(int formatId, String formatName, String footer, String header,
                                               String delimiter, String fieldArray)
-            throws JsonParseException, JsonMappingException, IOException {
+            throws IOException {
 
         StringBuffer returnString = new StringBuffer();
         DynamicFormat format = parseIntoDynamicFormat(formatId, formatName, footer, header, delimiter, fieldArray);
@@ -325,8 +322,7 @@ public class DynamicBillingController {
      * object.
      */
     private DynamicFormat parseIntoDynamicFormat(int formatId, String formatName, String footer, String header,
-                                                 String delimiter, String fieldArray)
-            throws JsonParseException, JsonMappingException, IOException {
+                                                 String delimiter, String fieldArray) throws IOException {
         
         DynamicFormat format = new DynamicFormat();
         
@@ -337,10 +333,9 @@ public class DynamicBillingController {
         format.setFooter(footer);
         format.setHeader(header);
         format.setDelim(delimiter);
-        
-        List<Map<String,String>> fields
-            = jsonObjectMapper.readValue(fieldArray, List.class);
-        
+
+        List<Map<String,String>> fields = JsonUtils.fromJson(fieldArray, List.class);
+
         // for loop for temporarily saving the selected fields, as well as the
         // formats associated(date, value)
         int count = 0;

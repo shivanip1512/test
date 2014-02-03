@@ -47,8 +47,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RequestMapping("/editor/*")
 @Controller
@@ -66,8 +66,6 @@ public class GroupEditorController {
     @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
@@ -157,7 +155,7 @@ public class GroupEditorController {
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
         mav.addObject("extSelectedNodePath", extSelectedNodePath);
         
-        String allGroupsDataJson = jsonObjectMapper.writeValueAsString(allGroupsRoot.toMap());
+        String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         // MOVE GROUPS TREE JSON
@@ -165,7 +163,7 @@ public class GroupEditorController {
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
         JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null);
         
-        String moveGroupJson = jsonObjectMapper.writeValueAsString(moveGroupRoot.toMap());
+        String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJson); 
         
         // COPY GROUPS TREE JSON
@@ -178,7 +176,7 @@ public class GroupEditorController {
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
         JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null);
         
-        String copyGroupJson = jsonObjectMapper.writeValueAsString(copyExtRoot.toMap());
+        String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson); 
         
         // DEVICE COLLECTION
@@ -368,7 +366,7 @@ public class GroupEditorController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup());
-        String dataJson = jsonObjectMapper.writeValueAsString(root.toMap());
+        String dataJson = JsonUtils.toJson(root.toMap());
         
         mav.addObject("groupDataJson", dataJson);
 

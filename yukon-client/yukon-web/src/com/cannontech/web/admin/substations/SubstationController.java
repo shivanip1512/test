@@ -25,8 +25,8 @@ import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/substations/*")
@@ -39,7 +39,6 @@ public class SubstationController {
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private ObjectMapper jsonObjectMapper = new ObjectMapper();
     private TypeReference<List<Integer>> integerListType
         = new TypeReference<List<Integer>>() {/*Jackson requires*/};
 
@@ -123,7 +122,7 @@ public class SubstationController {
         if (substationId == null) {
             return viewRoute(request, response);
         }            
-        List<Integer> routeIdList = jsonObjectMapper.readValue(jsonString, integerListType);
+        List<Integer> routeIdList = JsonUtils.fromJson(jsonString, integerListType);
 
         strmDao.update(substationId, routeIdList);
         return viewRoute(request,response);

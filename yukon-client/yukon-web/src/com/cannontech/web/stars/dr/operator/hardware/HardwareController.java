@@ -33,7 +33,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.AttributeReadingHelper;
-import com.fasterxml.jackson.databind.node.POJONode;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 
@@ -54,7 +53,7 @@ public class HardwareController {
 
     @RequestMapping("plc/readNow")
     @ResponseBody
-    public POJONode plcReadNow(int deviceId, YukonUserContext userContext) {
+    public Map<String, Object> plcReadNow(int deviceId, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
@@ -81,13 +80,12 @@ public class HardwareController {
             resultMap.put("message", accessor.getMessage(keyBase + "error.readNowFailed", Joiner.on(',').join(errors)));
         }
 
-        POJONode json = new POJONode(resultMap);
-        return json;
+        return resultMap;
     }
     
     @RequestMapping("rf/readNow")
     @ResponseBody
-    public POJONode rfReadNow(int deviceId, YukonUserContext context) {
+    public Map<String, Object> rfReadNow(int deviceId, YukonUserContext context) {
         final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         final RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         final Map<String, Object> resultMap = new HashMap<>();
@@ -131,7 +129,7 @@ public class HardwareController {
             waitableCallback.waitForCompletion();
         } catch (InterruptedException e) {/* ignore */};
         
-        return new POJONode(resultMap);
+        return resultMap;
     }
     
 }

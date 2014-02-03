@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.optout;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +56,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -97,7 +96,7 @@ public class OptOutAdminController {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
             model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
     
-            ObjectNode optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
+            Map<String, Object> optOutsJson = systemOptOuts(new ArrayList<Integer>(0), userContext);
             model.addAttribute("totalNumberOfAccounts", optOutsJson.get("totalNumberOfAccounts"));
             model.addAttribute("currentOptOuts", optOutsJson.get("currentOptOuts"));
             model.addAttribute("scheduledOptOuts", optOutsJson.get("scheduledOptOuts"));
@@ -155,9 +154,9 @@ public class OptOutAdminController {
     }
 
     @RequestMapping(value = "/operator/optOut/systemOptOuts", method = RequestMethod.POST)
-    public @ResponseBody ObjectNode systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object>  systemOptOuts(@RequestBody List<Integer> assignedProgramIds, YukonUserContext userContext) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        ObjectNode json = JsonNodeFactory.instance.objectNode();
+        Map<String, Object> json = new HashMap<>();
 
         json.put("totalNumberOfAccounts", customerAccountDao.getTotalNumberOfAccounts(yukonEnergyCompany, assignedProgramIds));
         json.put("currentOptOuts", optOutEventDao.getTotalNumberOfActiveOptOuts(yukonEnergyCompany, assignedProgramIds));

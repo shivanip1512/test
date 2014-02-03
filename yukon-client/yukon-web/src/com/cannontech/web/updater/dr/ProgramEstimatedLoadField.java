@@ -1,5 +1,7 @@
 package com.cannontech.web.updater.dr;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -11,8 +13,9 @@ import com.cannontech.dr.estimatedload.service.impl.EstimatedLoadBackingServiceH
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.cannontech.web.util.JsonUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Maps;
 
 public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
 
@@ -46,27 +49,33 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
         MessageSourceResolvable calculating = new YukonMessageSourceResolvable(
                 "yukon.web.modules.dr.estimatedLoad.calculating");
         
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode calculatingNode = mapper.createObjectNode();
+        Map<String, String> calculatingNode = Maps.newHashMapWithExpectedSize(3);
         calculatingNode.put("paoId", String.valueOf(programId));
         calculatingNode.put("status", "calc");
         calculatingNode.put("tooltip", accessor.getMessage(calculating));
-        return calculatingNode.toString();
+        try {
+            return JsonUtils.toJson(calculatingNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to write map to json", e);
+        }
     }
 
-    private String createErrorJson(int programId, EstimatedLoadException e, YukonUserContext userContext) {
+    private String createErrorJson(int programId, EstimatedLoadException exception, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         MessageSourceResolvable na = new YukonMessageSourceResolvable("yukon.web.defaults.na");
-        MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(e, userContext);
-        
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode errorNode = mapper.createObjectNode();
+        MessageSourceResolvable exceptionMessage = backingServiceHelper.resolveException(exception, userContext);
+
+        Map<String, String> errorNode = Maps.newHashMapWithExpectedSize(4);
         errorNode.put("paoId", String.valueOf(programId));
         errorNode.put("status", "error");
         errorNode.put("tooltip", accessor.getMessage(exceptionMessage));
         errorNode.put("value", accessor.getMessage(na));
-        return errorNode.toString();
+        try {
+            return JsonUtils.toJson(errorNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to write map to json", e);
+        }
     }
     
     private String createSuccessJson(int programId, EstimatedLoadAmount amount, YukonUserContext userContext) {
@@ -81,13 +90,16 @@ public class ProgramEstimatedLoadField extends EstimatedLoadBackingFieldBase {
                 amount.getMaxKwSavings(),
                 amount.getNowKwSavings());
         
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode successNode = mapper.createObjectNode();
+        Map<String, String> successNode = Maps.newHashMapWithExpectedSize(4);
         successNode.put("paoId", String.valueOf(programId));
         successNode.put("status", "success");
         successNode.put("connected", accessor.getMessage(connectedLoad));
         successNode.put("diversified", accessor.getMessage(diversifiedLoad));
         successNode.put("kwSavings", accessor.getMessage(kwSavings));
-        return successNode.toString();
+        try {
+            return JsonUtils.toJson(successNode);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Unable to write map to json", e);
+        }
     }
 }

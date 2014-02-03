@@ -43,8 +43,8 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.JsTreeNode;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/composedGroup/*")
@@ -57,8 +57,6 @@ public class ComposedGroupController {
     @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
     @Autowired private DeviceGroupComposedGroupDao deviceGroupComposedGroupDao;
     @Autowired private TransactionOperations transactionTemplate;
-
-    private static ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     @RequestMapping("build")
     public String build(HttpServletRequest request, LiteYukonUser user, ModelMap model)
@@ -189,7 +187,7 @@ public class ComposedGroupController {
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
         
-        String chooseGroupTreeJson = jsonObjectMapper.writeValueAsString(groupExtRoot.toMap());
+        String chooseGroupTreeJson = JsonUtils.toJson(groupExtRoot.toMap());
         model.addAttribute("chooseGroupTreeJson", chooseGroupTreeJson);
         
         return "composedGroup/create.jsp";
