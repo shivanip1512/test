@@ -21,7 +21,7 @@ public class YukonUserDaoImplTest {
 	private class testAlwaysFail extends YukonUserDaoImpl {
 		
 		public LiteYukonUser findUserByUsername(String username) {
-			return new LiteYukonUser();
+			return new LiteYukonUser(5, "thisUserNameAlreadyExists");
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class YukonUserDaoImplTest {
 		public LiteYukonUser findUserByUsername(String username) {
 			if(!done) {
 				done = true;
-				return new LiteYukonUser();
+				return new LiteYukonUser(6, "thisUserNameAlreadyExists");
 			} else {
 				return null;
 			}

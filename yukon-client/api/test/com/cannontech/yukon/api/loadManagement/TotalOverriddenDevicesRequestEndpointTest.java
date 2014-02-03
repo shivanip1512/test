@@ -18,7 +18,6 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.loadManagement.adapters.OptOutServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.TotalOverriddenDevicesRequestEndpoint;
-import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.LoadManagementTestUtils;
@@ -26,6 +25,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class TotalOverriddenDevicesRequestEndpointTest {
 
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+	private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+	
     private TotalOverriddenDevicesRequestEndpoint impl;
     private MockOptOutService mockOptOutService;
     
@@ -72,8 +74,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createOverridenDevicesByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeDevicesByAccount(requestElement, user);
+        Element respElement = impl.invokeDevicesByAccount(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -85,9 +86,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     	//==========================================================================================
         requestElement = LoadManagementTestUtils.createOverridenDevicesByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-        user = new LiteYukonUser();
-        user.setUserID(10);
-        respElement = impl.invokeDevicesByAccount(requestElement, user);
+
+        respElement = impl.invokeDevicesByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -105,7 +105,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         long totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
 
         // verify data in the response
-        Assert.assertEquals("Incorrect totalDevices", user.getUserID(), totalDevicesResult);
+        Assert.assertEquals("Incorrect totalDevices", AUTH_USER.getUsername().length(), totalDevicesResult);
 
         
         // test with invalid account number, no program, authorized user
@@ -113,7 +113,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverridenDevicesByAccountRequestElement(
         		INVALID_ACCOUNT, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         
-        respElement = impl.invokeDevicesByAccount(requestElement, user);
+        respElement = impl.invokeDevicesByAccount(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -133,7 +133,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverridenDevicesByAccountRequestElement(
         		ACCOUNT1, PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         
-        respElement = impl.invokeDevicesByAccount(requestElement, user);
+        respElement = impl.invokeDevicesByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -151,7 +151,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         totalDevicesResult = outputTemplate.evaluateAsLong(byAccountTotalDevicesStr);
 
         // verify data in the response
-        Assert.assertEquals("Incorrect totalDevices", user.getUserID(), totalDevicesResult);
+        Assert.assertEquals("Incorrect totalDevices", AUTH_USER.getUsername().length(), totalDevicesResult);
 
         
         // test with valid account number, invalid program, authorized user
@@ -159,7 +159,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverridenDevicesByAccountRequestElement(
         		ACCOUNT1, INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
         
-        respElement = impl.invokeDevicesByAccount(requestElement, user);
+        respElement = impl.invokeDevicesByAccount(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -190,8 +190,7 @@ public class TotalOverriddenDevicesRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createOverridenDevicesByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-        LiteYukonUser user = MockAuthDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeDevicesByProgram(requestElement, user);
+        Element respElement = impl.invokeDevicesByProgram(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -203,9 +202,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverridenDevicesByProgramRequestElement(
         		PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-        user = new LiteYukonUser();
-        user.setUserID(22);
-        respElement = impl.invokeDevicesByProgram(requestElement, user);
+
+        respElement = impl.invokeDevicesByProgram(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -222,14 +220,14 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         long totalDevicesResult = outputTemplate.evaluateAsLong(byProgramTotalDevicesStr);
 
         // verify data in the response
-        Assert.assertEquals("Incorrect totalDevices", totalDevicesResult, user.getUserID());
+        Assert.assertEquals("Incorrect totalDevices", totalDevicesResult, AUTH_USER.getUsername().length());
         
         
         // test with valid program, authorized user
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverridenDevicesByProgramRequestElement(
         		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1, reqSchemaResource);
-        respElement = impl.invokeDevicesByProgram(requestElement, user);
+        respElement = impl.invokeDevicesByProgram(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -269,8 +267,8 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         		throw new ProgramNotFoundException("Program invalid");
         	}
         	
-        	
-        	return user.getUserID();
+        	//Returns the user's username length because we need _some_ value that gets passed all the way through.
+        	return user.getUsername().length();
         }
         
         @Override
@@ -284,8 +282,9 @@ public class TotalOverriddenDevicesRequestEndpointTest {
         	if(INVALID_PROGRAM.equals(programName)) {
         		throw new ProgramNotFoundException("Program invalid");
         	}
-
-        	return user.getUserID();
+        	
+        	//Returns the user's username length because we need _some_ value that gets passed all the way through.
+        	return user.getUsername().length();
         }
         
         public String getAccountNumber() {

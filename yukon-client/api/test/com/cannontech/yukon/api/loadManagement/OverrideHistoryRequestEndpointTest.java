@@ -34,6 +34,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class OverrideHistoryRequestEndpointTest {
 
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+	private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+	
     private OverrideHistoryRequestEndpoint impl;
     private MockOptOutService mockOptOutService;
     
@@ -194,8 +197,7 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
-    	LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeHistoryByAccount(requestElement, unAuthorizedUser);
+        Element respElement = impl.invokeHistoryByAccount(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -205,10 +207,9 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid account, no program, valid user; to return empty list
         //==========================================================================================
-        LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
                 EMTPY_RETURN, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
-        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        respElement = impl.invokeHistoryByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -235,7 +236,7 @@ public class OverrideHistoryRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
-        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        respElement = impl.invokeHistoryByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -264,7 +265,7 @@ public class OverrideHistoryRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
     			ACCOUNT1, PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
-        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        respElement = impl.invokeHistoryByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -291,7 +292,7 @@ public class OverrideHistoryRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
         		INVALID_ACCOUNT, null, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
-        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        respElement = impl.invokeHistoryByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -311,7 +312,7 @@ public class OverrideHistoryRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createOverrideHistoryByAccountRequestElement(
         		ACCOUNT1, INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
-        respElement = impl.invokeHistoryByAccount(requestElement, user);
+        respElement = impl.invokeHistoryByAccount(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -344,8 +345,7 @@ public class OverrideHistoryRequestEndpointTest {
     	Element requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
-        LiteYukonUser unAuthorizedUser = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invokeHistoryByProgram(requestElement, unAuthorizedUser);
+        Element respElement = impl.invokeHistoryByProgram(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -355,11 +355,10 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid program, user; to return empty list (v1.0)
         //==========================================================================================
-        LiteYukonUser user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
                 EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -379,7 +378,7 @@ public class OverrideHistoryRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
                 EMTPY_RETURN, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
         
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -396,11 +395,10 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid program, user (v1.0)
         //==========================================================================================
-        user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
     	
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         XmlUtils.printElement(respElement, "respElement");
@@ -420,11 +418,10 @@ public class OverrideHistoryRequestEndpointTest {
         
         // test with valid program, user (v1.1)
         //==========================================================================================
-        user = new LiteYukonUser();
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
     			PROGRAM1, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
     	
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         XmlUtils.printElement(respElement, "respElement");
@@ -447,7 +444,7 @@ public class OverrideHistoryRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
         		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_0, reqSchemaResource);
         
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -462,7 +459,7 @@ public class OverrideHistoryRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createOverrideHistoryByProgramRequestElement(
         		INVALID_PROGRAM, START_DATE_VALID, STOP_DATE_VALID, VERSION_1_1, reqSchemaResource);
         
-        respElement = impl.invokeHistoryByProgram(requestElement, user);
+        respElement = impl.invokeHistoryByProgram(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);

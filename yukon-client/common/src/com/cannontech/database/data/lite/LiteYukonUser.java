@@ -24,16 +24,19 @@ public class LiteYukonUser extends LiteBase {
     private boolean forceReset;
     private Integer userGroupId;
 
+    /** 
+     *  New YukonUsers should be created using the non-lite objects. Don't use this anymore for creating users!
+     *    In Short, LiteYukonUser should NEVER have been used for a "create" object since it requires a liteId to exist.
+     *    This only exists to support legacy YukonUserDao.save fuctionality.
+     */
+    @Deprecated public final static int CREATE_NEW_USER_ID = 0;
+    
     public final static Function<LiteYukonUser, Integer> USER_ID_FUNCTION = new Function<LiteYukonUser, Integer>() {
         @Override
         public Integer apply(LiteYukonUser input) {
             return input.getLiteID();
         };
     };
-
-    public LiteYukonUser() {
-        this(0,null,null);
-    }
 
     public LiteYukonUser(int id) {
         this(id,null,null);

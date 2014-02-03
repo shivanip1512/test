@@ -42,7 +42,7 @@ public class OverrideRequestEndpointTest {
     private static final String KNOWN_ACCOUNT_NUMBER_NO_OPTOUTS_AVAILABLE = "B";
     private static final String UNKNOWN_ACCOUNT_NUMBER = "C";
     
-    private static final LiteYukonUser AUTH_USER = new LiteYukonUser();
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
     
     private static Namespace ns = YukonXml.getYukonNamespace();

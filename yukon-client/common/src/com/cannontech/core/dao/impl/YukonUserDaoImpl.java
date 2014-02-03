@@ -87,7 +87,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	@Override
 	@Transactional
     public void save(LiteYukonUser user) {
-	    boolean update = user.getUserID() != 0;
+	    boolean update = user.getUserID() != LiteYukonUser.CREATE_NEW_USER_ID;
 
 	    if (update) {
 	        update(user);

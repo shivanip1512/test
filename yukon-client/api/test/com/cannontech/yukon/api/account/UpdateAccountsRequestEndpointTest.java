@@ -25,10 +25,14 @@ import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountServiceHelper;
 import com.cannontech.yukon.api.account.endpoint.UpdateAccountsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 @Ignore("YUK-11816")
 public class UpdateAccountsRequestEndpointTest {
+	
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+	
     private UpdateAccountsRequestEndpoint impl;
 
     @Before
@@ -88,8 +92,7 @@ public class UpdateAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(successInputElement, reqSchemaResource);
         
-        LiteYukonUser user = new LiteYukonUser();
-        Element successOutputElement = impl.invoke(successInputElement, user);
+        Element successOutputElement = impl.invoke(successInputElement, AUTH_USER);
         
         // Test response against schema definition
         TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
@@ -123,7 +126,7 @@ public class UpdateAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(dupAccountNumInputElement, reqSchemaResource);
         
-        Element dupAccountNumOutputElement = impl.invoke(dupAccountNumInputElement, user);
+        Element dupAccountNumOutputElement = impl.invoke(dupAccountNumInputElement, AUTH_USER);
         
         // Test response against schema definition
         TestUtils.validateAgainstSchema(dupAccountNumOutputElement, respSchemaResource);

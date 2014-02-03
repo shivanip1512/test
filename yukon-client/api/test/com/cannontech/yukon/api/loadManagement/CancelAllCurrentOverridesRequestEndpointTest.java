@@ -21,6 +21,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CancelAllCurrentOverridesRequestEndpointTest {
 
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+    private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+	
     private CancelAllCurrentOverridesRequestEndpoint impl;
     private MockOptOutService mockOptOutService; 
     private StarsEventLogService mockStarsEventLogService;
@@ -52,8 +55,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createCancleCurrentOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_0, null, reqSchemaResource);
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invoke(requestElement, user);
+        Element respElement = impl.invoke(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -63,8 +65,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
     	
         // test with authorized user
         //==========================================================================================
-    	user = new LiteYukonUser();
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -80,8 +81,7 @@ public class CancelAllCurrentOverridesRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createCancleCurrentOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_1, "Program1", reqSchemaResource);
-    	user = new LiteYukonUser();
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);

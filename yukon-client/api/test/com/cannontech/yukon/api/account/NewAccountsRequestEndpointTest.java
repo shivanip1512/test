@@ -23,10 +23,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.yukon.api.account.endpoint.NewAccountsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class NewAccountsRequestEndpointTest {
-    private NewAccountsRequestEndpoint impl;
+
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+
+	private NewAccountsRequestEndpoint impl;
 
     @Before
     public void setUp() throws Exception {
@@ -68,8 +72,8 @@ public class NewAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(successInputElement, reqSchemaResource);
         
-        LiteYukonUser user = new LiteYukonUser();
-        Element successOutputElement = impl.invoke(successInputElement, user);
+        //Note: AUTH_USER is never actually used in accountServiceAdapter.addAccount
+        Element successOutputElement = impl.invoke(successInputElement, AUTH_USER);
         
         // Test response against schema definition
         TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
@@ -103,7 +107,8 @@ public class NewAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(dupAccountNumInputElement, reqSchemaResource);
         
-        Element dupAccountNumOutputElement = impl.invoke(dupAccountNumInputElement, user);
+        //Note: AUTH_USER is never actually used in accountServiceAdapter.addAccount
+        Element dupAccountNumOutputElement = impl.invoke(dupAccountNumInputElement, AUTH_USER);
         
         // Test request against schema definition
         TestUtils.validateAgainstSchema(dupAccountNumOutputElement, respSchemaResource);
@@ -128,7 +133,8 @@ public class NewAccountsRequestEndpointTest {
         
         Resource dupUsernameResource = new ClassPathResource("duplicateUsernameNewAccountsRequest.xml", NewAccountsRequestEndpointTest.class);
         Element dupUsernameInputElement = XmlUtils.createElementFromResource(dupUsernameResource);
-        Element dupUsernameOutputElement = impl.invoke(dupUsernameInputElement, user);
+        //Note: AUTH_USER is never actually used in accountServiceAdapter.addAccount
+        Element dupUsernameOutputElement = impl.invoke(dupUsernameInputElement, AUTH_USER);
         
         Assert.assertNotNull("Missing output element from NewAccountsResponse.", dupUsernameOutputElement);
 

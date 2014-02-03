@@ -6,18 +6,16 @@ import java.util.Comparator;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
@@ -521,25 +519,15 @@ public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<O
 		return html;
 	}
 	
-	/*
-     * Get the current lite yukon user.
-     */
-    private LiteYukonUser getUser(HttpServletRequest req) {
-        HttpSession session = req.getSession( false );
-        LiteYukonUser user = new LiteYukonUser();
-        if (session != null) {
-            user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-        }
-        return user;
-    }
-	
 	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 	    super.setParameters(req);
 		if( req != null)
 		{
-		    user = getUser(req);
+            //not fully populated, but only need userId in rolePropertyDao.getPropertyStringValue (Don't follow this as an example!)
+            user = new LiteYukonUser(getUserID());
+
 			String param = req.getParameter(ATT_All_CAP_CONTROL_STATE);
 			if( param != null)
 				setControlStates(null);	//ALL Of them!

@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.stars.endpoint;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -33,6 +33,9 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class ControllableDevicesRequestEndPointTest {
+
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+    private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
 
     private ControllableDevicesRequestEndPoint impl;
     private StarsControllableDeviceHelper mockHelper;
@@ -149,8 +152,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invokeAddDevice(reqElement, user);
+        Element respElement = impl.invokeAddDevice(reqElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/NewControllableDevicesResponse.xsd", this.getClass());
@@ -227,8 +229,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        impl.invokeAddDevice(reqElement, user);
+        impl.invokeAddDevice(reqElement, NOT_AUTH_USER);
     }
     
     @Test
@@ -244,8 +245,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invokeUpdateDevice(reqElement, user);
+        Element respElement = impl.invokeUpdateDevice(reqElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/UpdateControllableDevicesResponse.xsd", this.getClass());
@@ -321,8 +321,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        impl.invokeUpdateDevice(reqElement, user);
+        impl.invokeUpdateDevice(reqElement, NOT_AUTH_USER);
     }
 
     @Test
@@ -338,8 +337,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invokeRemoveDevice(reqElement, user);
+        Element respElement = impl.invokeRemoveDevice(reqElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/RemoveControllableDevicesResponse.xsd", this.getClass());
@@ -415,8 +413,7 @@ public class ControllableDevicesRequestEndPointTest {
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
         
         //invoke test with unauthorized user
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        impl.invokeRemoveDevice(reqElement, user);
+        impl.invokeRemoveDevice(reqElement, NOT_AUTH_USER);
     }
 
     private static class ControllableDeviceResultMapper implements

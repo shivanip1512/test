@@ -23,6 +23,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CountOverridesTowardsLimitRequestEndpointTest {
 
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+    private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+
     private CountOverridesTowardsLimitRequestEndpoint impl;
     private MockOptOutService mockOptOutService;
     private StarsEventLogService mockStarsEventLogService;
@@ -55,8 +58,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createCountOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invoke(requestElement, user);
+        Element respElement = impl.invoke(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -66,9 +68,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
 
         // test with authorized user, no program name
         //==========================================================================================
-        user = new LiteYukonUser();
-        
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -86,11 +86,9 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         requestElement = LoadManagementTestUtils.createCountOverridesRequestElement(
     			XmlVersionUtils.YUKON_MSG_VERSION_1_1, reqSchemaResource);
         
-        user = new LiteYukonUser();
-        
         Element tmpElement = XmlUtils.createStringElement("programName", ns, "TEST_PROGRAM");
         requestElement.addContent(tmpElement);
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);

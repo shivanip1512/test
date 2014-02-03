@@ -9,11 +9,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public final class LiteYukonUserMapper implements YukonRowMapper<LiteYukonUser> {
     @Override
     public LiteYukonUser mapRow(YukonResultSet rs) throws SQLException {
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUserID(rs.getInt("UserID"));
+        LiteYukonUser user = new LiteYukonUser(rs.getInt("UserID"));
         user.setUsername(rs.getString("UserName"));
         user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
-        user.setForceReset(rs.getBooleanYN("ForceReset"));
+        user.setForceReset(rs.getBoolean("ForceReset"));
         user.setUserGroupId(rs.getNullableInt("UserGroupId"));
         return user;
     }

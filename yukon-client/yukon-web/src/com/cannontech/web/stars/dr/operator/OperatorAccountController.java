@@ -362,8 +362,8 @@ public class OperatorAccountController {
 	    csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
 	    
-        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
-	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
+	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
 
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);

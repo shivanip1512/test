@@ -22,6 +22,9 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class DecrementOverrideLimitRequestEndpointTest {
 
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+	private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
+	
     private DecrementOverrideLimitRequestEndpoint impl;
     private MockOptOutService mockOptOutService;
     
@@ -59,8 +62,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
     	//==========================================================================================
     	Element requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
     			ACCOUNT1, SERIAL1, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invoke(requestElement, user);
+        Element respElement = impl.invoke(requestElement, NOT_AUTH_USER);
 
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
@@ -69,8 +71,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
     	
         // test with valid account, serial, authorized user
         //==========================================================================================
-    	user = new LiteYukonUser();
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // validate the response against schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -88,7 +89,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
     			INVALID_ACCOUNT, SERIAL1, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // validate the response against schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -106,7 +107,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
         		ACCOUNT1, INVALID_SERIAL, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // validate the response against schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
@@ -124,7 +125,7 @@ public class DecrementOverrideLimitRequestEndpointTest {
         //==========================================================================================
         requestElement = LoadManagementTestUtils.createDecrementLimitRequestElement(
         		ACCOUNT1, INCORRECT_SERIAL, XmlVersionUtils.YUKON_MSG_VERSION_1_0, reqSchemaResource);
-        respElement = impl.invoke(requestElement, user);
+        respElement = impl.invoke(requestElement, AUTH_USER);
         
         // validate the response against schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);

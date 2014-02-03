@@ -20,10 +20,14 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.yukon.api.account.endpoint.RemoveAccountsRequestEndpoint;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class RemoveAccountsRequestEndpointTest {
-    private RemoveAccountsRequestEndpoint impl;
+	
+	private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+	
+	private RemoveAccountsRequestEndpoint impl;
 
     @Before
     public void setUp() throws Exception {
@@ -58,8 +62,7 @@ public class RemoveAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(successInputElement, reqSchemaResource);
         
-        LiteYukonUser user = new LiteYukonUser();
-        Element successOutputElement = impl.invoke(successInputElement, user);
+        Element successOutputElement = impl.invoke(successInputElement, AUTH_USER);
         
         // Test response against schema definition
         TestUtils.validateAgainstSchema(successOutputElement, respSchemaResource);
@@ -93,7 +96,7 @@ public class RemoveAccountsRequestEndpointTest {
         // Test request against schema definition
         TestUtils.validateAgainstSchema(invalidAccountNumInputElement, reqSchemaResource);
         
-        Element invalidAccountNumOutputElement = impl.invoke(invalidAccountNumInputElement, user);
+        Element invalidAccountNumOutputElement = impl.invoke(invalidAccountNumInputElement, AUTH_USER);
         
         // Test response against schema definition
         TestUtils.validateAgainstSchema(invalidAccountNumOutputElement, respSchemaResource);

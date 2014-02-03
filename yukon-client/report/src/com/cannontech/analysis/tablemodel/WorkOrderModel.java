@@ -52,12 +52,12 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -821,9 +821,9 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		if (columnNames == null) {
             String addtlOrderNumberStr = ADDTL_ORDER_NO_STRING; 
             RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-            LiteYukonUser user = new LiteYukonUser();
-            user.setUserID(getUserID());
             
+            //not fully populated, but only need userId in rolePropertyDao.checkRole
+            LiteYukonUser user = new LiteYukonUser(getUserID());
             if( getUserID() != null)
             {
                 boolean hasRole = false;

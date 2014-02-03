@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.PasswordPolicy;
@@ -127,13 +126,15 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         	return PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED;
         }
 
-        try {
-            UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
-            if (!passwordPolicy.isPasswordAgeRequirementMet(userAuthenticationInfo)) {
-                return PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET;
-            }
-        } catch (EmptyResultDataAccessException e) {
-            // This is a new user so the password has no age...pass.
+        // if existing user, check password age and recently used list
+        if (user != null) {
+    		UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+    		if (!passwordPolicy.isPasswordAgeRequirementMet(userAuthenticationInfo)) {
+    			return PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET;
+    		}
+	        if (authenticationService.isPasswordBeingReused(user, password, passwordPolicy.getPasswordHistory())) {
+	            return PasswordPolicyError.PASSWORD_USED_TOO_RECENTLY;
+	        }
         }
         
         if (authenticationService.isPasswordBeingReused(user, password, passwordPolicy.getPasswordHistory())) {

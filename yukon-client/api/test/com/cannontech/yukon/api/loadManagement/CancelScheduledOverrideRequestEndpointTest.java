@@ -35,7 +35,7 @@ import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CancelScheduledOverrideRequestEndpointTest {
     
-    private static final LiteYukonUser AUTH_USER = new LiteYukonUser();
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
     private static final LiteYukonUser NOT_AUTH_USER = MockRolePropertyDao.getUnAuthorizedUser();
     
     private static final String KNOWN_ACCOUNT_NUMBER = "A";

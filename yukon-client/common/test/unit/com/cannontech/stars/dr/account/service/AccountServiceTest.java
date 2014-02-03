@@ -239,10 +239,10 @@ public class AccountServiceTest extends EasyMockSupport {
         replayAll();
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
-        LiteYukonUser user = new LiteYukonUser();
+        LiteYukonUser operator = new LiteYukonUser(4, "neverAuthenticatedOperator", LoginStatusEnum.ENABLED);
         
         try {
-            accountService.addAccount(updatableAccount, user);
+            accountService.addAccount(updatableAccount, operator);
         }catch(InvalidAccountNumberException e) {}
         catch(AccountNumberUnavailableException e) {}
         catch(UserNameUnavailableException e) {}
@@ -259,11 +259,12 @@ public class AccountServiceTest extends EasyMockSupport {
         updatableAccount.setAccountNumber(accountDto1.getAccountNumber());
         updatableAccount.setAccountDto(accountDto1);
 
-        LiteYukonUser user = new LiteYukonUser();
+        LiteYukonUser operatorUser = new LiteYukonUser(4, "neverAuthenticatedOperator", LoginStatusEnum.ENABLED);
 
-        LiteYukonUser newuser = new LiteYukonUser(); 
-        newuser.setUsername(updatableAccount.getAccountDto().getUserName());
-        newuser.setLoginStatus(LoginStatusEnum.ENABLED);
+        // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be.
+        LiteYukonUser newuser = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, 
+        											updatableAccount.getAccountDto().getUserName(),
+        											LoginStatusEnum.ENABLED);
 
         LiteCustomer liteCustomer = new LiteCustomer();
         liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
@@ -280,7 +281,7 @@ public class AccountServiceTest extends EasyMockSupport {
         yukonUserDaoMock.save(newuser);
         authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
         
-        dbChangeManager.processDbChange(user.getLiteID(),
+        dbChangeManager.processDbChange(newuser.getLiteID(),
                                         DBChangeMsg.CHANGE_YUKON_USER_DB,
                                         DBChangeMsg.CAT_YUKON_USER,
                                         DBChangeMsg.CAT_YUKON_USER,
@@ -288,7 +289,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(addressDaoMock.add(new LiteAddress())).andReturn(true);
         expect(contactServiceMock.createContact(updatableAccount.getAccountDto().getFirstName(), 
-                                                updatableAccount.getAccountDto().getLastName(), user));
+                                                updatableAccount.getAccountDto().getLastName(), newuser));
         expect(authenticationServiceMock.getDefaultAuthType()).andReturn(AuthType.NONE);
         dbChangeManager.processDbChange(1,
                                         DBChangeMsg.CHANGE_CONTACT_DB,
@@ -302,7 +303,7 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(contactNotificationServiceMock.createNotification(new LiteContact(1), ContactNotificationType.EMAIL, 
                                                                  updatableAccount.getAccountDto().getEmailAddress())).andReturn(null);
         expectLastCall().times(3);
-        expect(authDaoMock.getUserTimeZone(user)).andReturn(TimeZone.getDefault());
+        expect(authDaoMock.getUserTimeZone(newuser)).andReturn(TimeZone.getDefault());
         expect(energyCompanySettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,
@@ -328,14 +329,14 @@ public class AccountServiceTest extends EasyMockSupport {
         ecToAccountMapping.setEnergyCompanyId(YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDaoMock.addECToAccountMapping(ecToAccountMapping);
-        accountEventLogServiceMock.accountAdded(user, updatableAccount.getAccountDto().getAccountNumber());
+        accountEventLogServiceMock.accountAdded(operatorUser, updatableAccount.getAccountDto().getAccountNumber());
         
         replayAll();
         
         /*
          * run test
          */
-        accountService.addAccount(updatableAccount, user);
+        accountService.addAccount(updatableAccount, operatorUser);
     }
 
 }

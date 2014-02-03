@@ -21,16 +21,17 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.CurrentlyActiveProgramsRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.utils.TestUtils;
 
 public class CurrentlyActiveProgramsRequestEndpointTest {
 
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
+    
     private CurrentlyActiveProgramsRequestEndpoint impl;
     private MockLoadControlService mockService;
     
     private Namespace ns = YukonXml.getYukonNamespace();
-    private static final String EMTPY_RETURN_USER = "EMPTY";
-    private static final String LIST_RETURN_USER = "LIST";
     
     @Before
     public void setUp() throws Exception {
@@ -39,23 +40,30 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         
         impl = new CurrentlyActiveProgramsRequestEndpoint();
         impl.setLoadControlService(mockService);
+        impl.setRolePropertyDao(new MockRolePropertyDao());
         impl.initialize();
     }
     
     private class MockLoadControlService extends LoadControlServiceAdapter {
         
+    	private boolean returnEmptyList = true;
         @Override
         public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
             
             List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
-            if (!user.getUsername().equals(EMTPY_RETURN_USER)){
-                MockProgramStatus program1 = new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
+            if (returnEmptyList) {
+            	return programStatuses;
+            } else {
+            	MockProgramStatus program1 = new MockProgramStatus("Program1", LMProgramBase.STATUS_ACTIVE, "2008-10-13T12:30:00Z", "2008-10-13T21:40:01Z", "Gear1");
                 MockProgramStatus program2 = new MockProgramStatus("Program2", LMProgramBase.STATUS_INACTIVE, "2008-10-14T13:45:01Z", null, "Gear2");
                 programStatuses.add(program1);
                 programStatuses.add(program2);
+                return programStatuses;
             }
-            
-            return programStatuses;
+        }
+        
+        public void setReturnEmptyList(boolean isEmpty) {
+        	returnEmptyList = isEmpty;
         }
     }
     
@@ -79,9 +87,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         // run and validate response against xsd
-        LiteYukonUser emptyReturnUser = new LiteYukonUser();
-        emptyReturnUser.setUsername(EMTPY_RETURN_USER);
-        responseElement = impl.invoke(requestElement, emptyReturnUser);
+        mockService.setReturnEmptyList(true);
+        responseElement = impl.invoke(requestElement, AUTH_USER);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);
@@ -99,9 +106,8 @@ public class CurrentlyActiveProgramsRequestEndpointTest {
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
         // run and validate response against xsd
-        LiteYukonUser user = new LiteYukonUser();
-        user.setUsername(LIST_RETURN_USER);
-        responseElement = impl.invoke(requestElement, user);
+        mockService.setReturnEmptyList(false);
+        responseElement = impl.invoke(requestElement, AUTH_USER);
         TestUtils.validateAgainstSchema(responseElement, responseSchemaResource);
         
         outputTemplate = YukonXml.getXPathTemplateForElement(responseElement);

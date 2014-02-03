@@ -210,8 +210,8 @@ public class OperatorLoginController {
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
 
         //validate login
-        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(new LiteYukonUser());
-        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(new LiteYukonUser());
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
+        LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
 
         passwordValidator.validate(operatorLogin, bindingResult);
         usernameValidator.validate(operatorLogin, bindingResult);

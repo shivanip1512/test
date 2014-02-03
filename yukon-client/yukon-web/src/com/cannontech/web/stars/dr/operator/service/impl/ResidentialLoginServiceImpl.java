@@ -44,16 +44,16 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 LiteUserGroup residentialUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
                 
                 // Build up the user for creation
-                LiteYukonUser newUser = new LiteYukonUser();
-                newUser.setUsername(loginBackingBean.getUsername());
+                LoginStatusEnum loginStatus = (loginBackingBean.isLoginEnabled() ? 
+                						LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED);
+
+                // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be.
+                LiteYukonUser newUser = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, 
+                						loginBackingBean.getUsername(), 
+                						loginStatus);
+
                 if (residentialUserGroup != null) {
                     newUser.setUserGroupId(residentialUserGroup.getUserGroupId());
-                }
-                
-                if (loginBackingBean.isLoginEnabled()) {
-                    newUser.setLoginStatus(LoginStatusEnum.ENABLED);
-                } else {
-                    newUser.setLoginStatus(LoginStatusEnum.DISABLED);
                 }
 
                 yukonUserDao.save(newUser);

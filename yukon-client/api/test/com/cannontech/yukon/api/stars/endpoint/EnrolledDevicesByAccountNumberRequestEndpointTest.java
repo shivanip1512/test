@@ -31,11 +31,14 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.api.loadManagement.mocks.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.cannontech.yukon.api.utils.TestUtils;
 import com.google.common.collect.Lists;
 
 public class EnrolledDevicesByAccountNumberRequestEndpointTest {
+
+    private static final LiteYukonUser AUTH_USER = MockRolePropertyDao.getAuthorizedUser();
 
     private Namespace ns;
     private EnrolledDevicesByAccountNumberRequestEndpoint impl;
@@ -124,9 +127,8 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
 
-        // invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invoke(reqElement, user);
+        // invoke test with authorized user; NOTE: user doesn't appear to ever actually be read
+        Element respElement = impl.invoke(reqElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/EnrolledDevicesByAccountNumberResponse.xsd",
@@ -159,9 +161,8 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
 
-        // invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invoke(reqElement, user);
+        // invoke test with authorized user; NOTE: user doesn't appear to ever actually be read
+        Element respElement = impl.invoke(reqElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/EnrolledDevicesByAccountNumberResponse.xsd",
@@ -198,9 +199,8 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
                                                            this.getClass());
         TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
 
-        // invoke test with authorized user
-        LiteYukonUser user = new LiteYukonUser();
-        Element respElement = impl.invoke(reqElement, user);
+        // invoke test with authorized user; NOTE: user doesn't appear to ever actually be read
+        Element respElement = impl.invoke(reqElement, AUTH_USER);
 
         // verify the respElement is valid according to schema
         Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/EnrolledDevicesByAccountNumberResponse.xsd",

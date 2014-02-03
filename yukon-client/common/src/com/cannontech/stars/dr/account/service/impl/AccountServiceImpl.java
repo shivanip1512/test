@@ -162,9 +162,10 @@ public class AccountServiceImpl implements AccountService {
          */
         LiteYukonUser user = null;
         if(!StringUtils.isBlank(accountDto.getUserName())) {
-            user = new LiteYukonUser(); 
-            user.setUsername(accountDto.getUserName());
-            user.setLoginStatus(LoginStatusEnum.ENABLED);
+            // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be. 
+            user = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, 
+            						accountDto.getUserName(),
+            						LoginStatusEnum.ENABLED);
             try {
                 LiteUserGroup operatorUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
                 user.setUserGroupId(operatorUserGroup.getUserGroupId());
@@ -647,9 +648,10 @@ public class AccountServiceImpl implements AccountService {
                 }
             } else {
                 // Create a new login.
-                LiteYukonUser newUser = new LiteYukonUser(); 
-                newUser.setUsername(accountDto.getUserName());
-                newUser.setLoginStatus(LoginStatusEnum.ENABLED);
+                // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be.
+                LiteYukonUser newUser = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID,
+                											accountDto.getUserName(),
+                											LoginStatusEnum.ENABLED);
 
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(newUser, accountDto.getUserGroup(), accountNumber);

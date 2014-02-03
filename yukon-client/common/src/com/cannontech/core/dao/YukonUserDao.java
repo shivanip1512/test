@@ -149,6 +149,7 @@ public interface YukonUserDao {
 
     /**
      * Inserts or updates a lite yukon user.
+     * Requires userId = LiteYukonUser.CREATE_NEW_USER_ID for _new_ user to be created. (Not preferred!)
      */
     public void save(LiteYukonUser user);
 
