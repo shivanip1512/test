@@ -255,13 +255,17 @@ public class MeterReadPercentageModel extends BareDatedReportModelBase<MeterRead
      * 
      * @param This method calculates read percentage (successful/(total - unsupported - disabled -
      *            no data))
-     * @return
+     * @return Returns 0 if total is 0.
      */
     private double calculateReadPercent(ModelRow groupRow) {
-        return groupRow.countSuccessful
-               / (groupRow.countTotal - groupRow.countUnsupported.doubleValue()
-                  - groupRow.countDisabled.doubleValue() - groupRow.countNoData
-                   .doubleValue());
+    	try {
+	        return groupRow.countSuccessful
+	               / (groupRow.countTotal - groupRow.countUnsupported.doubleValue()
+	                  - groupRow.countDisabled.doubleValue() - groupRow.countNoData.doubleValue());
+    	} catch (ArithmeticException e) {
+    		log.error("cannot divide " + groupRow.countSuccessful + " by 0.", e);
+    		return 0;
+    	}
     }
 
     /**
