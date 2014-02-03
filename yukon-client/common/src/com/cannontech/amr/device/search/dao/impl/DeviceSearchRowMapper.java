@@ -5,6 +5,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.cannontech.amr.device.search.model.DeviceSearchField;
 import com.cannontech.amr.device.search.model.DeviceSearchResultEntry;
 import com.cannontech.amr.device.search.model.SearchField;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -69,8 +70,9 @@ public class DeviceSearchRowMapper implements YukonRowMapper<DeviceSearchResultE
         ResultSetMetaData metaData = wrappedResultSet.getMetaData();
         for(int columnIndex = 1; columnIndex <= metaData.getColumnCount(); columnIndex++) {
             Object value = wrappedResultSet.getObject(columnIndex);
-            if(value != null) {
-                entry.putField(metaData.getColumnLabel(columnIndex), value.toString());
+            if (value != null) {
+                SearchField field = DeviceSearchField.getByDatabaseColumnName(metaData.getColumnLabel(columnIndex));
+                entry.putField(field.getFieldName(), value.toString());
             }
         }
         
