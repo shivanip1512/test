@@ -45,7 +45,6 @@
         <tfoot></tfoot>
         <tbody>
             <c:forEach var="row" items="${displayData}">
-                <c:set var="dataVar" value=""/>
                 <tr id="row-${row.pointId}">
                     <td>
                         <c:if test="${display.acknowledgable}">
