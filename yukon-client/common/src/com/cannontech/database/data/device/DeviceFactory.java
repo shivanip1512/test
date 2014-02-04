@@ -328,7 +328,7 @@ public final class DeviceFactory {
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
         case LM_GROUP_EXPRESSCOMM:
-            returnDevice = new com.cannontech.database.data.device.lm.LMGroupExpressCom();
+            returnDevice = new com.cannontech.database.data.device.lm.LMGroupPlcExpressCom();
             returnDevice.setDeviceType( PAOGroups.STRING_EXPRESSCOMM_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;

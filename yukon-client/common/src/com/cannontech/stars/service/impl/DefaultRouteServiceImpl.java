@@ -24,6 +24,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupPlcExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
@@ -154,10 +155,10 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         // Checks to see if the LMGroupExpressCom exists
         String nameOfDefaultRoute = energyCompany.getName() + " Default Route";
         List<Integer> paoObjectIds = getDeviceGroupByName(nameOfDefaultRoute);
-        LMGroupExpressCom expresscomGroup;
+        LMGroupPlcExpressCom expresscomGroup;
         if (paoObjectIds.size() == 0) {
             //  Creates the expresscom if it doesn't exist.
-            expresscomGroup = (LMGroupExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
+            expresscomGroup = (LMGroupPlcExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
             expresscomGroup.setPAOName(nameOfDefaultRoute);  
             expresscomGroup.setRouteID(routeID);
             dbPersistentDao.performDBChange(expresscomGroup, TransactionType.INSERT);
@@ -165,7 +166,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             if (paoObjectIds.size() > 1) {
                 log.warn("Expected one group ID, got multiple, continuing with first: " + paoObjectIds);
             }
-            expresscomGroup = new LMGroupExpressCom();
+            expresscomGroup = new LMGroupPlcExpressCom();
             
             int deviceID = paoObjectIds.get(0);
             expresscomGroup.setDeviceID(deviceID);

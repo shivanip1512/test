@@ -1,12 +1,10 @@
 package com.cannontech.database.data.device.lm;
 
-/**
- * This type was created in VisualAge.
- */
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 
-public class LMGroupExpressCom extends LMGroup implements IGroupRoute {
+public abstract class LMGroupExpressCom extends LMGroup {
     protected com.cannontech.database.db.device.lm.LMGroupExpressCom lmGroupExpressComm = null;
 
     private LMGroupExpressComAddress serviceProviderAddress = null;
@@ -18,21 +16,13 @@ public class LMGroupExpressCom extends LMGroup implements IGroupRoute {
     private LMGroupExpressComAddress userAddress = null;
     private LMGroupExpressComAddress splinterAddress = null;
 
-    /**
-     * LMGroupVersacom constructor comment.
-     */
-    public LMGroupExpressCom() {
+    public LMGroupExpressCom(PaoType paoType) {
         super();
-
-        // we must always have our ExpressComm group not null
+        //we must always have our ExpressComm group not null
         lmGroupExpressComm = new com.cannontech.database.db.device.lm.LMGroupExpressCom();
-
-        getYukonPAObject().setType(com.cannontech.database.data.pao.PAOGroups.STRING_EXPRESSCOMM_GROUP[0]);
+        getYukonPAObject().setType(paoType.getDbString());
     }
 
-    /**
-     * add method comment.
-     */
     public void add() throws java.sql.SQLException {
         super.add();
 
@@ -103,17 +93,6 @@ public class LMGroupExpressCom extends LMGroup implements IGroupRoute {
 
     }
 
-    public void setRouteID(Integer rtID_) {
-        getLMGroupExpressComm().setRouteID(rtID_);
-    }
-
-    public Integer getRouteID() {
-        return getLMGroupExpressComm().getRouteID();
-    }
-
-    /**
-     * delete method comment.
-     */
     public void delete() throws java.sql.SQLException {
         getLMGroupExpressComm().delete();
 
@@ -125,10 +104,6 @@ public class LMGroupExpressCom extends LMGroup implements IGroupRoute {
         com.cannontech.database.db.device.lm.LMGroupExpressCom.purgeUnusedAddresses(getDbConnection());
     }
 
-    /**
-     * Insert the method's description here. Creation date: (6/6/2002 11:08:05
-     * AM)
-     */
     private void deleteAddresses() throws java.sql.SQLException {
         // Only delete the addresses if they are not used anymore
         if (!com.cannontech.database.db.device.lm.LMGroupExpressCom.isAddressUsed(getDbConnection(), getServiceProviderAddress().getAddressID())) {
