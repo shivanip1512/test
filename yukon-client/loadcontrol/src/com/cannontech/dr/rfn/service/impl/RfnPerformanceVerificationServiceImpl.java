@@ -2,16 +2,23 @@ package com.cannontech.dr.rfn.service.impl;
 
 import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.dao.PerformanceVerificationDao;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
@@ -31,6 +38,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private ScheduledExecutor scheduledExecutor;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
     
     private final long SECONDS_PER_DAY = 24 * 60 * 60;
     
@@ -75,5 +83,21 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
                 }
             }
         }, delay, SECONDS_PER_DAY, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(Range<Instant> dateRange,
+                                                                                int numberPerPage,
+                                                                                int pageNumber) {
+        List<Integer> unknownDeviceIds = performanceVerificationDao.getDeviceIdsWithUnknownStatus(dateRange);
+        int startIndex = (pageNumber-1) * numberPerPage;
+        int endIndex = Math.min(startIndex+numberPerPage, unknownDeviceIds.size());
+
+        if (startIndex > unknownDeviceIds.size()) {
+            return Collections.emptyMap();
+        }
+        unknownDeviceIds = unknownDeviceIds.subList(startIndex, endIndex);
+
+        return Collections.emptyMap();//assetAvailabilityService.getAssetAvailabilityStatus(unknownDeviceIds);
     }
 }

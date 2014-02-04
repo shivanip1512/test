@@ -118,6 +118,24 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
+    public List<Integer> getDeviceIdsWithUnknownStatus(Range<Instant> range) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM RfBroadcastEventDevice rbed");
+        sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
+        sql.append("WHERE SendTime").gt(range.getMin());
+        sql.append("AND SendTime").lt(range.getMax());
+        sql.append("AND Result").eq_k(UNKNOWN);
+
+        return jdbcTemplate.query(sql, new YukonRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getInt("DeviceId");
+            }
+        });
+    }
+    
+    @Override
     public PerformanceVerificationEventMessage createVerificationEvent() {
         int nextId = nextValueHelper.getNextValue("RfBroadcastEvent");
         Instant now = Instant.now();

@@ -54,4 +54,6 @@ public interface PerformanceVerificationDao {
      *      enrolled at the time the event was broadcast.
      */
     public void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
+
+    List<Integer> getDeviceIdsWithUnknownStatus(Range<Instant> range);
 }
