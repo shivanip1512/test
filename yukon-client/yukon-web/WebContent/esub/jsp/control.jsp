@@ -1,4 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
 <%@page import="com.cannontech.user.YukonUserContext"%>
 <%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
 <%@page import="com.cannontech.core.dao.TagDao"%>

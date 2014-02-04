@@ -1,3 +1,6 @@
+<%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<%@page import="com.cannontech.user.YukonUserContext"%>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%> 
 <%@ page import="com.cannontech.core.dao.PointDao" %>
 <%@ page import="com.cannontech.core.dao.DeviceDao" %>
@@ -9,8 +12,11 @@
 <%@ page import="com.cannontech.tags.Tag" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.util.List" %>
-<jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
 <%
+	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+	LiteYukonUser YUKON_USER = userContext.getYukonUser();
+
+
 	int pointID = Integer.parseInt(request.getParameter("pointid"));
 	
 	//The next parameters are only used when adding a tag
