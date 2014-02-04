@@ -1,4 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
 <%@page import="com.cannontech.core.dao.TagDao"%>
 <%@page import="com.cannontech.core.dao.StateDao"%>
 <%@page import="com.cannontech.core.dao.PaoDao"%>
@@ -19,8 +21,10 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
+
 <%
+	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+	LiteYukonUser YUKON_USER = userContext.getYukonUser();
 	
 	String pointIDStr = request.getParameter("pointid");
 	String instanceIDStr = request.getParameter("instanceid");
