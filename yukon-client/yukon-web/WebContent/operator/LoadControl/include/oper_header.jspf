@@ -17,17 +17,14 @@
 <%@ page import="com.cannontech.servlet.YukonUserContextUtils" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
- 
-<jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
 
 <%  
     String content;
 
-  	// YUKON_USER is an ugly name, give it an alias
-	LiteYukonUser user = YUKON_USER;	
     int energyCompanyID = 1;
 	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
     TimeZone tz = userContext.getTimeZone();
+    LiteYukonUser user = userContext.getYukonUser();
     
     if( YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user) != null) { 
     	energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(user).getEnergyCompanyID();
