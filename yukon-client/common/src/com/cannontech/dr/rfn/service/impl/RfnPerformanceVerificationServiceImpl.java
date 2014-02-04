@@ -48,18 +48,23 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
                     try {
                         log.debug("Using broadcast messaging for performance verification command.");
     
-                        // Create the event.
-                        PerformanceVerificationEventMessage verificationEvent = performanceVerificationDao.createVerificationEvent();
-                        
-                        // Log the enrolled devices we care about.
                         Set<Integer> deviceIds = enrollmentDao.getEnrolledDevicesByTypes(PaoType.getRfLcrTypes());
-                        performanceVerificationDao.writeVerificationEventForDevices(verificationEvent.getMessageId(), deviceIds);
                         
-                        LmCommand command = new LmCommand();
-                        command.setType(LmHardwareCommandType.PERFORMANCE_VERIFICATION);
-                        command.getParams().put(LmHardwareCommandParam.UNIQUE_MESSAGE_ID, verificationEvent.getMessageId());
-                        
-                        rfCommandStrategy.sendBroadcastCommand(command);
+                        if (!deviceIds.isEmpty()) {
+                            // Create the event.
+                            PerformanceVerificationEventMessage verificationEvent = performanceVerificationDao.createVerificationEvent();
+                            
+                            // Log the enrolled devices we care about.
+                            performanceVerificationDao.writeNewVerificationEventForDevices(verificationEvent.getMessageId(), deviceIds);
+                            
+                            LmCommand command = new LmCommand();
+                            command.setType(LmHardwareCommandType.PERFORMANCE_VERIFICATION);
+                            command.getParams().put(LmHardwareCommandParam.UNIQUE_MESSAGE_ID, verificationEvent.getMessageId());
+                            
+                            rfCommandStrategy.sendBroadcastCommand(command);
+                        } else {
+                            log.info("No enrolled devices exist for the performance verification event. No message will be broadcast.");
+                        }
                     } catch (Exception e) {
                         // something here.
                         log.error("Error occurred during the sending of the RFN performance verification message.", e);

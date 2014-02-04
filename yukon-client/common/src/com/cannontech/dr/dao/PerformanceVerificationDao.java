@@ -45,5 +45,13 @@ public interface PerformanceVerificationDao {
      * @param messageId the unique message id of the event
      * @param deviceIds the deviceIds of the devices being sent the message.
      */
-    void writeVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
+    public void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
+
+    /**
+     * Writes unenrolled success messages for a collection of devices.
+     * @param messageId the unique messageId of the event
+     * @param deviceIds the deviceIds of the devices who have reported back the unique id but who were not
+     *      enrolled at the time the event was broadcast.
+     */
+    public void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
 }

@@ -14,7 +14,7 @@ public enum LmHardwareCommandParam {
     DURATION(Duration.class), // Currently only used for opt out duration in hours
     FORCE_IN_SERVICE(Boolean.class),
     SPID(Integer.class),
-    UNIQUE_MESSAGE_ID(Integer.class);
+    UNIQUE_MESSAGE_ID(Long.class);
     
     private Class<?> clazz;
     private LmHardwareCommandParam(Class<?> clazz) {

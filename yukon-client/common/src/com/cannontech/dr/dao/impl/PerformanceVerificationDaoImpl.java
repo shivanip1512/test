@@ -1,8 +1,6 @@
 package com.cannontech.dr.dao.impl;
 
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUCCESS;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -136,7 +134,24 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public void writeVerificationEventForDevices(long messageId, Set<Integer> deviceIds) {
+    public void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds) {
+        writeVerificationEventForDevices(messageId, deviceIds, UNKNOWN);
+    }
+    
+    @Override
+    public void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds) {
+        writeVerificationEventForDevices(messageId, deviceIds, SUCCESS_UNENROLLED);
+    }
+    
+    /**
+     * Writes entries to the RfBroadcastEventDevice table for all of the specified devices. 
+     * @param messageId the unique message id of the broadcast event
+     * @param deviceIds the device ids the event is being logged for.
+     * @param status - the status of the broadcast event.
+     */
+    private void writeVerificationEventForDevices(long messageId, 
+                                                  Set<Integer> deviceIds, 
+                                                  PerformanceVerificationMessageStatus status) {
         for (Integer deviceId : deviceIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
@@ -146,7 +161,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             params.addValue("RfBroadcastEventDeviceId", rowId);
             params.addValue("DeviceId", deviceId);
             params.addValue("RfBroadcastEventId", messageId);
-            params.addValue("Result", UNKNOWN);
+            params.addValue("Result", status);
             
             jdbcTemplate.update(sql);
         }

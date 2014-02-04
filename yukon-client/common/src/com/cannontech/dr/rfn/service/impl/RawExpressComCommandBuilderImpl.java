@@ -15,7 +15,6 @@ import com.cannontech.common.exception.InvalidExpressComSerialNumberException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.dr.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -40,7 +39,6 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private LMGroupDao lmGroupDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private PerformanceVerificationDao performanceVerificationDao;
 
     @Override
     public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand)
