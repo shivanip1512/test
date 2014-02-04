@@ -3,7 +3,6 @@ package com.cannontech.dr.dao;
 import java.util.List;
 import java.util.Set;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.Range;
@@ -14,21 +13,21 @@ import com.cannontech.dr.model.PerformanceVerificationEventStats;
 public interface PerformanceVerificationDao {
 
     /**
-     * @Returns statistics for messages sent from {@code stop.minus(duration)} to {@code stop}.
+     * @return statistics for messages sent in {@code range}.
      * Statistics returned are per-message sent.
      */
     List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range);
 
     /**
-     * @Returns statistics for messages sent from {@code stop.minus(duration)} to {@code stop}. Statistics are averaged
+     * @return statistics for messages sent in {@code range}. Statistics are averaged
      * for each message accounted for and one statistic is returned.
      * 
-     * Use {@link #getReports(Duration, Instant)} for per-message stats
+     * Use {@link #getReports(Range)} for per-message stats
      */
     PerformanceVerificationEventStats getAverageReport(Range<Instant> range);
 
     /**
-     * @Returns a list of messages sent from {@code stop.minus(duration)} to {@code stop}.
+     * @return a list of messages sent in {@code range}.
      */
     List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range);
     
@@ -45,7 +44,7 @@ public interface PerformanceVerificationDao {
      * @param messageId the unique message id of the event
      * @param deviceIds the deviceIds of the devices being sent the message.
      */
-    public void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
+    void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
 
     /**
      * Writes unenrolled success messages for a collection of devices.
@@ -53,7 +52,10 @@ public interface PerformanceVerificationDao {
      * @param deviceIds the deviceIds of the devices who have reported back the unique id but who were not
      *      enrolled at the time the event was broadcast.
      */
-    public void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
+    void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
 
+    /**
+     * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast messages sent in {@code range}.
+     */
     List<Integer> getDeviceIdsWithUnknownStatus(Range<Instant> range);
 }

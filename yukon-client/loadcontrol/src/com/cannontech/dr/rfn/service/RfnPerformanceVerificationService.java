@@ -15,6 +15,11 @@ public interface RfnPerformanceVerificationService {
      */
     void schedulePerformanceVerificationMessaging();
     
+    /**
+     * For messages sent in {@code range} which currently have a status of UNKNOWN,
+     * this method will return the asset availability status for each device. 
+     * @Returns Map of DeviceId to asset availability
+     */
     Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(Range<Instant> dateRange, int numberPerPage,
                                                                          int pageNumber);
 }
