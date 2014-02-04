@@ -23,7 +23,7 @@
     <span style="margin-right: 10px;">
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
-    <span class="label label-success">${test.success}</span>
-    <span class="label label-danger">${test.failed}</span>
-    <span class="label label-default">${test.unknown}</span>
+    <span class="label label-success">${test.numSuccesses}</span>
+    <span class="label label-danger">${test.numFailures}</span>
+    <span class="label label-default">${test.numUnknowns}</span>
 </div>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -90,12 +91,16 @@ public class HomeController {
                     == PreferenceOnOff.ON;
         if (rfPerformance) {
             LocalTime testSchedule = new LocalTime(5, 0);
-            PerformanceVerificationEventStats lastTest =
-                performanceVerificationDao.getAverageReport(Duration.standardDays(1), Instant.now());
-            PerformanceVerificationEventStats last7Days =
-                performanceVerificationDao.getAverageReport(Duration.standardDays(6), Instant.now().minus(Duration.standardDays(1)));
-            PerformanceVerificationEventStats last30Days =
-                performanceVerificationDao.getAverageReport(Duration.standardDays(30), Instant.now().minus(Duration.standardDays(1)));
+            Instant now = new Instant();
+            Range<Instant> lastTestRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
+            // Not including most recent day, which is likely to be 'UNKNOWN' and will throw off stats
+            Range<Instant> lastWeekRange = Range.inclusive(now.minus(Duration.standardDays(7)), now.minus(Duration.standardDays(1)));
+            Range<Instant> lastMonthRange = Range.inclusive(now.minus(Duration.standardDays(30)), now.minus(Duration.standardDays(1)));
+
+            PerformanceVerificationEventStats lastTest = performanceVerificationDao.getAverageReport(lastTestRange);
+            PerformanceVerificationEventStats last7Days = performanceVerificationDao.getAverageReport(lastWeekRange);
+            PerformanceVerificationEventStats last30Days = performanceVerificationDao.getAverageReport(lastMonthRange);
+
             model.addAttribute("testSchedule", testSchedule);
             model.addAttribute("lastTest", lastTest);
             model.addAttribute("last7Days", last7Days);

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
@@ -16,7 +17,7 @@ public interface PerformanceVerificationDao {
      * @Returns statistics for messages sent from {@code stop.minus(duration)} to {@code stop}.
      * Statistics returned are per-message sent.
      */
-    public List<PerformanceVerificationEventMessageStats> getReports(Duration duration, Instant stop);
+    List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range);
 
     /**
      * @Returns statistics for messages sent from {@code stop.minus(duration)} to {@code stop}. Statistics are averaged
@@ -24,19 +25,19 @@ public interface PerformanceVerificationDao {
      * 
      * Use {@link #getReports(Duration, Instant)} for per-message stats
      */
-    public PerformanceVerificationEventStats getAverageReport(Duration duration, Instant stop);
+    PerformanceVerificationEventStats getAverageReport(Range<Instant> range);
 
     /**
      * @Returns a list of messages sent from {@code stop.minus(duration)} to {@code stop}.
      */
-    public List<PerformanceVerificationEventMessage> getEventMessages(Duration duration, Instant stop);
+    List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range);
     
     /**
      * Creates a new verification event in the database.
      * @return a {@link PerformanceVerificationEventMessage} object containing the message id of the event
      * and the time the event was created.
      */
-    public PerformanceVerificationEventMessage createVerificationEvent();
+    PerformanceVerificationEventMessage createVerificationEvent();
     
     /**
      * Writes the performance verification event information for the devices being sent
@@ -44,5 +45,5 @@ public interface PerformanceVerificationDao {
      * @param messageId the unique message id of the event
      * @param deviceIds the deviceIds of the devices being sent the message.
      */
-    public void writeVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
+    void writeVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
 }
