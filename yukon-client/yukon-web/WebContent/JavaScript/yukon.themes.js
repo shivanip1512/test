@@ -22,23 +22,25 @@ Yukon.Themes = (function () {
         _chooseText = '',
         _okText = '',
         _cancelText = '',
-        themeMod;
+        mod;
 
-    themeMod = {
+    mod = {
             
         init: function(cfg) {
             
             var pmo = jQuery('#palette-map').data('paletteMap'),
-                popups = jQuery('div[data-image-picker]'),
                 pmoObj,
+                popups = jQuery('div[data-image-picker]'),
                 tcols,
                 colors;
             
-            // move popup divs so we don't end up putting a form inside another form
+            // Move popup divs up to the body so we don't 
+            // end up putting a form inside another form.
             popups.each(function(idx, elem) {
-                jQuery('body').prepend(elem);
+                jQuery('body').prepend(elem); // Prepend with move, not clone the element.
             });
 
+            /** Localized button text */
             _chooseText = cfg.chooseText;
             _okText = cfg.okText;
             _cancelText = cfg.cancelText;
@@ -47,6 +49,7 @@ Yukon.Themes = (function () {
                 return;
             }
             
+            /** Initialize each color picker */ 
             jQuery('.f-color-input').each(function (idx, item) {
                 var item = jQuery(item),
                     color = item.val();
@@ -82,11 +85,13 @@ Yukon.Themes = (function () {
                 });
             });
             
+            /** Delete the theme */
             jQuery('#b-delete').click(function(e) {
                 jQuery('input[name=_method]').val('DELETE');
                 jQuery('#theme-form').submit();
             });
             
+            /** Show an image picker */
             jQuery('a[data-image-picker]').click(function(e) {
                 
                 var link = jQuery(e.currentTarget),
@@ -101,22 +106,25 @@ Yukon.Themes = (function () {
                         imagePicker,
                         selected,
                         first,
-                        category;
+                        category = link.data('imageCategory');
                     
-                    category = link.data('imageCategory');
-                    themeMod.initFileUpload(category);
+                    mod.initFileUpload(category);
                     buttons.push(cancelButton);
                     buttons.push(okButton);
+                    
                     popup.dialog({ autoOpen: false,
                                    height: 500, 
                                    width: 700,
                                    modal : false,
                                    buttons : buttons });
+                    
                     popup.dialog('open');
                     titleBar = jQuery(popup).prev();
-                    // move selected image to beginning of list
+                    
+                    // Move selected image to beginning of list
                     imagePicker = titleBar.parent().find('.image-picker');
-                    // avoid breakage if only one image in the list
+                    
+                    // Avoid breakage if only one image in the list
                     if (1 < imagePicker.find('.image').length) {
                         selected = imagePicker.find('.selected').parent().remove();
                         first = jQuery(imagePicker.find('.image')[0]).parent();
@@ -127,11 +135,12 @@ Yukon.Themes = (function () {
                 return false;
             });
 
-            // if i don't listen for this event it doesn't work, God knows why
+            // If i don't listen for this event it doesn't work, God knows why.
             jQuery(document).on('show.spectrum', 'input', function(e) {
                 e.preventDefault();
             });
             
+            /** Set an image as selected */
             jQuery(document).on('click', '.image-picker .image', function(e) {
                 var selected = jQuery(e.currentTarget),
                 imagePicker = selected.closest('.image-picker');
@@ -141,6 +150,7 @@ Yukon.Themes = (function () {
                 selected.addClass('selected');
             });
             
+            /** New image was choosen */
             jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
                 var imgPicker = jQuery(e.currentTarget),
                     selected = imgPicker.find('.image.selected').data('imageId'),
@@ -153,6 +163,7 @@ Yukon.Themes = (function () {
                 link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected);
             });
 
+            /** Build pallet icon for each theme using it's colors */
             for (pmoObj in pmo) {
                 tcols = jQuery('table[data-theme="' + pmoObj + '"] td');
                 colors = pmo[pmoObj];
@@ -161,6 +172,7 @@ Yukon.Themes = (function () {
                 });
             }
 
+            /** Delete image button handler  */
             jQuery(document).on('click', '.delete-image', function (e) {
                 var button = jQuery(e.currentTarget),
                     imageUrl = button.closest('.image').find('a img').attr('src'),
@@ -171,6 +183,7 @@ Yukon.Themes = (function () {
                 okcancel.removeClass('dn');
             });
 
+            /** Delete image button confirm handler, attempt to delete the image */
             jQuery(document).on('click', '.f-delete-ok', function (e) {
                 var button = jQuery(e.currentTarget),
                     imageParent = button.closest('.section'),
@@ -183,6 +196,7 @@ Yukon.Themes = (function () {
                     jQuery.ajax({
                       url: imageUrl,
                       type: 'post',
+                      // _method is needed by the HiddenHttpMethodFilter which allows us to use other methods like DELETE and PUT
                       data: { _method: 'DELETE'}
                     }).done(function (data, textStatus, jqXHR) {
                         var deleteConfirm = jQuery('.f-delete-confirm');
@@ -199,6 +213,7 @@ Yukon.Themes = (function () {
                 }
             });
             
+            /** Delete image button confirm cancel handler */
             jQuery(document).on('click', '.cancel', function (e) {
                 var button = jQuery(e.currentTarget);
                 e.preventDefault();
@@ -206,6 +221,8 @@ Yukon.Themes = (function () {
             });
             initialized = true;
         },
+        
+        /** Initialize the file uploaders for uploading images. Uses a jquery file upload plugin. */
         initFileUpload: function (category) {
             
             var uploadForm = jQuery('div[data-category="' + category + '"] form');
@@ -251,7 +268,7 @@ Yukon.Themes = (function () {
             uploadForm.fileupload('option', 'formData', {'category': category});
         }
     };
-    return themeMod;
+    return mod;
 }());
 
 jQuery(function () {
