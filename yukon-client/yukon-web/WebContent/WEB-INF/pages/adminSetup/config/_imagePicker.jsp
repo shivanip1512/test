@@ -7,7 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <cti:msgScope paths="yukon.common.imagePicker">
-<div class="separated-sections image-picker" data-category="${category}">
+<div class="separated-sections image-picker" data-category="${category}" data-original-image-id="${selected}">
     <div class="section clearfix">
         <form action="/common/images" method="post">
             <label for="uploader${cti:escapeJavaScript(category)}" class="uploadLabel">

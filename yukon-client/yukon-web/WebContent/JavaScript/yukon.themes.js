@@ -105,12 +105,14 @@ Yukon.Themes = (function () {
                                    buttons : buttons });
                     popup.dialog('open');
                     titleBar = jQuery(popup).prev();
-                    // TODO: will break if only one image in the list
                     // move selected image to beginning of list
                     imagePicker = titleBar.parent().find('.image-picker');
-                    selected = imagePicker.find('.selected').parent().remove();
-                    first = jQuery(imagePicker.find('.image')[0]).parent();
-                    selected.insertBefore(first);
+                    // avoid breakage if only one image in the list
+                    if (1 < imagePicker.find('.image').length) {
+                        selected = imagePicker.find('.selected').parent().remove();
+                        first = jQuery(imagePicker.find('.image')[0]).parent();
+                        selected.insertBefore(first);
+                    }
                 });
 
                 return false;
@@ -123,7 +125,7 @@ Yukon.Themes = (function () {
             
             jQuery(document).on('click', '.image-picker .image', function(e) {
                 var selected = jQuery(e.currentTarget),
-                    imagePicker = selected.closest('.image-picker');
+                imagePicker = selected.closest('.image-picker');
 
                 e.preventDefault();
                 imagePicker.find('.image').removeClass('selected');
@@ -163,7 +165,9 @@ Yukon.Themes = (function () {
             jQuery(document).on('click', '.ok', function (e) {
                 var button = jQuery(e.currentTarget),
                     imageParent = button.closest('.section'),
-                    imageUrl = imageParent.find('a img').attr('src');
+                    imageUrl = imageParent.find('a img').attr('src'),
+                    imagePicker = button.closest('.image-picker'),
+                    originalImageId = imagePicker.data('originalImageId');
 
                 e.preventDefault();
                 if ('undefined' !== typeof imageUrl) {
@@ -177,6 +181,7 @@ Yukon.Themes = (function () {
                             imageParent.toggle('fade', function() {
                                 imageParent.remove();
                             });
+                            imagePicker.find('[data-image-id=' + originalImageId + ']').addClass('selected');
                         } else {
                             deleteConfirm.html(data.message);
                             deleteConfirm.find('.button').addClass('dn');
@@ -213,7 +218,6 @@ Yukon.Themes = (function () {
                         copy = uploadArea.next().clone();
 
                         uploadArea.closest('.image-picker').find('.image.selected').removeClass('selected');
-
                         copy.find('.image').addClass('selected').attr('data-image-id', data.result.image.id);
                         copy.find('.f-name-value').text(data.result.image.name);
                         copy.find('.f-category-value').text(data.result.image.category);
