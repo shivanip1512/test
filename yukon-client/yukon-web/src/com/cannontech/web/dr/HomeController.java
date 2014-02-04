@@ -39,8 +39,8 @@ public class HomeController {
     
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private PaoAuthorizationService paoAuthService;
-    @Autowired private DemandResponseService drService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private DemandResponseService demandResponseService;
     @Autowired private UserPageDao userPageDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
 
@@ -54,12 +54,12 @@ public class HomeController {
         
         LiteYukonUser user = userContext.getYukonUser();
         List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
-        favorites = paoAuthService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
+        favorites = paoAuthorizationService.filterAuthorized(user, favorites, Permission.LM_VISIBLE);
 
         Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
-            sorter = drService.getSorter(sortField, userContext);
+            sorter = demandResponseService.getSorter(sortField, userContext);
             if (favDescending != null && favDescending && sorter != null) {
                 sorter = Ordering.from(sorter).reverse();
             }
@@ -70,11 +70,11 @@ public class HomeController {
 
         List<DisplayablePao> recentlyViewed = userPageDao.getDrRecentViewed(user);
 
-        recentlyViewed = paoAuthService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
+        recentlyViewed = paoAuthorizationService.filterAuthorized(user, recentlyViewed, Permission.LM_VISIBLE);
         sorter = null;
         if (rvSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
-            sorter = drService.getSorter(sortField, userContext);
+            sorter = demandResponseService.getSorter(sortField, userContext);
             if (rvDescending != null && rvDescending && sorter != null) {
                 sorter = Ordering.from(sorter).reverse();
             }
