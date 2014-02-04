@@ -162,6 +162,10 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited);
 
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+
                 break;
             }
             case Command_ResetDeviceRestartBit:
