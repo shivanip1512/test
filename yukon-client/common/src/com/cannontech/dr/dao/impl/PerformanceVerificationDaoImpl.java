@@ -11,15 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.dao.PerformanceVerificationDao;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
@@ -33,21 +34,21 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
     @Override
-    public List<PerformanceVerificationEventMessageStats> getReports(Duration duration, Instant stop) {
+    public List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT Result, rbed.RfBroadcastEventId, Count(*) as count");
         sql.append("FROM RfBroadcastEventDevice rbed");
         sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE SendTime").gt(stop.minus(duration));
-        sql.append("AND SendTime").lt(stop);
+        sql.append("WHERE SendTime").gt(range.getMin());
+        sql.append("AND SendTime").lt(range.getMax());
         sql.append("GROUP BY Result, rbed.RfBroadcastEventId");
 
-        final Map<Integer, Map<PerformanceVerificationMessageStatus, Integer>> stats = new HashMap<>();
+        final Map<Long, Map<PerformanceVerificationMessageStatus, Integer>> stats = new HashMap<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                int messageId = rs.getInt("RfBroadcastEventId");
+                Long messageId = rs.getLong("RfBroadcastEventId");
 
                 if(!stats.containsKey(messageId)) {
                     Map<PerformanceVerificationMessageStatus, Integer> counts = new HashMap<>();
@@ -61,28 +62,28 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
 
-        List<PerformanceVerificationEventMessage> messagesSent = getEventMessages(duration, stop);
+        List<PerformanceVerificationEventMessage> messagesSent = getEventMessages(range);
         List<PerformanceVerificationEventMessageStats> reports = new ArrayList<>();
         for (PerformanceVerificationEventMessage messageSent : messagesSent) {
             Map<PerformanceVerificationMessageStatus, Integer> counts = stats.get(messageSent.getMessageId());
             reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
-                                                                     messageSent.getMessageSent(),
-                                                                     counts.get(SUCCESS),
-                                                                     counts.get(UNSUCCESS),
-                                                                     counts.get(UNKNOWN)));
+                                                                 messageSent.getTimeMessageSent(),
+                                                                 counts.get(SUCCESS),
+                                                                 counts.get(UNSUCCESS),
+                                                                 counts.get(UNKNOWN)));
         }
 
         return reports;
     }
 
     @Override
-    public PerformanceVerificationEventStats getAverageReport(Duration duration, Instant stop) {
+    public PerformanceVerificationEventStats getAverageReport(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Result, Count(*) as count");
         sql.append("FROM RfBroadcastEventDevice rbed");
         sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE SendTime").gt(stop.minus(duration));
-        sql.append("AND SendTime").lt(stop);
+        sql.append("WHERE SendTime").gt(range.getMin());
+        sql.append("AND SendTime").lt(range.getMax());
         sql.append("GROUP BY Result");
 
         final Map<PerformanceVerificationMessageStatus, Integer> counts =
@@ -101,22 +102,20 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
 
     @Override
-    public List<PerformanceVerificationEventMessage> getEventMessages(Duration duration, Instant stop) {
+    public List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfBroadcastEventId, SendTime");
         sql.append("FROM RfBroadcastEvent");
-        sql.append("WHERE SendTime").gt(stop.minus(duration));
-        sql.append("AND SendTime").lt(stop);
+        sql.append("WHERE SendTime").gt(range.getMin());
+        sql.append("AND SendTime").lt(range.getMax());
 
-        final List<PerformanceVerificationEventMessage> eventMessages = new ArrayList<>();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        return jdbcTemplate.query(sql, new YukonRowMapper<PerformanceVerificationEventMessage>() {
             @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                eventMessages.add(new PerformanceVerificationEventMessage(rs.getInt("RfBroadcastEventId"),
-                                                                          rs.getInstant("SendTime")));
+            public PerformanceVerificationEventMessage mapRow(YukonResultSet rs) throws SQLException {
+                return new PerformanceVerificationEventMessage(rs.getLong("RfBroadcastEventId"),
+                                                                          rs.getInstant("SendTime"));
             }
         });
-        return eventMessages;
     }
     
     @Override
