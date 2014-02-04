@@ -51,7 +51,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
                 Long messageId = rs.getLong("RfBroadcastEventId");
 
                 if(!stats.containsKey(messageId)) {
-                    Map<PerformanceVerificationMessageStatus, Integer> counts = new HashMap<>();
+                    Map<PerformanceVerificationMessageStatus, Integer> counts = 
+                            Maps.newHashMapWithExpectedSize(PerformanceVerificationMessageStatus.values().length);
                     for (PerformanceVerificationMessageStatus status : PerformanceVerificationMessageStatus.values()) {
                         counts.put(status, 0);
                     }
