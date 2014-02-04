@@ -1,4 +1,4 @@
-package com.cannontech.dr.dao;
+package com.cannontech.dr.rfn.dao;
 
 import java.util.List;
 import java.util.Set;
@@ -9,6 +9,8 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
+import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.SortBy;
+import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
 
 public interface PerformanceVerificationDao {
 
@@ -57,5 +59,6 @@ public interface PerformanceVerificationDao {
     /**
      * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast messages sent in {@code range}.
      */
-    List<Integer> getDeviceIdsWithUnknownStatus(Range<Instant> range);
+    List<PerformanceVerificationEventMessageDeviceStatus> getStatusUnknownDevices(Range<Instant> range,
+                                                                                  SortBy sortBy);
 }

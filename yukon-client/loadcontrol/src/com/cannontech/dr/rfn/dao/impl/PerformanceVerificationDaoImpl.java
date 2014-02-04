@@ -1,6 +1,9 @@
-package com.cannontech.dr.dao.impl;
+package com.cannontech.dr.rfn.dao.impl;
 
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.*;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS_UNENROLLED;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUCCESS;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,11 +23,12 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.dao.PerformanceVerificationDao;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
+import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
 import com.google.common.collect.Maps;
 
 public class PerformanceVerificationDaoImpl implements PerformanceVerificationDao {
@@ -118,24 +122,32 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public List<Integer> getDeviceIdsWithUnknownStatus(Range<Instant> range) {
+    public List<PerformanceVerificationEventMessageDeviceStatus> getStatusUnknownDevices(Range<Instant> range,
+                                                                                         SortBy sortBy) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId");
+        sql.append("SELECT DeviceId, SendTime, rbed.RfBroadcastEventId");
         sql.append("FROM RfBroadcastEventDevice rbed");
         sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
         sql.append("WHERE SendTime").gt(range.getMin());
         sql.append("AND SendTime").lt(range.getMax());
         sql.append("AND Result").eq_k(UNKNOWN);
+        sql.append("ORDER BY " + sortBy.getDbColumnName());
+        if (sortBy.isDesc()) {
+            sql.append("DESC");
+        }
 
-        return jdbcTemplate.query(sql, new YukonRowMapper<Integer>() {
+        return jdbcTemplate.query(sql, new YukonRowMapper<PerformanceVerificationEventMessageDeviceStatus>() {
             @Override
-            public Integer mapRow(YukonResultSet rs) throws SQLException {
-                return rs.getInt("DeviceId");
+            public PerformanceVerificationEventMessageDeviceStatus mapRow(YukonResultSet rs) throws SQLException {
+                return new PerformanceVerificationEventMessageDeviceStatus(rs.getInt("DeviceId"),
+                                                                           rs.getLong("RfBroadcastEventId"),
+                                                                           rs.getInstant("SendTime"),
+                                                                           UNKNOWN);
             }
         });
     }
-    
     @Override
+    
     public PerformanceVerificationEventMessage createVerificationEvent() {
         int nextId = nextValueHelper.getNextValue("RfBroadcastEvent");
         Instant now = Instant.now();
@@ -182,6 +194,28 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             params.addValue("Result", status);
             
             jdbcTemplate.update(sql);
+        }
+    }
+    
+    public static enum SortBy {
+        DEVICE_ID("DeviceId"),
+        DEVICE_ID_DESC("DeviceId"),
+        MESSAGE_ID("RfBroadcastEventId"),
+        MESSAGE_ID_DESC("RfBroadcastEventId"),
+        SEND_TIME("SendTime"),
+        SEND_TIME_DESC("SendTime"),
+        ;
+        final String dbColumnName;
+        SortBy(String dbColumnName) {
+            this.dbColumnName = dbColumnName;
+        }
+        String getDbColumnName() {
+            return dbColumnName;
+        }
+        boolean isDesc() {
+            return this==DEVICE_ID_DESC 
+                    || this==MESSAGE_ID_DESC
+                    || this==SEND_TIME_DESC;
         }
     }
 }
