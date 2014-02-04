@@ -113,6 +113,39 @@ ALTER TABLE UserPage
 MODIFY PageName VARCHAR2(255);
 /* End YUK-12951 */
 
+/* Start YUK-12914 */
+CREATE TABLE RfBroadcastEventDevice  (
+   RfBroadcastEventDeviceId NUMBER                          NOT NULL,
+   DeviceId                 NUMBER                          NOT NULL,
+   RfBroadcastEventId       NUMBER                          NOT NULL,
+   Result                   VARCHAR2(30)                    NOT NULL,
+   ReceivedTime             DATE,
+   CONSTRAINT PK_RfBroadcastEventDevice PRIMARY KEY (RfBroadcastEventDeviceId)
+);
+
+CREATE INDEX AK_RfBrdcstEvntDev_DevIdMsgId ON RfBroadcastEventDevice (
+   DeviceId ASC,
+   RfBroadcastEventId ASC,
+   Result ASC
+);
+
+CREATE TABLE RfBroadcastEvent  (
+   RfBroadcastEventId   NUMBER                          NOT NULL,
+   SendTime             DATE                            NOT NULL,
+   CONSTRAINT PK_RfBroadcastEventId PRIMARY KEY (RfBroadcastEventId)
+);
+
+ALTER TABLE RfBroadcastEventDevice
+   ADD CONSTRAINT FK_RfBrdcstEvntDev_Device FOREIGN KEY (DeviceId)
+      REFERENCES Device (DeviceId)
+         ON DELETE CASCADE;
+
+ALTER TABLE RfBroadcastEventDevice
+   ADD CONSTRAINT FK_RfBrdcstEvntDev_RfBrcstEvnt FOREIGN KEY (RfBroadcastEventId)
+      REFERENCES RfBroadcastEvent (RfBroadcastEventId)
+         ON DELETE CASCADE;
+/* End YUK-12914 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

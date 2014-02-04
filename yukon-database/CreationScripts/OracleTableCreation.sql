@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/3/2014 12:41:10 PM                         */
+/* Created on:     2/4/2014 1:54:20 PM                          */
 /*==============================================================*/
 
 
@@ -7277,6 +7277,36 @@ create table ReportedAddressSep  (
 );
 
 /*==============================================================*/
+/* Table: RfBroadcastEvent                                      */
+/*==============================================================*/
+create table RfBroadcastEvent  (
+   RfBroadcastEventId   NUMBER                          not null,
+   SendTime             DATE                            not null,
+   constraint PK_RfBroadcastEventId primary key (RfBroadcastEventId)
+);
+
+/*==============================================================*/
+/* Table: RfBroadcastEventDevice                                */
+/*==============================================================*/
+create table RfBroadcastEventDevice  (
+   RfBroadcastEventDeviceId NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   RfBroadcastEventId   NUMBER                          not null,
+   Result               VARCHAR2(30)                    not null,
+   ReceivedTime         DATE,
+   constraint PK_RfBradcastEventDevice primary key (RfBroadcastEventDeviceId)
+);
+
+/*==============================================================*/
+/* Index: AK_RfBrdcstEvntDev_DevIdMsgId                         */
+/*==============================================================*/
+create index AK_RfBrdcstEvntDev_DevIdMsgId on RfBroadcastEventDevice (
+   DeviceId ASC,
+   RfBroadcastEventId ASC,
+   Result ASC
+);
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route  (
@@ -12163,6 +12193,16 @@ alter table ReportedAddressRelayExpressCom
 alter table ReportedAddressSep
    add constraint FK_ReportedAddressSep_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table RfBroadcastEventDevice
+   add constraint FK_RfBrdcstEvntDev_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table RfBroadcastEventDevice
+   add constraint FK_RfBrdcstEvntDev_RfBrcstEvnt foreign key (RfBroadcastEventId)
+      references RfBroadcastEvent (RfBroadcastEventId)
       on delete cascade;
 
 alter table Route
