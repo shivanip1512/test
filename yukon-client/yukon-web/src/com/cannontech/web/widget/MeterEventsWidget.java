@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,9 +49,9 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
         List<MeterPointValue> meterPointValues = getMeterPointValues(meter, userContext);
         model.addAttribute("valueMap", meterPointValues);
         model.addAttribute("deviceId", deviceId);
-        LocalDate localDate = new LocalDate(userContext.getJodaTimeZone());
-        localDate = localDate.minusDays(30);
-        model.addAttribute("defaultStartInstant", localDate.getMonthOfYear() + "/" + localDate.getDayOfMonth() + "/" + localDate.getYear());
+        Instant now = new Instant();
+        Instant defaultStartInstant = now.minus(Period.days(30).toDurationTo(now));
+        model.addAttribute("defaultStartInstant", defaultStartInstant);
         model.addAttribute("meter", meter);
     }
     
