@@ -1,10 +1,9 @@
 package com.cannontech.dr.assetavailability.service;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityTotals;
@@ -31,58 +30,53 @@ public interface AssetAvailabilityService {
     /**
      * Gets a simple asset availability summary of all inventory in all load groups in the specified
      * DR grouping.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException;
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
     
     /**
      * Gets a simple asset availability summary of all inventory in all specified load groups.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException;
+    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds);
     
     /**
      * Gets an asset availability summary of all appliances attached to inventory in any of the specified load groups.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds) throws DynamicDataAccessException;
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds);
     
     /**
      * Gets an asset availability summary of all appliances in all load groups in the specified DR grouping.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier) throws DynamicDataAccessException;
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier);
     
     /**
      * @return The AssetAvailability for the specified inventory.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public SimpleAssetAvailability getAssetAvailability(int inventoryId) throws DynamicDataAccessException;
+    public SimpleAssetAvailability getAssetAvailability(int inventoryId);
     
     /**
      * @return A map of inventoryId to AssetAvailability for the specified inventory.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      */
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds) throws DynamicDataAccessException;
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds);
     
     /**
      * @return A map of inventoryId to AssetAvailability for all inventory in the specified DR
      * grouping.
-     * @throws DynamicDataAccessException if the connection to dispatch is invalid.
      * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier) throws DynamicDataAccessException;
+    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier);
     
     /**
-     * Retrieves the total number of active, inactive and unavailable inventory in the specified collection.
+     * Retrieves the total number of active, inactive and unavailable devices in the specified 
+     * collection.
      */
-    public AssetAvailabilityTotals getAssetAvailabilityTotal(Iterable<Integer> inventoryIds);
+    public AssetAvailabilityTotals getAssetAvailabilityTotal(Collection<Integer> deviceIds);
     
     /**
-     * Retrieves the individual active, inactive or unavailable status of the inventory in the specified collection.
-     * Note that inventory that have never communicated will have a null AssetAvailabilityStatus.
+     * Retrieves the individual active, inactive or unavailable status of the devices in the 
+     * specified collection. Note that devices that have never communicated will have a null 
+     * AssetAvailabilityStatus.
      */
-    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Iterable<Integer> inventoryIds);
+    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Collection<Integer> deviceIds);
 
 }
