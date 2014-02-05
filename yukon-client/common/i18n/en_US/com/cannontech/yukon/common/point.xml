@@ -23,6 +23,7 @@
     <entry key="yukon.common.point.pointFormatting.formats.SHORT">{default} {status||{unit}} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.SHORTDATE">{default} {status||{unit}} {time|DATE} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.DATE">{time|BOTH}</entry>
+    <entry key="yukon.common.point.pointFormatting.formats.DATE_QUALITY">{time|BOTH} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.RAWVALUE">{rawValue}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.VALUE">{default}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.VALUE_UNIT">{default} {status||{unit}}</entry>

@@ -1,58 +1,94 @@
-Yukon.namespace('Yukon.veeReview');
+Yukon.namespace('Yukon.ui.veeReview');
 
-Yukon.veeReview = (function () {
-    var _resetDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
-            var elemToDisable = action === 'DELETE' ? deleteImgEl : acceptImgEl;
-            jQuery(elemToDisable).addClass('disabled');
+Yukon.ui.veeReview = (function () {
+        var _resetElementSelected = function (action, deleteEl, acceptEl, ignoreEl) {
+            if(action === 'DELETE'){
+                jQuery(deleteEl).removeClass('on');
+            } else if(action === 'ACCEPT'){
+                jQuery(acceptEl).removeClass('on');
+            } else {
+                jQuery(ignoreEl).removeClass('on');
+            }
+            
         },
-        _toggleDeleteAccept = function (action, deleteImgEl, acceptImgEl) {
+        _toggleElementSelected = function (action, deleteEl, acceptEl, ignoreEl) {
             if (action === 'DELETE') {
-                jQuery(deleteImgEl).removeClass('disabled');
-                jQuery(acceptImgEl).addClass('disabled');
+                jQuery(deleteEl).addClass('on');
+                jQuery(acceptEl).removeClass('on');
+                jQuery(ignoreEl).removeClass('on');
             }
             if (action === 'ACCEPT') {
-                jQuery(acceptImgEl).removeClass('disabled');
-                jQuery(deleteImgEl).addClass('disabled');
+                jQuery(deleteEl).removeClass('on');
+                jQuery(ignoreEl).removeClass('on');
+                jQuery(acceptEl).addClass('on');
+            }
+            if (action === 'IGNORE') {
+                jQuery(deleteEl).removeClass('on');
+                jQuery(acceptEl).removeClass('on');
+                jQuery(ignoreEl).addClass('on');
             }
         },
-        _getActionTdHash = function (el) {
-            var descendants = jQuery(el).children(),
-                idParts = descendants[0].id.split('_'),
+        _getActionValues = function (el) {
+                idParts = el.id.split('_'),
                 action = idParts[1],
-                changeId = idParts[3];
-
+                changeId = idParts[2];
             return {
                 action : action,
-                deleteImgEl : jQuery('#ACTION_DELETE_IMG_' + changeId).find('.icon')[0],
-                acceptImgEl : jQuery('#ACTION_ACCEPT_IMG_' + changeId).find('.icon')[0],
+                deleteEl : jQuery('#ACTION_DELETE_' + changeId),
+                acceptEl : jQuery('#ACTION_ACCEPT_' + changeId),
+                ignoreEl : jQuery('#ACTION_IGNORE_' + changeId),
                 valueEl : jQuery('#ACTION_' + changeId)[0]
             };
         },
         mod;
     mod = {
-        checkUncheckAll : function (action) {
-            var checkAllState = jQuery('#checkAllState');
-
-            jQuery('td.ACTION_TD').each(function (index, el) {
-                var h = _getActionTdHash(el),
-                    tdAction = h.action,
-                    valueEl = h.valueEl,
-                    delImgEl = h.deleteImgEl,
-                    accImgEl = h.acceptImgEl;
-
-                if (checkAllState.val() === action) {
-                    _resetDeleteAccept(tdAction, delImgEl, accImgEl);
-                    valueEl.value = '';
+        checkUncheckAll : function (actionChecked) {
+            var checkAll = false;
+            var attributeSelector = '[id*="DELETE"]';
+            if (actionChecked === 'ACCEPT') {
+                attributeSelector = '[id*="ACCEPT"]';
+                if (jQuery('#accept-all').hasClass('on')) {
+                    jQuery('#accept-all').removeClass('on');
                 } else {
-                    _toggleDeleteAccept(action, delImgEl, accImgEl);
-                    valueEl.value = action;
+                    checkAll = true;
+                    jQuery('#accept-all').addClass('on');
+                    jQuery('#ignore-all').removeClass('on');
+                    jQuery('#delete-all').removeClass('on');
+                }
+                
+            } else if (actionChecked === 'IGNORE') {
+                attributeSelector = '[id*="IGNORE"]';
+                if (jQuery('#ignore-all').hasClass('on')) {
+                    jQuery('#ignore-all').removeClass('on');
+                } else {
+                    checkAll = true;
+                    jQuery('#ignore-all').addClass('on');
+                    jQuery('#accept-all').removeClass('on');
+                    jQuery('#delete-all').removeClass('on');
+                }
+            } else if (actionChecked === 'DELETE') {
+                if (jQuery('#delete-all').hasClass('on')) {
+                    jQuery('#delete-all').removeClass('on');
+                } else {
+                    checkAll = true;
+                    jQuery('#delete-all').addClass('on');
+                    jQuery('#ignore-all').removeClass('on');
+                    jQuery('#accept-all').removeClass('on');
+                }
+            }
+
+            jQuery(attributeSelector).each(function (index, buttonElement) {
+                if(checkAll === true) {
+                    if(jQuery(buttonElement).hasClass('on') === false) {
+                        buttonElement.click();
+                    }
+                } else {
+                    if(jQuery(buttonElement).hasClass('on') === true) {
+                        buttonElement.click();
+                    }
                 }
             });
-            if (checkAllState.val() === action) {
-                checkAllState.val('');
-            } else {
-                checkAllState.val(action);
-            }
+                
         },
         reloadForm : function () {
             var reloadMsg = jQuery('#reloadForm').data('reloadmsg');
@@ -60,7 +96,7 @@ Yukon.veeReview = (function () {
             jQuery('#reloadButton').val(reloadMsg);
             jQuery('#reloadButton').prop('disabled', true);
             jQuery('#reloadSpinner').show();
-            jQuery("#saveForm input[type='checkbox']").each(function (index, el) {
+            jQuery("#review-form input[type='checkbox']").each(function (index, el) {
                 var h = document.createElement('input');
                 h.setAttribute('type', 'hidden');
                 h.setAttribute('name', el.getAttribute('name'));
@@ -72,19 +108,18 @@ Yukon.veeReview = (function () {
         }
     };
     jQuery(function () {
-        jQuery('#saveForm').on('click', 'td.ACTION_TD', function (ev) {
-            var elTarg = ev.currentTarget,
-                h = _getActionTdHash(elTarg),
-                action = h.action,
-                valueEl = h.valueEl,
-                delImgEl = h.deleteImgEl,
-                accImgEl = h.acceptImgEl;
-            if (valueEl.value === action) {
-                _resetDeleteAccept(action, delImgEl, accImgEl);
-                valueEl.value = '';
-            } else {
-                _toggleDeleteAccept(action, delImgEl, accImgEl);
-                valueEl.value = action;
+        jQuery('#review-form [id*="ACTION"]').click(function(e) {
+            var elementClicked = e.currentTarget;
+            h = _getActionValues(elementClicked);
+            action = h.action,
+            valueElement = h.valueEl,
+            deleteButtonElement = h.deleteEl,
+            acceptButtonElement = h.acceptEl;
+            ignoreButtonElement = h.ignoreEl;
+            //making sure that the element clicked isn't already clicked
+            if (valueElement.value !== action) {
+                _toggleElementSelected(action, deleteButtonElement, acceptButtonElement, ignoreButtonElement);
+                valueElement.value = action;
             }
         });
     });

@@ -36,19 +36,18 @@
     <entry key="yukon.web.modules.amr.validation.review.reloading">Reloading...</entry>
     
     <entry key="yukon.web.modules.amr.validation.review.deleteInfo"><![CDATA[
-    	&bull; Mark flagged values that you would like to remove from the database.
-    	<br>&bull; To mark a row for deletion, change its delete icon from <i class="icon icon-cross fn" disabled="disabled"></i> to <i class="icon icon-cross fn"></i> by clicking on it.
-    	<br>&bull; You may un-mark a row by clicking its icon again.
-    	<br>&bull; To mark/unmark all rows, click the <i class="icon icon-cross fn"></i> icon in the column header.
-    	<br><br>
+        <ul>
+            <li>Mark flagged values that you would like to remove from the database.
+            <li>Choose <i class="icon icon-cross fn"></i> to delete the row.
+        </ul>
+    
     ]]></entry>
     
     <entry key="yukon.web.modules.amr.validation.review.acceptInfo"><![CDATA[
-    	&bull; Mark flagged values that you would like to unflag by marking them as accepted values.
-    	<br>&bull; To mark a row as accepted, change its accept icon from <i class="icon icon-tick fn" disabled="disabled"></i> to <i class="icon icon-tick fn"></i> by clicking on it.
-    	<br>&bull; You may un-mark a row by clicking its icon again.
-    	<br>&bull; To mark/unmark all rows, click the <i class="icon icon-tick fn"></i> icon in the column header.
-    	<br><br>
+        <ul>
+            <li>Mark flagged values that you would like to unflag by marking them as accepted values.
+            <li>Choose <i class="icon icon-tick fn"></i> to to accept the row.
+        </ul>
     ]]></entry>
     
     <!-- ValidationMonitorsWidget render.jsp -->

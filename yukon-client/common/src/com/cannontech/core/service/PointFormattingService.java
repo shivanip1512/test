@@ -26,7 +26,8 @@ public interface PointFormattingService {
         VALUE,
         VALUE_UNIT,
         UNIT,
-        QUALITY;
+        QUALITY,
+        DATE_QUALITY;
         
         private final static String keyPrefix = "yukon.common.point.pointFormatting.formats.";
 
