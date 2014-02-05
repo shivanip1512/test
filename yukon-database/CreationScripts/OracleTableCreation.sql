@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/4/2014 1:54:20 PM                          */
+/* Created on:     2/5/2014 12:24:07 PM                         */
 /*==============================================================*/
 
 
@@ -4413,6 +4413,20 @@ create table DynamicLMProgramDirect  (
    AdditionalInfo       VARCHAR2(80)                    not null,
    CurrentLogId         NUMBER                         default 0 not null,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
+);
+
+/*==============================================================*/
+/* Table: DynamicLcrCommunications                              */
+/*==============================================================*/
+create table DynamicLcrCommunications  (
+   DeviceId             NUMBER                          not null,
+   LastCommunication    DATE,
+   LastNonZeroRuntime   DATE,
+   Relay1Runtime        DATE,
+   Relay2Runtime        DATE,
+   Relay3Runtime        DATE,
+   Relay4Runtime        DATE,
+   constraint PK_DynamicLcrCommunications primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -11086,6 +11100,11 @@ alter table DynamicLMProgram
 alter table DynamicLMProgramDirect
    add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
       references LMProgramDirect (DeviceID);
+
+alter table DynamicLcrCommunications
+   add constraint FK_YukonPAO_DynamicLcrComms foreign key (DeviceId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table DynamicPAOInfo
    add constraint FK_DynPAOInfo_YukPAO foreign key (PAObjectID)

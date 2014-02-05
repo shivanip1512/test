@@ -151,6 +151,25 @@ ALTER TABLE RfBroadcastEventDevice
 GO
 /* End YUK-12914 */
 
+/* Start YUK-12961 */
+CREATE TABLE DynamicLcrCommunications (
+   DeviceId             NUMERIC              NOT NULL,
+   LastCommunication    DATETIME             NULL,
+   LastNonZeroRuntime   DATETIME             NULL,
+   Relay1Runtime        DATETIME             NULL,
+   Relay2Runtime        DATETIME             NULL,
+   Relay3Runtime        DATETIME             NULL,
+   Relay4Runtime        DATETIME             NULL,
+   CONSTRAINT PK_DynamicLcrCommunications PRIMARY KEY (DeviceId)
+);
+GO
+
+ALTER TABLE DynamicLcrCommunications
+   ADD CONSTRAINT FK_YukonPAO_DynamicLcrComms FOREIGN KEY (DeviceId)
+      REFERENCES YukonPAObject (PAObjectID)
+      ON DELETE CASCADE;
+/* End YUK-12961 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/4/2014 1:53:31 PM                          */
+/* Created on:     2/5/2014 12:30:32 PM                         */
 /*==============================================================*/
 
 
@@ -4630,6 +4630,21 @@ create table DynamicLMProgramDirect (
    AdditionalInfo       varchar(80)          not null,
    CurrentLogId         numeric              not null default 0,
    constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
+)
+go
+
+/*==============================================================*/
+/* Table: DynamicLcrCommunications                              */
+/*==============================================================*/
+create table DynamicLcrCommunications (
+   DeviceId             numeric              not null,
+   LastCommunication    datetime             null,
+   LastNonZeroRuntime   datetime             null,
+   Relay1Runtime        datetime             null,
+   Relay2Runtime        datetime             null,
+   Relay3Runtime        datetime             null,
+   Relay4Runtime        datetime             null,
+   constraint PK_DynamicLcrCommunications primary key (DeviceId)
 )
 go
 
@@ -11911,6 +11926,12 @@ go
 alter table DynamicLMProgramDirect
    add constraint FK_DYNAMICL_LMPROGDIR_LMPROGRA foreign key (DeviceID)
       references LMProgramDirect (DeviceID)
+go
+
+alter table DynamicLcrCommunications
+   add constraint FK_YukonPAO_DynamicLcrComms foreign key (DeviceId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table DynamicPAOInfo
