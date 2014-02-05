@@ -21,12 +21,7 @@
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
 
-    <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper">
-        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
-        <property name="jdbcTemplate" ref="jdbcTemplate"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="authDao" ref="authDao"/>
-    </bean>
+    <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper"/>
     
     <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper"/>
@@ -424,6 +419,20 @@
         </property>
     </bean>
     
+    <bean id="rfnPerformanceVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rfnPerformanceVerification"/>
+        <property name="taskName">
+            <idref local="rfnPerformanceVerificationTask"/>
+        </property>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Export History Cleanup Task -->
     <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
         scope="prototype">
@@ -473,5 +482,9 @@
         class="com.cannontech.amr.scheduledGroupRequestExecution.dao.impl.ScheduledGroupRequestExecutionDaoImpl"
         scope="prototype">
     </bean>
+    
+    <bean id="rfnPerformanceVerificationTask" 
+        class="com.cannontech.web.dr.RfnPerformanceVerificationTask" 
+        scope="prototype"/>
 </beans>
 

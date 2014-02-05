@@ -398,8 +398,13 @@ public class JobManagerImpl implements JobManager {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
             // is this the right thing to do?
-            TimeZone userTimeZone = job.getUserContext().getTimeZone();
-            cronExpression.setTimeZone(userTimeZone);
+            YukonUserContext userContext = job.getUserContext();
+            TimeZone timeZone = TimeZone.getDefault(); // Default to use the system default time zone.
+            if (userContext != null) {
+                timeZone = userContext.getTimeZone();
+            }
+            
+            cronExpression.setTimeZone(timeZone);
             
             //If the next run time has already passed, check for the one after that,
             //and so on, until we catch back up to the present.

@@ -19,6 +19,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.user.YukonUserContext;
 
 public class JobDaoBase {
     protected YukonJdbcTemplate yukonJdbcTemplate;
@@ -44,14 +45,17 @@ public class JobDaoBase {
             }
             p.addValue("disabled", disabled);
             
-            int userId = job.getUserContext().getYukonUser().getLiteID();
-            p.addValue("userId", userId);
-            String locale = job.getUserContext().getLocale().toString();
-            p.addValue("locale", locale);
-            String timeZone = job.getUserContext().getTimeZone().getID();
-            p.addValue("timezone", timeZone);
-            String themeName = job.getUserContext().getThemeName();
-            p.addValue("themeName", themeName);
+            YukonUserContext context = job.getUserContext();
+            if (context != null) {
+                int userId = context.getYukonUser().getLiteID();
+                p.addValue("userId", userId);
+                String locale = context.getLocale().toString();
+                p.addValue("locale", locale);
+                String timeZone = context.getTimeZone().getID();
+                p.addValue("timezone", timeZone);
+                String themeName = context.getThemeName();
+                p.addValue("themeName", themeName);
+            }
         }
 
         public Number getPrimaryKey(YukonJob job) {

@@ -139,8 +139,12 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Override
     public byte[] getPerformanceVerificationCommand(long messageId) {
         ByteBuffer outputBuffer = ByteBuffer.allocate(32);
-        outputBuffer.put((byte) 0x80); // Use only SPID level addressing.
-        outputBuffer.putShort((short) 0); // Use SPID 0 (per Karl Slingsby and Ryan Brager)
+        outputBuffer.put((byte) 0xc0); // Use only SPID level addressing.
+        outputBuffer.putShort((short) 0x0000); // Use SPID 0 (per Karl Slingsby and Ryan Brager)
+        outputBuffer.putShort((short) 0xffff); // Geo 0xFFFF is the all-call universal address.
+        
+        outputBuffer.put((byte) 0x3c); // Expresscom command code.
+        
         outputBuffer.putInt((int) messageId);
         
         ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());

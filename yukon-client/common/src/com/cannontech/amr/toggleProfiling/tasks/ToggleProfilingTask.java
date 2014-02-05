@@ -32,7 +32,7 @@ public class ToggleProfilingTask extends YukonTaskBase {
     }
     
     private void startTask(){
-        logger.info("Starting toggle profiling task scheduled by " + getYukonUser().getUsername() + ".");
+        logger.info("Starting toggle profiling task scheduled by " + getUserContext().getYukonUser().getUsername() + ".");
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);

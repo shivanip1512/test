@@ -7,11 +7,12 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
@@ -24,10 +25,10 @@ import com.cannontech.user.SimpleYukonUserContext;
 
 final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
 
-    private JdbcTemplate jdbcTemplate;
-    private YukonUserDao yukonUserDao;
-    private AuthDao authDao;
-    private YukonJobDefinitionFactory<? extends YukonTask> beanDefinitionFactory;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private AuthDao authDao;
+    @Autowired private YukonJobDefinitionFactory<? extends YukonTask> beanDefinitionFactory;
 
     @Override
     protected YukonJob createObject(YukonResultSet rs) throws SQLException {
@@ -44,61 +45,44 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         JobDisabledStatus jobDisabledStatus = JobDisabledStatus.valueOf(rs.getString("disabled"));
         job.setDisabled(!jobDisabledStatus.equals(JobDisabledStatus.N));
         job.setDeleted(jobDisabledStatus.equals(JobDisabledStatus.D));
-        int userId = rs.getInt("userId");
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
-        String localeStr = rs.getString("locale");
-        Locale locale = LocaleUtils.toLocale(localeStr);
-        String timezoneStr = rs.getString("timezone");
-        String themeName = rs.getString("themeName");
-        // Because this table was expanded to include a timezone column (YUK-5204),
-        // we must handle the default case where timezone is blank.
         
-        // I considered not storing the time zone. In that case I would
-        // just get it off of the YukonUserDao every time. This gets interesting
-        // if the user changes their timezone after a job is scheduled. But
-        // I think that could get a little weird, so I'm sticking with storing it.
-        TimeZone timezone;
-        if (StringUtils.isBlank(timezoneStr)) {
-            // To replicate the old behavior, we must 
-            // look up the timezone for the user.
-            timezone = authDao.getUserTimeZone(liteYukonUser);
-        } else {
-            timezone = TimeZone.getTimeZone(timezoneStr);
+        Integer userId = rs.getNullableInt("userId");
+        if (userId != null) {
+            // Assume the rest is there.
+            LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
+            String localeStr = rs.getString("locale");
+            Locale locale = LocaleUtils.toLocale(localeStr);
+            String timezoneStr = rs.getString("timezone");
+            String themeName = rs.getString("themeName");
+            // Because this table was expanded to include a timezone column (YUK-5204),
+            // we must handle the default case where timezone is blank.
+            
+            // I considered not storing the time zone. In that case I would
+            // just get it off of the YukonUserDao every time. This gets interesting
+            // if the user changes their timezone after a job is scheduled. But
+            // I think that could get a little weird, so I'm sticking with storing it.
+            TimeZone timezone;
+            if (StringUtils.isBlank(timezoneStr)) {
+                // To replicate the old behavior, we must 
+                // look up the timezone for the user.
+                timezone = authDao.getUserTimeZone(liteYukonUser);
+            } else {
+                timezone = TimeZone.getTimeZone(timezoneStr);
+            }
+            
+            // handle blank themeName
+            if (StringUtils.isBlank(themeName)) {
+                themeName = ThemeUtils.getDefaultThemeName();
+            }
+            
+            SimpleYukonUserContext userContext = new SimpleYukonUserContext(liteYukonUser, locale, timezone, themeName);
+            job.setUserContext(userContext);
         }
         
-        // handle blank themeName
-        if (StringUtils.isBlank(themeName)) {
-            themeName = ThemeUtils.getDefaultThemeName();
-        }
-        
-        SimpleYukonUserContext userContext = new SimpleYukonUserContext(liteYukonUser, locale, timezone, themeName);
-        job.setUserContext(userContext);
-        String sql =
-            "select * from JobProperty " +
-            "where jobId = ?";
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM JobProperty WHERE JobId").eq(job.getId());
         HashMap<String, String> propertyMap = new HashMap<String, String>();
         JobPropertyRowCallbackHandler handler = new JobPropertyRowCallbackHandler(propertyMap);
-        Object[] params = new Object[]{job.getId()};
-        jdbcTemplate.query(sql, params, handler);
+        jdbcTemplate.query(sql, handler);
         job.setJobProperties(propertyMap);
-    }
-    
-    @Required
-    public void setBeanDefinitionFactory(YukonJobDefinitionFactory<? extends YukonTask> beanDefinitionFactory) {
-        this.beanDefinitionFactory = beanDefinitionFactory;
-    }
-    
-    @Required
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-    
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    @Required
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
     }
 }
