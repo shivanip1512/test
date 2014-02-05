@@ -58,7 +58,7 @@ jQuery(function() {
     }
     
     function ajaxMenuOpen(target, e) {
-        var menu = target.find('.dropdown-menu').eq(0),
+        var menu = target.data('menu'),
             params;
         if (typeof(target.data('menu_items')) !== 'undefined') {
             menu.toggle();
