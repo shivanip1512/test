@@ -9,8 +9,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
-import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.SortBy;
-import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
 
 public interface PerformanceVerificationDao {
 
@@ -57,8 +55,8 @@ public interface PerformanceVerificationDao {
     void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
 
     /**
-     * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast messages sent in {@code range}.
+     * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
      */
-    List<PerformanceVerificationEventMessageDeviceStatus> getStatusUnknownDevices(Range<Instant> range,
-                                                                                  SortBy sortBy);
+    Set<Integer> getDevicesWithUnknownStatus(long messageId);
+
 }

@@ -8,6 +8,7 @@ import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUC
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -28,7 +30,6 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
-import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
 import com.google.common.collect.Maps;
 
 public class PerformanceVerificationDaoImpl implements PerformanceVerificationDao {
@@ -122,32 +123,18 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public List<PerformanceVerificationEventMessageDeviceStatus> getStatusUnknownDevices(Range<Instant> range,
-                                                                                         SortBy sortBy) {
+    public Set<Integer> getDevicesWithUnknownStatus(long messageId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId, SendTime, rbed.RfBroadcastEventId");
+        sql.append("SELECT DeviceId");
         sql.append("FROM RfBroadcastEventDevice rbed");
         sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE SendTime").gt(range.getMin());
-        sql.append("AND SendTime").lt(range.getMax());
+        sql.append("WHERE rbed.RfBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
-        sql.append("ORDER BY " + sortBy.getDbColumnName());
-        if (sortBy.isDesc()) {
-            sql.append("DESC");
-        }
 
-        return jdbcTemplate.query(sql, new YukonRowMapper<PerformanceVerificationEventMessageDeviceStatus>() {
-            @Override
-            public PerformanceVerificationEventMessageDeviceStatus mapRow(YukonResultSet rs) throws SQLException {
-                return new PerformanceVerificationEventMessageDeviceStatus(rs.getInt("DeviceId"),
-                                                                           rs.getLong("RfBroadcastEventId"),
-                                                                           rs.getInstant("SendTime"),
-                                                                           UNKNOWN);
-            }
-        });
+        return new HashSet<>(jdbcTemplate.query(sql, RowMapper.INTEGER));
     }
+
     @Override
-    
     public PerformanceVerificationEventMessage createVerificationEvent() {
         int nextId = nextValueHelper.getNextValue("RfBroadcastEvent");
         Instant now = Instant.now();
@@ -194,28 +181,6 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             params.addValue("Result", status);
             
             jdbcTemplate.update(sql);
-        }
-    }
-    
-    public static enum SortBy {
-        DEVICE_ID("DeviceId"),
-        DEVICE_ID_DESC("DeviceId"),
-        MESSAGE_ID("RfBroadcastEventId"),
-        MESSAGE_ID_DESC("RfBroadcastEventId"),
-        SEND_TIME("SendTime"),
-        SEND_TIME_DESC("SendTime"),
-        ;
-        final String dbColumnName;
-        SortBy(String dbColumnName) {
-            this.dbColumnName = dbColumnName;
-        }
-        String getDbColumnName() {
-            return dbColumnName;
-        }
-        boolean isDesc() {
-            return this==DEVICE_ID_DESC 
-                    || this==MESSAGE_ID_DESC
-                    || this==SEND_TIME_DESC;
         }
     }
 }

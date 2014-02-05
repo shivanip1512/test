@@ -24,6 +24,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.system.GlobalSettingType;
@@ -43,6 +44,7 @@ public class HomeController {
     @Autowired private DemandResponseService demandResponseService;
     @Autowired private UserPageDao userPageDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
+    @Autowired private RfnPerformanceVerificationService performanceVerificationService;
 
     @RequestMapping("/home")
     public String home(ModelMap model, 

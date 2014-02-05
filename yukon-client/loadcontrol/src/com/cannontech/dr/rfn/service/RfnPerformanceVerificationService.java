@@ -1,12 +1,8 @@
 package com.cannontech.dr.rfn.service;
 
-import java.util.List;
+import java.util.Map;
 
-import org.joda.time.Instant;
-
-import com.cannontech.common.util.Range;
-import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.SortBy;
-import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 
 public interface RfnPerformanceVerificationService {
     
@@ -21,6 +17,5 @@ public interface RfnPerformanceVerificationService {
      * this method will return the asset availability status for each device. 
      * @Returns Map of DeviceId to asset availability
      */
-    List<PerformanceVerificationEventMessageDeviceStatus> getAssetAvailabilityForUnknown(Range<Instant> dateRange,
-                                                                     int numberPerPage, int pageNumber, SortBy sortBy);
+    Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(long messageId);
 }

@@ -2,29 +2,21 @@ package com.cannontech.dr.rfn.service.impl;
 
 import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
-import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.SortBy;
-import com.cannontech.dr.rfn.model.PerformanceVerificationEventMessageDeviceStatus;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
@@ -90,35 +82,8 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     }
 
     @Override
-    public List<PerformanceVerificationEventMessageDeviceStatus> getAssetAvailabilityForUnknown(Range<Instant> dateRange,
-                                                                                int numberPerPage,
-                                                                                int pageNumber,
-                                                                                SortBy sortBy) {
-        List<PerformanceVerificationEventMessageDeviceStatus> sortedUnknownDeviceIds = 
-                performanceVerificationDao.getStatusUnknownDevices(dateRange, sortBy);
-
-        int startIndex = (pageNumber-1) * numberPerPage;
-        int endIndex = Math.min(startIndex+numberPerPage, sortedUnknownDeviceIds.size());
-
-        if (startIndex > sortedUnknownDeviceIds.size()) {
-            return Collections.emptyList();
-        }
-        sortedUnknownDeviceIds = sortedUnknownDeviceIds.subList(startIndex, endIndex);
-
-        HashSet<Integer> deviceIds = new HashSet<>();
-        for(PerformanceVerificationEventMessageDeviceStatus deviceStatus : sortedUnknownDeviceIds) {
-            deviceIds.add(deviceStatus.getDeviceId());
-        }
-        Map<Integer, AssetAvailabilityStatus> assetAvailability = Collections.emptyMap();
-                //assetAvailabilityService.getAssetAvailabilityStatus(deviceIds);
-
-        List<PerformanceVerificationEventMessageDeviceStatus> sortedUnknownDeviceIdsWithAssetAvailability = new ArrayList<>();
-        for(PerformanceVerificationEventMessageDeviceStatus deviceStatus : sortedUnknownDeviceIds) {
-            PerformanceVerificationEventMessageDeviceStatus newDeviceStatus = 
-                    deviceStatus.withAssetAvailabilityStatus(assetAvailability.get(deviceStatus.getDeviceId()));
-            sortedUnknownDeviceIdsWithAssetAvailability.add(newDeviceStatus);
-        }
-
-        return sortedUnknownDeviceIdsWithAssetAvailability;
+    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(long messageId) {
+        Set<Integer> deviceIdsUnkown = performanceVerificationDao.getDevicesWithUnknownStatus(messageId);
+        return assetAvailabilityService.getAssetAvailabilityStatus(deviceIdsUnkown);
     }
 }
