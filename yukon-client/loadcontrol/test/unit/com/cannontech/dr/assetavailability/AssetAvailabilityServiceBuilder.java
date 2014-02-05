@@ -6,12 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.mock.MockGlobalSettingDao;
-import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
-import com.cannontech.core.dynamic.impl.MockDynamicDataSource;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.dao.MockDrGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.dao.MockLcrCommunicationsDao;
@@ -43,17 +40,6 @@ public class AssetAvailabilityServiceBuilder {
         //Opt Outs
         MockOptOutEventDao optOutEventDao = new MockOptOutEventDao(loadGroupToInventoryMap, optedOutInventory);
         
-        //Raw Point History
-        Object[][] rawPointHistoryData = new Object[rphList.size()][];
-        for(int i = 0; i < rawPointHistoryData.length; i++) {
-            rawPointHistoryData[i] = rphList.get(i);
-        }
-        MockRawPointHistoryDaoImpl rawPointHistoryDao = new MockRawPointHistoryDaoImpl(rawPointHistoryData,
-                                                                                       inventoryToDeviceMap,
-                                                                                       loadGroupToInventoryMap,
-                                                                                       deviceToAttributeAndPointMap);
-        rawPointHistoryDao.init();
-        
         //LM Hardware Configuration
         MockLmHardwareConfigurationDao lmHardwareConfigurationDao = new MockLmHardwareConfigurationDao(loadGroupToInventoryMap,
                                                                                                        inventoryToDeviceMap,
@@ -67,17 +53,6 @@ public class AssetAvailabilityServiceBuilder {
         MockDrGroupDeviceMappingDao drGroupDeviceMappingDao = new MockDrGroupDeviceMappingDao(loadGroupToInventoryMap,
                                                                                               inventoryToDeviceMap,
                                                                                               drGroupToLoadGroupMap);
-        
-        //DynamicData
-        Object[][] dynamicData = new Object[dynamicDataList.size()][];
-        for(int i = 0; i < dynamicData.length; i++) {
-            dynamicData[i] = dynamicDataList.get(i);
-        }
-        MockDynamicDataSource dynamicDataSource = new MockDynamicDataSource(dynamicData);
-        dynamicDataSource.init();
-        
-        //Points
-        MockPointDao pointDao = new MockPointDao(deviceToAttributeAndPointMap);
         
         //Global Settings
         MockGlobalSettingDao globalSettingDao = new MockGlobalSettingDao();
@@ -93,12 +68,9 @@ public class AssetAvailabilityServiceBuilder {
         
         
         AssetAvailabilityServiceImpl assetAvailabilityService = new AssetAvailabilityServiceImpl(optOutEventDao, 
-                                                                                                 rawPointHistoryDao,
                                                                                                  lmHardwareConfigurationDao, 
                                                                                                  inventoryDao,
                                                                                                  drGroupDeviceMappingDao, 
-                                                                                                 pointDao,
-                                                                                                 dynamicDataSource, 
                                                                                                  globalSettingDao,
                                                                                                  lcrCommunicationsDao);
         return assetAvailabilityService;

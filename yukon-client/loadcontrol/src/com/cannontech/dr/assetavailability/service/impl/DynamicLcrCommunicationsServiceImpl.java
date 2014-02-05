@@ -11,12 +11,12 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.dr.assetavailability.AssetAvailabilityRelays;
-import com.cannontech.dr.assetavailability.dao.LcrCommunicationsDao;
-import com.cannontech.dr.assetavailability.service.LcrCommunicationsService;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
+import com.cannontech.dr.assetavailability.service.DynamicLcrCommunicationsService;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class LcrCommunicationsServiceImpl implements LcrCommunicationsService {
-    @Autowired LcrCommunicationsDao lcrCommunicationsDao;
+public class DynamicLcrCommunicationsServiceImpl implements DynamicLcrCommunicationsService {
+    @Autowired DynamicLcrCommunicationsDao lcrCommunicationsDao;
     @Autowired AttributeService attributeService;
     @Autowired PointDao pointDao;
     

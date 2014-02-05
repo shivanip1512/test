@@ -27,9 +27,10 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceRelayCommunicationTimes;
-import com.cannontech.dr.assetavailability.dao.LcrCommunicationsDao;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableMap;
@@ -37,12 +38,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
-    private static final Logger log = YukonLogManager.getLogger(LcrCommunicationsDaoImpl.class);
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private ChunkingMappedSqlTemplate chunkingMappedSqlTemplate;
+public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunicationsDao {
+    private static final Logger log = YukonLogManager.getLogger(DynamicLcrCommunicationsDaoImpl.class);
     private static final Function<Integer, Integer> integerIdentity = Functions.identity();
     
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private ChunkingMappedSqlTemplate chunkingMappedSqlTemplate;
     private static final ImmutableMap<Integer, String> RELAY_COLUMNS =
             ImmutableMap.of(
                 1, "Relay1Runtime",
@@ -56,13 +57,13 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     }
     
     @Override
-    public Map<Integer, DeviceCommunicationTimes> getTimes(Collection<Integer> deviceIds) {
+    public Map<Integer, DeviceCommunicationTimes> findTimes(Collection<Integer> deviceIds) {
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT DeviceId, LastCommunication, LastNonZeroRuntime");
-                sql.append("FROM LcrCommunications");
+                sql.append("FROM DynamicLcrCommunications");
                 sql.append("WHERE DeviceId").in(subList);
                 return sql;
             }
@@ -81,6 +82,50 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         };
         
         Map<Integer, DeviceCommunicationTimes> results = 
+                chunkingMappedSqlTemplate.mappedQuery(sqlFragmentGenerator, deviceIds, rowMapper, integerIdentity);
+        
+        if(results.size() < deviceIds.size()) {
+            Set<Integer> missingIds = Sets.difference(new HashSet<>(deviceIds), results.keySet());
+            for(Integer deviceId : missingIds) {
+                results.put(deviceId, null);
+            }
+        }
+        
+        return results;
+    }
+    
+    @Override
+    public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds) {
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DeviceId, LastCommunication, LastNonZeroRuntime, Relay1Runtime, Relay2Runtime, Relay3Runtime, Relay4Runtime");
+                sql.append("FROM DynamicLcrCommunications");
+                sql.append("WHERE DeviceId").in(subList);
+                return sql;
+            }
+        };
+        
+        YukonRowMapper<Map.Entry<Integer, AllRelayCommunicationTimes>> rowMapper = 
+                new YukonRowMapper<Map.Entry<Integer, AllRelayCommunicationTimes>>() {
+            @Override
+            public Map.Entry<Integer, AllRelayCommunicationTimes> mapRow(YukonResultSet rs) throws SQLException{
+                Integer deviceId = rs.getInt("DeviceId");
+                Instant lastCommunication = rs.getInstant("LastCommunication");
+                Instant lastNonZeroRuntime = rs.getInstant("LastNonZeroRuntime");
+                Instant relay1Runtime = rs.getInstant("Relay1Runtime");
+                Instant relay2Runtime = rs.getInstant("Relay2Runtime");
+                Instant relay3Runtime = rs.getInstant("Relay3Runtime");
+                Instant relay4Runtime = rs.getInstant("Relay4Runtime");
+                
+                AllRelayCommunicationTimes times = new AllRelayCommunicationTimes(lastCommunication, lastNonZeroRuntime,
+                        relay1Runtime, relay2Runtime, relay3Runtime, relay4Runtime);
+                return Maps.immutableEntry(deviceId, times);
+            }
+        };
+        
+        Map<Integer, AllRelayCommunicationTimes> results = 
                 chunkingMappedSqlTemplate.mappedQuery(sqlFragmentGenerator, deviceIds, rowMapper, integerIdentity);
         
         if(results.size() < deviceIds.size()) {
@@ -113,11 +158,9 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     public boolean updateRuntimeAndComms(PaoIdentifier paoIdentifier, final int relay, Instant newTimestamp) {
         validateRelay(relay);
         
-        DeviceRelayCommunicationTimes oldTimes = null;
-        try {
-            //Read current values
-            oldTimes = getDeviceRelayCommunicationTimes(paoIdentifier.getPaoId(), relay);
-        } catch (EmptyResultDataAccessException e) {
+        //Read current values
+        DeviceRelayCommunicationTimes oldTimes = findDeviceRelayCommunicationTimes(paoIdentifier.getPaoId(), relay);
+        if (oldTimes == null) {
             //No row exists - create a new one with these values
             return insertRelayRuntimeAndComms(paoIdentifier.getPaoId(), relay, newTimestamp);
         }
@@ -140,7 +183,7 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     private Instant findLastCommunicationTime(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LastCommunication");
-        sql.append("FROM LcrCommunications");
+        sql.append("FROM DynamicLcrCommunications");
         sql.append("WHERE DeviceId").eq(deviceId);
         List<Instant> list = jdbcTemplate.query(sql, RowMapper.INSTANT_NULLABLE);
         if(list.size() == 0) {
@@ -151,22 +194,27 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
     
     /**
      * Retrieves the last communication time, last runtime, and last relay runtime for the specified device.
-     * @throws EmptyResultDataAccessException when no data row has been inserted yet for the device.
+     * DeviceRelayCommunicationTimes will be null for any device that has never communicated.
      */
-    private DeviceRelayCommunicationTimes getDeviceRelayCommunicationTimes(int deviceId, final int relay) throws EmptyResultDataAccessException {
+    private DeviceRelayCommunicationTimes findDeviceRelayCommunicationTimes(int deviceId, final int relay) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LastCommunication, LastNonZeroRuntime,").append(RELAY_COLUMNS.get(relay));
-        sql.append("FROM LcrCommunications");
+        sql.append("FROM DynamicLcrCommunications");
         sql.append("WHERE DeviceId").eq(deviceId);
-        DeviceRelayCommunicationTimes oldTimes = jdbcTemplate.queryForObject(sql, new YukonRowMapper<DeviceRelayCommunicationTimes>() {
-            @Override
-            public DeviceRelayCommunicationTimes mapRow(YukonResultSet rs) throws SQLException {
-                Instant lastCommunication = rs.getInstant("LastCommunication");
-                Instant lastNonZeroRuntime = rs.getInstant("LastNonZeroRuntime");
-                Instant relayLastNonZeroRuntime = rs.getInstant(RELAY_COLUMNS.get(relay));
-                return new DeviceRelayCommunicationTimes(lastCommunication, lastNonZeroRuntime, relay, relayLastNonZeroRuntime);
-            }
-        });
+        DeviceRelayCommunicationTimes oldTimes = null;
+        try {
+            oldTimes = jdbcTemplate.queryForObject(sql, new YukonRowMapper<DeviceRelayCommunicationTimes>() {
+                @Override
+                public DeviceRelayCommunicationTimes mapRow(YukonResultSet rs) throws SQLException {
+                    Instant lastCommunication = rs.getInstant("LastCommunication");
+                    Instant lastNonZeroRuntime = rs.getInstant("LastNonZeroRuntime");
+                    Instant relayLastNonZeroRuntime = rs.getInstant(RELAY_COLUMNS.get(relay));
+                    return new DeviceRelayCommunicationTimes(lastCommunication, lastNonZeroRuntime, relay, relayLastNonZeroRuntime);
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            //no entry, return null
+        }
         return oldTimes;
     }
     
@@ -175,10 +223,10 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
      * @return True if the operation succeeded.
      */
     private boolean insertCommunicationTime(int deviceId, Instant lastCommunicationTimestamp) {
-        log.trace("Inserting new row in LcrCommunications for device " + deviceId + ", timestamp: " 
+        log.trace("Inserting new row in DynamicLcrCommunications for device " + deviceId + ", timestamp: " 
                   + lastCommunicationTimestamp);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink sink = sql.insertInto("LcrCommunications");
+        SqlParameterSink sink = sql.insertInto("DynamicLcrCommunications");
         sink.addValue("DeviceId", deviceId);
         sink.addValue("LastCommunication", lastCommunicationTimestamp);
         //all other values are null
@@ -195,10 +243,10 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
      * @return True if the operation succeeded.
      */
     private boolean insertRelayRuntimeAndComms(int deviceId, int relay, Instant newTimestamp) {
-        log.trace("Inserting new row in LcrCommunications for device " + deviceId + ", timestamp: " 
+        log.trace("Inserting new row in DynamicLcrCommunications for device " + deviceId + ", timestamp: " 
                   + newTimestamp + ", relay: " + relay);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink sink = sql.insertInto("LcrCommunications");
+        SqlParameterSink sink = sql.insertInto("DynamicLcrCommunications");
         sink.addValue("DeviceId", deviceId);
         sink.addValue("LastCommunication", newTimestamp);
         sink.addValue("LastNonZeroRuntime", newTimestamp);
@@ -206,7 +254,7 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
         //other runtime values are null
         int rowsAffected = jdbcTemplate.update(sql);
         if(rowsAffected == 0) {
-            log.error("Failed to insert row in LcrCommunications for device" + deviceId + ", timestamp: " 
+            log.error("Failed to insert row in DynamicLcrCommunications for device" + deviceId + ", timestamp: " 
                       + newTimestamp + ", relay: " + relay);
         }
         return rowsAffected > 0;
@@ -220,15 +268,15 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
      * @return True if the operation succeeded.
      */
     private boolean updateCommunicationTime(int deviceId, Instant lastCommunicationTimestamp) {
-        log.trace("Updating row in LcrCommunications for device " + deviceId + ", timestamp: "
+        log.trace("Updating row in DynamicLcrCommunications for device " + deviceId + ", timestamp: "
                   + lastCommunicationTimestamp);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE LcrCommunications");
+        sql.append("UPDATE DynamicLcrCommunications");
         sql.set("LastCommunication", lastCommunicationTimestamp); 
         sql.append("WHERE DeviceId").eq(deviceId);
         int rowsAffected = jdbcTemplate.update(sql);
         if (rowsAffected == 0) {
-            log.error("Failed to update row in LcrCommunications for device " + deviceId + ", timestamp: "
+            log.error("Failed to update row in DynamicLcrCommunications for device " + deviceId + ", timestamp: "
                     + lastCommunicationTimestamp);
         }
         return rowsAffected > 0;
@@ -242,14 +290,14 @@ public class LcrCommunicationsDaoImpl implements LcrCommunicationsDao {
      * @return True if the operation succeeded.
      */
     public boolean updateRelayRuntimeAndComms(int deviceId, Map<String, Object> setValues) {
-        log.trace("Updating row in LcrCommunications for device " + deviceId);
+        log.trace("Updating row in DynamicLcrCommunications for device " + deviceId);
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE LcrCommunications");
+        sql.append("UPDATE DynamicLcrCommunications");
         sql.set(setValues);
         sql.append("WHERE DeviceId").eq(deviceId);
         int rowsAffected = jdbcTemplate.update(sql);
         if (rowsAffected == 0) {
-            log.error("Failed to update row in LcrCommunications for device " + deviceId);
+            log.error("Failed to update row in DynamicLcrCommunications for device " + deviceId);
         }
         return rowsAffected > 0;
     }

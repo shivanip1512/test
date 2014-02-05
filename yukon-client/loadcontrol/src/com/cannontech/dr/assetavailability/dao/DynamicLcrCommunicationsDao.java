@@ -6,19 +6,26 @@ import java.util.Map;
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 
 /**
- * Dao for reading and writing to the LcrCommunications table. This table tracks the most recent communications times
- * and most recently reported non-zero runtime times for 2-way LCRs.
+ * Dao for reading and writing to the DynamicLcrCommunications table. This table tracks the most recent communications 
+ * times and most recently reported non-zero runtime times for 2-way LCRs.
  */
-public interface LcrCommunicationsDao {
+public interface DynamicLcrCommunicationsDao {
     /**
      * Retrieves last communication time and last non-zero run time for the specified devices. Does not deal with
      * specifics of runtime per relay/appliance. DeviceCommunicationTimes will be null for any device that has never
      * communicated.
      */
-    public Map<Integer, DeviceCommunicationTimes> getTimes(Collection<Integer> deviceIds);
+    public Map<Integer, DeviceCommunicationTimes> findTimes(Collection<Integer> deviceIds);
+    
+    /**
+     * Retrieves last communication time, last non-zero run time, and last non-zero runtime for each relay for the
+     * specified devices. Will return null for any device that has never communicated.
+     */
+    public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds);
     
     /**
      * Updates the last communicated time for the specified device to the specified timestamp, if this timestamp is
@@ -28,7 +35,7 @@ public interface LcrCommunicationsDao {
     public boolean updateComms(PaoIdentifier paoIdentifier, Instant timestamp);
     
     /**
-     * Updates the last communicated time and/or the last runtime and/or the relay last runtime for the specified device
+     * Updates the last communicated time and/or the last runtime and/or a relay's last runtime for the specified device
      * to the specified timestamp, if this timestamp is more recent than the existing value. If no entry currently 
      * exists for the device, a new one will be inserted. If one already exists, it will be updated.
      */

@@ -7,12 +7,13 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.MethodNotImplementedException;
+import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 
-public class MockLcrCommunicationsDao implements LcrCommunicationsDao {
+public class MockLcrCommunicationsDao implements DynamicLcrCommunicationsDao {
 
     @Override
-    public Map<Integer, DeviceCommunicationTimes> getTimes(Collection<Integer> deviceIds) {
+    public Map<Integer, DeviceCommunicationTimes> findTimes(Collection<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
@@ -23,6 +24,11 @@ public class MockLcrCommunicationsDao implements LcrCommunicationsDao {
 
     @Override
     public boolean updateRuntimeAndComms(PaoIdentifier paoIdentifier, int relay, Instant timestamp) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
