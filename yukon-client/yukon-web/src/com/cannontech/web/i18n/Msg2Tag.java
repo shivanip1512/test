@@ -28,7 +28,6 @@ public class Msg2Tag extends YukonTagSupport {
     private ObjectFormattingService objectFormattingService;
 
     private Object arguments;
-    private String argumentSeparator;
     private String var;
     private String scope = TagUtils.SCOPE_PAGE;
     private Object key;
@@ -115,11 +114,8 @@ public class Msg2Tag extends YukonTagSupport {
      * @see org.springframework.web.servlet.tags.MessageTag#resolveArguments(Object)
      */
     protected Object[] resolveArguments(Object arguments) throws JspException {
-        if (arguments instanceof String) {
-            String[] stringArray = StringUtils.delimitedListToStringArray((String) arguments,
-                                                                          this.argumentSeparator);
-            return stringArray;
-        } else if (arguments instanceof Object[]) {
+        
+        if (arguments instanceof Object[]) {
             return (Object[]) arguments;
         } else if (arguments instanceof Collection<?>) {
             return ((Collection<?>) arguments).toArray();
@@ -146,15 +142,6 @@ public class Msg2Tag extends YukonTagSupport {
      */
     public void setArguments(Object arguments) {
         this.arguments = arguments;
-    }
-
-    /**
-     * Set the separator to use for splitting an arguments String.
-     * Default is a comma (",").
-     * @see #setArguments
-     */
-    public void setArgumentSeparator(String argumentSeparator) {
-        this.argumentSeparator = argumentSeparator;
     }
 
     /**

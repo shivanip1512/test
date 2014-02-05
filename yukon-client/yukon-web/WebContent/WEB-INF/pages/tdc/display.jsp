@@ -142,14 +142,24 @@
                                     </tags:dynamicChooseOption>
                                     <tags:dynamicChooseOption optionId="MULT_ALARMS">
                                         <cti:msg2 key=".alarm.acknowledge" var="title" />
-                                        <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                        <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                         <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-mult-alarm-ack" id="acknowledge-${row.pointId}"></cm:dropdownOption>
                                         <li class="divider"></li>
                                     </tags:dynamicChooseOption>
                                 </tags:dynamicChoose>
                                 <tags:dynamicChoose updaterString="TDC/MAN_ENTRY/${row.pointId}/${row.pointType.pointTypeId}/${hasPointValueColumn}" suffix="${row.pointId}">
                                     <cti:msg2 key=".manualEntry.title" var="title" />
-                                    <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <tags:dynamicChooseOption optionId="TRUE">
                                         <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-manualEntry" id="manualEntry-${row.pointId}"></cm:dropdownOption>
                                         <li class="divider"></li>
@@ -157,29 +167,54 @@
                                 </tags:dynamicChoose>
                                 <tags:dynamicChoose updaterString="TDC/MAN_CONTROL/${row.pointId}" suffix="${row.pointId}">
                                     <cti:msg2 key=".tdc.manualControl.title" var="title" />
-                                    <cti:msg2 key=".tdc.popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".tdc.popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <tags:dynamicChooseOption optionId="TRUE">
                                         <cm:dropdownOption key=".manualControl.title" icon="icon-wrench" pointId="${row.pointId}" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" classes="clearfix f-manualControl" id="manualControl-${row.pointId}"></cm:dropdownOption>
                                     </tags:dynamicChooseOption>
                                 </tags:dynamicChoose>
                                 <c:if test="${row.cog.tags}">
                                     <cti:msg2 key=".tags.title" var="title" />
-                                    <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <cm:dropdownOption key=".tags.title" icon="icon-tag-blue" pointId="${row.pointId}" deviceId="${row.device.deviceId}" popupTitle="${popupTitle}" classes="clearfix f-tags" id="tagsDialog-${row.pointId}"></cm:dropdownOption>
                                 </c:if>
                                 <c:if test="${row.cog.enableDisable}">
                                     <cti:msg2 key=".enableDisable.title" var="title" />
-                                    <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <cm:dropdownOption key=".enableDisable.title" icon="icon-accept" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-enableDisable" id="enableDisable-${row.pointId}"></cm:dropdownOption>
                                 </c:if>
                                 <c:if test="${row.cog.trend}">
                                     <cti:msg2 key=".trend.title" var="title" />
-                                    <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <cm:dropdownOption key=".trend.title" icon="icon-chart-line" pointId="${row.pointId}" popupTitle="${popupTitle}" classes="clearfix f-trend" id="trendDialog-${row.pointId}"></cm:dropdownOption>
                                 </c:if>
                                 <c:if test="${row.cog.altScan}">
                                     <cti:msg2 key=".altScan.title" var="title" />
-                                    <cti:msg2 key=".popupTitle" arguments="${title},${row.deviceName},${row.pointName}" argumentSeparator="," var="popupTitle" />
+                                        <cti:list var="arguments">
+                                            <cti:item value="${title}"/>
+                                            <cti:item value="${row.deviceName}"/>
+                                            <cti:item value="${row.pointName}"/>
+                                        </cti:list>
+                                    <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle" />
                                     <cm:dropdownOption key=".altScan.title" icon="icon-transmit-blue" popupTitle="${popupTitle}" deviceId="${row.device.deviceId}" deviceName="${row.deviceName}" classes="clearfix f-altScan" id="altScan-${row.pointId}"></cm:dropdownOption>
                                 </c:if>
                             </cm:dropdown></td>

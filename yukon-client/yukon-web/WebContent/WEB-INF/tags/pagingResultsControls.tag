@@ -52,7 +52,14 @@
                 </c:otherwise>
             </c:choose>
         </span>
-        <span class="fl page-num-text"><i:inline key="yukon.common.paging.viewing" arguments="${result.startIndex + 1},${result.endIndex},${result.hitCount}" argumentSeparator=","/></span>
+        <span class="fl page-num-text">
+            <cti:list var="arguments">
+                <cti:item value="${result.startIndex + 1}"/>
+                <cti:item value="${result.endIndex}"/>
+                <cti:item value="${result.hitCount}"/>
+            </cti:list>
+            <i:inline key="yukon.common.paging.viewing" arguments="${arguments}"/>
+        </span>
         <span class="fl next-link">
             <c:choose>
                 <c:when test="${result.nextNeeded}">

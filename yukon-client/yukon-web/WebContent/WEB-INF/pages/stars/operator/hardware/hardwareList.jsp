@@ -240,9 +240,11 @@
         </table>
 
         <div class="hardwarePopup">
-            <i:inline key=".serialNumber.moveToAccount" 
-                argumentSeparator="," 
-                arguments="${checkingAdd.accountNumber},${accountNumber}"/>
+            <cti:list var="arguments">
+                    <cti:item value="${checkingAdd.accountNumber}"/>
+                    <cti:item value="${accountNumber}"/>
+            </cti:list>
+            <i:inline key=".serialNumber.moveToAccount" arguments="${arguments}"/>
         </div>
 
         <form action="${addDevice}">

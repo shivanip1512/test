@@ -1,7 +1,6 @@
 <%@ tag trimDirectiveWhitespaces="true"%>
 
 <%@ attribute name="arguments" type="java.lang.Object"%>
-<%@ attribute name="argumentSeparator"%>
 <%@ attribute name="baseUrl" required="true"%>
 <%@ attribute name="defaultFilterInput"%>
 <%@ attribute name="filterDialog"%>
@@ -20,14 +19,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths=".${nameKey},">
-    <c:choose>
-        <c:when test="${not empty argumentSeparator}">
-            <cti:msg2 var="title" key=".title" arguments="${arguments}" argumentSeparator="${argumentSeparator}"/>
-        </c:when>
-        <c:otherwise>
-            <cti:msg2 var="title" key=".title" arguments="${arguments}"/>
-        </c:otherwise>
-    </c:choose>
+   <cti:msg2 var="title" key=".title" arguments="${arguments}"/>
 </cti:msgScope>
 
 <tags:pagedBox title="${pageScope.title}"

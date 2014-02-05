@@ -197,7 +197,7 @@
                 </div>
             </tags:boxContainer2>
             
-            <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" argumentSeparator=":" var="strategyTitle"/>
+            <cti:msg2 key=".strategyDetails.title" arguments="${strategyName}" var="strategyTitle"/>
             <tags:simplePopup id="strategyDetails" title="${strategyTitle}" on=".f-show-strategy-details">
                 <table class="compact-results-table" >
                     <thead>

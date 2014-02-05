@@ -13,7 +13,6 @@
 <%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
 <%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
 <%@ attribute name="arguments" required="false" type="java.lang.Object"%>
-<%@ attribute name="argumentSeparator" required="false" type="java.lang.String"%>
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
@@ -21,9 +20,6 @@
     <c:choose>
         <c:when test="${not empty pageScope.title}">
             <c:set var="titleMsg" value="${title}"/>
-        </c:when>
-        <c:when test="${not empty argumentSeparator}">
-            <cti:msg2 var="titleMsg" key=".title" arguments="${arguments}" argumentSeparator="${argumentSeparator}"/>
         </c:when>
         <c:otherwise>
             <cti:msg2 var="titleMsg" key=".title" arguments="${arguments}"/>

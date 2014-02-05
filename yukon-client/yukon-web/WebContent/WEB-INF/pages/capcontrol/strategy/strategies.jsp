@@ -55,7 +55,11 @@
                                 <td><spring:escapeBody htmlEscape="true">${item.controlUnits}</spring:escapeBody></td>
                     
                                 <td>
-                                    <i:inline key=".startStopTimes" arguments="${item.peakStartTime},${item.peakStopTime}" argumentSeparator=","/>
+                                    <cti:list var="arguments">
+                                        <cti:item value="${item.peakStartTime}"/>
+                                        <cti:item value="${item.peakStopTime}"/>
+                                    </cti:list>
+                                    <i:inline key=".startStopTimes" arguments="${arguments}"/>
                                 </td>
                     
                                 <td><spring:escapeBody htmlEscape="true">${item.controlInterval}</spring:escapeBody></td>

@@ -32,7 +32,11 @@
                                 </ul>
                             </div>
                             <div>
-                                <cti:msg2 key=".deviceNamePointName" arguments="${alarm.deviceName},${alarm.pointName}" argumentSeparator="," var="title" />
+                                <cti:list var="arguments">
+                                    <cti:item value="${alarm.deviceName}"/>
+                                    <cti:item value="${alarm.pointName}"/>
+                                </cti:list>
+                                <cti:msg2 key=".deviceNamePointName" arguments="${arguments}" var="title" />
                                 <a href="${allAlarms}" title="${title}">${fn:escapeXml(alarm.textMessage)}</a>
                             </div>
                         </td>

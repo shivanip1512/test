@@ -51,10 +51,12 @@
     <form id="parentForm" action="feeders.jsp" method="post">
         <input type="hidden" name="${lastAreaKey}" />
         <input type="hidden" name="${lastSubKey}" />
-    
+        <cti:list var="arguments">
+                    <cti:item value="${label}"/>
+                    <cti:item value="${resultsFound}"/>
+        </cti:list>
         <tags:pagedBox2 nameKey="searchContainer"
-                arguments="${label},${resultsFound}" 
-                argumentSeparator=","
+                arguments="${arguments}" 
                 searchResult="${searchResult}" 
                 baseUrl="${baseUrl}"
                 styleClass="padBottom">
