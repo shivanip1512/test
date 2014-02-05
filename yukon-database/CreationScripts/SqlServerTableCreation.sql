@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/5/2014 12:30:32 PM                         */
+/* Created on:     2/5/2014 2:36:40 PM                          */
 /*==============================================================*/
 
 
@@ -8672,7 +8672,7 @@ create table UserPage (
    UserId               numeric              not null,
    PagePath             varchar(2048)        not null,
    Module               varchar(64)          not null,
-   PageName             varchar(255)         not null,
+   PageName             varchar(256)         not null,
    Favorite             char(1)              not null,
    LastAccess           datetime             null,
    constraint PK_UserPage primary key (UserPageId)
