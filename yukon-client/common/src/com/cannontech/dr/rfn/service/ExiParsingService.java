@@ -7,6 +7,7 @@ import org.openexi.sax.TransmogrifierException;
 
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl.Schema;
 
 public interface ExiParsingService {
 
@@ -21,4 +22,6 @@ public interface ExiParsingService {
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) throws ParseExiException;
 
     public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException;
+    
+    public Schema getSchema(byte[] payload);
 }

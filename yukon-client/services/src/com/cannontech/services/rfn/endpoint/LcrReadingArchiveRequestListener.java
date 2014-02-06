@@ -19,6 +19,7 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -29,6 +30,8 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
+import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
+import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl.Schema;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -59,6 +62,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired LmHardwareCommandService commandService;
     @Autowired InventoryBaseDao inventoryBaseDao;
     @Autowired DynamicLcrCommunicationsService lcrCommunicationsService;
+    @Autowired RfnPerformanceVerificationService rfnPerformanceVerificationService;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
@@ -78,7 +82,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 SimpleXPathTemplate decodedPayload = null;
 
-                byte[] payload = readingArchiveRequest.getData().getPayload();
+                byte[] payload = readingArchiveRequest.getData().getPayload();;
                 try {
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
@@ -97,11 +101,19 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 /** Handle addressing data */
                 rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
                 
-                /** Handle Broadcast Verification Messages*/
-                Map<Long, Instant> verificationMsgs =
-                    rfnLcrDataMappingService.mapBroadcastVerificationMessages(decodedPayload);
-               
-    
+				/** Handle Broadcast Verification Messages */
+                Schema schema = exiParsingService.getSchema(payload);
+				if (schema.supportsBroadcastVerificationMessages()) {
+					Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
+							.mapBroadcastVerificationMessages(decodedPayload);
+					Range<Instant> range = rfnLcrDataMappingService
+							.mapBroadcastVerificationUnsuccessRange(
+									decodedPayload, rfnDevice);
+					rfnPerformanceVerificationService
+							.processVerificationMessages(rfnDevice
+									.getPaoIdentifier().getPaoId(),
+									verificationMsgs, range);
+				}
                 incrementProcessedArchiveRequest();
                 
             } else {

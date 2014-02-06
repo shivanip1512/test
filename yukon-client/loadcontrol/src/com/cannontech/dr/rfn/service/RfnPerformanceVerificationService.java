@@ -2,6 +2,9 @@ package com.cannontech.dr.rfn.service;
 
 import java.util.Map;
 
+import org.joda.time.Instant;
+
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 
 public interface RfnPerformanceVerificationService {
@@ -18,4 +21,10 @@ public interface RfnPerformanceVerificationService {
      * @Returns Map of DeviceId to asset availability
      */
     Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(long messageId);
+    
+	/**
+	 * Processes verification messages
+	 */
+	public void processVerificationMessages(int deviceId,
+			Map<Long, Instant> verificationMsgs, Range<Instant> range);
 }

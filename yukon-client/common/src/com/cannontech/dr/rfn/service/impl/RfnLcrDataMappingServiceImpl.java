@@ -1,6 +1,8 @@
 package com.cannontech.dr.rfn.service.impl;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -24,6 +27,7 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -38,6 +42,7 @@ import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 
 public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     
@@ -263,5 +268,39 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             msgMap.put(messageId, receivedTimestamp);
         }
         return msgMap;
+    }
+    
+    @Override
+    public Range<Instant> mapBroadcastVerificationUnsuccessRange(SimpleXPathTemplate data, RfnDevice device) {
+    	Range<Instant> range = null;
+    	PaoType type = device.getPaoIdentifier().getPaoType();
+    	
+        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+        Instant timeOfReading = new Instant(timeInSec * 1000);
+    	
+    	Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
+    	try {
+            rfnLcrRelayDataMap = RfnLcrRelayDataMap.getRelayMapByPaoType(type);
+        } catch (ParseException e) {
+            log.error("Cannot retrieve relay point data map for device type: " + type, e);
+            throw new RuntimeException();
+        }
+        
+    	List<Long> relayStartTimes = new ArrayList<Long>();
+        for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
+			long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
+							+ relay.getRelayIdXPathString()
+							+ "/IntervalData/@startTime");
+			if(startTime > 0){
+				relayStartTimes.add(startTime);
+			}
+        }
+        
+        if(!relayStartTimes.isEmpty()){
+        	 Collections.sort(relayStartTimes);
+        	 Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
+        	 range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
+        }
+        return range;
     }
 }

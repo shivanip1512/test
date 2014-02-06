@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -36,5 +37,10 @@ public interface RfnLcrDataMappingService {
      * This method extracts message id and the time the message was received by LCR.
      */
     public Map<Long, Instant> mapBroadcastVerificationMessages(SimpleXPathTemplate decodedPayload);
+
+    /**
+     * This method creates a date range of earliest start time and the time of reading.
+     */
+    public Range<Instant> mapBroadcastVerificationUnsuccessRange(SimpleXPathTemplate data, RfnDevice device);
 
 }

@@ -1,6 +1,7 @@
 package com.cannontech.dr.rfn.dao;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
@@ -58,5 +59,31 @@ public interface PerformanceVerificationDao {
      * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
      */
     Set<Integer> getDevicesWithUnknownStatus(long messageId);
+    
+    /**
+	 *This method looks up all the event ids for this device and returns the ones that are valid.
+	 */
+    List<Long> getEventIdsForDevice(int deviceId, List<Long> eventIds);
+    
+    /**
+	 *This method looks up all the and returns the ones that are valid.
+	 */
+    List<Long> getEventIds(List<Long> eventIds);
+
+    /**
+	 *This method creates unenrolled result entry.
+	 */
+	void createUnenrolledEventResult(int deviceId, long messageId, Instant receivedTime);
+	
+	/**
+	 * This method marks device as a successful
+	 */
+	void updateSuccessEventResult(int deviceId, Map<Long, Instant> verificationMsgs);
+	
+	/**
+	 * This method marks device as unsuccessful
+	 */
+	
+	void updateUnsuccessEventResult(int deviceId, Range<Instant> range);
 
 }

@@ -35,21 +35,36 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
+import com.google.common.collect.ImmutableMap;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class ExiParsingServiceImpl implements ExiParsingService {
     
-    enum SchemaLocation {
+    public enum Schema {
         SCHEMA_0_0_2("0.0.2", "rfnLcrExiMessageSchema_v0_0_2.xsd"),
         SCHEMA_0_0_3("0.0.3", "rfnLcrExiMessageSchema_v0_0_3.xsd");
        
         private final String version;
         private final String schema;
+        private boolean supportsBroadcastVerificationMessages;
         private static final String classpath = "classpath:com/cannontech/dr/rfn/endpoint/";
-
-        private SchemaLocation(String version, String schema) {
+        private static final Map<String, Schema> lookupByVersion;
+        
+		static {
+			ImmutableMap.Builder<String, Schema> builder = ImmutableMap
+					.builder();
+			for (Schema schema : values()) {
+				builder.put(schema.getVersion(), schema);
+			}
+			lookupByVersion = builder.build();
+		}
+        
+        private Schema(String version, String schema) {
             this.version = version;
-            this.schema = schema;     
+            this.schema = schema; 
+            if(!"0.0.2".equals(version)){
+            	this.supportsBroadcastVerificationMessages = true;
+            }
         }
 
         public String getVersion() {
@@ -59,6 +74,14 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         public String getLocation() {
             return classpath + schema;
         }  
+        
+        public boolean supportsBroadcastVerificationMessages() {
+            return supportsBroadcastVerificationMessages;
+        }  
+        
+        public static Schema getSchema(String schemaVersion){
+        	return lookupByVersion.get(schemaVersion);
+        }
     }
     
     private final static byte payloadType = (byte) 0xE2;
@@ -70,13 +93,14 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
     	
-    	if(payload[0] == payloadType){
+    	byte[] data = Arrays.copyOf(payload, payload.length);
+    	if(data[0] == payloadType){
     		// Trim 3-byte Expresscom header from the payload
-    		payload = Arrays.copyOfRange(payload, 3, payload.length);
+    		data = Arrays.copyOfRange(data, 3, data.length);
     	}
     	
         //Get the schema version from the header
-        byte[] header = Arrays.copyOfRange(payload, 0, 4);
+        byte[] header = Arrays.copyOfRange(data, 0, 4);
         String schemaVersion = getSchemaVersion(header);
         EXISchema exiSchema = getLcrReadingSchema(schemaVersion);
         
@@ -93,7 +117,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }
         
         // Get report without 4-byte header
-        byte[] report = Arrays.copyOfRange(payload, 4, payload.length);
+        byte[] report = Arrays.copyOfRange(data, 4, data.length);
         
         // Set up input and output streams.
         ByteArrayInputStream bis = new ByteArrayInputStream(report);
@@ -171,7 +195,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         // Serialize the EXI schemas once and then re-use it
         if (schemas.isEmpty()) {
             EXISchemaFactory factory = new EXISchemaFactory();
-            for (SchemaLocation location : SchemaLocation.values()) {
+            for (Schema location : Schema.values()) {
                 try {
                     Resource informingSchemaResource = loader.getResource(location.getLocation());
                     InputSource is = new InputSource(informingSchemaResource.getInputStream());
@@ -215,5 +239,17 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         buffer.get(output, 0, outputStream.getCount());
         return output;
     }
+    
+	@Override
+	public Schema getSchema(byte[] payload) {
+		byte[] header;
+	 	if(payload[0] == payloadType){
+	 		header = Arrays.copyOfRange(payload, 3, 8);
+    	}else{
+    		header = Arrays.copyOfRange(payload, 0, 4);
+    	}
+		String schemaVersion = getSchemaVersion(header);
+		return Schema.getSchema(schemaVersion);
+	}
 
 }

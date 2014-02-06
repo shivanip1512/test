@@ -183,4 +183,67 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             jdbcTemplate.update(sql);
         }
     }
+    
+    @Override
+    public List<Long> getEventIdsForDevice(int deviceId, List<Long> eventIds) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RfBroadcastEventId");
+        sql.append("FROM RfBroadcastEventDevice");
+        sql.append("WHERE  DeviceId").eq(deviceId);
+        sql.append("AND RfBroadcastEventId").in(eventIds);
+		return jdbcTemplate.query(sql, RowMapper.LONG);
+    }
+    
+    @Override
+    public List<Long> getEventIds(List<Long> eventIds) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RfBroadcastEventId");
+        sql.append("FROM RfBroadcastEvent");
+        sql.append("WHERE RfBroadcastEventId").in(eventIds);
+		return jdbcTemplate.query(sql, RowMapper.LONG);
+    }
+    
+    @Override
+    public void createUnenrolledEventResult(int deviceId, long messageId, Instant receivedTime) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
+                
+        params.addValue("RfBroadcastEventDeviceId", nextValueHelper.getNextValue("RfBroadcastEventDevice"));
+        params.addValue("DeviceId", deviceId);
+        params.addValue("RfBroadcastEventId", messageId);
+        params.addValue("Result", SUCCESS_UNENROLLED);
+        params.addValue("ReceivedTime", receivedTime);
+        
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void updateSuccessEventResult(int deviceId, Map<Long, Instant> verificationMsgs) {
+		for (long eventId : verificationMsgs.keySet()) {
+			SqlStatementBuilder sql = new SqlStatementBuilder();
+			SqlParameterSink params = sql.update("RfBroadcastEventDevice");
+			params.addValue("Result", SUCCESS);
+			params.addValue("ReceivedTime", verificationMsgs.get(eventId));
+			sql.append("WHERE  DeviceId").eq(deviceId);
+			sql.append("AND RfBroadcastEventId").eq(eventId);
+			sql.append("AND Result").neq(SUCCESS);
+
+			jdbcTemplate.update(sql);
+		}
+    }
+    
+    @Override
+	public void updateUnsuccessEventResult(int deviceId, Range<Instant> range) {
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		SqlParameterSink params = sql.update("RfBroadcastEventDevice");
+		params.addValue("Result", UNSUCCESS);
+		sql.append("FROM RfBroadcastEventDevice rbed");
+		sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
+		sql.append("WHERE DeviceId").eq(deviceId);
+		sql.append("AND Result").eq(UNKNOWN);
+		sql.append("AND SendTime").gte(range.getMin());
+		sql.append("AND SendTime").lt(range.getMax());
+		
+		jdbcTemplate.update(sql);
+	}
 }
