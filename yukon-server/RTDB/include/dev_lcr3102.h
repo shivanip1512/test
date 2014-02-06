@@ -3,6 +3,8 @@
 #include "dev_carrier.h"
 
 #include "dev_lcr3102_commands.h"
+#include "tbl_dyn_lcrComms.h"
+
 
 namespace Cti {
 namespace Devices {
@@ -15,6 +17,10 @@ private:
 
     static const    CommandSet  _commandStore;
     static          CommandSet  initCommandStore();
+
+    CtiTableDynamicLcrCommunications    _dynamicComms;
+
+    void updateLastCommsTime( const INT sequence_id, const CtiTime & current_time );
 
 protected:
 
@@ -135,6 +141,9 @@ public:
 
     LONG getSerial() const;
 
+    virtual std::string getSQLCoreStatement() const;
+
+    virtual void DecodeDatabaseReader( Cti::RowReader &rdr );
 };
 
 }       // namespace Devices

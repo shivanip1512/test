@@ -45,6 +45,7 @@
 #include "dev_grp_mct.h"
 #include "dev_mct_broadcast.h"
 #include "dev_rds.h"
+#include "dev_lcr3102.h"
 #include "tbl_static_paoinfo.h"
 
 #include "devicetypes.h"
@@ -706,7 +707,8 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 }
                 else
                 {
-                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice());
+                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice(), "LCR-3102", false);
+                    rowFound |= loadDeviceType(paoid_subset, "LCR-3102 devices", Devices::Lcr3102Device(), "LCR-3102", true);
 
                     if( !MctDevice::isMct410(deviceType) )
                     {

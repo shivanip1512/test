@@ -5,6 +5,8 @@
 #include "date_utility.h"
 #include "ctitokenizer.h"
 
+#include <boost/optional.hpp>
+
 using std::string;
 using std::endl;
 using std::list;
@@ -141,6 +143,11 @@ INT Lcr3102Device::ResultDecode( const INMESS *InMessage, CtiTime &TimeNow, CtiM
 
             break;
         }
+    }
+
+    if ( status == NoError ) 
+    {
+        updateLastCommsTime( InMessage->Sequence, TimeNow );
     }
 
     return status;
@@ -444,6 +451,8 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
     string results = getName() + " / Hourly " + identifier;
     ReturnMsg->setResultString(results);
 
+    boost::optional<CtiTime>    latestRuntimeTimestamp;
+
     for( int i = 0; i < numberOfTimesReturned; i++ )
     {
         pi = getSixBitValueFromBuffer(DSt->Message + 1, i, std::min(DSt->Length - 1, 36 - 1));
@@ -453,10 +462,22 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
         insertPointDataReport(AnalogPointType, point_offset, ReturnMsg,
                               pi, identifier + " Load " + CtiNumStr(relay), pointTime);
 
+        // a non-zero runtime -- with an uninitialized latest runtime timestamp
+        //      since timestamps are computed in reverse order the latest one comes first
+        if ( point_base == PointOffset_RuntimeBase && pi.value != 0 && ! latestRuntimeTimestamp )
+        {
+            latestRuntimeTimestamp = pointTime;
+        }
+
         pointTime.addMinutes(-1*60); // subtract an hour for each value
     }
 
-    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    if ( latestRuntimeTimestamp )
+    {
+        _dynamicComms.updateRelayRuntime( relay, *latestRuntimeTimestamp );
+    }
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection); 
     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
@@ -1679,6 +1700,97 @@ LONG Lcr3102Device::getAddress() const
 LONG Lcr3102Device::getSerial() const
 {
     return Inherited::getAddress(); // Necessary for the expresscom commands! Need the whole address, not just 22 bits!
+}
+
+
+std::string Lcr3102Device::getSQLCoreStatement() const
+{
+    static const std::string sql = 
+        "SELECT "
+            "YP.paobjectid, "
+            "YP.category, "
+            "YP.paoclass, "
+            "YP.paoname, "
+            "YP.type, "
+            "YP.disableflag, "
+            "DV.deviceid, "
+            "DV.alarminhibit, "
+            "DV.controlinhibit, "
+            "DCS.address, "
+            "RTS.routeid, "
+            "DLP.lastintervaldemandrate, "
+            "DLP.loadprofiledemandrate, "
+            "DLP.loadprofilecollection, "
+            "DLP.voltagedmdinterval, "
+            "DLP.voltagedmdrate, "
+            "MCT.deviceid, "
+            "MCT.connectedied, "
+            "MCT.password, "
+            "MCT.iedscanrate, "
+            "MCT.defaultdataclass, "
+            "MCT.defaultdataoffset, "
+            "MCT.realtimescan, "
+            "DLCRC.deviceid AS LcrCommsExist "
+        "FROM "
+            "YukonPAObject YP "
+                "JOIN Device DV ON YP.paobjectid = DV.deviceid "
+                "JOIN DeviceLoadProfile DLP ON YP.paobjectid = DLP.deviceid "
+                "JOIN DeviceCarrierSettings DCS ON YP.paobjectid = DCS.deviceid "
+                "LEFT OUTER JOIN DeviceRoutes RTS ON YP.paobjectid = RTS.deviceid "
+                "LEFT OUTER JOIN DeviceMCTIEDPort MCT ON YP.paobjectid = MCT.deviceid "
+                "LEFT OUTER JOIN DynamicLcrCommunications DLCRC ON YP.paobjectid = DLCRC.deviceid "
+        "WHERE "
+            "1 = 1";
+
+    return sql;
+}
+
+
+void Lcr3102Device::DecodeDatabaseReader( RowReader & rdr )
+{
+    if ( getDebugLevel() & DEBUGLEVEL_DATABASE )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    Inherited::DecodeDatabaseReader(rdr);
+
+    _dynamicComms.DecodeDatabaseReader(rdr);
+}
+
+
+void Lcr3102Device::updateLastCommsTime( const INT sequence_id, const CtiTime & current_time )
+{
+    switch ( sequence_id )
+    {
+        case EmetconProtocol::Scan_Integrity:
+
+        case EmetconProtocol::GetValue_IntervalLast:
+        case EmetconProtocol::GetValue_Runtime:
+        case EmetconProtocol::GetValue_Shedtime:
+        case EmetconProtocol::GetValue_Temperature:
+        case EmetconProtocol::GetValue_TransmitPower:
+        case EmetconProtocol::GetValue_ControlTime:
+        case EmetconProtocol::GetValue_XfmrHistoricalCT:
+        case EmetconProtocol::GetValue_PropCount:
+        case EmetconProtocol::GetValue_DutyCycle:
+
+        case EmetconProtocol::GetConfig_Softspec:
+        case EmetconProtocol::GetConfig_Time:
+        case EmetconProtocol::GetConfig_Addressing:
+        case EmetconProtocol::GetConfig_Raw:
+        {
+            _dynamicComms.updateLastCommsTime( current_time );
+
+            break;
+        }
+        default:
+        {
+            // don't update the last communicated time for any command not listed above
+            break;
+        }
+    }
 }
 
 

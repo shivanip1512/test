@@ -37,6 +37,7 @@ tbl_ci_cust.obj \
 tbl_contact_notification.obj \
 tbl_dialup.obj \
 tbl_direct.obj \
+tbl_dyn_lcrComms.obj \
 tbl_dyn_ptalarming.obj \
 tbl_dyn_pttag.obj \
 tbl_dyn_paoinfo.obj \
@@ -197,10 +198,10 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		row_reader.h tbl_rtcarrier.h dbaccess.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
 		CtiPCPtrQueue.h tbl_rtcomm.h ctibase.h ctinexus.h \
-		tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
-		msg_pcrequest.h message.h collectable.h tbl_state_grp.h \
-		rwutil.h database_connection.h database_reader.h boost_time.h \
-		boostutil.h tbl_state.h
+		socket_helper.h tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h \
+		tbl_rtversacom.h msg_pcrequest.h message.h collectable.h \
+		tbl_state_grp.h rwutil.h database_connection.h \
+		database_reader.h boost_time.h boostutil.h tbl_state.h
 invalidreaderexception.obj:	precompiled.h InvalidReaderException.h \
 		dlldefs.h database_reader.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
@@ -401,6 +402,13 @@ tbl_dv_wnd.obj:	precompiled.h tbl_dv_wnd.h row_reader.h ctitime.h \
 		dsm2err.h words.h optional.h dbmemobject.h resolvers.h \
 		pointtypes.h db_entry_defines.h desolvers.h logger.h thread.h \
 		CtiPCPtrQueue.h database_reader.h
+tbl_dyn_lcrcomms.obj:	precompiled.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
+		optional.h database_reader.h row_reader.h database_writer.h \
+		row_writer.h database_util.h tbl_dyn_lcrComms.h
 tbl_dyn_paoinfo.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -413,16 +421,17 @@ tbl_dyn_ptalarming.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
 		thread.h CtiPCPtrQueue.h tbl_dyn_ptalarming.h ctibase.h \
-		ctinexus.h dbmemobject.h pointdefs.h row_reader.h \
-		database_connection.h database_reader.h database_writer.h \
-		row_writer.h
+		ctinexus.h socket_helper.h dbmemobject.h pointdefs.h \
+		row_reader.h database_connection.h database_reader.h \
+		database_writer.h row_writer.h
 tbl_dyn_pttag.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
 		thread.h CtiPCPtrQueue.h tbl_dyn_pttag.h ctibase.h ctinexus.h \
-		dbmemobject.h pointdefs.h row_reader.h database_connection.h \
-		database_reader.h database_writer.h row_writer.h
+		socket_helper.h dbmemobject.h pointdefs.h row_reader.h \
+		database_connection.h database_reader.h database_writer.h \
+		row_writer.h
 tbl_lmg_point.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h tbl_lmg_point.h yukon.h \
@@ -557,9 +566,9 @@ tbl_ptdispatch.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
 		thread.h CtiPCPtrQueue.h tbl_ptdispatch.h ctibase.h \
-		ctinexus.h dbmemobject.h pointdefs.h row_reader.h \
-		database_connection.h database_reader.h database_writer.h \
-		row_writer.h ctidate.h
+		ctinexus.h socket_helper.h dbmemobject.h pointdefs.h \
+		row_reader.h database_connection.h database_reader.h \
+		database_writer.h row_writer.h ctidate.h
 tbl_pt_accum.obj:	precompiled.h tbl_pt_accum.h row_reader.h ctitime.h \
 		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \
@@ -651,15 +660,16 @@ tbl_rtcomm.obj:	precompiled.h tbl_rtcomm.h row_reader.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h logger.h thread.h CtiPCPtrQueue.h dbmemobject.h \
-		ctibase.h ctinexus.h database_connection.h database_reader.h
+		ctibase.h ctinexus.h socket_helper.h database_connection.h \
+		database_reader.h
 tbl_rtmacro.obj:	precompiled.h tbl_rtmacro.h row_reader.h ctitime.h \
 		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h ctibase.h ctinexus.h database_connection.h \
-		database_reader.h
+		CtiPCPtrQueue.h ctibase.h ctinexus.h socket_helper.h \
+		database_connection.h database_reader.h
 tbl_rtrepeater.obj:	precompiled.h tbl_rtrepeater.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
@@ -667,11 +677,12 @@ tbl_rtrepeater.obj:	precompiled.h tbl_rtrepeater.h row_reader.h \
 		optional.h dbaccess.h logger.h thread.h CtiPCPtrQueue.h
 tbl_rtroute.obj:	precompiled.h tbl_rtroute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h dbmemobject.h ctibase.h ctinexus.h \
-		cticonnect.h netports.h dllbase.h dsm2.h mutex.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h row_reader.h dbaccess.h logger.h \
-		thread.h CtiPCPtrQueue.h resolvers.h pointtypes.h \
-		db_entry_defines.h database_connection.h database_reader.h
+		cticonnect.h netports.h socket_helper.h numstr.h dllbase.h \
+		dsm2.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h dsm2err.h words.h optional.h \
+		row_reader.h dbaccess.h logger.h thread.h CtiPCPtrQueue.h \
+		resolvers.h pointtypes.h db_entry_defines.h \
+		database_connection.h database_reader.h
 tbl_rtversacom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -704,22 +715,23 @@ tbl_static_paoinfo.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h dsm2err.h words.h optional.h logger.h \
 		thread.h CtiPCPtrQueue.h tbl_static_paoinfo.h ctibase.h \
-		ctinexus.h dbmemobject.h pointdefs.h database_connection.h \
-		rwutil.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h database_writer.h row_writer.h
+		ctinexus.h socket_helper.h dbmemobject.h pointdefs.h \
+		database_connection.h rwutil.h database_reader.h row_reader.h \
+		boost_time.h boostutil.h database_writer.h row_writer.h
 tbl_tag.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
-		CtiPCPtrQueue.h tbl_tag.h ctibase.h ctinexus.h dbmemobject.h \
-		row_reader.h
+		CtiPCPtrQueue.h tbl_tag.h ctibase.h ctinexus.h \
+		socket_helper.h dbmemobject.h row_reader.h
 tbl_taglog.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
 		CtiPCPtrQueue.h tbl_taglog.h ctibase.h ctinexus.h \
-		dbmemobject.h pointdefs.h row_reader.h database_connection.h \
-		database_reader.h database_writer.h row_writer.h
+		socket_helper.h dbmemobject.h pointdefs.h row_reader.h \
+		database_connection.h database_reader.h database_writer.h \
+		row_writer.h
 tbl_unitmeasure.obj:	precompiled.h tbl_unitmeasure.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
