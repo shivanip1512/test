@@ -292,7 +292,7 @@
                  </table>
             <table border="0" cellspacing="0" cellpadding="5">
               <tr> 
-                <td width="16%"> <span class="TableCell"><input type="radio" name="STARTRADIO" value="now"/> 
+                <td width="16%"> <span class="TableCell"><input type="radio" name="STARTRADIO" value="now" checked/> 
                   </span></td>
                 <td width="25%"> <span class="TableCell">Now:</span></td>
                 <td width="59%">&nbsp; </td>
@@ -301,7 +301,7 @@
                 <td width="16%"> <span class="TableCell"><input type="radio" name="STARTRADIO" value="time"/> 
                   </span></td>
                 <td> <span class="TableCell">Time:</span></td>
-                <td> <span class="TableCell"><input type="text" name="STARTTIME" size="10"/> 
+                <td> <span class="TableCell"><input type="text" name="STARTTIME" size="10" value="<%=timeFormat.format(now) %>"/> 
                   </span></td>
                 <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                   </td>
@@ -322,10 +322,10 @@
             <p> 
             <table width="93%" border="0" cellspacing="0" cellpadding="5">
               <tr> 
-                <td width="16%"> <span class="TableCell"><input type="radio" name="STOPRADIO" value="now"> 
+                <td width="16%"> <span class="TableCell"><input type="radio" name="STOPRADIO" value="now" checked> 
                   </span></td>
                 <td> <span class="TableCell">Time:</span></td>
-                <td> <span class="TableCell"><input type="text" name="STOPTIME" size="10"> 
+                <td> <span class="TableCell"><input type="text" name="STOPTIME" size="10" value="<%=timeFormat.format( new java.util.Date( now.getTime() + 14400000))%>"> 
                   </span></td>
                 <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                 </td>

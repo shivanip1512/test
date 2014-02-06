@@ -8,7 +8,6 @@
 <%@ page import="com.cannontech.yukon.conns.ConnPool" %>
 <%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
-<%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <jsp:useBean id="checker" scope="session" class="com.cannontech.web.validate.PageBean"/>
 <%
@@ -190,7 +189,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <table width="657" border="0" cellspacing="0" cellpadding="0">
-              <struts:form name="checker" type="com.cannontech.web.validate.PageBean" action="stop_schedule.jsp" onSubmit="return validForm(this)"> 
+              <form name="checker" action="stop_schedule.jsp" onSubmit="return validForm(this)"> 
               <tr> 
                 <td width="650" class="title-header"> 
                   <p align="center"><br>DIRECT CONTROL - STOP SCHEDULE 
@@ -202,16 +201,16 @@
                           <p>&nbsp;<b>Stop:</b><br>
                           <table border="0" cellspacing="0" cellpadding="5">
                             <tr> 
-                              <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="now"/> 
+                              <td width="16%"> <span class="TableCell"><input type="radio" name="STOPRADIO" checked value="now"/> 
                                 </span></td>
                               <td width="25%"> <span class="TableCell"> Now:</span></td>
                               <td width="59%">&nbsp; </td>
                             </tr>
                             <tr> 
-                              <td width="16%"> <span class="TableCell"><struts:radio property="STOPRADIO" value="time"/> 
+                              <td width="16%"> <span class="TableCell"><input type="radio" name="STOPRADIO" value="time"/> 
                                 </span></td>
                               <td> <span class="TableCell"> Time:</span></td>
-                              <td> <span class="TableCell"><struts:text property="STOPTIME" size="10" pattern="@time"/> 
+                              <td> <span class="TableCell"><input type="text" name="STOPTIME" size="10" value="<%=timeFormat.format(now)%>"/> 
                                 </span></td>
                               <td class="TableCell"><%= tz.getDisplayName(tz.inDaylightTime(new java.util.Date()), TimeZone.SHORT) %>
                               </td>
@@ -240,9 +239,10 @@
               <input name="SUBMITTED" type="hidden" value="true">
               <input name="ID" type="hidden" value="<%= scheduleID %>">
               <input name="ACTION" type="hidden" value="STOP">
-              <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
+              <input type="hidden" name="STARTAT" value="-1"/>
+              <input type="hidden" name="STOPAT" value="0"/> 
               <input name="URL" type="hidden" value="<%= java.net.URLEncoder.encode(request.getContextPath() + "/operator/LoadControl/oper_direct.jsp?pending=true") %>">
-              </struts:form> 
+              </form> 
             </table>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
