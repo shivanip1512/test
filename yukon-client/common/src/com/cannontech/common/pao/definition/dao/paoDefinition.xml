@@ -7953,9 +7953,9 @@
         <displayName>RFN-420fRD</displayName></pao>
 
     <!-- ITRON RFN METERS -->
-    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION, CENTRON_DISPLAY_CONFIGURATION">
+    <pao id="RFN410CL"  inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_CONFIGURATION">
         <displayName>RFN-410cL</displayName></pao>
-    <pao id="RFN420CL"  inherits="RFN410CL">
+    <pao id="RFN420CL"  inherits="RFN410CL, CENTRON_DISPLAY_CONFIGURATION">
         <displayName>RFN-420cL</displayName></pao>
     <pao id="RFN420CD"  inherits="RFN420CL, RFN_DISCONNECT">
         <displayName>RFN-420cD</displayName></pao>
