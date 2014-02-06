@@ -33,6 +33,8 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.dao.ExpressComReportedAddressDao;
 import com.cannontech.dr.dao.ExpressComReportedAddressRelay;
@@ -44,28 +46,31 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-
 public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
-    
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
-
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
 
     @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
-        
         Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
-        Date timeOfReading = new Instant(timeInSec * 1000).toDate();
+        Instant instantOfReading = new Instant(timeInSec * 1000);
+        Date timeOfReading = instantOfReading.toDate();
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
 
         RfnDevice device = rfnDeviceLookupService.getDevice(request.getRfnIdentifier());
-
+        
+        //Object to store communication and non-zero runtime times for insertion into DynamicLcrCommunications
+        AssetAvailabilityPointDataTimes assetAvailabilityTimes = new AssetAvailabilityPointDataTimes(device.getPaoIdentifier().getPaoId());
+        assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
+        
         rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
         
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
@@ -109,13 +114,16 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         /** This may be useful some day */
         boolean readNow = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
         
-        intervalData = mapIntervalData(data, device);
+        intervalData = mapIntervalData(data, device, assetAvailabilityTimes);
         messagesToSend.addAll(intervalData);
+        
+        //Update asset availability times for this device
+        dynamicLcrCommunicationsDao.insertData(assetAvailabilityTimes);
         
         return messagesToSend;
     }
 
-    private List<PointData> mapIntervalData(SimpleXPathTemplate data, RfnDevice device) {
+    private List<PointData> mapIntervalData(SimpleXPathTemplate data, RfnDevice device, AssetAvailabilityPointDataTimes assetAvailabilityTimes) {
         
         int intervalLengthMinutes = evaluateArchiveReadValue(data, RfnLcrPointDataMap.RECORDING_INTERVAL).intValue();
         
@@ -161,6 +169,13 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
+                
+                //Store latest non-zero runtime for asset availability
+                //If runtime > 0 and no time stored for this relay, store currentIntervalTimestamp
+                Instant relayTime = assetAvailabilityTimes.getRelayRuntime(relay.getIndex());
+                if(runTime > 0 && relayTime == null) {
+                    assetAvailabilityTimes.setRelayRuntime(relay.getIndex(), currentIntervalTimestamp);
+                }
 
                 PointData runTimePointData = createPointData(runTimePoint.getPointID(), 
                         runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));

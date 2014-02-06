@@ -7,7 +7,7 @@ import org.joda.time.Instant;
 
 import com.google.common.collect.Maps;
 
-public class AllRelayCommunicationTimes extends DeviceCommunicationTimes {
+public final class AllRelayCommunicationTimes extends DeviceCommunicationTimes {
     private final Map<Integer, Instant> relayRuntimes = new HashMap<>();
     
     public AllRelayCommunicationTimes(Instant lastCommunicationTime, Instant lastNonZeroRuntime, 

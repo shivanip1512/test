@@ -3,10 +3,8 @@ package com.cannontech.dr.assetavailability.dao;
 import java.util.Collection;
 import java.util.Map;
 
-import org.joda.time.Instant;
-
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 
 /**
@@ -28,16 +26,9 @@ public interface DynamicLcrCommunicationsDao {
     public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds);
     
     /**
-     * Updates the last communicated time for the specified device to the specified timestamp, if this timestamp is
-     * more recent than the existing value. If no entry currently exists for the device, a new one will be inserted. 
-     * If one already exists, it will be updated.
+     * Inserts last communication time, last non-zero run time, and last non-zero runtime for each relay for the
+     * specified device. If no entry exists for the device, one will be created. If an entry does exist, it will be
+     * updated.
      */
-    public boolean updateComms(PaoIdentifier paoIdentifier, Instant timestamp);
-    
-    /**
-     * Updates the last communicated time and/or the last runtime and/or a relay's last runtime for the specified device
-     * to the specified timestamp, if this timestamp is more recent than the existing value. If no entry currently 
-     * exists for the device, a new one will be inserted. If one already exists, it will be updated.
-     */
-    public boolean updateRuntimeAndComms(PaoIdentifier paoIdentifier, int relay, Instant timestamp);
+    public void insertData(AssetAvailabilityPointDataTimes times);
 }

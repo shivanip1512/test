@@ -12,22 +12,24 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public enum RfnLcrRelayDataMap {
-    RELAY_1("[@id=0]", BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG),
-    RELAY_2("[@id=1]", BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
-    RELAY_3("[@id=2]", BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG);
+    RELAY_1("[@id=0]", BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG, 1),
+    RELAY_2("[@id=1]", BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG, 2),
+    RELAY_3("[@id=2]", BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG, 3);
     
     private String relayIdXPathString;
     private BuiltInAttribute runTimeAttribute;
     private BuiltInAttribute shedTimeAttribute;
+    private int relayIndex;
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrRelayDataMap.class);
     private static final Set<RfnLcrRelayDataMap> lcr6200RelayMap;
     private static final Set<RfnLcrRelayDataMap> lcr6600RelayMap;
     
-    RfnLcrRelayDataMap(String xPathQuery, BuiltInAttribute runTime, BuiltInAttribute shedTime) {
+    RfnLcrRelayDataMap(String xPathQuery, BuiltInAttribute runTime, BuiltInAttribute shedTime, int relayIndex) {
         this.relayIdXPathString = xPathQuery;
         this.runTimeAttribute = runTime;
         this.shedTimeAttribute = shedTime;
+        this.relayIndex = relayIndex;
     }
 
     static {
@@ -63,6 +65,10 @@ public enum RfnLcrRelayDataMap {
         return shedTimeAttribute;
     }
     
+    public int getIndex() {
+        return relayIndex;
+    }
+    
     public static Set<RfnLcrRelayDataMap> getLcr6200RelayMap() {
         return lcr6200RelayMap;
     }
@@ -70,5 +76,4 @@ public enum RfnLcrRelayDataMap {
     public static Set<RfnLcrRelayDataMap> getLcr6600RelayMap() {
         return lcr6600RelayMap;
     }
-    
 }

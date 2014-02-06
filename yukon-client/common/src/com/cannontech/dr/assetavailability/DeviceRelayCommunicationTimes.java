@@ -2,7 +2,7 @@ package com.cannontech.dr.assetavailability;
 
 import org.joda.time.Instant;
 
-public class DeviceRelayCommunicationTimes extends DeviceCommunicationTimes {
+public final class DeviceRelayCommunicationTimes extends DeviceCommunicationTimes {
     private final int relay;
     private final Instant relayLastNonZeroRuntime;
     
