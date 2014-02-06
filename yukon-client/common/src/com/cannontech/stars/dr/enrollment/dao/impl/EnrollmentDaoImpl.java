@@ -357,25 +357,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 	
-	@Override
-	public Set<Integer> getEnrolledDevicesByTypes(Set<PaoType> paoTypes) {
-	    Set<Integer> identifiers = new HashSet<>();
-	    
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT PAO.PAObjectID");
-	    sql.append("FROM LMHardwareControlGroup LM");
-	    sql.append("   JOIN InventoryBase IB ON IB.InventoryID = LM.InventoryID");
-	    sql.append("   JOIN YukonPAObject PAO ON PAO.PAObjectID = IB.DeviceID");
-	    sql.append("WHERE PAO.PAObjectID != 0");
-	    sql.append("   AND LM.GroupEnrollStart IS NOT NULL");
-	    sql.append("   AND LM.GroupEnrollStop IS NULL");
-	    sql.append("   AND PAO.Type").in(paoTypes);
-	    
-	    identifiers.addAll(yukonJdbcTemplate.query(sql, RowMapper.INTEGER));
-	    
-	    return identifiers;
-	}
-
     private final static YukonRowMapper<ProgramEnrollment> enrollmentRowMapper = new YukonRowMapper<ProgramEnrollment>(){
         @Override
         public ProgramEnrollment mapRow(YukonResultSet rs) throws SQLException {

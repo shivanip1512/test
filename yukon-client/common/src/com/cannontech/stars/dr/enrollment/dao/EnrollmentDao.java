@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -127,12 +126,4 @@ public interface EnrollmentDao {
      * @return
      */
     public Set<Integer> getActiveEnrolledInventoryIdsForGroupIds(Collection<Integer> groupIds);
-    
-    /**
-     * Returns a set of integers representing the devices which are enrolled in anything
-     * that are of a specific set of pao types.
-     * @param paoTypes the set of paotypes enrollments are being checked for.
-     */
-    public Set<Integer> getEnrolledDevicesByTypes(Set<PaoType> paoTypes);
-
 }

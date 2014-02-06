@@ -16,6 +16,7 @@ import java.util.Set;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowMapper;
@@ -151,37 +152,21 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds) {
-        writeVerificationEventForDevices(messageId, deviceIds, UNKNOWN);
-    }
-    
-    @Override
-    public void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds) {
-        writeVerificationEventForDevices(messageId, deviceIds, SUCCESS_UNENROLLED);
-    }
-    
-    /**
-     * Writes entries to the RfBroadcastEventDevice table for all of the specified devices. 
-     * @param messageId the unique message id of the broadcast event
-     * @param deviceIds the device ids the event is being logged for.
-     * @param status - the status of the broadcast event.
-     */
-    private void writeVerificationEventForDevices(long messageId, 
-                                                  Set<Integer> deviceIds, 
-                                                  PerformanceVerificationMessageStatus status) {
-        for (Integer deviceId : deviceIds) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
-            
-            int rowId = nextValueHelper.getNextValue("RfBroadcastEventDevice");
-            
-            params.addValue("RfBroadcastEventDeviceId", rowId);
-            params.addValue("DeviceId", deviceId);
-            params.addValue("RfBroadcastEventId", messageId);
-            params.addValue("Result", status);
-            
-            jdbcTemplate.update(sql);
-        }
+    public void writeNewVerificationEventForEnrolledDevices(long messageId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("INSERT INTO RfBroadcastEventDevice (DeviceId, RfBroadcastEventId, Result)");
+        sql.append("(SELECT DISTINCT PAO.PaobjectId, ").appendArgument(messageId).append(",").appendArgument_k(UNKNOWN);
+        sql.append(" FROM LMHardwareControlGroup LM");
+        sql.append("    JOIN InventoryBase IB ON IB.InventoryID = LM.InventoryID");
+        sql.append("    JOIN YukonPAObject PAO ON PAO.PAObjectID = IB.DeviceID");
+        sql.append(" WHERE PAO.PAObjectID != 0");
+        sql.append("    AND LM.GroupEnrollStart IS NOT NULL");
+        sql.append("    AND LM.GroupEnrollStop IS NULL");
+        sql.append("    AND PAO.Type").in(PaoType.getRfLcrTypes()).append(")");
+        
+        System.out.println(sql.getDebugSql());
+        
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -208,7 +193,6 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
                 
-        params.addValue("RfBroadcastEventDeviceId", nextValueHelper.getNextValue("RfBroadcastEventDevice"));
         params.addValue("DeviceId", deviceId);
         params.addValue("RfBroadcastEventId", messageId);
         params.addValue("Result", SUCCESS_UNENROLLED);

@@ -43,17 +43,8 @@ public interface PerformanceVerificationDao {
      * Writes the performance verification event information for the devices being sent
      * a performance verification message.
      * @param messageId the unique message id of the event
-     * @param deviceIds the deviceIds of the devices being sent the message.
      */
-    void writeNewVerificationEventForDevices(long messageId, Set<Integer> deviceIds);
-
-    /**
-     * Writes unenrolled success messages for a collection of devices.
-     * @param messageId the unique messageId of the event
-     * @param deviceIds the deviceIds of the devices who have reported back the unique id but who were not
-     *      enrolled at the time the event was broadcast.
-     */
-    void writeUnenrolledEventResultForDevices(long messageId, Set<Integer> deviceIds);
+    void writeNewVerificationEventForEnrolledDevices(long messageId);
 
     /**
      * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
