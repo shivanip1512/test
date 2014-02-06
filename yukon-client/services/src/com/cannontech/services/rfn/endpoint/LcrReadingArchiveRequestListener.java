@@ -82,7 +82,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 SimpleXPathTemplate decodedPayload = null;
 
-                byte[] payload = readingArchiveRequest.getData().getPayload();;
+                byte[] payload = readingArchiveRequest.getData().getPayload();
                 try {
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
