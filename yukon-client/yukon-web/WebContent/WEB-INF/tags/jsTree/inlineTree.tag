@@ -107,6 +107,9 @@
                 }
 
             },
+            onDblClick: function(node, event) {
+                node.toggleExpand();
+            },
             clickFolderMode: 2,
             activeVisible: false
         };

@@ -35,12 +35,10 @@ jQuery(function () {
                 <td><i:inline key=".graphType"/></td>
                 
                 <td>
-                    <c:set var="notFirst" value="false" scope="page"></c:set>
-                    <c:forEach var="agt" items="${availableAttributeGraphs}">
-                        <c:if test="${notFirst}">|</c:if>
+                    <c:forEach var="agt" items="${availableAttributeGraphs}" varStatus="status">
+                        <c:if test="${!status.first}">|</c:if>
                         <cti:msg2 var="graphTypeLabel" key="${agt.label}"/>
-                        <tags:widgetLink method="render" title="${graphTypeLabel}" labelBusy="${agt.label}" selected="${agt == attributeGraphType}" attribute="${agt.attribute.key}"><i:inline key="${agt.label}"/></tags:widgetLink>
-                        <c:set var="notFirst" value="true" scope="page"/>
+                        <tags:widgetLink method="render?attribute=${agt.attribute}" title="${graphTypeLabel}" selected="${agt == attributeGraphType}"><i:inline key="${agt.label}"/></tags:widgetLink>
                     </c:forEach>
                 </td>
             </tr>
@@ -62,17 +60,17 @@ jQuery(function () {
                 <cti:msg2 var="custom" key=".custom"/>
             
                 <td>
-                    <tags:widgetLink method="render" title="${prev24Hours}" labelBusy="${oneDay}" selected="${period == 'DAY'}" period="DAY" >${oneDay}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=DAY" title="${prev24Hours}" selected="${period == 'DAY'}">${oneDay}</tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${prevWeeksData}" labelBusy="${oneWeek}" selected="${period == 'WEEK'}" period="WEEK" >${oneWeek}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=WEEK" title="${prevWeeksData}" selected="${period == 'WEEK'}">${oneWeek}</tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${prevMonthsData}" labelBusy="${oneMonth}" selected="${period == 'MONTH'}" period="MONTH" >${oneMonth}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=MONTH" title="${prevMonthsData}" selected="${period == 'MONTH'}">${oneMonth}</tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${prev3MonthsData}" labelBusy="${threeMonths}" selected="${period == 'THREEMONTH'}" period="THREEMONTH" >${threeMonths}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=THREEMONTH" title="${prev3MonthsData}" selected="${period == 'THREEMONTH'}">${threeMonths}</tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${prevYearsData}" labelBusy="${oneYear}" selected="${period == 'YEAR'}" period="YEAR" >${oneYear}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=YEAR" title="${prevYearsData}" selected="${period == 'YEAR'}">${oneYear}</tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${customDateRange}" labelBusy="${custom}" selected="${period == 'NOPERIOD'}" period="NOPERIOD" >${custom}</tags:widgetLink>
+                    <tags:widgetLink method="render?period=NOPERIOD" title="${customDateRange}" selected="${period == 'NOPERIOD'}">${custom}</tags:widgetLink>
                 </td>
                 
             </tr>
@@ -108,9 +106,9 @@ jQuery(function () {
                     <cti:msg2 var="line" key=".line"/>
                     <cti:msg2 var="barGraph" key=".barGraph"/>
                     <cti:msg2 var="bar" key=".bar"/>
-                    <tags:widgetLink method="render" title="${lineGraph}" labelBusy="${line}" selected="${graphType == 'LINE'}" graphType="LINE"><i:inline key=".line"/></tags:widgetLink>
+                    <tags:widgetLink method="render?graphType=LINE" title="${lineGraph}" selected="${graphType == 'LINE'}"><i:inline key=".line"/></tags:widgetLink>
                     |
-                    <tags:widgetLink method="render" title="${barGraph}" labelBusy="${bar}" selected="${graphType == 'COLUMN'}" graphType="COLUMN"><i:inline key=".bar"/></tags:widgetLink>
+                    <tags:widgetLink method="render?graphType=COLUMN" title="${barGraph}" selected="${graphType == 'COLUMN'}"><i:inline key=".bar"/></tags:widgetLink>
                 </td>
             </tr>
         

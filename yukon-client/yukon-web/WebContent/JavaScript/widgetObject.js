@@ -65,8 +65,10 @@ function JsWidgetObject (shortName, parameters) {
         return this;
     };
 
+    /**
+     * Reloads the widget using the given command.
+     */
     this.doDirectActionRefresh = function (cmd) {
-        jQuery('#' + this.container + ' input').prop('disabled', true);
 
         var url = "/widget/" + this.shortName + "/" + cmd,
             params = this.getWidgetParameters(),
