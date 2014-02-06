@@ -114,41 +114,60 @@ ALTER COLUMN PageName VARCHAR(256) NOT NULL;
 /* End YUK-12951 */
 
 /* Start YUK-12914 */
-CREATE TABLE RfBroadcastEventDevice (
-    RfBroadcastEventDeviceId NUMERIC              NOT NULL,
+CREATE TABLE RfnBroadcastEventDeviceStatus (
     DeviceId                 NUMERIC              NOT NULL,
-    RfBroadcastEventId       NUMERIC              NOT NULL,
+    RfnBroadcastEventId      NUMERIC              NOT NULL,
     Result                   VARCHAR(30)          NOT NULL,
-    ReceivedTime             DATETIME             NULL,
-    CONSTRAINT PK_RfBroadcastEventDevice PRIMARY KEY (RfBroadcastEventDeviceId)
+    DeviceReceivedTime             DATETIME             NULL,
+    CONSTRAINT PK_RfnBroadcastEventDevStatus PRIMARY KEY (DeviceId, RfnBroadcastEventId)
 );
 GO
 
-CREATE INDEX AK_RfBrdcstEvntDev_DevIdMsgId ON RfBroadcastEventDevice (
-    DeviceId ASC,
-    RfBroadcastEventId ASC,
+CREATE INDEX Indx_RfnBcstEvntDev_DevIdMsgId ON RfnBroadcastEventDeviceStatus (
+    RfnBroadcastEventId ASC,
     Result ASC
 );
 GO
 
-CREATE TABLE RfBroadcastEvent (
-    RfBroadcastEventId   NUMERIC              NOT NULL,
-    SendTime             DATETIME             NOT NULL,
-    CONSTRAINT PK_RfBroadcastEventId PRIMARY KEY (RfBroadcastEventId)
+CREATE TABLE RfnBroadcastEvent (
+    RfnBroadcastEventId   NUMERIC              NOT NULL,
+    EventSendTime         DATETIME             NOT NULL,
+    CONSTRAINT PK_RfnBroadcastEventId PRIMARY KEY (RfnBroadcastEventId)
 );
 GO
 
-ALTER TABLE RfBroadcastEventDevice
-   ADD CONSTRAINT FK_RfBrdcstEvntDev_Device FOREIGN KEY (DeviceId)
+ALTER TABLE RfnBroadcastEventDeviceStatus
+   ADD CONSTRAINT FK_RfnBcstEvntDev_Device FOREIGN KEY (DeviceId)
       REFERENCES Device (DeviceId)
          ON DELETE CASCADE;
 GO
 
-ALTER TABLE RfBroadcastEventDevice
-   ADD CONSTRAINT FK_RfBrdcstEvntDev_RfBrcstEvnt FOREIGN KEY (RfBroadcastEventId)
-      REFERENCES RfBroadcastEvent (RfBroadcastEventId)
+ALTER TABLE RfnBroadcastEventDeviceStatus
+   ADD CONSTRAINT FK_RfnBcstEvntDev_RfnBcstEvnt FOREIGN KEY (RfnBroadcastEventId)
+      REFERENCES RfnBroadcastEvent (RfnBroadcastEventId)
          ON DELETE CASCADE;
 GO
+
+ALTER TABLE Job
+ALTER COLUMN UserId NUMERIC NULL;
+
+ALTER TABLE Job
+ALTER COLUMN Locale VARCHAR(10) NULL;
+
+ALTER TABLE Job
+ALTER COLUMN TimeZone VARCHAR(40) NULL;
+
+ALTER TABLE Job
+ALTER COLUMN ThemeName VARCHAR(60) NULL;
+
+GO
+sp_rename 'RFNAddress', 'RfnAddress', 'OBJECT';
+GO
+sp_rename 'PK_RFNAdd', 'PK_RfnAddress', 'OBJECT';
+GO
+sp_rename 'FK_RFNAdd_Device', 'FK_RfnAddress_Device', 'OBJECT';
+GO
+sp_rename 'RfnAddress.Indx_RFNAdd_SerNum_Man_Mod_UNQ', 'Indx_RfnAdd_SerNum_Man_Mod_UNQ', 'INDEX';
 /* End YUK-12914 */
 
 /* Start YUK-12961 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/5/2014 2:37:41 PM                          */
+/* Created on:     2/6/2014 4:12:43 PM                          */
 /*==============================================================*/
 
 
@@ -5345,10 +5345,10 @@ create table JOB  (
    JobID                INTEGER                         not null,
    BeanName             VARCHAR2(250)                   not null,
    Disabled             CHAR(1)                         not null,
-   UserID               NUMBER                          not null,
-   Locale               VARCHAR2(10)                    not null,
-   TimeZone             VARCHAR2(40)                    not null,
-   themeName            VARCHAR2(60)                    not null,
+   UserID               NUMBER,
+   Locale               VARCHAR2(10),
+   TimeZone             VARCHAR2(40),
+   themeName            VARCHAR2(60),
    constraint PK_JOB primary key (JobID)
 );
 
@@ -7180,26 +7180,6 @@ create index Indx_RwPtHisTstPtId on RAWPOINTHISTORY (
 );
 
 /*==============================================================*/
-/* Table: RFNAddress                                            */
-/*==============================================================*/
-create table RFNAddress  (
-   DeviceId             NUMBER                          not null,
-   SerialNumber         VARCHAR2(30)                    not null,
-   Manufacturer         VARCHAR2(80)                    not null,
-   Model                VARCHAR2(80)                    not null,
-   constraint PK_RFNAdd primary key (DeviceId)
-);
-
-/*==============================================================*/
-/* Index: Indx_RFNAdd_SerNum_Man_Mod_UNQ                        */
-/*==============================================================*/
-create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
-   SerialNumber ASC,
-   Manufacturer ASC,
-   Model ASC
-);
-
-/*==============================================================*/
 /* Table: RPHTag                                                */
 /*==============================================================*/
 create table RPHTag  (
@@ -7291,32 +7271,50 @@ create table ReportedAddressSep  (
 );
 
 /*==============================================================*/
-/* Table: RfBroadcastEvent                                      */
+/* Table: RfnAddress                                            */
 /*==============================================================*/
-create table RfBroadcastEvent  (
-   RfBroadcastEventId   NUMBER                          not null,
-   SendTime             DATE                            not null,
-   constraint PK_RfBroadcastEventId primary key (RfBroadcastEventId)
-);
-
-/*==============================================================*/
-/* Table: RfBroadcastEventDevice                                */
-/*==============================================================*/
-create table RfBroadcastEventDevice  (
-   RfBroadcastEventDeviceId NUMBER                          not null,
+create table RfnAddress  (
    DeviceId             NUMBER                          not null,
-   RfBroadcastEventId   NUMBER                          not null,
-   Result               VARCHAR2(30)                    not null,
-   ReceivedTime         DATE,
-   constraint PK_RfBradcastEventDevice primary key (RfBroadcastEventDeviceId)
+   SerialNumber         VARCHAR2(30)                    not null,
+   Manufacturer         VARCHAR2(80)                    not null,
+   Model                VARCHAR2(80)                    not null,
+   constraint PK_RfnAddress primary key (DeviceId)
 );
 
 /*==============================================================*/
-/* Index: AK_RfBrdcstEvntDev_DevIdMsgId                         */
+/* Index: Indx_RfnAdd_SerNum_Man_Mod_UNQ                        */
 /*==============================================================*/
-create index AK_RfBrdcstEvntDev_DevIdMsgId on RfBroadcastEventDevice (
-   DeviceId ASC,
-   RfBroadcastEventId ASC,
+create unique index Indx_RfnAdd_SerNum_Man_Mod_UNQ on RfnAddress (
+   SerialNumber ASC,
+   Manufacturer ASC,
+   Model ASC
+);
+
+/*==============================================================*/
+/* Table: RfnBroadcastEvent                                     */
+/*==============================================================*/
+create table RfnBroadcastEvent  (
+   RfnBroadcastEventId  NUMBER                          not null,
+   EventSendTime        DATE                            not null,
+   constraint PK_RfnBroadcastEventId primary key (RfnBroadcastEventId)
+);
+
+/*==============================================================*/
+/* Table: RfnBroadcastEventDeviceStatus                         */
+/*==============================================================*/
+create table RfnBroadcastEventDeviceStatus  (
+   DeviceId             NUMBER                          not null,
+   RfnBroadcastEventId  NUMBER                          not null,
+   Result               VARCHAR2(30)                    not null,
+   DeviceReceivedTime   DATE,
+   constraint PK_RfnBroadcastEventDevStatus primary key (DeviceId, RfnBroadcastEventId)
+);
+
+/*==============================================================*/
+/* Index: Indx_RfnBcstEvntDev_DevIdMsgId                        */
+/*==============================================================*/
+create index Indx_RfnBcstEvntDev_DevIdMsgId on RfnBroadcastEventDeviceStatus (
+   RfnBroadcastEventId ASC,
    Result ASC
 );
 
@@ -12162,11 +12160,6 @@ alter table PurchasePlan
    add constraint FK_PRCHSPL_REF_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID);
 
-alter table RFNAddress
-   add constraint FK_RFNAdd_Device foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
-
 alter table RPHTag
    add constraint FK_RPHTag_RPH foreign key (ChangeId)
       references RAWPOINTHISTORY (CHANGEID)
@@ -12214,14 +12207,19 @@ alter table ReportedAddressSep
       references DEVICE (DEVICEID)
       on delete cascade;
 
-alter table RfBroadcastEventDevice
-   add constraint FK_RfBrdcstEvntDev_Device foreign key (DeviceId)
+alter table RfnAddress
+   add constraint FK_RfnAddress_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
       on delete cascade;
 
-alter table RfBroadcastEventDevice
-   add constraint FK_RfBrdcstEvntDev_RfBrcstEvnt foreign key (RfBroadcastEventId)
-      references RfBroadcastEvent (RfBroadcastEventId)
+alter table RfnBroadcastEventDeviceStatus
+   add constraint FK_RfnBcstEvntDev_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+
+alter table RfnBroadcastEventDeviceStatus
+   add constraint FK_RfnBcstEvntDev_RfnBcstEvnt foreign key (RfnBroadcastEventId)
+      references RfnBroadcastEvent (RfnBroadcastEventId)
       on delete cascade;
 
 alter table Route
