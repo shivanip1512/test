@@ -20,6 +20,7 @@
             </tags:nameValueContainer>
         </tags:nameValueContainer>
         <div class="page-action-area">
+            <cti:button nameKey="broadcast" href="sendPerformanceVerification"/>
             <cti:button nameKey="send" type="submit" classes="f-blocker"/>
         </div>
     </form>

@@ -27,6 +27,7 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
+import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -43,6 +44,7 @@ public class RfnMeterArchiveTestController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RfnEventTestingService rfnEventTestingService;
+    @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     
     private JmsTemplate jmsTemplate;
 
@@ -70,6 +72,12 @@ public class RfnMeterArchiveTestController {
     @RequestMapping("viewLcrArchiveRequest")
     public String viewLcrArchiveRequest() {
         return "development/rfn/viewLcrArchive.jsp";
+    }
+    
+    @RequestMapping("sendPerformanceVerification")
+    public String sendPerformanceVerification() {
+        performanceVerificationService.sendPerformanceVerificationMessage();
+        return "development/rfn/viewLcrReadArchive.jsp";
     }
 
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {

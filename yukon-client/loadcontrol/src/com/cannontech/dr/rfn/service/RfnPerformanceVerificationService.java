@@ -10,6 +10,11 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 public interface RfnPerformanceVerificationService {
     
     /**
+     * Sends the performance verification message to all enrolled RFN LCR devices.
+     */
+    public void sendPerformanceVerificationMessage();
+    
+    /**
      * For messages sent in {@code range} which currently have a status of UNKNOWN,
      * this method will return the asset availability status for each device. 
      * @Returns Map of DeviceId to asset availability
@@ -19,6 +24,5 @@ public interface RfnPerformanceVerificationService {
 	/**
 	 * Processes verification messages
 	 */
-	public void processVerificationMessages(int deviceId,
-			Map<Long, Instant> verificationMsgs, Range<Instant> range);
+	public void processVerificationMessages(int deviceId, Map<Long, Instant> verificationMsgs, Range<Instant> range);
 }
