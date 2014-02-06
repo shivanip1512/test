@@ -41,18 +41,18 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     public List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        sql.append("SELECT Result, rbed.RfBroadcastEventId, Count(*) as count");
-        sql.append("FROM RfBroadcastEventDevice rbed");
-        sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE SendTime").gt(range.getMin());
-        sql.append("AND SendTime").lt(range.getMax());
-        sql.append("GROUP BY Result, rbed.RfBroadcastEventId");
+        sql.append("SELECT Result, rbed.RfnBroadcastEventId, Count(*) as count");
+        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
+        sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
+        sql.append("WHERE EventSendTime").gt(range.getMin());
+        sql.append("AND EventSendTime").lt(range.getMax());
+        sql.append("GROUP BY Result, rbed.RfnBroadcastEventId");
 
         final Map<Long, Map<PerformanceVerificationMessageStatus, Integer>> stats = new HashMap<>();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                Long messageId = rs.getLong("RfBroadcastEventId");
+                Long messageId = rs.getLong("RfnBroadcastEventId");
 
                 if(!stats.containsKey(messageId)) {
                     Map<PerformanceVerificationMessageStatus, Integer> counts = 
@@ -85,10 +85,10 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     public PerformanceVerificationEventStats getAverageReport(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Result, Count(*) as count");
-        sql.append("FROM RfBroadcastEventDevice rbed");
-        sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE SendTime").gt(range.getMin());
-        sql.append("AND SendTime").lt(range.getMax());
+        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
+        sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
+        sql.append("WHERE EventSendTime").gt(range.getMin());
+        sql.append("AND EventSendTime").lt(range.getMax());
         sql.append("GROUP BY Result");
 
         final Map<PerformanceVerificationMessageStatus, Integer> counts =
@@ -109,16 +109,16 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RfBroadcastEventId, SendTime");
-        sql.append("FROM RfBroadcastEvent");
-        sql.append("WHERE SendTime").gt(range.getMin());
-        sql.append("AND SendTime").lt(range.getMax());
+        sql.append("SELECT RfnBroadcastEventId, EventSendTime");
+        sql.append("FROM RfnBroadcastEvent");
+        sql.append("WHERE EventSendTime").gt(range.getMin());
+        sql.append("AND EventSendTime").lt(range.getMax());
 
         return jdbcTemplate.query(sql, new YukonRowMapper<PerformanceVerificationEventMessage>() {
             @Override
             public PerformanceVerificationEventMessage mapRow(YukonResultSet rs) throws SQLException {
-                return new PerformanceVerificationEventMessage(rs.getLong("RfBroadcastEventId"),
-                                                                          rs.getInstant("SendTime"));
+                return new PerformanceVerificationEventMessage(rs.getLong("RfnBroadcastEventId"),
+                                                                          rs.getInstant("EventSendTime"));
             }
         });
     }
@@ -127,9 +127,9 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     public Set<Integer> getDevicesWithUnknownStatus(long messageId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId");
-        sql.append("FROM RfBroadcastEventDevice rbed");
-        sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
-        sql.append("WHERE rbed.RfBroadcastEventId").eq(messageId);
+        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
+        sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
+        sql.append("WHERE rbed.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
         return new HashSet<>(jdbcTemplate.query(sql, RowMapper.INTEGER));
@@ -137,14 +137,14 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
     @Override
     public PerformanceVerificationEventMessage createVerificationEvent() {
-        int nextId = nextValueHelper.getNextValue("RfBroadcastEvent");
+        int nextId = nextValueHelper.getNextValue("RfnBroadcastEvent");
         Instant now = Instant.now();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink params = sql.insertInto("RfBroadcastEvent");
+        SqlParameterSink params = sql.insertInto("RfnBroadcastEvent");
         
-        params.addValue("RfBroadcastEventId", nextId);
-        params.addValue("SendTime", now);
+        params.addValue("RfnBroadcastEventId", nextId);
+        params.addValue("EventSendTime", now);
         
         jdbcTemplate.update(sql);
         
@@ -154,7 +154,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public void writeNewVerificationEventForEnrolledDevices(long messageId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO RfBroadcastEventDevice (DeviceId, RfBroadcastEventId, Result)");
+        sql.append("INSERT INTO RfnBroadcastEventDeviceStatus (DeviceId, RfnBroadcastEventId, Result)");
         sql.append("(SELECT DISTINCT PAO.PaobjectId, ").appendArgument(messageId).append(",").appendArgument_k(UNKNOWN);
         sql.append(" FROM LMHardwareControlGroup LM");
         sql.append("    JOIN InventoryBase IB ON IB.InventoryID = LM.InventoryID");
@@ -172,31 +172,31 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public List<Long> getEventIdsForDevice(int deviceId, List<Long> eventIds) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RfBroadcastEventId");
-        sql.append("FROM RfBroadcastEventDevice");
+        sql.append("SELECT RfnBroadcastEventId");
+        sql.append("FROM RfnBroadcastEventDeviceStatus");
         sql.append("WHERE  DeviceId").eq(deviceId);
-        sql.append("AND RfBroadcastEventId").in(eventIds);
+        sql.append("AND RfnBroadcastEventId").in(eventIds);
 		return jdbcTemplate.query(sql, RowMapper.LONG);
     }
     
     @Override
     public List<Long> getEventIds(List<Long> eventIds) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RfBroadcastEventId");
-        sql.append("FROM RfBroadcastEvent");
-        sql.append("WHERE RfBroadcastEventId").in(eventIds);
+        sql.append("SELECT RfnBroadcastEventId");
+        sql.append("FROM RfnBroadcastEvent");
+        sql.append("WHERE RfnBroadcastEventId").in(eventIds);
 		return jdbcTemplate.query(sql, RowMapper.LONG);
     }
     
     @Override
-    public void createUnenrolledEventResult(int deviceId, long messageId, Instant receivedTime) {
+    public void createUnenrolledEventResult(int deviceId, long messageId, Instant deviceReceivedTime) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink params = sql.insertInto("RfBroadcastEventDevice");
+        SqlParameterSink params = sql.insertInto("RfnBroadcastEventDeviceStatus");
                 
         params.addValue("DeviceId", deviceId);
-        params.addValue("RfBroadcastEventId", messageId);
+        params.addValue("RfnBroadcastEventId", messageId);
         params.addValue("Result", SUCCESS_UNENROLLED);
-        params.addValue("ReceivedTime", receivedTime);
+        params.addValue("DeviceReceivedTime", deviceReceivedTime);
         
         jdbcTemplate.update(sql);
     }
@@ -205,11 +205,11 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     public void updateSuccessEventResult(int deviceId, Map<Long, Instant> verificationMsgs) {
 		for (long eventId : verificationMsgs.keySet()) {
 			SqlStatementBuilder sql = new SqlStatementBuilder();
-			SqlParameterSink params = sql.update("RfBroadcastEventDevice");
+			SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
 			params.addValue("Result", SUCCESS);
-			params.addValue("ReceivedTime", verificationMsgs.get(eventId));
+			params.addValue("DeviceReceivedTime", verificationMsgs.get(eventId));
 			sql.append("WHERE  DeviceId").eq(deviceId);
-			sql.append("AND RfBroadcastEventId").eq(eventId);
+			sql.append("AND RfnBroadcastEventId").eq(eventId);
 			sql.append("AND Result").neq(SUCCESS);
 
 			jdbcTemplate.update(sql);
@@ -219,14 +219,14 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
 	public void updateUnsuccessEventResult(int deviceId, Range<Instant> range) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		SqlParameterSink params = sql.update("RfBroadcastEventDevice");
+		SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
 		params.addValue("Result", UNSUCCESS);
-		sql.append("FROM RfBroadcastEventDevice rbed");
-		sql.append("JOIN RfBroadcastEvent rbe ON rbed.RfBroadcastEventId = rbe.RfBroadcastEventId");
+		sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
+		sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
 		sql.append("WHERE DeviceId").eq(deviceId);
 		sql.append("AND Result").eq(UNKNOWN);
-		sql.append("AND SendTime").gte(range.getMin());
-		sql.append("AND SendTime").lt(range.getMax());
+		sql.append("AND EventSendTime").gte(range.getMin());
+		sql.append("AND EventSendTime").lt(range.getMax());
 		
 		jdbcTemplate.update(sql);
 	}

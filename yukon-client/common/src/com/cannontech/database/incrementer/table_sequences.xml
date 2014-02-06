@@ -344,8 +344,8 @@
       <sequence name="DeviceCollection">
         <table name="DeviceCollection" identitycolumn="CollectionId" initsequence="true" />
       </sequence>
-      <sequence name="RfBroadcastEvent">
-        <table name="RfBroadcastEvent" identitycolumn="RfBroadcastEventId" initsequence="true" />
+      <sequence name="RfnBroadcastEvent">
+        <table name="RfnBroadcastEvent" identitycolumn="RfnBroadcastEventId" initsequence="true" />
       </sequence>
   </sequencetable>
 </sequencetables>
