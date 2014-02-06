@@ -54,27 +54,27 @@ public interface PerformanceVerificationDao {
     /**
 	 *This method looks up all the event ids for this device and returns the ones that are valid.
 	 */
-    List<Long> getEventIdsForDevice(int deviceId, List<Long> eventIds);
+    List<Long> getValidEventIdsForDevice(int deviceId, List<Long> eventIds);
     
     /**
 	 *This method looks up all the and returns the ones that are valid.
 	 */
-    List<Long> getEventIds(List<Long> eventIds);
+    List<Long> getValidEventIds(List<Long> eventIds);
 
     /**
 	 *This method creates unenrolled result entry.
 	 */
-	void createUnenrolledEventResult(int deviceId, long messageId, Instant receivedTime);
+	void createUnenrolledEventResultStatus(int deviceId, long messageId, Instant receivedTime);
 	
 	/**
 	 * This method marks device as a successful
 	 */
-	void updateSuccessEventResult(int deviceId, Map<Long, Instant> verificationMsgs);
+	void setEventResultStatusToSuccessful(int deviceId, Map<Long, Instant> verificationMsgs);
 	
 	/**
 	 * This method marks device as unsuccessful
 	 */
 	
-	void updateUnsuccessEventResult(int deviceId, Range<Instant> range);
+	void setEventResultStatusToUnuccessful(int deviceId, Range<Instant> range);
 
 }

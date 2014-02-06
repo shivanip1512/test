@@ -90,30 +90,34 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
                 
-                /** Handle point data */
-                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
-                messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
-                lcrCommunicationsService.processPointData(messagesToSend);
-                dynamicDataSource.putValues(messagesToSend);
-                archivedReadings.addAndGet(messagesToSend.size());
-                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+                // Discard all the data before 1/1/2011
+                if(rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)){
                 
-                /** Handle addressing data */
-                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
-                
-				/** Handle Broadcast Verification Messages */
-                Schema schema = exiParsingService.getSchema(payload);
-				if (schema.supportsBroadcastVerificationMessages()) {
-					Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
-							.mapBroadcastVerificationMessages(decodedPayload);
-					Range<Instant> range = rfnLcrDataMappingService
-							.mapBroadcastVerificationUnsuccessRange(
-									decodedPayload, rfnDevice);
-					rfnPerformanceVerificationService
-							.processVerificationMessages(rfnDevice
-									.getPaoIdentifier().getPaoId(),
-									verificationMsgs, range);
-				}
+	                /** Handle point data */
+	                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
+	                messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
+	                lcrCommunicationsService.processPointData(messagesToSend);
+	                dynamicDataSource.putValues(messagesToSend);
+	                archivedReadings.addAndGet(messagesToSend.size());
+	                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+	                
+	                /** Handle addressing data */
+	                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+	                
+					/** Handle Broadcast Verification Messages */
+	                Schema schema = exiParsingService.getSchema(payload);
+					if (schema.supportsBroadcastVerificationMessages()) {
+						Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
+								.mapBroadcastVerificationMessages(decodedPayload);
+						Range<Instant> range = rfnLcrDataMappingService
+								.mapBroadcastVerificationUnsuccessRange(
+										decodedPayload, rfnDevice);
+						rfnPerformanceVerificationService
+								.processVerificationMessages(rfnDevice
+										.getPaoIdentifier().getPaoId(),
+										verificationMsgs, range);
+					}
+                }
                 incrementProcessedArchiveRequest();
                 
             } else {

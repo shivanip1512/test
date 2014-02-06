@@ -163,14 +163,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("    AND LM.GroupEnrollStart IS NOT NULL");
         sql.append("    AND LM.GroupEnrollStop IS NULL");
         sql.append("    AND PAO.Type").in(PaoType.getRfLcrTypes()).append(")");
-        
-        System.out.println(sql.getDebugSql());
-        
+                
         jdbcTemplate.update(sql);
     }
     
     @Override
-    public List<Long> getEventIdsForDevice(int deviceId, List<Long> eventIds) {
+    public List<Long> getValidEventIdsForDevice(int deviceId, List<Long> eventIds) {
+        //12 message ids maximum we can get from device
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");
         sql.append("FROM RfnBroadcastEventDeviceStatus");
@@ -180,7 +179,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public List<Long> getEventIds(List<Long> eventIds) {
+    public List<Long> getValidEventIds(List<Long> eventIds) {
+        //12 message ids maximum we can get from device
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");
         sql.append("FROM RfnBroadcastEvent");
@@ -189,20 +189,19 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public void createUnenrolledEventResult(int deviceId, long messageId, Instant deviceReceivedTime) {
+    public void createUnenrolledEventResultStatus(int deviceId, long messageId, Instant deviceReceivedTime) {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("RfnBroadcastEventDeviceStatus");
-                
         params.addValue("DeviceId", deviceId);
         params.addValue("RfnBroadcastEventId", messageId);
         params.addValue("Result", SUCCESS_UNENROLLED);
-        params.addValue("DeviceReceivedTime", deviceReceivedTime);
+        params.addValue("DeviceReceivedTime", deviceReceivedTime);    
         
         jdbcTemplate.update(sql);
     }
     
     @Override
-    public void updateSuccessEventResult(int deviceId, Map<Long, Instant> verificationMsgs) {
+    public void setEventResultStatusToSuccessful(int deviceId, Map<Long, Instant> verificationMsgs) {
 		for (long eventId : verificationMsgs.keySet()) {
 			SqlStatementBuilder sql = new SqlStatementBuilder();
 			SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
@@ -210,23 +209,26 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 			params.addValue("DeviceReceivedTime", verificationMsgs.get(eventId));
 			sql.append("WHERE  DeviceId").eq(deviceId);
 			sql.append("AND RfnBroadcastEventId").eq(eventId);
-			sql.append("AND Result").neq(SUCCESS);
+			sql.append("AND Result").neq_k(SUCCESS);
+			sql.append("AND Result").neq_k(SUCCESS_UNENROLLED);
 
 			jdbcTemplate.update(sql);
 		}
     }
     
     @Override
-	public void updateUnsuccessEventResult(int deviceId, Range<Instant> range) {
+	public void setEventResultStatusToUnuccessful(int deviceId, Range<Instant> range) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
 		params.addValue("Result", UNSUCCESS);
-		sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
-		sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
-		sql.append("WHERE DeviceId").eq(deviceId);
-		sql.append("AND Result").eq(UNKNOWN);
-		sql.append("AND EventSendTime").gte(range.getMin());
-		sql.append("AND EventSendTime").lt(range.getMax());
+        sql.append("WHERE DeviceId").eq(deviceId);
+        sql.append("   AND Result").eq_k(UNKNOWN);
+        sql.append("   AND RfnBroadcastEventId IN (SELECT RfnBroadcastEventId");
+        sql.append("                               FROM RfnBroadcastEvent");
+        sql.append("                               WHERE EventSendTime").gte(range.getMin());
+        sql.append("                               AND EventSendTime").lt(range.getMax()).append(")");
+        
+        
 		
 		jdbcTemplate.update(sql);
 	}

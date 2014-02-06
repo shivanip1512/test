@@ -240,16 +240,16 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         return output;
     }
     
-	@Override
-	public Schema getSchema(byte[] payload) {
-		byte[] header;
-	 	if(payload[0] == payloadType){
-	 		header = Arrays.copyOfRange(payload, 3, 8);
-    	}else{
-    		header = Arrays.copyOfRange(payload, 0, 4);
-    	}
-		String schemaVersion = getSchemaVersion(header);
-		return Schema.getSchema(schemaVersion);
-	}
+    @Override
+    public Schema getSchema(byte[] payload) {
+        byte[] header;
+        if (payload[0] == payloadType) {
+            header = Arrays.copyOfRange(payload, 3, 8);
+        } else {
+            header = Arrays.copyOfRange(payload, 0, 4);
+        }
+        String schemaVersion = getSchemaVersion(header);
+        return Schema.getSchema(schemaVersion);
+    }
 
 }

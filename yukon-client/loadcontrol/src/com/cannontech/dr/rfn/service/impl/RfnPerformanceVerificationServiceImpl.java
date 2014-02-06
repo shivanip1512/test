@@ -73,8 +73,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     @Override
     public void processVerificationMessages(int deviceId, Map<Long, Instant> verificationMsgs, Range<Instant> range){
 		/*
-		 * 1. Remove invalid messages (message ids that were never sent to the
-		 * device) 
+		 * 1. Remove invalid messages
 		 * 2. Add messages received from unenrolled devices
 		 * (SUCCESS_UNENROLLED) 
 		 * 3. Mark received messages as success (SUCCESS)
@@ -82,10 +81,9 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		 * earliest relay start time and time of reading (UTC) and the result is
 		 * still "UNKNOWN". Mark the result. (UNSUCCESS)
 		 */
-    	
     	//message ids that were sent to the device
 		List<Long> sentMsgIds = performanceVerificationDao
-				.getEventIds(new ArrayList<Long>(verificationMsgs.keySet()));
+				.getValidEventIds(new ArrayList<Long>(verificationMsgs.keySet()));
 		//remove message ids that were never sent to the device
 		Map<Long, Instant> successMsgs = Maps.filterKeys(verificationMsgs,
 				Predicates.in(sentMsgIds));
@@ -94,7 +92,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     	    	
     	List<Long> unexpectedMsgIds = new ArrayList<Long>(successMsgs.keySet());
     	// message ids we expect to receive from this device
-		List<Long> expectedMsgIds = performanceVerificationDao.getEventIdsForDevice(
+		List<Long> expectedMsgIds = performanceVerificationDao.getValidEventIdsForDevice(
 				deviceId, new ArrayList<Long>(successMsgs.keySet()));
 		// Remove the message ids we expected to receive for this device. The
 		// remaining message ids we didn't expect to get back because the device
@@ -102,7 +100,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		unexpectedMsgIds.removeAll(expectedMsgIds);
 		// keep track of successful responses for unenrolled devices
 		for(Long eventId: unexpectedMsgIds){
-			performanceVerificationDao.createUnenrolledEventResult(deviceId, eventId, successMsgs.get(eventId));
+			performanceVerificationDao.createUnenrolledEventResultStatus(deviceId, eventId, successMsgs.get(eventId));
 		}
 		
 		//SUCCESS
@@ -110,13 +108,13 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		// update only expected messages as a success
 		Map<Long, Instant> successMsgsToMarkAsSuccess = Maps.filterKeys(successMsgs, Predicates.in(expectedMsgIds));
 		if(!successMsgsToMarkAsSuccess.isEmpty()){
-			performanceVerificationDao.updateSuccessEventResult(deviceId, successMsgsToMarkAsSuccess);
+			performanceVerificationDao.setEventResultStatusToSuccessful(deviceId, successMsgsToMarkAsSuccess);
 		}
 		
 		//UNSUCCESS
 		
 		if(range != null){
-			performanceVerificationDao.updateUnsuccessEventResult(deviceId, range);
+			performanceVerificationDao.setEventResultStatusToUnuccessful(deviceId, range);
 		}
     }
 }

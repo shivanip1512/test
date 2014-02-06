@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,11 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
 
+    @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
+        
+        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+        Date timeOfReading = new Instant(timeInSec * 1000).toDate();
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
@@ -95,8 +100,6 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                     }
                 }
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
-                Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
-                Date timeOfReading = new Instant(timeInSec * 1000).toDate();
                 PointData pointData = createPointData(pointId, pointTypeId, timeOfReading, value);
                 messagesToSend.add(pointData);
             }
@@ -259,11 +262,16 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     @Override
     public Map<Long, Instant> mapBroadcastVerificationMessages(SimpleXPathTemplate data) {
         Map<Long, Instant> msgMap = new HashMap<>();
-        List<Node> events = data.evaluateAsNodeList("/DRReport/BroadcastVerificationMessages/Event");
+        List<Node> events =
+            data.evaluateAsNodeList("/DRReport/BroadcastVerificationMessages/Event");
         for (Node event : events) {
             Element elem = (Element) event;
-            long messageId = Long.parseLong(elem.getElementsByTagName("UniqueIdentifier").item(0).getTextContent());
-            long timeInSec = Long.parseLong(elem.getElementsByTagName("ReceivedTimestamp").item(0).getTextContent());
+            long messageId =
+                Long.parseLong(elem.getElementsByTagName("UniqueIdentifier").item(0)
+                    .getTextContent());
+            long timeInSec =
+                Long.parseLong(elem.getElementsByTagName("ReceivedTimestamp").item(0)
+                    .getTextContent());
             Instant receivedTimestamp = new Instant(timeInSec * 1000);
             msgMap.put(messageId, receivedTimestamp);
         }
@@ -271,36 +279,46 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     }
     
     @Override
-    public Range<Instant> mapBroadcastVerificationUnsuccessRange(SimpleXPathTemplate data, RfnDevice device) {
-    	Range<Instant> range = null;
-    	PaoType type = device.getPaoIdentifier().getPaoType();
-    	
-        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
-        Instant timeOfReading = new Instant(timeInSec * 1000);
-    	
-    	Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
-    	try {
+    public Range<Instant> mapBroadcastVerificationUnsuccessRange(SimpleXPathTemplate data,
+                                                                 RfnDevice device) {
+        Range<Instant> range = null;
+        PaoType type = device.getPaoIdentifier().getPaoType();
+
+        Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
+        try {
             rfnLcrRelayDataMap = RfnLcrRelayDataMap.getRelayMapByPaoType(type);
         } catch (ParseException e) {
             log.error("Cannot retrieve relay point data map for device type: " + type, e);
             throw new RuntimeException();
         }
-        
-    	List<Long> relayStartTimes = new ArrayList<Long>();
+
+        List<Long> relayStartTimes = new ArrayList<Long>();
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
-			long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
-							+ relay.getRelayIdXPathString()
-							+ "/IntervalData/@startTime");
-			if(startTime > 0){
-				relayStartTimes.add(startTime);
-			}
+            long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
+                                                 + relay.getRelayIdXPathString()
+                                                 + "/IntervalData/@startTime");
+            if (startTime > 0) {
+                relayStartTimes.add(startTime);
+            }
         }
-        
-        if(!relayStartTimes.isEmpty()){
-        	 Collections.sort(relayStartTimes);
-        	 Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
-        	 range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
+
+        if (!relayStartTimes.isEmpty()) {
+            Collections.sort(relayStartTimes);
+            Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+            // remove minutes and seconds from time of reading
+            Instant timeOfReading = new DateTime(timeInSec * 1000).hourOfDay()
+                .roundFloorCopy().toInstant();
+            Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
+            range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
         }
         return range;
+    }
+
+    @Override
+    public boolean isValidTimeOfReading(SimpleXPathTemplate data) {
+        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+        DateTime timeOfReading = new DateTime(timeInSec * 1000);
+        DateTime year2011 = new DateTime(2011, 1, 1, 0, 0);
+        return timeOfReading.isAfter(year2011);
     }
 }
