@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -65,4 +66,12 @@ public class DeferedSqlFragmentHelper implements SqlFragmentSource {
         return arguments.toArray();
     }
 
+    @Override
+    public String getDebugSql() {
+        StringBuilder builder = new StringBuilder("Query: ");
+        builder.append(getSql());
+        builder.append(" Arguments: ");
+        builder.append(Arrays.toString(getArguments()));
+        return builder.toString();
+    }
 }

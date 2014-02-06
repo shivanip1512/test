@@ -48,6 +48,15 @@ public class VendorSpecificSqlBuilderFactory {
                 return getUsefulSqlSource().getSql();
             }
             
+            @Override
+            public String getDebugSql() {
+                StringBuilder builder = new StringBuilder("Query: ");
+                builder.append(getSql());
+                builder.append(" Arguments: ");
+                builder.append(Arrays.toString(getArguments()));
+                return builder.toString();
+            }
+            
             /* (non-Javadoc)
              * @see com.cannontech.database.vendor.VendorSpecificSqlBuilder#buildFor(com.cannontech.database.vendor.DatabaseVendor)
              */
@@ -181,6 +190,10 @@ public class VendorSpecificSqlBuilderFactory {
             return this;
         }
         
+        @Override
+        public SqlBuilder appendArgument_k(Enum<?> constant) {
+            return this;
+        }
     }
     
     @Autowired

@@ -14,19 +14,21 @@ import java.util.List;
 public interface SqlFragmentSource {
     /**
      * Returns the SQL String for this fragment.
-     * @return
      */
     public String getSql();
     
     /**
      * Returns the arguments as a List.
-     * @return
      */
     public List<Object> getArgumentList();
     
     /**
      * Returns the arguments as an Object array.
-     * @return
      */
     public Object[] getArguments();
+    
+    /**
+     * Returns the SQL String with any arguments that exist for the query.
+     */
+    public String getDebugSql();
 }

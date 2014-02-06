@@ -30,4 +30,12 @@ public class SqlFragment implements SqlFragmentSource {
     	return arguments;
     }
 
+    @Override
+    public String getDebugSql() {
+        StringBuilder builder = new StringBuilder("Query: ");
+        builder.append(getSql());
+        builder.append(" Arguments: ");
+        builder.append(Arrays.toString(getArguments()));
+        return builder.toString();
+    }
 }

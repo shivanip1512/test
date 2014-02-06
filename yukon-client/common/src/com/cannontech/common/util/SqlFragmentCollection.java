@@ -1,5 +1,6 @@
 package com.cannontech.common.util;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,6 +56,15 @@ public class SqlFragmentCollection implements SqlFragmentSource {
             result = "(" + result + ")";
         }
         return result;
+    }
+    
+    @Override
+    public String getDebugSql() {
+        StringBuilder builder = new StringBuilder("Query: ");
+        builder.append(getSql());
+        builder.append(" Arguments: ");
+        builder.append(Arrays.toString(getArguments()));
+        return builder.toString();
     }
     
     @Override

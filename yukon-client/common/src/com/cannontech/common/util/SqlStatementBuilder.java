@@ -74,6 +74,14 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             return delegate.getArguments();
         }
         
+        @Override
+        public String getDebugSql() {
+            StringBuilder builder = new StringBuilder("Query: ");
+            builder.append(getSql());
+            builder.append(" Arguments: ");
+            builder.append(Arrays.toString(getArguments()));
+            return builder.toString();
+        }
     }
     
     public SqlStatementBuilder() {
@@ -215,14 +223,8 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
     
     public SqlStatementBuilder eq_k(Enum<?> constant) {
-        addString("= '");
-        if (constant instanceof DatabaseRepresentationSource) {
-            addString(((DatabaseRepresentationSource) constant).getDatabaseRepresentation().toString());
-        } else {
-            addString(((Enum<?>) constant).name());
-        }
-        addString("' ");
-        return this;
+        addString("=");
+        return appendArgument_k(constant);
     }
     
     @Override
@@ -410,6 +412,18 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     	return this;
     }
     
+    @Override
+    public SqlStatementBuilder appendArgument_k(Enum<?> constant) {
+        addString(" '");
+        if (constant instanceof DatabaseRepresentationSource) {
+            addString(((DatabaseRepresentationSource) constant).getDatabaseRepresentation().toString());
+        } else {
+            addString(((Enum<?>) constant).name());
+        }
+        addString("' ");
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendArgumentList(java.util.Collection)
      */
@@ -503,6 +517,15 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             public List<Object> getArgumentList() {
                 return columnValues;
             }
+            
+            @Override
+            public String getDebugSql() {
+                StringBuilder builder = new StringBuilder("Query: ");
+                builder.append(getSql());
+                builder.append(" Arguments: ");
+                builder.append(Arrays.toString(getArguments()));
+                return builder.toString();
+            }
         };
         appendFragment(fragment);
         return sink;
@@ -574,5 +597,12 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     	return base.getArguments();
     }
 
-
+    @Override
+    public String getDebugSql() {
+        StringBuilder builder = new StringBuilder("Query: ");
+        builder.append(getSql());
+        builder.append(" Arguments: ");
+        builder.append(Arrays.toString(getArguments()));
+        return builder.toString();
+    }
 }

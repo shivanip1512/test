@@ -46,6 +46,13 @@ public interface SqlBuilder {
      * @return
      */
     public SqlBuilder appendArgument(Object argument);
+    
+    /**
+     * something
+     * @param constant
+     * @return
+     */
+    public SqlBuilder appendArgument_k(Enum<?> constant);
 
     public SqlBuilder appendArgumentList(Iterable<?> list);
 
