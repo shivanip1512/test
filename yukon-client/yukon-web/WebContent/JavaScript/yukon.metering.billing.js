@@ -31,15 +31,21 @@ Yukon.MeteringBilling = (function() {
             err.hide();
             return true;
         },
+        
+        _get_max_previous_days = function() {
+        	var previousDays = 65535;
+        	return previousDays;
+        },
 
         _is_valid_demand_days = function() {
         	var demandDaysPrevious = jQuery("input[name=demandDays]").val();        	
             // Check if demand days is positive Integer
             var isPositiveInteger =  /^\d+$/.test(demandDaysPrevious);          
             var errDemandDaysPrevious = jQuery("#txt_invalidDemandDaysPrevious");
-            if (!isPositiveInteger || demandDaysPrevious  > 65535 ) {
+            var MAX_PREVIOUS_DAYS = _get_max_previous_days();
+            if (!isPositiveInteger || demandDaysPrevious  > MAX_PREVIOUS_DAYS ) {
             	 errDemandDaysPrevious.remove();             	 
-                 jQuery("#row_demand_days_previous .value").append(errDemandDaysPrevious);
+                 jQuery("#row-demand-days-previous .value").append(errDemandDaysPrevious);
                  errDemandDaysPrevious.show();
                  return false;
             }            
@@ -52,9 +58,10 @@ Yukon.MeteringBilling = (function() {
             // Check if energy days is positive Integer        	
             var isPositiveInteger =  /^\d+$/.test(energyDaysPrevious);   
             var errEnergyDaysPrevious = jQuery("#txt_invalidEnergyDaysPrevious");
-            if (!isPositiveInteger || energyDaysPrevious > 65535 ) {
+            var MAX_PREVIOUS_DAYS =_get_max_previous_days();
+            if (!isPositiveInteger || energyDaysPrevious > MAX_PREVIOUS_DAYS ) {
             	errEnergyDaysPrevious.remove();
-             	jQuery("#row_energy_days_previous .value").append(errEnergyDaysPrevious);
+             	jQuery("#row-energy-days-previous .value").append(errEnergyDaysPrevious);
              	errEnergyDaysPrevious.show();
                 return false;
             }            

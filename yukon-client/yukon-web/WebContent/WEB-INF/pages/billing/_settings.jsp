@@ -41,11 +41,11 @@
                     <dt:date name="endDate" value="${origEndDate}" />
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.demandDaysPrevious" var="demandDaysPrevious" />
-                <tags:nameValue name="${demandDaysPrevious}" id="row_demand_days_previous">
+                <tags:nameValue name="${demandDaysPrevious}" id="row-demand-days-previous">
                  <input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">                    
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.energyDaysPrevious" var="energyDaysPrevious" />
-                <tags:nameValue name="${energyDaysPrevious}" id="row_energy_days_previous">
+                <tags:nameValue name="${energyDaysPrevious}" id="row-energy-days-previous">
                     <input type="text" name="energyDays" value="${BILLING_BEAN.energyDaysPrev}" size = "8">
                 </tags:nameValue>
                 <cti:msg key="yukon.web.billing.removeMultiplier" var="removeMultiplier" />
