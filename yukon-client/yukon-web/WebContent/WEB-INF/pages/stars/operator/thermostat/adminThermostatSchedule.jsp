@@ -122,7 +122,7 @@
     <div align="center">
     
         <form id="scheduleForm" name="scheduleForm" method="POST" action="/stars/admin/thermostat/schedule/save">
-
+        <cti:csrfToken/>
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">
             <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">

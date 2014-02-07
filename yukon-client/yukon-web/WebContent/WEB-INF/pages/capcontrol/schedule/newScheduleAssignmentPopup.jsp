@@ -4,6 +4,7 @@
 
 <cti:msgScope paths="modules.capcontrol.scheduleAssignments">
     <form name="newScheduleAssignmentForm" id="newScheduleAssignmentForm" method="post" action="addPao">
+    <cti:csrfToken/>
     	<input type="hidden" name="paoIdList" id="paoIdList" />
     	<input type="hidden" name="filterCommand" value="${param.command}" />
     	<input type="hidden" name="filterSchedule" value="${param.schedule}" />

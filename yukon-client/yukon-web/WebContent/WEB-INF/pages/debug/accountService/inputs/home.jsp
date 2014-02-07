@@ -43,6 +43,7 @@
             <td class="doc"><i:inline key=".section3"/></td>
             <td class="inputTest">
                 <form action="/debug/accountService/inputs/deleteAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".accountNumber" >
                             <input type="text" name="delete_accountNumber" value="${delete_accountNumber}">
@@ -66,6 +67,7 @@
             <td class="doc"></td>
             <td class="inputTest">
                 <form action="/debug/accountService/inputs/addAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
                             <input type="text" name="add_user" value="${add_user}">
@@ -178,6 +180,7 @@
             <td class="doc"></td>
             <td class="inputTest">
                 <form action="/debug/accountService/inputs/updateAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
                             <input type="text" name="update_user" value="${update_user}">

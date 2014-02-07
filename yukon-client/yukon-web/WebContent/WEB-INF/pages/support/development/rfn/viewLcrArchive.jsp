@@ -7,6 +7,7 @@
 
 <tags:sectionContainer title="RFN LCR Archive Request Test">
     <form action="sendLcrArchiveRequest" method="post">
+    <cti:csrfToken/>
         <tags:nameValueContainer>
             <tags:nameValue name="Serial Number"><input name="serialFrom" type="text" value="1000"> to <input name="serialTo" type="text" value="1000"></tags:nameValue>
             <tags:nameValue name="Manufacturer">

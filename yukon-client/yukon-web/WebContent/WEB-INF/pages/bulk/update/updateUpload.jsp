@@ -7,6 +7,7 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.updateUpload.header"/>
     <form id="uploadForm" method="post" action="/bulk/update/parseUpload" enctype="multipart/form-data">
+    <cti:csrfToken/>
     <tags:sectionContainer title="${headerTitle}" id="updateUploadContainer" hideEnabled="false">
         <div class="column-12-12 stacked clearfix">
             <div class="column one">

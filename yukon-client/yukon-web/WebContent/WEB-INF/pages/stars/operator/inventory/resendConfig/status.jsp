@@ -47,6 +47,7 @@ function taskFinished() {
 
     <c:if test="${not empty task}">
         <form action="do" method="post">
+        <cti:csrfToken/>
             <input type="hidden" name="taskId" value="${task.taskId}">
             <tags:sectionContainer2 nameKey="progress">
                 <tags:nameValueContainer2>

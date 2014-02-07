@@ -48,16 +48,18 @@
 
     <%-- MISC FORMS --%>
     <form id="configDeleteForm" action="/amr/outageProcessing/monitorEditor/delete" method="post">
+    <cti:csrfToken/>
         <input type="hidden" name="deleteOutageMonitorId" value="${outageMonitorId}">
     </form>
     
     <form id="toggleEnabledForm" action="/amr/outageProcessing/monitorEditor/toggleEnabled" method="post">
+    <cti:csrfToken/>
         <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
     </form>
         
         <%-- UPDATE FORM --%>
     <form id="updateForm" action="/amr/outageProcessing/monitorEditor/update" method="post">
-    
+    <cti:csrfToken/>
         <input type="hidden" name="outageMonitorId" value="${outageMonitorId}">
         
         <cti:msg2 var="setupSectiontext" key=".section.setup" />

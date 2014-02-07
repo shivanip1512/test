@@ -19,6 +19,7 @@
 
     <cti:url var="submitUrl" value="/stars/consumer/enrollment/enrollSelectedHardware"/>
     <form method="POST" action="${submitUrl}">
+    <cti:csrfToken/>
         <input type="hidden" name="assignedProgramId" value="${displayableEnrollmentProgram.program.programId}"/>
 		<c:forEach var="inventory" items="${displayableEnrollmentProgram.inventory}">
 		    <c:set var="inventoryId" value="${inventory.inventoryId}"/>

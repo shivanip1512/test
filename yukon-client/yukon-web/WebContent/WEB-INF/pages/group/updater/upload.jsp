@@ -41,6 +41,7 @@
     <div class="column one">
         <tags:sectionContainer2 nameKey="options">
             <form id="uploadForm" method="post" action="/group/updater/parseUpload" enctype="multipart/form-data">
+            <cti:csrfToken/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey="yukon.common.file">
                         <input type="file" name="dataFile" size="30px">

@@ -24,7 +24,9 @@
             </list>
         </property>
     </bean>
-
+    
+    <bean id="requestDataValueProcessor" class="com.cannontech.web.security.csrf.CsrfRequestDataValueProcessor"/>
+    
     <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
 
     <bean id="webSecurityAnnotationProcessor" class="com.cannontech.web.security.WebSecurityAnnotationProcessor"/>
@@ -1131,7 +1133,11 @@
     <bean id="pageTitleTagPrototype" class="com.cannontech.web.i18n.PageTitleTag"/>
 
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
-
+    
+    <bean id="csrfTokenService" class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
+    
+    
+    
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
         <property name="accessOrder" value="true" />

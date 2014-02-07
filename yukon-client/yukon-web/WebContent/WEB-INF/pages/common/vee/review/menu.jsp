@@ -40,6 +40,7 @@ Please restart the Yukon Service Manager to resume processing.
                 on the Review page.
                 </p>
                 <form method="post" action="acceptAllTaggedRows">
+                <cti:csrfToken/>
                     <c:forEach var="tag" items="${rphTags}">
                         <label>
                             <input type="checkbox" name="selectedTags" value="${tag}">
@@ -59,6 +60,7 @@ Please restart the Yukon Service Manager to resume processing.
                 completely from the database. This cannot be undone! </b>
                 </p>
                 <form method="post" action="deleteAllTaggedRows">
+                <cti:csrfToken/>
                     <c:forEach var="tag" items="${rphTags}">
                         <label>
                             <input type="checkbox" name="selectedTags" value="${tag}">
@@ -82,9 +84,11 @@ Please restart the Yukon Service Manager to resume processing.
                 After pressing the Delete button, the service may be restarted.
                 </p>
                 <form method="post" action="resetValidationEngineOneYear">
+                <cti:csrfToken/>
                     Delete previous 12 months of tags: <input type="submit" value="Reset">
                 </form>
                 <form method="post" action="resetValidationEngine">
+                <cti:csrfToken/>
                     Delete all tags: <input type="submit" value="Reset">
                 </form>
             </tags:boxContainer>    

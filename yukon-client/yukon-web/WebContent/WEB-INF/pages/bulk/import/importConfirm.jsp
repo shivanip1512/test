@@ -8,7 +8,7 @@
     <tags:sectionContainer title="${headerTitle}" id="importConfirmContainer" hideEnabled="false">
     
         <form id="importConfirmForm" action="/bulk/import/doImport" method="post">
-
+        <cti:csrfToken/>
             <input type="hidden" value="${bulkImportType}" name="bulkImportType" />
             
             <%-- CONFIRMATION INFO --%>

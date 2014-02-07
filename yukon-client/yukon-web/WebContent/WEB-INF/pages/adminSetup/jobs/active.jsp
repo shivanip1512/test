@@ -25,6 +25,7 @@
         <td title="${job.id}">${fn:escapeXml(job.jobDefinition.title)}</td>
         <td>
             <form action="abortJob" method="post">
+            <cti:csrfToken/>
             <input type="hidden" name="jobId" value="${job.id}"> 
             <cti:msg2 var="abortButtonLabel" key=".abortButton"/>
             <input type="submit" value="${abortButtonLabel}">

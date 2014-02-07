@@ -49,6 +49,7 @@
     <i:simplePopup titleKey=".deleteWorkOrderConfirmation.title" id="confirmDeleteWorkOrderDialog" on="#confirmDelete">
         <cti:msg2 key=".deleteWorkOrderConfirmation.message" arguments="${workOrderDto.workOrderBase.orderNumber}"/>
          <form id="deleteForm" action="/stars/operator/workOrder/deleteWorkOrder" method="post">
+         <cti:csrfToken/>  
           <input type="hidden" name="accountId" value="${accountId}">
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
           <div class="action-area">

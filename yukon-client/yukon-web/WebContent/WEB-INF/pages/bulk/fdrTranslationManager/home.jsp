@@ -53,6 +53,7 @@
             <div class="stacked clearfix">
                 <%-- This form submitted through ajax --%>
                 <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
+                <cti:csrfToken/>
                     <cti:msg2 key="yukon.common.file" var="fileName"/>
                     <tags:nameValueContainer>
                         <tags:nameValue name="${fileName}">
@@ -72,6 +73,7 @@
                 <i:inline key=".reportText"/>
             </div>
             <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report" class="clearfix">
+            <cti:csrfToken/>
                 <div class="action-area">
                   <cti:button type="submit" nameKey="download" icon="icon-bullet-go-down"/>
                   <label>

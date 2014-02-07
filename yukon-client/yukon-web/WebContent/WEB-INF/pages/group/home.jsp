@@ -151,6 +151,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <a title="Click to edit group name" href="javascript:void(0);" class="f-edit-grp-name">${editGroupNameText}</a>
                                     <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
                                         <form id="editGroupNameForm" method="post" action="/group/editor/updateGroupName" >
+                                        <cti:csrfToken/>    
                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                             <tags:nameValueContainer>
                                                 <tags:nameValue name="${newGroupNameText}">
@@ -169,6 +170,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     &nbsp;|&nbsp;
                                     <%-- REMOVE --%>
                                     <form id="removeGroupForm" action="/group/editor/removeGroup" method="post" class="di">
+                                    <cti:csrfToken/>
                                         <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
                                         <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="javascript:removeGroup('removeGroupForm')"/>
                                     </form>
@@ -178,7 +180,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <cti:link id="moveGroupLink" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                                         
                                     <form id="moveGroupForm" action="/group/editor/moveGroup" method="post">
-                                        
+                                    <cti:csrfToken/>    
                                         <cti:msg2 var="moveGroupPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title"/>
                                         <cti:msg2 var="moveGroupPopupSubmitButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText"/>
                                         <cti:msg2 var="moveGroupPopupCancelButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.cancelButtonText"/>
@@ -241,6 +243,7 @@ function confirmRemoveAllDevices(confirmText) {
                                             <a title="${addSubgroupLinkTitle}" class="f-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
                                             <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
                                                 <form id="addSubGroupForm" method="post" action="/group/editor/addChild">
+                                                <cti:csrfToken/>
                                                     <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                     <tags:nameValueContainer>
                                                         <tags:nameValue name="${subgroupNameLabel}" nameColumnWidth="120px">
@@ -409,6 +412,7 @@ function confirmRemoveAllDevices(confirmText) {
                                                             
                                                                         <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
                                                                         <form style="display: inline;" id="${subId}removeSubGroupForm" action="/group/editor/removeGroup" method="post">
+                                                                        <cti:csrfToken/>    
                                                                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.key.fullName)}">
                                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                                             <div class="dib">

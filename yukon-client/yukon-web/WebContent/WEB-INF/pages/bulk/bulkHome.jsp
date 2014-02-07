@@ -116,6 +116,7 @@
                                     <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
                                     
                                     <form id="${successFormName}" method="post" action="/bulk/collectionActions">
+                                    <cti:csrfToken/>
                                         <cti:deviceCollection deviceCollection="${callbackResult.successDeviceCollection}" />
                                     </form>
                                 </c:otherwise>
@@ -144,6 +145,7 @@
       	                                    <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
       	                                    <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
       	                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/bulk/collectionActions">
+                                            <cti:csrfToken/>
       	                                        <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
       	                                    </form>
   	                                    </td>

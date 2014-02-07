@@ -47,6 +47,7 @@ BILLING_ERRORS = {
     </div>
 
     <form id="billingFormatForm" name="billingFormatForm" action="" method="post" autocomplete="off">
+    <cti:csrfToken/>
     
         <%--  FORMAT SETUP --%>
         <cti:msg2 key=".formatSetup.title" var="formatSetup"/>

@@ -47,6 +47,7 @@
                                 <td width="303" valign="top">
                                   <div>
                                         <form id=MForm method="POST" action="<%= request.getContextPath() %>/servlet/GraphGenerator"  name="MForm">
+                                        <cti:csrfToken/>
                                           <INPUT TYPE="hidden" NAME="gdefid" VALUE="<%=graphBean.getGdefid()%>">
                                           <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
                                           <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >

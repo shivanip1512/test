@@ -52,6 +52,7 @@ function createJSON() {
         <br>
 
         <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
+            <cti:csrfToken/>
             <div id="controlEventsDiv" style="height: auto;">
                 <table class="results-table" align="center" width="99%">
                     <tr>

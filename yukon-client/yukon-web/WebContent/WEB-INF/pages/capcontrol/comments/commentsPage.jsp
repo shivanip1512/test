@@ -9,6 +9,7 @@
 
     <div id="comment_editor" class="scroll-large stacked">
         <form id="commentForm" action="/capcontrol/comments/" method="POST" data-submitnormal="${submitNormal}" data-commentsurl="${commentsURL}">
+        <cti:csrfToken/>
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">

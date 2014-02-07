@@ -39,6 +39,7 @@
               <div align="center"><span class="MainText">Check the appropriate Odds for Control for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+              <cti:csrfToken/>
 			  	<input type="hidden" name="action" value="SendControlOdds">
                 <table border="1" cellspacing="0" cellpadding="3" width="550">
                   <tr> 

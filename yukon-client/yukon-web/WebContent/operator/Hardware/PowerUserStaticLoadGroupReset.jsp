@@ -35,6 +35,7 @@
     	   `
             
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager">
+        <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="StaticLoadGroupMap">
 	    	<input type="hidden" name="actionTask" value="StaticLoadGroupMapMasterReset">
 	    	

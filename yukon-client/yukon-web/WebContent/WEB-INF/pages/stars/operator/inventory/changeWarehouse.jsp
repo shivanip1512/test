@@ -29,6 +29,7 @@
         
         <c:if test="${empty task}">
             <form action="do" method="post">
+            <cti:csrfToken/>
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".newWarehouse">

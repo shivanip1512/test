@@ -41,10 +41,12 @@
         
         <%-- TOGGLE/DELETE FORMS --%>
         <form id="toggleJobEnabledForm" action="/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
+        <cti:csrfToken/>
 			<input type="hidden" name="toggleJobId" value="${editJobId}">
 		</form>
 		
 		<form id="disabledAndDeleteJobForm" action="/group/scheduledGroupRequestExecution/deleteJob" method="post">
+        <cti:csrfToken/>
 			<input type="hidden" name="deleteJobId" value="${editJobId}">
 		</form>
 							
@@ -55,7 +57,7 @@
 			<cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
         		
 				<form id="scheduledGroupRequestExecutionForm_attr" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
-        		 
+        		<cti:csrfToken/>
         		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
         		 	<cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
@@ -136,7 +138,7 @@
         	<cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
         	
         		<form id="scheduledGroupRequestExecutionForm_cmd" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
-        		 
+                <cti:csrfToken/>
         		 	<input type="hidden" name="editJobId" value="${editJobId}">
         		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
         		 	<cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />

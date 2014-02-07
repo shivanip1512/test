@@ -69,6 +69,7 @@
         <%-- DOWNLOAD --%>    
         <br>
         <form id="downloadExportFileForm" action="/support/database/migration/downloadExportFile" method="post">
+        <cti:csrfToken/>
             <input type="hidden" name="fileKey" value="${migrationStatus.id}">
         </form>
         

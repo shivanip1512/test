@@ -55,6 +55,7 @@
               <%@ include file="include/SearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
                         <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
+                        <cti:csrfToken/>
                             <input type="hidden" name="page" value="1">
                             <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
                             <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">

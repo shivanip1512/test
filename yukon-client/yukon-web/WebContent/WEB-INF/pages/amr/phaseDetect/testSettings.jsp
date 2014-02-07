@@ -5,6 +5,7 @@
 <cti:standardPage module="amr" page="phaseDetect.testSettings">
 
     <form action="/amr/phaseDetect/saveTestSettings" method="post">
+    <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="testParameters">
             <table style="padding-right: 20px;padding-bottom: 10px;">
                 <tr valign="top">

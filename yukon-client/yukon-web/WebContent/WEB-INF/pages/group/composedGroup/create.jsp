@@ -49,7 +49,7 @@
     </c:if>
     
     <form id="buildForm" action="/group/composedGroup/build" method="post">
-    
+    <cti:csrfToken/>
     <input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}">
     <input type="hidden" name="firstLoad" value="false">
     

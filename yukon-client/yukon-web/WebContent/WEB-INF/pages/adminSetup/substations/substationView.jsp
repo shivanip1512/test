@@ -23,6 +23,7 @@
 
 <b>Substation Name</b>
 <form name="subform" action="${subUrl}" method="post">
+<cti:csrfToken/>
         
     <table>
     

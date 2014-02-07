@@ -8,6 +8,7 @@
 
     <tags:bulkActionContainer key="yukon.common.device.bulk.readConfig" deviceCollection="${deviceCollection}">
         <form id="readConfigForm" method="post" action="/bulk/config/doReadConfig">
+        <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}"/>
             <cti:button nameKey="read" type="submit" classes="primary action" busy="true"/>

@@ -86,6 +86,7 @@ function taskFinished() {
                 </cti:url>
             
                 <form action="do" method="post">
+                <cti:csrfToken/>
                     <input type="hidden" name="taskId" value="${task.taskId}">
                     <tags:sectionContainer2 nameKey="progress">
                         <tags:nameValueContainer2>

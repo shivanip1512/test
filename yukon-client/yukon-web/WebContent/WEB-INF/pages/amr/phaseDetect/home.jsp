@@ -67,6 +67,7 @@
     </script>
 
     <form action="/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+    <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="selectSubstation">
             <table style="padding-bottom: 5px;">
                 <tr>

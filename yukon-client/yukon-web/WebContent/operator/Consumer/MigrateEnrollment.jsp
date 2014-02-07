@@ -38,6 +38,7 @@
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
 			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">
+              <cti:csrfToken/>
                 <input type="hidden" name="action" value="MigrateEnrollment">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/MigrateEnrollment.jsp">
                 <br>

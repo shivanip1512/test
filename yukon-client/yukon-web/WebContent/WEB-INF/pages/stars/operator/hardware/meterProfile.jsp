@@ -20,6 +20,7 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
     <!-- Delete Hardware Popup -->
     <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardware.displayName}">
         <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
+        <cti:csrfToken/>
             <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="deleteOption" value="delete">
@@ -48,7 +49,6 @@ jQuery(document).on('click', '#cancelDeleteBtn', function() {
     </cti:displayForPageEditModes>
     
     <form:form commandName="hardware" action="${action}" method="post">
-    
         <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
         <form:hidden path="accountId"/>
         <form:hidden path="hardwareType"/>

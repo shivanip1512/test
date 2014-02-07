@@ -16,6 +16,7 @@
             <tr>
                 <th>
                     <form id="form_scheduleName" action="${viewUrl}" method="POST">
+                    <cti:csrfToken/>
                         <a href="javascript:document.getElementById('form_scheduleName').submit();">
                             <cti:msg2 key=".scheduleName"/>
                         </a>
@@ -41,6 +42,7 @@
                 </th>
                 <th>
                     <form id="form_categoryName" action="${viewUrl}" method="POST">
+                    <cti:csrfToken/>
                         <a href="javascript:document.getElementById('form_categoryName').submit();">
                             <cti:msg2 key=".categoryName"/>
                         </a>
@@ -66,6 +68,7 @@
                 </th>
                 <th id="Current State">
                     <form id="form_currentState" action="${viewUrl}" method="POST">
+                    <cti:csrfToken/>
                         <a href="javascript:document.getElementById('form_currentState').submit();">
                             <cti:msg2 key=".currentState"/>
                         </a>
@@ -91,6 +94,7 @@
                 </th>
                 <th id="Start Date/Time">
                     <form id="form_startDate" action="${viewUrl}" method="POST">
+                    <cti:csrfToken/>
                         <a href="javascript:document.getElementById('form_startDate').submit();">
                             <cti:msg2 key=".startDateTime"/>
                         </a>
@@ -116,6 +120,7 @@
                 </th>
                 <th id="Stop Date/Time">
                     <form id="form_stopDate" action="${viewUrl}" method="POST">
+                    <cti:csrfToken/>
                         <a href="javascript:document.getElementById('form_stopDate').submit();">
                             <cti:msg2 key=".stopDateTime"/>
                         </a>
@@ -158,6 +163,7 @@
                         <c:choose>
                             <c:when test="${scheduleInfo.showControllable}">
                                 <form id="controlform_${scheduleInfo.schedule.id}" action="${controlUrl}" method="POST">
+                                <cti:csrfToken/>
                                     <a href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">${scheduleInfo.schedule.scheduleName}</a>
                                     <input type="hidden" name="id" value="${scheduleInfo.schedule.id}" />
                                     <input type="hidden" name="sortBy" value="${sortBy}" />
@@ -229,6 +235,7 @@
                     <td>
                         <c:if test="${scheduleInfo.showToggleButton}">
                             <form action="${toggleUrl}" method="POST">
+                            <cti:csrfToken/>
                                 <c:choose>
                                     <c:when test="${scheduleInfo.disabledState}">
                                         <c:set var="icon" value="icon-disabled" />

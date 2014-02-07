@@ -19,6 +19,7 @@
     <cti:msg key="yukon.dr.operator.optout.description"/><br><br>
 
     <form action="/stars/operator/optout/optout2" method="POST">
+    <cti:csrfToken/>
         <table>
             <tr>
                 <td align="right">
@@ -104,11 +105,13 @@
                         </td>
                         <td>
                             <form action="/stars/operator/optout/cancel" method="post">
+                            <cti:csrfToken/>
                                 <input type="hidden" name="eventId" value="${optOut.eventId}">
                                 <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="button">
                             </form>
                             <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <form action="/stars/operator/optout/repeat" method="post">
+                                <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
                                     <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="button">
                                 </form>
@@ -151,6 +154,7 @@
                 <c:if test="${!noOptOutLimits}">
                     <td>
                         <form action="/stars/operator/optOut/allowAnother" method="post">
+                        <cti:csrfToken/>
                             <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
                             <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="button">
                         </form>
@@ -174,6 +178,7 @@
                            </c:when>
                            <c:otherwise>
                                 <form action="/stars/operator/optOut/resetToLimit" method="post">
+                                <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
                                     <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="button">
                                 </form>

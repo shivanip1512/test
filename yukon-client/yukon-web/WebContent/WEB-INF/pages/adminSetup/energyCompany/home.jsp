@@ -20,6 +20,7 @@ jQuery(document).on('click', 'button.loginButton',function() {
 
 </script>
     <form action="parentLogin" method="post" id="parentLoginForm">
+    <cti:csrfToken/>
         <input type="hidden" name="loginAsUserId" id="loginAsUserId">
     </form>
     <div class="column-8-16">

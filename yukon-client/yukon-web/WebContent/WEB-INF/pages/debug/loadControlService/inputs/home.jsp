@@ -41,6 +41,7 @@
             <td class="functionality"><i:inline key=".programStatusByName"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/getProgramStatusByProgramName" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
@@ -60,6 +61,7 @@
             <td class="functionality"><i:inline key=".programStatusAllActive"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/getAllCurrentlyActivePrograms" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".run" >
                             <cti:button nameKey="testBtn" type="submit" classes="f-blocker"/>
@@ -75,6 +77,7 @@
             <td class="functionality"><i:inline key=".startByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/startControlByScenarioName" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
@@ -111,6 +114,7 @@
             <td class="functionality"><i:inline key=".startByProgramName"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/startControlByProgramName" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
@@ -151,6 +155,7 @@
             <td class="functionality"><i:inline key=".stopByScenarioName"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/stopControlByScenarioName" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
@@ -182,6 +187,7 @@
             <td class="functionality"><i:inline key=".stopByProgramName"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/stopControlByProgramName" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
                             <input type="text" name="programName" value="${programName}">
@@ -213,6 +219,7 @@
             <td class="functionality"><i:inline key=".scenarioProgramList"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/getScenarioProgramStartGears" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
                             <input type="text" name="scenarioName" value="${scenarioName}">
@@ -231,6 +238,7 @@
             <td class="functionality"><i:inline key=".enrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/enrollingADeviceInAProgram" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
                         <tags:nameValue2 nameKey=".accountNumber" >
@@ -272,6 +280,7 @@
             <td class="functionality"><i:inline key=".unenrollingInAProgram"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/unenrollingADeviceInAProgram" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
                         <tags:nameValue2 nameKey=".accountNumber" >
@@ -309,6 +318,7 @@
             <td class="functionality"><i:inline key=".addDevice"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/addDeviceToAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
                         <tags:nameValue2 nameKey=".accountNumber" >
@@ -343,6 +353,7 @@
             <td class="functionality"><i:inline key=".updateDevice"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/updateDeviceOnAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
                         <tags:nameValue2 nameKey=".accountNumber" >
@@ -377,6 +388,7 @@
             <td class="functionality"><i:inline key=".removeDevice"/></td>
             <td class="inputTest">
                 <form action="/debug/loadControlService/inputs/removeDeviceFromAccount" method="post">
+                <cti:csrfToken/>
                     <tags:nameValueContainer2>
                     
                         <tags:nameValue2 nameKey=".accountNumber" >

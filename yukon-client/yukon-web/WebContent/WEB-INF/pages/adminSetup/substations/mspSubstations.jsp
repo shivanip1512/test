@@ -10,6 +10,7 @@
 </script>
 
 <form action="/adminSetup/substations/routemapping/multispeak/add" method="post">
+<cti:csrfToken/>
 
 	<div style="text-align:right;">
 	<a href="javascript:void(0);" onclick="mspSubstations_check(false);">Uncheck All</a> |

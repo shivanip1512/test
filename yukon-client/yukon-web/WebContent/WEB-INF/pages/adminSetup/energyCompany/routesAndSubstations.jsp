@@ -27,6 +27,7 @@
             <div class="column one">
 	            <tags:boxContainer2 nameKey="routes">
 	                <form action="${editUrl}" method="post">
+                    <cti:csrfToken/>
 	                    <input type="hidden" name="ecId" value="${ecId}"/>
 	                    <c:choose>
 	                        <c:when test="${empty inheritedRoutes and empty ecRoutes}">
@@ -92,6 +93,7 @@
 	        <tags:boxContainer2 nameKey="substations">
 	
 	            <form action="${editUrl}" method="post">
+                <cti:csrfToken/>
 	                <input type="hidden" name="ecId" value="${ecId}"/>
 	                
 	                <c:choose>

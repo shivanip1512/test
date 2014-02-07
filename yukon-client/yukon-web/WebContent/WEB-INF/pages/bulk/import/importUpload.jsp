@@ -30,6 +30,7 @@ function updateImportTypeSelection() {
     
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
     <form id="uploadForm" method="post" action="/bulk/import/parseUpload" enctype="multipart/form-data">
+    <cti:csrfToken/>    
     <tags:sectionContainer title="${headerTitle}" id="importUploadContainer" hideEnabled="false">
         <div class="column-12-12">
             <div class="column one">

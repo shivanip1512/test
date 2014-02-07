@@ -26,6 +26,7 @@
     	</div>
     	
 		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager" onsubmit="prepareSubmit(this)">
+        <cti:csrfToken/>
 	    	<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>">
 	    	<table width="80%" border="1" align="center" cellspacing="0" cellpadding="3" class="TableCell">
     			<tr> 

@@ -9,12 +9,14 @@
     <cti:dataGridCell>
         <tags:sectionContainer title="ISOC">
         <form action="insertProgramTypes" method="post">
+        <cti:csrfToken/>
             <cti:button nameKey="insertProgramTypes" type="submit"/>
         </form>
         </tags:sectionContainer>
         
         <tags:sectionContainer title="SEP Text Message Tester"> 
             <form action="sendTestTextMessage" method="post">
+            <cti:csrfToken/>
                 <input type="hidden" name="loadProgramId" id="loadProgramId">
                     <tags:pickerDialog  type="lmProgramPicker"
                                                         extraArgs="${energyCompanyId}"
@@ -29,6 +31,7 @@
                 <cti:button nameKey="sendTestTextMessage" type="submit"/>
             </form>
             <form action="sendTestCancelMessage" method="post">
+            <cti:csrfToken/>
                 <input type="hidden" name="loadProgramId" id="loadProgramId2">
                     <tags:pickerDialog  type="lmProgramPicker"
                                                         extraArgs="${energyCompanyId}"
@@ -46,6 +49,7 @@
             
             <tags:sectionContainer title="Control Notification Tester"> 
             <form action="sendControlStartNotificationMessage" method="post">
+            <cti:csrfToken/>
                 <input type="hidden" name="loadProgramId" id="loadProgramId3">
                     <tags:pickerDialog  type="lmProgramPicker"
                                                         extraArgs="${energyCompanyId}"
@@ -60,6 +64,7 @@
                 <cti:button nameKey="sendControlStartNotificationMessage" type="submit"/>
             </form>
             <form action="sendControlStopNotificationMessage" method="post">
+            <cti:csrfToken/>
                 <input type="hidden" name="loadProgramId" id="loadProgramId4">
                     <tags:pickerDialog  type="lmProgramPicker"
                                                         extraArgs="${energyCompanyId}"

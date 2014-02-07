@@ -9,13 +9,14 @@
 <tags:setFormEditMode mode="${mode}"/>
 
     <form id="delete-call" action="/stars/operator/callTracking/deleteCall" method="post" class="dn">
+    <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="deleteCallId" value="${callReport.callId}">
     </form>
 
     <cti:url var="submitUrl" value="/stars/operator/callTracking/updateCall"/>
     <form:form commandName="callReport" action="${submitUrl}">
-    
+      
         <input type="hidden" name="accountId" value="${accountId}">
     
         <tags:sectionContainer2 nameKey="callContainer">

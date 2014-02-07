@@ -8,6 +8,7 @@
 
 <b>Assigned Routes</b>
 <form name="routeform" class="pr" action="${routeUrl}" method="post">
+<cti:csrfToken/>
     <table>
         <tr>
             <td>

@@ -6,6 +6,7 @@
 
 <cti:standardPage module="adminSetup" page="maintenance.EDIT">
     <form action="update" method="post">
+    <cti:csrfToken/>
         <c:set var="cronUniqueId" value="cronUniqueId_${job.id}" />
         <input type="hidden" name="jobId" value="${job.id}"> <input type="hidden" name="cronUniqueId"
             value="${cronUniqueId}">

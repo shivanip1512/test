@@ -48,7 +48,7 @@
     
     <div>
         <form method="post" action="/stars/consumer/thermostat/view/allSelected" onsubmit="return checkSelected()">
-            
+        <cti:csrfToken/>
             <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
             
             <cti:msg key="yukon.dr.consumer.allThermostats.chooseThermostats" /><br><br>

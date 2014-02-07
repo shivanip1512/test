@@ -31,6 +31,7 @@
     	</div>
     	
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
+        <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="PurchaseChange"> 
 	    	<div align="center">
 	    		<span class="title-header">PURCHASE PLAN</span>

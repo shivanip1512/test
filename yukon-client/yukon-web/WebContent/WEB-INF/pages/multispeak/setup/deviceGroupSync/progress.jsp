@@ -50,7 +50,7 @@
         
         <%-- BACK/CANCEL BUTTONS --%>
         <form id="backToHomeForm" action="/multispeak/setup/deviceGroupSync/done" method="post">
-        
+        <cti:csrfToken/>
             <button name="backToHome" class="button">
                 <i:inline key=".backToHomeButton"/>
             </button>

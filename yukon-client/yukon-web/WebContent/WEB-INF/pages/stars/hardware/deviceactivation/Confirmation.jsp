@@ -17,6 +17,7 @@
             </h2>
             <form id="activateform" method="POST" action="${url}"
                 style="margin: 0px; padding: 0px;">
+            <cti:csrfToken/>
                 <table cellspacing="5">
                     <tr>
                         <td valign="top" style="text-align: right">

@@ -62,6 +62,7 @@ function checkUpdate(){
 <div id="mainDiv"></div>
 <div class="page-action-area">
     <form id="uploadForm" method="POST" action="downloadBundle">
+    <cti:csrfToken/>
         <input type="hidden" name="fileName">
         <cti:button nameKey="downloadBtn" disabled="true" name="download" type="submit" icon="icon-bullet-go-down"/>
         <cti:button nameKey="ftpUploadBtn" disabled="true" id="ftpUploadBtn" href="javascript:void(0);" icon="icon-bullet-go-up"/>
@@ -81,6 +82,7 @@ function checkUpdate(){
         </tags:nameValue2>
     </tags:nameValueContainer2>
     <form id="ftpPopupForm" action="uploadBundle" method="POST">
+    <cti:csrfToken/>
         <input type="hidden" name="fileName" />
     </form>
 </div>

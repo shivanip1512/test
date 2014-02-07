@@ -1,7 +1,7 @@
 <%@page import="com.cannontech.system.GlobalSettingType"%>
 <%@page import="com.cannontech.spring.YukonSpringHook" %>
 <%@page import="com.cannontech.system.dao.GlobalSettingDao" %>
-
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%
     GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
     String logo = globalSettingDao.getString(GlobalSettingType.WEB_LOGO_URL);
@@ -52,6 +52,7 @@ self.name = "mainWin";
             <div align="center"><b>SIGN IN</b><br>
               Please enter your username and password below.</div>
             <form name="form1" method="post" action="/servlet/LoginController">
+            <cti:csrfToken/>
               <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 

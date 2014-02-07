@@ -77,6 +77,7 @@
 			<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
 			<cti:dataGridCell>
 			<form name="mspForm" method="post" action="/multispeak/setup/save">
+            <cti:csrfToken/>
 				<input type="hidden" name="actionEndpoint">
 				<input type="hidden" name="actionService">
 				
@@ -256,13 +257,15 @@
 				<c:if test="${!isCreateNew }">				  
 				<td>
 				  <form name="mspDeleteForm" method="post" action="/multispeak/setup/delete">
+                    <cti:csrfToken/>
 				    <input type="hidden" name="mspVendorId" value="${mspVendor.vendorID}">
 				    <input type="submit" name="Delete" value="Delete" class="button" onclick="return confirmDelete()">
 				  </form>
 				</td>
 				</c:if>
 				<td>
-				  <form name="mspCreateForm" method="post" action="/multispeak/setup/home">				      
+				  <form name="mspCreateForm" method="post" action="/multispeak/setup/home">
+                    <cti:csrfToken/>				      
 				    <input type="submit" name="New" value="New" class="button">
 				  </form>
 				</td>

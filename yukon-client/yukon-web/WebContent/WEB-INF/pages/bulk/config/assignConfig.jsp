@@ -11,7 +11,7 @@
             <c:when test="${fn:length(existingConfigs) > 0}">
                 <div class="page-action-area">
                     <form id="assignConfigForm" method="post" action="/bulk/config/doAssignConfig">
-                    
+                    <cti:csrfToken/>
                         <%-- DEVICE COLLECTION --%>
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <label>

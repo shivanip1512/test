@@ -8,6 +8,7 @@
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
     <div>
         <form id="startform" method="post" action="action">
+        <cti:csrfToken/>
             <c:if test="${errorMsg != null}">
                 <div class="error">${errorMsg}</div>
             </c:if>

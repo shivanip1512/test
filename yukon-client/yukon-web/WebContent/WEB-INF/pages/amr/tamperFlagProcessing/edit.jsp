@@ -28,16 +28,18 @@
     
         <%-- MISC FORMS --%>
         <form id="monitorDeleteForm" action="/amr/tamperFlagProcessing/delete" method="post">
+        <cti:csrfToken/>
             <input type="hidden" id="deleteTamperFlagMonitorId" name="deleteTamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
         
         <form id="toggleEnabledForm" action="/amr/tamperFlagProcessing/toggleEnabled" method="post">
+        <cti:csrfToken/>
             <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
         </form>
         
         <%-- UPDATE FORM --%>
         <form id="updateForm" action="/amr/tamperFlagProcessing/update" method="post">
-        
+        <cti:csrfToken/>        
             <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitorId}">
             
             <cti:msg2 var="setupSectionText" key=".section.setup" />

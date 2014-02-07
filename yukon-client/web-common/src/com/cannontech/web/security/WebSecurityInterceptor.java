@@ -8,14 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private WebSecurityAnnotationProcessor annotationProcessor;
+    @Autowired private CsrfTokenService csrfTokenService;
     
     @Override
     public boolean preHandle(HttpServletRequest request, 
             HttpServletResponse response, Object handler) throws Exception {
+       
+        if ("POST".equals(request.getMethod())) {
+            csrfTokenService.validateToken(request);
+        }
 
         if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;

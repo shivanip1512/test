@@ -98,6 +98,7 @@
                                 
             
             <form action="/stars/consumer/thermostat/runProgram" method="post" >
+            <cti:csrfToken/>
                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                 <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />
                 <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">

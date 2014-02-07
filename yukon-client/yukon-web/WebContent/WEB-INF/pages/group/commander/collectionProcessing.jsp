@@ -18,7 +18,7 @@
     
     <div style="width: 700px;">
         <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand" />" method="post">
-        
+        <cti:csrfToken/>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
       
               <%-- SELECT COMMAND --%>

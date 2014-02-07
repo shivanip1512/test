@@ -79,6 +79,7 @@ jQuery(function(){
         <br>
         <div class="tempControls fl">
             <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+            <cti:csrfToken/>
                 <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                 <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
             </form>
@@ -111,6 +112,7 @@ jQuery(function(){
                 </div>
                 <div class="tempControls fl">
                     <form method="post" action="/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                    <cti:csrfToken/>
                         <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
                         <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
                     </form>

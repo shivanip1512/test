@@ -79,6 +79,7 @@
         </div>
         
         <form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager" onsubmit="prepareSubmit(this)">
+        <cti:csrfToken/>
             <input type="hidden" name="action" value=UpdateFilters>
             <table width="600" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 

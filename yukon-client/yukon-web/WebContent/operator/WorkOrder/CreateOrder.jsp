@@ -62,6 +62,7 @@ function changeStatus(form) {
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               
 			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager" onsubmit="return validate(this)">
+              <cti:csrfToken/>
                 <input type="hidden" name="action" value="CreateWorkOrder">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/WorkOrder.jsp?OrderId=">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">

@@ -32,6 +32,7 @@
     	</div>
     	
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
+        <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="TimePeriodChange"> 
 	    	<div align="center">
 	    		<span class="title-header">TIME PROJECTION FOR DELIVERY</span>

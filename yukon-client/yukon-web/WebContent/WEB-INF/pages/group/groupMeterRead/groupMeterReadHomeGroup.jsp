@@ -34,6 +34,7 @@
         </c:if>
     
         <form id="groupMeterReadForm" action="/group/groupMeterRead/readGroup" method="post">
+        <cti:csrfToken/>
         <div class="column-12-12">
             <div class="column one">
                 <%-- GROUPS HIERARCHY BOX --%>

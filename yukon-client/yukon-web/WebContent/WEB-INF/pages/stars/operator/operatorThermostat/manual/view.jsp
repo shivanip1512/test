@@ -103,6 +103,7 @@ jQuery(function(){
             
             <%-- RUN PROGRAM BUTTON --%>
             <form action="/stars/operator/thermostatManual/runProgram" method="post" >
+            <cti:csrfToken/>
                 <input name="accountId" type="hidden" value="${accountId}" />
                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                 <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
