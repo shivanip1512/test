@@ -19,6 +19,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
+import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class JobDaoBase {
@@ -46,9 +47,10 @@ public class JobDaoBase {
             p.addValue("disabled", disabled);
             
             YukonUserContext context = job.getUserContext();
-            if (context != null) {
-                int userId = context.getYukonUser().getLiteID();
-                p.addValue("userId", userId);
+            int userId = context.getYukonUser().getLiteID();
+            p.addValue("userId", userId);
+            
+            if (userId != UserUtils.USER_YUKON_ID) {
                 String locale = context.getLocale().toString();
                 p.addValue("locale", locale);
                 String timeZone = context.getTimeZone().getID();

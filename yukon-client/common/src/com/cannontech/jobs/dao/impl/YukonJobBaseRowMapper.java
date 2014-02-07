@@ -22,6 +22,8 @@ import com.cannontech.jobs.support.YukonJobDefinitionFactory;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
 import com.cannontech.user.SimpleYukonUserContext;
+import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 
 final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
 
@@ -46,8 +48,10 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         job.setDisabled(!jobDisabledStatus.equals(JobDisabledStatus.N));
         job.setDeleted(jobDisabledStatus.equals(JobDisabledStatus.D));
         
-        Integer userId = rs.getNullableInt("userId");
-        if (userId != null) {
+        int userId = rs.getInt("userId");
+        if (userId == UserUtils.USER_YUKON_ID) {
+            job.setUserContext(YukonUserContext.system);
+        } else {
             // Assume the rest is there.
             LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
             String localeStr = rs.getString("locale");

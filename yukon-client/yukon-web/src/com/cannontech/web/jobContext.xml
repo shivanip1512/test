@@ -424,6 +424,7 @@
         <property name="taskName">
             <idref local="rfnPerformanceVerificationTask"/>
         </property>
+        <property name="title" value="Rfn Performance Verification Job"/>
         <property name="inputs">
             <bean class="com.cannontech.web.input.InputRoot">
                 <property name="inputList">

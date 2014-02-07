@@ -8,6 +8,10 @@ import org.joda.time.DateTimeZone;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 
+/**
+ * @deprecated use {@link YukonUserContext#system}
+ */
+@Deprecated
 public class SystemUserContext implements YukonUserContext {
 
     @Override
@@ -30,8 +34,8 @@ public class SystemUserContext implements YukonUserContext {
         return UserUtils.getYukonUser();
     }
     
+    @Override
     public String getThemeName() {
         return ThemeUtils.getDefaultThemeName();
     }
-
 }

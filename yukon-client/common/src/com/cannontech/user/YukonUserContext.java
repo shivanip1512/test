@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import org.joda.time.DateTimeZone;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.ThemeUtils;
 
 /**
  * This interface represents a simple data object used to pass around information
@@ -16,15 +17,40 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * that this class doesn't have convenient helpers like "getMessageSource".
  */
 public interface YukonUserContext extends Serializable {
+    YukonUserContext system = new YukonUserContext() {
+        @Override
+        public Locale getLocale() {
+            return Locale.getDefault();
+        }
 
-    public Locale getLocale();
+        @Override
+        public TimeZone getTimeZone() {
+            return TimeZone.getDefault();
+        }
 
-    public LiteYukonUser getYukonUser();
+        @Override
+        public DateTimeZone getJodaTimeZone() {
+            return DateTimeZone.getDefault();
+        }
 
-    public TimeZone getTimeZone();
+        @Override
+        public LiteYukonUser getYukonUser() {
+            return UserUtils.getYukonUser();
+        }
 
-    public DateTimeZone getJodaTimeZone();
-    
-    public String getThemeName();
+        @Override
+        public String getThemeName() {
+            return ThemeUtils.getDefaultThemeName();
+        }
+    };
 
+    Locale getLocale();
+
+    LiteYukonUser getYukonUser();
+
+    TimeZone getTimeZone();
+
+    DateTimeZone getJodaTimeZone();
+
+    String getThemeName();
 }

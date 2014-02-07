@@ -40,7 +40,6 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
@@ -216,7 +215,7 @@ public class JobManagerImpl implements JobManager {
 
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
-        return scheduleJob(jobDefinition, task, time, new SystemUserContext());
+        return scheduleJob(jobDefinition, task, time, YukonUserContext.system);
     }
 
     @Override
@@ -245,7 +244,7 @@ public class JobManagerImpl implements JobManager {
 
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
-        return scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
+        return scheduleJob(jobDefinition, task, cronExpression, YukonUserContext.system);
     }
 
     @Override
@@ -398,12 +397,7 @@ public class JobManagerImpl implements JobManager {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
             // is this the right thing to do?
-            YukonUserContext userContext = job.getUserContext();
-            TimeZone timeZone = TimeZone.getDefault(); // Default to use the system default time zone.
-            if (userContext != null) {
-                timeZone = userContext.getTimeZone();
-            }
-            
+            TimeZone timeZone = job.getUserContext().getTimeZone();
             cronExpression.setTimeZone(timeZone);
             
             //If the next run time has already passed, check for the one after that,
