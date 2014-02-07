@@ -192,7 +192,11 @@ ALTER TABLE DynamicLcrCommunications
 /* Start YUK-12506 */      
 ALTER TABLE Yukonuser
 ALTER COLUMN Password NVARCHAR(128) NOT NULL;
-/* Start YUK-12506 */
+
+ALTER TABLE PasswordHistory
+ALTER COLUMN Password VARCHAR (128) NOT NULL;
+
+/* End YUK-12506 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
