@@ -8,7 +8,7 @@
     <cti:url var="commentsURL" value="/capcontrol/comments/"/>
 
     <div id="comment_editor" class="scroll-large stacked">
-        <form id="commentForm" action="/capcontrol/comments/" method="POST" data-submitnormal="${submitNormal}" data-commentsurl="${commentsURL}">
+        <form id="commentForm" action="/capcontrol/comments/" method="POST" data-submit-normal="${submit-normal}" data-comments-url="${commentsURL}">
         <cti:csrfToken/>
             <input type="hidden" name="paoId" value="${paoId}">
             <input type="hidden" name="commentId" id="commentId" value="">
@@ -38,11 +38,11 @@
                                     <div id="editCommentSpan_${comment.id}" style="display: none;">
                                         <input id="editComment_${comment.id}" type="text" 
                                             style="margin-right: 5px;width:350px;" 
-                                            name="editCommentInput" onKeyPress="return Yukon.ui.commentsPage.updateOrCancel(event, ${comment.id})" 
+                                            name="editCommentInput" onKeyPress="return Yukon.Comments.updateOrCancel(event, ${comment.id})" 
                                             value="${fn:escapeXml(comment.comment)}">
-                                        <a href="javascript:Yukon.ui.commentsPage.updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:Yukon.ui.commentsPage.cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
+                                        <a href="javascript:Yukon.Comments.updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:Yukon.Comments.cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
                                     </div>
-                                    <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" <c:if test="${modifyPermission}">onclick="Yukon.ui.commentsPage.editComment(${comment.id})"</c:if> >
+                                    <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" <c:if test="${modifyPermission}">onclick="Yukon.Comments.editComment(${comment.id})"</c:if> >
                                         ${fn:escapeXml(comment.comment)}
                                     </div>
                                 </td>
@@ -62,7 +62,7 @@
                                     </c:choose>
                                 </td>
                                 <td class="remove-column">
-                                    <cti:button nameKey="remove" renderMode="image" onclick="Yukon.ui.commentsPage.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                    <cti:button nameKey="remove" renderMode="image" onclick="Yukon.Comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -75,12 +75,12 @@
         <div id="newRow" style="display: none;">
             <span><i:inline key=".enterText"/></span>
             <span class="textFieldLabel">
-                <input type="text" id="newCommentInput" onKeyPress="return Yukon.ui.commentsPage.addOrCancel(event)">
+                <input type="text" id="newCommentInput" onKeyPress="return Yukon.Comments.addOrCancel(event)">
             </span>
-            <span class="textFieldLabel"><a href="javascript:Yukon.ui.commentsPage.addComment()"><i:inline key=".save"/></a> <a href="javascript:Yukon.ui.commentsPage.hideNewRow()"><i:inline key=".cancel"/></a></span>
+            <span class="textFieldLabel"><a href="javascript:Yukon.Comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:Yukon.Comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
         </div>
         <div class="compactResultsFooter">
-            <cti:button nameKey="add" icon="icon-add" onclick="javascript:Yukon.ui.commentsPage.showNewRow()"/>
+            <cti:button nameKey="add" icon="icon-add" onclick="javascript:Yukon.Comments.showNewRow()"/>
         </div>
     </c:if>
 </cti:msgScope>

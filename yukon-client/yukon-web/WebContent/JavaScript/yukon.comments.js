@@ -1,9 +1,9 @@
-Yukon.namespace('Yukon.ui.commentsPage');
+Yukon.namespace('Yukon.Comments');
 
-Yukon.ui.commentsPage = (function () {
+Yukon.Comments = (function () {
     var mod,
         _submitForm = function () {
-            var submitNormal = jQuery('#commentForm').data('submitnormal');
+            var submitNormal = jQuery('#commentForm').data('submitNormal');
             if (submitNormal) {
                 jQuery('#commentForm').submit();
             } else {
@@ -23,7 +23,7 @@ Yukon.ui.commentsPage = (function () {
                 commentsUrl,
                 escapedText;
             if (jQuery.trim(newComment).length !== 0) {
-                commentsUrl = jQuery('#commentForm').data('commentsurl');
+                commentsUrl = jQuery('#commentForm').data('commentsUrl');
                 jQuery('#commentForm').attr('action', commentsUrl + 'add');
                 escapedText = jQuery('<div />').text(newComment).html();
                 jQuery('#comment').val(escapedText);
@@ -84,7 +84,7 @@ Yukon.ui.commentsPage = (function () {
                 commentsUrl,
                 escapedText;
             if (jQuery.trim(newComment).length !== 0) {
-                commentsUrl = jQuery('#commentForm').data('commentsurl');
+                commentsUrl = jQuery('#commentForm').data('commentsUrl');
                 escapedText = jQuery('<div />').text(newComment).html();
                 jQuery('#comment').val(escapedText);
                 jQuery('#commentForm').attr('action', commentsUrl + 'update');
@@ -109,7 +109,7 @@ Yukon.ui.commentsPage = (function () {
         },
     
         deleteComment : function (commentId) {
-            var commentsUrl = jQuery('#commentForm').data('commentsurl');
+            var commentsUrl = jQuery('#commentForm').data('commentsUrl');
             jQuery('#commentId').val(commentId);
             jQuery('#commentForm').attr('action', commentsUrl + 'remove');
             _submitForm();
