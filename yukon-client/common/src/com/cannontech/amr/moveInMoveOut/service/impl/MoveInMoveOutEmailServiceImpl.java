@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,8 +28,8 @@ import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceMessage;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
@@ -146,10 +147,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveInResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveInResult.getEmailAddress(), subject, body);
     }
 
     private void createMoveInScheduleEmail(MoveInResult moveInResult,
@@ -171,10 +169,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveInResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveInResult.getEmailAddress(), subject, body);
     }
 
     private void createMoveInFailureEmail(MoveInResult moveInResult,
@@ -201,10 +196,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveInResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveInResult.getEmailAddress(), subject, body);
     }
 
     private void createMoveOutSuccessEmail(MoveOutResult moveOutResult,
@@ -249,10 +241,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveOutResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveOutResult.getEmailAddress(), subject, body);
     }
 
     private void createMoveOutScheduleEmail(MoveOutResult moveOutResult,
@@ -273,10 +262,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveOutResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveOutResult.getEmailAddress(), subject, body);
     }
 
     private void createMoveOutFailureEmail(MoveOutResult moveOutResult,
@@ -303,23 +289,20 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             logger.error("Resource template could not be opened for the move in move out email service ",ioe);
         }
         
-        DefaultEmailMessage emailMessage = new DefaultEmailMessage(moveOutResult.getEmailAddress(),
-                                                                   subject,
-                                                                   body);
-        sendEmail(emailMessage);
+        sendEmail(moveOutResult.getEmailAddress(), subject, body);
     }
 
-    /**
-     * @param defaultEmailMessage
-     */
-    private void sendEmail(DefaultEmailMessage defaultEmailMessage) {
+    private void sendEmail(String toEmailAddress, String subject, String body) {
         try {
-            emailService.sendMessage(defaultEmailMessage);
-        } catch (MessagingException me) {
-            logger.error(me.getStackTrace());
+            EmailServiceMessage emailServiceMessage = 
+                    new EmailServiceMessage(InternetAddress.parse(toEmailAddress), subject, body);
+            emailService.sendMessage(emailServiceMessage);
+        } catch (MessagingException e) {
+            logger.warn("Unable to email message to address " + toEmailAddress + ".", e);
         }
     }
 
+    
     private void setDatesMoveOut(MoveOutResult moveOutResult,
             Map<String, Object> msgData, YukonUserContext userContext) {
 

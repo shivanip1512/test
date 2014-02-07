@@ -1,13 +1,13 @@
 package com.cannontech.stars.dr.optout.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,13 +37,11 @@ import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceMessage;
 import com.cannontech.user.YukonUserContext;
 
 public class OptOutNotificationServiceImpl implements OptOutNotificationService {
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final String DELIMITER = ",";
 
     private static final String CODE_SUBJECT = "yukon.dr.consumer.optoutnotification.subject";
     private static final String OPT_OUT_MESSAGEBODY = "yukon.dr.consumer.optoutnotification.messageBody";
@@ -161,7 +159,6 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             throw new AddressException("Property \"optout_notification_recipients\" is not set."); 
         }
         
-        String[] recipients = recipientsCsvString.split(DELIMITER);
         String fromAddress = energyCompany.getAdminEmailAddress();
         String subject = holder.subject;
         String messageBody = getMessageBody(holder);
@@ -171,17 +168,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             return;
         }
         
-        logger.debug(new StringBuilder()
-                     .append("Recipients: ").append(Arrays.toString(recipients)).append(LINE_SEPARATOR)
-                     .append("From: ").append(fromAddress).append(LINE_SEPARATOR)
-                     .append("Subject: ").append(subject).append(LINE_SEPARATOR)
-                     .append("Message Body: ").append(messageBody).append(LINE_SEPARATOR)
-                     .toString());
-        
-        EmailMessage emailMsg = new EmailMessage(recipients, subject, messageBody);
-        emailMsg.setFrom(fromAddress);
-
-        emailService.send(emailMsg);
+        EmailServiceMessage message = 
+                new EmailServiceMessage(new InternetAddress(fromAddress),
+                                        InternetAddress.parse(recipientsCsvString), subject, messageBody);
+        emailService.sendMessage(message);
 	}
     
     private String getMessageBody(Holder holder) {
@@ -208,8 +198,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
                                                                     holder.yukonUserContext);
         
         LiteAccountInfo liteAcctInfo = 
-            starsCustAccountInformationDao.getById(holder.customerAccount.getAccountId(),
-                                                   holder.energyCompany.getEnergyCompanyId());
+            starsCustAccountInformationDao.getByAccountId(holder.customerAccount.getAccountId());
 
         List<Integer> inventoryIdList = holder.request.getInventoryIdList();
         List<LiteLmHardwareBase> hardwares = new ArrayList<LiteLmHardwareBase>();;

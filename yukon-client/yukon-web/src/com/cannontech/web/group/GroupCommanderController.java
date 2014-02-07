@@ -12,6 +12,7 @@ import java.util.Vector;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,8 +60,8 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
-import com.cannontech.tools.email.DefaultEmailAttachmentMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceAttachmentMessage;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -281,10 +282,8 @@ public class GroupCommanderController {
             String body = messageSourceAccessor.getMessage("yukon.web.commander.groupCommander.completionEmail.body", resultUrl, successCount, failureCount, result.getCommand());
             
             // build up email
-            DefaultEmailAttachmentMessage email = new DefaultEmailAttachmentMessage();
-            email.setRecipient(emailAddress);
-            email.setBody(body);
-            email.setSubject(subject);
+            EmailServiceAttachmentMessage email = 
+                    new EmailServiceAttachmentMessage(InternetAddress.parse(emailAddress), subject, body);
             
             // create success attachment
             ByteArrayDataSource successDataSource = new ByteArrayDataSource(successReportBytes.toByteArray(), "application/pdf");
@@ -298,7 +297,7 @@ public class GroupCommanderController {
             failureDataSource.setName(failureFileName);
             email.addAttachment(failureDataSource);
             
-            emailService.sendAttachmentMessage(email);
+            emailService.sendMessage(email);
             log.info("Sent results email to " + emailAddress);
             
         } catch (IOException e) {
@@ -318,8 +317,8 @@ public class GroupCommanderController {
         List<GroupCommandResult> pending = groupCommandExecutor.getPending();
         
         ArrayList<GroupCommandResult> allResults = new ArrayList<GroupCommandResult>(completed.size() + pending.size());
-        allResults.addAll(completed);
         allResults.addAll(pending);
+        allResults.addAll(completed);
         
         map.addAttribute("resultList", allResults);
     }

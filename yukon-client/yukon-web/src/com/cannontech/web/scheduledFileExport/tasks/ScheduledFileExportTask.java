@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -29,10 +30,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.tools.csv.CSVWriter;
-import com.cannontech.tools.email.DefaultEmailMessage;
-import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
-import com.google.common.collect.Lists;
+import com.cannontech.tools.email.EmailServiceHtmlMessage;
 import com.google.common.io.Files;
 
 /**
@@ -202,28 +201,24 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 	 * Sends email notifications to the specified email addresses indicating that the job is complete.
 	 */
 	protected void sendNotificationEmails(ExportHistoryEntry historyEntry) {
-		List<EmailMessageHolder> messages = Lists.newArrayList();
 		String subject = getMessage(getSubjectKey(historyEntry.getType()), historyEntry.getOriginalFileName());
 		String body = getNotificationBody(historyEntry);
-		
 		notificationEmailAddresses = StringUtils.trimAllWhitespace(notificationEmailAddresses);
 		String[] emailsArray = notificationEmailAddresses.split(",");
 		
 		for(String emailAddress : emailsArray) {
-			DefaultEmailMessage message = new DefaultEmailMessage();
-			message.setRecipient(emailAddress);
-			message.setSubject(subject);
-			message.setHtmlBody(body);
-			messages.add(message);
+            try {
+                EmailServiceHtmlMessage message = 
+                        new EmailServiceHtmlMessage(InternetAddress.parse(emailAddress),
+                                                    subject, org.apache.commons.lang.StringUtils.EMPTY, body);
+
+                emailService.sendMessage(message);
+            } catch(MessagingException e) {
+                log.error("Unable to send " + historyEntry.getType() + " export notification email.", e);
+            }
+
 		}
 		
-		for(EmailMessageHolder message : messages) {
-			try {
-				emailService.sendHTMLMessage(message);
-			} catch(MessagingException e) {
-				log.error("Unable to send " + historyEntry.getType() + " export notification email.", e);
-			}
-		}
 		log.debug("Scheduled " + historyEntry.getType() + " export \"" + name + "\" email notifications complete.");
 	}
 

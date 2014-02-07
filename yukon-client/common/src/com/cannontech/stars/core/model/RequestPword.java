@@ -3,6 +3,8 @@ package com.cannontech.stars.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -16,8 +18,8 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceMessage;
 
 /**
  * @author rneuharth
@@ -256,15 +258,12 @@ public class RequestPword
 
 	protected void sendEmails( String[] emailTO_, final String body_ )
 	{
-		EmailMessage msg = new EmailMessage(
-			emailTO_,
-			subject,
-			body_ );
-
 		try
 		{
+	        String to = StringUtils.join(emailTO_, ",");
+	        EmailServiceMessage message = new EmailServiceMessage(InternetAddress.parse(to), subject, body_);
 		    EmailService emailService = YukonSpringHook.getBean(EmailService.class);
-			emailService.send(msg);
+			emailService.sendMessage(message);
 		}
 		catch( Exception e )
 		{

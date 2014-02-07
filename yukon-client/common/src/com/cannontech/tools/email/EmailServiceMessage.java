@@ -1,21 +1,27 @@
 package com.cannontech.tools.email;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * Use this class if you are only sending PLAIN text body.
+ * If you are including _any_ html formatting (href, for example), then use {@link EmailServiceHtmlMessage}
+ * If you want to add attachments, then use {@link EmailServiceAttachmentMessage}
+ */
 public class EmailServiceMessage {
     private final InternetAddress from;
     private final InternetAddress[] to;
     private final InternetAddress[] cc;
     private final InternetAddress[] bcc;
     private final String subject;
-    private final MimeMultipart body;
+    private String body;
     
     public EmailServiceMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
-                               InternetAddress[] bcc, String subject, MimeMultipart body) throws AddressException {
+                               InternetAddress[] bcc, String subject, String body) throws MessagingException {
     	if (from != null) {
     		this.from = new InternetAddress(from.getAddress());
     	} else {
@@ -43,28 +49,19 @@ public class EmailServiceMessage {
         
         this.body = body;
     }
-    
+
     public EmailServiceMessage(InternetAddress from, InternetAddress[] to, String subject, String body) throws MessagingException {
-        this(from, to, null, null, subject, createMultipartBody(body));
+        this(from, to, null, null, subject, body);
     }
-    
+
     public EmailServiceMessage(InternetAddress[] to, String subject, String body) throws MessagingException {
-        this(null, to, null, null, subject, createMultipartBody(body));
+        this(null, to, null, null, subject, body);
     }
-    
-    private static MimeMultipart createMultipartBody(String body) throws MessagingException {
-        MimeMultipart multipart = new MimeMultipart();
-        MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText(body);
-        multipart.addBodyPart(bodyPart);
-        
-        return multipart;
-    }
-    
+
     public InternetAddress getFrom() {
         return from;
     }
-    
+
     public InternetAddress[] getTo() {
         return to;
     }
@@ -72,16 +69,47 @@ public class EmailServiceMessage {
     public InternetAddress[] getCc() {
         return cc;
     }
-    
+
     public InternetAddress[] getBcc() {
         return bcc;
     }
-    
+
     public String getSubject() {
         return subject;
     }
-    
-    public MimeMultipart getBody() {
+
+    /**
+     * @return the original body string.
+     */
+    public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+    
+    /**
+     * Returns the content MimeMultipart consisting of plain text body
+     * @throws MessagingException
+     */
+    public MimeMultipart createBodyContent() throws MessagingException {
+        
+        MimeMultipart multipart = new MimeMultipart();
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setContent(body, "text/plain");
+        multipart.addBodyPart(bodyPart);
+
+        return multipart;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append("Recipients: ").append(InternetAddress.toString(to));
+        str.append(" From: ").append(from.toString());
+        str.append(" Subject: ").append(subject);
+        str.append(" Message Body: ").append(StringUtils.abbreviate(body, 1000));
+        return str.toString();
     }
 }

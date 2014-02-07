@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;
@@ -24,9 +26,8 @@ import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.tools.email.EmailServiceMessage;
 
 /**
  * @author yao
@@ -87,7 +88,7 @@ public class SendControlOddsTask implements Runnable {
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
 					LiteAccountInfo accountInfo =
-						starsCustAccountInformationDao.getById(accountID, energyCompanyID);
+						starsCustAccountInformationDao.getByAccountId(accountID);
 					
 					LiteContact primContact = YukonSpringHook.getBean(ContactDao.class).getContact( accountInfo.getCustomer().getPrimaryContactID() );
 					LiteContactNotification email = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(
@@ -97,23 +98,16 @@ public class SendControlOddsTask implements Runnable {
 					
 					List<LiteStarsLMProgram> activeProgs = new ArrayList<LiteStarsLMProgram>();	// List of all the active programs
 					for (int j = 0; j < accountInfo.getPrograms().size(); j++) {
-						LiteStarsLMProgram program = (LiteStarsLMProgram) accountInfo.getPrograms().get(j);
+						LiteStarsLMProgram program = accountInfo.getPrograms().get(j);
 						if (progList.contains( program.getPublishedProgram() ) && program.isInService())
 							activeProgs.add( program );
 					}
 					if (activeProgs.size() == 0) continue;
 					
-					StringTokenizer st = new StringTokenizer( email.getNotification(), "," );
-					List<String> toList = new ArrayList<String>();
-					while (st.hasMoreTokens()) {
-						toList.add( st.nextToken() );
-					}
-					String[] to = toList.toArray(new String[]{});
-					
 					Map<String, String> programOddsMap = new HashMap<String, String>();
 					int maxProgramNameLength = 18; // length of 'Program Enrollment' header
 					for (int j = 0; j < activeProgs.size(); j++) {
-						LiteStarsLMProgram program = (LiteStarsLMProgram) activeProgs.get(j);
+						LiteStarsLMProgram program = activeProgs.get(j);
 						String progName = StarsUtils.getPublishedProgramName( program.getPublishedProgram() );
 						String ctrlOdds = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( program.getPublishedProgram().getChanceOfControlID() ).getEntryText();
 						
@@ -125,16 +119,15 @@ public class SendControlOddsTask implements Runnable {
 
 					}
 
-					String ctrlOddsText = "odds for control";
-					String subject = "Today's " + ServletUtil.capitalizeAll( ctrlOddsText );
+					String ctrlOddsText = WordUtils.capitalize("odds for control");
+					String subject = "Today's " + ctrlOddsText;
 					
 					StringBuffer messageText = new StringBuffer();
 
 					String columnHeader = 
 						StringUtils.rightPad("Program Enrollment", maxProgramNameLength + 2, " "); 
 					messageText.append(columnHeader);
-					
-					messageText.append(ServletUtil.capitalizeAll( ctrlOddsText ));
+					messageText.append(ctrlOddsText);
 					messageText.append( LINE_SEPARATOR );
 					
 					String lineText = StringUtils.leftPad("  ", maxProgramNameLength + 2, "=");
@@ -164,9 +157,10 @@ public class SendControlOddsTask implements Runnable {
 					try {
 				        EmailService emailService = YukonSpringHook.getBean(EmailService.class);
 					    
-						EmailMessage emailMsg = new EmailMessage( to, subject, messageText.toString() );
-						emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
-						emailService.send(emailMsg);
+				        EmailServiceMessage message = 
+				                new EmailServiceMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+				                                        InternetAddress.parse(email.getNotification()), subject, messageText.toString());
+						emailService.sendMessage(message);
 					}
 					catch (Exception e) {
 						com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );

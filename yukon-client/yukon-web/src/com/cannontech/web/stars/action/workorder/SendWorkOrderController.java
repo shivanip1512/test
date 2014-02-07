@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,15 +21,15 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceAttachmentMessage;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
@@ -94,14 +95,14 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             Date now = new Date();
             String fileName = "WorkOrder_" + StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".pdf";
             
-            EmailMessage emailMsg = new EmailMessage();
-            emailMsg.setFrom( energyCompany.getAdminEmailAddress() );
-            emailMsg.setTo( email );
-            emailMsg.setSubject( "Work Order" );
-            emailMsg.setBody( "" );
-            emailMsg.addAttachment( tempFile, fileName );
+            EmailServiceAttachmentMessage message = 
+                    new EmailServiceAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+                                            InternetAddress.parse(email), 
+                                            "Work Order", "Work Order Attached", null);
+            message.addAttachment(new EmailFileDataSource(tempFile, fileName));
             
-            emailService.send(emailMsg);
+            
+            emailService.sendMessage(message);
             
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Sent work order to the service company successfully." );
         }

@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executor;
 
 import javax.annotation.Resource;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,8 +59,9 @@ import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceAttachmentMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -1281,14 +1283,14 @@ public class AccountImportService {
     }
 
     private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
-        EmailMessage emailMsg = new EmailMessage();
-        emailMsg.setFrom(energyCompany.getAdminEmailAddress());
-        emailMsg.setTo(email);
-        emailMsg.setSubject("Import Log");
-        emailMsg.setBody("The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR);
-        emailMsg.addAttachment(importLog, null);
         
-        emailService.send(emailMsg);
+        String body = "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR;
+        EmailServiceAttachmentMessage message = 
+                new EmailServiceAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+                                                  InternetAddress.parse(email), "Import Log", body);
+        EmailFileDataSource dataSource = new EmailFileDataSource(importLog);
+        message.addAttachment(dataSource);
+        emailService.sendMessage(message);
     }
 
     @Resource(name="longRunningExecutor")

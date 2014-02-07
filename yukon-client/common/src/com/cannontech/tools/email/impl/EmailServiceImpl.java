@@ -3,21 +3,15 @@ package com.cannontech.tools.email.impl;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -26,10 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.CharArrayDataSource;
-import com.cannontech.tools.email.EmailAttachmentMessageHolder;
-import com.cannontech.tools.email.EmailMessage;
-import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailServiceMessage;
 
@@ -38,67 +28,7 @@ public class EmailServiceImpl implements EmailService {
     
     @Autowired private GlobalSettingDao globalSettingDao;
     
-    @Override
-    public void sendMessage(EmailMessageHolder holder) throws MessagingException {
-        Session session = getSession();
-        MimeMessage message = prepareMessage(holder, session);
-        message.setText(holder.getBody());
-        send(message, session);
-    }
-    
-    @Override
-    public void sendHTMLMessage(EmailMessageHolder holder) throws MessagingException {
-        Session session = getSession();
-        MimeMessage message = prepareMessage(holder, session);
-        
-        Multipart mp = new MimeMultipart();
-        
-        MimeBodyPart plain_part = new MimeBodyPart();
-        plain_part.setContent(holder.getBody(), "text/plain");
 
-        MimeBodyPart html_part = new MimeBodyPart();
-        html_part.setContent(holder.getHtmlBody(), "text/html");
-        
-        mp.addBodyPart(html_part);
-        mp.addBodyPart(plain_part);
-        
-        message.setContent(mp);
-        
-        send(message, session);
-    }
-    
-    @Override
-    public void sendAttachmentMessage(EmailAttachmentMessageHolder holder)
-        throws MessagingException {
-        Session session = getSession();
-        MimeMessage message = prepareMessage(holder, session);
-        
-        Multipart mp = new MimeMultipart();
-        
-        MimeBodyPart plain_part = new MimeBodyPart();
-        plain_part.setContent(holder.getBody(), "text/plain");
-        
-        String htmlBody = holder.getHtmlBody();
-        if (htmlBody != null) {
-            MimeBodyPart html_part = new MimeBodyPart();
-            html_part.setContent(htmlBody, "text/html");
-            mp.addBodyPart(html_part);
-        }
-        
-        mp.addBodyPart(plain_part);
-        
-        for (DataSource dataSource : holder.getAttachments()) {
-            MimeBodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setDataHandler(new DataHandler(dataSource));
-            messageBodyPart.setFileName(dataSource.getName());
-            mp.addBodyPart(messageBodyPart);
-        }
-        
-        message.setContent(mp);
-        
-        send(message, session);
-    }
-    
     @Override
     public void sendMessage(EmailServiceMessage data) throws MessagingException {
         Session session = getSession();
@@ -125,47 +55,13 @@ public class EmailServiceImpl implements EmailService {
         String subjectStr = StringUtils.isNotBlank(data.getSubject()) ? data.getSubject() : "(none)";
         message.setSubject(subjectStr);
         
-        if (data.getBody() != null) {
-            message.setContent(data.getBody());
-        }
+        message.setContent(data.createBodyContent());
         
         // Set the send date to now.
         message.setSentDate(new Date());
         
         // Ready to go, send the message.
         send(message, session);
-    }
-    
-    @Override
-    public void send(EmailMessage emailMessage) throws MessagingException {
-        MimeMultipart multiPart = new MimeMultipart();
-        MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText(emailMessage.getBody());
-        multiPart.addBodyPart(bodyPart);
-        
-        for (int i = 0; i < emailMessage.getAttachments().size(); i++) {
-            CharArrayDataSource ds = new CharArrayDataSource(emailMessage.getAttachments().get(i), emailMessage.getAttachmentNames().get(i), "");
-            
-            bodyPart = new MimeBodyPart();
-            bodyPart.setDataHandler(new DataHandler(ds));
-            bodyPart.setFileName(ds.getName());
-            multiPart.addBodyPart(bodyPart);
-        }
-        
-        for (DataSource ds : emailMessage.getDSAttachments()) {
-            bodyPart = new MimeBodyPart();
-            bodyPart.setDataHandler(new DataHandler(ds));
-            bodyPart.setFileName(ds.getName());
-            multiPart.addBodyPart(bodyPart);
-        }
-        
-        sendMessage(new EmailServiceMessage(
-                        new InternetAddress(emailMessage.getFrom()), 
-                        InternetAddress.parse(emailMessage.getTo()), 
-                        InternetAddress.parse(emailMessage.getTo_CC()), 
-                        InternetAddress.parse(emailMessage.getTo_BCC()), 
-                        emailMessage.getSubject(), 
-                        multiPart));
     }
     
     /**
@@ -192,10 +88,13 @@ public class EmailServiceImpl implements EmailService {
                 transport.connect(host, username, password);
             }
             
+//            Doesn't seem to be necessary. API says it should be called to update headers, but it is expensive so only call if needed.
+//            message.saveChanges();
             transport.sendMessage(message, message.getAllRecipients());
         } else {
             Transport.send(message);
         }
+        log.debug("Message Sent: " + message.toString());
     }
     
     /**
@@ -274,23 +173,5 @@ public class EmailServiceImpl implements EmailService {
      */
     private InternetAddress getGlobalSettingsFromAddress() throws AddressException, MessagingException {
         return new InternetAddress(getRequiredGlobalSettingsString(GlobalSettingType.MAIL_FROM_ADDRESS));
-    }
-    
-    /**
-     * Return a MimeMessage populated with the data from the provided EmailMessageHolder
-     * @param holder the EmailMessageHolder containing the data used to populate the message
-     * @return a populated message ready to be sent
-     * @throws MessagingException if a problem occurs while populating the message
-     */
-    private MimeMessage prepareMessage(EmailMessageHolder holder, Session session) throws MessagingException {
-        MimeMessage message = new MimeMessage(session);
-        
-        message.setHeader("X-Mailer", "YukonEmail");
-        message.setFrom(getGlobalSettingsFromAddress());
-        message.setRecipient(Message.RecipientType.TO, new InternetAddress(holder.getRecipient()));
-        message.setSubject(holder.getSubject());
-        message.setSentDate(new Date());
-        
-        return message;
     }
 }

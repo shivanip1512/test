@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -31,10 +32,9 @@ import com.cannontech.stars.core.login.model.PasswordResetInfo;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailException;
-import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.EmailServiceHtmlMessage;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.PasswordResetService;
@@ -88,12 +88,12 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         String subject = messageSourceAccessor.getMessage(subjectKey);
 
         MessageSourceResolvable bodyKey = new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.body", forgottenPasswordResetUrl);
-        String body = messageSourceAccessor.getMessage(bodyKey);
+        String htmlBody = messageSourceAccessor.getMessage(bodyKey);
         
         for (LiteContactNotification emailAddress : emailAddresses) {
-            EmailMessageHolder emailMessage = new DefaultEmailMessage(emailAddress.getNotification(), subject, body);
-        
             try {
+                EmailServiceHtmlMessage emailMessage = 
+                        new EmailServiceHtmlMessage(InternetAddress.parse(emailAddress.getNotification()), subject, htmlBody, htmlBody);
                 emailService.sendMessage(emailMessage);
             } catch (MessagingException e) {
                 logger.error(e);

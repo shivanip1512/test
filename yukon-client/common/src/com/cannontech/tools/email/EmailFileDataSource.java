@@ -32,6 +32,11 @@ public class EmailFileDataSource implements DataSource {
 		this.file = file;
 	}
 	
+    public EmailFileDataSource(File file, String name) {
+        this.file = file;
+        this.name = name;
+    }
+
 	public EmailFileDataSource(File file, String name, String contentType) {
 		this.file = file;
 		this.name = name;
