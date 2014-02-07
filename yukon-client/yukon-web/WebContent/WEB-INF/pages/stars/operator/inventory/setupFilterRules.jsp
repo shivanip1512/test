@@ -11,7 +11,7 @@
 
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-    <cti:includeScript link="/JavaScript/yukon.tableCreation.js" />
+    <cti:includeScript link="/JavaScript/yukon.tables.js" />
     <cti:includeScript link="/JavaScript/picker.js" />
 
     <cti:msg key="yukon.common.calendarcontrol.months" var="months" />

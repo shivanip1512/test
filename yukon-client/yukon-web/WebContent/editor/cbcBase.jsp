@@ -17,7 +17,7 @@
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-<cti:includeScript link="/JavaScript/yukon.tableCreation.js"/>
+<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 <cti:includeScript link="/JavaScript/scrollDiv.js"/>
 <cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
 

@@ -18,9 +18,9 @@
 //        }
 //     }
 // An unattached table DOM element is returned from this function.
-Yukon.namespace('Yukon.CreateHtmlTableFromJson');
+Yukon.namespace('Yukon.Tables');
 
-Yukon.CreateHtmlTableFromJson = (function () {
+Yukon.Tables = (function () {
     var mod;
 
     mod = {

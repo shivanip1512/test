@@ -35,7 +35,7 @@
 
 <cti:includeScript link="/JavaScript/picker.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/yukon.tableCreation.js"/>
+<cti:includeScript link="/JavaScript/yukon.tables.js"/>
 
 <c:set var="containerDivArg" value="null"/>
 <c:if test="${!empty  pageScope.containerDiv}">
