@@ -148,14 +148,14 @@
     <entry key="yukon.web.modules.amr.highBill.error">Error: {0}</entry>
     <entry key="yukon.web.modules.amr.highBill.endDate">End Date</entry>
     <entry key="yukon.web.modules.amr.highBill.startDate">Start Date</entry>
-    <entry key="yukon.web.modules.amr.highBill.getReport">Get Report</entry>
-    <entry key="yukon.web.modules.amr.highBill.retrievingReport">Retrieving Report...</entry>
+    <entry key="yukon.web.modules.amr.highBill.getReport.label">Get Report</entry>
+    <entry key="yukon.web.modules.amr.highBill.getReport.labelBusy">Retrieving Report...</entry>
     <entry key="yukon.web.modules.amr.highBill.prevReports">Previous Reports</entry>
     <entry key="yukon.web.modules.amr.highBill.expandAvailableReport">Expand Available Report</entry>
     <entry key="yukon.web.modules.amr.highBill.availableReports">Available Reports:</entry>
-    <entry key="yukon.web.modules.amr.highBill.step1">Step 1: Find The Peak day</entry>
-    <entry key="yukon.web.modules.amr.highBill.step2">Step 2: Collect Profile Data</entry>
-    <entry key="yukon.web.modules.amr.highBill.step3">Step 3: Analyze Profile Data</entry>
+    <entry key="yukon.web.modules.amr.highBill.step1.title">Step 1: Find The Peak day</entry>
+    <entry key="yukon.web.modules.amr.highBill.step2.title">Step 2: Collect Profile Data</entry>
+    <entry key="yukon.web.modules.amr.highBill.step3.title">Step 3: Analyze Profile Data</entry>
     <entry key="yukon.web.modules.amr.highBill.chartRange">Chart Range:</entry>
     <entry key="yukon.web.modules.amr.highBill.peakPlusMinus3days">Peak +/- 3 Days</entry>
     <entry key="yukon.web.modules.amr.highBill.plusMinus3days">+/- 3 Days</entry>
@@ -170,6 +170,15 @@
     <entry key="yukon.web.modules.amr.highBill.errorMsgStart3">Start date must be before today.</entry>
     <entry key="yukon.web.modules.amr.highBill.errorMsgStop1">Stop date: {0} is not formatted correctly - example (mm/dd/yyyy).</entry>
     <entry key="yukon.web.modules.amr.highBill.errorMsgStop2">Stop date must on or before today.</entry>
+    <entry key="yukon.web.modules.amr.highBill.period">Period</entry>
+    <entry key="yukon.web.modules.amr.highBill.dailyTotal"><![CDATA[Avg Daily /<br>Total Usage]]></entry>
+    <entry key="yukon.web.modules.amr.highBill.dailyTotalValue">{0} / {1} kWh</entry>
+    <entry key="yukon.web.modules.amr.highBill.peak">Peak {0}</entry>
+    <entry key="yukon.web.modules.amr.highBill.peakTotalUsage">Peak Day Total Usage</entry>
+    <entry key="yukon.web.modules.amr.highBill.peakTotalUsageValue">{0} kWh</entry>
+    <entry key="yukon.web.modules.amr.highBill.daysBeforePeak">Days Before Peak</entry>
+    <entry key="yukon.web.modules.amr.highBill.daysAfterPeak">Days After Peak</entry>
+    <entry key="yukon.web.modules.amr.highBill.email">Email</entry>
     
     <!-- profile.jsp -->
     <entry key="yukon.web.modules.amr.meterDetailProfile.pageName">Profile</entry>

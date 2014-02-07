@@ -10,9 +10,9 @@
 <%@ attribute name="isReadable" required="true" type="java.lang.Boolean" %>
 <%@ attribute name="email" %>
 
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
 <cti:includeScript link="/JavaScript/collectProfileDataAroundPeak.js"/>
@@ -57,61 +57,39 @@
         ]
         }'
 </input>
-<table class="results-table">
 
-    <%--  HEADERS --%>
-    <thead>
-        <tr style="text-align:center; white-space:nowrap;">
-            <th>Days Before Peak</th>
-            <th>Peak Day</th>
-            <th>Days After Peak</th>
-            <th>Email</th>
-            <th>Collect</th>
-        </tr>
-    </thead>
-    <tfoot></tfoot>
-    <tbody>
-        
-        <%--  ADJUST +/- OFF PEAK DATE --%>
-        <tr>
-            <td style="text-align:center;">
-                <select id="${id}_beforeDays">
-                    <option value="0" selected>0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="all">All</option>
-                </select>
-            </td>
-            <td style="text-align:center;">
-                
-                <select id="${id}_selectedPeakDate" onchange="Yukon.PeakDayProfile.changePeak();">
-                    <c:if test="${!preResult.noData && preResult.deviceError == ''}">
-                        <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
-                    </c:if>
-                    <c:if test="${!postResult.noData && postResult.deviceError == ''}">
-                        <option value="${postResult.peakValue}">${postResult.peakValue}</option>
-                    </c:if>
-                </select>
-                            
-            </td>
-            <td style="text-align:center;">
-                <select id="${id}_afterDays">
-                    <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
-                        <option value="${d}" <c:if test="${d == '0'}"> selected</c:if>>${d}</option>
-                    </c:forEach>
-                </select>
-            </td>
-            
-            <td>
-                <input id="${id}_email" value="${pageScope.email}" type="text" size="20">
-            </td>
-            
-            <td>
-                <input type="button" id="${id}_startButton" value="Start" onclick="Yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');">
-            </td>
-            
-        </tr>
-    </tbody>
-    
-</table>
+<tags:nameValueContainer2>
+    <tags:nameValue2 nameKey=".daysBeforePeak">
+        <select id="${id}_beforeDays">
+            <option value="0" selected>0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="all">All</option>
+        </select>
+    </tags:nameValue2>
+    <tags:nameValue2 nameKey=".peakDay">
+        <select id="${id}_selectedPeakDate" onchange="Yukon.PeakDayProfile.changePeak();">
+            <c:if test="${!preResult.noData && preResult.deviceError == ''}">
+                <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
+            </c:if>
+            <c:if test="${!postResult.noData && postResult.deviceError == ''}">
+                <option value="${postResult.peakValue}">${postResult.peakValue}</option>
+            </c:if>
+        </select>
+    </tags:nameValue2>
+    <tags:nameValue2 nameKey=".daysAfterPeak">
+        <select id="${id}_afterDays">
+            <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
+                <option value="${d}" <c:if test="${d == '0'}">selected</c:if>>${d}</option>
+            </c:forEach>
+        </select>
+    </tags:nameValue2>
+    <tags:nameValue2 nameKey=".email">
+        <input id="${id}_email" value="${pageScope.email}" type="text" size="20">
+    </tags:nameValue2>
+</tags:nameValueContainer2>
+
+<div class="action-area">
+    <cti:button id="${id}_startButton" nameKey="start" onclick="Yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');"/>
+</div>
