@@ -23,6 +23,8 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.AccountCheckerService;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
@@ -47,6 +49,7 @@ import com.cannontech.web.stars.dr.operator.hardware.validator.ThermostatValidat
  */
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
+@RequestMapping("/consumer/thermostat/*")
 public class ThermostatManualController extends AbstractThermostatController {
     private static int DEFAULT_DEADBAND = 3;
     
@@ -58,10 +61,12 @@ public class ThermostatManualController extends AbstractThermostatController {
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private ThermostatService thermostatService;
-    
+    @Autowired private AccountCheckerService accountCheckerService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+
     private final int NUMBER_OF_HISTORY_ROWS_TO_DISPLAY = 6;
     
-    @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
+    @RequestMapping(value = "view", method = RequestMethod.GET)
     public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
                        LiteYukonUser user, 
                        ModelMap map,
@@ -122,7 +127,7 @@ public class ThermostatManualController extends AbstractThermostatController {
     }
     
     // VIEW
-    @RequestMapping(value = "/consumer/thermostat/autoEnabledView", method = RequestMethod.GET)
+    @RequestMapping(value = "autoEnabledView", method = RequestMethod.GET)
     public String autoEnabledView(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, LiteYukonUser user, 
                                    ModelMap map, HttpServletRequest request) throws Exception {
     
@@ -131,7 +136,7 @@ public class ThermostatManualController extends AbstractThermostatController {
      }
 
 
-    @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
+    @RequestMapping(value = "saveLabel", method = RequestMethod.POST)
     public String saveLabel(ModelMap map, @ModelAttribute Thermostat thermostat,
                             BindingResult bindingResult, FlashScope flashScope,
                             YukonUserContext userContext)  {
@@ -168,7 +173,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "redirect:/stars/consumer/thermostat/view";
     }
 
-    @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
+    @RequestMapping(value = "manual", method = RequestMethod.POST)
     public String manual(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
                          String mode, String fan, String temperatureUnit, Double heatTemperature, Double coolTemperature, 
                          FlashScope flashScope, YukonUserContext userContext, 
@@ -197,7 +202,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "redirect:/stars/consumer/thermostat/view";
     }
     
-    @RequestMapping(value = "/consumer/thermostat/runProgram", method = RequestMethod.POST)
+    @RequestMapping(value = "runProgram", method = RequestMethod.POST)
     public String runProgram(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, YukonUserContext userContext,
                              HttpServletRequest request, FlashScope flashScope, ModelMap map) throws Exception {
         
@@ -205,7 +210,7 @@ public class ThermostatManualController extends AbstractThermostatController {
             return "consumer/thermostat/thermostatDisabled.jsp";
         }
         // Log run program attempt
-        CustomerAccount account = getCustomerAccount(request);
+        CustomerAccount account = getCustomerAccount(userContext.getYukonUser());
         List<String> serialNumbers =  lmHardwareBaseDao.getSerialNumberForInventoryIds(thermostatIds);
         for (String serialNumber : serialNumbers) {
             accountEventLogService.thermostatRunProgramAttempted(userContext.getYukonUser(), account.getAccountNumber(), serialNumber, EventSource.CONSUMER);
@@ -232,7 +237,7 @@ public class ThermostatManualController extends AbstractThermostatController {
 	                                Temperature heatTemperature, Temperature coolTemperature, boolean autoModeEnabledCommand,
 	                                YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope, ModelMap map) {
 		
-	    CustomerAccount account = getCustomerAccount(request);
+	    CustomerAccount account = getCustomerAccount(userContext.getYukonUser());
 		
         thermostatService.logThermostatManualSaveAttempt(thermostatIds, userContext, account,
                                                         (heatTemperature != null) ? heatTemperature.toFahrenheit().getValue() : null,

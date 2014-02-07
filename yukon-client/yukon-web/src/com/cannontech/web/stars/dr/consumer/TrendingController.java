@@ -13,33 +13,29 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.graph.GraphBean;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.model.GraphViewType;
 
 @CheckRole(YukonRole.TRENDING)
 @Controller
+@RequestMapping("/consumer/trending/*")
 public class TrendingController extends AbstractConsumerController {
 
-	private GraphDao graphDao;
+    @Autowired private GraphDao graphDao;
+    @Autowired private AccountCheckerService accountCheckerService;
 
-	@Autowired
-	public void setGraphDao(GraphDao graphDao) {
-		this.graphDao = graphDao;
-	}
-
-	@RequestMapping(value = "/consumer/trending/view", method = RequestMethod.GET)
+	@RequestMapping(value = "view", method = RequestMethod.GET)
 	public String view(LiteYukonUser user, HttpSession session, ModelMap map, Integer gdefid) {
 
 		accountCheckerService.checkGraph(user, gdefid);
 		
-		LiteGraphDefinition graphDefinition = graphDao
-				.getLiteGraphDefinition(gdefid);
+		LiteGraphDefinition graphDefinition = graphDao.getLiteGraphDefinition(gdefid);
 		map.addAttribute("graphDefinition", graphDefinition);
 
 		// Get graph bean from session if exists
-		Object sessionBean = session.getAttribute(
-				ServletUtil.ATT_GRAPH_BEAN);
+		Object sessionBean = session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 
 		GraphBean bean = null;
 		if (sessionBean != null) {

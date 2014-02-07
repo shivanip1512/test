@@ -17,6 +17,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
@@ -31,7 +32,6 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.WebSecurityChecker;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.SessionUtil;
 import com.google.common.collect.Lists;
@@ -46,8 +46,8 @@ public class EnrollmentController extends AbstractConsumerController {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private OptOutStatusService optOutStatusService;
-    @Autowired private WebSecurityChecker webSecurityChecker;
-    
+    @Autowired private RolePropertyDao rolePropertyDao;
+
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
@@ -101,22 +101,20 @@ public class EnrollmentController extends AbstractConsumerController {
 
         }
 
-
-        
         return saveChanges(model, assignedProgramId,
                            customerAccount.getAccountId(), updatedEnrollments,
                            session, yukonUserContext);
     }
 
     @RequestMapping(value = "/consumer/enrollment/enrollSelectedHardware", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE)
     public String enrollSelectedHardware(ModelMap model,
                                          @ModelAttribute CustomerAccount customerAccount,
                                          int assignedProgramId,
                                          Integer[] inventoryIds,
                                          HttpSession session,
                                          YukonUserContext yukonUserContext) {
-        webSecurityChecker.checkRoleProperty(false,YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
-        
+
         if(isCommunicationDisabled(yukonUserContext)){
             return "consumer/enrollment/enrollmentDisabled.jsp";
         }

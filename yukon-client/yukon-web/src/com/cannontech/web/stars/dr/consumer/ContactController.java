@@ -27,6 +27,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -34,7 +35,9 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -66,7 +69,10 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private GlobalSettingDao globalSettingsDao;
     @Autowired private LiteContactValidator liteContactValidator;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    
+    @Autowired private AccountCheckerService accountCheckerService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String index(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		YukonUserContext yukonUserContext,

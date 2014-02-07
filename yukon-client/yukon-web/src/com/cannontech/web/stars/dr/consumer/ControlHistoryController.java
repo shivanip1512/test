@@ -12,16 +12,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
+import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableGroupedControlHistory;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ListMultimap;
@@ -30,9 +37,16 @@ import com.google.common.collect.ListMultimap;
 @Controller
 public class ControlHistoryController extends AbstractConsumerController {
     private static final String viewNamePrefix = "consumer/controlhistory/";
-    
+
     @Autowired private ControlHistoryService controlHistoryService;
-    
+    @Autowired private ControlHistoryDao controlHistoryDao;
+    @Autowired private ProgramEnrollmentService programEnrollmentService;
+    @Autowired private ProgramDao programDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private DisplayableProgramDao displayableProgramDao;
+    @Autowired private AccountCheckerService accountCheckerService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {

@@ -24,7 +24,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
+import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
+import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
@@ -35,17 +37,18 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL)
 @Controller
+@RequestMapping("/consumer/*")
 public class GeneralController extends AbstractConsumerController {
-    private static final String viewName = "consumer/general.jsp";
-    
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private DisplayableProgramDao displayableProgramDao;
+    @Autowired private OptOutEventDao optOutEventDao;
 
-    @RequestMapping(value = "/consumer/general", method = RequestMethod.GET)
-    public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+    @RequestMapping(value = "general", method = RequestMethod.GET)
+    public String general(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
         
         List<DisplayableProgram> displayablePrograms =
@@ -96,7 +99,9 @@ public class GeneralController extends AbstractConsumerController {
         
         map.addAttribute("promptForEmail", promptForEmail);
 
-        if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
+        if (isNotEnrolled) {
+            return "consumer/general.jsp"; // if there are no programs enrolled there is nothing more to show
+        }
         
         int accountId = customerAccount.getAccountId();
 		List<OptOutEvent> scheduledOptOuts = optOutEventDao.getAllScheduledOptOutEvents(accountId);
@@ -129,14 +134,13 @@ public class GeneralController extends AbstractConsumerController {
         }
         map.addAttribute("showNotification", showNotification);
         
-        return viewName;
+        return "consumer/general.jsp";
     }
     
-    @RequestMapping(value = "/consumer/general/updateOddsForControlNotification", method = RequestMethod.POST)
+    @RequestMapping(value = "general/updateOddsForControlNotification", method = RequestMethod.POST)
     public String updateOddsForControlNotification(
     		@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		String oddsForControlEmail, HttpServletRequest request, 
-    		YukonUserContext yukonUserContext) {
+    		String oddsForControlEmail, HttpServletRequest request) {
         
     	int accountId = customerAccount.getAccountId();
     	LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);

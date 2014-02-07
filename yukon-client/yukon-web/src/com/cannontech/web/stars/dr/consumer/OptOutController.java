@@ -36,8 +36,12 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -78,6 +82,10 @@ public class OptOutController extends AbstractConsumerController {
 	@Autowired private SurveyDao surveyDao;
 	@Autowired private SurveyService surveyService;
 	@Autowired private OptOutControllerHelper helper;
+	@Autowired private AccountCheckerService accountCheckerService;
+	@Autowired private DisplayableInventoryDao displayableInventoryDao;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	@Autowired private InventoryBaseDao inventoryBaseDao;
 
     private static class StartDateException extends IllegalArgumentException {
         private final static long serialVersionUID = 1L;

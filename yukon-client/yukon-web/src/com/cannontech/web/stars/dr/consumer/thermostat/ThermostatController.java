@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -26,12 +27,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
  */
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL)
 @Controller
+@RequestMapping("/consumer/thermostat/*")
 public class ThermostatController extends AbstractThermostatController {
 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private AccountCheckerService accountCheckerService;
 
-    @RequestMapping(value = "/consumer/thermostat/view/all", method = RequestMethod.GET)
+    @RequestMapping(value = "view/all", method = RequestMethod.GET)
     public String viewAll(@ModelAttribute("customerAccount") CustomerAccount account,
                           LiteYukonUser user,
                           ModelMap map) {
@@ -46,7 +49,7 @@ public class ThermostatController extends AbstractThermostatController {
         return "consumer/allThermostats.jsp";
     }
 
-    @RequestMapping(value = "/consumer/thermostat/view/allSelected", method = RequestMethod.POST)
+    @RequestMapping(value = "view/allSelected", method = RequestMethod.POST)
     public String allSelected(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
                               @ModelAttribute("customerAccount") CustomerAccount account,
                               LiteYukonUser user, 
@@ -61,8 +64,7 @@ public class ThermostatController extends AbstractThermostatController {
             return "redirect:/stars/consumer/thermostat/view/all";
         }
         
-        accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
         // Manually put thermsotatIds into model for redirect
         map.addAttribute("thermostatIds", thermostatIds.toString());

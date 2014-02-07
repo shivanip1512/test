@@ -38,6 +38,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -76,6 +77,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private AccountCheckerService accountCheckerService;
     
     @RequestMapping(value = "send", method = RequestMethod.POST)
     public String sendSchedule(HttpServletRequest request,
@@ -85,7 +87,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                Integer scheduleId,
                                YukonUserContext yukonUserContext,
                                FlashScope flashScope,
-                               ModelMap map) throws NotAuthorizedException, ServletRequestBindingException, IllegalArgumentException {
+                               ModelMap map) throws NotAuthorizedException, IllegalArgumentException {
         
         if(isCommunicationDisabled(yukonUserContext.getYukonUser())){
             return "consumer/thermostat/thermostatDisabled.jsp";
