@@ -27,4 +27,8 @@ public class AmqClientConnection extends AmqConnectionBase<TwoWayTransport> {
     public String toString() {
         return super.toString() + " (client side)";
     }
+    
+    public void warnConnectingFailure(String message) {
+        super.warnConnectingFailure(message);
+    }
 }

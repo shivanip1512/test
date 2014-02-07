@@ -1,8 +1,13 @@
 package com.cannontech.messaging.connection.amq;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -21,14 +26,18 @@ import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTransport> implements ListenerConnection,
     ConnectionEventHandler {
 
+    private static final long REQUEST_EXPIRE_TIME_MILLIS = 1000 * 30; // 30 seconds - filter duplicate request younger then this
+    
     protected final InboundConnectionEvent inboundConnectionEvent;
     private final List<AmqServerConnection> serverConnectionList;
+    private final Map<Destination, Date> requestTimeMap;
 
     public AmqListenerConnection(String name, String queueName) {
         super(name, queueName);
         setManagedConnection(true);
         inboundConnectionEvent = new InboundConnectionEvent();
         serverConnectionList = new LinkedList<AmqServerConnection>();
+        requestTimeMap = new HashMap<Destination, Date>();
     }
 
     @Override
@@ -49,9 +58,29 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
     @Override
     public void onMessage(Message message) {
         try {
-            if (message == null || !"com.eaton.eas.yukon.clientinit".equals(message.getJMSType())) {
+
+            if (message == null || !HandShakeConnector.HAND_SHAKE_REQ_MSG_TYPE.equals(message.getJMSType()) || message.getJMSReplyTo() == null) {
                 return;
             }
+
+            final Date now = new Date();
+            final Date expired = new Date( now.getTime() - REQUEST_EXPIRE_TIME_MILLIS );
+
+            // clean up expired
+            Iterator<Map.Entry<Destination, Date>> iterator = requestTimeMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Destination, Date> entry = iterator.next();
+                if (entry.getValue().before(expired)) {
+                    iterator.remove();
+                }
+            }
+
+            // filter duplicate
+            if (requestTimeMap.containsKey(message.getJMSReplyTo())) {
+                return;
+            }
+
+            requestTimeMap.put(message.getJMSReplyTo(), now);
 
             // Incoming connection request received
 

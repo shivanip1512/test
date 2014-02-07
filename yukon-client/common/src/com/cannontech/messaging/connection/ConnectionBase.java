@@ -11,7 +11,6 @@ import com.cannontech.messaging.connection.event.ConnectionEvent;
 import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.MessageEvent;
 import com.cannontech.messaging.connection.event.MessageEventHandler;
-import com.cannontech.messaging.connection.transport.HandShakeTimeoutException;
 import com.cannontech.messaging.connection.transport.Transport;
 import com.cannontech.message.util.Message;
 
@@ -132,11 +131,6 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
                 
                 //clear the flag
                 Thread.interrupted();
-            }
-            catch (HandShakeTimeoutException e) {
-                isFailed = true;
-                
-                logger.warn(e);
             }
             catch (Exception e) {
                 isFailed = true;
@@ -422,5 +416,17 @@ public abstract class ConnectionBase<T extends Transport> implements Connection 
     
     public void disableWorkerThreadLogError() {
         disableWorkerThreadLogError = true;
+    }
+    
+    /**
+     * This method is use internally during connecting state to log a warning and fire disconnect events.
+     */
+    protected void warnConnectingFailure(String message) {
+        isFailed = true;
+
+        logger.warn(message);
+    
+        setState(ConnectionState.Disconnected);
+        setState(ConnectionState.Connecting);
     }
 }

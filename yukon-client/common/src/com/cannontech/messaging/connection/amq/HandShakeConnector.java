@@ -2,10 +2,11 @@ package com.cannontech.messaging.connection.amq;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
+
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
-import com.cannontech.messaging.connection.transport.HandShakeTimeoutException;
+
 import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 import com.cannontech.messaging.connection.transport.amq.AmqProducerTransport;
@@ -13,13 +14,13 @@ import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
 
 class HandShakeConnector {
 
-    private static final int WAIT_REPLY_TIME_MILLIS = 30000;
-    private static final int TIME_TO_LIVE_MILLIS = WAIT_REPLY_TIME_MILLIS - 1000;
-    private static final int MAX_HAND_SHAKE_MSG_COUNT = 120;
-    private static final String HAND_SHAKE_REQ_MSG_TYPE = "com.eaton.eas.yukon.clientinit";
-    private static final String HAND_SHAKE_RESP_MSG_TYPE = "com.eaton.eas.yukon.serverresp";
-    private static final String HAND_SHAKE_ACK_MSG_TYPE  = "com.eaton.eas.yukon.clientack";
-    
+    private static final long INITIAL_WAIT_REPLY_TIME_MILLIS = 1000 * 30;       // 30 seconds
+    private static final long WAIT_REPLY_TIME_MILLIS         = 1000 * 60 * 60;  // 1 hour
+    private static final long TIME_TO_LIVE_MILLIS            = 1000 * 60 * 120; // 2 hours
+
+    public static final String HAND_SHAKE_REQ_MSG_TYPE  = "com.eaton.eas.yukon.clientinit";
+    public static final String HAND_SHAKE_RESP_MSG_TYPE = "com.eaton.eas.yukon.serverresp";
+    public static final String HAND_SHAKE_ACK_MSG_TYPE  = "com.eaton.eas.yukon.clientack";
 
     static TwoWayTransport createClientConnectionTransport(AmqClientConnection clientConnection) {
         AmqConsumerTransport consumer = null;
@@ -27,8 +28,6 @@ class HandShakeConnector {
         AmqProducerTransport reqProducer = null;
 
         ActiveMQConnection connection = clientConnection.getConnection();
-
-        final int maxHandShakeMsgCount = ( clientConnection.isConnectionFailed() ) ? MAX_HAND_SHAKE_MSG_COUNT : 1;
 
         try {
             // Create the consumer. It will create its own temporary queue
@@ -41,8 +40,8 @@ class HandShakeConnector {
             reqProducer.start();
             reqProducer.getProducer().setTimeToLive(TIME_TO_LIVE_MILLIS);
 
-            Message rspMessage;
-            int connectionRequestCount = 0;
+            Message rspMessage = null;
+
             do {
                 // Create, setup and send the request message to the listenerConnection (the server)
                 Message reqMsg = reqProducer.getSession().createMessage();
@@ -50,15 +49,19 @@ class HandShakeConnector {
                 reqMsg.setJMSType(HAND_SHAKE_REQ_MSG_TYPE);
                 reqProducer.sendMessage(reqMsg);
 
-                // and wait <WAIT_REPLY_TIME_MILLIS> seconds for the reply
-                rspMessage = consumer.receiveMessage(WAIT_REPLY_TIME_MILLIS);
-                
-            } while (connectionRequestCount++ < maxHandShakeMsgCount && rspMessage == null);
+                long replyTimeMillis = (clientConnection.isConnectionFailed()) ? 
+                        WAIT_REPLY_TIME_MILLIS : 
+                        INITIAL_WAIT_REPLY_TIME_MILLIS;
 
-            // Validate
-            if (rspMessage == null) {
-                throw new HandShakeTimeoutException("Timeout while waiting for the server to reply to a connection request");
-            }
+                // and wait <replyTimeMillis> seconds for the reply
+                rspMessage = consumer.receiveMessage(replyTimeMillis);
+
+                if (rspMessage == null) {
+                    // log warning and fire disconnect state event change
+                    clientConnection.warnConnectingFailure("Timeout while waiting for the server to reply to a connection request");
+                }
+
+            } while (rspMessage == null);
 
             if (!HAND_SHAKE_RESP_MSG_TYPE.equals(rspMessage.getJMSType())) {
                 throw new TransportException("The server response message is not of the expected type: " +
