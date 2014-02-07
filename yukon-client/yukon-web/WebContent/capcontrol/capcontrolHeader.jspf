@@ -23,7 +23,7 @@
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/validation.js"/>
-<cti:includeScript link="/JavaScript/commentsPage.js"/>
+<cti:includeScript link="/JavaScript/yukon.comments.js"/>
 
 <!-- Beans -->
 <jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>
