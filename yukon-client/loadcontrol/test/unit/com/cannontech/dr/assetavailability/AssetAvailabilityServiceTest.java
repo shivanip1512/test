@@ -1,26 +1,20 @@
 package com.cannontech.dr.assetavailability;
 
+import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.MutableDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
+import org.junit.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.point.PointQuality;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceTest {
-    //Disabled until I can update them to work with DynamicLcrCommunicationsDao
-    /*
     @Test
     public void getAssetAvailability_ByDrGroupPaoIdentifier() {
         Instant now = getNow();
@@ -123,7 +117,6 @@ public class AssetAvailabilityServiceTest {
         
         testSimpleAssetAvailabilitySummary(aaSummary);
     }
-    */
     
     private void testApplianceAssetAvailabilitySummary(ApplianceAssetAvailabilitySummary applianceSummary) {
         //All appliances
@@ -351,7 +344,7 @@ public class AssetAvailabilityServiceTest {
     }
     
     private AssetAvailabilityService buildServiceWithOneInEachState(boolean databaseUpToDate, Instant now) {
-        String tenMinutesAgo = getDateStringPriorToCurrentTime(now, Duration.standardMinutes(10));
+        Instant tenMinutesAgo = now.minus(Duration.standardMinutes(10));
         
         AssetAvailabilityServiceBuilder builder = new AssetAvailabilityServiceBuilder();
         builder.withCommunicationHours(1)
@@ -380,22 +373,6 @@ public class AssetAvailabilityServiceTest {
                .withInventoryRelayApplianceMapping(6, 1, 10061)
                .withInventoryRelayApplianceMapping(7, 1, 10071)
                .withInventoryRelayApplianceMapping(8, 1, 10081)
-               //device to attribute/point mapping
-               .withDeviceToAttributeAndPointMapping(1003, new Object[][]{
-                       {BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, 1003001},
-                       {BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG, 1003002}
-               })
-               .withDeviceToAttributeAndPointMapping(1004, new Object[][]{
-                       {BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG, 1004003},
-                       {BuiltInAttribute.BLINK_COUNT, 1004010}
-               })
-               .withDeviceToAttributeAndPointMapping(1005, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG, 1005004)
-               .withDeviceToAttributeAndPointMapping(1006, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, 1006001)
-               .withDeviceToAttributeAndPointMapping(1007, new Object[][]{
-                       {BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, 1007001},
-                       {BuiltInAttribute.BLINK_COUNT, 1007010}
-               })
-               .withDeviceToAttributeAndPointMapping(1008, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, 1008001)
                //one-way program and area
                .withDrGroupToLoadGroupIds(new PaoIdentifier(102, PaoType.LM_DIRECT_PROGRAM), 100)
                .withDrGroupToLoadGroupIds(new PaoIdentifier(103, PaoType.LM_CONTROL_AREA), 100)
@@ -406,25 +383,17 @@ public class AssetAvailabilityServiceTest {
                .withDrGroupToLoadGroupIds(new PaoIdentifier(106, PaoType.LM_CONTROL_AREA), 100, 101)
                .withDrGroupToLoadGroupIds(new PaoIdentifier(107, PaoType.LM_CONTROL_AREA), 100, 101)
                //rph and dynamic data
-                //run time for inventory 3
-               .withDynamicData(1003002, PointType.Analog, PointQuality.Normal, 5.0, tenMinutesAgo)
-                //blink count data for inventory 4
-               .withDynamicData(1004010, PointType.Analog, PointQuality.Normal, 1.0, tenMinutesAgo)
-                //no data for inventory 5 (it's unavailable)
-                //run time for inventory 6
-               .withRawPointHistoryData(1006001, PointType.Analog, PointQuality.Normal, 6.0, tenMinutesAgo)
-               .withDynamicData(1006001, PointType.Analog, PointQuality.Normal, 6.0, tenMinutesAgo)
-                //blink count data for inventory 7
-               .withRawPointHistoryData(1007010, PointType.Analog, PointQuality.Normal, 1.0, tenMinutesAgo)
-               .withDynamicData(1007010, PointType.Analog, PointQuality.Normal, 1.0, tenMinutesAgo);
-                //no data for inventory 8 (it's unavailable)
-        
+               //run time for inventory 3
+               .withData(1003, tenMinutesAgo, null, tenMinutesAgo, null, null)
+               //comm data for inventory 4
+               .withData(1004, tenMinutesAgo, null, null, null, null)
+               //no data for inventory 5 (it's unavailable) - entry exists, but all nulls
+               .withData(1005, null, null, null, null, null)
+               //run time for inventory 6
+               .withData(1006, tenMinutesAgo, tenMinutesAgo, null, null, null)
+               //comm data for inventory 7
+               .withData(1007, tenMinutesAgo, null, null, null, null);
+               //no data for inventory 8 (it's unavailable) - entry does not exist
         return builder.build();
-    }
-    
-    private String getDateStringPriorToCurrentTime(Instant now, Duration duration) {
-        DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(centralTimeZone);
-        return dateTimeFormatter.print(now.minus(duration));
     }
 }

@@ -1,15 +1,13 @@
 package com.cannontech.dr.assetavailability;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.mock.MockGlobalSettingDao;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.point.PointQuality;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.assetavailability.dao.MockDrGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.dao.MockLcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -19,7 +17,6 @@ import com.cannontech.stars.dr.hardware.dao.MockLmHardwareConfigurationDao;
 import com.cannontech.stars.dr.optout.dao.MockOptOutEventDao;
 import com.cannontech.system.GlobalSettingType;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -29,12 +26,10 @@ public class AssetAvailabilityServiceBuilder {
     private Integer runtimeHours = null;
     private Multimap<Integer, Integer> loadGroupToInventoryMap = ArrayListMultimap.create();
     private Set<Integer> optedOutInventory = Sets.newHashSet();
-    List<Object[]> rphList = Lists.newArrayList();
-    List<Object[]> dynamicDataList = Lists.newArrayList();
     private Map<Integer, Integer> inventoryToDeviceMap = Maps.newHashMap();
     private Multimap<PaoIdentifier, Integer> drGroupToLoadGroupMap = ArrayListMultimap.create();
     private Map<Integer, Map<Integer, Integer>> inventoryRelayApplianceMap = Maps.newHashMap();
-    private Map<Integer, Map<Attribute, Integer>> deviceToAttributeAndPointMap = Maps.newHashMap();
+    private Map<Integer, AssetAvailabilityPointDataTimes> data = Maps.newHashMap();
     
     public AssetAvailabilityService build() {
         //Opt Outs
@@ -64,7 +59,7 @@ public class AssetAvailabilityServiceBuilder {
         }
         
         //LCR Communications
-        MockLcrCommunicationsDao lcrCommunicationsDao = new MockLcrCommunicationsDao();
+        MockLcrCommunicationsDao lcrCommunicationsDao = new MockLcrCommunicationsDao(data);
         
         
         AssetAvailabilityServiceImpl assetAvailabilityService = new AssetAvailabilityServiceImpl(optOutEventDao, 
@@ -123,33 +118,6 @@ public class AssetAvailabilityServiceBuilder {
     }
     
     /**
-     * Adds raw point history data. 
-     * Timestamp string format: "MM/dd/yyyy HH:mm:ss"
-     * Calling this method more than once will append data. If this method is not called, default data will be used.
-     * @See MockDynamicDataSource.
-     */
-    public AssetAvailabilityServiceBuilder withRawPointHistoryData(int pointId, PointType pointType, 
-                                                                   PointQuality pointQuality, double value,
-                                                                   String dateTime) {
-        rphList.add(new Object[]{pointId, pointType, pointQuality, value, dateTime});
-        return this;
-    }
-    
-    /**
-     * Adds dynamic point data.
-     * Timestamp string format: "MM/dd/yyyy HH:mm:ss"
-     * 
-     * Calling this method more than once will append data. If this method is not called, default data will be
-     * used. @See MockDynamicDataSource.
-     */
-    public AssetAvailabilityServiceBuilder withDynamicData(int pointId, PointType pointType, 
-                                                           PointQuality pointQuality, double value,
-                                                           String dateTime) {
-        dynamicDataList.add(new Object[]{pointId, pointType, pointQuality, value, dateTime});
-        return this;
-    }
-    
-    /**
      * Maps inventoryIds to deviceIds.
      * Calling this method more than once appends data.
      */
@@ -203,48 +171,15 @@ public class AssetAvailabilityServiceBuilder {
         return this;
     }
     
-    /**
-     * Maps an attribute and pointId to a device.
-     * Calling this method more than once appends data.
-     */
-    public AssetAvailabilityServiceBuilder withDeviceToAttributeAndPointMapping(Integer deviceId, 
-                                                                                Attribute attribute, 
-                                                                                Integer pointId) {
-        if(deviceToAttributeAndPointMap.containsKey(deviceId)) {
-            deviceToAttributeAndPointMap.get(deviceId).put(attribute, pointId);
-        } else {
-            Map<Attribute, Integer> attributePointMap = Maps.newHashMap();
-            attributePointMap.put(attribute, pointId);
-            deviceToAttributeAndPointMap.put(deviceId, attributePointMap);
-        }
-        return this;
-    }
-    
-    /**
-     * Maps multiple attribute/pointId pairs to a device.
-     * Calling this method more than once appends data.
-     * 
-     * Example: On device with id 1, map RELAY_1_RUN_TIME_DATA_LOG with pointId 151 and RELAY_2_RUN_TIME_DATA_LOG
-     * with pointId 152.
-     * 
-     * .withDeviceToAttributeAndPointMapping(1, new Object[][] {
-     *     {BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, 151},
-     *     {BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG, 152}
-     * })
-     */
-    public AssetAvailabilityServiceBuilder withDeviceToAttributeAndPointMapping(Integer deviceId, 
-                                                                            Object[][] attributeAndPointArray) {
-        if(deviceToAttributeAndPointMap.containsKey(deviceId)) {
-            for(Object[] attributeAndPoint : attributeAndPointArray) {
-                deviceToAttributeAndPointMap.get(deviceId).put((Attribute)attributeAndPoint[0], (Integer)attributeAndPoint[1]);
-            }
-        } else {
-            Map<Attribute, Integer> attributePointMap = Maps.newHashMap();
-            for(Object[] attributeAndPoint : attributeAndPointArray) {
-                attributePointMap.put((Attribute)attributeAndPoint[0], (Integer)attributeAndPoint[1]);
-            }
-            deviceToAttributeAndPointMap.put(deviceId, attributePointMap);
-        }
+    public AssetAvailabilityServiceBuilder withData(int deviceId, Instant communicationTime, Instant relay1runtime, 
+                                                    Instant relay2runtime, Instant relay3runtime, Instant relay4runtime) {
+        AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(deviceId);
+        times.setLastCommunicationTime(communicationTime);
+        times.setRelayRuntime(1, relay1runtime);
+        times.setRelayRuntime(2, relay2runtime);
+        times.setRelayRuntime(3, relay3runtime);
+        times.setRelayRuntime(4, relay4runtime);
+        data.put(deviceId, times);
         return this;
     }
 }

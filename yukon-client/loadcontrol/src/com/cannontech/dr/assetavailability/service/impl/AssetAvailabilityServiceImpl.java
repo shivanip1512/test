@@ -144,7 +144,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 Map<Integer, Instant> relayRuntimes = times.getRelayRuntimeMap();
                 if(relayApplianceMap != null) {
                     for(Integer relay : relayApplianceMap.keySet()) {
-                        if(relayRuntimes != null && relayRuntimes.containsKey(relay) && relayRuntimes.get(relay).isAfter(runtimeWindowEnd)) {
+                        if(relayRuntimes != null && relayRuntimes.get(relay) != null && 
+                           relayRuntimes.get(relay).isAfter(runtimeWindowEnd)) {
                             //runtime exists for this relay, but is it in the window?
                             Integer applianceId = inventoryRelayAppliances.getApplianceId(inventoryId, relay);
                             runningAppliances.add(applianceId);
