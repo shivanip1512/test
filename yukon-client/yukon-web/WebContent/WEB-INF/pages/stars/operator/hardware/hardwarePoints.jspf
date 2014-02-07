@@ -61,10 +61,10 @@ jQuery(function() {
         </cti:url>
         <a href="${pointsUrl}"><i:inline key="yukon.web.defaults.showAll"/></a>
         <c:if test="${hardware.hardwareType.rf}">
-            <cti:button id="rfReadNow" nameKey="readNow" busy="true"/>
+            <cti:button id="rfReadNow" nameKey="readNow" busy="true" icon="icon-read"/>
         </c:if>
         <c:if test="${hardware.hardwareType.twoWayPlcLcr}">
-            <cti:button id="plcReadNow" nameKey="readNow" busy="true"/>
+            <cti:button id="plcReadNow" nameKey="readNow" busy="true" icon="icon-read"/>
         </c:if>
     </div>
 </tags:sectionContainer2>

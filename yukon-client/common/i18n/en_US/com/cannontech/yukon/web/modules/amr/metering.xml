@@ -133,10 +133,10 @@
     <!-- touWidget/render.jsp -->
     <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>
     <entry key="yukon.web.widgets.touWidget.notConfigured">Tou Widget not configured.</entry>
-    <entry key="yukon.web.widgets.touWidget.rateA">A</entry>
-    <entry key="yukon.web.widgets.touWidget.rateB">B</entry>
-    <entry key="yukon.web.widgets.touWidget.rateC">C</entry>
-    <entry key="yukon.web.widgets.touWidget.rateD">D</entry>
+    <entry key="yukon.web.widgets.touWidget.rateA">Rate A</entry>
+    <entry key="yukon.web.widgets.touWidget.rateB">Rate B</entry>
+    <entry key="yukon.web.widgets.touWidget.rateC">Rate C</entry>
+    <entry key="yukon.web.widgets.touWidget.rateD">Rate D</entry>
     <entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
     <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
     <entry key="yukon.web.widgets.touWidget.errorReading">There was an error reading the meter:</entry>

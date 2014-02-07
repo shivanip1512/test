@@ -161,7 +161,7 @@ jQuery(function() {
                 </div>
                 <div class="page-action-area">
                     <div class="fl">
-                        <cti:button id="rf-read-now" nameKey="readNow" busy="true"/>
+                        <cti:button id="rf-read-now" nameKey="readNow" busy="true" icon="icon-read"/>
                         <span id="rf-command-status" class="dn error"></span>
                     </div>
                 </div>

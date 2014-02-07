@@ -8,32 +8,32 @@
 <cti:standardPage title="Device Configuration Page" module="amr">
 <cti:standardMenu/>
 <cti:breadCrumbs>
-	<cti:crumbLink url="/dashboard" title="Home"  />
+    <cti:crumbLink url="/dashboard" title="Home"  />
     &gt; Device Configuration Home
 </cti:breadCrumbs>
 
-	<script type="text/javascript">
-	
-		function deleteConfig(){
-			var confirmDelete = confirm("Are you sure you want to delete this configuration?  You will not be able to recover this configuration after it is deleted.  All devices with this configuration will be changed to have no configuration assigned to them.  However, any configuration settings that have been downloaded to the meter will remain until a new configuration is assigned and downloaded.");
-			return confirmDelete;
-		}
-	
-	</script>
+<script type="text/javascript">
 
-	<c:set var="editConfig" scope="page">
+    function deleteConfig(){
+        var confirmDelete = confirm("Are you sure you want to delete this configuration?  You will not be able to recover this configuration after it is deleted.  All devices with this configuration will be changed to have no configuration assigned to them.  However, any configuration settings that have been downloaded to the meter will remain until a new configuration is assigned and downloaded.");
+        return confirmDelete;
+    }
+
+</script>
+
+    <c:set var="editConfig" scope="page">
         <cti:getProperty property="ADMIN_EDIT_CONFIG"/>
-	</c:set>
+    </c:set>
 
-	<h2>Device Configuration Setup</h2>
+    <h2>Device Configuration Setup</h2>
     <br>
-	
-	<c:if test="${!empty param.message}">
-		${fn:escapeXml(param.message)}
+    
+    <c:if test="${!empty param.message}">
+        ${fn:escapeXml(param.message)}
         <br>
         <br>
-	</c:if>
-	
+    </c:if>
+    
     <c:if test="${editConfig}">
         <form name="configTemplateForm" action="/deviceConfiguration">
             <tags:sectionContainer title="Create New Configuration">
@@ -41,7 +41,7 @@
                     <tags:nameValue name="Configuration Type">
                         <select name="configurationTemplate">
                             <c:forEach var="template" items="${configurationTemplateList}">
-                                <option id="${template}">${template}</option>	
+                                <option id="${template}">${template}</option>    
                             </c:forEach>
                         </select>
                     </tags:nameValue>
@@ -50,22 +50,22 @@
             <input type="submit" name="createConfig" value="Create" class="button"/>
         </form>
     </c:if>
-	
+    
     <br>
     <br>
-	
-	<c:choose>
-		<c:when test="${fn:length(existingConfigs) > 0}">
+    
+    <c:choose>
+        <c:when test="${fn:length(existingConfigs) > 0}">
             <form name="configForm" action="/deviceConfiguration">
                 <tags:sectionContainer title="${editConfig ? 'Manage' : 'View'} Existing Configurations">
                     <tags:nameValueContainer style="width: 380px;">
                         <tags:nameValue name="Existing Configurations">
-            				<select id="configuration" name="configuration">
-            					<c:forEach var="config" items="${existingConfigs}">
-            						<option value="${config.id}">${fn:escapeXml(config.name)}</option>	
-            					</c:forEach>
-            				</select>
-    				    </tags:nameValue>
+                            <select id="configuration" name="configuration">
+                                <c:forEach var="config" items="${existingConfigs}">
+                                    <option value="${config.id}">${fn:escapeXml(config.name)}</option>    
+                                </c:forEach>
+                            </select>
+                        </tags:nameValue>
                     </tags:nameValueContainer>
                     <br>
                     <a href="/bulk/deviceSelection">Manage Device Configuration Assignments</a>
@@ -75,13 +75,13 @@
                     <input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()" class="button"/>
                     <input type="submit" name="cloneConfig" value="Copy" class="button"/>
                 </c:if>
-			</form>
-		</c:when>
-		<c:otherwise>
+            </form>
+        </c:when>
+        <c:otherwise>
             <tags:sectionContainer title="${editConfig ? 'Manage' : 'View'} Existing Configurations">
                 There are no existing configurations.
             </tags:sectionContainer>
-		</c:otherwise>
-	</c:choose>
-	
+        </c:otherwise>
+    </c:choose>
+    
 </cti:standardPage>

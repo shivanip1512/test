@@ -1,8 +1,6 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="jqGrid" tagdir="/WEB-INF/tags/jqGrid" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:url var="dataUrl" value="/widget/rfnOutagesWidget/outageData"><cti:param name="deviceId" value="${deviceId}"/></cti:url>
 <script type="text/javascript">
@@ -27,8 +25,6 @@ jQuery(document).on('click', '#refreshLogs', loadOutageTable);
     </c:forEach>
 </tags:nameValueContainer2>
 
-<div id="${widgetParameters.widgetId}_results"></div>
-
-<br>
+<div id="${widgetParameters.widgetId}_results" class="stacked"></div>
 
 <div id="outageLog"></div>

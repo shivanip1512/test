@@ -74,13 +74,19 @@
                     <td class="remove-column">
                         <span id="disableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'DISABLED'
                                 || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                            <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}" 
-                                nameKey="enable" arguments="${jobWrapper.name}" icon="icon-disabled"/>
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           jobId="${jobWrapper.job.id}" 
+                                                           nameKey="enable"
+                                                           arguments="${jobWrapper.name}"
+                                                           icon="icon-disabled"/>
                         </span>
                         <span id="enableSpan_${jobWrapper.job.id}" <c:if test="${jobWrapper.jobStatus eq 'ENABLED'
                                 || jobWrapper.jobStatus eq 'RUNNING'}">style="display:none;"</c:if>>
-                            <tags:widgetActionRefreshImage method="toggleEnabled" jobId="${jobWrapper.job.id}" 
-                                nameKey="disable" arguments="${jobWrapper.name}" icon="icon-enabled"/>
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           jobId="${jobWrapper.job.id}" 
+                                                           nameKey="disable"
+                                                           arguments="${jobWrapper.name}"
+                                                           icon="icon-enabled"/>
                         </span>
                     </td>
                 </c:if>

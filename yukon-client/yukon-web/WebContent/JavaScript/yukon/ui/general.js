@@ -221,7 +221,7 @@ Yukon.modules.ui = function (mod) {
           originalText;
 
         if (btn.is("[data-busy]")) {
-            btn.attr('disabled', 'disabled');
+            btn.prop('disabled', true);
             btn.addClass('busy');
             // if this button has an icon hide it
             btn.children(".icon").hide();
@@ -244,7 +244,7 @@ Yukon.modules.ui = function (mod) {
         originalText;
 
         if (btn.is("[data-busy]")) {
-            btn.removeAttr('disabled');
+            btn.prop('disabled', false);
             btn.removeClass('busy');
             // if this button has an icon show it
             btn.children(".icon").show();
@@ -457,7 +457,11 @@ Yukon.modules.ui = function (mod) {
         html = jQuery('#f-page-actions')[0];
         if (typeof html !== 'undefined') {
             jQuery('#f-page-actions').remove();
-            jQuery('#b-page-actions .dropdown-menu').html(html.innerHTML);
+            var menu = jQuery('#b-page-actions .dropdown-menu');
+            menu.html(html.innerHTML);
+            if (menu.find('.icon').length === menu.find('.icon-blank').length) {
+                menu.addClass('no-icons');
+            }
             jQuery('#b-page-actions').show();
         }
 

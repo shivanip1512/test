@@ -1077,8 +1077,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-flag-gray{background-position: -560px -400px}
 .icon-read{background-position: -576px -400px}
 .icon-download{background-position: -592px -400px}
-.icon-cross-hollow{background-position: -608px -400px}
-.icon-tick-hollow{background-position: -624px -400px}
+.icon-ping{background-position: -608px -400px}
 
 /* 18 pixel icons, icon blocks are 20px by 20px since the stupid sprite builder would 
 not accept 0px as a valid offset */

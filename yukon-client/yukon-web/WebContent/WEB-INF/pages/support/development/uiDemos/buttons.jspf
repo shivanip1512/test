@@ -94,10 +94,10 @@
     </div>
     <div class="button-example section">
         <div class="clearfix">
-	        <cti:button nameKey="readNow" busy="true" icon="icon-bullet-go"/>
+	        <cti:button nameKey="readNow" busy="true" icon="icon-read"/>
             <span class="description">button that will disable after clicking with busy text and busy icon</span>
 	    </div>
-        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disable-after-click&quot; busy=&quot;true&quot; icon=&quot;icon-bullet-go&quot;/&gt;</pre>
+        <pre class="code prettyprint">&lt;cti:button nameKey=&quot;readNow&quot; classes=&quot;f-disable-after-click&quot; busy=&quot;true&quot; icon=&quot;icon-read&quot;/&gt;</pre>
     </div>
     <div class="button-example section">
         <div class="clearfix">

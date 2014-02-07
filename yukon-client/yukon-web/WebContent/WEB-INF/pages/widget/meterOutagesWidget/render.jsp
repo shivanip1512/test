@@ -52,5 +52,5 @@
     </div>
 </c:if>
 <div class="action-area">
-    <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
+    <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read" icon="icon-read"/>
 </div>

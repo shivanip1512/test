@@ -28,7 +28,7 @@ jQuery(function () {
             graphType="${graphType}"
             ymin="0"/>
 
-        <table class="compact-results-table trend-settings">
+        <table class="compact-results-table trend-settings no-stripes">
         
             <%-- ATTRIBUTES GRAPH TYPES --%>
             <tr>

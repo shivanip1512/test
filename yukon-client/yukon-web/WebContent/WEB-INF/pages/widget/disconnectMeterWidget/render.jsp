@@ -47,7 +47,7 @@
 
     <a href="javascript:void(0);" class="f-showDisconnectInfo fl"><i:inline key=".infoLink"/></a>
 
-	<tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read"/>
+    <tags:widgetActionRefresh hide="${!readable}" method="read" nameKey="read" icon="icon-read"/>
     
     <%-- INIT VISIBILITY OF BUTTONS --%>
     <c:set var="connectStyle" value="" />
@@ -62,23 +62,23 @@
     
     <%-- CONNECT/DISCONNECT BUTTONS --%>
     <span id="connectSpan" style="${connectStyle}">
-		<tags:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect" showConfirm="true"/>
+        <tags:widgetActionRefresh hide="${!controllable}" method="connect" nameKey="connect" showConfirm="true"/>
     </span>
     
     <span id="disconnectSpan" style="${disconnectStyle}">
-		<tags:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect" showConfirm="true"/>
+        <tags:widgetActionRefresh hide="${!controllable}" method="disconnect" nameKey="disconnect" showConfirm="true"/>
     </span>
 </div>
 <c:if test="${configString != ''}">
 <div style="max-height: 240px; overflow: auto">
     <cti:msg2 var="disconnectConfigSettings" key=".disconnectConfigSettings"/>
     <tags:hideReveal title="${disconnectConfigSettings}" showInitially="false">
-		${configString}
+        ${configString}
     </tags:hideReveal><br>
 </div>
 </c:if>
 <c:if test="${isRead}">
-	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
+    <c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
 </c:if>
 
 <%-- UPDATER WILL TOGGLE WHICH BUTTON IS DISPLAYED IF REMOTELY CONTROLED --%>

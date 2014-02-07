@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
@@ -26,9 +27,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
-/**
- * Widget used to display basic device information
- */
 @RequestMapping("/configWidget/*")
 public class ConfigWidget extends WidgetControllerBase {
 
@@ -37,16 +35,8 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
 
-    /**
-     * This method renders the default deviceGroupWidget
-     * 
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
     @Override
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         ModelAndView mav = getConfigModelAndView(request);
         
         return mav;
@@ -69,18 +59,13 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
 
-    /**
-     * @param request
-     * @return
-     * @throws ServletRequestBindingException
-     */
     private YukonDevice getYukonDevice(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         return deviceDao.getYukonDevice(deviceId);
     }
     
     @RequestMapping("assignConfig")
-    public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, InvalidDeviceTypeException {
         YukonDevice device = getYukonDevice(request);
         
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");

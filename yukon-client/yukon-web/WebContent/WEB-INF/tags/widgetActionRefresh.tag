@@ -1,8 +1,8 @@
 <%@ tag  dynamic-attributes="linkParameters" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ attribute name="arguments" %>
@@ -19,53 +19,40 @@
 <cti:default var="renderMode" value="button"/>
 
 <c:if test="${!pageScope.hide}">
-    <cti:uniqueIdentifier var="thisId" prefix="widgetAction_"/>
-    <cti:uniqueIdentifier var="uniqueId" prefix="widgetLinkId_"/>
+
     <cti:uniqueIdentifier var="buttonId" prefix="widgetRefreshButton_"/>
     
     <script type="text/javascript">
-        ${widgetParameters.jsWidget}.setupLink('${uniqueId}', ${cti:jsonString(pageScope.linkParameters)});
+        ${widgetParameters.jsWidget}.setupLink('${buttonId}', ${cti:jsonString(pageScope.linkParameters)});
     </script>
     
-    <span id="${thisId}">
-        <c:if test="${showConfirm}">
-            <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
-        </c:if>
-        
-        <%-- Prepending '.' and appending '.labelBusy' here to stay consistent with the xml key style of cti:button --%>
-        <cti:msg2 var="labelBusyText" key=".${nameKey}.labelBusy"/>
-        
-        <c:choose>
-            <c:when test="${type == 'button'}">
-                <c:if test="${not empty pageScope.icon}">
-                    <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}"/>
-                </c:if>
-                <c:if test="${empty icon}">
-                    <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}"/>
-                </c:if>
-            </c:when>
-            <c:otherwise>
-                <a id="${buttonId}" href="javascript:void(0);" classes="${pageScope.classes}"><i:inline key=".${nameKey}.label"/></a>
-            </c:otherwise>
-        </c:choose>
-        <script type="text/javascript">
-            jQuery('#' + '${buttonId}').on('click', function () {
-                var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
-                    confirmed = true;
-                if (confirmText !== null && jQuery.trim(confirmText) !== '') {
-                    confirmed = window.confirm(confirmText);
-                }
-                if (confirmed) {
-                    ${widgetParameters.jsWidget}.doActionRefresh({
-                        command:        '${method}', 
-                        buttonID:       '${thisId}', 
-                        waitingText:    '${labelBusyText}...',
-                        key:            '${uniqueId}'});
-                }
-            });
-        </script>
-        <span class="widgetAction_waiting" style="display:none">
-            <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>">
-        </span>
-    </span>
+    <c:if test="${showConfirm}">
+        <cti:msg2 var="confirmText" key=".${nameKey}.confirmText" arguments="${arguments}"/>
+    </c:if>
+    
+    <c:choose>
+        <c:when test="${type == 'button'}">
+            <c:if test="${not empty pageScope.icon}">
+                <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+            </c:if>
+            <c:if test="${empty icon}">
+                <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+            </c:if>
+        </c:when>
+        <c:otherwise>
+            <a id="${buttonId}" href="javascript:void(0);" classes="${pageScope.classes}"><i:inline key=".${nameKey}.label"/></a>
+        </c:otherwise>
+    </c:choose>
+    <script type="text/javascript">
+        jQuery('#' + '${buttonId}').on('click', function () {
+            var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
+                confirmed = true;
+            if (confirmText !== null && jQuery.trim(confirmText) !== '') {
+                confirmed = window.confirm(confirmText);
+            }
+            if (confirmed) {
+                ${widgetParameters.jsWidget}.doActionRefresh({command: '${method}', key: '${buttonId}'});
+            }
+        });
+    </script>
 </c:if>

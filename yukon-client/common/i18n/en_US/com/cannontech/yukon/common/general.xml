@@ -164,4 +164,5 @@
 <entry key="yukon.common.collapseAll">Collapse All</entry>
 
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
+<entry key="yukon.common.operationSuccess">Operation Successful</entry>
 </properties>

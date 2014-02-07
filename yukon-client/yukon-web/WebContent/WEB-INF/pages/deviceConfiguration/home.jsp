@@ -73,25 +73,15 @@ function showSelectedDevices(divId, url) {
                                             <div title="${popupTitle}" id="${id}" class="dn"></div>
                                             
                                             <cm:dropdown icon="icon-cog" containerCssClass="fr">
-                                                <li>
-                                                    <cti:url var="groupUrl" value="/group/editor/home">
-                                                        <cti:param name="groupName" value="/System/Device Configs/${config.name}"/>
-                                                    </cti:url>
-                                                    <a href="${groupUrl}" class="f-cc-create clearfix">
-                                                        <i class="icon icon-folder-magnify"></i>
-                                                        <span class="fl dib"><i:inline key=".deviceGroup"/></span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <cti:url var="collectionsUrl" value="/bulk/collectionActions">
-                                                        <cti:param name="collectionType" value="group"/>
-                                                        <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
-                                                    </cti:url>
-                                                    <a href="${collectionsUrl}" class="clearfix">
-                                                        <i class="icon icon-cog"></i>
-                                                        <span class="fl dib"><i:inline key=".collectionAction"/></span>
-                                                    </a>
-                                                </li>
+                                                <cti:url var="groupUrl" value="/group/editor/home">
+                                                    <cti:param name="groupName" value="/System/Device Configs/${config.name}"/>
+                                                </cti:url>
+                                                <cm:dropdownOption icon="icon-folder-magnify" href="${groupUrl}" key=".deviceGroup"/>
+                                                <cti:url var="collectionsUrl" value="/bulk/collectionActions">
+                                                    <cti:param name="collectionType" value="group"/>
+                                                    <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
+                                                </cti:url>
+                                                <cm:dropdownOption icon="icon-cog" href="${collectionsUrl}" key=".collectionAction"/>
                                             </cm:dropdown>
                                         </td>
                                     </tr>

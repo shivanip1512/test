@@ -13,7 +13,7 @@
 <entry key="yukon.web.widgets.accountInformationWidget">CIS Information</entry>
 <entry key="yukon.web.widgets.cayentaAccountInformationWidget">CIS Information (Cayenta)</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget">Device Groups</entry>
-<entry key="yukon.web.widgets.touWidget">TOU</entry>
+<entry key="yukon.web.widgets.touWidget">Time of Use</entry>
 <entry key="yukon.web.widgets.configWidget">Device Configuration</entry>
 <entry key="yukon.web.widgets.disconnectMeterWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget">Disconnect</entry>

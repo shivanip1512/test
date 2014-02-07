@@ -7,7 +7,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty tamperFlagMonitorsWidgetError}">
-  	<div class="error">${tamperFlagMonitorsWidgetError}</div>
+      <div class="error">${tamperFlagMonitorsWidgetError}</div>
 </c:if>
 
 <%-- TABLE --%>
@@ -20,70 +20,78 @@
 
 <table class="compact-results-table">
     <thead>
-    	<tr>
-    		<th style="width:20px;">&nbsp;</th>
-    		<th><i:inline key=".tableHeader.name"/></th>
-    		<th style="text-align:right;"><i:inline key=".tableHeader.violations"/></th>
-    		<th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
-    		<th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
-    	</tr>
+        <tr>
+            <th style="width:20px;">&nbsp;</th>
+            <th><i:inline key=".tableHeader.name"/></th>
+            <th style="text-align:right;"><i:inline key=".tableHeader.violations"/></th>
+            <th style="text-align:right;"><i:inline key=".tableHeader.monitoring"/></th>
+            <th style="text-align:right;width:80px;"><i:inline key=".tableHeader.enabled"/></th>
+        </tr>
     </thead>
     <tfoot></tfoot>
     <tbody>
 
-    	<c:forEach var="monitor" items="${monitors}">
-    	
-    		<c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
-    		<c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
+        <c:forEach var="monitor" items="${monitors}">
+        
+            <c:set var="monitorId" value="${monitor.tamperFlagMonitorId}"/>
+            <c:set var="monitorName" value="${monitor.tamperFlagMonitorName}"/>
     
-    		<c:set var="tdClass" value=""/>
-    		<c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
-    			<c:set var="tdClass" value="subtle"/>
-    		</c:if>
-    		
-    		<tr>
-    			
-    			<cti:url var="viewTamperFlagProcessingUrl" value="/amr/tamperFlagProcessing/process/process">
-    				<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
-    			</cti:url>
-    				
-    			<%-- action icons --%>
-    			<td>
+            <c:set var="tdClass" value=""/>
+            <c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
+                <c:set var="tdClass" value="subtle"/>
+            </c:if>
+            
+            <tr>
+                
+                <cti:url var="viewTamperFlagProcessingUrl" value="/amr/tamperFlagProcessing/process/process">
+                    <cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
+                </cti:url>
+                    
+                <%-- action icons --%>
+                <td>
                         <cti:button nameKey="edit" renderMode="image" href="${viewTamperFlagProcessingUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
-    			</td>
-    			
-    			<%-- monitor name --%>
-    			<td class="${tdClass}">
-    				<a href="${viewTamperFlagProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
-    			</td>
-    			
-    			<%-- violations count --%>
-    			<td class="${tdClass}" style="text-align:right;">
-    				<cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${monitorId}/VIOLATIONS_COUNT"/>
-    			</td>
-    			
-    			<%-- monitoring count --%>
-    			<td class="${tdClass}" style="text-align:right;">
-    				<cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
-    			</td>
-    			
-    			<%-- enable/disable --%>
-    			<td class="${tdClass}" style="text-align:right;">
-    				<c:choose>
-    					<c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-    						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}"
-                                                           nameKey="disable" arguments="${monitorName}" icon="icon-enabled" btnClass="fr"/>
-    					</c:when>
-    					<c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-    						<tags:widgetActionRefreshImage method="toggleEnabled" tamperFlagMonitorId="${monitorId}" 
-                                                           nameKey="enable" arguments="${monitorName}" icon="icon-disabled" btnClass="fr"/>
-    					</c:when>
-    				</c:choose>
-    			</td>
-    			
-    		</tr>
-    	
-    	</c:forEach>
+                </td>
+                
+                <%-- monitor name --%>
+                <td class="${tdClass}">
+                    <a href="${viewTamperFlagProcessingUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${monitorName}"/>">${fn:escapeXml(monitorName)}</a>
+                </td>
+                
+                <%-- violations count --%>
+                <td class="${tdClass}" style="text-align:right;">
+                    <cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${monitorId}/VIOLATIONS_COUNT"/>
+                </td>
+                
+                <%-- monitoring count --%>
+                <td class="${tdClass}" style="text-align:right;">
+                    <cti:dataUpdaterValue type="TAMPER_FLAG_PROCESSING" identifier="${monitorId}/MONITORING_COUNT"/>
+                </td>
+                
+                <%-- enable/disable --%>
+                <td class="${tdClass}" style="text-align:right;">
+                    <c:choose>
+                        <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           tamperFlagMonitorId="${monitorId}"
+                                                           nameKey="disable"
+                                                           arguments="${monitorName}"
+                                                           icon="icon-enabled"
+                                                           btnClass="fr"/>
+                        </c:when>
+                        <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           tamperFlagMonitorId="${monitorId}" 
+                                                           nameKey="enable"
+                                                           arguments="${monitorName}"
+                                                           icon="icon-disabled"
+                                                           btnClass="fr"/>
+                        </c:when>
+                    </c:choose>
+                </td>
+                
+            </tr>
+        
+        </c:forEach>
     </tbody>
 
 </table>

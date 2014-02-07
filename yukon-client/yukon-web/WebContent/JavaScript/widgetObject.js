@@ -1,13 +1,16 @@
-// TODO: Update the rest of this file to use jQuery
-// Currently the only jQuery in here are the .ajax calls (except for doPeriodicRefresh)
-
+/**
+ * Object to create and operator a widget
+ */
 function JsWidgetObject (shortName, parameters) {
-    // Don't use $() up here because this is called before page is fully loaded
+    
     this.shortName = shortName;
     this.parameters = parameters;
     this.container = "widget-container-" + this.parameters.widgetId;
     this.linkInfo = {};
 
+    /**
+     * Render the widget
+     */
     this.render = function () {
         var url = "/widget/" + this.shortName + "/render",
            params = this.getWidgetParameters(),
@@ -34,6 +37,19 @@ function JsWidgetObject (shortName, parameters) {
         this.linkInfo = {};
     };
 
+    /**
+     * Private function to start periodic reloading of the widget.
+     * 
+     * opts - json representing the options 
+     * {
+     *    url - the url of the ajax request
+     *    params - the parameters of the ajax request
+     *    container - the container to load the returned html into
+     *    frequency - the number of seconds to wait between reloads
+     * }
+     * 
+     * context - the widget object making the call
+     */
     this.periodicRefresh = function (opts, context) {
         var timeoutId = 0,
             doRefresh = function () {
@@ -61,7 +77,7 @@ function JsWidgetObject (shortName, parameters) {
             doRefresh();
             return this;
         };
-        doRefresh ();
+        doRefresh();
         return this;
     };
 
@@ -83,21 +99,11 @@ function JsWidgetObject (shortName, parameters) {
         });
     };
 
-  /**
-   * args = {
-   *    command = string final path for the url
-   *    buttonID = string containing the ID of the button
-   *    waitingText = text that will be placed on the button while the ajax call is in progress
-   *    key = 
-   * }
-   */
     this.doActionRefresh = function (args) {
-        var defaultButtonText = jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(),
-            container = this.container,
+        
+        var container = this.container,
             _self = this,
             localSuccess = function (xhr) {
-                jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(defaultButtonText);
-                jQuery('#' + args.buttonID + ' .widgetAction_waiting').hide();
                 if (args.disableInputs == null || args.disableInputs == true) {
                     jQuery('#' + container + ' input').prop('disabled', false);
                     jQuery('#' + container + ' button').prop('disabled', false);
@@ -106,8 +112,7 @@ function JsWidgetObject (shortName, parameters) {
             },
             oldParams,
             url;
-        jQuery(jQuery('#' + args.buttonID + ' span')[0]).html(args.waitingText);
-        jQuery('#' + args.buttonID + ' .widgetAction_waiting').show();
+            
         if (args.disableInputs == null || args.disableInputs == true) {
             jQuery('#' + 'container' + ' input').prop('disabled', true);
             jQuery('#' + 'container' + ' button').prop('disabled', true);
@@ -120,60 +125,31 @@ function JsWidgetObject (shortName, parameters) {
         jQuery.ajax({
             url : url,
             data : oldParams
-        }).done( function (data, status, xhr) {
+        }).done(function (data, status, xhr) {
             localSuccess(xhr);
             jQuery(document.getElementById(_self.container)).html(data);
         });
     };
 
-  /**
-   * args = {
-   *    command = string final path for the url
-   *    containerID = string containing the ID of the container
-   *    buttonID = string containing the ID of the button
-   *    waitingText = text that will be placed on the button while the ajax call is in progress
-   *    key = 
-   * }
-   */
+    /**
+     * Performs the action for the given command and loads the resulting 
+     * html into the provided container.
+     */
     this.doActionUpdate = function (args) {
-        var waitingTextLocationSpecified = typeof args.waitingTextLocation !== 'undefined',
-            defaultButtonText,
-            container = this.container,
-            updateButton = function () {
-                if (waitingTextLocationSpecified) {
-                    jQuery(args.waitingTextLocation).hide();
-                } else {
-                    jQuery('#' + args.buttonID).find('span').text(defaultButtonText);
-                }
-                jQuery('#' + args.buttonID).find('.widgetAction_waiting').hide();
-                jQuery('#' + container).find('button').prop('disabled', false);
-            },
-            oldParams,
-            url;
-        if (args.buttonID) {
-            if (waitingTextLocationSpecified) {
-                jQuery(args.waitingTextLocation).text(args.waitingText);
-                jQuery(args.waitingTextLocation).show();
-            } else {
-                defaultButtonText = jQuery('#' + args.buttonID).find('span').text();
-                jQuery('#' + args.buttonID).find('span').text(args.waitingText);
-            }
-            jQuery('#' + args.buttonID).find('.widgetAction_waiting').show();
-            jQuery('#' + container).find('button').prop('disabled', true);
-        }
-
-        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters);
-
-        url = "/widget/" + this.shortName + "/" + args.command;
+        
+        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters),
+            url = "/widget/" + this.shortName + "/" + args.command,
+            buttonId = args.key; // key happeneds to be the button's id as well so lets just use it.
 
         jQuery.ajax({
             url : url,
-            data : oldParams,
-            success : function (data) {
-                if (args.buttonID) {
-                    updateButton();
-                }
-                jQuery(document.getElementById(args.containerID)).html(data);
+            data : oldParams
+        }).done(function (data) {
+            jQuery(document.getElementById(args.containerID)).html(data);
+        }).always(function() {
+            var button = jQuery('#' + buttonId);
+            if (button.length > 0) { // if the cotainer included the button, it won't be there anymore
+                Yukon.ui.unbusy(button);
             }
         });
     };
@@ -184,37 +160,6 @@ function JsWidgetObject (shortName, parameters) {
 
     this.setupLink = function (key, jsonData) {
         this.linkInfo[key] = jsonData;
-    };
-
-    this.doActionLinkRefresh = function (cmd, actionSpan, waitingLabel, key, container) {
-        var oldParams,
-            url,
-            useContainer,
-            _self = this;
-        jQuery('#' + actionSpan + ' .actionLinkAnchor').hide();
-        jQuery('#' + actionSpan + ' .widgetAction_waiting').show();
-        jQuery('#' + actionSpan + ' span').html(waitingLabel);
-        jQuery('#' + this.container + ' input').prop('disabled', true);
-
-        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
-
-        url = "/widget/" + this.shortName + "/" + cmd;
-
-        useContainer = container;
-        if (typeof container === 'undefined' || container === '') {
-            useContainer = this.container;
-        }
-
-        jQuery.ajax({
-            url : url,
-            data : oldParams
-        }).done( function (data, status, xhr) {
-            _self.onSuccess(xhr);
-            jQuery(document.getElementById(useContainer)).html(data);
-        }).always( function () {
-                jQuery("#" + actionSpan + " .actionLinkAnchor").show();
-        });
-        jQuery('#' + this.container + ' input').prop('disabled', false);
     };
 
     this.doPeriodicRefresh = function (cmd, newParams, period, container) {

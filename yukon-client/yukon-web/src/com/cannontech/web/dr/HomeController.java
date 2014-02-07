@@ -18,7 +18,6 @@ import com.cannontech.common.userpage.dao.UserPageDao;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -88,10 +87,9 @@ public class HomeController {
         model.addAttribute("recents", recentlyViewed);
         
         /* RF BROADCAST PERMORMANCE */
-        boolean rfPerformance = rolePropertyDao.checkRole(YukonRole.LM_DIRECT_LOADCONTROL, user)
-                && globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class)
-                    == PreferenceOnOff.ON;
-        if (rfPerformance) {
+        PreferenceOnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
+        if (rfPerformance == PreferenceOnOff.ON) {
+            
             LocalTime testSchedule = new LocalTime(5, 0);
             Instant now = new Instant();
             Range<Instant> lastTestRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
@@ -108,7 +106,6 @@ public class HomeController {
             model.addAttribute("last7Days", last7Days);
             model.addAttribute("last30Days", last30Days);
         }
-        model.addAttribute("showRfPerformance", rfPerformance);
 
         return "dr/home.jsp";
     }

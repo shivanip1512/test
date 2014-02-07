@@ -3,16 +3,25 @@
  */
 jQuery(function() {
     
-    jQuery(document).on("click", ".dropdown-container", function(e) {
-        var target,
-            menu;
-        jQuery(".dropdown-container").removeClass("menu-open");
-        target = jQuery(this);
+    /** Handle clicks on menu triggers */
+    jQuery(document).on('click', '.dropdown-container', function(e) {
+        
+        jQuery('.dropdown-container').removeClass('menu-open');
+        
+        var target = jQuery(this),
+            menu = target.find('.dropdown-menu');
+        
+        /** Get menu, do the body prepending at this point since the menu may
+         * have been ajaxed in. */
+        if (menu[0]) { // The menu hasn't been moved to the body yet
+            target.data({'menu': menu});
+            jQuery('body').prepend(menu); // prepend will move, not clone
+        } else { // The menu has been opened once already
+            menu = target.data('menu');
+        }
 
-        menu = target.data('menu');
-
-        if (menu.is(":visible")) {
-            jQuery("ul.dropdown-menu").hide();
+        if (menu.is(':visible')) {
+            jQuery('ul.dropdown-menu').hide();
             /*
              * We want to propagate the click event if it was on a link.
              * The target may have been an icon inside that link, 
@@ -24,8 +33,8 @@ jQuery(function() {
             return false;
         }
 
-        jQuery("ul.dropdown-menu").hide();
-        if (target.closest(".dropdown-container").hasClass("ajax-menu")) {
+        jQuery('ul.dropdown-menu').hide();
+        if (target.closest('.dropdown-container').hasClass('ajax-menu')) {
             ajaxMenuOpen(target, e);
             return false;
         }
@@ -43,9 +52,9 @@ jQuery(function() {
             offset = container.offset(),
             width = menu.width();
         
-        container.addClass("menu-open");
+        container.addClass('menu-open');
 
-        menu.removeAttr("style");
+        menu.removeAttr('style');
         menu.css({top: offset.top + container.height() + 2, right: (jQuery(window).width() - offset.left - container.width())});
 
         menu.toggle();
@@ -57,17 +66,20 @@ jQuery(function() {
         }
     }
     
+    /**
+     * Retrieve a menu via ajax and open it.
+     */
     function ajaxMenuOpen(target, e) {
         var menu = target.data('menu'),
             params;
         if (typeof(target.data('menu_items')) !== 'undefined') {
             menu.toggle();
-            target.addClass("menu-open");
+            target.addClass('menu-open');
         } else {
-            target.find(".icon-cog").removeClass("icon-cog").addClass("icon-spinner");
+            target.find('.icon-cog').removeClass('icon-cog').addClass('icon-spinner');
             params = {};
-            target.closest(".dropdown-container").prev(".params").find("input").each(function() {
-                params[jQuery(this).attr("name")] = jQuery(this).val();
+            target.closest('.dropdown-container').prev('.params').find('input').each(function() {
+                params[jQuery(this).attr('name')] = jQuery(this).val();
             });
             jQuery.ajax({
                 url: '/contextualMenu/list',
@@ -81,30 +93,38 @@ jQuery(function() {
                     if (data[i].divider === true) {
                         list_item = '<li class="divider"></li>';
                     } else {
-                        list_item = "<li><a href='" + data[i].url + "'>" + data[i].text + "</a></li>";
+                        list_item = '<li><a href="' + data[i].url + '">' + data[i].text + '</a></li>';
                     }
                     items.push(list_item);
                 }
                 target.data({'menu_items': true});
                 menu.append(items.join(''));
-                target.find(".icon-spinner").removeClass("icon-spinner").addClass("icon-cog");
+                target.find('.icon-spinner').removeClass('icon-spinner').addClass('icon-cog');
                 positionDropdownMenu(menu, target);
             });
         }
         return false;
     }
     
-    /* close on document click */
+    /** Close all menus if clicking somewhere off the menu */
     jQuery(document).click(function(e) {
         /* click was not inside the dropdown menu, hide it. */
         if (jQuery(e.target).closest('.dropdown-menu').length === 0) {
             jQuery('ul.dropdown-menu').hide();
-            jQuery(".dropdown-container").removeClass("menu-open");
+            jQuery('.dropdown-container').removeClass('menu-open');
         }
     });
     
-    /* update text for criteria buttons */
-    jQuery(document).on("click", ".criteria-menu .criteria-option", function(e) {
+    /** Close all menus when esc key is hit */
+    jQuery(document).keyup(function(e) {
+        if (e.which == 27) { // esc
+            jQuery('ul.dropdown-menu').hide();
+            jQuery('.dropdown-container').removeClass('menu-open');
+        }
+    });
+    
+    /** Handle option selections for criteria buttons */
+    jQuery(document).on('click', '.criteria-menu .criteria-option', function(e) {
         
         var option = jQuery(e.target),
             menu = option.closest('.criteria-menu');
@@ -115,6 +135,7 @@ jQuery(function() {
         return false;
     });
     
+    /** Update a criteria button's text */
     function updateCriteriaButton(menu) {
         var button = menu.prev(),
             allOptions = menu.find('.criteria-option input'),
@@ -136,20 +157,10 @@ jQuery(function() {
         }
     }
     
-    /* close on escape key */
-    jQuery(document).keyup(function(e) {
-        if (e.which == 27) { // esc
-            jQuery('ul.dropdown-menu').hide();
-            jQuery(".dropdown-container").removeClass("menu-open");
-        }
-    });
-    
+    /** Update criteria buttons on page load */
     jQuery('.dropdown-container').each(function(idx, container) {
         var container = jQuery(container),
             menu = container.find('.dropdown-menu');
-        
-        container.data('menu', menu);
-        jQuery('body').prepend(menu); // prepend will move...not clone
         
         if (menu.is('.criteria-menu')) {
             updateCriteriaButton(menu);

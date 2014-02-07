@@ -125,42 +125,42 @@
                         
                         <%-- FAILURES --%>
                         <td>
-                        	<table>
+                            <table>
                                 <tr>
-                          		<td>
-                          			<c:choose>
-                          			<%-- FAILURE COUNT --%>
-                          			<c:when test="${not callbackResult.failureDevicesSupported}">
-  	                                	<td>
-  	                                	<div style="font-size:12px;padding-right:20px;">
-  	                                		<cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
-  										</div>
-  										</td>
-  	                                </c:when>
-  	                                
-  	                                <%-- FAILURE COUNT/DEVICE COLLECTION --%>
-  	                                <c:otherwise>
-  	                                	<td>
-      	                                    <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${resultsId}"/>
-      	                                    <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
-      	                                    <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
-      	                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/bulk/collectionActions">
+                                  <td>
+                                      <c:choose>
+                                      <%-- FAILURE COUNT --%>
+                                      <c:when test="${not callbackResult.failureDevicesSupported}">
+                                          <td>
+                                          <div style="font-size:12px;padding-right:20px;">
+                                              <cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/>
+                                          </div>
+                                          </td>
+                                      </c:when>
+                                      
+                                      <%-- FAILURE COUNT/DEVICE COLLECTION --%>
+                                      <c:otherwise>
+                                          <td>
+                                              <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${resultsId}"/>
+                                              <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BACKGROUNDPROCESS" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
+                                              <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" />
+                                              <form id="${processingExceptionCollectionActionFormName}" method="post" action="/bulk/collectionActions">
                                             <cti:csrfToken/>
-      	                                        <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
-      	                                    </form>
-  	                                    </td>
-  	                                </c:otherwise>
-  	                            	</c:choose>
-                          		</td>
+                                                  <cti:deviceCollection deviceCollection="${callbackResult.failureDeviceCollection}" />
+                                              </form>
+                                          </td>
+                                      </c:otherwise>
+                                      </c:choose>
+                                  </td>
                           
-                          		<%-- FAILURE FILE DOWNLOAD --%>
-                              	<td>
-                              		<c:if test="${callbackResult.failureFileSupported}">
-                                 	   <tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="false" />
-                             		</c:if>
+                                  <%-- FAILURE FILE DOWNLOAD --%>
+                                  <td>
+                                      <c:if test="${callbackResult.failureFileSupported}">
+                                        <tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="false" />
+                                     </c:if>
                                 </td>
-                             	</tr>
-                           	</table>
+                                 </tr>
+                               </table>
                             
                         </td>
                         
@@ -170,10 +170,10 @@
                             <div></div>
                         </td>
                         <td>
-                        	<c:if test="${displayableResult.bulkFieldColumnHeaders != null}">
-	                            <c:forEach var="field" items="${displayableResult.bulkFieldColumnHeaders}" varStatus="fieldStatus">
-	                                ${field}<c:if test="${fieldStatus.count < fn:length(displayableResult.bulkFieldColumnHeaders)}">,</c:if>
-	                            </c:forEach>
+                            <c:if test="${displayableResult.bulkFieldColumnHeaders != null}">
+                                <c:forEach var="field" items="${displayableResult.bulkFieldColumnHeaders}" varStatus="fieldStatus">
+                                    ${field}<c:if test="${fieldStatus.count < fn:length(displayableResult.bulkFieldColumnHeaders)}">,</c:if>
+                                </c:forEach>
                             </c:if>
                         </td>
                         
@@ -210,7 +210,7 @@
     </c:if>
 <script type="text/javascript">
 function submitForm(id) {
-  document.getElementById().submit();
+  document.getElementById(id).submit();
 }
 function hideShowErrorList(id) {
   var elem = jQuery('#' + id);

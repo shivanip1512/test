@@ -67,12 +67,20 @@
                 <td class="${tdClass}" style="text-align:right;">
                     <c:choose>
                         <c:when test="${monitor.evaluatorStatus eq 'ENABLED'}">
-                            <tags:widgetActionRefreshImage  method="toggleEnabled" validationMonitorId="${monitorId}" btnClass="fr"
-                                                            nameKey="disable" arguments="${monitorName}" icon="icon-enabled"/>
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           validationMonitorId="${monitorId}"
+                                                           btnClass="fr"
+                                                           nameKey="disable"
+                                                           arguments="${monitorName}"
+                                                           icon="icon-enabled"/>
                         </c:when>
                         <c:when test="${monitor.evaluatorStatus eq 'DISABLED'}">
-                            <tags:widgetActionRefreshImage method="toggleEnabled" validationMonitorId="${monitorId}" btnClass="fr"
-                                                           nameKey="enable" arguments="${monitorName}" icon="icon-disabled"/>
+                            <tags:widgetActionRefreshImage method="toggleEnabled"
+                                                           validationMonitorId="${monitorId}"
+                                                           btnClass="fr"
+                                                           nameKey="enable"
+                                                           arguments="${monitorName}"
+                                                           icon="icon-disabled"/>
                         </c:when>
                     </c:choose>
                 </td>
