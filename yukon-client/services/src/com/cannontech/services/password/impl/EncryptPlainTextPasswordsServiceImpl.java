@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ import com.cannontech.services.password.EncryptPlainTextPasswordsService;
 public class EncryptPlainTextPasswordsServiceImpl implements EncryptPlainTextPasswordsService {
     private final static Logger log = YukonLogManager.getLogger(EncryptPlainTextPasswordsServiceImpl.class);
 
-    @Autowired private PasswordEncrypter encrypter;
+    @Autowired private @Qualifier("scryptAuthentication") PasswordEncrypter encrypter;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private AuthenticationService authenticationService;

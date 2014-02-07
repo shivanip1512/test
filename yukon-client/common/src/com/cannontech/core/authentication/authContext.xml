@@ -22,6 +22,7 @@
           <entry key="NONE" value-ref="nullAuthentication"/>
           <entry key="AD" value-ref="ADAuthentication"/>
           <entry key="LDAP" value-ref="ldapAuthentication"/>
+          <entry key="SCRYPT" value-ref="scryptAuthentication"/>
         </map>
       </property>
     </bean>
@@ -36,6 +37,8 @@
 
     <bean id="localShaV2Authentication"
         class="com.cannontech.core.authentication.service.impl.LocalHashV2AuthenticationService"/>
+        
+    <bean id="scryptAuthentication" class="com.cannontech.core.authentication.service.impl.ScryptAuthenticationService"/>
 
     <bean id="simpleMD5Hasher" class="com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher">
         <constructor-arg value="MD5"/>

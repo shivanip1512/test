@@ -11,6 +11,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum AuthType implements DisplayableEnum {
     HASH_SHA,
     HASH_SHA_V2,
+    SCRYPT,
     RADIUS,
     NONE,
     AD,

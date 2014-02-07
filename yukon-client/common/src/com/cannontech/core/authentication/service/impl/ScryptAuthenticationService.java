@@ -1,0 +1,115 @@
+package com.cannontech.core.authentication.service.impl;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+
+import org.bouncycastle.crypto.generators.SCrypt;
+import org.bouncycastle.util.encoders.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
+import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationProvider;
+import com.cannontech.core.authentication.service.PasswordEncrypter;
+import com.cannontech.core.authentication.service.PasswordSetProvider;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
+public class ScryptAuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
+    @Autowired
+    protected YukonUserPasswordDao yukonUserPasswordDao;
+    private static final int derivedKeyLength = 32;
+    /**
+     * Default encryption values.Changing below these parameter values will make different hashing
+     * password.So please do not change these values unless it is necessary
+     */
+    private static final int cpuCostParam = 16384;
+    private static final int memoryCostParam = 8;
+    private static final int parallelParam = 1;
+
+    @Override
+    public void setPassword(LiteYukonUser user, String newPassword) {
+        String digest = encryptPassword(newPassword, cpuCostParam, memoryCostParam, parallelParam);
+        yukonUserPasswordDao.setPassword(user, AuthType.SCRYPT, digest);
+    }
+
+    @Override
+    public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousDigest) {
+        boolean methodCheck = false;
+        return checkPassword(previousDigest, newPassword, yukonUser, methodCheck);
+    }
+
+    @Override
+    public boolean login(LiteYukonUser user, String password) {
+        boolean methodCheck = true;
+        String digest = yukonUserPasswordDao.getDigest(user);
+        return checkPassword(digest, password, user, methodCheck);
+    }
+
+    @Override
+    public String encryptPassword(String password) {
+        return encryptPassword(password, cpuCostParam, memoryCostParam, parallelParam);
+
+    }
+
+    /**
+     * This method encrypt the password based upon the scrypt parameters
+     * The Format of hashing password is $cpuCostParam$memoryCostParam$parallelParam$SALT$KEY
+     * SALT and KEY are base64-encoded.
+     * Returns the String depends upon the password.
+     * @throws IllegalStateException
+     */
+    private static String encryptPassword(String password, int cpuCostParam, int memoryCostParam, int parallelParam) {
+        try {
+            byte[] salt = new byte[16];
+            SecureRandom.getInstance("SHA1PRNG").nextBytes(salt);
+            byte[] fullHashedPasswordString =
+                SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
+                                derivedKeyLength);
+            StringBuilder sb = new StringBuilder((salt.length + fullHashedPasswordString.length) * 2);
+            sb.append("$").append(cpuCostParam).append("$").append(memoryCostParam).append("$").append(parallelParam);
+            sb.append("$").append(new String(Base64.encode(salt))).append('$');
+            sb.append(new String(Base64.encode(fullHashedPasswordString)));
+            return sb.toString();
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException("The Character Encoding is not supported");
+        }
+    }
+
+    /**
+     * This method check if the user is logged into the application with correct password and auto
+     * update the database if there is any change in scrypt parameters.
+     * Returns the boolean check depends upon the stored password.
+     * @throws IllegalStateException
+     */
+    private boolean checkPassword(String digest, String password, LiteYukonUser user, boolean methodCheck) {
+        boolean loginCheck = false;
+        String[] digestParts = digest.split("\\$");
+        int storedCpuCostParam = Integer.parseInt(digestParts[1]);
+        int storedMemoryCostParam = Integer.parseInt(digestParts[2]);
+        int storedParallelParam = Integer.parseInt(digestParts[3]);
+        byte[] salt = Base64.decode(digestParts[4]);
+        byte[] fullStoredHashedPasswordString = Base64.decode(digestParts[5]);
+        try {
+            if (cpuCostParam == storedCpuCostParam && memoryCostParam == storedMemoryCostParam
+                && parallelParam == storedParallelParam) {
+                byte[] fullHashedPasswordString =
+                    SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
+                                    derivedKeyLength);
+                loginCheck = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
+            } else {
+                byte[] fullHashedPasswordString =
+                    SCrypt.generate(password.getBytes("UTF-8"), salt, storedCpuCostParam, storedMemoryCostParam,
+                                    storedParallelParam, derivedKeyLength);
+                loginCheck = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
+                if (loginCheck && methodCheck) {
+                    setPassword(user, password);
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("JVM Doest not support UTF-8 ?");
+        }
+        return loginCheck;
+    }
+}

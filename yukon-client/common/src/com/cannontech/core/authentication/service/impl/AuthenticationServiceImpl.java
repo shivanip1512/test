@@ -66,6 +66,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException,
             PasswordExpiredException {
+        boolean authUpdateCheck = false;
+        boolean UserLoginCheck = false;
         // see if login attempt allowed and track the attempt
         authenticationThrottleService.loginAttempted(username);
 
@@ -82,9 +84,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ", status=" + user.getLoginStatus());
             throw new BadAuthenticationException();
         }
-
+        
         UserAuthenticationInfo authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
         AuthType authType = authenticationInfo.getAuthType();
+        AuthType supportingAuthType = AuthenticationCategory.ENCRYPTED.getSupportingAuthType();
         if (authType == AuthType.PLAIN) {
             // This is an old plain text password.   Service manager will eventually encrypt this if we leave it
             // alone unless someone updated the database manually like this (which we want to support):
@@ -92,14 +95,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             encryptPlainTextPassword(user);
             authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
             authType = authenticationInfo.getAuthType();
+        } else if (authType != supportingAuthType) {
+            authUpdateCheck = compareHistoricPassword(user, password, authType);
+            if (!authUpdateCheck) {
+                log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
+                throw new BadAuthenticationException();
+            }
         }
-        AuthenticationProvider provider = providerMap.get(authType);
+        AuthenticationProvider provider = providerMap.get(supportingAuthType);
         if (provider == null) {
-            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + authType);
+            throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + supportingAuthType);
+        }
+        if (authUpdateCheck) {
+            PasswordEncrypter passwordEncrypter = (PasswordEncrypter) providerMap.get(supportingAuthType);
+            String newDigest = passwordEncrypter.encryptPassword(password);
+            yukonUserPasswordDao.setPassword(user, supportingAuthType, newDigest);
+        } else {
+            UserLoginCheck = provider.login(user, password);
         }
 
         // Attempt login; remove throttle if login successful.
-        if (provider.login(user, password)) {
+        if (UserLoginCheck || authUpdateCheck) {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
             
@@ -107,10 +123,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             boolean passwordExpired = isPasswordExpired(user);
             if (passwordExpired) {
                 throw new PasswordExpiredException("The user's password is expired.  Please login to the web " +
-                		"interface to reset it. (" + user.getUsername() + ")" );
+                        "interface to reset it. (" + user.getUsername() + ")" );
             }
 
-            return user;
+           return user;
         } else {
             // login must have failed
             log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
@@ -229,7 +245,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthType encryptedAuthType = AuthenticationCategory.ENCRYPTED.getSupportingAuthType();
         PasswordEncrypter provider = (PasswordEncrypter) providerMap.get(encryptedAuthType);
         String newDigest = provider.encryptPassword(password);
-        yukonUserPasswordDao.setPasswordWithoutHistory(user, AuthType.HASH_SHA_V2, newDigest);
+        yukonUserPasswordDao.setPasswordWithoutHistory(user,encryptedAuthType, newDigest);
+    }
+    
+    public boolean compareHistoricPassword(LiteYukonUser yukonUser, String password, AuthType historicAuthType) {
+        String storePassword = yukonUserPasswordDao.getDigest(yukonUser);
+        PasswordSetProvider historicProvider = (PasswordSetProvider) providerMap.get(historicAuthType);
+        return historicProvider.comparePassword(yukonUser, password, storePassword);
     }
 
     @Override

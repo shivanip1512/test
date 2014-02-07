@@ -188,6 +188,11 @@ ALTER TABLE DynamicLcrCommunications
       REFERENCES YukonPAObject (PAObjectID)
       ON DELETE CASCADE;
 /* End YUK-12961 */
+      
+/* Start YUK-12506 */      
+ALTER TABLE Yukonuser
+ALTER COLUMN Password NVARCHAR(128) NOT NULL;
+/* Start YUK-12506 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  */
 public enum AuthenticationCategory implements DisplayableEnum {
     AD(AuthType.AD),
-    ENCRYPTED(AuthType.HASH_SHA_V2, AuthType.HASH_SHA),
+    ENCRYPTED(AuthType.SCRYPT,AuthType.HASH_SHA_V2, AuthType.HASH_SHA),
     LDAP(AuthType.LDAP),
     RADIUS(AuthType.RADIUS),
 
