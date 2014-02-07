@@ -7,7 +7,7 @@
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="consumer" page="completecontrolhistory">
-
+    <cti:standardMenu />
     <c:set var="controls">    
         <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
         <select onchange="updateControlEvents(this.options[this.options.selectedIndex].value)">

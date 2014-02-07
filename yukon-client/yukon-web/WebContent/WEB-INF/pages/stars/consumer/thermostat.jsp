@@ -87,23 +87,21 @@
             <cti:msg key="yukon.web.modules.consumer.thermostat.runProgramText" />
             <br><br>
             
+            <form action="/stars/consumer/thermostat/runProgram" method="post" >
+                <cti:csrfToken/>
+                <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
+                <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />
+                <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
+                <cti:button name="runProgram" type="submit" label="${runProgramText}" classes="f-blocker"/>
+            </form>
+            
             <%-- Auto Enabled Manual Page --%>
             <c:if test="${!autoModeEnabledCommandView && autoModeEnabled}">
                 <cti:url var="autoEnabledManualUrl" value="/stars/consumer/thermostat/autoEnabledView">
                     <cti:param name="thermostatIds" value="${thermostatIds}"/>
                 </cti:url>
                 <cti:button nameKey="autoEnabledManual" href="${autoEnabledManualUrl}" classes="stacked"/>
-                <br>
             </c:if>
-                                
-            
-            <form action="/stars/consumer/thermostat/runProgram" method="post" >
-            <cti:csrfToken/>
-                <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
-                <cti:msg var="runProgramText" key="yukon.web.modules.consumer.thermostat.runProgram" />
-                <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
-                <input name="runProgram" type="submit" value="${runProgramText}" class="f-blocker" />
-            </form>
         </div>
     </cti:msgScope>
 </cti:standardPage>
