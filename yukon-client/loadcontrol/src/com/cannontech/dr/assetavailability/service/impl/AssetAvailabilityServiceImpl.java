@@ -135,8 +135,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         
         //Get appliances in runtime window
         Set<Integer> runningAppliances = new HashSet<>();
-        for(int inventoryId : inventoryIds) {
-            int deviceId = inventoryAndDevices.get(inventoryId);
+        for(Map.Entry<Integer, Integer> entry : inventoryAndDevices.entrySet()) {
+            int deviceId = entry.getValue();
+            int inventoryId = entry.getKey();
             AllRelayCommunicationTimes times = allTimes.get(deviceId);
             if(times != null) {
                 Map<Integer, Integer> relayApplianceMap = inventoryRelayAppliances.getRelayApplianceMap(inventoryId);
