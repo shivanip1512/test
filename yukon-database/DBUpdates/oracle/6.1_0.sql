@@ -180,6 +180,14 @@ ALTER TABLE DynamicLcrCommunications
       ON DELETE CASCADE;
 /* End YUK-12961 */
 
+/* Start YUK-12995 */
+ALTER TABLE PasswordHistory
+MODIFY Password NVARCHAR2(128);
+
+ALTER TABLE YukonUser
+MODIFY Password NVARCHAR2(128);
+/* End YUK-12995 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

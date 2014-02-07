@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/6/2014 4:08:23 PM                          */
+/* Created on:     2/7/2014 10:46:55 AM                         */
 /*==============================================================*/
 
 
@@ -7388,7 +7388,7 @@ go
 create table PasswordHistory (
    PasswordHistoryId    numeric              not null,
    UserId               numeric              not null,
-   Password             varchar(64)          not null,
+   Password             nvarchar(128)        not null,
    AuthType             varchar(16)          not null,
    PasswordChangedDate  datetime             not null,
    constraint PK_PasswordHistory primary key nonclustered (PasswordHistoryId)
@@ -10062,7 +10062,7 @@ INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/ser
 create table YukonUser (
    UserID               numeric              not null,
    UserName             nvarchar(64)         not null,
-   Password             nvarchar(64)         not null,
+   Password             nvarchar(128)        not null,
    Status               varchar(20)          not null,
    AuthType             varchar(16)          not null,
    LastChangedDate      datetime             not null,

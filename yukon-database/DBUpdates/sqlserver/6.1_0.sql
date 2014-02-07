@@ -189,14 +189,13 @@ ALTER TABLE DynamicLcrCommunications
       ON DELETE CASCADE;
 /* End YUK-12961 */
       
-/* Start YUK-12506 */      
+/* Start YUK-12995 */      
 ALTER TABLE Yukonuser
 ALTER COLUMN Password NVARCHAR(128) NOT NULL;
 
 ALTER TABLE PasswordHistory
-ALTER COLUMN Password VARCHAR (128) NOT NULL;
-
-/* End YUK-12506 */
+ALTER COLUMN Password NVARCHAR(128) NOT NULL;
+/* End YUK-12995 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

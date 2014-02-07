@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2014 4:12:43 PM                          */
+/* Created on:     2/7/2014 10:45:54 AM                         */
 /*==============================================================*/
 
 
@@ -6959,7 +6959,7 @@ create table PROFILEPEAKRESULT  (
 create table PasswordHistory  (
    PasswordHistoryId    NUMBER                          not null,
    UserId               NUMBER                          not null,
-   Password             VARCHAR2(64)                    not null,
+   Password             NVARCHAR2(128)                  not null,
    AuthType             VARCHAR2(16)                    not null,
    PasswordChangedDate  DATE                            not null,
    constraint PK_PasswordHistory primary key (PasswordHistoryId)
@@ -9521,7 +9521,7 @@ INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/ser
 create table YukonUser  (
    UserID               NUMBER                          not null,
    UserName             NVARCHAR2(64)                   not null,
-   Password             NVARCHAR2(64)                   not null,
+   Password             NVARCHAR2(128)                  not null,
    Status               VARCHAR2(20)                    not null,
    AuthType             VARCHAR2(16)                    not null,
    LastChangedDate      DATE                            not null,
