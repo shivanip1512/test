@@ -82,6 +82,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
                 byte[] payload = readingArchiveRequest.getData().getPayload();
                 try {
+                    log.debug("device:"+rfnDevice);
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
                     log.error("Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);

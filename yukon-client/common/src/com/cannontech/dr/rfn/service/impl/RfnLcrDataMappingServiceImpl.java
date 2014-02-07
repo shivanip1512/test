@@ -279,6 +279,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         Map<Long, Instant> msgMap = new HashMap<>();
         List<Node> events =
             data.evaluateAsNodeList("/DRReport/BroadcastVerificationMessages/Event");
+        log.debug("Parsed message ids:");
         for (Node event : events) {
             Element elem = (Element) event;
             long messageId =
@@ -289,6 +290,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                     .getTextContent());
             Instant receivedTimestamp = new Instant(timeInSec * 1000);
             msgMap.put(messageId, receivedTimestamp);
+            log.debug("   "+messageId +  "     " + receivedTimestamp.toDate());
         }
         return msgMap;
     }
@@ -309,11 +311,17 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
 
         List<Long> relayStartTimes = new ArrayList<Long>();
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
-            long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
-                                                 + relay.getRelayIdXPathString()
-                                                 + "/IntervalData/@startTime");
-            if (startTime > 0) {
-                relayStartTimes.add(startTime);
+            try{
+                long startTime = data.evaluateAsLong("/DRReport/Relays/Relay"
+                                                     + relay.getRelayIdXPathString()
+                                                     + "/IntervalData/@startTime");
+                if (startTime > 0) {
+                    relayStartTimes.add(startTime);
+                }
+            } catch (NullPointerException e) {
+                // if there is no relay info it could be gap filled data before it was configured,
+                // before it had a timesync or a combination
+                // It is ok for this method to return null if the valid range can't be determined.
             }
         }
 
@@ -325,6 +333,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 .roundFloorCopy().toInstant();
             Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
             range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
+            log.debug("Created range: Min: " + earliestStartTime.toDate()
+                      + "(earliest relay start time truncated to an hour)       Max: " + timeOfReading.toDate()
+                      + "(/DRReport/@utc)");
         }
         return range;
     }
@@ -334,6 +345,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
         DateTime timeOfReading = new DateTime(timeInSec * 1000);
         DateTime year2011 = new DateTime(2011, 1, 1, 0, 0);
-        return timeOfReading.isAfter(year2011);
+        boolean isValid = timeOfReading.isAfter(year2011);
+        log.debug("time of reading:"+timeOfReading.toDate()+"    after 1/1/2011 =" +isValid);
+        return isValid;
     }
 }

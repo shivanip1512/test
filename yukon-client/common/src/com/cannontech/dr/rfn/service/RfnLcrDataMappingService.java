@@ -40,6 +40,7 @@ public interface RfnLcrDataMappingService {
 
     /**
      * This method creates a date range of earliest start time and the time of reading.
+     * @return This method will return null if a valid range is not determined.
      */
     public Range<Instant> mapBroadcastVerificationUnsuccessRange(SimpleXPathTemplate data, RfnDevice device);
     
