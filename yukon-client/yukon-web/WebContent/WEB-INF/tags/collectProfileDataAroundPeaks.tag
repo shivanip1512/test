@@ -1,19 +1,18 @@
-<%@ attribute name="deviceId" required="true" type="java.lang.Long"%>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="preResult" required="true" type="java.lang.Object"%>
-<%@ attribute name="preAvailableDaysAfterPeak" required="true" type="java.util.List"%>
-
-<%@ attribute name="postResult" required="true" type="java.lang.Object"%>
-<%@ attribute name="postAvailableDaysAfterPeak" required="true" type="java.util.List"%>
-
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
-<%@ attribute name="isReadable" required="true" type="java.lang.Boolean"%>
-<%@ attribute name="email" required="false" type="java.lang.String"%>
+<%@ attribute name="deviceId" required="true" type="java.lang.Long" %>
+<%@ attribute name="preResult" required="true" type="java.lang.Object" %>
+<%@ attribute name="preAvailableDaysAfterPeak" required="true" type="java.util.List" %>
+<%@ attribute name="postResult" required="true" type="java.lang.Object" %>
+<%@ attribute name="postAvailableDaysAfterPeak" required="true" type="java.util.List" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="profileRequestOrigin" required="true" %>
+<%@ attribute name="isReadable" required="true" type="java.lang.Boolean" %>
+<%@ attribute name="email" %>
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
 <cti:includeScript link="/JavaScript/collectProfileDataAroundPeak.js"/>
@@ -21,71 +20,43 @@
 <cti:formatDate var="preStartDate" value="${preResult.rangeStartDate}" type="DATE" />
 <cti:formatDate var="preStopDate" value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
 <c:if test="${postResult != null}">
-	<cti:formatDate var="postStartDate" value="${postResult.rangeStartDate}" type="DATE" />
-	<cti:formatDate var="postStopDate" value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
+    <cti:formatDate var="postStartDate" value="${postResult.rangeStartDate}" type="DATE" />
+    <cti:formatDate var="postStopDate" value="${postResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
 </c:if>
 
 <input type="hidden" id="${id}_deviceId" value="${deviceId}">
 <input type="hidden" id="${id}_startDate" value="${preStartDate}">
 <input type="hidden" id="${id}_stopDate" value="${preStopDate}">
 
-<script type="text/javascript">
-
-    function changePeak () {
-        // convert el lists into js arrays
-        var preAvailableDaysAfterPeak = [],
-            postAvailableDaysAfterPeak,
-            afterDaysSelectElement,
-            afterDaysItemsCount,
-            i,
-            peakDaySelectElement;
-
-        <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
-            preAvailableDaysAfterPeak.push('${d}')
+<input type="hidden"
+    data-ids-and-dates = '{
+        "afterDaysId": "${id}_afterDays",
+        "peakDateId": "${id}_selectedPeakDate",
+        "startDateId": "${id}_startDate",
+        "stopDateId": "${id}_stopDate",
+        "preStartDate": "${preStartDate}",
+        "preStopDate": "${preStopDate}",
+        "postStartDate": "${postStartDate}",
+        "postStopDate": "${postStopDate}"
+    }'
+</input>
+<input type="hidden" data-pre-days = '{
+        "preDaysAfterPeak": [
+        <c:forEach var="preDay" items="${preAvailableDaysAfterPeak}" varStatus="status">
+            "${cti:escapeJavaScript(preDay)}"<c:if test="${not status.last}">,</c:if>
         </c:forEach>
+        ]
+        }'
+</input>
 
-        postAvailableDaysAfterPeak = [];
-        <c:forEach var="d" items="${postAvailableDaysAfterPeak}">
-            postAvailableDaysAfterPeak.push('${d}')
+<input type="hidden" data-post-days = '{
+        "postDaysAfterPeak": [
+        <c:forEach var="postDay" items="${postAvailableDaysAfterPeak}" varStatus="status">
+            "${cti:escapeJavaScript(postDay)}"<c:if test="${not status.last}">,</c:if>
         </c:forEach>
-
-        // remove after days options so they can be reset
-        afterDaysSelectElement = jQuery('#' + '${id}_afterDays')[0];
-        afterDaysItemsCount = afterDaysSelectElement.options.length;
-        for (i = afterDaysItemsCount - 1; i >= 0; i -= 1) {
-            afterDaysSelectElement.remove(i);
-        }
-
-        // set start stop date for selected peak date
-        // reset days after drop down options
-        peakDaySelectElement = jQuery('#' + '${id}_selectedPeakDate')[];
-
-        if (peakDaySelectElement.selectedIndex === 0) {
-            jQuery('#' + '${id}_startDate').val('${preStartDate}');
-            jQuery('#' + '${id}_stopDate').val('${preStopDate}');
-
-            setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, preAvailableDaysAfterPeak);
-        }
-        else {
-            jQuery('#' + '${id}_startDate').val('${postStartDate}');
-            jQuery('#' + '${id}_stopDate').val('${postStopDate}');
-
-            setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, postAvailableDaysAfterPeak);
-        }
-    }
-
-    // helper function to reset days after options
-    function setAvailableValuesForDaysAfterSelectElement (selectElement, values) {
-        values.forEach(function (optVal, index, arr) {
-            var newOpt = document.createElement('option');
-            newOpt.setAttribute('value', optVal);
-            newOpt.appendChild(document.createTextNode(optVal));
-            selectElement.appendChild(newOpt);
-       });
-    }
-
-</script>
-
+        ]
+        }'
+</input>
 <table class="results-table">
 
     <%--  HEADERS --%>
@@ -114,7 +85,7 @@
             </td>
             <td style="text-align:center;">
                 
-                <select id="${id}_selectedPeakDate" onchange="changePeak();">
+                <select id="${id}_selectedPeakDate" onchange="Yukon.PeakDayProfile.changePeak();">
                     <c:if test="${!preResult.noData && preResult.deviceError == ''}">
                         <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
                     </c:if>
@@ -127,7 +98,7 @@
             <td style="text-align:center;">
                 <select id="${id}_afterDays">
                     <c:forEach var="d" items="${preAvailableDaysAfterPeak}">
-                        <option value="${d}" <c:if test="${d == '0'}">selected</c:if>>${d}</option>
+                        <option value="${d}" <c:if test="${d == '0'}"> selected</c:if>>${d}</option>
                     </c:forEach>
                 </select>
             </td>
@@ -137,7 +108,7 @@
             </td>
             
             <td>
-                <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');">
+                <input type="button" id="${id}_startButton" value="Start" onclick="Yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');">
             </td>
             
         </tr>
