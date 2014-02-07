@@ -6,6 +6,7 @@ import static com.cannontech.dr.rfn.model.RfnLcrPointDataMap.RELAY_1_REMAINING_C
 import java.util.List;
 
 import junit.framework.Assert;
+import org.joda.time.Instant;
 
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -17,6 +18,7 @@ import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -60,9 +62,17 @@ public class RfnLcrDataMappingServiceTest {
     public void testMapPointIntervalData() {
         SimpleXPathTemplate data = new SimpleXPathTemplate();
         data.setContext(realReading);
+        
+        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
+        Instant instantOfReading = new Instant(timeInSec * 1000);
+        
+        PaoIdentifier identifier = new PaoIdentifier(1, PaoType.LCR6200_RFN);
+        
+        AssetAvailabilityPointDataTimes assetAvailabilityTimes = new AssetAvailabilityPointDataTimes(identifier.getPaoId());
+        assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
 
-        RfnDevice device = new RfnDevice(new PaoIdentifier(1, PaoType.LCR6200_RFN), new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
-        List<PointData> mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device);
+        RfnDevice device = new RfnDevice(identifier, new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
+        List<PointData> mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device, assetAvailabilityTimes);
         
         Assert.assertEquals(mapIntervalData.size(), 0);
         
