@@ -18,7 +18,6 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -75,16 +74,12 @@ public abstract class DemandResponseControllerBase {
     protected ModelMap getAssetAvailabilityInfo(DisplayablePao dispPao, 
                                          ModelMap model, 
                                          YukonUserContext userContext) {
-        try {
-            SimpleAssetAvailabilitySummary aaSummary = 
-                    assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
-            model.addAttribute("assetAvailabilitySummary", aaSummary);
-            model.addAttribute("assetTotal", aaSummary.getAll().size());
-            model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
-            model.addAttribute("colorMap", colorMap);
-        } catch(DynamicDataAccessException e) {
-            model.addAttribute("dispatchDisconnected", true);
-        }
+        SimpleAssetAvailabilitySummary aaSummary = 
+                assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
+        model.addAttribute("assetAvailabilitySummary", aaSummary);
+        model.addAttribute("assetTotal", aaSummary.getAll().size());
+        model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
+        model.addAttribute("colorMap", colorMap);
         return model;
     }
 

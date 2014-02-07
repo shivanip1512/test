@@ -47,7 +47,6 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -369,12 +368,8 @@ public class OperatorHardwareController {
         model.addAttribute("showViewMore", showViewMore);
         
         if (hardware.getHardwareType().isTwoWay()) {
-            try {
-                SimpleAssetAvailability assetAvail = assetAvailabilityService.getAssetAvailability(hardware.getInventoryId());
-                model.addAttribute("assetAvailability", assetAvail);
-            } catch(DynamicDataAccessException ee) {
-                model.addAttribute("dispatchDisconnected", true);
-            }
+            SimpleAssetAvailability assetAvail = assetAvailabilityService.getAssetAvailability(hardware.getInventoryId());
+            model.addAttribute("assetAvailability", assetAvail);
             model.addAttribute("isTwoWayDevice", true);
         }
         

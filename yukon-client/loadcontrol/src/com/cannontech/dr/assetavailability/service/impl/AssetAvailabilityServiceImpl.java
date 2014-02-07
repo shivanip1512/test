@@ -6,10 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
@@ -29,6 +31,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashBiMap;
@@ -37,6 +40,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
+    private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityServiceImpl.class);
     private final OptOutEventDao optOutEventDao;
     private final LMHardwareConfigurationDao lmHardwareConfigurationDao;
     private final InventoryDao inventoryDao;
@@ -61,18 +65,26 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) {
+        log.debug("Calculating asset availability summary for " + drPaoIdentifier.getPaoType() + " " 
+                + drPaoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
         return getAssetAvailabilityFromLoadGroups(loadGroupIds);
     }
     
     @Override
     public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier) {
+        log.debug("Calculating appliance-level asset availability summary for " + drPaoIdentifier.getPaoType() 
+                + " " + drPaoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
         return getApplianceAssetAvailability(loadGroupIds);
     }
     
     @Override
     public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds) {
+        log.debug("Calculating appliance-level asset availability summary for load groups");
+        if(log.isTraceEnabled()) {
+            log.trace("Load group ids: " + Joiner.on(", ").join(loadGroupIds));
+        }
         //Get all inventory & associated paos
         Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
         Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
@@ -161,6 +173,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) {
+        log.debug("Calculating asset availability summary for load groups");
+        if(log.isTraceEnabled()) {
+            log.trace("Load group ids: " + Joiner.on(", ").join(loadGroupIds));
+        }
         //Get all inventory & associated paos
         Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
         Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
@@ -225,12 +241,17 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public SimpleAssetAvailability getAssetAvailability(int inventoryId) {
+        log.debug("Calculating simple asset availability for inventory " + inventoryId);
         Map<Integer, SimpleAssetAvailability> singleValueMap = getAssetAvailability(Sets.newHashSet(inventoryId));
         return singleValueMap.get(inventoryId);
     }
     
     @Override
     public AssetAvailabilityTotals getAssetAvailabilityTotal(Collection<Integer> deviceIds) {
+        log.debug("Calculating asset availability total for deviceIds");
+        if(log.isTraceEnabled()) {
+            log.trace("DeviceIds: " + deviceIds.toArray().toString());
+        }
         //Get communications and runtime windows
         Instant now = Instant.now();
         Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
@@ -257,6 +278,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Collection<Integer> deviceIds) {
+        log.debug("Calculating asset availability statuses for deviceIds");
+        if(log.isTraceEnabled()) {
+            log.trace("DeviceIds: " + deviceIds.toArray().toString());
+        }
         //Get communications and runtime windows
         Instant now = Instant.now();
         Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
@@ -289,6 +314,10 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds) {
+        log.debug("Calculating asset availability total for inventoryIds");
+        if(log.isTraceEnabled()) {
+            log.trace("InventoryIds: " + Joiner.on(", ").join(inventoryIds));
+        }
         Map<Integer, Integer> inventoryAndDevices = inventoryDao.getDeviceIds(inventoryIds);
         Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
         Set<Integer> deviceIds = getTwoWayInventoryDevices(inventoryAndDevices);
@@ -311,6 +340,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier) {
+        log.debug("Calculating simple asset availability for " + paoIdentifier.getPaoType() + " " 
+                + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
         Set<Integer> inventoryIds = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds).keySet();
         return getAssetAvailability(inventoryIds);

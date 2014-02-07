@@ -207,62 +207,55 @@ jQuery(function() { updateServiceCompanyInfo();});
             </c:if>
 
         <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
-            <c:if test="${isTwoWayDevice && (!empty assetAvailability || dispatchDisconnected)}">
+            <c:if test="${isTwoWayDevice && (!empty assetAvailability)}">
                 <tags:nameValue2 nameKey=".assetAvailability.label">
+                    <c:set var="aaStatus" value="${assetAvailability.status}" />
+                    <c:set var="isOptedOut" value="${assetAvailability.optedOut}" />
                     <c:choose>
-                        <c:when test="${dispatchDisconnected}">
-                            <span class="error"><i:inline key=".assetAvailability.dispatchDisconnected"/></span>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="aaStatus" value="${assetAvailability.status}" />
-                            <c:set var="isOptedOut" value="${assetAvailability.optedOut}" />
+                        <c:when test="${aaStatus == 'ACTIVE'}">
                             <c:choose>
-                                <c:when test="${aaStatus == 'ACTIVE'}">
-                                    <c:choose>
-                                        <c:when test="${isOptedOut}">
-                                            <span title="<cti:msg2 key=".assetAvailability.optedOutActive.title"/>">
-                                                <i:inline key=".assetAvailability.optedOutActive"/>
-                                            </span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="success"  title="<cti:msg2 key=".assetAvailability.active.title"/>">
-                                                <i:inline key=".assetAvailability.active"/>
-                                            </span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:when test="${aaStatus == 'INACTIVE'}">
-                                    <c:choose>
-                                        <c:when test="${isOptedOut}">
-                                            <span title="<cti:msg2 key=".assetAvailability.optedOutInactive.title"/>">
-                                                <i:inline key=".assetAvailability.optedOutInactive"/>
-                                            </span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span title="<cti:msg2 key=".assetAvailability.inactive.title"/>">
-                                                <i:inline key=".assetAvailability.inactive"/>
-                                            </span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:when test="${aaStatus == 'UNAVAILABLE'}">
-                                    <c:choose>
-                                        <c:when test="${isOptedOut}">
-                                            <span title="<cti:msg2 key=".assetAvailability.optedOutUnavailable.title"/>">
-                                                <i:inline key=".assetAvailability.optedOutUnavailable"/>
-                                            </span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span title="<cti:msg2 key=".assetAvailability.unavailable.title"/>">
-                                                <i:inline key=".assetAvailability.unavailable"/>
-                                            </span>
-                                        </c:otherwise>
-                                    </c:choose>
+                                <c:when test="${isOptedOut}">
+                                    <span title="<cti:msg2 key=".assetAvailability.optedOutActive.title"/>">
+                                        <i:inline key=".assetAvailability.optedOutActive"/>
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
-                                    <span class="error"><i:inline key=".assetAvailability.invalidStatus" arguments="${aaStatus}"/></span>
+                                    <span class="success"  title="<cti:msg2 key=".assetAvailability.active.title"/>">
+                                        <i:inline key=".assetAvailability.active"/>
+                                    </span>
                                 </c:otherwise>
                             </c:choose>
+                        </c:when>
+                        <c:when test="${aaStatus == 'INACTIVE'}">
+                            <c:choose>
+                                <c:when test="${isOptedOut}">
+                                    <span title="<cti:msg2 key=".assetAvailability.optedOutInactive.title"/>">
+                                        <i:inline key=".assetAvailability.optedOutInactive"/>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span title="<cti:msg2 key=".assetAvailability.inactive.title"/>">
+                                        <i:inline key=".assetAvailability.inactive"/>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
+                        <c:when test="${aaStatus == 'UNAVAILABLE'}">
+                            <c:choose>
+                                <c:when test="${isOptedOut}">
+                                    <span title="<cti:msg2 key=".assetAvailability.optedOutUnavailable.title"/>">
+                                        <i:inline key=".assetAvailability.optedOutUnavailable"/>
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span title="<cti:msg2 key=".assetAvailability.unavailable.title"/>">
+                                        <i:inline key=".assetAvailability.unavailable"/>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="error"><i:inline key=".assetAvailability.invalidStatus" arguments="${aaStatus}"/></span>
                         </c:otherwise>
                     </c:choose>
                 </tags:nameValue2>

@@ -61,24 +61,15 @@
                 <%-- Display the Asset Availability Info --%>
                 <tags:sectionContainer2 nameKey="assetAvailability">
                     <c:choose>
-                        <c:when test="${dispatchDisconnected}">
-                            <span class="error">
-                                <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.dispatchDisconnected"/>
+                        <c:when test="${assetTotal <= 0}">
+                            <span class="empty-list">
+                                <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
                             </span>
                         </c:when>
                         <c:otherwise>
-                            <c:choose>
-                                <c:when test="${assetTotal <= 0}">
-                                    <span class="empty-list">
-                                        <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
-                                    </span>
-                                </c:when>
-                                <c:otherwise>
-                                    <dr:assetAvailabilityStatus assetId="${scenarioId}"
-                                        assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                        pieJSONData="${pieJSONData}" showDetails="true"/>
-                                </c:otherwise>
-                            </c:choose>
+                            <dr:assetAvailabilityStatus assetId="${scenarioId}"
+                                assetAvailabilitySummary="${assetAvailabilitySummary}" 
+                                pieJSONData="${pieJSONData}" showDetails="true"/>
                         </c:otherwise>
                     </c:choose>
                 </tags:sectionContainer2>
