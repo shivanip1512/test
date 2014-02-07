@@ -39476,7 +39476,7 @@
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>64</i__columnSize>
+            <i__columnSize>128</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
@@ -45689,9 +45689,9 @@
             <i__table reference="../../.."/>
             <i__columnName>Password</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>varchar</i__typeName>
+            <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
-            <i__columnSize>64</i__columnSize>
+            <i__columnSize>128</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
