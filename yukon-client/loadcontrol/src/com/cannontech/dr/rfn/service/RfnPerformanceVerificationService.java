@@ -5,7 +5,6 @@ import java.util.Map;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 
 public interface RfnPerformanceVerificationService {
     
@@ -13,14 +12,7 @@ public interface RfnPerformanceVerificationService {
      * Sends the performance verification message to all enrolled RFN LCR devices.
      */
     public void sendPerformanceVerificationMessage();
-    
-    /**
-     * For messages sent in {@code range} which currently have a status of UNKNOWN,
-     * this method will return the asset availability status for each device. 
-     * @Returns Map of DeviceId to asset availability
-     */
-    Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(long messageId);
-    
+
 	/**
 	 * Processes verification messages
 	 */

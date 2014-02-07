@@ -5,7 +5,6 @@ import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
@@ -63,13 +61,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
             log.debug("RF Broadcast Performance is disabled, not sending broadcast performance verification message.");
         }
     }
-    
-    @Override
-    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityForUnknown(long messageId) {
-        Set<Integer> deviceIdsUnkown = performanceVerificationDao.getDevicesWithUnknownStatus(messageId);
-        return assetAvailabilityService.getAssetAvailabilityStatus(deviceIdsUnkown);
-    }
-    
+
     @Override
     public void processVerificationMessages(int deviceId, Map<Long, Instant> verificationMsgs, Range<Instant> range){
 		/*

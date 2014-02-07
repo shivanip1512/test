@@ -8,11 +8,10 @@ import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUC
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,16 +25,20 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Maps;
 
 public class PerformanceVerificationDaoImpl implements PerformanceVerificationDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private GlobalSettingDao globalSettingDao;
 
     @Override
     public List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range) {
@@ -122,17 +125,44 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
     }
-    
+
     @Override
-    public Set<Integer> getDevicesWithUnknownStatus(long messageId) {
+    public Map<Integer, AssetAvailabilityStatus> getDevicesWithUnknownStatus(long messageId) {
+        Instant now = new Instant();
+        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
+        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId");
+        sql.append("SELECT rbed.DeviceId,");
+        sql.append("   case");
+        sql.append("      when lastcommunication is not null or lastnonzeroruntime is not null then");
+        sql.append("      case");
+        sql.append("         when lastnonzeroruntime is not null");
+        sql.append("              and lastnonzeroruntime").gt(runtimeWindowEnd);
+        sql.append("              and lastcommunication").gt(communicatingWindowEnd);
+        sql.append("              then '" + AssetAvailabilityStatus.ACTIVE + "'");
+        sql.append("         when lastcommunication").gt(communicatingWindowEnd);
+        sql.append("              then '" + AssetAvailabilityStatus.INACTIVE + "'");
+        sql.append("         when lastcommunication").lt(communicatingWindowEnd);
+        sql.append("              then '" + AssetAvailabilityStatus.UNAVAILABLE + "'");
+        sql.append("      end");
+        sql.append("   end as AssetAvailabilityStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
         sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
+        sql.append("LEFT JOIN dynamiclcrcommunications dlc on dlc.deviceId = rbed.deviceId");
         sql.append("WHERE rbed.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
-        return new HashSet<>(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        final Map<Integer, AssetAvailabilityStatus> assetAvailability = new HashMap<>();
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                assetAvailability.put(rs.getInt("DeviceId"),
+                                      rs.getEnum("AssetAvailabilityStatus", AssetAvailabilityStatus.class));
+            }
+        });
+        
+        return assetAvailability;
     }
 
     @Override
@@ -232,4 +262,12 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 		
 		jdbcTemplate.update(sql);
 	}
+    
+    private Duration getCommunicationWindowDuration() {
+        return Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS));
+    }
+    
+    private Duration getRuntimeWindowDuration() {
+        return Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS));
+    }
 }
