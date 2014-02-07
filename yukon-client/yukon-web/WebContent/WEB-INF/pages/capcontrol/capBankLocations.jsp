@@ -8,7 +8,7 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-    <cti:includeScript link="/JavaScript/tableCreation.js" />
+    <cti:includeScript link="/JavaScript/yukon.tableCreation.js" />
 
     <table class="results-table drivingDirections">
         <thead>

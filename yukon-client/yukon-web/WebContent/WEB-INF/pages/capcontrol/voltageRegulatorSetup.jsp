@@ -7,7 +7,7 @@
 
 <cti:includeScript link="/JavaScript/picker.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/tableCreation.js"/>
+<cti:includeScript link="/JavaScript/yukon.tableCreation.js"/>
 
 <f:subview id="regulatorView" rendered="#{capControlForm.visibleTabs['Regulator']}">
     <x:htmlTag value="fieldSet" styleClass="fieldSet">

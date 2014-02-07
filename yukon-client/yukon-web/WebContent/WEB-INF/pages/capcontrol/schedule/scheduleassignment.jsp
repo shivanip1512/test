@@ -21,7 +21,7 @@
 <%@include file="/capcontrol/capcontrolHeader.jspf" %>
 <%@include file="scheduleAssignmentFilterPopup.jsp" %>
 
-<cti:includeScript link="/JavaScript/tableCreation.js" />
+<cti:includeScript link="/JavaScript/yukon.tableCreation.js" />
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/picker.js" />
 

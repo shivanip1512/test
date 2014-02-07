@@ -129,7 +129,7 @@ public class PickerController {
 
     /**
      * The ultimate use of these output columns is in Javascript
-     * (tableCreation.js via picker.js) to determine the label (title) and value
+     * (yukon.tableCreation.js via picker.js) to determine the label (title) and value
      * (field is the name of the property on the row object) of each column.
      * Because there is no way in Javascript to resolve a
      * MessageSourceResolvable, we do it here.

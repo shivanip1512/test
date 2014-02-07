@@ -9,7 +9,7 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
-    <cti:includeScript link="/JavaScript/tableCreation.js" />
+    <cti:includeScript link="/JavaScript/yukon.tableCreation.js" />
     <cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <cti:includeScript link="/JavaScript/picker.js" />
     <cti:includeScript link="/JavaScript/dynamicTable.js"/>

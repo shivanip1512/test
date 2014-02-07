@@ -236,7 +236,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
                  createItemLink = null;
              });
 
-            resultTable = createHtmlTableFromJson(hitList, outputColumns,
+            resultTable = Yukon.CreateHtmlTableFromJson.createHtmlTableFromJson(hitList, outputColumns,
                 processRowForRender);
             resultTable.className = 'compact-results-table pickerResultTable';
             resultAreaFixed.appendChild(resultTable);
@@ -858,7 +858,7 @@ Yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             outputColumns.push(translatedColumn);
         });
 
-        resultTable = createHtmlTableFromJson(this.selectedItems, outputColumns);
+        resultTable = Yukon.CreateHtmlTableFromJson.createHtmlTableFromJson(this.selectedItems, outputColumns);
         jQuery(resultTable).addClass('compact-results-table');
         jQuery(resultTable).addClass('pickerResultTable');
         jQuery(resultTable).addClass('row-highlighting');
