@@ -129,28 +129,28 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public Map<Integer, AssetAvailabilityStatus> getDevicesWithUnknownStatus(long messageId) {
         Instant now = new Instant();
-        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
-        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
-        
+        Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
+        Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rbed.DeviceId,");
+        sql.append("SELECT RBED.DeviceId,");
         sql.append("   CASE");
-        sql.append("      WHEN lastcommunication IS NOT NULL or lastnonzeroruntime IS NOT NULL THEN");
+        sql.append("      WHEN LastCommunication IS NOT NULL or LastNonZeroRuntime IS NOT NULL THEN");
         sql.append("      CASE");
-        sql.append("         WHEN lastnonzeroruntime IS NOT NULL");
-        sql.append("              AND lastnonzeroruntime").gt(runtimeWindowEnd);
+        sql.append("         WHEN LastNonZeroRuntime IS NOT NULL");
+        sql.append("              AND LastNonZeroRuntime").gt(runtimeWindowEnd);
         sql.append("              AND lastcommunication").gt(communicatingWindowEnd);
         sql.append("              THEN '" + AssetAvailabilityStatus.ACTIVE + "'");
-        sql.append("         WHEN lastcommunication").gt(communicatingWindowEnd);
+        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("              THEN '" + AssetAvailabilityStatus.INACTIVE + "'");
-        sql.append("         WHEN lastcommunication").lt(communicatingWindowEnd);
+        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd);
         sql.append("              THEN '" + AssetAvailabilityStatus.UNAVAILABLE + "'");
         sql.append("      END");
         sql.append("   END AS AssetAvailabilityStatus");
-        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
-        sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
-        sql.append("LEFT JOIN dynamiclcrcommunications dlc ON dlc.deviceId = rbed.deviceId");
-        sql.append("WHERE rbed.RfnBroadcastEventId").eq(messageId);
+        sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
+        sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
+        sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
+        sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
         final Map<Integer, AssetAvailabilityStatus> assetAvailability = new HashMap<>();
@@ -263,11 +263,11 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 		jdbcTemplate.update(sql);
 	}
     
-    private Duration getCommunicationWindowDuration() {
-        return Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS));
+    private Instant getCommunicationWindowEnd(Instant now) {
+        return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
     }
     
-    private Duration getRuntimeWindowDuration() {
-        return Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS));
+    private Instant getRuntimeWindowEnd(Instant now) {
+        return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
     }
 }
