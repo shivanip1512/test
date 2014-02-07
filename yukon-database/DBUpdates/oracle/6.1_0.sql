@@ -142,18 +142,6 @@ ALTER TABLE RfnBroadcastEventDeviceStatus
    ADD CONSTRAINT FK_RfnBcstEvntDev_RfnBcstEvnt FOREIGN KEY (RfnBroadcastEventId)
       REFERENCES RfnBroadcastEvent (RfnBroadcastEventId)
          ON DELETE CASCADE;
-         
-ALTER TABLE Job
-MODIFY UserID NUMBER NULL;
-
-ALTER TABLE Job
-MODIFY Locale VARCHAR2(10) NULL;
-
-ALTER TABLE Job
-MODIFY TimeZone VARCHAR2(40) NULL;
-
-ALTER TABLE Job
-MODIFY ThemeName VARCHAR2(60) NULL;
 
 ALTER TABLE RfnAddress
 RENAME CONSTRAINT PK_RFNADD TO PK_RfnAddress;

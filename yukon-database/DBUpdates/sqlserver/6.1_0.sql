@@ -148,19 +148,6 @@ ALTER TABLE RfnBroadcastEventDeviceStatus
          ON DELETE CASCADE;
 GO
 
-ALTER TABLE Job
-ALTER COLUMN UserId NUMERIC NULL;
-
-ALTER TABLE Job
-ALTER COLUMN Locale VARCHAR(10) NULL;
-
-ALTER TABLE Job
-ALTER COLUMN TimeZone VARCHAR(40) NULL;
-
-ALTER TABLE Job
-ALTER COLUMN ThemeName VARCHAR(60) NULL;
-
-GO
 sp_rename 'RFNAddress', 'RfnAddress', 'OBJECT';
 GO
 sp_rename 'PK_RFNAdd', 'PK_RfnAddress', 'OBJECT';
