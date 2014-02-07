@@ -134,22 +134,22 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT rbed.DeviceId,");
-        sql.append("   case");
-        sql.append("      when lastcommunication is not null or lastnonzeroruntime is not null then");
-        sql.append("      case");
-        sql.append("         when lastnonzeroruntime is not null");
-        sql.append("              and lastnonzeroruntime").gt(runtimeWindowEnd);
-        sql.append("              and lastcommunication").gt(communicatingWindowEnd);
-        sql.append("              then '" + AssetAvailabilityStatus.ACTIVE + "'");
-        sql.append("         when lastcommunication").gt(communicatingWindowEnd);
-        sql.append("              then '" + AssetAvailabilityStatus.INACTIVE + "'");
-        sql.append("         when lastcommunication").lt(communicatingWindowEnd);
-        sql.append("              then '" + AssetAvailabilityStatus.UNAVAILABLE + "'");
-        sql.append("      end");
-        sql.append("   end as AssetAvailabilityStatus");
+        sql.append("   CASE");
+        sql.append("      WHEN lastcommunication IS NOT NULL or lastnonzeroruntime IS NOT NULL THEN");
+        sql.append("      CASE");
+        sql.append("         WHEN lastnonzeroruntime IS NOT NULL");
+        sql.append("              AND lastnonzeroruntime").gt(runtimeWindowEnd);
+        sql.append("              AND lastcommunication").gt(communicatingWindowEnd);
+        sql.append("              THEN '" + AssetAvailabilityStatus.ACTIVE + "'");
+        sql.append("         WHEN lastcommunication").gt(communicatingWindowEnd);
+        sql.append("              THEN '" + AssetAvailabilityStatus.INACTIVE + "'");
+        sql.append("         WHEN lastcommunication").lt(communicatingWindowEnd);
+        sql.append("              THEN '" + AssetAvailabilityStatus.UNAVAILABLE + "'");
+        sql.append("      END");
+        sql.append("   END AS AssetAvailabilityStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
         sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
-        sql.append("LEFT JOIN dynamiclcrcommunications dlc on dlc.deviceId = rbed.deviceId");
+        sql.append("LEFT JOIN dynamiclcrcommunications dlc ON dlc.deviceId = rbed.deviceId");
         sql.append("WHERE rbed.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
