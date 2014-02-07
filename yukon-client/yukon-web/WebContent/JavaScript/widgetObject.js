@@ -1,5 +1,5 @@
 /**
- * Object to create and operator a widget
+ * Object to create and operate a widget
  */
 function JsWidgetObject (shortName, parameters) {
     
