@@ -63,9 +63,8 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
  */
 bool CtiClientConnection::establishConnection()
 {
-    const long receiveMillis       = 30000;
-    const long timeToLiveMillis    = receiveMillis - 1000;
-    const long loggingMessageCount = 120;
+    const long receiveMillis    = 1000 * 60 * 60;  // 1 hour
+    const long timeToLiveMillis = 1000 * 60 * 120; // 2 hours
 
     try
     {
@@ -94,8 +93,6 @@ bool CtiClientConnection::establishConnection()
                 // Create consumer for inbound traffic
                 _consumer.reset( createTempQueueConsumer( *_sessionIn ));
 
-                unsigned messageCount = 0;
-
                 while( !_valid && !_dontReconnect && _connection->verifyConnection() )
                 {
                     // create an empty message for handshake
@@ -106,10 +103,7 @@ bool CtiClientConnection::establishConnection()
 
                     handshakeProducer.send( outMessage.get() );
 
-                    if( ! messageCount )
-                    {
-                        logDebug( __FUNCTION__, "waiting for server reply." );
-                    }
+                    logDebug( __FUNCTION__, "waiting for server reply." );
 
                     // We should block here until the delay expires or until the connection is closed
                     auto_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
@@ -140,15 +134,7 @@ bool CtiClientConnection::establishConnection()
                     }
                     else
                     {
-                        if( ! messageCount )
-                        {
-                            logStatus( __FUNCTION__, "timeout while trying to connect to \"" + _serverQueueName + "\". reconnecting." );
-                        }
-
-                        if( ++messageCount == loggingMessageCount )
-                        {
-                            messageCount = 0; // reset the message count
-                        }
+                        logStatus( __FUNCTION__, "timeout while trying to connect to \"" + _serverQueueName + "\". reconnecting." );
 
                         // check for a cancellation before re-sending a handshake message
                         checkCancellation();

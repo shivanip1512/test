@@ -15,6 +15,9 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     std::auto_ptr<cms::Destination>                        _clientReplyDest;
     std::auto_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
 
+    typedef std::map<std::string, CtiTime> DestTimeMap;
+    DestTimeMap requestTimeMap;
+
     CtiCriticalSection _closeConnectionMux;
 
     bool _closed;
@@ -30,6 +33,7 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 
     void releaseResources();
     void closeConnection();
+    bool validateRequest( const std::string &replyTo );
 
 public:
 

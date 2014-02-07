@@ -161,12 +161,18 @@ bool CtiListenerConnection::acceptClient()
 
     try
     {
-        const int timeoutMillis = 30000;
+        const int timeoutMillis = 1000 * 30; // 30 seconds
 
         // We should block here until the connection is closed or if there is a timeout
         auto_ptr<cms::Message> message( _consumer->receive(timeoutMillis) );
 
-        if( !message.get() || message->getCMSType() != MessageType::clientInit || !message->getCMSReplyTo() )
+        if( ! message.get() || message->getCMSType() != MessageType::clientInit || ! message->getCMSReplyTo() )
+        {
+            return false;
+        }
+
+        // validate the request : check for a duplicate request in the recent past
+        if( ! validateRequest( destPhysicalName( *message->getCMSReplyTo() )))
         {
             return false;
         }
@@ -182,6 +188,34 @@ bool CtiListenerConnection::acceptClient()
 
         return _valid = false;
     }
+}
+
+/**
+ * check if request received is not a duplicate
+ * @param replyTo physical name of reply destination
+ * @return true if request is consider valid, false otherwise
+ */
+bool CtiListenerConnection::validateRequest( const string &replyTo )
+{
+    const CtiTime now;
+    const CtiTime expired = now - (30 * 1000); // 30 seconds - filter duplicate request younger then this
+
+    // clean up expired
+    DestTimeMap::iterator itr = requestTimeMap.begin();
+    while( itr != requestTimeMap.end() )
+    {
+        if( itr->second <= expired )
+        {
+            requestTimeMap.erase(itr++);
+        }
+        else
+        {
+            ++itr;
+        }
+    }
+
+    // try to insert
+    return requestTimeMap.insert( make_pair( replyTo, now )).second;
 }
 
 /**
