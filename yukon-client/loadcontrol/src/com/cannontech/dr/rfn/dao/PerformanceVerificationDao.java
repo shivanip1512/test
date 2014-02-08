@@ -2,7 +2,6 @@ package com.cannontech.dr.rfn.dao;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -73,9 +72,9 @@ public interface PerformanceVerificationDao {
 	void setEventResultStatusToSuccessful(int deviceId, Map<Long, Instant> verificationMsgs);
 	
 	/**
-	 * This method marks device as unsuccessful
+	 * This method marks device as failure
 	 */
 	
-	void setEventResultStatusToUnuccessful(int deviceId, Range<Instant> range);
+	void setEventResultStatusToFailure(int deviceId, Range<Instant> range);
 
 }

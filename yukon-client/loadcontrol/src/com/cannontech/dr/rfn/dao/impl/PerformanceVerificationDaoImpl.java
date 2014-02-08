@@ -1,9 +1,12 @@
 package com.cannontech.dr.rfn.dao.impl;
 
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.ACTIVE;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.INACTIVE;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.UNAVAILABLE;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.FAILURE;
 import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
 import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS_UNENROLLED;
 import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNSUCCESS;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -77,7 +80,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
                                                                  messageSent.getTimeMessageSent(),
                                                                  counts.get(SUCCESS),
-                                                                 counts.get(UNSUCCESS),
+                                                                 counts.get(FAILURE),
                                                                  counts.get(UNKNOWN)));
         }
 
@@ -106,7 +109,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
 
-        return new PerformanceVerificationEventStats(counts.get(SUCCESS), counts.get(UNSUCCESS), counts.get(UNKNOWN));
+        return new PerformanceVerificationEventStats(counts.get(SUCCESS), counts.get(FAILURE), counts.get(UNKNOWN));
     }
 
     @Override
@@ -135,16 +138,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RBED.DeviceId,");
         sql.append("   CASE");
-        sql.append("      WHEN LastCommunication IS NOT NULL or LastNonZeroRuntime IS NOT NULL THEN");
+        sql.append("      WHEN LastCommunication IS NOT NULL OR LastNonZeroRuntime IS NOT NULL THEN");
         sql.append("      CASE");
         sql.append("         WHEN LastNonZeroRuntime IS NOT NULL");
         sql.append("              AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("              AND lastcommunication").gt(communicatingWindowEnd);
-        sql.append("              THEN '" + AssetAvailabilityStatus.ACTIVE + "'");
-        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd);
-        sql.append("              THEN '" + AssetAvailabilityStatus.INACTIVE + "'");
-        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd);
-        sql.append("              THEN '" + AssetAvailabilityStatus.UNAVAILABLE + "'");
+        sql.append("              AND lastcommunication").gt(communicatingWindowEnd).append("THEN '" + ACTIVE + "'");
+        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN '" + INACTIVE + "'");
+        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd).append("THEN '" + UNAVAILABLE + "'");
         sql.append("      END");
         sql.append("   END AS AssetAvailabilityStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
@@ -247,10 +247,10 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-	public void setEventResultStatusToUnuccessful(int deviceId, Range<Instant> range) {
+	public void setEventResultStatusToFailure(int deviceId, Range<Instant> range) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
-		params.addValue("Result", UNSUCCESS);
+		params.addValue("Result", FAILURE);
         sql.append("WHERE DeviceId").eq(deviceId);
         sql.append("   AND Result").eq_k(UNKNOWN);
         sql.append("   AND RfnBroadcastEventId IN (SELECT RfnBroadcastEventId");

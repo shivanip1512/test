@@ -71,7 +71,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		 * 3. Mark received messages as success (SUCCESS)
 		 * 4. Check if there was a broadcast event that happened between
 		 * earliest relay start time and time of reading (UTC) and the result is
-		 * still "UNKNOWN". Mark the result. (UNSUCCESS)
+		 * still "UNKNOWN". Mark the result. (FAILURE)
 		 */
     	//message ids that were sent to the device
 		List<Long> sentMsgIds = performanceVerificationDao
@@ -103,10 +103,10 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 			performanceVerificationDao.setEventResultStatusToSuccessful(deviceId, successMsgsToMarkAsSuccess);
 		}
 		
-		//UNSUCCESS
+		//FAILURE
 		
 		if(range != null){
-			performanceVerificationDao.setEventResultStatusToUnuccessful(deviceId, range);
+			performanceVerificationDao.setEventResultStatusToFailure(deviceId, range);
 		}
     }
 }
