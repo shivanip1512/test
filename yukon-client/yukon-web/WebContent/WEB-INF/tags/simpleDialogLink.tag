@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 <%@ attribute name="dialogId" required="true"%>
 <%@ attribute name="titleKey" required="true"%>
 <%@ attribute name="actionUrl" required="true"%>

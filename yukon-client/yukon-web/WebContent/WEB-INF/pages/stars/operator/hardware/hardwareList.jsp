@@ -1,11 +1,13 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="operator" page="hardware.list">
 
@@ -347,9 +349,7 @@
                         <c:forEach var="hwSwitch" items="${switches}">
                             <tr>
                                 <td>
-                                    <a href="${viewUrl}${hwSwitch.inventoryId}">
-                                        ${fn:escapeXml(hwSwitch.serialNumber)}
-                                    </a>
+                                    <a href="${viewUrl}${hwSwitch.inventoryId}">${fn:escapeXml(hwSwitch.serialNumber)}</a>
                                 </td>
                                 <td>${fn:escapeXml(hwSwitch.displayType)}</td>
                                 <td>
@@ -364,9 +364,9 @@
                                                             type="availableSwitchPicker" 
                                                             destinationFieldId="newInventoryId" 
                                                             immediateSelectMode="true"
-                                                            endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }" >
+                                                            endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }">
                                                             <cti:icon icon="icon-arrow-swap"/>
-                                                            <cti:msg2 key=".changeOut.label"/>
+                                                            <span class="dib"><cti:msg2 key=".changeOut.label"/></span>
                                                     </tags:pickerDialog>
                                                 </li>
                                             </c:if>
@@ -658,17 +658,17 @@
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <c:if test="${inventoryChecking}">
                                             <cm:dropdown containerCssClass="fr">
-                                            <li>
-                                                <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                        id="availableGatewayPicker${gateway.inventoryId}" 
-                                                        type="availableGatewayPicker" 
-                                                        destinationFieldId="newInventoryId"
-                                                        immediateSelectMode="true"
-                                                        endAction="function(items) { return changeOut(${gateway.inventoryId}, false); }">
-                                                    <cti:icon icon="icon-arrow-swap"/>
-                                                    <cti:msg2 key=".changeOut.label"/>
-                                                </tags:pickerDialog>
-                                            </li>
+                                                <li>
+                                                    <tags:pickerDialog extraArgs="${energyCompanyId}" 
+                                                            id="availableGatewayPicker${gateway.inventoryId}" 
+                                                            type="availableGatewayPicker" 
+                                                            destinationFieldId="newInventoryId"
+                                                            immediateSelectMode="true"
+                                                            endAction="function(items) { return changeOut(${gateway.inventoryId}, false); }">
+                                                        <cti:icon icon="icon-arrow-swap"/>
+                                                        <cti:msg2 key=".changeOut.label"/>
+                                                    </tags:pickerDialog>
+                                                </li>
                                             </cm:dropdown>
                                         </c:if>
                                     </cti:checkRolesAndProperties>

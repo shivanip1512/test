@@ -86,23 +86,23 @@ public class HomeController {
         Collections.sort(recentlyViewed, sorter);
         model.addAttribute("recents", recentlyViewed);
         
-        /* RF BROADCAST PERMORMANCE */
+        /** RF BROADCAST PERMORMANCE */
         PreferenceOnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
         if (rfPerformance == PreferenceOnOff.ON) {
             
             LocalTime testSchedule = new LocalTime(5, 0);
             Instant now = new Instant();
-            Range<Instant> lastTestRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
-            // Not including most recent day, which is likely to be 'UNKNOWN' and will throw off stats
+            Range<Instant> last24HrRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
+            // Not including most recent day for week and month, which is likely to be 'UNKNOWN' and will throw off stats
             Range<Instant> lastWeekRange = Range.inclusive(now.minus(Duration.standardDays(7)), now.minus(Duration.standardDays(1)));
             Range<Instant> lastMonthRange = Range.inclusive(now.minus(Duration.standardDays(30)), now.minus(Duration.standardDays(1)));
 
-            PerformanceVerificationEventStats lastTest = performanceVerificationDao.getAverageReport(lastTestRange);
+            PerformanceVerificationEventStats last24Hr = performanceVerificationDao.getAverageReport(last24HrRange);
             PerformanceVerificationEventStats last7Days = performanceVerificationDao.getAverageReport(lastWeekRange);
             PerformanceVerificationEventStats last30Days = performanceVerificationDao.getAverageReport(lastMonthRange);
 
             model.addAttribute("testSchedule", testSchedule);
-            model.addAttribute("lastTest", lastTest);
+            model.addAttribute("last24Hr", last24Hr);
             model.addAttribute("last7Days", last7Days);
             model.addAttribute("last30Days", last30Days);
         }

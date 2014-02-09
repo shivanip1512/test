@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
@@ -69,37 +71,35 @@
                 </c:if>
             </tags:sectionContainer2>
             
-            <c:if test="${showRfPerformance}">
+            <cti:checkRolesAndProperties value="DEMAND_RESPONSE">
                 <tags:sectionContainer2 nameKey="rfPerformance">
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
-                            <tags:nameValue2 nameKey=".rfPerformance.lastTest" valueClass="full-width">
-                                <dr:rfPerformanceStats test="${lastTest}"/>
-                                <a href="javascript:void(0);" style="margin-left: 10px;" class="show-on-hover"><i:inline key="yukon.common.view"/></a>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".rfPerformance.last7Days" valueClass="full-width">
-                                <dr:rfPerformanceStats test="${last7Days}"/>
-                                <a href="javascript:void(0);" style="margin-left: 10px;" class="show-on-hover"><i:inline key="yukon.common.view"/></a>
-                            </tags:nameValue2>
-                            <tags:nameValue2 nameKey=".rfPerformance.last30Days" valueClass="full-width">
-                                <dr:rfPerformanceStats test="${last30Days}"/>
-                                <a href="javascript:void(0);" style="margin-left: 10px;" class="show-on-hover"><i:inline key="yukon.common.view"/></a>
-                            </tags:nameValue2>
+                            <tr>
+                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last24Hr"/>:</a></td>
+                                <td class="value full-width"><dr:rfPerformanceStats test="${last24Hr}"/></td>
+                            </tr>
+                            <tr>
+                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last7Days"/>:</a></td>
+                                <td class="value full-width"><dr:rfPerformanceStats test="${last7Days}"/></td>
+                            </tr>
+                            <tr>
+                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last30Days"/>:</a></td>
+                                <td class="value full-width"><dr:rfPerformanceStats test="${last30Days}"/></td>
+                            </tr>
                         </tags:nameValueContainer2>
                     </div>
-                    <div class="stacked"><a href="javascript:void(0);"><i:inline key=".rfPerformance.details"/></a></div>
-                    <div>
-                        <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
-                            <tags:nameValue2 nameKey=".rfPerformance.testSchedule" valueClass="full-width">
-                                <cti:formatDate type="TIME" value="${testSchedule}"/>
-                                <cti:button nameKey="rfPerformance.editSettings" id="broadcast-test-settings" icon="icon-pencil" classes="fr"/>
-                            </tags:nameValue2>
-                        </tags:nameValueContainer2>
+                    <div class="action-area">
+                        <a href="javascript:void(0);"><i:inline key=".rfPerformance.details"/></a>
+                        <cti:button nameKey="rfPerformance.configure" id="broadcast-test-settings" icon="icon-cog-edit"/>
                     </div>
-                    <d:inline okEvent="yukon.dr.performance.settings.save" nameKey="rfPerformance.editSettings" on="#broadcast-test-settings">
+                    <d:inline okEvent="yukon.dr.performance.settings.save" 
+                              nameKey="rfPerformance.configure" 
+                              on="#broadcast-test-settings"
+                              options="{width: 500}">
                     </d:inline>
                 </tags:sectionContainer2>
-            </c:if>
+            </cti:checkRolesAndProperties>
         </div>
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="quickSearches" styleClass="stacked">
