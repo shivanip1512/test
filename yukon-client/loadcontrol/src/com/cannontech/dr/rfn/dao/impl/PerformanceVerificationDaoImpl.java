@@ -26,7 +26,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
-import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.system.GlobalSettingType;
@@ -80,31 +79,6 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         }
 
         return reports;
-    }
-
-    @Override
-    public PerformanceVerificationEventStats getAverageReport(Range<Instant> range) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Result, Count(*) as count");
-        sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
-        sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
-        sql.append("WHERE EventSendTime").gt(range.getMin());
-        sql.append("AND EventSendTime").lt(range.getMax());
-        sql.append("GROUP BY Result");
-
-        final Map<PerformanceVerificationMessageStatus, Integer> counts =
-                Maps.newHashMapWithExpectedSize(PerformanceVerificationMessageStatus.values().length);
-        for (PerformanceVerificationMessageStatus status : PerformanceVerificationMessageStatus.values()) {
-            counts.put(status, 0);
-        }
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                counts.put(rs.getEnum("Result", PerformanceVerificationMessageStatus.class), rs.getInt("count"));
-            }
-        });
-
-        return new PerformanceVerificationEventStats(counts.get(SUCCESS), counts.get(FAILURE), counts.get(UNKNOWN));
     }
 
     @Override

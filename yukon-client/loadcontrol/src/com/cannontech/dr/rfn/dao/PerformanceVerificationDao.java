@@ -20,14 +20,6 @@ public interface PerformanceVerificationDao {
     List<PerformanceVerificationEventMessageStats> getReports(Range<Instant> range);
 
     /**
-     * @return statistics for messages sent in {@code range}. Statistics are averaged
-     * for each message accounted for and one statistic is returned.
-     * 
-     * Use {@link #getReports(Range)} for per-message stats
-     */
-    PerformanceVerificationEventStats getAverageReport(Range<Instant> range);
-
-    /**
      * @return a list of messages sent in {@code range}.
      */
     List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range);

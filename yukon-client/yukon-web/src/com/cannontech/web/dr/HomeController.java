@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.model.PerformanceVerificationEventStats;
+import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.service.DemandResponseService;
@@ -89,22 +86,15 @@ public class HomeController {
         /** RF BROADCAST PERMORMANCE */
         PreferenceOnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
         if (rfPerformance == PreferenceOnOff.ON) {
-            
             LocalTime testSchedule = new LocalTime(5, 0);
-            Instant now = new Instant();
-            Range<Instant> last24HrRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
-            // Not including most recent day for week and month, which is likely to be 'UNKNOWN' and will throw off stats
-            Range<Instant> lastWeekRange = Range.inclusive(now.minus(Duration.standardDays(7)), now.minus(Duration.standardDays(1)));
-            Range<Instant> lastMonthRange = Range.inclusive(now.minus(Duration.standardDays(30)), now.minus(Duration.standardDays(1)));
 
-            PerformanceVerificationEventStats last24Hr = performanceVerificationDao.getAverageReport(last24HrRange);
-            PerformanceVerificationEventStats last7Days = performanceVerificationDao.getAverageReport(lastWeekRange);
-            PerformanceVerificationEventStats last30Days = performanceVerificationDao.getAverageReport(lastMonthRange);
+            PerformanceVerificationAverageReports averageReports = performanceVerificationService.getAverageReports();
 
             model.addAttribute("testSchedule", testSchedule);
-            model.addAttribute("last24Hr", last24Hr);
-            model.addAttribute("last7Days", last7Days);
-            model.addAttribute("last30Days", last30Days);
+            model.addAttribute("last24Hr", averageReports.getLastDay());
+            model.addAttribute("last7Days", averageReports.getLastSevenDays());
+            model.addAttribute("last30Days", averageReports.getLastThirtyDays());
+            model.addAttribute("showRfPerformance", true);
         }
 
         return "dr/home.jsp";

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
+import com.cannontech.dr.model.MutablePerformanceVerificationEventStats;
+import com.cannontech.dr.model.PerformanceVerificationAverageReports;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
+import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
@@ -108,5 +112,54 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		if(range != null){
 			performanceVerificationDao.setEventResultStatusToFailure(deviceId, range);
 		}
+    }
+
+    @Override
+    public PerformanceVerificationAverageReports getAverageReports() {
+        Instant now = new Instant();
+        Range<Instant> lastDayRange = Range.inclusive(now.minus(Duration.standardDays(1)), now);
+        // Not including most recent day, which is likely to be 'UNKNOWN' and will throw off stats
+        Range<Instant> lastTwoDaysRange = 
+                Range.inclusive(now.minus(Duration.standardDays(2)),now.minus(Duration.standardDays(1)));
+        Range<Instant> lastSevenDaysRange = 
+                Range.inclusive(now.minus(Duration.standardDays(7)), now.minus(Duration.standardDays(1)));
+        Range<Instant> lastThirtyDaysRange = 
+                Range.inclusive(now.minus(Duration.standardDays(30)), now.minus(Duration.standardDays(1)));
+
+        Range<Instant> thirtyDaysRange = Range.inclusive(now.minus(Duration.standardDays(30)), now);
+        List<PerformanceVerificationEventMessageStats> messageStats = 
+                    performanceVerificationDao.getReports(thirtyDaysRange);
+
+        MutablePerformanceVerificationEventStats oneDayStats = new MutablePerformanceVerificationEventStats();
+        MutablePerformanceVerificationEventStats twoDaysStats = new MutablePerformanceVerificationEventStats();
+        MutablePerformanceVerificationEventStats sevenDaysStats = new MutablePerformanceVerificationEventStats();
+        MutablePerformanceVerificationEventStats thirtyDaysStats = new MutablePerformanceVerificationEventStats();
+
+        for (PerformanceVerificationEventMessageStats messageStat : messageStats) {
+            if (lastDayRange.intersects(messageStat.getTimeMessageSent())) {
+                oneDayStats.addStats(messageStat.getNumSuccesses(),
+                                      messageStat.getNumFailures(),
+                                      messageStat.getNumUnknowns());
+            } else {
+                if (lastThirtyDaysRange.intersects(messageStat.getTimeMessageSent())) {
+                    thirtyDaysStats.addStats(messageStat.getNumSuccesses(),
+                                                 messageStat.getNumFailures(),
+                                                 messageStat.getNumUnknowns());
+                    if (lastSevenDaysRange.intersects(messageStat.getTimeMessageSent())) {
+                        sevenDaysStats.addStats(messageStat.getNumSuccesses(),
+                                                    messageStat.getNumFailures(),
+                                                    messageStat.getNumUnknowns());
+                        if (lastTwoDaysRange.intersects(messageStat.getTimeMessageSent())) {
+                            twoDaysStats.addStats(messageStat.getNumSuccesses(),
+                                                      messageStat.getNumFailures(),
+                                                      messageStat.getNumUnknowns());
+                        }
+                    }
+                }
+            }
+        }
+
+        return new PerformanceVerificationAverageReports(oneDayStats.getImmutable(), twoDaysStats.getImmutable(),
+                                                         sevenDaysStats.getImmutable(), thirtyDaysStats.getImmutable());
     }
 }
