@@ -56,8 +56,8 @@ var yukon = (function (yukonMod) {
 // namespace function, so we don't have to put all those checks to see if
 // modules exist and either create empty ones or set a reference to one
 // that was previously created.
-// Creates a global namespace. If 'Yukon' is in leading part of name,
-// strip it off and hang the rest off of Yukon
+// Creates a global namespace. If 'yukon' is in leading part of name,
+// strip it off and hang the rest off of yukon
 // See Zakas, Maintainable JavaScript, pp. 72-73, and Stefanov,
 // Javascript Patterns, pp. 89-90
 yukon.namespace = function (ns) {
@@ -173,14 +173,14 @@ function Sandbox () {
 }
 // any prototype properties as needed
 Sandbox.prototype = {
-    name: "Yukon",
+    name: "yukon",
     version: "1.0",
     getName: function () {
         return this.name;
     }
 };
 
-// for modules outside the Yukon umbrella
+// for modules outside the yukon umbrella
 Sandbox.modules = {};
 
 /** 
@@ -859,9 +859,9 @@ yukon.modules.ui = function (mod) {
     };
 };
 
-// merge created sandbox module with existing Yukon barebones module
+// merge created sandbox module with existing yukon barebones module
 Sandbox('base', function (basemod) {
-    jQuery.extend(Yukon, basemod);
+    jQuery.extend(yukon, basemod);
 });
 
 Sandbox('ui', function (uimod) {

@@ -8,10 +8,10 @@ var yukon = (function (yukonMod) {
 // that was previously created
 yukon.namespace = function (ns_string) {
     var parts = ns_string.split('.'),
-        parent = Yukon,
+        parent = yukon,
         i;
     // strip redundant leading global
-    if (parts[0] === "Yukon") {
+    if (parts[0] === "yukon") {
         parts = parts.slice(1);
     }
     for (i = 0; i < parts.length; i += 1) {
@@ -57,4 +57,4 @@ if (!Object.create) {
         };
         jQuery.extend(exports, inheritPrototypeApi);
     }((typeof exports === 'undefined') ? window : exports));
-}(Yukon));
+}(yukon));

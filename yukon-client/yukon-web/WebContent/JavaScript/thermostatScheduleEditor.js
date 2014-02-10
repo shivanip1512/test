@@ -4,12 +4,12 @@ var KEYUP = 38;
 var KEYDOWN = 40;
 var TEMPERATURE_WINDOW_TYPES = ["HEAT","COOL"];
 
-if(typeof(Yukon) === 'undefined'){
+if(typeof(yukon) === 'undefined'){
     /**
-     * Yukon global object
+     * yukon global object
      * @class
      */
-    Yukon={};
+    yukon={};
 }
 
 /**
