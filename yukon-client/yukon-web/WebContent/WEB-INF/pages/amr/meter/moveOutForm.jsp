@@ -9,7 +9,7 @@
 </c:forEach>
 
 <form action="/meter/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
-<cti:csrfToken/>
+    <cti:csrfToken/>
     <input name="deviceId" type="hidden" value="${meter.deviceId}" />
 
 	<ct:boxContainer2 nameKey="moveOutForm" hideEnabled="false">

@@ -32,7 +32,7 @@
         </div>
         
         <form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" name="action" value="InvoiceChange"> 
             <div align="center">
                 <span class="title-header">INVOICE</span>

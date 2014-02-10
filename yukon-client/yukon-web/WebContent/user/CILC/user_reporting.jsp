@@ -83,7 +83,7 @@ function loadTarget(form)
                     <br>
                     <br>
                     <form id="MForm" name="MForm" method="POST" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="loadTarget(document.MForm)">
-                    <cti:csrfToken/>
+                        <cti:csrfToken/>
                       <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
                       <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
                       <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">

@@ -151,7 +151,7 @@ jQuery(function() {
                 <cti:msg2 key='.supportBundle.previousHeading' var="previousHeading"/>
                 <cti:tabbedContentSelectorContent selectorName="${previousHeading}" >
                     <form id="previousBundlesForm" action="/support/downloadBundle" method="POST">
-                    <cti:csrfToken/>
+                        <cti:csrfToken/>
                         <c:if test="${empty bundleList}">
                             <span class="empty-list"><i:inline key=".supportBundle.noPreviousBundlesLbl"/></span>
                         </c:if>
@@ -185,7 +185,7 @@ jQuery(function() {
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                         <form id="ftpPopupForm" action="/support/uploadBundle" method="POST">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
                             <input type="hidden" name="fileName" />
                         </form>
                     </div>

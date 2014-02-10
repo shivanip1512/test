@@ -28,7 +28,7 @@
     </script>
     
     <form action="/amr/phaseDetect/saveBroadcastRoutes" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
             <table style="padding-bottom: 5px;">
                 <tr>

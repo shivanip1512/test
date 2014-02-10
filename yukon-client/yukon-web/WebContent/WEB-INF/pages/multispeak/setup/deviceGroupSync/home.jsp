@@ -51,7 +51,7 @@
                 <td class="syncNow">
                     <br>
                     <form id="startForm" action="/multispeak/setup/deviceGroupSync/start" method="post">
-                    <cti:csrfToken/>
+                        <cti:csrfToken/>
                         <span id="syncNowContent">
                         <select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
                             <c:forEach var="type" items="${deviceGroupSyncTypes}">

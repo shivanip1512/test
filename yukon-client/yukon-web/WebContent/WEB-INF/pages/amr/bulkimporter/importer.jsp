@@ -19,7 +19,7 @@
 <div class="warning stacked"><i:inline key=".header"/></div>
 
 <form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
-<cti:csrfToken/>
+    <cti:csrfToken/>
 <cti:msg2 var="actionsHeader" key=".actions.header" />
 <cti:msg2 var="actionsLoadDataLabel" key=".actions.loadDataFromFileLabel" />
 <cti:msg2 var="actionsBulkImporterLabel" key=".actions.bulkImporterCommsLabel" />

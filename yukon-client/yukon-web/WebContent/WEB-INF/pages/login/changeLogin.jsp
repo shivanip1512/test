@@ -31,7 +31,7 @@
     <cti:msg key="yukon.web.changelogin.changeUsername" var="changeUsernameTitle"/>
     <ct:boxContainer title="${changeUsernameTitle}" hideEnabled="false">
         <form action="${usernameActionUrl}" method="POST">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <br>
             <table>
                 <tr>
@@ -69,7 +69,7 @@
     <cti:msg key="yukon.web.changelogin.changePassword" var="changePasswordTitle"/>
     <ct:boxContainer title="${changePasswordTitle}" hideEnabled="false">
         <form action="${passwordActionUrl}" method="POST">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <br>
             <table>
                 <tr>

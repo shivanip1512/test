@@ -46,7 +46,7 @@ function validateGroupIsSelected(btn, alertText) {
     </c:if>
     
     <form id="groupCommanderForm" action="<cti:url value="/group/commander/executeGroupCommand" />" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
 
     <%-- SELECT DEVICE GROUP TREE INPUT --%>
     <div><strong><i:inline key="yukon.web.deviceGroups.commander.groupSelectionLabel"/></strong></div>

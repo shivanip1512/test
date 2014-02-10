@@ -17,7 +17,7 @@
 
         <br><br>
 		<form action="/stars/consumer/optout/cancel" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
 			<input type="hidden" name="eventId" value="${optOut.eventId}">
 			<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancelOptOut"/>" class="button">
 			<input type="button" value="<cti:msg key="yukon.dr.consumer.optout.noCancelOptOut"/>" class="button" onclick="window.location='/stars/consumer/optout'">

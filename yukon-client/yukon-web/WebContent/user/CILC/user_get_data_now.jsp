@@ -80,7 +80,7 @@ MM_reloadPage(true);
 				 if (confirmMsg != null)
               		out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");%>
               <form name = "getDataNowForm" method="POST" action="<%=request.getContextPath()%>/servlet/GraphGenerator?">
-              <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="hidden" name="action" value="GetDataNow">
                 <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">

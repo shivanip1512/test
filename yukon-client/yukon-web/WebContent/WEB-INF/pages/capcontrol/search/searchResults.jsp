@@ -49,7 +49,7 @@
     <c:set var="baseUrl" value="/capcontrol/search/searchResults"/>
     
     <form id="parentForm" action="feeders.jsp" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="${lastAreaKey}" />
         <input type="hidden" name="${lastSubKey}" />
         <cti:list var="arguments">

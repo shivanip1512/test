@@ -29,7 +29,7 @@
         
         <div class="page-action-area">
             <form id="massDeleteForm" method="post" action="/bulk/massDelete/doMassDelete">
-            <cti:csrfToken/>
+                <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <cti:button nameKey="delete" type="submit" name="deleteButton" classes="primary action"/>
             </form>

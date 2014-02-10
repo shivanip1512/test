@@ -92,6 +92,7 @@
                 <td width="650"> 
                   <div align="center" class="title-header"><br>
                   <form action="oper_mand.jsp?tab=newconfirm" method="post">
+                    <cti:csrfToken/>
                     <input type=hidden name="confirmed" value="true">
                     <input type=hidden name="program" value="<%= programStr %>">
                     <input type=hidden name="notifydate" value="<%= notifyDateStr %>">

@@ -13,15 +13,14 @@ import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private WebSecurityAnnotationProcessor annotationProcessor;
+    
     @Autowired private CsrfTokenService csrfTokenService;
     
     @Override
     public boolean preHandle(HttpServletRequest request, 
             HttpServletResponse response, Object handler) throws Exception {
        
-        if ("POST".equals(request.getMethod())) {
             csrfTokenService.validateToken(request);
-        }
 
         if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;

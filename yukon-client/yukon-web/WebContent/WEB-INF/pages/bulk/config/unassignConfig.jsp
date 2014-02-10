@@ -8,7 +8,7 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.unassignConfig" deviceCollection="${deviceCollection}">
     
         <form id="unassignConfigForm" method="post" action="<cti:url value="/bulk/config/doUnassignConfig" />">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             

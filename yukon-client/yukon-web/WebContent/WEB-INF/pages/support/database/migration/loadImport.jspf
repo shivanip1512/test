@@ -24,6 +24,7 @@
 	
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
 		<form id="loadLocalFileForm" action="/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
+            <cti:csrfToken/>
 			<input type="file" name="dataFile" size="30px">
             <cti:button nameKey="load" type="submit"/>
 		</form>
@@ -33,6 +34,7 @@
 	
 	<tags:nameValue name="Server File">
 		<form id="loadServerFileForm" action="/support/database/migration/loadServerFile" method="post">
+            <cti:csrfToken/>
 			<select name="dataFilePath">
 				<c:forEach var="serverFile" items="${serverFiles}">
 					<option value="${serverFile}">${serverFile}</option>

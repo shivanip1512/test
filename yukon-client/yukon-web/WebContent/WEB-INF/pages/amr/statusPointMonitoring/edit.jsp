@@ -45,13 +45,13 @@
     
     <cti:url var="submitUrl" value="/amr/statusPointMonitoring/delete"/>
     <form id="deleteStatusPointMonitor" action="${submitUrl}" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
     </form>
 
     <%-- MISC FORMS --%>
     <form id="toggleEnabledForm" action="/amr/statusPointMonitoring/toggleEnabled" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}">
     </form>
     

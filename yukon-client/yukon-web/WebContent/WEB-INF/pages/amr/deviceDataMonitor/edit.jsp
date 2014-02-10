@@ -13,11 +13,11 @@
     <%@ include file="shared.jspf"%>
 
     <form action="toggleEnabled" method="post" class="f-toggle_enabled_form">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
     <form action="delete" method="post" class="f-delete_form">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="monitorId" value="${monitor.id}"/>
     </form>
 

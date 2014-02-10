@@ -55,7 +55,7 @@
 	</spring:hasBindErrors>
 		
 	<form id="configurationForm" action="" method="post" onsubmit="return saveConfig()">
-	<cti:csrfToken/>
+	    <cti:csrfToken/>
 		<spring:nestedPath path="deviceConfiguration">
 			<div style="width: 600px; margin: 15px 10px; font-size: 12px;">
 				

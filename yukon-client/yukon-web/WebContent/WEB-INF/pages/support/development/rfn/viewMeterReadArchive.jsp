@@ -18,7 +18,7 @@ function useRandom() {
 
     <tags:sectionContainer title="RFN Meter Read Archive Request Test">
         <form action="sendMeterArchiveRequest" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <tags:nameValueContainer>
                 
                 <tags:nameValue name="Serial Number">

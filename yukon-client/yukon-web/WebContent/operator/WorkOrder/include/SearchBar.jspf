@@ -3,6 +3,7 @@
     <td width="50%" valign = "top" align = "left">&nbsp;</td>
     <td align = "right" width="50%"><span class="title-header">
 	  <form method="POST" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+        <cti:csrfToken/>
 	    <input type="hidden" name="action" value="SearchWorkOrder">
 		<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/SearchResults.jsp">
         <select name="SearchBy">

@@ -42,7 +42,7 @@
               <%@ include file="include/SearchBar.jspf" %>
 			  <c:if test="${workOrderBean.initialized}">
 					<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
-                    <cti:csrfToken/>
+                        <cti:csrfToken/>
 	                <input type="hidden" name="action" value="CreateReport">
 	                <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER %>">
 	                <input type="hidden" name="fileName" value="WorkOrder">

@@ -26,7 +26,7 @@
 <div class="schedule ${pageScope.styleClass}" id="scheduleId_${schedule.accountThermostatScheduleId}">
 
     <form method="POST" action="${actionPath}/save">
-    
+        <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="scheduleName" value="${fn:escapeXml(schedule.scheduleName)}">
@@ -103,6 +103,7 @@
         </c:choose>
     </form>
     <form id="send_${schedule.accountThermostatScheduleId}" action="${actionPath}/send" method="POST" class="dn">
+        <cti:csrfToken/>
         <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
         <input type="hidden" name="thermostatIds" value="${thermostatIds}">
         <input type="hidden" name="accountId" value="${accountId}">
@@ -131,6 +132,7 @@
             <div class="action-area">
                 <cti:button nameKey="save" classes="f-blocker primary action f-save"/>
                 <form action="${actionPath}/delete" method="POST">
+                    <cti:csrfToken/>
                     <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
                     <input type="hidden" name="thermostatId" value="${thermostatId}">
                     <input type="hidden" name="thermostatIds" value="${thermostatIds}">

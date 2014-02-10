@@ -3,6 +3,7 @@
     <td width="50%" valign = "top" align = "left">&nbsp;</td>
     <td align = "right" width="50%"><span class="title-header">
 	  <form name="searchForm" method="POST" action="<%= request.getContextPath() %>/servlet/InventoryManager">
+        <cti:csrfToken/>
 	    <input type="hidden" name="action" value="SearchInventory">
 		<input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Hardware/ResultSet.jsp">
         <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">

@@ -25,7 +25,7 @@ function loadCommand() {
     <tags:sectionContainer2 nameKey="executeCommand" styleClass="clear">
     
         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" name="deviceID" value="${device.yukonID}">
             <input type="hidden" name="timeOut" value="8000">
             <input id="redirect" type="hidden" name="REDIRECT" value="/amr/manualCommand/home?deviceId=${deviceId}">

@@ -168,7 +168,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     <!-- Delete Hardware Popup -->
     <i:simplePopup titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardware.displayName}">
         <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <c:choose>
@@ -488,7 +488,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         <c:if test="${not empty availableDevices}">
                             <div class="action-area">
                                 <form action="/stars/operator/hardware/zb/addDeviceToGateway" method="post">
-                                <cti:csrfToken/>
+                                    <cti:csrfToken/>
                                     <input type="hidden" name="accountId" value="${accountId}">
                                     <input type="hidden" name="inventoryId" value="${inventoryId}">
                                     <input type="hidden" name="gatewayId" value="${hardware.deviceId}">

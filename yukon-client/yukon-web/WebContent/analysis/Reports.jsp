@@ -241,7 +241,7 @@ function makeFirstSelectedFilterValueVisible () {
 %>
 
       <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
-      <cti:csrfToken/>
+         <cti:csrfToken/>
       <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
       <input type="hidden" name="REDIRECT" value="<%= fromURI %>">
       <input type="hidden" name="REFERRER" value="<%= fromURI %>">

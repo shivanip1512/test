@@ -15,7 +15,6 @@
 
         <div class="column one">
             <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
-                <cti:csrfToken/>
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 

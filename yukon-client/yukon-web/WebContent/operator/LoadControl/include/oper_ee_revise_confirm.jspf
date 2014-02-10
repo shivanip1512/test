@@ -96,6 +96,7 @@
                   <p align="center" class="MainText">The total target amount is <%= totAmountStr %> 
                     kW. Please confirm the offer information below.</p>
                   <form action="oper_ee.jsp?tab=reviseconfirm" method="post">
+                    <cti:csrfToken/>
           <input type=hidden name="confirmed" value="true">
           <input type=hidden name="prog" value="<%= progIdStr %>">
           <input type=hidden name="offer" value="<%= offerIdStr %>">

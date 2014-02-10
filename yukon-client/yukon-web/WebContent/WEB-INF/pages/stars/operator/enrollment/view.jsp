@@ -21,7 +21,7 @@
         <c:otherwise>
             <c:set var="multiple" value="${fn:length(available) > 1 ? true : false}"/>
             <form action="enroll" method="post">
-            <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="hidden" name="accountId" value="${accountId}">
 	            <table class="compact-results-table dashed">
 	                <thead>
@@ -69,7 +69,7 @@
         <c:otherwise>
             <c:set var="multiple" value="${fn:length(active) > 1 ? true : false}"/>
             <form action="enroll" method="post">
-            <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="hidden" name="accountId" value="${accountId}">
 	            <table class="compact-results-table dashed">
 	                <thead>

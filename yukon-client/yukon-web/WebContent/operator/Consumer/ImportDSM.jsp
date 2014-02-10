@@ -49,7 +49,7 @@ function generateConfigFiles(form) {
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager">
-              <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="hidden" name="action" value="ImportDSM">
                 <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/ImportDSM.jsp?Done">
                 <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/operator/Consumer/ImportDSM.jsp">

@@ -142,6 +142,7 @@
 <i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}">
     
     <form action="${actionPath}" method="post">
+        <cti:csrfToken/>
         <input type="hidden" name="accountId"  value="${accountId}" />
         <input type="hidden" name="thermostatIds"  value="${thermostatIds}" />
         <input type="hidden" name="fan" value=""/>

@@ -178,6 +178,7 @@ function validateAddressRange() {
         <%-- DEVICES --%>
         <div class="page-action-area">
             <form id="selectDevicesForm" method="post" action="${action}" class="dn">
+                <cti:csrfToken/>
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
@@ -279,6 +280,7 @@ function validateAddressRange() {
             
             <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup">
                 <form id="addByFileUploadForm" method="post" action="${action}" enctype="multipart/form-data">
+                    <cti:csrfToken/>
                     <input type="hidden" name="collectionType" value="fileUpload" />
                     <input type="hidden" name="isFileUpload" value="true" />
                     

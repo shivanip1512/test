@@ -23,7 +23,7 @@
         	<br>
 
 	        <form action="${actionUrl}" method="POST">
-            <cti:csrfToken/>
+                <cti:csrfToken/>
 		        <table>
 		            <tr>
 		                <td align="right">
@@ -117,7 +117,7 @@
     			        		<td>
                                     <c:if test="${optOut.state == 'SCHEDULED'}">
     			                        <form action="/stars/consumer/optout/confirmCancel" method="post">
-                                        <cti:csrfToken/>
+                                            <cti:csrfToken/>
     				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
     				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="button">
     				        			</form>

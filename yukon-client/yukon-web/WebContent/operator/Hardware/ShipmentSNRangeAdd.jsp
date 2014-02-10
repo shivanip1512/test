@@ -26,7 +26,7 @@
     	</div>
     	
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="ShipmentSNRangeAdd"> 
 	    	<div align="center">
 	    		<span class="title-header">SERIAL RANGE DETAIL</span>

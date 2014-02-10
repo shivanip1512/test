@@ -221,7 +221,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                                     </c:choose>
                                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                         <form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
-                                        <cti:csrfToken/>
+                                            <cti:csrfToken/>
                                             <input type="hidden" name="eventId" value="${item.eventId}">
                                             <input type="hidden" name="paoId" value="${item.paoId}">
                                             <cti:button  type="submit" nameKey="remove" renderMode="image" classes="deleteAssignment" icon="icon-cross"/>

@@ -53,7 +53,7 @@ function showFileUpload() {
 <i:simplePopup titleKey=".create.device" id="add-hardware-dialog" on=".f-create-hardware">
     <div class="stacked clearfix">
         <form action="creationPage" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <cti:button nameKey="addHardware" id="addHardwareBtn" type="submit"/>
             <select name="hardwareTypeId">
                 <c:forEach items="${addHardwareTypes}" var="deviceType">
@@ -64,7 +64,7 @@ function showFileUpload() {
     </div>
     <div class="stacked clearfix">
         <form action="abr/view" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
             <select name="hardwareTypeId">
                 <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
@@ -102,7 +102,7 @@ function showFileUpload() {
                             <tr>
                                 <td>
                                     <form id="selectByInventoryPickerForm" action="/stars/operator/inventory/inventoryActions" method="post">
-                                    <cti:csrfToken/>
+                                        <cti:csrfToken/>
                                         <input type="hidden" name="collectionType" value="idList"/>
                                         <input type="hidden" name="idList.ids" id="inventoryIds"/>
                                         <tags:pickerDialog type="lmHardwareBasePicker" 
@@ -128,7 +128,7 @@ function showFileUpload() {
                                     <div id="fileUploadPopup" title="${fileUploadTitle}" class="dn">
                                         <cti:url var="submitUrl" value="/stars/operator/inventory/uploadFile"/>
                                         <form method="post" action="${submitUrl}" enctype="multipart/form-data">
-                                        <cti:csrfToken/>
+                                            <cti:csrfToken/>
                                             <tags:nameValueContainer2>
                                                 <tags:nameValue2 nameKey=".fileLabel">
                                                     <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40">

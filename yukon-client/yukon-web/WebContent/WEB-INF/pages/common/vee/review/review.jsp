@@ -25,7 +25,7 @@
     <c:otherwise>
 
     <form id="review-form" action="/common/veeReview/save" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="afterPaoId" value="${nextPaoId}">
         <input type="hidden" id="checkAllState" value="">
 

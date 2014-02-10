@@ -91,7 +91,7 @@
     </script>
 
        <form id="themostatSelectForm" method="post" action="/stars/operator/thermostatSelect/selectRedirect">
-       <cti:csrfToken/>
+            <cti:csrfToken/>
     <tags:boxContainer2 nameKey="chooseThermostats" hideEnabled="false">
         
         

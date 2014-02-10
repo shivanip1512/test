@@ -73,7 +73,7 @@ function showAll(form) {
               <%@ include file="include/SearchBar.jspf" %>
               </b> 
               <form name="MForm" method="post" action="" onSubmit="setFilterValue(this)">
-              <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="hidden" name="page" value="1">
                 <table width="80%" border="0" cellspacing="0" cellpadding="0">
                   <tr> 

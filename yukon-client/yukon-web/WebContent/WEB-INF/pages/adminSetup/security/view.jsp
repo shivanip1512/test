@@ -21,7 +21,6 @@
     <dialog:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
-                <cti:csrfToken/>
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
                 <tags:nameValue2 nameKey=".keyName">
                     <tags:input path="name" size="30" />
@@ -36,7 +35,6 @@
     <dialog:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
-                <cti:csrfToken/>
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
                         <input type="file" name="keyFile">
@@ -84,7 +82,6 @@
                                 <td>${fn:escapeXml(route.paoName)}</td>
                                 <td>${fn:escapeXml(route.type.paoTypeName)}</td>
                                 <form:form id="routes_${route.paobjectId}" commandName="encryptedRoute" method="POST" autocomplete="off" action="${actionUrl}">
-                                    <cti:csrfToken/>
                                     <c:set var="btnAction" value="add" />
                                     <c:if test="${route.encrypted}">
                                         <c:set var="btnAction" value="remove" />
@@ -146,7 +143,6 @@
                         <c:forEach items="${encryptionKeys}" var="key">
                             <dialog:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
                             <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
-                                <cti:csrfToken/>
                                 <input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />
                                 <tr>
                                     <td>${fn:escapeXml(key.name)}</td>

@@ -131,7 +131,7 @@
 	        <cti:msg key="yukon.dr.consumer.general.oddsForControlTitle" var="oddsTitle" />
 	        <tags:boxContainer title="${oddsTitle}" hideEnabled="false">
 	            <form action="/stars/consumer/general/updateOddsForControlNotification" method="post" onsubmit="checkOddsForControlEmail()">
-                <cti:csrfToken/>
+                    <cti:csrfToken/>
 	                <input id="oddsForControlNotification" type="checkbox" name="oddsForControlNotification" ${(emailEnabled)?'checked':''}/>
 	                <label for="oddsForControlNotification">
 				        <cti:msg key="yukon.dr.consumer.general.enableOddsForControl"/>

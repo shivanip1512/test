@@ -26,7 +26,7 @@
     	</div>
     	
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return prepareSubmit(this)">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="DeliveryScheduleChange"> 
 	    	<div align="center">
 	    		<span class="title-header">DELIVERY SCHEDULE</span>

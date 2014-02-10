@@ -146,7 +146,7 @@ function validate(form) {
             </div>
             <cti:checkEnergyCompanyOperator>
     			<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
-                <cti:csrfToken/>
+                  <cti:csrfToken/>
                   <input type="hidden" name="action" value="SendSwitchCommands">
                   <input type="hidden" name="<%=ServletUtils.CONFIRM_ON_MESSAGE_PAGE%>">
     <%

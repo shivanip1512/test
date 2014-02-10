@@ -13,7 +13,7 @@
         </c:if>
         
         <form id="massChangeOptionsForm" method="post" action="/bulk/massChangeOptions">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
           <spring:nestedPath path="massChangeOptions">
           
               <%-- DEVICE COLLECTION --%>

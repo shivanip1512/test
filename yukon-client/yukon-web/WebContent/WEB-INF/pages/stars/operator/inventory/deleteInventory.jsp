@@ -30,7 +30,7 @@
         <c:if test="${empty task}">
             <div class="page-action-area">
                 <form action="delete" method="post">
-                <cti:csrfToken/>
+                    <cti:csrfToken/>
                     <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                     <cti:button nameKey="start" type="submit" name="start"/>
                     <cti:button nameKey="cancel" type="submit" name="cancel"/>

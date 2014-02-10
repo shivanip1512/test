@@ -30,7 +30,7 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="importContainer" styleClass="stacked">
                 <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
-                <cti:csrfToken/>
+                    <cti:csrfToken/>
                     <cti:msg2 key=".importTypeSelect" var="importTypeName" htmlEscape="true"/>
                     <cti:msg2 key="yukon.common.file" var="fileName" htmlEscape="true"/>
                     <tags:nameValueContainer>

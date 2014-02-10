@@ -14,7 +14,7 @@
 <div class="separated-sections image-picker" data-category="${category}" data-original-image-id="${selected}">
     <div class="section clearfix">
         <form action="/common/images" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <label for="uploader-${cti:escapeJavaScript(category)}" class="uploadLabel">
                 <i:inline key=".uploadNew"/>
             </label>

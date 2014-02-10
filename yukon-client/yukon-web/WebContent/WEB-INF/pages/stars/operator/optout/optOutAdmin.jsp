@@ -155,7 +155,7 @@
                             <br>
                         
                             <form action="/stars/operator/optOut/admin/setDisabled" method="post">
-                            <cti:csrfToken/>
+                                <cti:csrfToken/>
                                 <div class="stacked" style="background-color:#EEE;">
                                     <div class="stacked">
                                         <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction" arguments="${change}"/>
@@ -204,7 +204,7 @@
                             </div>
                             
                             <form action="/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
-                            <cti:csrfToken/>
+                                <cti:csrfToken/>
                                 <div style="background-color:#EEE;">
                                     <div>
                                         <b><i:inline key=".cancelOptOuts.byProgramName.instruction.label"/></b> <i:inline key=".cancelOptOuts.byProgramName.instruction.text"/>
@@ -279,7 +279,7 @@
                             </table>
                         
                             <form action="/stars/operator/optOut/admin/setCounts" method="post">
-                            <cti:csrfToken/>    
+                                <cti:csrfToken/>    
                                 <div style="background-color:#EEE">
                                     <div class="stacked">
                                         <b><i:inline key=".countOptOuts.byProgramName.label"/></b> <i:inline key=".countOptOuts.byProgramName.instruction" arguments="${change}"/>

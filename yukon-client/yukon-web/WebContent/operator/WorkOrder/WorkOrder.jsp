@@ -88,7 +88,7 @@ function applyOrdering(form)
 		            	<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
                         <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>		            	
 	              		<form name="MForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
 						    <input type="hidden" name="page_" value="1">
 						    <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 						    <input type="hidden" name="showAll" value="0">

@@ -23,5 +23,6 @@
 </a> 
 
 <form id="${formName}" method="post" action="/bulk/processingExceptionFileDownload">
+    <cti:csrfToken/>
     <input type="hidden" name="resultsId" value="${resultsId}">
 </form>

@@ -25,6 +25,7 @@ if (contWorkPhone != null)
     </td>
     <td align = "right" width="50%"><span class="title-header"> 
 	  <form name="searchForm" method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
+        <cti:csrfToken/>
 		<input type="hidden" name="action" value="SearchCustAccount">
         <select name="SearchBy" onchange="document.searchForm.SearchValue.value=''">
 <%

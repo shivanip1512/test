@@ -1,21 +1,21 @@
 package com.cannontech.web.security.csrf;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
-import com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class CsrfRequestDataValueProcessor implements RequestDataValueProcessor  
 {
+    @Autowired private CsrfTokenService csrfTokenService;
 
     @Override
     public Map<String,String> getExtraHiddenFields(HttpServletRequest request) {
-      Map<String,String> hiddenFields = new HashMap<String,String>();
-      hiddenFields.put(CsrfTokenService.REQUEST_CSRF_TOKEN, 
-                       new CsrfTokenServiceImpl().getTokenForSession(request.getSession()));
-      
+      Map<String,String> hiddenFields = Collections.singletonMap(CsrfTokenService.REQUEST_CSRF_TOKEN,
+                                         csrfTokenService.getTokenForSession(request.getSession()));
+
       return hiddenFields;
      }
     

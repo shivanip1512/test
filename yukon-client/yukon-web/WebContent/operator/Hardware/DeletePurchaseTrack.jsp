@@ -21,7 +21,7 @@
     	</div>
     	
 		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
 	    	<input type="hidden" name="action" value="DeletePurchasePlanConfirmed"> 
 	    	<div align="center">
 	    		<input type="submit" name="Submit" value="Yes">

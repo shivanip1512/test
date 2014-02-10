@@ -209,11 +209,13 @@
                           </div>
                         </td>
 						<form name="form2" method="post" action="oper_ee.jsp?tab=revise&prog=<%= programID %>&offer=<%= offerID %>&rev=<%= revisionNumber %>">
+                            <cti:csrfToken/>    
                         <td width="13%"> 
                               <input type="submit" name="tab" value="Revise">
                         </td>
 						</form>
                         <form name="form2" method="post" action="oper_ee.jsp?tab=close&prog=<%= programID %>&offer=<%= offerID %>">
+                            <cti:csrfToken/>
 						<td width="13%"> 
                           <input type="submit" name="tab" value="Close Offer">
                         </td>

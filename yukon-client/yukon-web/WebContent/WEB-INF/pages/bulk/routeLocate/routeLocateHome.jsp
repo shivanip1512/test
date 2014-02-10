@@ -84,7 +84,7 @@ function submitForm(id) {
                                 <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}"/>
                                 
                                 <form id="${successFormName}" method="post" action="/bulk/collectionActions">
-                            <cti:csrfToken/>
+                                    <cti:csrfToken/>
                                     <cti:deviceCollection deviceCollection="${b.successDeviceCollection}"/>
                                 </form>
                             </td>
@@ -101,7 +101,7 @@ function submitForm(id) {
                                 <tags:selectedDevicesPopup deviceCollection="${b.failureDeviceCollection}"/>
                                 
                                 <form id="${notFoundCollectionActionFormName}" method="post" action="/bulk/collectionActions">
-                            <cti:csrfToken/>
+                                    <cti:csrfToken/>
                                     <cti:deviceCollection deviceCollection="${b.failureDeviceCollection}"/>
                                 </form>
                                 

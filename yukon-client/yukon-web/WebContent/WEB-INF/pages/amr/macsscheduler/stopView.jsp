@@ -7,7 +7,7 @@
 <cti:standardPage module="tools" page="scripts.stop">
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
     <form id="stopform" method="post" action="action">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <tags:sectionContainer2 nameKey=".start" styleClass="clearfix">
             <div>
                 <input type="checkbox" name="stopNow" checked="checked"/><i:inline key=".stopNow"/>

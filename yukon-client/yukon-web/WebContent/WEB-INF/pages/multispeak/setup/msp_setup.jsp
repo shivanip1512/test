@@ -77,7 +77,7 @@
 			<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
 			<cti:dataGridCell>
 			<form name="mspForm" method="post" action="/multispeak/setup/save">
-            <cti:csrfToken/>
+                <cti:csrfToken/>
 				<input type="hidden" name="actionEndpoint">
 				<input type="hidden" name="actionService">
 				

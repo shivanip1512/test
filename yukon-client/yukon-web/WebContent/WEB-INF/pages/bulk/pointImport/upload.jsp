@@ -12,7 +12,7 @@
                     <tags:sectionContainer title="${importTitle}">
                         <div class="stacked"><i:inline key=".importDescription"/></div>
                         <form id="importForm" method="post" action="/bulk/pointImport/submitImport" enctype="multipart/form-data">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
                             <tags:nameValueContainer2>
                                 <tags:nameValue2 nameKey=".importTypeSelectLabel">
                                     <select name="importType" id="importTypeSelect">

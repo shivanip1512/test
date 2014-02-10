@@ -52,7 +52,7 @@ self.name = "mainWin";
             <div align="center"><b>SIGN IN</b><br>
               Please enter your username and password below.</div>
             <form name="form1" method="post" action="/servlet/LoginController">
-            <cti:csrfToken/>
+              <cti:csrfToken/>
               <input type="hidden" name="ACTION" value="LOGIN">
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 

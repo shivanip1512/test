@@ -101,7 +101,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 		
 	      <tr>
           <FORM METHOD="POST" ACTION="/scripts/jrun.dll/servlet/LoginController">
-          <cti:csrfToken/>
+            <cti:csrfToken/>
             <td width="40%" height="20"> 
               <p align=RIGHT>&nbsp;<font size="-1" face="Arial">Username:</font>
             </td>

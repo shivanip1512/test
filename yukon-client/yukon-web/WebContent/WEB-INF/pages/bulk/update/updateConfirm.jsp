@@ -8,7 +8,7 @@
     <tags:sectionContainer title="${headerTitle}" id="updateConfirmContainer">
     
         <form id="updateConfirmForm" action="/bulk/update/doUpdate" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <%-- CONFIRMATION INFO --%>
             <cti:msg var="rows" key="yukon.common.device.bulk.updateConfirm.rows"/>
             <cti:msg var="identifierColumn" key="yukon.common.device.bulk.updateConfirm.identifierColumn"/>

@@ -14,7 +14,7 @@
    	<tags:bulkActionContainer key="yukon.web.modules.tools.bulk.readAttribute" deviceCollection="${deviceCollection}">
    	
    		<form id="groupMeterReadForm" action="/group/groupMeterRead/readCollection" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		
 	        <strong class="db"><cti:msg2 key="yukon.common.device.groupMeterRead.home.selectAttributeLabel"/>:</strong>

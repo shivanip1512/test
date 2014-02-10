@@ -85,7 +85,7 @@
                 <tags:nameValueGap gapHeight="15px;"/>
                 <tags:nameValue name="${filePathLabel}">
                       <form id="openFileForm" action="/support/database/migration/downloadExportFile" method="post">
-                      <cti:csrfToken/>
+                          <cti:csrfToken/>
                           <input type="hidden" name="fileKey" value="${status.id}">
                       </form>
                     <div>
@@ -157,12 +157,12 @@
         
         <%-- COMMIT --%>
         <form id="cancelForm" action="/support/database/migration/home" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" name="import" value="true">
         </form>
     
         <form id="confirmForm" action="/support/database/migration/importConfirm" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" name="fileKey" value="${status.id}">
             <input type="hidden" id="warningProcessingValue" name="warningProcessingValue" value="USE_EXISTING">
         </form>

@@ -92,7 +92,7 @@ jQuery(function() {
             
                     <tags:boxContainer2 nameKey="membersContainer" styleClass="membersContainer">
                         <form action="manageMembers" method="post">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
                             <input name="ecId" type="hidden" value="${ecId}">
                             
                             <c:choose>
@@ -151,7 +151,7 @@ jQuery(function() {
                     
                     <tags:boxContainer2 nameKey="userGroupsContainer">
                         <form action="updateOperatorGroups" id="operatorUserGroupsForm" method="post">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
                             <input name="ecId" type="hidden" value="${ecId}">
                             <input type="hidden" name="operatorUserGroupIds" id="operatorUserGroupIds">
                             <div class="operatorGroupTable">
@@ -188,7 +188,7 @@ jQuery(function() {
                         <br>
                         
                         <form action="updateCustomerGroups" id="customerUserGroupsForm" method="post">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
                             <input name="ecId" type="hidden" value="${ecId}">
                             <input type="hidden" name="customerUserGroupIds" id="customerUserGroupIds">
                             <div class="customerGroupTable">

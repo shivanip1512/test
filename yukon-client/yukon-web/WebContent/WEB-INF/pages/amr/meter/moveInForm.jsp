@@ -9,7 +9,7 @@
 </c:forEach>
 
 <form action="/meter/moveInRequest?deviceId=${meter.deviceId}" id="moveInForm" method="post">
-<cti:csrfToken/>    
+    <cti:csrfToken/>    
 	<tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
 
 		<tags:nameValueContainer2>

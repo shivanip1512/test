@@ -143,7 +143,7 @@
                 </tr>
               </table>
               <form name="form1" method="post" action="" onsubmit="return confirm('Are you sure you want to cancel the current operation?')">
-              <cti:csrfToken/>
+                <cti:csrfToken/>
                 <input type="submit" name="Cancel" value="Cancel">
               </form>
               <p>&nbsp;</p>

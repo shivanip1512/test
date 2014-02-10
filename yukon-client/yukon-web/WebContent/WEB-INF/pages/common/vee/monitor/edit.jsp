@@ -27,12 +27,12 @@
     
     <%-- MISC FORMS --%>
     <form id="configDeleteForm" action="/common/vee/monitor/delete" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="deleteValidationMonitorId" value="${validationMonitorId}">
     </form>
     
     <form id="toggleEnabledForm" action="/common/vee/monitor/toggleEnabled" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
     </form>
     
@@ -41,7 +41,7 @@
     
     <%-- UPDATE FORM --%>
     <form id="updateForm" action="/common/vee/monitor/update" method="post">
-    <cti:csrfToken/>
+        <cti:csrfToken/>
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
         
        <tags:sectionContainer2 nameKey="setup">

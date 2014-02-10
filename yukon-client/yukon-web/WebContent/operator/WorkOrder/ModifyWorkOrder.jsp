@@ -216,7 +216,7 @@ function sendWorkOrder() {
               </tr>--%>
             </table>
 			<form name="rptForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator">
-            <cti:csrfToken/>
+              <cti:csrfToken/>
 			  <input type="hidden" name="ACTION" value="DownloadReport">
 			  <input type="hidden" name="type" value="<%=com.cannontech.analysis.ReportTypes.EC_WORK_ORDER%>">
 			  <input type="hidden" name="fileName" value="WorkOrder">
@@ -227,7 +227,7 @@ function sendWorkOrder() {
 			  <input type="hidden" name="REFERRER" value="<%=request.getRequestURI()%>">
 			</form>
 			<form name="woForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
-            <cti:csrfToken/>
+              <cti:csrfToken/>
 			  <input type="hidden" name="action" value="SendWorkOrder">
               <input type="hidden" name="OrderID" value="<%=liteOrder.getOrderID()%>">
                 <input type="hidden" name="OrderNo" value="<%=liteOrder.getOrderNumber()%>">
@@ -251,7 +251,7 @@ function sendWorkOrder() {
               %>			  
               
 			  <form name="soForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
-              <cti:csrfToken/>
+                <cti:csrfToken/>
 			    <input type="hidden" name="action" value="UpdateWorkOrder">
                 <input type="hidden" name="OrderNo" value="<%=liteOrder.getOrderNumber()%>">
                 <input type="hidden" name="OrderID" value="<%=liteOrder.getOrderID()%>">

@@ -60,7 +60,7 @@
 							<cti:param name="contactId" value="${contact.contactID}"/>
 						</cti:url>
 			    		<form action="${deleteUrl}" method="POST">
-                        <cti:csrfToken/>
+                            <cti:csrfToken/>
 							<input type="hidden" name="contactID" value="${contact.contactID}"/>
 				    		<a id="contact_${contact.contactID}" class="fr button naked" type="submit">
                                 <i class="icon icon-cross"></i><span class="b-label"><i:inline key=".removeContact"/></span>

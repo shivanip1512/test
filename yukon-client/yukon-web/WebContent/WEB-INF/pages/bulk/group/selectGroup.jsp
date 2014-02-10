@@ -36,7 +36,7 @@ function validateGroupIsSelected(btn, alertText) {
     <tags:bulkActionContainer key="${containerKey}" deviceCollection="${deviceCollection}">
     
         <form id="selectGroupForm" action="${formAction}" method="post" style="max-width: 500px;">
-        <cti:csrfToken/>   
+            <cti:csrfToken/>   
              <%-- DEVICE COLLECTION --%>
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
                                 

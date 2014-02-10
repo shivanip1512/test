@@ -96,6 +96,7 @@
         <div align="center">
 		
           <form action="oper_ee.jsp?tab=newconfirm" method="post"> 
+             <cti:csrfToken/>  
           <input type=hidden name="confirmed" value="true">
           <input type=hidden name="program" value='<%= checker.get("program") %>'>
           <input type=hidden name="date" value="<%= dateStr %>">

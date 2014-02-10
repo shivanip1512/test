@@ -79,7 +79,7 @@
     
     <div class="page-action-area">    
         <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
-        <cti:csrfToken/>
+            <cti:csrfToken/>
             <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
             
             <cti:button id="deleteButton" nameKey="delete" type="submit"/>

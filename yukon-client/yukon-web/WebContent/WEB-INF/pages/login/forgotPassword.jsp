@@ -23,7 +23,7 @@
                     </div>
                 </c:if>
                 <form name="form1" method="post" action="<cti:url value="/servlet/StarsPWordRequest"/>">
-                <cti:csrfToken/>
+                    <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".username">
                             <input autocomplete="off" id="USERNAME" name="USERNAME">
