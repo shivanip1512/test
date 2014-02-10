@@ -49,9 +49,9 @@ if (!Object.create) {
 }
 
 /** Yukon Module */
-var Yukon = (function (yukonMod) {
+var yukon = (function (yukonMod) {
     return yukonMod;
-})(Yukon || {});
+})(yukon || {});
 
 // namespace function, so we don't have to put all those checks to see if
 // modules exist and either create empty ones or set a reference to one

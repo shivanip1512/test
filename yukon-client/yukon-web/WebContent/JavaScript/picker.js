@@ -1,6 +1,6 @@
-var Yukon = (function (yukonMod) {
+var yukon = (function (yukonMod) {
     return yukonMod;
-})(Yukon || {});
+})(yukon || {});
 
 // prototype for Picker, from which all Picker instances are derived
 yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {

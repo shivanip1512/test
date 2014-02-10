@@ -1,6 +1,6 @@
-var Yukon = (function (yukonMod) {
+var yukon = (function (yukonMod) {
     return yukonMod;
-})(Yukon || {});
+})(yukon || {});
 yukon.namespace('yukon.Surveys.List');
 yukon.Surveys.List = (function () {
     mod = {

@@ -6,9 +6,9 @@
  * @requires jQuery UI 1.9.2+
  */
 
-var Yukon = (function (yukonMod) {
+var yukon = (function (yukonMod) {
     return yukonMod;
-})(Yukon || {});
+})(yukon || {});
 
 yukon.namespace('yukon.dr.dashboard');
 

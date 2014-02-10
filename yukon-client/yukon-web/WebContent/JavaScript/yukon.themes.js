@@ -10,9 +10,9 @@
  * @requires JQUERY_SPECTRUM
  */
 
-var Yukon = (function (yukonMod) {
+var yukon = (function (yukonMod) {
     return yukonMod;
-})(Yukon || {});
+})(yukon || {});
 
 yukon.namespace('yukon.Themes');
 
