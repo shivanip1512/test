@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.DeviceDataMonitor');
+yukon.namespace('yukon.DeviceDataMonitor');
 
-Yukon.DeviceDataMonitor = (function () {
+yukon.DeviceDataMonitor = (function () {
     /**
      * Singleton that manages the javascript in the Device Data Monitor
      * 
@@ -615,8 +615,8 @@ Yukon.DeviceDataMonitor = (function () {
     };
 
     return deviceDataMonitorMod;
-})(Yukon.DeviceDataMonitor || {});
+})(yukon.DeviceDataMonitor || {});
 
 jQuery(function () {
-    Yukon.DeviceDataMonitor.init();
+    yukon.DeviceDataMonitor.init();
 });

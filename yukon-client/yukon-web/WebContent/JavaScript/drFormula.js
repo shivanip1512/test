@@ -2,9 +2,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.DrFormula');
+yukon.namespace('yukon.DrFormula');
 
-Yukon.DrFormula = (function() {
+yukon.DrFormula = (function() {
     var
     _initialized = false, 
     _rowIndex, // Set in intializer
@@ -436,7 +436,7 @@ Yukon.DrFormula = (function() {
 }());
 
 jQuery(function() {
-    Yukon.DrFormula.init();
+    yukon.DrFormula.init();
 
     jQuery("#assignments").on("mouseenter", ".f-drFormula-show-on-hover-target", function() {
         jQuery(this).find(".f-drFormula-show-on-hover").show();

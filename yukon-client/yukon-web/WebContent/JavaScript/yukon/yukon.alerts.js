@@ -8,8 +8,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Alerts');
-Yukon.Alerts = (function () {
+yukon.namespace('yukon.Alerts');
+yukon.Alerts = (function () {
         var _initialized = false,
         _countInitialized = false,
         _oldCount = 0,
@@ -111,5 +111,5 @@ Yukon.Alerts = (function () {
 
 
 jQuery(function() {
-    Yukon.Alerts.init();
+    yukon.Alerts.init();
 });

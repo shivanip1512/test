@@ -38,4 +38,4 @@
                                 completionCallback="${pageScope.completionCallback}" />
 </div>
 
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />

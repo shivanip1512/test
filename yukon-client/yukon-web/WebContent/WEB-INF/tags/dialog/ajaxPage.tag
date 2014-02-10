@@ -71,7 +71,7 @@ jQuery(document).ready(function() {
         jQuery.extend(dialogOpts, ${options});
     </c:if>
     dialogDiv.dialog(dialogOpts);
-    Yukon.ui.unblockPage();
+    yukon.ui.unblockPage();
 });
 </script>
 

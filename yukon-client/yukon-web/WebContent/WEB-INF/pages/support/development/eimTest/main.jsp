@@ -74,7 +74,7 @@ jQuery(function() {
             jQuery('#uriHidden').val((uriSelect.val() == 'other' ? uriInput : uriSelect).val());
         },
         'success' : function(responseXml) {
-            Yukon.ui.unblockPage();
+            yukon.ui.unblockPage();
             var dest = jQuery('#eimResponseDiv').empty();
             if (jQuery('#formatResponse')[0].checked) {
                 dest.append(jQuery('<pre/>', {'text' : formatXml(responseXml)}));

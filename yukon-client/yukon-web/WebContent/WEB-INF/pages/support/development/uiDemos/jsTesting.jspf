@@ -40,19 +40,19 @@
 /*
 var fakeYukon = fakeYukon || {};
 jQuery( function () {
-        Yukon.modules = {};
-        Yukon.modules.dom = function (box) {
+        yukon.modules = {};
+        yukon.modules.dom = function (box) {
             box.getElement = function () { console.log('getElement called'); };
             box.getStyle = function () { console.log('getStyle called'); };
             box.foo = "bar";
         };
-        Yukon.modules.event = function (box) {
+        yukon.modules.event = function (box) {
         // access to the Sandbox prototype if needed:
         // box.constructor.prototype.m = "mmm";
             box.attachEvent = function () { console.log('attachEvent called'); };
             box.detachEvent = function () { console.log('detachEvent called'); };
         };
-        Yukon.modules.ajax = function (box) {
+        yukon.modules.ajax = function (box) {
             box.makeRequest = function () { console.log('makeRequest called'); };
             box.getResponse = function () { console.log('getResponse called'); };
         };
@@ -77,15 +77,15 @@ jQuery( function () {
             // no modules or "*" both mean "use all modules"
             if (!modules || modules === '*') {
                 modules = [];
-                for (i in Yukon.modules) {
-                        if (Yukon.modules.hasOwnProperty(i)) {
+                for (i in yukon.modules) {
+                        if (yukon.modules.hasOwnProperty(i)) {
                             modules.push(i);
                         }
                 }
             }
             // initialize the required modules
             for (i = 0; i < modules.length; i += 1) {
-                Yukon.modules[modules[i]](this);
+                yukon.modules[modules[i]](this);
             }
             // call the callback
             callback(this);
@@ -111,7 +111,7 @@ jQuery( function () {
         console.log("mybox dump:");
         console.dir(mybox);
         // add some new modules
-        Yukon.modules.ui = function (box) {
+        yukon.modules.ui = function (box) {
             var uiState = false;
             box.getUiState = function () {
                 return uiState;
@@ -179,7 +179,7 @@ jQuery(function() {
     try {
         console.log("javascript object creation test begin");
         // globally-accessible functions
-        Yukon.protoPicker.prototype.dumpVars = function () {
+        yukon.protoPicker.prototype.dumpVars = function () {
             console.log("pickerType=" + this.pickerType + " pickerId=" + this.pickerId);
         };
 
@@ -198,8 +198,8 @@ jQuery(function() {
             + " horse.multiSelectMode=" + horse.multiSelectMode);
         // This method, init, does secondary initialization which needs to happen after
         // the HTML elements in the tag file have been fully created.
-        Yukon.ui.aux.callAfterMainWindowLoad(stock.init.bind(stock, true));
-        Yukon.ui.aux.callAfterMainWindowLoad(horse.init.bind(horse, true));
+        yukon.ui.aux.callAfterMainWindowLoad(stock.init.bind(stock, true));
+        yukon.ui.aux.callAfterMainWindowLoad(horse.init.bind(horse, true));
         //console.log("calling stock.resetSearchFields...");
         // should, and does, cause an exception, because the method
         // is not available to Picker, but private to protoPicker

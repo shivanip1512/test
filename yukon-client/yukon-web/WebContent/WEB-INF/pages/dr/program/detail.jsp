@@ -54,7 +54,7 @@
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                             <cti:dataUpdaterCallback
-                                function="Yukon.EstimatedLoad.displayProgramValue"
+                                function="yukon.EstimatedLoad.displayProgramValue"
                                 value="ESTIMATED_LOAD/${programId}/PROGRAM"
                                 initialize="true"/>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">

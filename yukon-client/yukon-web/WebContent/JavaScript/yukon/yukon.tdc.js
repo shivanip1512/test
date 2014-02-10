@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Tdc');
-Yukon.Tdc = (function () {
+yukon.namespace('yukon.Tdc');
+yukon.Tdc = (function () {
     var _playAudio = function() {
         try {
             jQuery('#alarm-audio')[0].play();
@@ -59,7 +59,7 @@ Yukon.Tdc = (function () {
             
             jQuery('.f-ack-all').click(function () {
                 jQuery.post('/tdc/acknowledgeAll', {}).done(function (data) {
-                    Yukon.ui.flashSuccess(data.success);
+                    yukon.ui.flashSuccess(data.success);
                 });
             });    
             
@@ -177,7 +177,7 @@ Yukon.Tdc = (function () {
 	    		};
 	    		jQuery.post('/tdc/acknowledgeAlarmsForDisplay', data)
 	        		.done(function (data) {
-	            	Yukon.ui.flashSuccess(data.success);
+	            	yukon.ui.flashSuccess(data.success);
 	        	});
 			});
            jQuery('.f-one-alarm-ack').click(function (event) {
@@ -287,7 +287,7 @@ Yukon.Tdc = (function () {
                 var data = {};
                 data.pointId = pointId;
                 jQuery.post('/tdc/acknowledgeAlarmsForPoint', data).done(function(data) {  
-                    Yukon.ui.flashSuccess(data.success);
+                    yukon.ui.flashSuccess(data.success);
                     jQuery('#tdc-popup').dialog('close');
                 });
             });
@@ -297,5 +297,5 @@ Yukon.Tdc = (function () {
 }());
 
 jQuery(function () {
-    Yukon.Tdc.init();
+    yukon.Tdc.init();
 });

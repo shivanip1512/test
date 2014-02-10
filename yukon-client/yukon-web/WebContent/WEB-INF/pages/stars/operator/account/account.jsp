@@ -149,7 +149,7 @@
                         success:    function(data){
                             //reset the dialog and clear the errors
                             jQuery("#passwordDialog").dialog('close');
-                            Yukon.ui.flashSuccess(data.flash);
+                            yukon.ui.flashSuccess(data.flash);
                         },
                         error:      function(xhr){
                             var data = jQuery.parseJSON(xhr.responseText);

@@ -1,7 +1,7 @@
 // initiate profile collection
-Yukon.namespace('Yukon.PeakDayProfile');
+yukon.namespace('yukon.PeakDayProfile');
 
-Yukon.PeakDayProfile = (function () {
+yukon.PeakDayProfile = (function () {
     var mod,
         // helper function to reset days after options
         _setAvailableValuesForDaysAfterSelectElement = function (selectElement, values) {
@@ -43,7 +43,7 @@ Yukon.PeakDayProfile = (function () {
                 type: 'POST',
                 data: args
             }).done(function (data, textStatus, jqXHR) {
-                var jsonData = Yukon.ui.aux.getHeaderJSON(jqXHR);
+                var jsonData = yukon.ui.aux.getHeaderJSON(jqXHR);
                 initiateComplete(jqXHR, jsonData);
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 var jsonData = {};

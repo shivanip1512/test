@@ -20,7 +20,7 @@ var indexManager_getProgress = function (indexName) {
         url: "/index/percentDone?index=" + indexName,
         type: 'get'
     }).done(function (data, textStatus, jqXHR) {
-        var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+        var json = yukon.ui.aux.getHeaderJSON(jqXHR);
         indexManager_updateProgressWrapper(jqXHR, json);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         indexManager_ajaxError(jqXHR);

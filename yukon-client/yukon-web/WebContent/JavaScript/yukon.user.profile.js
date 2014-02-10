@@ -1,5 +1,5 @@
-Yukon.namespace('Yukon.UserPreferences');
-Yukon.UserPreferences = (function () {
+yukon.namespace('yukon.UserPreferences');
+yukon.UserPreferences = (function () {
     /**
      * Singleton that manages the javascript in User Preferences
      * 
@@ -224,7 +224,7 @@ Yukon.UserPreferences = (function () {
             if (is_phone) {
                 input.addClass("f-formatPhone");
                 for (var ii=0; ii < input.length; ii++) {
-                    Yukon.ui.formatPhone(input[ii]);
+                    yukon.ui.formatPhone(input[ii]);
                 }
             }
         },
@@ -342,5 +342,5 @@ Yukon.UserPreferences = (function () {
 })();
 
 jQuery(function() {
-    Yukon.UserPreferences.init();
+    yukon.UserPreferences.init();
 });

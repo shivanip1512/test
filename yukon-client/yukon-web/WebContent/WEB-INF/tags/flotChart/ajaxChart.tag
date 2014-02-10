@@ -23,13 +23,13 @@ jQuery(function() {
         url: '${url}',
         dataType : 'json',
         success: function(data) {
-            Yukon.Flot.addChart({
+            yukon.Flot.addChart({
                 chartId: chartId,
                 type: data.type,
                 data: data.datas,
                 options: data.options
             });
-            Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+            yukon.Flot.charts[chartId].methods.plotGraph(chartId);
         }
     });
 });

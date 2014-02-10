@@ -22,7 +22,7 @@
             <tags:sectionContainer2 nameKey="heading.info">
             <tags:nameValueContainer2>
                 <cti:dataUpdaterCallback
-                    function="Yukon.EstimatedLoad.displaySummaryValue"
+                    function="yukon.EstimatedLoad.displaySummaryValue"
                     identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                         <div data-pao="${scenarioId}">

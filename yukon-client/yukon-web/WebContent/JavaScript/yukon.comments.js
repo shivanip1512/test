@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.Comments');
+yukon.namespace('yukon.Comments');
 
-Yukon.Comments = (function () {
+yukon.Comments = (function () {
     var mod,
         _submitForm = function () {
             var submitNormal = jQuery('#commentForm').data('submitNormal');

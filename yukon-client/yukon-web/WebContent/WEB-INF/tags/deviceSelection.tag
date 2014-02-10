@@ -58,7 +58,7 @@ function selectDevices(devices) {
     
     document.getElementById('deviceIds').value = ids;
     if ('${blockOnSubmit}') {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
     }
     document.getElementById('selectDevicesForm').submit();
     return true;
@@ -71,7 +71,7 @@ function submitSelectDevicesByGroupForm() {
         return false;
     }
     if ('${blockOnSubmit}') {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
     }
     document.getElementById('selectDevicesByGroupForm').submit();
 }

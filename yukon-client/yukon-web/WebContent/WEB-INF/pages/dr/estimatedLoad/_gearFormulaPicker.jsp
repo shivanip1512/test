@@ -11,7 +11,7 @@
     selectionProperty="name"
     nameKey="noAssignment"
     icon="icon-plus-green"
-    endAction="Yukon.DrFormula.gearFormulaPickerClose"
+    endAction="yukon.DrFormula.gearFormulaPickerClose"
     initialId="${gearAssignment.formulaId}"
     allowEmptySelection="true"/>
     <c:if test="${gearAssignment.formulaId != null}">

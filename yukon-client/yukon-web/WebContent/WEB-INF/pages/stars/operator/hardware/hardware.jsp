@@ -26,7 +26,7 @@ jQuery(function(){
             url += 'decommission';
         }
 
-        Yukon.ui.block(event);
+        yukon.ui.block(event);
 
         jQuery.ajax({
             type: 'GET',
@@ -40,9 +40,9 @@ jQuery(function(){
             } else {
                 jQuery('#zbCommandStatus').removeClass('success').addClass('error');
             }
-            Yukon.ui.unblock(event);
+            yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
-            Yukon.ui.unblock(event);
+            yukon.ui.unblock(event);
         });
     });
 
@@ -61,7 +61,7 @@ jQuery(function(){
             url += 'decommission';
         }
 
-        Yukon.ui.block(event);
+        yukon.ui.block(event);
 
         jQuery.ajax({
             type: 'GET',
@@ -75,9 +75,9 @@ jQuery(function(){
             } else {
                 jQuery('#zbAssignedStatus').removeClass('success').addClass('error');
             }
-            Yukon.ui.unblock(event);
+            yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
-            Yukon.ui.unblock(event);
+            yukon.ui.unblock(event);
         });
     });
 

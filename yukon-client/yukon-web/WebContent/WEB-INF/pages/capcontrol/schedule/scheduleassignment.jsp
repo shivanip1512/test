@@ -47,9 +47,9 @@ jQuery(function() {
             'deviceName': deviceName
         }).done(function(json) {
             if (!json.success) {
-                Yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
+                yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
             } else {
-                Yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
+                yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
             }
         });
         
@@ -68,9 +68,9 @@ jQuery(function() {
             'deviceName': deviceName
         }).done(function(json) {
             if(!json.success) {
-                Yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
+                yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
             } else {
-                Yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
+                yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
             }
         });
         
@@ -83,7 +83,7 @@ function setOvUv(eventId, ovuv) {
         'ovuv': ovuv
     }).done(function(json) {
         if (!json.success) {
-            Yukon.CapControl.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
+            yukon.CapControl.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
         }
     });
 }
@@ -119,12 +119,12 @@ function newScheduleAssignmentPopup(schedule, command) {
     <c:choose>
         <c:when test="${param.success}">
             <script type="text/javascript">
-                Yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
+                yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
             </script>
         </c:when>
         <c:otherwise>
             <script type="text/javascript">
-            Yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
+            yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
             </script>
         </c:otherwise>
     </c:choose>

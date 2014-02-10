@@ -4,7 +4,7 @@
 
 <f:subview id="cbcStrategy">
 
-    <h:selectBooleanCheckbox id="Edit_Strategy" onclick="Yukon.CapControl.lockButtonsPerSubmit('Strategy_Buttons'); submit();"
+    <h:selectBooleanCheckbox id="Edit_Strategy" onclick="yukon.CapControl.lockButtonsPerSubmit('Strategy_Buttons'); submit();"
         value="#{capControlForm.editingCBCStrategy}" rendered="#{capControlForm.hasEditingRole}"/>
         
     <x:outputLabel for="Edit_Strategy" value="Edit Strategy" title="A toggle to edit the selected strategy" styleClass="padCheckBoxLabel" rendered="#{capControlForm.hasEditingRole}"/>

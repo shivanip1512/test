@@ -104,9 +104,9 @@
         dialogCont = groupTreeObj.closest('.ui-dialog');
         treeHelperPane = groupTreeObj.find('.tree_helper_controls');
         // ignores if present, creates if not
-        Yukon.namespace('Yukon.ui.dialogs');
-        if ('undefined' === typeof Yukon.ui.dialogs.${id}) {
-            Yukon.namespace('Yukon.ui.dialogs.${id}');
+        yukon.namespace('yukon.ui.dialogs');
+        if ('undefined' === typeof yukon.ui.dialogs.${id}) {
+            yukon.namespace('yukon.ui.dialogs.${id}');
         }
         <c:if test="${!empty pageScope.triggerElement}">
         //click a button, get the window
@@ -117,10 +117,10 @@
             // save offset of popup once. Subsequently, dialogCont.offset().top appears to change
             // Store the first value of the top offset of the dialog. Subsequent values vary
             // considerably and undermine the positioning logic
-            if ('undefined' === typeof Yukon.ui.dialogs.${id}.offsetTop) {
-                Yukon.ui.dialogs.${id}.offsetTop = offsetTop;
+            if ('undefined' === typeof yukon.ui.dialogs.${id}.offsetTop) {
+                yukon.ui.dialogs.${id}.offsetTop = offsetTop;
             } else {
-                offsetTop = Yukon.ui.dialogs.${id}.offsetTop;
+                offsetTop = yukon.ui.dialogs.${id}.offsetTop;
             }
             // make dialog wider so long entries don't force horizontal scrollbars
             groupTreeObj.dialog('option', 'width', TREE_DIALOG_MAX_WIDTH);

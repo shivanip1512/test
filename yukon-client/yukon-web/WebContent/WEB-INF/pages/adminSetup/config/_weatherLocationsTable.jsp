@@ -38,7 +38,7 @@
                         <td>${fn:escapeXml(weatherStations[weatherLocation.stationId].stationDesc)}</td>
                         <td>
                             <cti:dataUpdaterCallback
-                             function="Yukon.AdminSetupConfig.updateWeatherInputFields"
+                             function="yukon.AdminSetupConfig.updateWeatherInputFields"
                              initialize="true"
                              value="WEATHER_STATION/${weatherLocation.paoIdentifier.paoId}/JSON_META_DATA" />
                             <span id="temperatureField_${weatherLocation.paoIdentifier.paoId}" class="f-drFormula-temperature-field">

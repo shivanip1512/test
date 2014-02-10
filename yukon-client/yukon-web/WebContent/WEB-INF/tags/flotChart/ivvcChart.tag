@@ -16,7 +16,7 @@ jQuery(function() {
         jsonDataAndOptions = ${cti:jsonString(jsonDataAndOptions)},
         choiceContainer = jQuery(".graph_phases");
 
-    Yukon.Flot.addChart({
+    yukon.Flot.addChart({
         chartId: chartId,
         type: jsonDataAndOptions.type,
         data: jsonDataAndOptions.datas,
@@ -25,7 +25,7 @@ jQuery(function() {
             getFilteredGraphData: function() {
                 // only show checked phase lines
                 var phases = getCheckedPhases();
-                var data_with_meta = Yukon.Flot.charts[chartId].data_with_meta;
+                var data_with_meta = yukon.Flot.charts[chartId].data_with_meta;
                 var data = [];
                 for (var i=0; i < data_with_meta.length; i++) {
                     if (typeof data_with_meta[i].phase === 'undefined'
@@ -49,15 +49,15 @@ jQuery(function() {
     }
 
     var phaseMap = {};
-    for (var i=0; i < Yukon.Flot.charts[chartId].data_with_meta.length; i++) {
-        var line_phase = Yukon.Flot.charts[chartId].data_with_meta[i].phase;
+    for (var i=0; i < yukon.Flot.charts[chartId].data_with_meta.length; i++) {
+        var line_phase = yukon.Flot.charts[chartId].data_with_meta[i].phase;
         if (typeof line_phase !== 'undefined') {
             if (typeof phaseMap[line_phase] === 'undefined') {
                 phaseMap[line_phase] = {};
             }
             phaseMap[line_phase] = {
-                text: Yukon.Flot.charts[chartId].data_with_meta[i].lineName,
-                color: Yukon.Flot.charts[chartId].data_with_meta[i].color,
+                text: yukon.Flot.charts[chartId].data_with_meta[i].lineName,
+                color: yukon.Flot.charts[chartId].data_with_meta[i].color,
             };
         }
     }
@@ -68,10 +68,10 @@ jQuery(function() {
     });
     
     jQuery(".graph_phases input").click(function () {
-        Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+        yukon.Flot.charts[chartId].methods.plotGraph(chartId);
     });
     
     /* chart it!! */
-    Yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+    yukon.Flot.charts[chartId].methods.plotGraph(chartId);
 });
 </script>

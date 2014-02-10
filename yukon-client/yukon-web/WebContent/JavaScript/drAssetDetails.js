@@ -2,9 +2,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.DrAssetDetails');
+yukon.namespace('yukon.DrAssetDetails');
 
-Yukon.DrAssetDetails = (function() {
+yukon.DrAssetDetails = (function() {
     var
     _initialized = false, 
     _assetId = "", // Set in intializer
@@ -64,7 +64,7 @@ Yukon.DrAssetDetails = (function() {
         },
         
         unbusyPingButton: function() {
-            Yukon.ui.unbusy(jQuery('#pingButton'));
+            yukon.ui.unbusy(jQuery('#pingButton'));
         }
 
     };
@@ -74,5 +74,5 @@ Yukon.DrAssetDetails = (function() {
 }());
 
 jQuery(function() {
-    Yukon.DrAssetDetails.init();
+    yukon.DrAssetDetails.init();
 });

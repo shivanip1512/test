@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.CapControl');
-Yukon.CapControl = (function () {
+yukon.namespace('yukon.CapControl');
+yukon.CapControl = (function () {
 
     var lock_buttons = function(el_id) {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
@@ -346,5 +346,5 @@ Yukon.CapControl = (function () {
 }());
 
 jQuery(function() {
-    Yukon.CapControl.init();
+    yukon.CapControl.init();
 });

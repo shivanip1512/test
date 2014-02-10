@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.DeviceConfig');
-Yukon.DeviceConfig = (function () { 
+yukon.namespace('yukon.DeviceConfig');
+yukon.DeviceConfig = (function () { 
     
     /*******************
      * Private Methods *
@@ -182,5 +182,5 @@ Yukon.DeviceConfig = (function () {
 }());
 
 jQuery(function() {
-    Yukon.DeviceConfig.configInit();
+    yukon.DeviceConfig.configInit();
 });

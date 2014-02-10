@@ -21,7 +21,7 @@ submitForm = function() {
 updateComponentAvailability = function() {
     // reset date value to now if checkbox checked, since it may have been changed
     if (true === jQuery('#stopNowCheckbox').prop('checked')) {
-        jQuery('#stopDate').val(Yukon.ui.initialNowVal);
+        jQuery('#stopDate').val(yukon.ui.initialNowVal);
     }
     jQuery('#stopDate').prop('disabled', jQuery('#stopNowCheckbox').prop('checked'));
     <c:if test="${stopGearAllowed}">
@@ -40,9 +40,9 @@ updateComponentAvailability = function() {
 }
 jQuery( function () {
     // init dateTime fields dynamically brought onto page after initial page load
-    Yukon.ui.initDateTimePickers();
+    yukon.ui.initDateTimePickers();
     // save off initial value of date in case we must reinstate later
-    Yukon.ui.initialNowVal = jQuery('#stopDate').val();
+    yukon.ui.initialNowVal = jQuery('#stopDate').val();
 });
 </script>
 

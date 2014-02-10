@@ -27,7 +27,7 @@
             type: 'POST',
             dataType: 'json'
         }).done( function (data, textStatus, jqXHR) {
-            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
             if (json.errorOccurred) {
                 jQuery('#spinner').hide();
                 jQuery('#actionResultDiv').html(errorDetectMessage);
@@ -102,7 +102,7 @@
             type: 'POST',
             data: params
         }).done( function (data, textStatus, jqXHR) {
-            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
             if (json.success) {
                 jQuery('#read' + json.phase).show();
                 jQuery('#readButton').val(readingMsg);
@@ -128,7 +128,7 @@
             url: '/amr/phaseDetect/sendClearFromTestPage',
             type: 'GET'
         }).done( function (data, textStatus, jqXHR) {
-            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
             jQuery('#spinner').hide();
             jQuery('#actionResultDiv').show();
             if (json.success) {

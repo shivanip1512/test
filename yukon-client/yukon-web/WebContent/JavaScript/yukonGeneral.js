@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.ui.aux');
+yukon.namespace('yukon.ui.aux');
 
-Yukon.ui.aux = (function () {
+yukon.ui.aux = (function () {
     var uiAux;
     uiAux = {
         yukonGeneral_moveOptionPositionInSelect : function (selectElement, direction) {
@@ -279,7 +279,7 @@ Yukon.ui.aux = (function () {
 })();
 
 jQuery(function() {
-    Yukon.ui.aux.loadComplete = true;
+    yukon.ui.aux.loadComplete = true;
 });
 
 /**

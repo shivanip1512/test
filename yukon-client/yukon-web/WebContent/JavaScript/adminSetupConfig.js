@@ -2,9 +2,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.AdminSetupConfig');
+yukon.namespace('yukon.AdminSetupConfig');
 
-Yukon.AdminSetupConfig = (function() {
+yukon.AdminSetupConfig = (function() {
     var
     _initialized = false, 
 
@@ -25,7 +25,7 @@ Yukon.AdminSetupConfig = (function() {
         jQuery("#findCloseStationsForm").ajaxSubmit({success: function(data) {
             jQuery("#weatherStationDialog").fadeOut(50, function () {
                 jQuery(this).html(data).fadeIn(50);
-                Yukon.ui.elementGlass.hide(jQuery("#weatherStationDialog"));
+                yukon.ui.elementGlass.hide(jQuery("#weatherStationDialog"));
             });
         }});
     },
@@ -112,5 +112,5 @@ Yukon.AdminSetupConfig = (function() {
 }());
 
 jQuery(function() {
-    Yukon.AdminSetupConfig.init();
+    yukon.AdminSetupConfig.init();
 });

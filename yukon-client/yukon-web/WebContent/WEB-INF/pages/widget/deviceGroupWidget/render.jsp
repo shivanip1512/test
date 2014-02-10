@@ -21,10 +21,10 @@
                 });
             }, 5000);
          }
-        jQuery('#deviceGroupWidgetTree').on('Yukon.ui.widget.DeviceGroupWidget.save', function() {
+        jQuery('#deviceGroupWidgetTree').on('yukon.ui.widget.DeviceGroupWidget.save', function() {
             var groupIds = jQuery('#groupIds').val();
             ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
-            Yukon.ui.elementGlass.show('#currentGroups');
+            yukon.ui.elementGlass.show('#currentGroups');
             ${widgetParameters.jsWidget}.doDirectActionRefresh('update');
         })
     });
@@ -59,7 +59,7 @@
                                              title="yukon.web.widgets.deviceGroupWidget"
                                              cancelButton="components.button.cancel.label"
                                              submitButton="components.button.save.label"
-                                             submitEvent="Yukon.ui.widget.DeviceGroupWidget.save"/>
+                                             submitEvent="yukon.ui.widget.DeviceGroupWidget.save"/>
             <div class="action-area">
                 <cti:button nameKey="edit" icon="icon-pencil" type="button" id="showPopupButton" />
             </div>

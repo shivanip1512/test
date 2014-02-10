@@ -71,7 +71,7 @@
                 url : url,
                 data : paramObj
             }).done( function (data, textStatus, jqXHR) {
-                var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+                var json = yukon.ui.aux.getHeaderJSON(jqXHR);
                 jQuery('#detailsReportDiv').html(data);
                 jQuery('#viewHideDetailsReportButtonIndicator').hide();
                 jQuery('#detailsReportDiv').show();

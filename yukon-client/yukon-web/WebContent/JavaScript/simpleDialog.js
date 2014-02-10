@@ -125,11 +125,11 @@ function submitFormViaAjax(dialogId, formId, url, title, method, options) {
  *            (JSON) A json object of request parameters
  */
 function simpleAJAXRequest(url, data) {
-    Yukon.ui.blockPage();
+    yukon.ui.blockPage();
     
     jQuery.get(url,data)
     .done(function(json, textStatus, jqXHR) {
-        Yukon.ui.unblockPage();
+        yukon.ui.unblockPage();
         if (json.action === 'reload') {
             window.location = window.location;
         }
@@ -137,7 +137,7 @@ function simpleAJAXRequest(url, data) {
     .fail(function(jqXHR, textStatus, errorThrown) {
         alert('error making request');
     })
-    .always(function() {Yukon.ui.unblockPage();});
+    .always(function() {yukon.ui.unblockPage();});
 }
 
 /**

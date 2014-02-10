@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.MeteringBilling');
+yukon.namespace('yukon.MeteringBilling');
 
-Yukon.MeteringBilling = (function() {
+yukon.MeteringBilling = (function() {
     
     /**
      * Singleton that manages the javascript in User Preferences
@@ -540,5 +540,5 @@ Yukon.MeteringBilling = (function() {
 })();
 
 jQuery(function() {
-    Yukon.MeteringBilling.init();
+    yukon.MeteringBilling.init();
 });

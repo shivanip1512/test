@@ -15,7 +15,7 @@
 	<a href="${progressUrl}"><cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_${lastRunTimestampValue.type}"/></a>
 </span>
 
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['hasLinkableProgressLinkSpan${uniqueId}'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/HAS_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['noLinkableProgressLinkSpan${uniqueId}'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/HAS_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['noLinkableProgressLinkSpan${uniqueId}'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/NO_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['hasLinkableProgressLinkSpan${uniqueId}'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/NO_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['hasLinkableProgressLinkSpan${uniqueId}'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/HAS_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['noLinkableProgressLinkSpan${uniqueId}'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/HAS_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['noLinkableProgressLinkSpan${uniqueId}'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/NO_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['hasLinkableProgressLinkSpan${uniqueId}'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/NO_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />

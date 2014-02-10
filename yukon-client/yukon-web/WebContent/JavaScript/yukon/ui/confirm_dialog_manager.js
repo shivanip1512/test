@@ -14,8 +14,8 @@
  *          * registering a new confirmation object
  *          * closing the dialog
  */
-Yukon.namespace('Yukon.modules.DialogConfirmationManager');
-Yukon.modules.DialogConfirmationManager = function (mod) {
+yukon.namespace('yukon.modules.DialogConfirmationManager');
+yukon.modules.DialogConfirmationManager = function (mod) {
     var _initialized = false,
         _current_dialog = null,
         _INDEX_OF_ACTION_BUTTON = 1, // Action button is the right of 2 buttons = [1]
@@ -223,7 +223,7 @@ Yukon.modules.DialogConfirmationManager = function (mod) {
 ( function () {
     try {
         Sandbox ('DialogConfirmationManager', function (mod) {
-            Yukon.DialogConfirmationManager = mod;
+            yukon.DialogConfirmationManager = mod;
         });
     } catch(dialogex) {
     }

@@ -155,8 +155,8 @@
             
                 <tr class="cp" 
                     onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
-                    onmouseover="Yukon.ui.aux.activeResultsTable_highLightRow(this)" 
-                    onmouseout="Yukon.ui.aux.activeResultsTable_unHighLightRow(this)"
+                    onmouseover="yukon.ui.aux.activeResultsTable_highLightRow(this)" 
+                    onmouseout="yukon.ui.aux.activeResultsTable_unHighLightRow(this)"
                     title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
                     
                     <c:if test="${!singleJob}">

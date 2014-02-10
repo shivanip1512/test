@@ -68,6 +68,6 @@
             </cti:url>
             <cti:button nameKey="viewResultsButton" href="${resultsUrl}"/>
         </div>
-        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['viewResultsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
+        <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['viewResultsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
     </tags:sectionContainer2>
 </cti:standardPage>

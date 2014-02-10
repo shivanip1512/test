@@ -8,7 +8,7 @@
 
 <script>
 jQuery(function(){
-    Yukon.ui.passwordManager.init({minLength: ${passwordPolicy.minPasswordLength}});
+    yukon.ui.passwordManager.init({minLength: ${passwordPolicy.minPasswordLength}});
     jQuery(".password_manager input.new").trigger('keyup');
 });
 </script>

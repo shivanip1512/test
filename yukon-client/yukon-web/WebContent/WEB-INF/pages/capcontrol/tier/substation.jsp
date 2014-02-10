@@ -33,8 +33,8 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    Yukon.CapControl.checkPageExpire();
-    Yukon.CapControl.initSubstation();
+    yukon.CapControl.checkPageExpire();
+    yukon.CapControl.initSubstation();
 });
 </script>
 

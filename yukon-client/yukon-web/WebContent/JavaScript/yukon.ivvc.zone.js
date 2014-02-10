@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Ivvc.Zone');
-Yukon.Ivvc.Zone = (function () {
+yukon.namespace('yukon.Ivvc.Zone');
+yukon.Ivvc.Zone = (function () {
 
     var _zoneId,
         _subBusId,
@@ -54,7 +54,7 @@ Yukon.Ivvc.Zone = (function () {
 
             init : function (params) {
                 var controlRole = params.controlRole === 'true' ? true : false,
-                    localCapControl = Yukon.CapControl;
+                    localCapControl = yukon.CapControl;
                 _timeOut = +params.timeOut || 4000;
                 _zoneId = +params.zoneId;
                 _subBusId = +params.subBusId;

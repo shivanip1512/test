@@ -82,7 +82,7 @@ function clearFilter() {
                                 </td>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <cti:dataUpdaterCallback
-                                        function="Yukon.EstimatedLoad.displaySummaryValue"
+                                        function="yukon.EstimatedLoad.displaySummaryValue"
                                         identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>

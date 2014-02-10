@@ -17,7 +17,7 @@
 <script type="text/javascript">
 var TIME_SLIDER = null;
 jQuery(function(){
-    Yukon.ThermostatScheduleEditor.init({
+    yukon.ThermostatScheduleEditor.init({
         thermostat: {
             HEAT: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitHeat.value}), unit:'F'}),

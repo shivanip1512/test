@@ -91,12 +91,13 @@
                     </div>
                     <div class="action-area">
                         <a href="javascript:void(0);"><i:inline key=".rfPerformance.details"/></a>
-                        <cti:button nameKey="rfPerformance.configure" id="broadcast-test-settings" icon="icon-cog-edit"/>
+                        <cti:button nameKey="rfPerformance.configure" id="b-broadcast-config" icon="icon-cog-edit"/>
                     </div>
-                    <d:inline okEvent="yukon.dr.performance.settings.save" 
+                    <d:inline okEvent="yukon.dr.performance.config.save" 
                               nameKey="rfPerformance.configure" 
-                              on="#broadcast-test-settings"
+                              on="#b-broadcast-config"
                               options="{width: 500}">
+                              
                     </d:inline>
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>

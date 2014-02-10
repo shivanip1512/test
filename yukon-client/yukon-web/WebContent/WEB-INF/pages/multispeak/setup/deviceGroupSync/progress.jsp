@@ -63,7 +63,7 @@
     
     </tags:sectionContainer2>
     
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
 
 </cti:standardPage>

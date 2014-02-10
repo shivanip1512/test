@@ -14,9 +14,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.Themes');
+yukon.namespace('yukon.Themes');
 
-Yukon.Themes = (function () {
+yukon.Themes = (function () {
     
     var initialized = false,
         _chooseText = '',
@@ -272,5 +272,5 @@ Yukon.Themes = (function () {
 }());
 
 jQuery(function () {
-    Yukon.Themes.init(jQuery('#button-keys').data('buttonKeys'));
+    yukon.Themes.init(jQuery('#button-keys').data('buttonKeys'));
 });

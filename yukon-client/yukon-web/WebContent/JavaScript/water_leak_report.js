@@ -1,5 +1,5 @@
-Yukon.namespace('Yukon.WaterLeakReport');
-Yukon.WaterLeakReport = (function() {
+yukon.namespace('yukon.WaterLeakReport');
+yukon.WaterLeakReport = (function() {
     /**
      * Singleton that manages the javascript in the Water Leak Report
      * 
@@ -76,7 +76,7 @@ Yukon.WaterLeakReport = (function() {
             jQuery(document.getElementById("threshold.errors")).prev("br").remove();
 
             // if there are filter errors... set the focus to the first one of these
-            Yukon.ui.focusFirstError();
+            yukon.ui.focusFirstError();
         },
 
         _store_filter_values = function() {
@@ -182,7 +182,7 @@ Yukon.WaterLeakReport = (function() {
             if (in_array === -1) {
                 _f_cis_details_store.push(paoId);
                 // only block the page if we haven't requested this before (will take longer)
-                Yukon.ui.blockPage();
+                yukon.ui.blockPage();
             }
             
             var url = _get_row_account_info_url(this);
@@ -227,7 +227,7 @@ Yukon.WaterLeakReport = (function() {
                 jQuery(document).on("dialogopen", _leak_filter_dialog, _filter_dialog_open);
                 jQuery(document).bind("keyup", _init_open_filter_key_binding);
                 jQuery("a.f-cis_details").bind("click", _view_cis_details);
-                jQuery(".f-open_filter_dialog").bind("click", function(){Yukon.ui._autofocus();});
+                jQuery(".f-open_filter_dialog").bind("click", function(){yukon.ui._autofocus();});
                 jQuery("#exportLeakCsv").bind("click", _export_leak_csv);
                 _init_filter();
                 _store_filter_values();
@@ -289,5 +289,5 @@ Yukon.WaterLeakReport = (function() {
 })();
 
 jQuery(function() {
-    Yukon.WaterLeakReport.init();
+    yukon.WaterLeakReport.init();
 });

@@ -60,7 +60,7 @@ var Yukon = (function (yukonMod) {
 // strip it off and hang the rest off of Yukon
 // See Zakas, Maintainable JavaScript, pp. 72-73, and Stefanov,
 // Javascript Patterns, pp. 89-90
-Yukon.namespace = function (ns) {
+yukon.namespace = function (ns) {
     var parts = ns.split("."),
         object = this,
         i,
@@ -79,10 +79,10 @@ Yukon.namespace = function (ns) {
     return object;
 };
 
-Yukon.namespace('Yukon.modules.base'); // creates our base module namespace
+yukon.namespace('yukon.modules.base'); // creates our base module namespace
 
 // define our base module
-Yukon.modules.base = function (box) {
+yukon.modules.base = function (box) {
     // replacement for prototype.js bind call
     // Note: All "modern" browsers support Function.prototype.bind, IE9+, Safari
     // 5.1.4+ (but not ipad1!).
@@ -120,7 +120,7 @@ Yukon.modules.base = function (box) {
                 }
             }
             if ('undefined' === typeof func) {
-                throw "Yukon.doBind: func undefined";
+                throw "yukon.doBind: func undefined";
             } else {
                 func.apply(context, arguments);
             }
@@ -158,15 +158,15 @@ function Sandbox () {
     // no modules or "*" both mean "use all modules"
     if (!modules || modules === '*') {
         modules = [];
-        for (i in Yukon.modules) {
-            if (Yukon.modules.hasOwnProperty(i)) {
+        for (i in yukon.modules) {
+            if (yukon.modules.hasOwnProperty(i)) {
                 modules.push(i);
             }
         }
     }
     // initialize the required modules
     for (i = 0; i < modules.length; i += 1) {
-        Yukon.modules[modules[i]](this);
+        yukon.modules[modules[i]](this);
     }
     // call the callback
     callback(this);
@@ -184,20 +184,20 @@ Sandbox.prototype = {
 Sandbox.modules = {};
 
 /** 
- * UI module - General purpose ui functionality for Yukon.
+ * UI module - General purpose ui functionality for yukon.
  * 
  *     REQUIRES:
  *     * jQuery 1.6.4
  *     * blockUI 2.39
  *     
  *     USAGE:
- *     In day to day use, the Yukon.ui class will be your best bet at getting the functionality you
- *     need on a page.  The former Yukon.uiUtils are more low level functions for use by other libraries,
- *     but have been subsumed into Yukon.ui.
+ *     In day to day use, the yukon.ui class will be your best bet at getting the functionality you
+ *     need on a page.  The former yukon.uiUtils are more low level functions for use by other libraries,
+ *     but have been subsumed into yukon.ui.
  */
-Yukon.namespace("Yukon.modules.ui");
+yukon.namespace("yukon.modules.ui");
 
-Yukon.modules.ui = function (mod) {
+yukon.modules.ui = function (mod) {
     var initialized = false;
 
     mod.init = function () {
@@ -493,7 +493,7 @@ Yukon.modules.ui = function (mod) {
                 //give the autofocus element 3 seconds to show itself
                 if (mod._AUTOFOCUS_TRIES < 30) {
                     //certain browsers will error if the element to be focused is not yet visible
-                    setTimeout('Yukon.ui._autofocus()', 100);
+                    setTimeout('yukon.ui._autofocus()', 100);
                 }
             }
         }
@@ -865,7 +865,7 @@ Sandbox('base', function (basemod) {
 });
 
 Sandbox('ui', function (uimod) {
-    Yukon.ui = uimod; // so for now, 90 references to Yukon.ui don't have to be changed
+    yukon.ui = uimod; // so for now, 90 references to yukon.ui don't have to be changed
 });
 
 jQuery.fn.selectText = function () {
@@ -920,8 +920,8 @@ jQuery.fn.flashYellow = function (duration) {
 
 // initialize the lib
 jQuery(document).ready(function () {
-    Yukon.ui.init();
-    Yukon.ui.initSitewideSearchAutocomplete();
+    yukon.ui.init();
+    yukon.ui.initSitewideSearchAutocomplete();
 
     //turn off ajax caching application-wide by default
     jQuery.ajaxSetup({cache: false});

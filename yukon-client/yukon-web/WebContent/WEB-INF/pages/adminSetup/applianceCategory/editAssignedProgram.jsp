@@ -43,7 +43,7 @@ displayNameChanged = function() {
 updateDisplayNameKey = function() {
     // This prefix must match com.cannontech.stars.dr.program.model.Program.java
     var prefix = 'yukon.dr.program.displayname.'; 
-    var displayNameKey = Yukon.ui.aux.generateMessageCode(prefix, document.getElementById('displayNameInput').value);
+    var displayNameKey = yukon.ui.aux.generateMessageCode(prefix, document.getElementById('displayNameInput').value);
 
     document.getElementById('displayNameKeyArea').innerHTML = displayNameKey;
 }

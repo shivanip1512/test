@@ -41,7 +41,7 @@
 	<%-- Only add GA if we have tracking Id(s) --%>
 	<c:if test="${fn:length(cooperTrackingId) != 0 || fn:length(additionalTrackingIds) != 0}">
 		<script>
-            Yukon.AnalyticsManager.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
+            yukon.AnalyticsManager.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
                 additional_tracking_ids: '${additionalTrackingIds}'});
 		</script>
 	</c:if>

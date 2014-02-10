@@ -1,5 +1,5 @@
-Yukon.namespace('Yukon.ui.iconChooser');
-Yukon.ui.iconChooser = (function () {
+yukon.namespace('yukon.ui.iconChooser');
+yukon.ui.iconChooser = (function () {
     var uiIcon,
         _iconFilenames = function (id, fileNames) {
             jQuery('#' + id + 'IconInput').data(id + 'data', fileNames);

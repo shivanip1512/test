@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.VeeReview');
+yukon.namespace('yukon.VeeReview');
 
-Yukon.VeeReview = (function () {
+yukon.VeeReview = (function () {
         var _resetElementSelected = function (action, deleteEl, acceptEl, ignoreEl) {
             if(action === 'DELETE'){
                 jQuery(deleteEl).removeClass('on');

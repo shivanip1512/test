@@ -2,11 +2,11 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.Flot = (function () {
+yukon.Flot = (function () {
     /**
      * Singleton that manages the javascript of our FlotCharts implementation
      * 
-     * @class Yukon.Flot javascript
+     * @class yukon.Flot javascript
      * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
      * @requires jQuery 1.6+
      */
@@ -328,7 +328,7 @@ Yukon.Flot = (function () {
 
         /**
          * Add a flotChart. This method simply adds the options, methods, and data to the Singleton.
-         * Calling plotGraph (Yukon.Flot.charts[chartId].methods.plotGraph(chartId)) is still required for the chart to show up
+         * Calling plotGraph (yukon.Flot.charts[chartId].methods.plotGraph(chartId)) is still required for the chart to show up
          * 
          * Required parameters: chartId, type (bar, line, pie), data
          */
@@ -424,5 +424,5 @@ Yukon.Flot = (function () {
 }());
 
 jQuery(function() {
-    Yukon.Flot._init();
+    yukon.Flot._init();
 });

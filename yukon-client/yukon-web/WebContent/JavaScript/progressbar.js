@@ -1,6 +1,6 @@
-Yukon.namespace('Yukon.ui.progressBar');
+yukon.namespace('yukon.ui.progressBar');
 
-Yukon.ui.progressBar = (function () {
+yukon.ui.progressBar = (function () {
     var  setupProgressBar = function (pbarId, completedCount, totalCount, completionCallback) {
         var percentDone = 100,
             innerWidth,

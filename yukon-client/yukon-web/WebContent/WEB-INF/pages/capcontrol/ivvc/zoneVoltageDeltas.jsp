@@ -84,7 +84,7 @@
 				
 				if (inputs.length > 0) {
 					jQuery('form#deltaForm').append(inputs.join(''));
-					Yukon.ui.blockPage();
+					yukon.ui.blockPage();
 					jQuery('form#deltaForm').submit();
 				}
 			});

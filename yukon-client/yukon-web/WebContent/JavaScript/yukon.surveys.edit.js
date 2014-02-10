@@ -1,9 +1,9 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Surveys.Edit');
+yukon.namespace('yukon.Surveys.Edit');
 
-Yukon.Surveys.Edit = (function () {
+yukon.Surveys.Edit = (function () {
 
 
     var _moveUpIcon,
@@ -223,12 +223,12 @@ Yukon.Surveys.Edit = (function () {
 
             initQuestions : function () {
                 _questionTypeChanged();
-                jQuery('#questionType').change(Yukon.Surveys.questionTypeChanged);
+                jQuery('#questionType').change(yukon.Surveys.questionTypeChanged);
                 jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
             },
 
             initAnswerKeys : function (answerKeys) {
-                var localEdit = Yukon.Surveys.Edit,
+                var localEdit = yukon.Surveys.Edit,
                     ii;
                 localEdit.addAnswer.nextRowIdNum = 0;
                 localEdit.addAnswer.rowIdNums = [];

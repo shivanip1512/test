@@ -1,4 +1,4 @@
-Yukon.modules.dateTimePickers = function (box) {
+yukon.modules.dateTimePickers = function (box) {
     /**
      * Manager for date time and dateTime pickers. We use:
      *  - https://github.com/trentrichardson/jQuery-Timepicker-Addon
@@ -205,18 +205,18 @@ Yukon.modules.dateTimePickers = function (box) {
     };
     box.initialNowVal = null;
 };
-Yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
-    Yukon.namespace('Yukon.modules.dateTimePickers');
+yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
+    yukon.namespace('yukon.modules.dateTimePickers');
     try {
         Sandbox ('dateTimePickers', function (mod) {
-            Yukon.ui.dateTimePickers = mod;
+            yukon.ui.dateTimePickers = mod;
         });
     } catch (sandboxex) {
         alert('dateTimePickers init: sandbox exception: ' + sandboxex);
     }
     try {
-        Yukon.ui.dateTimePickers.init(cfgLocalization, cfgTimepickerArgs);
+        yukon.ui.dateTimePickers.init(cfgLocalization, cfgTimepickerArgs);
     } catch (datetimepickerex) {
-        alert('dateTimePickers: exception in Yukon.ui.dateTimePickers.init: ' + datetimepickerex);
+        alert('dateTimePickers: exception in yukon.ui.dateTimePickers.init: ' + datetimepickerex);
     }
 };

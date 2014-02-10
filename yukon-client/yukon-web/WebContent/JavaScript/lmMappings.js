@@ -68,7 +68,7 @@ function getMappedName (callback) {
         url: url,
         data: params
     }).done(function (data, textStatus, jqXHR) {
-        var jsonData = Yukon.ui.aux.getHeaderJSON(jqXHR),
+        var jsonData = yukon.ui.aux.getHeaderJSON(jqXHR),
             mappedName = jsonData['mappedName'];
         callback(mappedName);
     }).fail(function (jqXHR, textStatus, errorThrown) {

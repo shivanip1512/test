@@ -9,9 +9,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.PorterResponseMonitor');
+yukon.namespace('yukon.PorterResponseMonitor');
 
-Yukon.PorterResponseMonitor = (function () {
+yukon.PorterResponseMonitor = (function () {
     
     var mod = {
         
@@ -79,13 +79,13 @@ jQuery(function() {
         row.removeClass('f-template-row');
         row.appendTo('#rules-table tbody');
         
-        Yukon.PorterResponseMonitor.reindexAll();
+        yukon.PorterResponseMonitor.reindexAll();
     });
     
     /** REMOVE RULE */
     jQuery(document).on('click','.f-remove', function(event) {
         jQuery(this).closest('tr').remove();
-        Yukon.PorterResponseMonitor.reindexAll();
+        yukon.PorterResponseMonitor.reindexAll();
     });
     
     /** MOVE RULE UP */
@@ -95,7 +95,7 @@ jQuery(function() {
         
         row.insertBefore(prevRow);
         
-        Yukon.PorterResponseMonitor.reindexAll();
+        yukon.PorterResponseMonitor.reindexAll();
     });
     
     /** MOVE RULE DOWN */
@@ -105,6 +105,6 @@ jQuery(function() {
         
         row.insertAfter(nextRow);
         
-        Yukon.PorterResponseMonitor.reindexAll();
+        yukon.PorterResponseMonitor.reindexAll();
     });
 });

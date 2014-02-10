@@ -26,7 +26,7 @@
                 this.disabled = false;
                 jQuery(this).closest("tr").find("input:checkbox").attr("checked", true);
             });
-            Yukon.ui.focusFirstError();
+            yukon.ui.focusFirstError();
         });
     </script>
 

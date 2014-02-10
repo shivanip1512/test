@@ -14,7 +14,7 @@ submitForm = function() {
 }
 jQuery( function () {
     // init dateTime fields dynamically brought onto page after initial page load
-    Yukon.ui.initDateTimePickers();
+    yukon.ui.initDateTimePickers();
 });
 </script>
 

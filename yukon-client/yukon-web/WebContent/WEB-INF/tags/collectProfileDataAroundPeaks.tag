@@ -69,7 +69,7 @@
         </select>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".peakDay">
-        <select id="${id}_selectedPeakDate" onchange="Yukon.PeakDayProfile.changePeak();">
+        <select id="${id}_selectedPeakDate" onchange="yukon.PeakDayProfile.changePeak();">
             <c:if test="${!preResult.noData && preResult.deviceError == ''}">
                 <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
             </c:if>
@@ -91,5 +91,5 @@
 </tags:nameValueContainer2>
 
 <div class="action-area">
-    <cti:button id="${id}_startButton" nameKey="start" onclick="Yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');"/>
+    <cti:button id="${id}_startButton" nameKey="start" onclick="yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');"/>
 </div>

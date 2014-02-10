@@ -28,7 +28,7 @@ jQuery(function() {
                     jQuery('#commandStatus').removeClass('success').addClass('error');
                 }
             }).always(function() {
-                Yukon.ui.unbusy(jQuery(selector));
+                yukon.ui.unbusy(jQuery(selector));
             });
         });
     }

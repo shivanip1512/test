@@ -26,7 +26,7 @@ function JsWidgetObject (shortName, parameters) {
     };
 
     this.onSuccess = function (xhr) {
-        this.parameters = Yukon.ui.aux.getHeaderJSON(xhr);
+        this.parameters = yukon.ui.aux.getHeaderJSON(xhr);
         // this helps prevent this from growing like crazy each time the widget is refreshed
         this.linkInfo = {};
     };
@@ -61,7 +61,7 @@ function JsWidgetObject (shortName, parameters) {
                     if ('undefined' !== typeof data && null !== data) {
                         jQuery('#' + opts.container).html(data);
                     }
-                    context.parameters = Yukon.ui.aux.getHeaderJSON(xhr);
+                    context.parameters = yukon.ui.aux.getHeaderJSON(xhr);
                     context.linkInfo = {};
                 }).always(function (data, status, xhr) {
                     timeoutId = setTimeout(doRefresh, opts.frequency * 1000);
@@ -149,7 +149,7 @@ function JsWidgetObject (shortName, parameters) {
         }).always(function() {
             var button = jQuery('#' + buttonId);
             if (button.length > 0) { // if the cotainer included the button, it won't be there anymore
-                Yukon.ui.unbusy(button);
+                yukon.ui.unbusy(button);
             }
         });
     };

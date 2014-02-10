@@ -17,9 +17,9 @@
 
 <script type="text/javascript">
     jQuery(function() {
-        Yukon.Surveys.Edit.initQuestions();
+        yukon.Surveys.Edit.initQuestions();
         <cti:displayForPageEditModes modes="EDIT">
-        Yukon.Surveys.Edit.initAnswerKeys(${cti:jsonString(answerKeys)});
+        yukon.Surveys.Edit.initAnswerKeys(${cti:jsonString(answerKeys)});
         </cti:displayForPageEditModes>
     });
 </script>
@@ -90,7 +90,7 @@
 			    </table>
 	        </div>
             <cti:displayForPageEditModes modes="EDIT">
-                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: Yukon.Surveys.Edit.addAnswer()" classes="fl" icon="icon-add"/></div>
+                <div style="margin-top: 10px;" class="clearfix"><cti:button renderMode="labeledImage" nameKey="addAnswer" href="javascript: yukon.Surveys.Edit.addAnswer()" classes="fl" icon="icon-add"/></div>
             </cti:displayForPageEditModes>
 	    </tags:boxContainer2>
     </div>

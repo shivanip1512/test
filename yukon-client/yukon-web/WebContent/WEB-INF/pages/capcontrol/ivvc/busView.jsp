@@ -246,7 +246,7 @@
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${graphSettings.graphTitle}" />
 
-                    <cti:dataUpdaterCallback function="Yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

@@ -79,7 +79,7 @@
 		jQuery("#${cti:escapeJavaScript(sortBy)}Btn").replaceWith(jQuery("#${cti:escapeJavaScript(sortBy)}Btn").html()); // Remove surrounding anchor tag
 
   		jQuery(document).bind("customDateRangeSubmit", function(event) {
-	     	Yukon.ui.blockPage();
+	     	yukon.ui.blockPage();
 	     	jQuery("#customDateForm").submit();
     	});
 	});

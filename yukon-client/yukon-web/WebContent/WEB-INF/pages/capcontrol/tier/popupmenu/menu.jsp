@@ -8,32 +8,32 @@
 <script type="text/javascript">
 <c:if test="${showLocalControl}">
 jQuery('#localControlsOption').click(function(event) {
-    Yukon.CapControl.hideMenu();
-    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
+    yukon.CapControl.hideMenu();
+    yukon.CapControl.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showChangeOpState}">
 jQuery('#changeOpStateOption').click(function(event) {
-    Yukon.CapControl.hideMenu();
-    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
+    yukon.CapControl.hideMenu();
+    yukon.CapControl.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showResetBankOpCount}">
 jQuery('#resetBankOpCountOption').click(function(event) {
-    Yukon.CapControl.hideMenu();
-    Yukon.CapControl.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
+    yukon.CapControl.hideMenu();
+    yukon.CapControl.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
 });
 </c:if>
 <c:if test="${showRecentCommands}">
 jQuery('#recentEventsOption').click(function(event) {
-    Yukon.CapControl.hideMenu();
+    yukon.CapControl.hideMenu();
     window.location = '/capcontrol/search/recentEvents?value=${paoId}';
 });
 </c:if>
 <c:if test="${showComments}">
 jQuery('#viewCommentsOption').click(function(event) {
-    Yukon.CapControl.hideMenu();
-    Yukon.CapControl.showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
+    yukon.CapControl.hideMenu();
+    yukon.CapControl.showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
 });
 </c:if>
 </script>

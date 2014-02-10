@@ -1,5 +1,5 @@
 <%@ tag body-content="empty"
-    description="Create an AJAX confirmation dialog. The dialog will trigger 'yukonDialogConfirmOk' or 'yukonDialogConfirmCancel' if the dialog is confirmed or cancelled (repsectively) either via a button click or by calling Yukon.DialogConfirmationManager methods directly."%>
+    description="Create an AJAX confirmation dialog. The dialog will trigger 'yukonDialogConfirmOk' or 'yukonDialogConfirmCancel' if the dialog is confirmed or cancelled (repsectively) either via a button click or by calling yukon.DialogConfirmationManager methods directly."%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -26,7 +26,7 @@
 </c:if>
 <script type="text/javascript">
 jQuery(function(){
-    Yukon.DialogConfirmationManager.add({
+    yukon.DialogConfirmationManager.add({
         'on': '${on}',
         ${disable_group}
         'strings':{

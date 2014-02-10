@@ -2,9 +2,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.EstimatedLoad');
+yukon.namespace('yukon.EstimatedLoad');
 
-Yukon.EstimatedLoad = (function() {
+yukon.EstimatedLoad = (function() {
    
     drEstimatedLoadModule = {
             

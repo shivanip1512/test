@@ -67,7 +67,7 @@
 
 <script type="text/javascript">
 jQuery( function () {
-    Yukon.ui.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
+    yukon.ui.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
         {
             <c:forEach var="icon" varStatus="status" items="${pageScope.icons}">
                 '${icon}' : '${icon.filename}'<c:if test="${!status.last}">,</c:if>

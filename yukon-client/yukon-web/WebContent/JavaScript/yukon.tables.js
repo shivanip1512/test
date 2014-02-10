@@ -18,9 +18,9 @@
 //        }
 //     }
 // An unattached table DOM element is returned from this function.
-Yukon.namespace('Yukon.Tables');
+yukon.namespace('yukon.Tables');
 
-Yukon.Tables = (function () {
+yukon.Tables = (function () {
     var mod;
 
     mod = {

@@ -21,7 +21,7 @@
 
 <div class="schedule editor ${pageScope.styleClass} ${schedule.thermostatScheduleMode}">
     
-    <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="Yukon.ThermostatScheduleEditor.prepForm(this);">
+    <form id="form_${schedule.accountThermostatScheduleId}" method="POST" action="${actionPath}" onsubmit="yukon.ThermostatScheduleEditor.prepForm(this);">
         <cti:csrfToken/>        
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="schedulableThermostatType" value="${thermostatType}">

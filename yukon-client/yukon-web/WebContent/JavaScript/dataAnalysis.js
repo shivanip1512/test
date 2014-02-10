@@ -2,9 +2,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.DataAnalysis');
+yukon.namespace('yukon.DataAnalysis');
 
-Yukon.DataAnalysis = (function() {
+yukon.DataAnalysis = (function() {
     var dataAnalysisModule = {
         changeStatus : function (msg) {
             var data = jQuery.parseJSON(msg.value),

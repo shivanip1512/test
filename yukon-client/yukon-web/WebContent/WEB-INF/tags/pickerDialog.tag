@@ -174,7 +174,7 @@
 
 <script type="text/javascript">
 try {
-    Yukon.ui.aux.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
+    yukon.ui.aux.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
 } catch (callAfterLoadex) { alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex); }
 
 if (${!empty excludeIds}) {

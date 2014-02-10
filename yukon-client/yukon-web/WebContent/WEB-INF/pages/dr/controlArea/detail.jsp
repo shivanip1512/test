@@ -39,7 +39,7 @@
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
-                            function="Yukon.EstimatedLoad.displaySummaryValue"
+                            function="yukon.EstimatedLoad.displaySummaryValue"
                             value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">

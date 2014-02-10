@@ -44,8 +44,8 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-	Yukon.CapControl.addLockButtonForButtonGroup("hdr_buttons");
-	Yukon.CapControl.addLockButtonForButtonGroup("foot_buttons");
+	yukon.CapControl.addLockButtonForButtonGroup("hdr_buttons");
+	yukon.CapControl.addLockButtonForButtonGroup("foot_buttons");
 </script>
 </f:verbatim>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

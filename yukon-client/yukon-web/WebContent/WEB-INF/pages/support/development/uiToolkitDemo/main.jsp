@@ -74,10 +74,10 @@ jQuery(function() {
     // unblock page (and elements) on escape key
     jQuery(document).keyup(function(e) {
         if (e.which == 27) { // esc
-            Yukon.ui.unblockPage();
+            yukon.ui.unblockPage();
         
             jQuery(".f-block-this").each(function() {
-                Yukon.ui.elementGlass.hide(jQuery(this));
+                yukon.ui.elementGlass.hide(jQuery(this));
             });
         }
     });
@@ -85,7 +85,7 @@ jQuery(function() {
     jQuery("button.blockElement").click(function(e){
 		var elem = jQuery(e.target).closest(".f-block-this");
 		if(elem) {
-		    Yukon.ui.elementGlass.show(elem);
+		    yukon.ui.elementGlass.show(elem);
 		}
     });
 });
@@ -362,7 +362,7 @@ button
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
                         <br /> <br /> <pre class="code">
 jQuery('#myCloseButton').on('click', function () {
-    Yukon.ui.unblockPage();
+    yukon.ui.unblockPage();
 });
         </pre></td>
                 </tr>
@@ -383,13 +383,13 @@ jQuery('#myCloseButton').on('click', function () {
 jQuery("button.blockElement").click( function() {
     ...
     var elem = jQuery(this).closest('.f-block-this');
-    Yukon.ui.elementGlass.show(elem);
+    yukon.ui.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
     var elem = jQuery('.f-block-this');
-    Yukon.ui.elementGlass.hide(elem);
+    yukon.ui.elementGlass.hide(elem);
 ...
         </pre>
                     </td>

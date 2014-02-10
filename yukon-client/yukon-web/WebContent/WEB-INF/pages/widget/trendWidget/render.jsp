@@ -12,7 +12,7 @@ jQuery(function () {
             .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
     });
     // init for a specific DOM element and its children
-    Yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
+    yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
 });
 </script>
 

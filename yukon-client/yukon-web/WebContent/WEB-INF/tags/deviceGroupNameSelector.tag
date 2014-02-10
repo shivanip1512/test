@@ -36,9 +36,9 @@
 
 <script>
     // ignores if present, creates if not
-    Yukon.namespace('Yukon.ui.dialogs');
-    if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}) {
-        Yukon.namespace('Yukon.ui.dialogs.${uniqueId}');
+    yukon.namespace('yukon.ui.dialogs');
+    if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}) {
+        yukon.namespace('yukon.ui.dialogs.${uniqueId}');
     }
 
     jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
@@ -76,8 +76,8 @@
                 return maxHeight;
             };
 
-        if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}.init) {
-            Yukon.ui.dialogs.${uniqueId}.init = 'inited';
+        if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}.init) {
+            yukon.ui.dialogs.${uniqueId}.init = 'inited';
         } else {
             // for some reason, this is called multiple times
             if (true === jQuery('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
@@ -94,10 +94,10 @@
             treeHelperPane = groupTreeObj.find('.tree_helper_controls');
             // Store the first value of the top offset of the dialog. Subsequent values vary
             // considerably and undermine the positioning logic
-            if ('undefined' === typeof Yukon.ui.dialogs.${uniqueId}.offsetTop) {
-                Yukon.ui.dialogs.${uniqueId}.offsetTop = offsetTop;
+            if ('undefined' === typeof yukon.ui.dialogs.${uniqueId}.offsetTop) {
+                yukon.ui.dialogs.${uniqueId}.offsetTop = offsetTop;
             } else {
-                offsetTop = Yukon.ui.dialogs.${uniqueId}.offsetTop;
+                offsetTop = yukon.ui.dialogs.${uniqueId}.offsetTop;
             }
             dialogHeight = window.windowHeight - offsetTop;
             // height set on dialog. when tree expanded

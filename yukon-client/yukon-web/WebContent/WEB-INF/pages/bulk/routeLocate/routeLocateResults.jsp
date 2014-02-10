@@ -98,7 +98,7 @@
     </tags:bulkActionContainer>
     
     <cti:dataUpdaterCallback function="enableButton()" initialize="true" isComplete="ROUTELOCATE/${resultId}/IS_COMPLETE" isCanceled="ROUTELOCATE/${resultId}/IS_CANCELED"/>
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['AllDevicesActionsDiv','successActionsDiv','errorActionsDiv'],true)" initialize="true" value="ROUTELOCATE/${resultId}/IS_CANCELED" />
     
  </cti:standardPage>

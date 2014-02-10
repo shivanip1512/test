@@ -207,7 +207,7 @@ function saveButton () {
     }
     else {
 //        document.billingFormatForm.submit();
-//        Yukon.MeteringBilling.do_save_format();
+//        yukon.MeteringBilling.do_save_format();
         form.submit();
     }
     return false;

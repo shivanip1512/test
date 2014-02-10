@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="action-area">
-                            <cti:button id="reloadButton" nameKey="reload" type="button" onclick="Yukon.VeeReview.reloadForm();" busy="true" icon="icon-arrow-refresh"/>
+                            <cti:button id="reloadButton" nameKey="reload" type="button" onclick="yukon.VeeReview.reloadForm();" busy="true" icon="icon-arrow-refresh"/>
                         </div>
                     </tags:sectionContainer2>
                 </div>
@@ -99,9 +99,9 @@
                 <th><i:inline key=".next"/></th>
                 <th>
                     <div class="fr">
-                        <cti:button id="delete-all" icon="icon-cross" renderMode="buttonImage" classes="left" onclick="Yukon.VeeReview.checkUncheckAll('DELETE');"/>
-                        <cti:button id="accept-all" icon="icon-tick" renderMode="buttonImage" classes="middle" onclick="Yukon.VeeReview.checkUncheckAll('ACCEPT');"/>
-                        <cti:button nameKey="ignore" id="ignore-all" classes="right on" onclick="Yukon.VeeReview.checkUncheckAll('IGNORE');"/>
+                        <cti:button id="delete-all" icon="icon-cross" renderMode="buttonImage" classes="left" onclick="yukon.VeeReview.checkUncheckAll('DELETE');"/>
+                        <cti:button id="accept-all" icon="icon-tick" renderMode="buttonImage" classes="middle" onclick="yukon.VeeReview.checkUncheckAll('ACCEPT');"/>
+                        <cti:button nameKey="ignore" id="ignore-all" classes="right on" onclick="yukon.VeeReview.checkUncheckAll('IGNORE');"/>
                     </div>
                 </th>
             </thead>

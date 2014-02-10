@@ -171,7 +171,7 @@
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

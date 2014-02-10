@@ -35,7 +35,7 @@ jQuery(function() {
 });
 
 function updateControlEvents(controlPeriod) {
-    Yukon.ui.elementGlass.show(jQuery('#controlEventsDiv'));
+    yukon.ui.elementGlass.show(jQuery('#controlEventsDiv'));
     jQuery.ajax({
         url: '${innerViewUrl}',
         method: 'POST',
@@ -46,7 +46,7 @@ function updateControlEvents(controlPeriod) {
     }).done(function(data){
         jQuery('#controlEventsDiv').html(data);
     }).always(function() {
-        Yukon.ui.elementGlass.hide(jQuery('#controlEventsDiv'));
+        yukon.ui.elementGlass.hide(jQuery('#controlEventsDiv'));
     });
 }
 </script>  

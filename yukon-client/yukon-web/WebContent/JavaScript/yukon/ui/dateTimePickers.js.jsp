@@ -46,5 +46,5 @@ jQuery(function(){
             closeText: "<cti:msg key="yukon.common.js.timePicker.closeText"/>",
             ampm: <cti:msg key="yukon.common.js.timePicker.ampm"/>
         };
-    Yukon.ui.initDateTimePickers(cfgLocalization, cfgTimepickerArgs);
+    yukon.ui.initDateTimePickers(cfgLocalization, cfgTimepickerArgs);
 });

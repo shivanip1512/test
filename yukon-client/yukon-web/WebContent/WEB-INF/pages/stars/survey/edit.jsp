@@ -25,7 +25,7 @@
 
 <script type="text/javascript">
     jQuery(function () {
-        Yukon.Surveys.Edit.init({hasBeenTaken : '${hasBeenTaken}'});
+        yukon.Surveys.Edit.init({hasBeenTaken : '${hasBeenTaken}'});
     });
 </script>
 

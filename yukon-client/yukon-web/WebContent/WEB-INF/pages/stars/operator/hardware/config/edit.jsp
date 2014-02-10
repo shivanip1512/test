@@ -43,7 +43,7 @@ jQuery(function() {
                  jQuery('#rf-command-status').removeClass('success').addClass('error');
             }
         }).always(function(data) {
-            Yukon.ui.unbusy(jQuery("#rf-read-now"));
+            yukon.ui.unbusy(jQuery("#rf-read-now"));
         });
     });
 });

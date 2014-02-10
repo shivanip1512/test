@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Surveys.List');
-Yukon.Surveys.List = (function () {
+yukon.namespace('yukon.Surveys.List');
+yukon.Surveys.List = (function () {
     mod = {
         init: function () {
             jQuery('#addSurveyBtn').click(function () {
@@ -21,5 +21,5 @@ Yukon.Surveys.List = (function () {
 }());
 
 jQuery(function () {
-    Yukon.Surveys.List.init();
+    yukon.Surveys.List.init();
 });

@@ -20,7 +20,7 @@
 <script type="text/javascript">
 jQuery(function() {
     //for rendering the display safe temperatures in the correct unit for the customer    
-    Yukon.ThermostatManualEditor.renderOtherTemperatures('${temperatureUnit}');
+    yukon.ThermostatManualEditor.renderOtherTemperatures('${temperatureUnit}');
 });
 </script>
 

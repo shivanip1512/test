@@ -206,7 +206,7 @@
     
     function submitForm(formId) {
         jQuery(".ui-dialog").css("display","none");
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
         jQuery("#"+formId).submit();
     }
     
@@ -215,7 +215,7 @@
     });
     
     function loadPublicKey(generateNewKey) {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
         jQuery.ajax({ 
             url: "getPublicKey", 
             type: "POST",
@@ -237,21 +237,21 @@
                 jQuery("#publicKeyTextArea").val(publicKeyObj.publicKey);
                 jQuery("#publicKeyText").show('fade',{},200);
             }
-            Yukon.ui.unblockPage();
+            yukon.ui.unblockPage();
         }).fail(function() {
             jQuery("#publicKeyText").hide();
             jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.keyGenerationFailed'/>").show('fade',{},200);
-            Yukon.ui.unblockPage();
+            yukon.ui.unblockPage();
         });
     }
     
     jQuery(document).bind('addKeyFormSubmit', function(event) {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
         jQuery('#encryptionKey').submit();
     });
     
     jQuery(document).bind('importKeyFileFormSubmit', function(event) {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
         jQuery('#fileImportBindingBean').submit();
     });
     

@@ -57,7 +57,7 @@ DynamicTable.prototype = {
         parameters = jQuery.extend({}, this.addItemParameters);
         url = 'addItem';
         thisContext = this;
-        onComplete = Yukon.doBind(this.addItemSuccess, this);
+        onComplete = yukon.doBind(this.addItemSuccess, this);
         if (extraArgs) {
             if (extraArgs.extraParameters) {
                 jQuery.extend(parameters, extraArgs.extraParameters);
@@ -89,7 +89,7 @@ DynamicTable.prototype = {
      *   -url (optional)
      */
     addItems: function (args) {
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
 
         var that = this,
             doRequest;
@@ -120,7 +120,7 @@ DynamicTable.prototype = {
                 if (index < args.requests.length) {
                     doRequest(index);
                 } else {
-                    Yukon.ui.unblockPage();
+                    yukon.ui.unblockPage();
                 }
             }
 
@@ -157,7 +157,7 @@ DynamicTable.prototype = {
             noItemsMessageDiv.parentNode.removeChild(noItemsMessageDiv);
         }
         if (doUnblock) {
-            Yukon.ui.unblockPage();
+            yukon.ui.unblockPage();
         }
     },
 

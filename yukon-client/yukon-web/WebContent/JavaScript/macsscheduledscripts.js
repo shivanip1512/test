@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Macs');
-Yukon.Macs = (function () {
+yukon.namespace('yukon.Macs');
+yukon.Macs = (function () {
     var _autoUpdatePageContent = function () {
         var tableContainer = jQuery('[data-reloadable]'),
             reloadUrl = tableContainer.attr('data-url');
@@ -23,5 +23,5 @@ Yukon.Macs = (function () {
 }());
 
 jQuery(function () {
-    Yukon.Macs.init();
+    yukon.Macs.init();
 });

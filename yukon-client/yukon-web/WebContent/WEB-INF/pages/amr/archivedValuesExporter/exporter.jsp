@@ -259,7 +259,7 @@
         });
         jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
             event.preventDefault();
-            Yukon.DialogConfirmationManager.cancel();
+            yukon.DialogConfirmationManager.cancel();
             submitForm(-1, 'deleteFormat');
         });
         jQuery('.f-initialFocus').focus();

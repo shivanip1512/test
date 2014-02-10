@@ -148,7 +148,7 @@ jQuery(function() {
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
 
 </cti:msgScope>
 </cti:standardPage>

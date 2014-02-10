@@ -1,5 +1,5 @@
 jQuery(document).on('click', 'li.menuOption.command', function(event) {
-   Yukon.CapControl.hideMenu();
+   yukon.CapControl.hideMenu();
     var doCommand = true;
     var menuOption = jQuery(event.currentTarget).closest("li");
     var ul = menuOption.parent("ul");
@@ -13,7 +13,7 @@ jQuery(document).on('click', 'li.menuOption.command', function(event) {
 });
 
 jQuery(document).on('click', 'li.menuOption.stateChange', function(event) {
-    Yukon.CapControl.hideMenu();
+    yukon.CapControl.hideMenu();
     doChangeState(jQuery(event.currentTarget).closest("ul").find("input[name='paoId']").val(), jQuery(event.currentTarget).val());
 });
 
@@ -31,9 +31,9 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
         jQuery("#menuPopup").html(data);
 
         if (jQuery("#menuPopup #isFinished").val() === "true") {
-            Yukon.CapControl.showMessage(data);
+            yukon.CapControl.showMessage(data);
         } else {
-            Yukon.CapControl.showMenuPopup({position: "center", modal: true});
+            yukon.CapControl.showMenuPopup({position: "center", modal: true});
         }
     });
 }
@@ -44,7 +44,7 @@ function doSystemCommand(commandId) {
 		type: 'POST',
         data: {'commandId' : commandId}
     }).done( function(response){
-        Yukon.CapControl.showMessage(response);
+        yukon.CapControl.showMessage(response);
     });
 }
 
@@ -54,23 +54,23 @@ function doChangeState(itemId, stateId) {
 		type: 'POST',
         data: {'paoId' : itemId, 'rawStateId' : stateId}
     }).done( function(response){
-        Yukon.CapControl.showMessage(response);
+        yukon.CapControl.showMessage(response);
     });
 }
 
 function doResetBankOpCount(itemId, newOpCount) {
-    Yukon.CapControl.hideMenu();
+    yukon.CapControl.hideMenu();
     jQuery.ajax({
         url: '/capcontrol/command/resetBankOpCount',
         type: 'POST',
         data: {'bankId' : itemId, 'newOpCount' : newOpCount}
     }).done( function(response){
-        Yukon.CapControl.showMessage(response);
+        yukon.CapControl.showMessage(response);
     });
 }
 
 function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
-    Yukon.CapControl.hideMenu();
+    yukon.CapControl.hideMenu();
     parameters = {'bankId': bankId, 'opState': stateId, 'reason': reason};
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
@@ -79,12 +79,12 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
         type: 'POST',
         data: parameters
     }).done( function(response){
-        Yukon.CapControl.showMessage(response);
+        yukon.CapControl.showMessage(response);
     });
 }
 
 function addCommandMenuBehavior(selector) {
 	jQuery(document).on('click', selector, function (event) {
-        Yukon.CapControl.getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
+        yukon.CapControl.getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
 }

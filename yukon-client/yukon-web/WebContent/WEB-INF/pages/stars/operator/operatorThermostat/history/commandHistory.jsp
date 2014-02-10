@@ -17,7 +17,7 @@
 
 <script type="text/javascript">
 jQuery(function(){
-    Yukon.ThermostatManualEditor.init({
+    yukon.ThermostatManualEditor.init({
         thermostat: {
             HEAT: {
                 upper: new Temperature({degrees: parseFloat(${thermostat.schedulableThermostatType.upperLimitHeat.value}), unit:'F'}),

@@ -2,11 +2,11 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.ui = (function (uiMod) {
+yukon.ui = (function (uiMod) {
     return uiMod;
-})(Yukon.ui || {});
+})(yukon.ui || {});
 
-Yukon.ui.passwordManager = (function () {
+yukon.ui.passwordManager = (function () {
     var passwordManagerMod;
 
     passwordManagerMod = {

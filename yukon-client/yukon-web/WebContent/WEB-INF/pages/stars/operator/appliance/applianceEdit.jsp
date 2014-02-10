@@ -10,7 +10,7 @@
     <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-        Yukon.ui.aux.alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
+        yukon.ui.aux.alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
     </script>
     
     <div class="column-12-12">

@@ -6,7 +6,7 @@
  * Singleton for UI functionality editing focusableFieldHolders
  */
 
-Yukon.modules.FieldHelper = function (mod) {
+yukon.modules.FieldHelper = function (mod) {
     var _initialized = false,
         _timeout = null,
         _timeoutArgs = null;
@@ -124,12 +124,12 @@ Yukon.modules.FieldHelper = function (mod) {
 };
 
 jQuery(document).ready(function() {
-    Yukon.namespace('Yukon.modules.FieldHelper');
+    yukon.namespace('yukon.modules.FieldHelper');
     try {
         Sandbox('FieldHelper', function (mod) {
-            Yukon.FieldHelper = mod;
+            yukon.FieldHelper = mod;
         });
     } catch(fieldhelperex) {
     }
-    Yukon.FieldHelper.init();
+    yukon.FieldHelper.init();
 });

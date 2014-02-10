@@ -189,7 +189,7 @@
 </tags:simplePopup>
 <tags:updatedWarning/>
 <tags:dataUpdateEnabler/>
-<cti:dataUpdaterCallback function="Yukon.Alerts.countUpdated" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
+<cti:dataUpdaterCallback function="yukon.Alerts.countUpdated" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
 <tags:analyticsTrackPage/>
 <%-- <tags:feedback/> TODO: uncomment when ready for feedback --%>

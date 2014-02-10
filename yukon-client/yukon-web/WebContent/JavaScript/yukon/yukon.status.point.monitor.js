@@ -9,9 +9,9 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.StatusPointMonitor');
+yukon.namespace('yukon.StatusPointMonitor');
 
-Yukon.StatusPointMonitor = (function () {
+yukon.StatusPointMonitor = (function () {
     
     var mod = {
         
@@ -51,13 +51,13 @@ jQuery(function() {
         row.removeClass('f-template-row');
         row.appendTo('#processors-table tbody');
         
-        Yukon.StatusPointMonitor.reindexAll();
+        yukon.StatusPointMonitor.reindexAll();
     });
     
     /** REMOVE RULE */
     jQuery(document).on('click','.f-remove', function(event) {
         jQuery(this).closest('tr').remove();
-        Yukon.StatusPointMonitor.reindexAll();
+        yukon.StatusPointMonitor.reindexAll();
     });
     
 });

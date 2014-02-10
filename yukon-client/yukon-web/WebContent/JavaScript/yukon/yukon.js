@@ -6,7 +6,7 @@ var Yukon = (function (yukonMod) {
 // namespace function, so we don't have to put all those checks to see if
 // modules exist and either create empty ones or set a reference to one
 // that was previously created
-Yukon.namespace = function (ns_string) {
+yukon.namespace = function (ns_string) {
     var parts = ns_string.split('.'),
         parent = Yukon,
         i;
@@ -40,7 +40,7 @@ if (!Object.create) {
 }
 
 //support for inheritance: inherit superType's prototype
-//Yukon.inheritPrototype = function (subType, superType) {
+//yukon.inheritPrototype = function (subType, superType) {
 //    var prototype = Object.create(superType.prototype);
 //    prototype.constructor = subType;
 //    subType.prototype = prototype;

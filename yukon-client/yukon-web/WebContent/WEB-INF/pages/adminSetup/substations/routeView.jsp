@@ -24,11 +24,11 @@
                 <div class="pa T0">
 	                <div style="padding-bottom: 5px">
 	                    <input type="button" value="&#9650" class="button" name="up"
-	                        onclick="javascript:Yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
+	                        onclick="javascript:yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
 	                </div>
 	                <div>
 	                    <input type="button" value="&#9660" class="button" name="down"
-	                        onclick="javascript:Yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
+	                        onclick="javascript:yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
 	                </div>
                 </div>
                 <div style="padding-top: 55px">

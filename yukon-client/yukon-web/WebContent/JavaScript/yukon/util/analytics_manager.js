@@ -2,11 +2,11 @@ var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
 
-Yukon.namespace('Yukon.AnalyticsManager');
+yukon.namespace('yukon.AnalyticsManager');
 
-Yukon.AnalyticsManager = ( function () {
+yukon.AnalyticsManager = ( function () {
     /**
-     * Singleton that manages [Google] analytics for Yukon. It is initialized 
+     * Singleton that manages [Google] analytics for yukon. It is initialized 
      * when the public method "setTrackingIds" is first called. This is also when event listeners 
      * are registered (currently this only includes listening for all non-dataupdater ajax calls).
      * 

@@ -41,6 +41,6 @@
             </cti:url>
             <cti:button href="${downloadUrl}" nameKey="downloadFailedButton" icon="icon-bullet-go-down"/>
         </div>
-        <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['downloadFailedSection'], true)" initialize="true" value="POINT_IMPORT/${resultId}/IS_COMPLETE_WITH_FAILURES" />
+        <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['downloadFailedSection'], true)" initialize="true" value="POINT_IMPORT/${resultId}/IS_COMPLETE_WITH_FAILURES" />
     </tags:sectionContainer2>
 </cti:standardPage>

@@ -8,8 +8,8 @@
     // Reinit the datepickers. Required after an action is take on the Meter Profile
     // page and the contents, including the date pickers, are ajaxed in.
     jQuery(function () {
-        if ('undefined' !== typeof Yukon.ui.dateTimePickers) {
-            Yukon.ui.dateTimePickers.init();
+        if ('undefined' !== typeof yukon.ui.dateTimePickers) {
+            yukon.ui.dateTimePickers.init();
         }
     });
 </script>
@@ -17,7 +17,7 @@
 <c:choose>
 <c:when test="${not empty reportQueryString}">
     <script language="JavaScript" type="text/javascript">
-        Yukon.ui.blockPage();
+        yukon.ui.blockPage();
         parent.window.location = "${reportQueryString}";
     </script>
     <i:inline key=".retrievingReport"/>
@@ -34,7 +34,7 @@
             // stop the ajax so it doesn't reload the popup as we're using it
             if (jQuery('#' + popupDivName).is(':visible')) {
                 // init these datepickers each time the popup is made visible
-                Yukon.ui.dateTimePickers.init('#' + popupDivName);
+                yukon.ui.dateTimePickers.init('#' + popupDivName);
                 scanningUpdater.stop();
             }
             else {

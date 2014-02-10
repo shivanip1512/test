@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Favorites');
-Yukon.Favorites = (function () {
+yukon.namespace('yukon.Favorites');
+yukon.Favorites = (function () {
 
     var _dataFavoriteButton = function (button) {
 
@@ -108,7 +108,7 @@ Yukon.Favorites = (function () {
 
         init: function() {
 
-            var localUi = Yukon.ui;
+            var localUi = yukon.ui;
 
             _addToHistory();
 
@@ -144,7 +144,7 @@ Yukon.Favorites = (function () {
 
         initSubscribe: function() {
 
-            var localUi = Yukon.ui;
+            var localUi = yukon.ui;
 
             jQuery('.b-subscribe:not(.remove)').each( function() {
                 var button = jQuery(this);
@@ -177,5 +177,5 @@ Yukon.Favorites = (function () {
 }());
 
 jQuery(function() {
-    Yukon.Favorites.init();
+    yukon.Favorites.init();
 });

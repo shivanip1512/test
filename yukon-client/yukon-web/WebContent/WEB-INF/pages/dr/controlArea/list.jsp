@@ -218,7 +218,7 @@
                                             <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                         </span>
                                         <cti:dataUpdaterCallback
-                                            function="Yukon.EstimatedLoad.displaySummaryValue "
+                                            function="yukon.EstimatedLoad.displaySummaryValue "
                                             value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                                     </td>
                                 </cti:checkRolesAndProperties>

@@ -3,7 +3,7 @@
 */
 
 
-Yukon.GridHelper = {
+yukon.GridHelper = {
         createGrid: function(args){
             this._createBasicGrid(args);
             if(args.toolbar){
@@ -11,7 +11,7 @@ Yukon.GridHelper = {
             }
             
             if(args.refreshRate){
-                setInterval('Yukon.GridHelper._refresh("'+ args.id +'")', args.refreshRate)
+                setInterval('yukon.GridHelper._refresh("'+ args.id +'")', args.refreshRate)
             }
         },
 
@@ -91,7 +91,7 @@ Yukon.GridHelper = {
         }
 };
 
-var jqGridHelper = Yukon.GridHelper;
+var jqGridHelper = yukon.GridHelper;
 
 jQuery(window).resize(function() {
 	jQuery('.ui-jqgrid-btable').each(function(index, elem){

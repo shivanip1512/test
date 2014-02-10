@@ -49,7 +49,7 @@
             meterErrors.html(jqXHR.responseText);
             meterErrors.show();
         }).always(function() {
-            Yukon.ui.unbusy(reportBtn);
+            yukon.ui.unbusy(reportBtn);
         });
     }
 jQuery(document).on('click', '#b-get-report', function(event) {

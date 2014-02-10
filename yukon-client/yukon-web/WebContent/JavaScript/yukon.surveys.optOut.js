@@ -1,8 +1,8 @@
 var Yukon = (function (yukonMod) {
     return yukonMod;
 })(Yukon || {});
-Yukon.namespace('Yukon.Surveys.OptOut');
-Yukon.Surveys.OptOut = (function () {
+yukon.namespace('yukon.Surveys.OptOut');
+yukon.Surveys.OptOut = (function () {
 
     var mod = {
         init : function () {
@@ -44,5 +44,5 @@ Yukon.Surveys.OptOut = (function () {
 }());
 
 jQuery(function () {
-    Yukon.Surveys.OptOut.init();
+    yukon.Surveys.OptOut.init();
 });

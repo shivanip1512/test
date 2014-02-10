@@ -99,7 +99,7 @@
                             <d:confirm on="#deleteButton_${analysis.analysisId}" nameKey="deleteConfirmation" argument="${attribName}"/>
                         </div>
                     </td>
-                    <cti:dataUpdaterCallback function="Yukon.DataAnalysis.changeStatus"
+                    <cti:dataUpdaterCallback function="yukon.DataAnalysis.changeStatus"
                                 value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
                     
                 </tr>

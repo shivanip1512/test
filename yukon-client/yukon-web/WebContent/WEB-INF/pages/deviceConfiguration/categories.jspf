@@ -88,7 +88,7 @@
                                         multiSelectMode="false"
                                         immediateSelectMode="true"
                                         icon="icon-arrow-swap"
-                                        endAction="function(items) {return Yukon.DeviceConfig.changeOut('${catType}');}"
+                                        endAction="function(items) {return yukon.DeviceConfig.changeOut('${catType}');}"
                                         extraArgs="${catType}"
                                         />
                                 </c:if>

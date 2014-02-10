@@ -25,7 +25,7 @@
             type: 'POST',
             dataType: 'json'
         }).done( function (data, textStatus, jqXHR) {
-           var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+           var json = yukon.ui.aux.getHeaderJSON(jqXHR);
            jQuery('#complete').val(json.complete);
            if (json.errorOccurred) {
                 jQuery('#spinner').hide();
@@ -104,7 +104,7 @@
             url: '/amr/phaseDetect/readPhase',
             type: 'POST'
         }).done( function (data, textStatus, jqXHR) {
-            var json = Yukon.ui.aux.getHeaderJSON(jqXHR);
+            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
             if (json.success) {
                 jQuery('#readButton').val(readingMsg);
                 jQuery('#readButton').prop({ 'disabled': true });

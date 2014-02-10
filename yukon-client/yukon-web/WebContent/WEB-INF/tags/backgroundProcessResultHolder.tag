@@ -52,7 +52,7 @@
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
     </div>
     
-    <cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
 
 </c:if>
 
@@ -93,4 +93,4 @@
 	
 </div>
 
-<cti:dataUpdaterCallback function="Yukon.ui.progressBar.toggleElementsWhenTrue(['errorActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_FAILURES" />
+<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['errorActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_FAILURES" />
