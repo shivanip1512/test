@@ -435,6 +435,16 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.label">Configure</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.title">Broad Performance Test Settings</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.ok">Save</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.successful">Successful</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.unsuccessful">Unsccessful</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.unknown">Unknown</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.percentage">Percent Succesful</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.emailSubject">RF Performance Results</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.emailHeader"><![CDATA[
+Daily read report has completed.<br />
+More deail is available on the <a href="">Broadcast Verification Report</a> page.
+]]></entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.emailFooter">This email was generated at {0}</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

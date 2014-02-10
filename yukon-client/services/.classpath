@@ -25,5 +25,10 @@
 	<classpathentry kind="lib" path="/third-party/spring-integration-core-2.1.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-integration-jms-2.1.4.RELEASE.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
+	<classpathentry kind="lib" path="/third-party/mail.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
