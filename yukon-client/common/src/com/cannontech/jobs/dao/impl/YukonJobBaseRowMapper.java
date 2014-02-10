@@ -22,7 +22,6 @@ import com.cannontech.jobs.support.YukonJobDefinitionFactory;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
 import com.cannontech.user.SimpleYukonUserContext;
-import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
 final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
@@ -48,9 +47,10 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         job.setDisabled(!jobDisabledStatus.equals(JobDisabledStatus.N));
         job.setDeleted(jobDisabledStatus.equals(JobDisabledStatus.D));
         
-        int userId = rs.getInt("userId");
-        if (userId == UserUtils.USER_YUKON_ID) {
+        Integer userId = rs.getNullableInt("userId");
+        if (userId == null) {
             job.setUserContext(YukonUserContext.system);
+            job.setSystemUser(true);
         } else {
             // Assume the rest is there.
             LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);

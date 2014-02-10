@@ -13,13 +13,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
-import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
 public class JobDaoBase {
@@ -35,7 +35,7 @@ public class JobDaoBase {
     };
 
     private FieldMapper<YukonJob> jobFieldMapper = new FieldMapper<YukonJob>() {
-
+        @Override
         public void extractValues(MapSqlParameterSource p, YukonJob job) {
             String beanNaem = job.getBeanName();
             p.addValue("beanName", beanNaem);
@@ -46,11 +46,10 @@ public class JobDaoBase {
             }
             p.addValue("disabled", disabled);
             
-            YukonUserContext context = job.getUserContext();
-            int userId = context.getYukonUser().getLiteID();
-            p.addValue("userId", userId);
-            
-            if (userId != UserUtils.USER_YUKON_ID) {
+            if (!job.isSystemUser()) {
+                // Not system user, should have all the context goodies.
+                YukonUserContext context = job.getUserContext();
+                p.addValue("userId", context.getYukonUser().getLiteID());
                 String locale = context.getLocale().toString();
                 p.addValue("locale", locale);
                 String timeZone = context.getTimeZone().getID();
@@ -60,10 +59,12 @@ public class JobDaoBase {
             }
         }
 
+        @Override
         public Number getPrimaryKey(YukonJob job) {
             return job.getId();
         }
 
+        @Override
         public void setPrimaryKey(YukonJob job, int value) {
             job.setId(value);
         }
@@ -89,22 +90,21 @@ public class JobDaoBase {
     private void reInsertProperties(YukonJob job) {
         // delete old JobProperty entries
         SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("delete from JobProperty");
-        deleteSql.append("where jobId = ?");
-        yukonJdbcTemplate.update(deleteSql.toString(), job.getId());
+        deleteSql.append("DELETE FROM JobProperty");
+        deleteSql.append("WHERE JobId").eq(job.getId());
         
+        yukonJdbcTemplate.update(deleteSql);
         
         // create JobProperty entries
-        SqlStatementBuilder insertSql = new SqlStatementBuilder();
-        insertSql.append("insert into JobProperty");
-        insertSql.append("(jobPropertyId, jobId, name, value)");
-        insertSql.append("values (?,?,?,?)");
         for (Map.Entry<String, String> jobProperty : job.getJobProperties().entrySet()) {
-            int jobPropertyId = nextValueHelper.getNextValue("JobProperty");
-            int jobId = job.getId();
-            String name = jobProperty.getKey();
-            String value = SqlUtils.convertStringToDbValue(jobProperty.getValue());
-            yukonJdbcTemplate.update(insertSql.toString(), jobPropertyId, jobId, name, value);
+            SqlStatementBuilder insertSql = new SqlStatementBuilder();
+            SqlParameterSink params = insertSql.insertInto("JobProperty");
+            params.addValue("JobPropertyId", nextValueHelper.getNextValue("JobProperty"));
+            params.addValue("JobId", job.getId());
+            params.addValue("Name", jobProperty.getKey());
+            params.addValue("Value", SqlUtils.convertStringToDbValue(jobProperty.getValue()));
+            
+            yukonJdbcTemplate.update(insertSql);
         }
     }
 
@@ -123,6 +123,4 @@ public class JobDaoBase {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
-
-
 }

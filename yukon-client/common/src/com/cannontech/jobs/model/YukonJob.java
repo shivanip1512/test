@@ -13,53 +13,83 @@ public class YukonJob {
     private String beanName;
     private boolean disabled;
     private boolean deleted;
-    private Map<String,String> jobProperties;
+    private Map<String, String> jobProperties;
     private YukonJobDefinition<? extends YukonTask> jobDefinition;
     private YukonUserContext userContext;
 
+    /*
+     * This is unfortunate. A byproduct of the PacifiCorp changes. We currently have no way
+     * to determine whether a job read in from the database is assigned a "system" user other
+     * than by knowing the job had null data in the user context columns of the job table.
+     * This variable is meant to signify that state, and should be removed upon the completion
+     * of YUK-13009, which will create a system user to be used for user-less jobs in Yukon.
+     */
+    private boolean isSystemUser;
 
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getBeanName() {
         return beanName;
     }
+
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
+
     public boolean isDisabled() {
         return disabled;
     }
+
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
+
     public boolean isDeleted() {
-		return deleted;
-	}
+        return deleted;
+    }
+
     public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+        this.deleted = deleted;
+    }
+
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
+
     public YukonUserContext getUserContext() {
         return userContext;
     }
+    
+    public void setSystemUser(boolean isSystemUser) {
+        this.isSystemUser = isSystemUser;
+    }
+    
+    public boolean isSystemUser() {
+        return isSystemUser;
+    }
+
     public Map<String, String> getJobProperties() {
         return jobProperties;
     }
+
     public void setJobProperties(Map<String, String> jobProperties) {
         this.jobProperties = jobProperties;
     }
+
     public YukonJobDefinition<? extends YukonTask> getJobDefinition() {
         return jobDefinition;
     }
+
     public void setJobDefinition(YukonJobDefinition<? extends YukonTask> jobDefinition) {
         this.jobDefinition = jobDefinition;
     }
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
@@ -67,6 +97,7 @@ public class YukonJob {
         result = PRIME * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
