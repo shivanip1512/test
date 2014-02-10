@@ -84,7 +84,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         }
     }
     
-    private final static byte payloadType = (byte) 0xE2;
+    private final static byte expresscomPayloadHeader = (byte) 0xE2;
     
     @Autowired ResourceLoader loader;
     private static final Logger log = YukonLogManager.getLogger(ExiParsingService.class);
@@ -94,7 +94,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
     	
     	byte[] data = Arrays.copyOf(payload, payload.length);
-    	if(data[0] == payloadType){
+    	if(data[0] == expresscomPayloadHeader){
     		// Trim 3-byte Expresscom header from the payload
     		data = Arrays.copyOfRange(data, 3, data.length);
     	}
@@ -243,7 +243,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     @Override
     public Schema getSchema(byte[] payload) {
         byte[] header;
-        if (payload[0] == payloadType) {
+        if (payload[0] == expresscomPayloadHeader) {
             header = Arrays.copyOfRange(payload, 3, 8);
         } else {
             header = Arrays.copyOfRange(payload, 0, 4);

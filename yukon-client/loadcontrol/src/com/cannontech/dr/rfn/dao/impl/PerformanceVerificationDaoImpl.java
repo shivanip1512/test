@@ -198,7 +198,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public List<Long> getValidEventIdsForDevice(int deviceId, List<Long> eventIds) {
+    public List<Long> getValidEventIdsForDevice(int deviceId, Iterable<Long> eventIds) {
         //12 message ids maximum we can get from device
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");
@@ -209,7 +209,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
     
     @Override
-    public List<Long> getValidEventIds(List<Long> eventIds) {
+    public List<Long> getValidEventIds(Iterable<Long> eventIds) {
         //12 message ids maximum we can get from device
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");

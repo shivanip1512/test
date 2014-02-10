@@ -52,14 +52,14 @@ public interface PerformanceVerificationDao {
     Map<Integer, AssetAvailabilityStatus> getDevicesWithUnknownStatus(long messageId);
     
     /**
-	 *This method looks up all the event ids for this device and returns the ones that are valid.
+	 *Looks up all the event ids for this device and returns the ones that are valid.
 	 */
-    List<Long> getValidEventIdsForDevice(int deviceId, List<Long> eventIds);
+    List<Long> getValidEventIdsForDevice(int deviceId, Iterable<Long> eventIds);
     
     /**
-	 *This method looks up all the and returns the ones that are valid.
+	 *Looks up all the event ids and returns the ones that are valid.
 	 */
-    List<Long> getValidEventIds(List<Long> eventIds);
+    List<Long> getValidEventIds(Iterable<Long> eventIds);
 
     /**
 	 *This method creates unenrolled result entry.

@@ -89,7 +89,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
                 }
                 
-                // Discard all the data before 1/1/2011
+                // Discard all the data before 1/1/2001
                 if(rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)){
                 
 	                /** Handle point data */
@@ -111,9 +111,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 								.mapBroadcastVerificationUnsuccessRange(
 										decodedPayload, rfnDevice);
 						rfnPerformanceVerificationService
-								.processVerificationMessages(rfnDevice
-										.getPaoIdentifier().getPaoId(),
-										verificationMsgs, range);
+								.processVerificationMessages(rfnDevice, verificationMsgs, range);
 					}
                 }
                 incrementProcessedArchiveRequest();

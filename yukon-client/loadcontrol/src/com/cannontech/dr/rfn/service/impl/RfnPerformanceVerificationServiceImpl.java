@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
@@ -63,7 +64,8 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     }
 
     @Override
-    public void processVerificationMessages(int deviceId, Map<Long, Instant> verificationMsgs, Range<Instant> range){
+    public void processVerificationMessages(YukonPao device, Map<Long, Instant> verificationMsgs, Range<Instant> range){
+        int deviceId = device.getPaoIdentifier().getPaoId();
 		/*
 		 * 1. Remove invalid messages
 		 * 2. Add messages received from unenrolled devices
@@ -74,8 +76,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
 		 * still "UNKNOWN". Mark the result. (FAILURE)
 		 */
     	//message ids that were sent to the device
-		List<Long> sentMsgIds = performanceVerificationDao
-				.getValidEventIds(new ArrayList<Long>(verificationMsgs.keySet()));
+        List<Long> sentMsgIds = performanceVerificationDao.getValidEventIds(verificationMsgs.keySet());
 		//remove message ids that were never sent to the device
 		Map<Long, Instant> successMsgs = Maps.filterKeys(verificationMsgs,
 				Predicates.in(sentMsgIds));
@@ -84,8 +85,7 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     	    	
     	List<Long> unexpectedMsgIds = new ArrayList<Long>(successMsgs.keySet());
     	// message ids we expect to receive from this device
-		List<Long> expectedMsgIds = performanceVerificationDao.getValidEventIdsForDevice(
-				deviceId, new ArrayList<Long>(successMsgs.keySet()));
+    	List<Long> expectedMsgIds = performanceVerificationDao.getValidEventIdsForDevice(deviceId, successMsgs.keySet());
 		// Remove the message ids we expected to receive for this device. The
 		// remaining message ids we didn't expect to get back because the device
 		// was not enrolled in the program at the time the message was sent.

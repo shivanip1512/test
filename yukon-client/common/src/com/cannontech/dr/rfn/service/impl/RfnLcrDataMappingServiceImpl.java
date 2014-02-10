@@ -55,6 +55,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
     private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
+    private static final DateTime year2001 = new DateTime(2001, 1, 1, 0, 0);
 
     @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
@@ -344,9 +345,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     public boolean isValidTimeOfReading(SimpleXPathTemplate data) {
         Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
         DateTime timeOfReading = new DateTime(timeInSec * 1000);
-        DateTime year2011 = new DateTime(2011, 1, 1, 0, 0);
-        boolean isValid = timeOfReading.isAfter(year2011);
-        log.debug("time of reading:"+timeOfReading.toDate()+"    after 1/1/2011 =" +isValid);
+        boolean isValid = timeOfReading.isAfter(year2001);
+        log.debug("time of reading:"+timeOfReading.toDate()+"    after 1/1/2001 =" +isValid);
         return isValid;
     }
 }
