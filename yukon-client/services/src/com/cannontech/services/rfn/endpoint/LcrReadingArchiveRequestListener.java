@@ -101,18 +101,17 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 	                
 	                /** Handle addressing data */
 	                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
-	                
-					/** Handle Broadcast Verification Messages */
-	                Schema schema = exiParsingService.getSchema(payload);
-					if (schema.supportsBroadcastVerificationMessages()) {
-						Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
-								.mapBroadcastVerificationMessages(decodedPayload);
-						Range<Instant> range = rfnLcrDataMappingService
-								.mapBroadcastVerificationUnsuccessRange(
-										decodedPayload, rfnDevice);
-						rfnPerformanceVerificationService
-								.processVerificationMessages(rfnDevice, verificationMsgs, range);
-					}
+                }
+                /** Handle Broadcast Verification Messages */
+                Schema schema = exiParsingService.getSchema(payload);
+                if (schema.supportsBroadcastVerificationMessages()) {
+                    Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
+                        .mapBroadcastVerificationMessages(decodedPayload);
+                    Range<Instant> range = rfnLcrDataMappingService
+                        .mapBroadcastVerificationUnsuccessRange(
+                                                                decodedPayload, rfnDevice);
+                    rfnPerformanceVerificationService
+                        .processVerificationMessages(rfnDevice, verificationMsgs, range);
                 }
                 incrementProcessedArchiveRequest();
                 
