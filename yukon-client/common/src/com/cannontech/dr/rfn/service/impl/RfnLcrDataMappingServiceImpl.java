@@ -335,8 +335,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             Instant earliestStartTime = new Instant(relayStartTimes.get(0) * 1000);
             range = new Range<Instant>(earliestStartTime, true, timeOfReading, true);
             log.debug("Created range: Min: " + earliestStartTime.toDate()
-                      + "(earliest relay start time truncated to an hour)       Max: " + timeOfReading.toDate()
-                      + "(/DRReport/@utc)");
+                      + "(earliest relay start time)       Max: " + timeOfReading.toDate()
+                      + "(/DRReport/@utc truncated to an hour)");
         }
         return range;
     }
