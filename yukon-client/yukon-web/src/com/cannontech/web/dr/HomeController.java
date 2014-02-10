@@ -94,7 +94,6 @@ public class HomeController {
             model.addAttribute("last24Hr", averageReports.getLastDay());
             model.addAttribute("last7Days", averageReports.getLastSevenDays());
             model.addAttribute("last30Days", averageReports.getLastThirtyDays());
-            model.addAttribute("showRfPerformance", true);
         }
 
         return "dr/home.jsp";
