@@ -15,7 +15,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 public abstract class GenericEmailHandler implements OutputHandler {
     private static final Logger log = YukonLogManager.getLogger(GenericEmailHandler.class);
@@ -66,8 +66,8 @@ public abstract class GenericEmailHandler implements OutputHandler {
                     InternetAddress fromAddr = 
                             StringUtils.isNotBlank(from) ? new InternetAddress(from) : null;
                     
-                    EmailServiceMessage message = 
-                            new EmailServiceMessage(
+                    EmailMessage message = 
+                            new EmailMessage(
                                 fromAddr,
                                 InternetAddress.parse(emailTo), 
                                 emailSubject, 

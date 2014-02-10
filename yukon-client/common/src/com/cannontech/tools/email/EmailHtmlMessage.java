@@ -10,20 +10,20 @@ import javax.mail.internet.MimeMultipart;
  * The body and htmlBody shall contain identical information, simply formatted for plain vs hmtl.
  * The email client will display whichever it has capabilities to do, with plain being default.
  */
-public class EmailServiceHtmlMessage extends EmailServiceMessage {
+public class EmailHtmlMessage extends EmailMessage {
     private String htmlBody = null;
     
-    public EmailServiceHtmlMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
+    public EmailHtmlMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
                                InternetAddress[] bcc, String subject, String body, String htmlBody) throws MessagingException {
         super(from, to, cc, bcc, subject, body);
         this.htmlBody = htmlBody;
     }
     
-    public EmailServiceHtmlMessage(InternetAddress from, InternetAddress[] to, String subject, String body, String htmlBody) throws MessagingException {
+    public EmailHtmlMessage(InternetAddress from, InternetAddress[] to, String subject, String body, String htmlBody) throws MessagingException {
         this(from, to, null, null, subject, body, htmlBody);
     }
     
-    public EmailServiceHtmlMessage(InternetAddress[] to, String subject, String body, String htmlBody) throws MessagingException {
+    public EmailHtmlMessage(InternetAddress[] to, String subject, String body, String htmlBody) throws MessagingException {
         this(null, to, null, null, subject, body, htmlBody);
     }
 

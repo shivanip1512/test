@@ -9,10 +9,10 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Use this class if you are only sending PLAIN text body.
- * If you are including _any_ html formatting (href, for example), then use {@link EmailServiceHtmlMessage}
- * If you want to add attachments, then use {@link EmailServiceAttachmentMessage}
+ * If you are including _any_ html formatting (href, for example), then use {@link EmailHtmlMessage}
+ * If you want to add attachments, then use {@link EmailAttachmentMessage}
  */
-public class EmailServiceMessage {
+public class EmailMessage {
     private final InternetAddress from;
     private final InternetAddress[] to;
     private final InternetAddress[] cc;
@@ -20,7 +20,7 @@ public class EmailServiceMessage {
     private final String subject;
     private String body;
     
-    public EmailServiceMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
+    public EmailMessage(InternetAddress from, InternetAddress[] to, InternetAddress[] cc, 
                                InternetAddress[] bcc, String subject, String body) throws MessagingException {
     	if (from != null) {
     		this.from = new InternetAddress(from.getAddress());
@@ -50,11 +50,11 @@ public class EmailServiceMessage {
         this.body = body;
     }
 
-    public EmailServiceMessage(InternetAddress from, InternetAddress[] to, String subject, String body) throws MessagingException {
+    public EmailMessage(InternetAddress from, InternetAddress[] to, String subject, String body) throws MessagingException {
         this(from, to, null, null, subject, body);
     }
 
-    public EmailServiceMessage(InternetAddress[] to, String subject, String body) throws MessagingException {
+    public EmailMessage(InternetAddress[] to, String subject, String body) throws MessagingException {
         this(null, to, null, null, subject, body);
     }
 

@@ -21,7 +21,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
     
 
     @Override
-    public void sendMessage(EmailServiceMessage data) throws MessagingException {
+    public void sendMessage(EmailMessage data) throws MessagingException {
         Session session = getSession();
         MimeMessage message = new MimeMessage(session);
         message.setHeader("X-Mailer", "YukonEmail");

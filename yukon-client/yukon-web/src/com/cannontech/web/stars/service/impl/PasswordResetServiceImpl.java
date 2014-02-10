@@ -34,7 +34,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.tools.email.EmailException;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceHtmlMessage;
+import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.PasswordResetService;
@@ -92,8 +92,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         
         for (LiteContactNotification emailAddress : emailAddresses) {
             try {
-                EmailServiceHtmlMessage emailMessage = 
-                        new EmailServiceHtmlMessage(InternetAddress.parse(emailAddress.getNotification()), subject, htmlBody, htmlBody);
+                EmailHtmlMessage emailMessage = 
+                        new EmailHtmlMessage(InternetAddress.parse(emailAddress.getNotification()), subject, htmlBody, htmlBody);
                 emailService.sendMessage(emailMessage);
             } catch (MessagingException e) {
                 logger.error(e);

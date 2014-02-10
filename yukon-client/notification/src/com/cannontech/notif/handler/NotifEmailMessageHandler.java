@@ -18,7 +18,7 @@ import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 public class NotifEmailMessageHandler implements MessageHandler<NotifEmailMsg> {
     private static final Logger log = YukonLogManager.getLogger(NotifEmailMessageHandler.class);
@@ -56,8 +56,8 @@ public class NotifEmailMessageHandler implements MessageHandler<NotifEmailMsg> {
 			for (LiteContactNotification addr : notifications) {
 				String emailTo = addr.getNotification();
 				try {
-				    EmailServiceMessage data = 
-				            new EmailServiceMessage(
+				    EmailMessage data = 
+				            new EmailMessage(
                                 InternetAddress.parse(emailTo),
                                 msg.getSubject(),
                                 msg.getBody());

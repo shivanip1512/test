@@ -31,7 +31,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceHtmlMessage;
+import com.cannontech.tools.email.EmailHtmlMessage;
 import com.google.common.io.Files;
 
 /**
@@ -208,8 +208,8 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		
 		for(String emailAddress : emailsArray) {
             try {
-                EmailServiceHtmlMessage message = 
-                        new EmailServiceHtmlMessage(InternetAddress.parse(emailAddress),
+                EmailHtmlMessage message = 
+                        new EmailHtmlMessage(InternetAddress.parse(emailAddress),
                                                     subject, org.apache.commons.lang.StringUtils.EMPTY, body);
 
                 emailService.sendMessage(message);

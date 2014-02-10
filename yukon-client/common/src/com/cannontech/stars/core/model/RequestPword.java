@@ -19,7 +19,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author rneuharth
@@ -261,7 +261,7 @@ public class RequestPword
 		try
 		{
 	        String to = StringUtils.join(emailTO_, ",");
-	        EmailServiceMessage message = new EmailServiceMessage(InternetAddress.parse(to), subject, body_);
+	        EmailMessage message = new EmailMessage(InternetAddress.parse(to), subject, body_);
 		    EmailService emailService = YukonSpringHook.getBean(EmailService.class);
 			emailService.sendMessage(message);
 		}

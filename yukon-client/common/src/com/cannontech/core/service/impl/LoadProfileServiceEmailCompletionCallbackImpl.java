@@ -21,7 +21,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceHtmlMessage;
+import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.user.YukonUserContext;
 
 
@@ -49,7 +49,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
     private final String failure_template_html = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
     private final String cancel_template_html  = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
     
-    private EmailServiceHtmlMessage getEmailer(String bodyTemplate, String htmlBodyTemplate, Map<String, Object> extraData) throws AddressException, MessagingException {
+    private EmailHtmlMessage getEmailer(String bodyTemplate, String htmlBodyTemplate, Map<String, Object> extraData) throws AddressException, MessagingException {
         Map<String, Object> data = new HashMap<String, Object>(msgData);
         data.putAll(extraData);
         
@@ -58,7 +58,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
         String body = tp.process(bodyTemplate, data);
         String htmlBody = tp.process(htmlBodyTemplate, data);
 
-        EmailServiceHtmlMessage emailer = new EmailServiceHtmlMessage(InternetAddress.parse(email),
+        EmailHtmlMessage emailer = new EmailHtmlMessage(InternetAddress.parse(email),
                                                                       subject, body, htmlBody);
         return emailer;
     }
@@ -105,7 +105,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
             extraData.put("status", "failed");
             extraData.put("statusMsg", "Your profile data collection request has encountered an error.");
             
-            EmailServiceHtmlMessage failureMessage = getEmailer(failure_template_plain, failure_template_html, extraData);
+            EmailHtmlMessage failureMessage = getEmailer(failure_template_plain, failure_template_html, extraData);
             if (!StringUtils.isBlank(errorReason)) {
                 String originalBody = failureMessage .getBody();
                 String newBody = originalBody + "\n\n" + errorReason;
@@ -131,7 +131,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
             extraData.put("status", "completed");
             extraData.put("statusMsg", "Your profile data collection request has completed.");
             
-            EmailServiceHtmlMessage successMessage = getEmailer(success_template_plain, success_template_html, extraData);
+            EmailHtmlMessage successMessage = getEmailer(success_template_plain, success_template_html, extraData);
             if (!StringUtils.isBlank(successInfo)) {
                 String originalBody = successMessage .getBody();
                 String newBody = originalBody + "\n\n" + successInfo;
@@ -167,7 +167,7 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
             extraData.put("status", "canceled");
             extraData.put("statusMsg", "Your profile data collection was canceled.");
             
-            EmailServiceHtmlMessage cancelMessage = getEmailer(cancel_template_plain, cancel_template_html, extraData);
+            EmailHtmlMessage cancelMessage = getEmailer(cancel_template_plain, cancel_template_html, extraData);
             if (!StringUtils.isBlank(cancelInfo)) {
                 String originalBody = cancelMessage .getBody();
                 String newBody = originalBody + "\n\n" + cancelInfo;

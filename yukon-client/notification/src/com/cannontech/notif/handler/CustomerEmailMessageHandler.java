@@ -20,7 +20,7 @@ import com.cannontech.notif.outputs.StandardEmailHandler;
 import com.cannontech.notif.server.NotifServerConnection;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomerEmailMsg> {
     
@@ -48,8 +48,8 @@ public class CustomerEmailMessageHandler implements MessageHandler<NotifCustomer
         for (LiteContactNotification notif : customer.getNotifications(StandardEmailHandler.checker)) {
             String emailTo = notif.getNotification();
             try {
-                EmailServiceMessage data = 
-                        new EmailServiceMessage(
+                EmailMessage data = 
+                        new EmailMessage(
                             InternetAddress.parse(emailTo), 
                             msg.getSubject(), 
                             msg.getBody());

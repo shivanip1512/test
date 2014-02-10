@@ -38,7 +38,7 @@ import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.YukonUserContext;
 
 public class OptOutNotificationServiceImpl implements OptOutNotificationService {
@@ -168,8 +168,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             return;
         }
         
-        EmailServiceMessage message = 
-                new EmailServiceMessage(new InternetAddress(fromAddress),
+        EmailMessage message = 
+                new EmailMessage(new InternetAddress(fromAddress),
                                         InternetAddress.parse(recipientsCsvString), subject, messageBody);
         emailService.sendMessage(message);
 	}

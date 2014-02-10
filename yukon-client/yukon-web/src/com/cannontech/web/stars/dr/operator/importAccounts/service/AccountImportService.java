@@ -61,7 +61,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceAttachmentMessage;
+import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -1285,8 +1285,8 @@ public class AccountImportService {
     private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
         
         String body = "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR;
-        EmailServiceAttachmentMessage message = 
-                new EmailServiceAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+        EmailAttachmentMessage message = 
+                new EmailAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
                                                   InternetAddress.parse(email), "Import Log", body);
         EmailFileDataSource dataSource = new EmailFileDataSource(importLog);
         message.addAttachment(dataSource);

@@ -46,7 +46,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.PreferenceOnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceHtmlMessage;
+import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 
@@ -85,14 +85,14 @@ public class RfnPerformanceEmailService {
                 init();
                 PreferenceOnOff preference = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
                 if (preference.equals(PreferenceOnOff.ON)) {
-                    EmailServiceHtmlMessage htmlMessage = generateEmail();
+                    EmailHtmlMessage htmlMessage = generateEmail();
                     sendEmails(htmlMessage);
                 }
             }
         }, secondsUntilSixAm, TimeUnit.SECONDS);
     }
 
-    private void sendEmails(final EmailServiceHtmlMessage htmlMessageTemplate) {
+    private void sendEmails(final EmailHtmlMessage htmlMessageTemplate) {
         //TODO Header has a link. Where should the link go?
         int notifGroupId = NotificationGroup.NONE_NOTIFICATIONGROUP_ID;
 
@@ -115,8 +115,8 @@ public class RfnPerformanceEmailService {
             for (LiteContactNotification addr : notifications) {
                 String emailTo = addr.getNotification();
                 try {
-                    EmailServiceHtmlMessage message = 
-                            new EmailServiceHtmlMessage(
+                    EmailHtmlMessage message = 
+                            new EmailHtmlMessage(
                                 InternetAddress.parse(emailTo),
                                 htmlMessageTemplate.getSubject(),
                                 htmlMessageTemplate.getBody(),
@@ -130,7 +130,7 @@ public class RfnPerformanceEmailService {
         }
     }
 
-    public EmailServiceHtmlMessage generateEmail() {
+    public EmailHtmlMessage generateEmail() {
         final YukonUserContext userContext = new SystemUserContext();
         FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormatEnum.DATE, userContext);
@@ -205,9 +205,9 @@ public class RfnPerformanceEmailService {
         }
 
 
-        EmailServiceHtmlMessage htmlMessage = null;
+        EmailHtmlMessage htmlMessage = null;
         try {
-            htmlMessage = new EmailServiceHtmlMessage(
+            htmlMessage = new EmailHtmlMessage(
                 new InternetAddress[] {new InternetAddress()},
                 subject,
                 htmlBody,

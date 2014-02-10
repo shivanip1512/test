@@ -29,7 +29,7 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceAttachmentMessage;
+import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
@@ -95,8 +95,8 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             Date now = new Date();
             String fileName = "WorkOrder_" + StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".pdf";
             
-            EmailServiceAttachmentMessage message = 
-                    new EmailServiceAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+            EmailAttachmentMessage message = 
+                    new EmailAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
                                             InternetAddress.parse(email), 
                                             "Work Order", "Work Order Attached", null);
             message.addAttachment(new EmailFileDataSource(tempFile, fileName));

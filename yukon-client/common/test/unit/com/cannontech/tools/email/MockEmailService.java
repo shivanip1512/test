@@ -6,14 +6,14 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 public class MockEmailService implements EmailService {
-    private List<EmailServiceMessage> sentMessages = new ArrayList<EmailServiceMessage>();
+    private List<EmailMessage> sentMessages = new ArrayList<EmailMessage>();
     
-    public List<EmailServiceMessage> getSentMessages() {
+    public List<EmailMessage> getSentMessages() {
         return sentMessages;
     }
     
     @Override
-    public void sendMessage(EmailServiceMessage message) throws MessagingException {
+    public void sendMessage(EmailMessage message) throws MessagingException {
         sentMessages.add(message);
     }
 }

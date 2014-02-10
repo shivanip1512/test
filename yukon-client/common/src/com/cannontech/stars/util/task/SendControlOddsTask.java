@@ -27,7 +27,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceMessage;
+import com.cannontech.tools.email.EmailMessage;
 
 /**
  * @author yao
@@ -157,8 +157,8 @@ public class SendControlOddsTask implements Runnable {
 					try {
 				        EmailService emailService = YukonSpringHook.getBean(EmailService.class);
 					    
-				        EmailServiceMessage message = 
-				                new EmailServiceMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+				        EmailMessage message = 
+				                new EmailMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
 				                                        InternetAddress.parse(email.getNotification()), subject, messageText.toString());
 						emailService.sendMessage(message);
 					}

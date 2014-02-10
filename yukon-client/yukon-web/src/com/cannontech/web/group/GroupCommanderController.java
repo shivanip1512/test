@@ -61,7 +61,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailServiceAttachmentMessage;
+import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -282,8 +282,8 @@ public class GroupCommanderController {
             String body = messageSourceAccessor.getMessage("yukon.web.commander.groupCommander.completionEmail.body", resultUrl, successCount, failureCount, result.getCommand());
             
             // build up email
-            EmailServiceAttachmentMessage email = 
-                    new EmailServiceAttachmentMessage(InternetAddress.parse(emailAddress), subject, body);
+            EmailAttachmentMessage email = 
+                    new EmailAttachmentMessage(InternetAddress.parse(emailAddress), subject, body);
             
             // create success attachment
             ByteArrayDataSource successDataSource = new ByteArrayDataSource(successReportBytes.toByteArray(), "application/pdf");
@@ -317,8 +317,8 @@ public class GroupCommanderController {
         List<GroupCommandResult> pending = groupCommandExecutor.getPending();
         
         ArrayList<GroupCommandResult> allResults = new ArrayList<GroupCommandResult>(completed.size() + pending.size());
-        allResults.addAll(pending);
         allResults.addAll(completed);
+        allResults.addAll(pending);
         
         map.addAttribute("resultList", allResults);
     }
