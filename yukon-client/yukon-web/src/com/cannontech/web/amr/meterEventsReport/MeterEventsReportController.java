@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -118,7 +117,6 @@ public class MeterEventsReportController {
     @Autowired private DeviceCollectionService deviceCollectionService;
     
     private final static String reportJspPath = "meterEventsReport/report.jsp";
-    private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
     private Map<String, Comparator<MeterPointValue>> sorters;
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
@@ -149,17 +147,17 @@ public class MeterEventsReportController {
                 public void doValidation(MeterEventsReportFilterBackingBean backingBean, Errors errors) {
                     /* Dates & Hours */
                     if (backingBean.getFromInstant() == null && !errors.hasFieldErrors("fromInstant")) {
-                        errors.rejectValue("fromInstant", "yukon.web.error.required");
+                        errors.rejectValue("fromInstant", "yukon.web.error.date.validRequired");
                     } else if (backingBean.getToInstantDisplayable() == null && !errors.hasFieldErrors("toInstant")) {
-                        errors.rejectValue("toInstant", "yukon.web.error.required");
+                        errors.rejectValue("toInstant", "yukon.web.error.date.validRequired");
                     } else if(backingBean.getFromInstant().isAfterNow()) {
                         // If the from Instant is in the future
-                        errors.rejectValue("fromInstant", baseKey + ".validation.fromDateInFuture");
+                        errors.rejectValue("fromInstant", "yukon.web.error.date.inThePast");
                     } else if (!backingBean.getFromInstant().isBefore(backingBean.getToInstantDisplayable())) {
-                        errors.rejectValue("fromInstant", baseKey + ".validation.fromDateAfterToDate");
+                        errors.rejectValue("fromInstant", "yukon.web.error.date.fromAfterTo");
                     } else if(backingBean.getToInstantDisplayable().isAfterNow()) {
                         // If the to Instant is in the future
-                        errors.rejectValue("toInstant", baseKey + ".validation.toDateInFuture");
+                        errors.rejectValue("toInstant", "yukon.web.error.date.inThePast");
                     }
                 }
             };

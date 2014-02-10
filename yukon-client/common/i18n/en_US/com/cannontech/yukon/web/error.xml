@@ -25,4 +25,8 @@
     <entry key="yukon.web.error.csrf.badToken">Unable to verify request validity, please try again.</entry>
     <entry key="yukon.web.error.csrf.badPassword">The password did not match the password for this account.</entry>
 
+    <entry key="yukon.web.error.date.validRequired">A valid date is required.</entry>
+    <entry key="yukon.web.error.date.inThePast">Date must be in the past.</entry>
+    <entry key="yukon.web.error.date.fromAfterTo">From date must be after To date.</entry>
+
 </properties>

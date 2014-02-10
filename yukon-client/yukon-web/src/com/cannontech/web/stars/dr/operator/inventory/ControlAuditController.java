@@ -68,7 +68,7 @@ public class ControlAuditController {
     @Autowired private FlotChartService flotChartService;
     
     private RecentResultsCache<ControlAuditResult> resultsCache;
-    private static final String BASE_KEY = "yukon.web.modules.operator.controlAudit";
+    private static final String BASE_ERROR_KEY = "yukon.web.error";
     
     private Validator auditInputValidator = new SimpleValidator<AuditSettings>(AuditSettings.class) {
         @Override
@@ -77,24 +77,24 @@ public class ControlAuditController {
             Instant from = auditSettings.getFrom();
             Instant to = auditSettings.getTo();
             if (from == null) {
-                YukonValidationUtils.rejectValues(errors, BASE_KEY + ".from.error.required", "from");
+                YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.validRequired", "from");
             } else {
                 if (from.isAfter(now)) {
-                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".from.error.future", "from");
+                    YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.inThePast", "from");
                 }
             }
             
             if (to == null) {
-                YukonValidationUtils.rejectValues(errors, BASE_KEY + ".to.error.required", "to");
+                YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.validRequired", "to");
             } else {
                 if (to.isAfter(now)) {
-                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".to.error.future", "to");
+                    YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.inThePast", "to");
                 }
             }
 
             if (from != null && to != null) {
                 if (from.isAfter(to)) {
-                    YukonValidationUtils.rejectValues(errors, BASE_KEY + ".range.error.fromAfterTo", "to", "from");
+                    YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.secondAfterFirst", "to", "from");
                 }
             }
         }
@@ -128,21 +128,18 @@ public class ControlAuditController {
                            FlashScope flash) throws ServletRequestBindingException {
         /** gets the collection and also puts it in the model map, which we need if we fail */
         InventoryCollection collection = inventoryCollectionFactory.addCollectionToModelMap(request, model);
+
+        /* TODO create custom binder for this stuff */
+        settings.setCollection(collection);
+        settings.setContext(context);
         
         auditInputValidator.validate(settings, result);
         
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            /* TODO create custom binder for this stuff */
-            settings.setCollection(collection);
-            settings.setContext(context);
             return "operator/inventory/controlAudit/view.jsp";
         }
-        
-        /* TODO create custom binder for this stuff */
-        settings.setCollection(collection);
-        settings.setContext(context);
         
         /** Run Audit */
         ControlAuditResult audit = controlAuditService.runAudit(settings);

@@ -159,17 +159,17 @@ public class WaterLeakReportController {
             public void doValidation(WaterLeakReportFilterBackingBean backingBean, Errors errors) {
                 /* Dates & Hours */
                 if (backingBean.getFromInstant() == null && !errors.hasFieldErrors("fromInstant")) {
-                    errors.rejectValue("fromInstant", "yukon.web.error.required");
+                    errors.rejectValue("fromInstant", "yukon.web.error.date.validRequired");
                 } else if (backingBean.getToInstant() == null && !errors.hasFieldErrors("toInstant")) {
-                    errors.rejectValue("toInstant", "yukon.web.error.required");
+                    errors.rejectValue("toInstant", "yukon.web.error.date.validRequired");
                 } else if(backingBean.getFromInstant().isAfterNow()) {
                     // If the from date is in the future
-                    errors.rejectValue("fromInstant", baseKey + ".validation.fromDateInFuture");
+                    errors.rejectValue("fromInstant", "yukon.web.error.date.inThePast");
                 } else if (backingBean.getFromInstant().isAfter(backingBean.getToInstant())) {
-                    errors.rejectValue("fromInstant", baseKey + ".validation.fromDateAfterToDate");
+                    errors.rejectValue("fromInstant", "yukon.web.error.date.fromAfterTo");
                 } else if(backingBean.getToInstant().isAfterNow()) {
                     // If the to date is in the future
-                    errors.rejectValue("toInstant", baseKey + ".validation.toDateInFuture");
+                    errors.rejectValue("toInstant", "yukon.web.error.date.inThePast");
                 }
 
                 /* Threshold */
