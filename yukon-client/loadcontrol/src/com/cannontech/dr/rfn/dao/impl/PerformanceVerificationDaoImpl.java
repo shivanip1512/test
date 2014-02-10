@@ -1,12 +1,7 @@
 package com.cannontech.dr.rfn.dao.impl;
 
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.ACTIVE;
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.INACTIVE;
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.UNAVAILABLE;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.FAILURE;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS_UNENROLLED;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.*;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -142,9 +137,9 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("      CASE");
         sql.append("         WHEN LastNonZeroRuntime IS NOT NULL");
         sql.append("              AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("              AND lastcommunication").gt(communicatingWindowEnd).append("THEN '" + ACTIVE + "'");
-        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN '" + INACTIVE + "'");
-        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd).append("THEN '" + UNAVAILABLE + "'");
+        sql.append("              AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
+        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
+        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
         sql.append("      END");
         sql.append("   END AS AssetAvailabilityStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
