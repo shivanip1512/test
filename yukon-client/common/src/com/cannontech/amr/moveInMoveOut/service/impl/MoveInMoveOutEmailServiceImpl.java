@@ -28,8 +28,8 @@ import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
@@ -294,9 +294,9 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void sendEmail(String toEmailAddress, String subject, String body) {
         try {
-            EmailMessage emailServiceMessage = 
+            EmailMessage emailMessage = 
                     new EmailMessage(InternetAddress.parse(toEmailAddress), subject, body);
-            emailService.sendMessage(emailServiceMessage);
+            emailService.sendMessage(emailMessage);
         } catch (MessagingException e) {
             logger.warn("Unable to email message to address " + toEmailAddress + ".", e);
         }
