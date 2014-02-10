@@ -108,8 +108,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
                         .mapBroadcastVerificationMessages(decodedPayload);
                     Range<Instant> range = rfnLcrDataMappingService
-                        .mapBroadcastVerificationUnsuccessRange(
-                                                                decodedPayload, rfnDevice);
+                        .mapBroadcastVerificationUnsuccessRange(decodedPayload, rfnDevice);
                     rfnPerformanceVerificationService
                         .processVerificationMessages(rfnDevice, verificationMsgs, range);
                 }
