@@ -47,6 +47,16 @@ jQuery(function() {
         });
     });
 });
+updateSub = function (data) {
+    if (data.value == -1) {
+        jQuery('.f-non-readable-value').show();
+        jQuery('.f-readable-value').hide();
+    } else {
+        jQuery('.f-readable-value').html(data.value);
+        jQuery('.f-readable-value').show();
+        jQuery('.f-non-readable-value').hide();
+    }
+} 
 </script>
 
 <cti:url var="submitUrl" value="/stars/operator/hardware/config/commit"/>
