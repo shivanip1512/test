@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -30,6 +31,7 @@ import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
+    private final Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
 
@@ -102,7 +104,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public RfnDevice getDevice(YukonPao pao) {
         try {
             return getDeviceForId(pao.getPaoIdentifier().getPaoId());
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NotFoundException e) {
+            log.warn("No RfnAddress found for " + pao.getPaoIdentifier() + ". Returning object with blank RfnIdentifier");
             RfnDevice rfnDevice = new RfnDevice(pao, RfnIdentifier.BLANK);
             return rfnDevice;
         }
