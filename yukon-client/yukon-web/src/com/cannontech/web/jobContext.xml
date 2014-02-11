@@ -418,6 +418,36 @@
         </property>
     </bean>
     
+    <bean id="rfnPerformanceVerificationEmailJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="rfnPerformanceVerificationEmail"/>
+        <property name="taskName">
+            <idref local="rfnPerformanceVerificationEmailTask"/>
+        </property>
+        <property name="title" value="Rfn Performance Verification Email Job"/>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="notificationGroups"/>
+                            <property name="displayName" value="Notification Groups"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="additionalEmails"/>
+                            <property name="displayName" value="Additional Emails"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Export History Cleanup Task -->
     <bean id="repeatingExportHistoryDeletionTask" class="com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask" 
         scope="prototype">
@@ -470,6 +500,10 @@
     
     <bean id="rfnPerformanceVerificationTask" 
         class="com.cannontech.web.dr.RfnPerformanceVerificationTask" 
+        scope="prototype"/>
+        
+    <bean id="rfnPerformanceVerificationEmailTask" 
+        class="com.cannontech.web.dr.RfnPerformanceVerificationEmailTask" 
         scope="prototype"/>
 </beans>
 
