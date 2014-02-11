@@ -414,7 +414,7 @@
     <entry key="yukon.web.modules.capcontrol.search.parent">Parent</entry>
     
     <!-- movedCapBanks.jsp -->
-    <entry key="yukon.web.modules.capcontrol.movedCapBanks.pageName">Recent Cap Bank Moves</entry>
+    <entry key="yukon.web.modules.capcontrol.movedCapBanks.pageName">Recent Temp Cap Bank Moves</entry>
     <entry key="yukon.web.modules.capcontrol.movedCapBanks.movedContainer.title">Moved Cap Banks</entry>
     <entry key="yukon.web.modules.capcontrol.movedCapBanks.noRecentMoves">No Moved Cap Banks</entry>
     <entry key="yukon.web.modules.capcontrol.movedCapBanks.recentFeeder">Recent Feeder</entry>
