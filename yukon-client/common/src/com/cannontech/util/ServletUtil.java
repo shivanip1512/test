@@ -1133,26 +1133,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 		return false;
 	}
 	
-	public static void createCookie(final HttpServletRequest request, final HttpServletResponse response,
-	        final String cookieName, final String cookieValue) {
-	    Cookie cookie = new Cookie(cookieName, cookieValue);
-        cookie.setMaxAge(Integer.MAX_VALUE);
-        cookie.setPath("/" + request.getContextPath());
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-	}
-	
-    public static Cookie getCookie(final HttpServletRequest request, final String cookieName) {
-        final Cookie[] cookieArray = request.getCookies();
-        if (cookieArray == null) return null;
-        for (final Cookie cookie : cookieArray) {
-            if (cookie.getName().equals(cookieName)) {
-                return cookie;
-            }
-        }
-        return null;
-    }
-    
     public static void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
         if (cookies == null) return;

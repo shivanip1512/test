@@ -1,7 +1,6 @@
 package com.cannontech.web.login;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,14 +16,20 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.NotLoggedInException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.exception.SessionTimeoutException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -41,12 +46,11 @@ public class LoginFilter implements Filter {
     private final Logger log = YukonLogManager.getLogger(getClass());
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
-    private WebApplicationContext context;
     private YukonUserContextResolver userContextResolver;
-    private List<LoginRequestHandler> loginRequestHandlers;
     private UrlAccessChecker urlAccessChecker;
     private RolePropertyDao rolePropertyDao;
     private LoginService loginService;
+    private LoginCookieHelper loginCookieHelper;
 
     // Setup ant-style paths that should be processed even if the user is not logged in.
     // All paths should start with a slash because that's just the way it works.
@@ -106,27 +110,26 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        boolean loggedIn = isLoggedIn(request);
-
-        if (!loggedIn) {
-            // Try to log them in using a LoginRequestHandler to handle the login request.
-            // Send error response if we fail to log them in.
+        if (!isLoggedIn(request)) {
             boolean success = false;
-            for (LoginRequestHandler handler : loginRequestHandlers) {
-                success = handler.handleLoginRequest(request, response);
-                if (success) {
-                    log.debug("Proceeding with request after successful handler login");
-                    break;
-                }
+
+            // Send error response or redirect to login page if we fail to log them in.
+            if (!success) {
+                success = doRememberMeCookieLogin(request, response);
             }
 
             if (!success) {
-                // If we got here, they couldn't be authenticated, send an error response.
-                log.debug("All login attempts failed, returning error");
+                success = doDefaultParameterLogin(request);
+            }
 
+            if (!success) {
+             // If we got here, they couldn't be authenticated, send an error response or redirect to login page.
+                log.debug("All login attempts failed, returning error");
                 doLoginRedirect(isAjaxRequest, request, response);
                 return;
             }
+
+            log.debug("Proceeding with request after successful handler login");
         }
 
         // At this point the user has been authenticated, check for timeout and authorization.
@@ -230,9 +233,9 @@ public class LoginFilter implements Filter {
 
     private YukonUserContext attachYukonUserContext(HttpServletRequest request, boolean isFailureAnError) {
         try {
-            YukonUserContext context = userContextResolver.resolveContext(request);
-            request.setAttribute(YukonUserContextUtils.userContextAttrName, context);
-            return context;
+            YukonUserContext userContext = userContextResolver.resolveContext(request);
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, userContext);
+            return userContext;
         } catch (RuntimeException e) {
             request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
             if (isFailureAnError) {
@@ -244,15 +247,65 @@ public class LoginFilter implements Filter {
         }
     }
 
+    private boolean doRememberMeCookieLogin(HttpServletRequest request, HttpServletResponse response) {
+        UserPasswordHolder userPass = loginCookieHelper.readRememberMeCookie(request);
+        if (userPass != null) {
+            try {
+                loginService.login(request, userPass.getUsername(), userPass.getPassword());
+                LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+                ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION,
+                                        "User " + user.getUsername()
+                                        + " (userid=" + user.getUserID() + ") has logged in from "
+                                        + request.getRemoteAddr() + " (cookie)");
+
+                log.info("Proceeding with request after successful Remember Me login");
+                return true;
+            } catch (AuthenticationThrottleException e) {
+                log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
+            } catch (BadAuthenticationException e) {
+                log.info("Remember Me login failed");
+            } catch (PasswordExpiredException e) {
+                log.error("The password for " + userPass.getUsername() + " is expired.");
+            }
+        }
+
+        //cookie login failed, remove cookies.
+        ServletUtil.deleteAllCookies(request, response);
+
+        return false;
+    }
+
+    private boolean doDefaultParameterLogin(HttpServletRequest request) throws ServletRequestBindingException {
+        String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
+        String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
+        
+        if (username == null || password == null) return false;
+        
+        try {
+            loginService.login(request, username, password);
+            
+            log.info("Proceeding with request after successful Param login");
+            return true;
+        } catch (AuthenticationThrottleException e) {
+            log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
+        } catch (BadAuthenticationException e) {
+            log.error(e);
+        } catch (PasswordExpiredException e) {
+            log.debug("The password for "+username+" is expired.");
+        }
+        return false;
+    }
+
     @Override
-    @SuppressWarnings("unchecked")
     public void init(FilterConfig filterConfig) throws ServletException {
-        context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-        userContextResolver = context.getBean("userContextResolver", YukonUserContextResolver.class);
-        loginRequestHandlers = context.getBean("loginRequestHandlers", List.class);
-        urlAccessChecker = context.getBean("urlAccessChecker", UrlAccessChecker.class);
-        rolePropertyDao = context.getBean("rolePropertyDao", RolePropertyDao.class);
-        loginService = context.getBean("loginService", LoginService.class);
+        WebApplicationContext applicationContext = 
+                WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+        userContextResolver = applicationContext.getBean(YukonUserContextResolver.class);
+        loginCookieHelper = applicationContext.getBean(LoginCookieHelper.class);
+        urlAccessChecker = applicationContext.getBean(UrlAccessChecker.class);
+        rolePropertyDao = applicationContext.getBean(RolePropertyDao.class);
+        loginService = applicationContext.getBean(LoginService.class);
     }
 
     @Override

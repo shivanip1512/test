@@ -1,11 +1,16 @@
 package com.cannontech.web.login;
 
-import java.security.GeneralSecurityException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public interface LoginCookieHelper {
-    
-    public String createCookieValue(final String username, final String password) throws GeneralSecurityException;
-    
-    public UserPasswordHolder decodeCookieValue(String cryptValue) throws GeneralSecurityException;
+
+    void setRememberMeCookie(HttpServletRequest request, HttpServletResponse response,
+                                      String username, String password);
+
+    /**
+     * @return username/password for remember me cookie. If cookie is not valid, null is returned.
+     */
+    UserPasswordHolder readRememberMeCookie(HttpServletRequest request);
     
 }

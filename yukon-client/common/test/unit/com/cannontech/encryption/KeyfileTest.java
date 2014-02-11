@@ -15,7 +15,7 @@ import org.junit.Test;
 import com.cannontech.common.util.BootstrapUtils;
 
 public class KeyfileTest {
-    private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
+    private static final File keysFolder = BootstrapUtils.getKeysFolder().toFile();
     private static final File masterCfgCryptoFile = new File(keysFolder,"masterConfigKeyfile.dat");
 
     private File testFileGood; // Set before tests run

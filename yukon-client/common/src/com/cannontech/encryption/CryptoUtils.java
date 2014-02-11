@@ -32,7 +32,7 @@ public class CryptoUtils {
     private static final int rsaKeySize = 512; //4096 bits
     private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+={}[];:,.?!@#$%^*()";
 
-    private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
+    private static final File keysFolder = BootstrapUtils.getKeysFolder().toFile();
     private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
 
     /**
@@ -175,9 +175,7 @@ public class CryptoUtils {
         char[] passkey = null;
         try {
             passkey = generateRandomPasskey(passKeyLength);
-            if (!keysFolder.exists()) {
-                keysFolder.mkdir();
-            }
+
             // File not found, Create a new one
             file.setReadOnly();
             Runtime.getRuntime().exec("attrib +H " + file.getPath()); // Set file hidden

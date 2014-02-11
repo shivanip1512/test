@@ -78,8 +78,7 @@ public class YukonLoginController extends MultiActionController {
         		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         
         if (createRememberMeCookie) {
-            String value = loginCookieHelper.createCookieValue(username, password);
-            ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
+            loginCookieHelper.setRememberMeCookie(request, response, username, password);
         }
 
         if (redirectedFrom != null && !redirectedFrom.equals("")) {

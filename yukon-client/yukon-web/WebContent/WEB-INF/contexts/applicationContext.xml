@@ -1429,37 +1429,9 @@
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
     <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl" />
     <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl"/>
-    
-    <bean id="loginRequestHandlers" class="java.util.LinkedList">
-        <constructor-arg>
-            <list>
-                <!--  processed by insertion order -->
-                <ref bean="cookieLoginRequestHandler"/>
-                <ref bean="defaultParamLoginRequestHandler"/>
-            </list>
-        </constructor-arg>
-    </bean>
 
-    <bean id="abstractLoginRequestHandler" class="com.cannontech.web.login.AbstractLoginRequestHandler"
-          abstract="true">
-        <property name="loginService" ref="loginService"/>
-        <property name="config" ref="configurationSource"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-    </bean>          
-    
-    <bean id="cookieLoginRequestHandler" class="com.cannontech.web.login.impl.CookieLoginRequestHandler"
-          parent="abstractLoginRequestHandler">
-        <property name="loginCookieHelper" ref="loginCookieHelper"/>
-    </bean>
-    
-    <bean id="defaultParamLoginRequestHandler" class="com.cannontech.web.login.impl.DefaultParamLoginRequestHandler"
-          parent="abstractLoginRequestHandler">
-    </bean>
+    <bean class="com.cannontech.web.login.impl.LoginCookieHelperImpl"/>
 
-    <bean id="loginCookieHelper" class="com.cannontech.web.login.impl.LoginCookieHelperImpl">
-        <property name="cryptoService" ref="cryptoService"/>    
-    </bean>
-    
     <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer"/>
     
     <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">

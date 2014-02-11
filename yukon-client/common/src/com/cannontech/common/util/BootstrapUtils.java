@@ -2,6 +2,10 @@ package com.cannontech.common.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -127,8 +131,19 @@ public class BootstrapUtils {
         return CtiUtilities.getYukonBase() + "/Server/Log/";
     }
 
-    public final static String getKeysFolder() {
-        return getYukonBase(false) + KEYS_DIRECTORY;
+    /**
+     * @return directory used to store encryption keys. Directory will be created if it doesn't exist.
+     */
+    public final static Path getKeysFolder() {
+        Path keyFolder = Paths.get(getYukonBase(false) + KEYS_DIRECTORY);
+        if (!Files.exists(keyFolder, LinkOption.NOFOLLOW_LINKS)) {
+            try {
+                Files.createDirectory(keyFolder);
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot create keys directory. This is required for Yukon.", e);
+            }
+        }
+        return keyFolder;
     }
 
     /**
