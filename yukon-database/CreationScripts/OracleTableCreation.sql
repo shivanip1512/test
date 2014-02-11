@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/7/2014 1:31:19 PM                          */
+/* Created on:     2/11/2014 4:00:43 PM                         */
 /*==============================================================*/
 
 
@@ -11101,7 +11101,7 @@ alter table DynamicLMProgramDirect
 
 alter table DynamicLcrCommunications
    add constraint FK_YukonPAO_DynamicLcrComms foreign key (DeviceId)
-      references YukonPAObject (PAObjectID)
+      references DEVICE (DEVICEID)
       on delete cascade;
 
 alter table DynamicPAOInfo

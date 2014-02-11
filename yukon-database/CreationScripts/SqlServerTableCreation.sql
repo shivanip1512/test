@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/7/2014 1:26:40 PM                          */
+/* Created on:     2/11/2014 1:47:15 PM                         */
 /*==============================================================*/
 
 
@@ -11928,7 +11928,7 @@ go
 
 alter table DynamicLcrCommunications
    add constraint FK_YukonPAO_DynamicLcrComms foreign key (DeviceId)
-      references YukonPAObject (PAObjectID)
+      references DEVICE (DEVICEID)
          on delete cascade
 go
 
