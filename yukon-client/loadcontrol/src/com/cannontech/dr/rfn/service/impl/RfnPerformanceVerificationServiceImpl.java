@@ -1,6 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
-import static com.cannontech.system.GlobalSettingType.RF_BROADCAST_PERFORMANCE;
+import static com.cannontech.system.GlobalSettingType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,21 +138,21 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
         for (PerformanceVerificationEventMessageStats messageStat : messageStats) {
             if (lastDayRange.intersects(messageStat.getTimeMessageSent())) {
                 oneDayStats.addStats(messageStat.getNumSuccesses(),
-                                      messageStat.getNumFailures(),
-                                      messageStat.getNumUnknowns());
+                                     messageStat.getNumFailures(),
+                                     messageStat.getNumUnknowns());
             } else {
                 if (lastThirtyDaysRange.intersects(messageStat.getTimeMessageSent())) {
                     thirtyDaysStats.addStats(messageStat.getNumSuccesses(),
-                                                 messageStat.getNumFailures(),
-                                                 messageStat.getNumUnknowns());
+                                             messageStat.getNumFailures(),
+                                             messageStat.getNumUnknowns());
                     if (lastSevenDaysRange.intersects(messageStat.getTimeMessageSent())) {
                         sevenDaysStats.addStats(messageStat.getNumSuccesses(),
-                                                    messageStat.getNumFailures(),
-                                                    messageStat.getNumUnknowns());
+                                                messageStat.getNumFailures(),
+                                                messageStat.getNumUnknowns());
                         if (lastTwoDaysRange.intersects(messageStat.getTimeMessageSent())) {
                             twoDaysStats.addStats(messageStat.getNumSuccesses(),
-                                                      messageStat.getNumFailures(),
-                                                      messageStat.getNumUnknowns());
+                                                  messageStat.getNumFailures(),
+                                                  messageStat.getNumUnknowns());
                         }
                     }
                 }
