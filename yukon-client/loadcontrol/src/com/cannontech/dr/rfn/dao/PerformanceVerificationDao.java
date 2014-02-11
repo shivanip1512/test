@@ -9,7 +9,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
-import com.cannontech.dr.model.PerformanceVerificationEventStats;
 
 public interface PerformanceVerificationDao {
 
