@@ -36,6 +36,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -160,7 +161,7 @@ public class ProgramController extends ProgramControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       @RequestParam(value="filter[]", required=false) String[] filters) {
+                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao program = programService.getProgram(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters);
@@ -184,7 +185,7 @@ public class ProgramController extends ProgramControllerBase {
 
     @RequestMapping("/program/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false)String[] filters,
+                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
@@ -465,7 +466,6 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/sendEnableDisableProgramsConfirm.jsp";
     }
     
-    @SuppressWarnings("null")
     @RequestMapping("enableDisablePrograms")
     public @ResponseBody Map<String, String> enableDisablePrograms(HttpServletRequest request, FlashScope flashScope,
                 Boolean supressRestoration, boolean enable) {

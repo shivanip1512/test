@@ -1,10 +1,10 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,9 +85,10 @@ public abstract class DemandResponseControllerBase {
 
     protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, 
                                                             YukonUserContext userContext, 
-                                                            String[] filters) {
-        
-        Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
+                                                            AssetAvailabilityCombinedStatus[] filters) {
+
+        Set<AssetAvailabilityCombinedStatus> filterSet = new HashSet<>();
+        Collections.addAll(filterSet, filters != null ? filters : AssetAvailabilityCombinedStatus.values());
 
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
         
@@ -148,38 +149,6 @@ public abstract class DemandResponseControllerBase {
             }
         }
         return resultList;
-    }
-
-
-    private Set<AssetAvailabilityCombinedStatus> getFilterSet(String[] filterArray) {
-        // Create a HashSet for the filtered AssetAvailabilityCombinedStatus values.
-        // Either null or an empty JSONArray will display all data values.
-        List<String> filters = Collections.emptyList();
-        if (filterArray != null) {
-            filters = Arrays.asList(filterArray);
-        }
-
-        Set<AssetAvailabilityCombinedStatus> filterSet = Sets.newHashSet();
-        if (filters.isEmpty()) {
-            filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
-            filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
-            filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-            filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-        } else {
-            if (filters.contains("ACTIVE")) {
-                filterSet.add(AssetAvailabilityCombinedStatus.ACTIVE);
-            }
-            if (filters.contains("INACTIVE")) {
-                filterSet.add(AssetAvailabilityCombinedStatus.INACTIVE);
-            }
-            if (filters.contains("OPTED_OUT")) {
-                filterSet.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-            }
-            if (filters.contains("UNAVAILABLE")) {
-                filterSet.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-            }
-        }
-        return filterSet;
     }
 
     /*
@@ -289,10 +258,12 @@ public abstract class DemandResponseControllerBase {
      * Used as part of the downloadToCsv feature in the controllers.
      */
     protected List<String[]> getDownloadDataRows(DisplayablePao dispPao,
-                                                 String[] filters,
+                                                 AssetAvailabilityCombinedStatus[] filters,
                                                  YukonUserContext userContext) {
 
-        Set<AssetAvailabilityCombinedStatus> filterSet = getFilterSet(filters);
+        Set<AssetAvailabilityCombinedStatus> filterSet = new HashSet<>();
+        Collections.addAll(filterSet, filters != null ? filters : AssetAvailabilityCombinedStatus.values());
+
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         Map<Integer, SimpleAssetAvailability> resultMap = 

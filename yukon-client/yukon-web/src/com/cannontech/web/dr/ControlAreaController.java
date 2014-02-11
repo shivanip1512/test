@@ -47,6 +47,7 @@ import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
@@ -280,7 +281,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       @RequestParam(value="filter[]", required=false) String[] filters) {
+                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters);
@@ -301,7 +302,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
     
     @RequestMapping("/controlArea/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false) String[] filters,
+                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         

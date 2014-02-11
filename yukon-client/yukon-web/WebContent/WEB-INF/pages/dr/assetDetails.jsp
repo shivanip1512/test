@@ -46,8 +46,8 @@
 </cti:msgScope>
 
     <%-- Paged results table goes here... --%>
+    <h2><cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.devices"/></h2>
     <div class="clear device-detail-table">
-        <h2><cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.devices"/></h2>
         <dr:assetDetailsResult result="${result}" assetId="${assetId}" itemsPerPage="${itemsPerPage}"/>
     </div>
 

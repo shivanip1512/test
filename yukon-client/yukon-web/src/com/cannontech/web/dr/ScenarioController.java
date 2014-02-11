@@ -36,6 +36,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
@@ -172,7 +173,7 @@ public class ScenarioController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       @RequestParam(value="filter[]", required=false) String[] filters) throws IOException {
+                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) throws IOException {
 
         DisplayablePao scenario = scenarioService.getScenario(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
@@ -195,7 +196,7 @@ public class ScenarioController extends DemandResponseControllerBase {
 
     @RequestMapping("/scenario/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false)String[] filters,
+                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         

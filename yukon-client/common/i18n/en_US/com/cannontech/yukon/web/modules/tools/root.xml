@@ -81,6 +81,7 @@
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS2">2 days</entry>
     <entry key="yukon.web.modules.tools.tdc.altScanRate.DAYS5">5 days</entry>
 
+    <entry key="yukon.web.modules.tools.search.pageName">Search</entry>
     <entry key="yukon.web.modules.tools.search.emptySearch">Please enter some text to search for.</entry>
     <entry key="yukon.web.modules.tools.search.noResults">
         <![CDATA[<span class="detail">No results found for:</span>&nbsp;<strong><em>{0}</em></strong>]]>

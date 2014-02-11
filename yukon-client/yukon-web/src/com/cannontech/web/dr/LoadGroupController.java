@@ -35,6 +35,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -164,7 +165,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
                        final boolean descending,
                        @RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                        @RequestParam(defaultValue="1") int page,
-                       @RequestParam(value="filter[]", required=false) String[] filters) {
+                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
@@ -186,7 +187,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
 
     @RequestMapping("/loadGroup/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false) String[] filters,
+                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
                               HttpServletResponse response,
                               YukonUserContext userContext) throws IOException {
         
