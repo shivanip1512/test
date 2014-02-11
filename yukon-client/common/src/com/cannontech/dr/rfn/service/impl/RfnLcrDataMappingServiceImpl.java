@@ -240,7 +240,6 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         address.setSpid(data.evaluateAsInt("/DRReport/ExtendedAddresssing/SPID"));
         address.setGeo(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Geo"));
         
-        /** hack until Karl gets us some new firmware */
         Integer sub = data.evaluateAsInt("/DRReport/ExtendedAddresssing/Substation");
         sub = sub == null ? -1 : sub;
         address.setSubstation(sub);
