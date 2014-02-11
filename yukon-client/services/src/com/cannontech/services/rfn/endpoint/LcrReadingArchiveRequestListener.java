@@ -50,17 +50,17 @@ import com.google.common.collect.Lists;
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     
-    @Autowired RfnLcrDataMappingService rfnLcrDataMappingService;
-    @Autowired ExiParsingService exiParsingService;
-    @Autowired PaoDao paoDao;
-    @Autowired PointDao pointDao;
-    @Autowired EnrollmentDao enrollmentService;
-    @Autowired InventoryDao inventoryDao;
-    @Autowired YukonEnergyCompanyService yecService;
-    @Autowired EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired LmHardwareCommandService commandService;
-    @Autowired InventoryBaseDao inventoryBaseDao;
-    @Autowired RfnPerformanceVerificationService rfnPerformanceVerificationService;
+    @Autowired private RfnLcrDataMappingService rfnLcrDataMappingService;
+    @Autowired private ExiParsingService exiParsingService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private EnrollmentDao enrollmentService;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private LmHardwareCommandService commandService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";

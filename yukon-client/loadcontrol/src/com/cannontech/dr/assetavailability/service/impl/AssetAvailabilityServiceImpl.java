@@ -87,7 +87,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         }
         //Get all inventory & associated paos
         Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
-        Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
+        Set<Integer> inventoryIds = inventoryAndDevices.keySet();
         
         //Get appliances
         InventoryRelayAppliances inventoryRelayAppliances = lmHardwareConfigurationDao.getInventoryRelayAppliances(inventoryIds);
