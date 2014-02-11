@@ -233,6 +233,11 @@ function exportData(extension)
 //	changeFormat(extension);
 	document.exportForm.action="<%=request.getContextPath()%>/servlet/Download?ext="+extension;
 	document.exportForm.method="post";
+	
+	var csrfToken = document.createElement("token");
+	csrfToken.innerHTML = '<cti:csrfToken/>';
+	document.exportForm.appendChild(csrfToken);
+
 	document.exportForm.submit();
 }
 
