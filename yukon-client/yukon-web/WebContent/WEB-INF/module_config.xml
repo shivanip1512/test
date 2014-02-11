@@ -672,10 +672,12 @@
           <page name="setupDatabase" type="BASIC" />
           <page name="miscellaneousMethod" type="BASIC" />
           <page name="rfnTest" type="BASIC">
+            <link>/support/development/rfn/viewBase</link>
             <pages>
               <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
               <page name="rfnTest.viewEventArchive" type="DETAIL" />
               <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
+              <page name="rfnTest.viewDataSimulator" type="BASIC" />
             </pages>
           </page>
         </pages>

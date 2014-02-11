@@ -17,6 +17,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -28,6 +30,8 @@ import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
+import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -45,6 +49,7 @@ public class RfnMeterArchiveTestController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
+    @Autowired private RfnLcrDataSimulatorService dataSimulator;
     
     private JmsTemplate jmsTemplate;
 
@@ -78,6 +83,35 @@ public class RfnMeterArchiveTestController {
     public String sendPerformanceVerification() {
         performanceVerificationService.sendPerformanceVerificationMessage();
         return "development/rfn/viewLcrReadArchive.jsp";
+    }
+
+    @RequestMapping("viewLcrDataSimulator")
+    public String viewLcrDataSimulator() {
+        return "development/rfn/dataSimulator.jsp";
+    }
+
+    @RequestMapping(value="startDataSimulator", method=RequestMethod.GET)
+    public String startDataSimulator(
+            @RequestParam(value = "lcr6200serialFrom", required = true) String lcr6200serialFrom,
+            @RequestParam(value = "lcr6200serialTo", required = true) String lcr6200serialTo,
+            @RequestParam(value = "lcr6600serialTo", required = true) String lcr6600serialTo,
+            @RequestParam(value = "lcr6600serialFrom", required = true) String lcr6600serialFrom,
+            @RequestParam(value = "messageId", required = true) String messageId,
+            @RequestParam(value = "messageIdTimestamp", required = true) String messageIdTimestamp) {
+        SimulatorSettings settings = new SimulatorSettings(
+                Integer.parseInt(lcr6200serialFrom), Integer.parseInt(lcr6200serialTo), 
+                Integer.parseInt(lcr6600serialFrom), Integer.parseInt(lcr6600serialFrom),
+                Long.parseLong(messageId), Long.parseLong(messageIdTimestamp));
+        
+        dataSimulator.startSimulator(settings);
+        
+        return "development/rfn/dataSimulator.jsp";
+    }
+
+    @RequestMapping("stopDataSimulator")
+    public String stopDataSimulator() {
+        dataSimulator.stopSimulator();
+        return "development/rfn/dataSimulator.jsp";
     }
 
     private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
