@@ -218,28 +218,23 @@ public class ExiParsingServiceImpl implements ExiParsingService {
 
     @Override
     public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException {
-        EXISchema schema = getLcrReadingSchema("0.0.2");
+        EXISchema schema = getLcrReadingSchema("0.0.3");
         short defaultOptions = GrammarOptions.DEFAULT_OPTIONS;
         GrammarCache grammarCache = new GrammarCache(schema, defaultOptions);
         
         Transmogrifier transmogrifier = new Transmogrifier();
         transmogrifier.setEXISchema(grammarCache);
-        
-        ByteOutputStream outputStream = new ByteOutputStream();
-        transmogrifier.setOutputStream(outputStream);
-
-        StringReader input = new StringReader(xmlPayload);
-        InputSource inputSource = new InputSource(input);
-        transmogrifier.encode(inputSource);
-        
-        ByteBuffer buffer = ByteBuffer.allocate(outputStream.getCount());
-        buffer.put(outputStream.getBytes(), 0, outputStream.getCount());
-        buffer.rewind();
-        byte[] output = new byte[outputStream.getCount()];
-        buffer.get(output, 0, outputStream.getCount());
+        byte[] output;
+        try (ByteOutputStream outputStream = new ByteOutputStream(); 
+                StringReader input = new StringReader(xmlPayload)) {
+            transmogrifier.setOutputStream(outputStream);
+            InputSource inputSource = new InputSource(input);
+            transmogrifier.encode(inputSource);
+            output = Arrays.copyOf(outputStream.getBytes(), outputStream.getCount());
+        }
         return output;
     }
-    
+
     @Override
     public Schema getSchema(byte[] payload) {
         byte[] header;

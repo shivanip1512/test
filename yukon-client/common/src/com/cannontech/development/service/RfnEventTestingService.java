@@ -24,6 +24,5 @@ public interface RfnEventTestingService {
     
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
     public int sendLcrReadArchive(int serialFrom, int serialTo, DRReport drReport) throws IOException;
-    <R extends RfnIdentifyingMessage> void sendArchiveRequest(String queueName, R archiveRequest);
     void calculationStressTest();
 }

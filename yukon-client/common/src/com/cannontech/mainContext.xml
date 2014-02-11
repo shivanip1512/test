@@ -94,9 +94,9 @@
     </bean>
 
     <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate">
+        <qualifier value="longRunning" />
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
-                <qualifier value="longRunning" />
                 <constructor-arg value="2" />
                 <constructor-arg value="2" />
                 <constructor-arg value="60" />
@@ -107,12 +107,11 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+
     <bean class="com.cannontech.common.util.ExecutorDelegate">
         <qualifier value="estimatedLoad"/>
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
-                <qualifier value="estimatedLoad" />
                 <constructor-arg value="2" />
                 <constructor-arg value="4" />
                 <constructor-arg value="60" />
@@ -123,7 +122,12 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+
+    <bean class="java.util.concurrent.ScheduledThreadPoolExecutor">
+        <qualifier value="scheduled"/>
+        <constructor-arg value="2" />
+    </bean>
+
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 
     <!--  basenames of i18n files as a  List<String>. The classpath will be changed to file in dev mode -->
@@ -363,6 +367,7 @@
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnPerformanceVerificationServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.dr.dao.impl.ExpressComReportedAddressDaoImpl"/>
     <bean class="com.cannontech.dr.dao.impl.SepReportedAddressDaoImpl"/>

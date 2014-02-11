@@ -6,20 +6,18 @@ public class SimulatorSettings {
     private final int lcr6200serialTo;
     private final int lcr6600serialFrom;
     private final int lcr6600serialTo;
+    private final long messageId;
+    private final long messageIdTimestamp;
     
-    public SimulatorSettings() {
-        // Default values in case the simulator does not get initialized.
-        this.lcr6200serialFrom = 100000;
-        this.lcr6200serialTo = 200000;
-        this.lcr6600serialFrom = 300000;
-        this.lcr6600serialTo = 320000;
-    }
-    
-    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo) {
+
+    public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo,
+            long messageId, long messageIdTimestamp) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
+        this.messageId = messageId;
+        this.messageIdTimestamp = messageIdTimestamp;
     }
 
     public int getLcr6200serialFrom() {
@@ -36,6 +34,14 @@ public class SimulatorSettings {
 
     public int getLcr6600serialTo() {
         return lcr6600serialTo;
+    }
+
+    public long getMessageId() {
+        return messageId;
+    }
+
+    public long getMessageIdTimestamp() {
+        return messageIdTimestamp;
     }
 
 }
