@@ -1,21 +1,22 @@
 package com.cannontech.dr.assetavailability;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.joda.time.Instant;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public final class AllRelayCommunicationTimes extends DeviceCommunicationTimes {
-    private final ImmutableMap<Integer, Instant> relayRuntimes;
+    private final Map<Integer, Instant> relayRuntimes = new HashMap<>();
     
     public AllRelayCommunicationTimes(Instant lastCommunicationTime, Instant lastNonZeroRuntime, 
             Instant relay1Runtime, Instant relay2Runtime, Instant relay3Runtime, Instant relay4Runtime) {
         super(lastCommunicationTime, lastNonZeroRuntime);
-        ImmutableMap.Builder<Integer, Instant> builder = ImmutableMap.builder();
-        builder.put(1, relay1Runtime);
-        builder.put(2, relay2Runtime);
-        builder.put(3, relay3Runtime);
-        builder.put(4, relay4Runtime);
-        relayRuntimes = builder.build();
+        this.relayRuntimes.put(1, relay1Runtime);
+        this.relayRuntimes.put(2, relay2Runtime);
+        this.relayRuntimes.put(3, relay3Runtime);
+        this.relayRuntimes.put(4, relay4Runtime);
     }
     
     public Instant getRelayRuntime(int relay) {
@@ -25,7 +26,7 @@ public final class AllRelayCommunicationTimes extends DeviceCommunicationTimes {
         return relayRuntimes.get(relay);
     }
     
-    public ImmutableMap<Integer, Instant> getRelayRuntimeMap() {
-        return relayRuntimes;
+    public Map<Integer, Instant> getRelayRuntimeMap() {
+        return Maps.newHashMap(relayRuntimes);
     }
 }
