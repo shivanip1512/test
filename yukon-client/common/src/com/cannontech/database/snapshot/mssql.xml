@@ -43333,6 +43333,15 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_YukonPAO_DynamicLcrComms</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>DeviceId</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>DEVICE</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>SYS_C0013186</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
@@ -57261,15 +57270,6 @@
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
             <i__foreignTableName>YukonPAObject</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_YukonPAO_DynamicLcrComms</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>DeviceId</i__columnName>
-            <i__foreignColumnName>PAObjectID</i__foreignColumnName>
-            <i__foreignTableName>YukonPAObject</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
