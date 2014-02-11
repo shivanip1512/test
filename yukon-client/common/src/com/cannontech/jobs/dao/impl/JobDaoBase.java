@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -22,8 +21,9 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
 
-public class JobDaoBase {
-    protected YukonJdbcTemplate yukonJdbcTemplate;
+public abstract class JobDaoBase {
+    @Autowired protected YukonJdbcTemplate jdbcTemplate;
+    @Autowired protected NextValueHelper nextValueHelper;
 
     protected static YukonRowMapper<JobDisabledStatus> jobDisabledStatusRowMapper = 
         new YukonRowMapper<JobDisabledStatus>() {
@@ -70,12 +70,11 @@ public class JobDaoBase {
         }
     };
 
-    protected NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<YukonJob> template;
 
     @PostConstruct
     public void init() throws Exception {
-        template = new SimpleTableAccessTemplate<YukonJob>(yukonJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<YukonJob>(jdbcTemplate, nextValueHelper);
         template.setTableName("Job");
         template.setPrimaryKeyField("jobId");
         template.setFieldMapper(jobFieldMapper);
@@ -83,17 +82,21 @@ public class JobDaoBase {
 
     protected void insertJob(YukonJob job) {
         template.insert(job);
-
-        reInsertProperties(job);
+        reinsertProperties(job);
     }
 
-    private void reInsertProperties(YukonJob job) {
+    protected void updateJob(YukonJob job) {
+        template.update(job);
+        reinsertProperties(job);
+    }
+
+    private void reinsertProperties(YukonJob job) {
         // delete old JobProperty entries
         SqlStatementBuilder deleteSql = new SqlStatementBuilder();
         deleteSql.append("DELETE FROM JobProperty");
         deleteSql.append("WHERE JobId").eq(job.getId());
         
-        yukonJdbcTemplate.update(deleteSql);
+        jdbcTemplate.update(deleteSql);
         
         // create JobProperty entries
         for (Map.Entry<String, String> jobProperty : job.getJobProperties().entrySet()) {
@@ -104,23 +107,7 @@ public class JobDaoBase {
             params.addValue("Name", jobProperty.getKey());
             params.addValue("Value", SqlUtils.convertStringToDbValue(jobProperty.getValue()));
             
-            yukonJdbcTemplate.update(insertSql);
+            jdbcTemplate.update(insertSql);
         }
-    }
-
-    protected void updateJob(YukonJob job) {
-        template.update(job);
-        
-        reInsertProperties(job);
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Required
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

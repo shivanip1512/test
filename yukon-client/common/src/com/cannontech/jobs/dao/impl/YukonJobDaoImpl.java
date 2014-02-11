@@ -1,6 +1,6 @@
 package com.cannontech.jobs.dao.impl;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -11,13 +11,11 @@ import com.cannontech.jobs.dao.YukonJobDao;
 import com.cannontech.jobs.model.YukonJob;
 
 public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
-
-    private ScheduledOneTimeJobDao scheduledOneTimeJobDao;
-    private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private ScheduledOneTimeJobDao scheduledOneTimeJobDao;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 
     @Override
     public  YukonJob getById(int id) {
-        
         YukonJob job = null;
         
         // the job must be either one time or recurring (otherwise you have bigger problems..)
@@ -35,7 +33,6 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
             }
         }
         
-
         return job;
     }
     
@@ -45,7 +42,7 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
         sql.append("SELECT Disabled");
         sql.append("FROM Job");
         sql.append("WHERE jobId").eq(jobId);
-        JobDisabledStatus result = yukonJdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
+        JobDisabledStatus result = jdbcTemplate.queryForObject(sql, jobDisabledStatusRowMapper);
         return result;
     }
 
@@ -53,18 +50,4 @@ public class YukonJobDaoImpl extends JobDaoBase implements YukonJobDao {
     public void update(YukonJob job) {
         updateJob(job);
     }
-    
-    @Required
-    public void setScheduledOneTimeJobDao(
-            ScheduledOneTimeJobDao scheduledOneTimeJobDao) {
-        this.scheduledOneTimeJobDao = scheduledOneTimeJobDao;
-    }
-
-    @Required
-    public void setScheduledRepeatingJobDao(
-            ScheduledRepeatingJobDao scheduledRepeatingJobDao) {
-        this.scheduledRepeatingJobDao = scheduledRepeatingJobDao;
-    }
-
-
 }

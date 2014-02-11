@@ -16,28 +16,12 @@
             value="com.cannontech.jobs.support.YukonJobDefinitionFactory" />
     </bean>
 
-    <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
-    </bean>
+    <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl"/>
+    <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl"/>
 
     <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper"/>
-    
-    <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
-        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
-    </bean>
-    
-    <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
-    </bean>
-
-    <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
-    </bean>
+    <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl"/>
+    <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl"/>
 
     <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ThreadCachingScheduledExecutorService">
         <qualifier value="job"/>

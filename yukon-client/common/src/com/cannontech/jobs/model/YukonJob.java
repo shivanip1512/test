@@ -123,6 +123,7 @@ public class YukonJob {
         tsc.append("disabled", disabled);
         tsc.append("userContext", userContext);
         tsc.append("jobProperties", jobProperties);
+        tsc.append("isSystemUser", isSystemUser);
         return tsc.toString();
     }
 }
