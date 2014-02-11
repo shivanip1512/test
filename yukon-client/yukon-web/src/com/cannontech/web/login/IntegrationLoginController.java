@@ -1,6 +1,5 @@
 package com.cannontech.web.login;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +30,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
+import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
@@ -55,7 +55,7 @@ public class IntegrationLoginController {
         }
         ServletUtil.deleteAllCookies(request, response);
 
-        LiteYukonUser user = validateLogin(request, response);
+        LiteYukonUser user = validateLogin(request);
         String redirect = null;
         if (user != null) {
             redirect = "/home";
@@ -77,7 +77,8 @@ public class IntegrationLoginController {
     }
 
     @RequestMapping(value="/remoteLogin", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> remoteLogin(HttpServletRequest request, HttpServletResponse response,
+    @IgnoreCsrfCheck
+    public @ResponseBody Map<String, String> remoteLogin(HttpServletRequest request,
             String username, String password) throws Exception {
         Map<String, String> result = new HashMap<>();
         try {
@@ -106,12 +107,12 @@ public class IntegrationLoginController {
     }
 
     @RequestMapping(value="/checkConnection", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> checkConnection(HttpServletRequest request) {
+    @IgnoreCsrfCheck
+    public @ResponseBody Map<String, String> checkConnection() {
         return successfulConnectionResults;
     }
 
-    private LiteYukonUser validateLogin(HttpServletRequest request, HttpServletResponse response) throws IOException,
-            ServletException {
+    private LiteYukonUser validateLogin(HttpServletRequest request) throws ServletException {
         String headerName = config.getString(HEADER_PROPERTY_KEY, "");
         if (headerName.equals(""))
             return null;

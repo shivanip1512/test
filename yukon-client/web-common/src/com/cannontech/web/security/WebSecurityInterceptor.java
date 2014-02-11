@@ -5,9 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.widget.support.WidgetMultiActionController;
 
@@ -19,15 +21,19 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, 
             HttpServletResponse response, Object handler) throws Exception {
-       
-            csrfTokenService.validateToken(request);
-
+        boolean ignoreCsrf = false;
         if (handler instanceof HandlerMethod) {
             HandlerMethod method = (HandlerMethod) handler;
             annotationProcessor.processClass(getClass(method.getBean()));
             annotationProcessor.processMethod(method.getMethod());
+            ignoreCsrf = AnnotationUtils.findAnnotation(method.getMethod(), IgnoreCsrfCheck.class) != null;
         } else {
             annotationProcessor.processClass(getClass(handler));
+            ignoreCsrf = AnnotationUtils.findAnnotation(getClass(handler), IgnoreCsrfCheck.class) != null;
+        }
+
+        if (!ignoreCsrf) {
+            csrfTokenService.validateToken(request);
         }
 
         return true;

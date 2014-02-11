@@ -41,7 +41,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
 
         if (!actualToken.equals(requestToken)) {
             request.getSession().removeAttribute(SESSION_CSRF_TOKEN); // owasp recomendation
-            throw new SecurityException("Request token not found or invalid");
+            throw new SecurityException("Request token not found or invalid. " + request.getRequestURL());
         }
     }
 }
