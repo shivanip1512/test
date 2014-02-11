@@ -3,8 +3,15 @@ package com.cannontech.common.rfn.model;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.google.common.collect.Lists;
 
+/**
+ * Only use this enum if you know what you are doing!
+ * Creation of new RfnDevices should utilize the template name structure (*RfnTemplate_manufacturer_model)
+ *  see {@link RfnDeviceCreationService}.create method.
+ *
+ */
 public enum RfnManufacturerModel {
     
     RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "1077"),
