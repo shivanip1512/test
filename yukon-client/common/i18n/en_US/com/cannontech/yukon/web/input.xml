@@ -7,11 +7,7 @@
 <entry key="typeMismatch">not a valid value</entry>
 <entry key="yukon.web.input.error.unique">{0} must be unique.  {1} is already in use.</entry>
 <entry key="yukon.web.input.error.invalidOption">{1} is an invalid option for {0}.</entry>
-<entry key="yukon.web.input.error.belowMin">{0} must be an integer value greater than or equal to {1}.</entry>
-<entry key="yukon.web.input.error.aboveMax">{0} must be an integer value less than or equal to {1}.</entry>
-<entry key="yukon.web.input.error.belowFloatMin">{0} must be a decimal value greater than or equal to {1}.</entry>
-<entry key="yukon.web.input.error.aboveFloatMax">{0} must be a decimal value less than or equal to {1}.</entry>
+<entry key="yukon.web.input.error.outOfRangeInt">{0} must be an integer value between {1} and {2}, inclusive.</entry>
+<entry key="yukon.web.input.error.outOfRangeFloat">{0} must be a decimal value between {1} and {2}, inclusive.</entry>
 <entry key="yukon.web.input.error.requiredField">{0} is a required field.</entry>
-<entry key="yukon.web.input.error.minLength">{0} must be at least {1} characters long.</entry>
-<entry key="yukon.web.input.error.maxLength">{0} must be shorter than or equal to {1} characters.</entry>
 </properties>

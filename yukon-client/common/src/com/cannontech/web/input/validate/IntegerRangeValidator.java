@@ -7,7 +7,6 @@ import org.springframework.validation.Errors;
  * range
  */
 public class IntegerRangeValidator implements InputValidator<Integer> {
-
     private int minValue = Integer.MIN_VALUE;
     private int maxValue = Integer.MAX_VALUE;
 
@@ -27,29 +26,28 @@ public class IntegerRangeValidator implements InputValidator<Integer> {
         this.minValue = minValue;
     }
 
+    @Override
     public String getDescription() {
         return "(" + minValue + " - " + maxValue + ")";
     }
 
+    @Override
     public void validate(String path, String displayName, Integer value, Errors errors) {
-
         if (value == null) {
             return;
         }
 
         if (value < minValue) {
             errors.rejectValue(path,
-                               "yukon.web.input.error.belowMin",
-                               new Object[] { displayName, minValue },
+                               "yukon.web.input.error.outOfRangeInt",
+                               new Object[] { displayName, minValue, maxValue},
                                "The input value must be greater than or equal to " + minValue);
         }
         if (value > maxValue) {
             errors.rejectValue(path,
-                               "yukon.web.input.error.aboveMax",
-                               new Object[] { displayName, maxValue },
+                               "yukon.web.input.error.outOfRangeInt",
+                               new Object[] { displayName, minValue, maxValue },
                                "The input value must be less than or equal to " + maxValue);
         }
-
     }
-
 }
