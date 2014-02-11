@@ -23,7 +23,12 @@ public interface RfnDeviceDao {
     
     public RfnMeter getMeterForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
     
-    public RfnDevice getDevice(YukonPao pao) throws NotFoundException;
+    /**
+     * Returns RfnDevice for pao. 
+     * Will return at minimum RfnDevice populated with pao.
+     * NOTE: If no RfnAddress is found for pao, an RfnDevice object will still be returned with a "blank" RfnIdentifier.
+     */
+    public RfnDevice getDevice(YukonPao pao);
 
     /**
      * Get a map of YukonPao -> RfnIdentifier for the specified PAOs.  PAOs in the list not matching any
@@ -31,6 +36,10 @@ public interface RfnDeviceDao {
      */
     public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos);
 
+    /**
+     * Returns RfnDevice for deviceId.
+     * @throws NotFoundException - when no rfn meter exists, joined against RfnAddress table
+     */
     public RfnDevice getDeviceForId(int deviceId) throws NotFoundException;
     
     /** 

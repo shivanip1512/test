@@ -49,7 +49,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("no device matches " + rfnIdentifier);
+            throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
         }
     }
 
@@ -68,34 +68,40 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             RfnMeter rfnMeter = jdbcTemplate.queryForObject(sql, new RfnMeterRowMapper());
             return rfnMeter;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier.toString());
+            throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
         }
     }
     
     @Override
     public RfnDevice getDeviceForId(int paoId) throws NotFoundException {
-        return getDevice(paoDao.getYukonPao(paoId));
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE rfn.DeviceId").eq(paoId);
+        
+        try {
+            RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnDevice>() {
+                @Override
+                public RfnDevice mapRow(YukonResultSet rs) throws SQLException {
+                    
+                    PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                             rs.getStringSafe("Manufacturer"), 
+                                                             rs.getStringSafe("Model"));
+                    RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
+                    return rfnDevice;
+                }
+            });
+            return rfnDevice;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Unknown rfn meter Id " + paoId + ". RfnAddress may be empty.");
+        }
     }
     
     @Override
-    public RfnDevice getDevice(YukonPao pao) throws NotFoundException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("from RfnAddress rfn");
-        sql.append("where rfn.DeviceId").eq(pao.getPaoIdentifier().getPaoId());
-        
+    public RfnDevice getDevice(YukonPao pao) {
         try {
-            RfnIdentifier rfnIdentifier = jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnIdentifier>() {
-                @Override
-                public RfnIdentifier mapRow(YukonResultSet rs) throws SQLException {
-                    RfnIdentifier result = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
-                                                             rs.getStringSafe("Manufacturer"), 
-                                                             rs.getStringSafe("Model"));
-                    return result;
-                }
-            });
-            RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
-            return rfnDevice;
+            return getDeviceForId(pao.getPaoIdentifier().getPaoId());
         } catch (EmptyResultDataAccessException e) {
             RfnDevice rfnDevice = new RfnDevice(pao, RfnIdentifier.BLANK);
             return rfnDevice;
