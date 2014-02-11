@@ -12,81 +12,54 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/26/2001 9:40:33 AM)
- * @author:
- */
-public final class NotificationGroupDaoImpl implements NotificationGroupDao 
-{
+public final class NotificationGroupDaoImpl implements NotificationGroupDao {
     private IDatabaseCache databaseCache;
-  
-    /**
-	 * NotificationGroupFuncs constructor comment.
-	 */
-	public NotificationGroupDaoImpl() 
-	{
-		super();
-	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.NotificationGroupDao#getNotifEmailsByLiteGroup(com.cannontech.database.data.lite.LiteNotificationGroup)
-     */
-	public String[] getNotifEmailsByLiteGroup( LiteNotificationGroup lGrp_ )
-	{
-		ArrayList emailList = new ArrayList(8);
+    @Override
+    public String[] getNotifEmailsByLiteGroup(LiteNotificationGroup notificationGroup) {
+        List<String> emailList = new ArrayList<>(8);
 
-		synchronized( databaseCache )
-		{		
-			for( int j = 0; j < lGrp_.getNotifDestinationMap().length; j++ )
-			{
-				NotifDestinationMap notifDest = lGrp_.getNotifDestinationMap()[j];
-				
-				LiteContactNotification lcn = (LiteContactNotification)
-					databaseCache.getAllContactNotifsMap().get(
-						new Integer(notifDest.getRecipientID()) );
+        synchronized (databaseCache) {
+            for (NotifDestinationMap notifDest : notificationGroup.getNotifDestinationMap()) {
+                LiteContactNotification lcn = databaseCache.getAllContactNotifsMap().get(notifDest.getRecipientID());
 
-				//we have an email address, add it to our list
-				if( lcn.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
-					emailList.add( lcn.getNotification() );
-			}
-			
-		}
-		
-		String[] retVals = new String[ emailList.size() ];
-		if( !emailList.isEmpty() )
-			retVals = (String[])emailList.toArray( retVals );
-		
-		return retVals;
-	}
+                // we have an email address, add it to our list
+                if (lcn.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
+                    emailList.add(lcn.getNotification());
+                }
+            }
 
+        }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.NotificationGroupDao#getLiteNotificationGroup(int)
-     */
-	public LiteNotificationGroup getLiteNotificationGroup( int groupID_ )
-	{
-		synchronized( databaseCache )
-		{		
+        String[] emailArray = new String[emailList.size()];
+        if (!emailList.isEmpty()) {
+            emailArray = emailList.toArray(emailArray);
+        }
+
+        return emailArray;
+    }
+
+    @Override
+    public LiteNotificationGroup getLiteNotificationGroup(int groupId) {
+        synchronized (databaseCache) {
             List<LiteNotificationGroup> groups = databaseCache.getAllContactNotificationGroupsWithNone();
-			for( LiteNotificationGroup group : groups )
-			{
-				if( groupID_ == group.getNotificationGroupID() )
-					return group;
-			}
-		}
-		
-		return null;
-	}
-    
+            for (LiteNotificationGroup group : groups) {
+                if (groupId == group.getNotificationGroupID()) {
+                    return group;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Set<LiteNotificationGroup> getAllNotificationGroups() {
-        List<LiteNotificationGroup> allContactNotificationGroups = 
-            databaseCache.getAllContactNotificationGroups();
-        HashSet<LiteNotificationGroup> hashSet = 
-            new HashSet<LiteNotificationGroup>(allContactNotificationGroups);
+        List<LiteNotificationGroup> allContactNotificationGroups = databaseCache.getAllContactNotificationGroups();
+        Set<LiteNotificationGroup> hashSet = new HashSet<LiteNotificationGroup>(allContactNotificationGroups);
         return hashSet;
     }
-    
+
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }

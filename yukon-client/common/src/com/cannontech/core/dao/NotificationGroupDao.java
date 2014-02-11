@@ -5,10 +5,9 @@ import java.util.Set;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 
 public interface NotificationGroupDao {
+    String[] getNotifEmailsByLiteGroup(LiteNotificationGroup notificationGroup);
 
-    public String[] getNotifEmailsByLiteGroup(LiteNotificationGroup lGrp_);
+    LiteNotificationGroup getLiteNotificationGroup(int groupId);
 
-    public LiteNotificationGroup getLiteNotificationGroup(int groupID_);
-    public Set<LiteNotificationGroup> getAllNotificationGroups();
-
+    Set<LiteNotificationGroup> getAllNotificationGroups();
 }
