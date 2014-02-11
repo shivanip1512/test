@@ -29,16 +29,24 @@ public class SearchResults<T> {
     }
 
     /**
-     * Returns a SearchResult containing a specific "page" of items, based on the specified parameters.
-     * This method takes a list of _all_ results and will set the result list to the appropriate sublist for
-     * the specified page.
+     * Build a SearchResult containing a specific "page" of items, based on the specified parameters.
+     * This method takes a list of _all_ results and will set the result list to the appropriate
+     * sublist for the specified page.
+     * 
+     * @param currentPage The current page. The first page is numbered 1.
      */
     public static <T> SearchResults<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int numberOfResults = itemList.size();
-        int toIndex = Math.min(startIndex + itemsPerPage, numberOfResults);
+        return indexBasedForWholeList((currentPage - 1) * itemsPerPage, itemsPerPage, itemList);
+    }
 
-        itemList = itemList.subList(startIndex, toIndex);
+    /**
+     * Build a SearchResult based on a start index for a result list which contains all results.
+     */
+    public static <T> SearchResults<T> indexBasedForWholeList(int startIndex, int itemsPerPage, List<T> itemList) {
+        int numberOfResults = itemList.size();
+        int endIndex = Math.min(startIndex + itemsPerPage, numberOfResults);
+
+        itemList = itemList.subList(startIndex, endIndex);
 
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(itemList);

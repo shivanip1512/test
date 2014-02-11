@@ -39,6 +39,10 @@
         <c:set var="itemIdProperty" value="groupId"/>
         <c:set var="itemNameProperty" value="groupName"/>
     </c:when>
+    <c:when test="${pickerType == 'notificationGroupPicker'}">
+        <c:set var="itemIdProperty" value="notificationGroupId"/>
+        <c:set var="itemNameProperty" value="name"/>
+    </c:when>
 </c:choose>
 
 <script type="text/javascript">
@@ -87,6 +91,7 @@ This page should be tested at 1024x768.
         <option value="userPicker"<c:if test="${pickerType == 'userPicker'}"> selected</c:if>>User Picker (Lucene)</option>
         <option value="userGroupPicker"<c:if test="${pickerType == 'userGroupPicker'}"> selected</c:if>>User Group Picker (Lucene)</option>
         <option value="loginGroupPicker"<c:if test="${pickerType == 'loginGroupPicker'}"> selected</c:if>>Role Group Picker (Lucene)</option>
+        <option value="notificationGroupPicker"<c:if test="${pickerType == 'notificationGroupPicker'}"> selected</c:if>>Notification Group Picker (Custom)</option>
     </select>
 </form>
 

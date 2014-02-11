@@ -1865,6 +1865,7 @@
     </bean>
 
     <bean name="surveyPicker" class="com.cannontech.web.picker.v2.SurveyPicker"/>
+    <bean name="notificationGroupPicker" class="com.cannontech.web.picker.v2.NotificationGroupPicker"/>
 
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"

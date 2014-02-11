@@ -9,11 +9,10 @@ public abstract class BasePicker<T> implements Picker<T>, BeanNameAware {
     private String beanName = null;
     protected MessageSourceResolvable dialogTitle = null;
 
+    @Override
     public MessageSourceResolvable getDialogTitle() {
         if (dialogTitle == null) {
-            this.dialogTitle =
-                new YukonMessageSourceResolvable("yukon.web.picker." +
-                                                 beanName + ".dialogTitle");
+            dialogTitle = new YukonMessageSourceResolvable("yukon.web.picker." + beanName + ".dialogTitle");
         }
         return dialogTitle;
     }

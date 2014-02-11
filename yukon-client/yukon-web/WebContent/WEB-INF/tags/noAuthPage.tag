@@ -38,9 +38,9 @@
         <cti:includeScript link="PROTOTYPE" force="true"/>
         <cti:includeScript link="YUKON" force="true"/>
         <cti:includeScript link="JQUERY_TIPSY" force="true"/>
-        <script type="text/javascript" src="/JavaScript/yukonGeneral.js"></script>
-        <script type="text/javascript" src="/JavaScript/simpleCookies.js"></script>
-        <script type="text/javascript" src="/JavaScript/simpleDialog.js"></script>
+        <script type="text/javascript" src="<cti:url value="/JavaScript/yukonGeneral.js"/>"></script>
+        <script type="text/javascript" src="<cti:url value="/JavaScript/simpleCookies.js"/>"></script>
+        <script type="text/javascript" src="<cti:url value="/JavaScript/simpleDialog.js"/>"></script>
 
         <cti:css key="yukon.web.login.loginStyles"/>
     </head>

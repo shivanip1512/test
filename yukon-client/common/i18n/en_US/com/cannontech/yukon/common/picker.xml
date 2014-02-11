@@ -171,4 +171,9 @@
 <entry key="yukon.web.picker.configurationCategory.name">Category Name</entry>
 <entry key="yukon.web.picker.configurationCategory.categoryType">Category Type</entry>
 
+<!-- Notification Group Picker -->
+<entry key="yukon.web.picker.notificationGroup.name">Name</entry>
+
+<entry key="yukon.web.picker.notificationGroupPicker.dialogTitle">Select Notification Group</entry>
+
 </properties>
