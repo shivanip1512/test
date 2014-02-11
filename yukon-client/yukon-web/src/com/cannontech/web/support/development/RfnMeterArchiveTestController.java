@@ -100,7 +100,7 @@ public class RfnMeterArchiveTestController {
             @RequestParam(value = "messageIdTimestamp", required = true) String messageIdTimestamp) {
         SimulatorSettings settings = new SimulatorSettings(
                 Integer.parseInt(lcr6200serialFrom), Integer.parseInt(lcr6200serialTo), 
-                Integer.parseInt(lcr6600serialFrom), Integer.parseInt(lcr6600serialFrom),
+                Integer.parseInt(lcr6600serialFrom), Integer.parseInt(lcr6600serialTo),
                 Long.parseLong(messageId), Long.parseLong(messageIdTimestamp));
         
         dataSimulator.startSimulator(settings);
