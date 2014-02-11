@@ -163,7 +163,7 @@ CREATE TABLE DynamicLcrCommunications  (
 );
 
 ALTER TABLE DynamicLcrCommunications
-   ADD CONSTRAINT FK_YukonPAO_DynamicLcrComms FOREIGN KEY (DeviceId)
+   ADD CONSTRAINT FK_Device_DynamicLcrComms FOREIGN KEY (DeviceId)
       REFERENCES Device (DeviceId)
       ON DELETE CASCADE;
 /* End YUK-12961 */
