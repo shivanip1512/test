@@ -50,7 +50,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     private static final String rowTemplate = "<tr>" +
             "<{cell}>{date}</{cell}>" +
             "<{cell}>{successful}</{cell}>" +
-            "<{cell}>{unsuccessful}</{cell}>" +
+            "<{cell}>{failure}</{cell}>" +
             "<{cell}>{unknown}</{cell}>" +
             "<{cell}>{percentage}</{cell}>" +
             "</tr>";
@@ -135,7 +135,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         theaderData.put("cell", "th");
         theaderData.put("date", accessor.getMessage("yukon.web.defaults.date"));
         theaderData.put("successful", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.successful"));
-        theaderData.put("unsuccessful", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.unsuccessful"));
+        theaderData.put("failure", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.failure"));
         theaderData.put("unknown",accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.unknown"));
         theaderData.put("percentage", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.percentage"));
         String theader = tp.process(rowTemplate, theaderData);
@@ -169,7 +169,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
             templateData.put("cell", "td");
             templateData.put("date", formattedDate);
             templateData.put("successful", report.getNumSuccesses());
-            templateData.put("unsuccessful", report.getNumFailures());
+            templateData.put("failure", report.getNumFailures());
             templateData.put("unknown", report.getNumUnknowns());
             templateData.put("percentage", precentageStr);
             String rowText = tp.process(rowTemplate, templateData);
@@ -179,9 +179,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         String formattedDate = dateTimeFormatter.print(now);
 
         // TODO Header has a link. Where should the link go?
-        String subject = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.emailSubject");
-        String header = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.emailHeader");
-        String footer = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.emailFooter", formattedDate);
+        String subject = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.subject");
+        String header = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.header");
+        String footer = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.footer", formattedDate);
 
         Map<String, String> emailData = new HashMap<>();
         emailData.put("header", header);
