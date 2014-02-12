@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/12/2014 12:12:37 PM                        */
+/* Created on:     2/12/2014 1:04:00 PM                         */
 /*==============================================================*/
 
 
@@ -5353,6 +5353,7 @@ create table JOB  (
 );
 
 INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N');
+INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N');
 
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
@@ -5384,6 +5385,7 @@ create table JOBSCHEDULEDREPEATING  (
 );
 
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
+INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */

@@ -203,6 +203,11 @@ INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-2, 'rfnPerformanceVerificat
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 /* End YUK-13016 */
 
+/* Start YUK-13008 */
+INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N');
+INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
+/* End YUK-13008 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
