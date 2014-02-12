@@ -85,7 +85,7 @@
             <cti:button nameKey="save" type="submit" classes="primary action"/>
             <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"/>
             <cti:button nameKey="cancel" href="view?formulaId=${formulaBean.formulaId}"/>
-            <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${fn:escapeXml(formulaBean.name)}"/>
+            <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${fn:escapeXml(formulaBean.name)}"/>
         </cti:displayForPageEditModes>
     </div>
 </form:form>

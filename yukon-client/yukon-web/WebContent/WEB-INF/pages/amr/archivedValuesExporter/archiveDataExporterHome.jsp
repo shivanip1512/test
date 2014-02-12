@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage page="bulk.archivedValueExporter" module="tools">
@@ -245,7 +245,7 @@ jQuery(function() {
                                             <cti:param name="jobId" value="${job.id}"/>
                                         </cti:url>
                                         <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}" icon="icon-cross"/>
-                                        <dialog:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
+                                        <d:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
                                     </td>
                                 </tr>
                             </c:forEach>

@@ -8,7 +8,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
@@ -182,7 +182,7 @@
     <cti:msg2 var="scheduleButton" key=".scheduleButton"/>
     <cti:msg2 var="updateButton" key=".updateButton"/>
     <cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
-    <dialog:inline nameKey="schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup" okEvent="submitSchedule"
+    <d:inline nameKey="schedulePopup" arguments="${popupTitleArgs}" id="schedulePopup" okEvent="submitSchedule"
         options="{'modal': true, 
                   'buttons': 
                     [{
@@ -261,7 +261,7 @@
                 <input type="hidden" name="jobId" value="${jobId}">
             </c:if>
         </form:form>
-    </dialog:inline>
+    </d:inline>
     
     <form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm stacked">
         <div class="column-12-12 clearfix">

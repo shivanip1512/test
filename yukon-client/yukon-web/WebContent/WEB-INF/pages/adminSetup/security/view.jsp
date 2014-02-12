@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="security">
 
@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <dialog:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
+    <d:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
@@ -30,9 +30,9 @@
                 </tags:nameValue2>
             </form:form>
         </tags:nameValueContainer2>
-    </dialog:inline>
+    </d:inline>
 
-    <dialog:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
+    <d:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
                 <tags:nameValue2 nameKey=".importKeyFile">
@@ -45,9 +45,9 @@
                 </tags:nameValue2>
             </form:form>
         </tags:nameValueContainer2>
-    </dialog:inline>
+    </d:inline>
     
-    <dialog:inline nameKey="viewPublicKeyDialog" okEvent="none" 
+    <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
         on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'f-blocker2', click: function() { loadPublicKey(true);}},
                                         {text: 'Cancel', click: function() { jQuery(this).dialog('close'); } }]}">
         <div id="publicKeyStatus"></div>
@@ -57,10 +57,10 @@
             <textarea id="publicKeyTextArea" rows="17" cols="70"
                 readonly="readonly"></textarea>
         </div>
-    </dialog:inline>
+    </d:inline>
 
-    <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
-        <cti:dataGridCell>
+    <div class="column-12-12">
+        <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
                 <table id="routesBoxTable" class="compact-results-table row-highlighting">
                     <thead>
@@ -93,14 +93,14 @@
                                         <c:if test="${route.encrypted}">
                                             <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
                                             <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
-                                            <dialog:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
+                                            <d:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
                                             <select disabled="disabled" style="width: 100%">
                                                 <option>${fn:escapeXml(route.encryptionKeyName)}</option>
                                             <select>
                                         </c:if> 
                                         <c:if test="${!route.encrypted}">
                                             <c:if test="${fn:length(encryptionKeys) > 0}">
-                                                <dialog:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
+                                                <d:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
                                                 <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
                                                     <c:forEach items="${encryptionKeys}" var="key">
                                                         <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
@@ -126,73 +126,78 @@
                     </tbody>
                 </table>
             </tags:boxContainer2>
-        </cti:dataGridCell>
-        <cti:dataGridCell>
+        </div>
+        <div class="column two nogutter">
             <tags:boxContainer2 nameKey="keyBox" styleClass="largeContainer">
                 <c:if test="${fn:length(encryptionKeys) <= 0}">
                     <div><i:inline key=".noKeysAvailable" /></div>
                 </c:if>
                 <c:if test="${fn:length(encryptionKeys) > 0}">
                     <table id="keyBoxTable" class="compact-results-table row-highlighting">
-                        <tr>
-                            <th><i:inline key=".key" /> </th>
-                            <th><i:inline key=".status" /> </th>
-                            <th><i:inline key=".assigned" /> </th>
-                            <th class="remove-column"><i:inline key=".remove" /></th>
-                        </tr>
-                        <c:forEach items="${encryptionKeys}" var="key">
-                            <dialog:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
-                            <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
-                                <input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />
-                                <tr>
-                                    <td>${fn:escapeXml(key.name)}</td>
-                                    <td id="keyStatus_${key.encryptionKeyId}">
-                                        <c:if test="${key.isValid}">
-                                            <span class="success"><i:inline key=".validKey" /></span>
-                                        </c:if>
-                                        <c:if test="${not key.isValid}">
-                                            <span class="error"><i:inline key=".invalidKey" /></span>
-                                        </c:if>
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${key.currentlyUsed}">
-                                                <i:inline key=".assignedKey" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i:inline key=".unassignedKey" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td class="remove-column">
-                                        <c:choose>
-	                                        <c:when test="${key.currentlyUsed}">
-												<a class="button naked" disabled="disabled" title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
-                                                    <i class="icon icon-cross"></i>
-                                                </a>
-											</c:when>
-	                                        <c:otherwise>
-												<a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
-													href="javascript:submitForm('keys_${key.encryptionKeyId}')"
-													class="button naked"
-													title="<cti:msg2 key=".deleteKeyBtnTitle"/>">
-													<i class="icon icon-cross"></i>
-                                                </a>
-											</c:otherwise>
-                                        </c:choose>
-                                </tr>
-                            </form:form>
-                        </c:forEach>
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".key" /> </th>
+                                <th><i:inline key=".status" /> </th>
+                                <th><i:inline key=".assigned" /> </th>
+                                <th class="remove-column"><i:inline key=".remove" /></th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${encryptionKeys}" var="key">
+                                <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}" />
+                                <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
+                                    
+                                    <tr>
+                                        <td><input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />${fn:escapeXml(key.name)}</td>
+                                        <td id="keyStatus_${key.encryptionKeyId}">
+                                            <c:if test="${key.isValid}">
+                                                <span class="success"><i:inline key=".validKey" /></span>
+                                            </c:if>
+                                            <c:if test="${not key.isValid}">
+                                                <span class="error"><i:inline key=".invalidKey" /></span>
+                                            </c:if>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${key.currentlyUsed}">
+                                                    <i:inline key=".assignedKey" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key=".unassignedKey" />
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td class="remove-column">
+                                            <c:choose>
+                                                <c:when test="${key.currentlyUsed}">
+                                                    <a class="button naked" disabled="disabled" title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
+                                                        <i class="icon icon-cross"></i>
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
+                                                        href="javascript:submitForm('keys_${key.encryptionKeyId}')"
+                                                        class="button naked"
+                                                        title="<cti:msg2 key=".deleteKeyBtnTitle"/>">
+                                                        <i class="icon icon-cross"></i>
+                                                    </a>
+                                                </c:otherwise>
+                                            </c:choose>
+                                    </tr>
+                                </form:form>
+                            </c:forEach>
+                        </tbody>
                     </table>
                 </c:if>
                 <div class="page-action-area">
-	                <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
-	                <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-	                <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f-blocker2" />
+                    <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
+                    <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
+                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="f-blocker2" />
                 </div>
             </tags:boxContainer2>
-        </cti:dataGridCell>
-    </cti:dataGrid>
+        </div>
+    </div>
     
     <script type="text/javascript">
     jQuery(function(){

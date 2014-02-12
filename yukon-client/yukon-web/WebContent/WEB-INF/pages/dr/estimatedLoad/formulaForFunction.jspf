@@ -96,7 +96,7 @@
             <cti:button nameKey="save" type="submit" classes="primary action"/>
             <cti:button nameKey="delete" id="deleteBtn" href="delete?formulaId=${formulaBean.formulaId}"/>
             <cti:button nameKey="cancel" href="view?formulaId=${formulaBean.formulaId}"/>
-            <dialog:confirm nameKey="confirmDelete" on="#deleteBtn" argument="${formulaBean.name}"/>
+            <d:confirm nameKey="confirmDelete" on="#deleteBtn" argument="${formulaBean.name}"/>
         </cti:displayForPageEditModes>
     </div>
 </form:form>

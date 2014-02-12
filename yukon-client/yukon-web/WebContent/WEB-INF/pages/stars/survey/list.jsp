@@ -3,7 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="survey.list">
     <cti:includeScript link="/JavaScript/ajaxDialog.js"/>

@@ -4,7 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="tools" page="configs.config.${mode}">
 
@@ -39,18 +39,18 @@
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <cti:url var="viewUrl" value="view">
-                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
-                    </cti:url>
-                    <cti:button nameKey="cancel" href="${viewUrl}"/>
+                    <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                     <c:if test="${isDeletable}">
-                        <dialog:confirm on="#remove" nameKey="confirmRemove"/>
+                        <d:confirm on="#remove" nameKey="confirmRemove"/>
                         <cti:url var="deleteUrl" value="delete">
                             <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                         </cti:url>
                         <cti:button nameKey="remove" id="remove" href="${deleteUrl}" disabled="${disabled}"/>
                     </c:if>
-                    <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
+                    <cti:url var="viewUrl" value="view">
+                        <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
+                    </cti:url>
+                    <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
@@ -88,7 +88,7 @@
                                         <cti:checkRolesAndProperties value="${editingRoleProperty}">
                                             <cti:displayForPageEditModes modes="VIEW">
                                                 <c:if test="${fn:length(configurationDeviceTypesBackingBean.supportedTypes) > 1}">
-                                                    <dialog:confirm on="#remove-${type.key}" nameKey="confirmSupportedTypeRemove" argument="${type.key.dbString}"/>
+                                                    <d:confirm on="#remove-${type.key}" nameKey="confirmSupportedTypeRemove" argument="${type.key.dbString}"/>
                                                     <cti:url var="removeUrl" value="removeSupportedType">
                                                         <cti:param name="configId" value="${deviceConfigurationBackingBean.configId}"/>
                                                         <cti:param name="paoType" value="${type.key}"/>

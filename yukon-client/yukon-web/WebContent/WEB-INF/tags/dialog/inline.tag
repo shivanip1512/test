@@ -1,18 +1,19 @@
-<%@ tag trimDirectiveWhitespaces="true" language="java" pageEncoding="UTF-8" description="Use this tag to wrap a JSP which is to be an AJAX dialog."%>
+<%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="nameKey" required="true"%>
-<%@ attribute name="title" description="The raw text to use for the title, if supplied it is overrides any i18n title that may be specified."%>
-<%@ attribute name="id" description="The id of the div to put the dialog in.  This div is created in this tag.  This is also used to name the function to open the dialog."%>
-<%@ attribute name="okEvent" required="true" description="Use 'submit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog."%>
-<%@ attribute name="on" description="registers click event on the element with this CSS selector"%>
+<%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="title" description="The raw text to use for the title, if supplied it is overrides any i18n title that may be specified." %>
+<%@ attribute name="id" description="The id of the dialog element. This is also used to name the function to open the dialog: 'open_\${id}'" %>
+<%@ attribute name="okEvent" required="true" description="Use 'submit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog." %>
+<%@ attribute name="on" description="registers click event on the element with this CSS selector" %>
 <%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
-<%@ attribute name="arguments" required="false" type="java.lang.Object"%>
+<%@ attribute name="arguments" type="java.lang.Object" %>
+<%@ attribute name="classes" %>
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
@@ -35,45 +36,59 @@
 </c:if>
 
 <script type="text/javascript">
-function open_${id}() {
-    var dialogDiv = jQuery('#${id}');
-    var buttons = [];
+window['open_${id}'] = function () {
     
-    <c:if test="${okEvent == 'none'}">
-        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
-    </c:if>
-    <c:if test="${okEvent != 'none'}">
+    var dialog = jQuery('#${id}'),
+        buttons = [],
+        okEvent = '${okEvent}',
+        on = '${pageScope.on}';
+    
+    if (okEvent === 'none') {
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() {jQuery(this).dialog('close');}});
+    } else {
         var okButton = {'text' : '${okBtnMsg}', 'class': 'primary action'};
-        <c:if test="${!empty pageScope.on}">
-        dialogDiv.data('on', '${pageScope.on}');
-        </c:if>
-        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
-        okButton.click = function() { dialogDiv.trigger('${okEvent}'); }
+        
+        if (on != '') {
+            dialog.data('on', '${pageScope.on}');
+        }
+        
+        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() {jQuery(this).dialog('close');}});
+        
+        if (okEvent === 'submit') {
+            okButton.click = function() {
+                dialog.find('form').submit();
+            };
+        } else {
+            okButton.click = function() {
+                dialog.trigger('${okEvent}');
+            };
+        }
         buttons.push(okButton);
-    </c:if>
+    }
     
-    var dialogOpts = {
-            'title' : '${titleMsg}',
-            'position' : 'center',
-            'width' : 'auto',
-            'height' : 'auto',
-            'modal' : false,
-            'buttons' : buttons };
-    <c:if test="${!empty pageScope.options}">
-        jQuery.extend(dialogOpts, ${options});
+    var defaults = {
+            'title': '${titleMsg}',
+            'position': 'center',
+            'width': 'auto',
+            'height': 'auto',
+            'modal': false,
+            'buttons': buttons};
+    
+    <c:if test="${not empty pageScope.options}">
+        jQuery.extend(defaults, ${options});
     </c:if>
-    dialogDiv.dialog(dialogOpts);
-}
-<c:if test="${!empty pageScope.on}">
-jQuery(function() {
-    jQuery(document).on('click', '${on}', function() {
-        open_${id}();
+    dialog.dialog(defaults);
+};
+if ('${pageScope.on}' != '') {
+    jQuery(function() {
+        jQuery(document).on('click', '${on}', function() {
+            window['open_${id}']();
+        });
     });
-});
-</c:if>
+}
 </script>
 
-<div id="${id}" style="display: none">
+<div id="${id}" class="dn ${pageScope.classes}">
     <cti:flashScopeMessages/>
     <jsp:doBody/>
 </div>

@@ -1,5 +1,5 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -11,7 +11,7 @@ jQuery(function() {
 });
 </script>
 
-<dialog:ajaxPage nameKey="${nameKey}" module="tools" page="configs.config" okEvent="ajaxDialogSubmit" 
+<d:ajaxPage nameKey="${nameKey}" module="tools" page="configs.config" okEvent="ajaxDialogSubmit" 
     id="categoryPopup"
     options="{ 'height' : '600', 'width' : '988' }">
     <form:form commandName="categoryEditBean" action="/deviceConfiguration/category/saveInPlace">
@@ -32,4 +32,4 @@ jQuery(function() {
         
         <%@ include file="category.jspf" %>
     </form:form>
-</dialog:ajaxPage>
+</d:ajaxPage>

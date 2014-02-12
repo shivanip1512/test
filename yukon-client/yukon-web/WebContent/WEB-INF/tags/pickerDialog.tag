@@ -31,7 +31,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:includeScript link="/JavaScript/picker.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
@@ -44,6 +43,7 @@
 
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
 <cti:msg2 var="cancelText" key="yukon.common.cancel"/>
+<cti:msg2 var="noneSelectedText" key="yukon.web.components.button.selectionPicker.label"/>
 
 <script type="text/javascript">
     // Only create picker if not already created.  This tag gets called more than
@@ -56,7 +56,7 @@
     jQuery(document.getElementById('${id}')).remove();
     try {
         try {
-            ${id} = new Picker('${okText}', '${cancelText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
+            ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});
         } catch(pickerException) {
             if (console) {
                 console.log('pickerDialog.tag: new Picker failed: ' + pickerException);
@@ -113,9 +113,9 @@
         <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
         <cti:msg2 var="closeMsg" key=".close"/>
     </cti:msgScope>
-    <d:inline okEvent="none" nameKey="" title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
+    <div title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
         <div id="picker_${id}_selectedItemsDisplayArea"></div>
-    </d:inline>
+    </div>
 </c:if>
 
 <span id="picker_${id}_inputArea">

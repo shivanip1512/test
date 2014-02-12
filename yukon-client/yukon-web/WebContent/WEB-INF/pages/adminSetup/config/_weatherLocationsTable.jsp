@@ -2,7 +2,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:msgScope paths="modules.adminSetup.config.weather">
@@ -57,7 +57,7 @@
                             <cti:button id="deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
                                 href="removeWeatherLocation?paoId=${weatherLocation.paoIdentifier.paoId}" nameKey="remove"
                                 renderMode="image" icon="icon-cross" classes="fr"/>
-                            <dialog:confirm on="#deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
+                            <d:confirm on="#deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
                                  nameKey="confirmDelete" argument="${fn:escapeXml(weatherLocation.name)}"/>
                         </td>
                     </tr>

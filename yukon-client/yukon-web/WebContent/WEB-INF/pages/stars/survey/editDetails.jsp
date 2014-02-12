@@ -4,11 +4,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 
-<dialog:ajaxPage nameKey="details" module="adminSetup" page="survey.list" okEvent="yukonDialogSubmit">
+<d:ajaxPage nameKey="details" module="adminSetup" page="survey.list" okEvent="yukonDialogSubmit">
 
 <cti:url var="submitUrl" value="saveDetails"/>
 <form:form id="inputForm" commandName="survey" action="${submitUrl}">
@@ -27,4 +27,4 @@
     </tags:nameValueContainer>
 </form:form>
 
-</dialog:ajaxPage>
+</d:ajaxPage>

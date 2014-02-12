@@ -6,7 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="amr" page="deviceDataMonitor.${mode}">
 
@@ -204,14 +204,14 @@
     <c:set var="okEvent" value="e_ddm_update_or_create"/>
     <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
     <c:set var="options" value="{width: 550}"/>
-    <dialog:inline id="update_loading_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    <d:inline id="update_loading_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureLoading" arguments="${updateCreateMsgVerb}"/>
-    </dialog:inline>
-    <dialog:inline id="update_missing_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    </d:inline>
+    <d:inline id="update_missing_dialog" okEvent="${okEvent}" nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureMissing" arguments="${updateCreateMsgVerb}"/>
-    </dialog:inline>
+    </d:inline>
 
     <%-- update / enable_disable / delete / cancel --%>
     <div class="page-action-area">
@@ -224,7 +224,7 @@
                 <cti:button classes="f-toggle_enabled" nameKey="enable"/>
             </c:if>
             <cti:button id="deleteButton" nameKey="delete" classes="delete"/>
-            <dialog:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
+            <d:confirm nameKey="deleteConfirmation" argument="${monitor.name}" on="#deleteButton"  />
             <cti:url var="viewMonitorUrl" value="/amr/deviceDataMonitor/view">
                 <cti:param name="monitorId" value="${monitor.id}" />
             </cti:url>

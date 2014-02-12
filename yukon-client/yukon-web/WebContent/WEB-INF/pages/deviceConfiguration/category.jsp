@@ -66,7 +66,7 @@
                     <cti:button nameKey="save" id="save" type="submit" classes="primary action"/>
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
                     <c:if test="${isDeletable}">
-                        <dialog:confirm on="#remove" nameKey="confirmRemove"/>
+                        <d:confirm on="#remove" nameKey="confirmRemove"/>
                         <cti:url var="deleteUrl" value="delete">
                             <cti:param name="categoryId" value="${categoryEditBean.categoryId}"/>
                         </cti:url>
@@ -78,8 +78,8 @@
         <cti:displayForPageEditModes modes="CREATE">
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <div class="page-action-area clear">
-                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                     <cti:button nameKey="create" type="submit" classes="primary action"/>
+                    <cti:button nameKey="cancel" href="/deviceConfiguration/home"/>
                 </div>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>

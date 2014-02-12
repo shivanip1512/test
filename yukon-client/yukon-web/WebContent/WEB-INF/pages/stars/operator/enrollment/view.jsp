@@ -4,14 +4,14 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="alternateEnrollment">
 
-<dialog:confirm nameKey="confirmAlternate" on="#enroll_alternate" disableGroup="alternate_confirm"/>
-<dialog:confirm nameKey="confirmNormal" on="#enroll_normal" disableGroup="normal_confirm"/>
+<d:confirm nameKey="confirmAlternate" on="#enroll_alternate" disableGroup="alternate_confirm"/>
+<d:confirm nameKey="confirmNormal" on="#enroll_normal" disableGroup="normal_confirm"/>
 
 <tags:sectionContainer2 nameKey="available">
     <c:choose>

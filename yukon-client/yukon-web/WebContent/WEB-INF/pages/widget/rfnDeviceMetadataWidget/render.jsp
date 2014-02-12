@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 
-<d:inline id="metadata_showAll" nameKey="showAll" okEvent="none" on="#showAll" options="{'modal' : false}">
+<d:inline id="metadata_showAll" nameKey="showAll" okEvent="none" on="#showAll">
     <tags:nameValueContainer altRowOn="true">
         <c:forEach var="pair" items="${metadata}">
             <%@ include file="metadataRow.jspf" %>

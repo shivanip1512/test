@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
@@ -289,26 +289,26 @@
         <form:hidden path="rowIndex" />
 
         <!-- Helper Popups -->
-        <dialog:inline nameKey="helper.rounding" okEvent="none" on="#helperRounding" options="{'modal' : false}">
+        <d:inline nameKey="helper.rounding" okEvent="none" on="#helperRounding" options="{'modal' : false}">
             <cti:url var="roundingHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp" />
             <div class="helpDialogContents">
                 <jsp:include page="${roundingHelperUrl}" />
             </div>
-        </dialog:inline>
+        </d:inline>
 
-        <dialog:inline nameKey="helper.value" okEvent="none" on="#helperValue" options="{'modal' : false}">
+        <d:inline nameKey="helper.value" okEvent="none" on="#helperValue" options="{'modal' : false}">
             <cti:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp" />
             <div class="helpDialogContents">
                 <jsp:include page="${valueHelperUrl}" />
             </div>
-        </dialog:inline>
+        </d:inline>
 
-        <dialog:inline nameKey="helper.timestamp" okEvent="none" on="#helperTimestamp" options="{'modal' : false}">
+        <d:inline nameKey="helper.timestamp" okEvent="none" on="#helperTimestamp" options="{'modal' : false}">
             <cti:url var="timestampHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp" />
             <div class="helpDialogContents">
                 <jsp:include page="${timestampHelperUrl}" />
             </div>
-        </dialog:inline>
+        </d:inline>
 
         <tags:boxContainer2 nameKey="formatSettings" styleClass="stacked">
             <tags:nameValueContainer2>
@@ -485,7 +485,7 @@
         </c:if>
         <div class="page-action-area">
             <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disable-after-click primary action"/>
-            <dialog:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
+            <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="${backingBean.format.formatName}" />
             <c:if test="${backingBean.format.formatId != 0}">
                 <cti:button id="deleteBtn" nameKey="delete" />
             </c:if>

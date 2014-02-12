@@ -3,10 +3,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<dialog:ajaxPage nameKey="details" module="operator" page="thermostatHistory" okEvent="none">
+<d:ajaxPage nameKey="details" module="operator" page="thermostatHistory" okEvent="none">
 
 <script>
 var TIME_SLIDER = null;
@@ -43,4 +43,4 @@ jQuery(function() {
                                         customActions="true"
                                         thermostatType="${thermostatType}"/>
 
-</dialog:ajaxPage>
+</d:ajaxPage>

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -203,10 +203,10 @@
                 <li><a href="/sitemap"><i:inline key=".siteMap"/></a></li>
                 <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
                     <li><a href="javascript:void(0);" id="appsLauncher"><i:inline key=".applications"/></a></li>
-                    <dialog:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
+                    <d:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
                         options="{width: 400, 'buttons': [], 'position' : 'relative'}">
                         <c:import url="/jws/applications"/>
-                    </dialog:inline>
+                    </d:inline>
                 </cti:checkRolesAndProperties>
                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
                     <li><a href="/support/development/main">Development</a></li>

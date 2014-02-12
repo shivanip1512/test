@@ -7,7 +7,7 @@
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 

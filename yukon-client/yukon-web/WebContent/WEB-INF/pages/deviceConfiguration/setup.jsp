@@ -1,11 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<dialog:ajaxPage okEvent="yukonDialogSubmit" module="tools" nameKey="addSupportedTypes" page="configs.config" 
+<d:ajaxPage okEvent="yukonDialogSubmit" module="tools" nameKey="addSupportedTypes" page="configs.config" 
     id="supportedTypePopup"
     options="{ 'width' : '988' }">
     <form:form commandName="configurationDeviceTypesBackingBean" action="addSupportedTypes">
@@ -110,4 +110,4 @@
             </div>
         </div>
     </form:form>
-</dialog:ajaxPage>
+</d:ajaxPage>

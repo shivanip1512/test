@@ -1,12 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:url var="viewUrl" value="/meter/historicalReadings/view"/>
-<dialog:ajaxPage nameKey="popup" title="${title}" module="amr"
+<d:ajaxPage nameKey="popup" title="${title}" module="amr"
     page="widgetClasses.MeterReadingsWidget.historicalReadings" id="${dialogId}" okEvent="none"
     options="{height: 400, 
               width: 450,
@@ -54,4 +54,4 @@
         </c:otherwise>
     </c:choose>
             
-</dialog:ajaxPage>
+</d:ajaxPage>

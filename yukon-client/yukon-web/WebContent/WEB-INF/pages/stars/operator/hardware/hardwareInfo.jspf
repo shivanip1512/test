@@ -3,7 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
@@ -310,7 +310,7 @@ jQuery(function() { updateServiceCompanyInfo();});
                         <c:if test="${not hardware.hardwareType.meter}">
                             <c:set var="deleteName" value="${hardware.serialNumber}"/>
                         </c:if>
-                        <dialog:confirm nameKey="deleteInventoryConfirm" on="#invDeleteBtn" argument="${deleteName}"/>
+                        <d:confirm nameKey="deleteInventoryConfirm" on="#invDeleteBtn" argument="${deleteName}"/>
                     </c:otherwise>
                 </c:choose>
            </cti:displayForPageEditModes>

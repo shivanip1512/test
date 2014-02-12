@@ -3,7 +3,7 @@ var yukon = (function (yukonMod) {
 })(yukon || {});
 
 // prototype for Picker, from which all Picker instances are derived
-yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
     /**
      * Reset things that need to be reset when first popping up the picker
      * or when clearing it.
@@ -37,13 +37,14 @@ yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
      *   and property specifies a property of the data to be placed into
      *   this HTML element (using innerHTML).
      */
-    initialize = function (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+    initialize = function (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
         var index,
             pairs,
             pair,
             extraDestinationField;
         this.okText = okText;
         this.cancelText = cancelText;
+        this.noneSelectedText = noneSelectedText;
         this.pickerType = pickerType;
         this.destinationFieldName = destinationFieldName;
         this.pickerId = pickerId;
@@ -161,7 +162,7 @@ yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
             // unselect
             jQuery(parentRow).removeClass('highlighted');
             removeFromSelectedItems.call(this, hit);
-            if ('undefined' !== typeof this.selectAllCheckBox) {
+            if (this.selectAllCheckBox != null && 'undefined' !== typeof this.selectAllCheckBox) {
                 this.selectAllCheckBox.checked = false;
             }
         } else {
@@ -414,7 +415,7 @@ yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
         if (this.selectionProperty) {
             if (hit === null) {
-                this.selectionLabel.innerHTML = this.originalSelectionLabel;
+                this.selectionLabel.innerHTML = this.noneSelectedText;
                 jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
             } else {
                 labelMsg = jQuery('<div>').text(hit[this.selectionProperty].toString()).html();
@@ -893,7 +894,7 @@ yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
         yukon.protoPicker.rememberedSearches = {};
     }
 
-    initialize.call(this, okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+    initialize.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
 
     // circumvent default processing of ctrl-left-click and shift-left-click events
     jQuery(document).on('click', '#' + this.pickerId, function (ev) {
@@ -906,11 +907,10 @@ yukon.protoPicker = function (okText, cancelText, pickerType, destinationFieldNa
 
 // constructor for Picker
 // could add functions and variables to this
-function Picker (okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
-    yukon.protoPicker.call(this, okText, cancelText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
+function Picker (okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv) {
+    yukon.protoPicker.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
 };
 
 // called once to assign methods and properties accessible to all
 // instances of Picker
 yukon.inheritPrototype(Picker, yukon.protoPicker);
-

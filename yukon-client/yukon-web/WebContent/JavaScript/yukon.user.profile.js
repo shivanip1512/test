@@ -229,7 +229,7 @@ yukon.UserPreferences = (function () {
             }
         },
 
-        // The <dialog:confirm> gets hit, then it comes here:
+        // The <d:confirm> gets hit, then it comes here:
         reset_all_preferences: function(event) {
             var table = jQuery("#tbl_preferences");
             var userId = jQuery("input[name='userId']").val();

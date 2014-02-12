@@ -184,8 +184,8 @@ jQuery(function() {
         };
 
         // some uses of the above mechanisms
-        var stock = new Picker('Okey-Doke', 'Forget it', 'userStockPicker', 'yomama', 'stock', '', null);
-        var horse = new Picker('Alright', 'No way', 'userHorsePicker', 'bite me', 'horse', '', null);
+        var stock = new Picker('Okey-Doke', 'Forget it', '(none selected)', 'userStockPicker', 'yomama', 'stock', '', null);
+        var horse = new Picker('Alright', 'No way', '(none selected)', 'userHorsePicker', 'bite me', 'horse', '', null);
         console.log("stock picker: stock instanceof Picker: " + (stock instanceof Picker));
         console.dir(stock);
         console.log("horse picker: horse instanceof Picker: " + (horse instanceof Picker));

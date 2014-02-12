@@ -45,7 +45,7 @@
             </button>
         </c:when>
         <c:otherwise>
-            <a><i class="icon ${icon}"></i><c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if></a>
+            <a><i class="icon ${icon} M0"></i><c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down M0"></i></c:if></a>
         </c:otherwise>
     </c:choose>
     <ul class="dropdown-menu dn ${pageScope.menuCssClass}" role="menu"><jsp:doBody/></ul>

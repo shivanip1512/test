@@ -8,7 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
-<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage page="waterLeakReport.report" module="amr">
 
@@ -29,7 +29,7 @@
 	<cti:msg2 var="cancelButton" key="yukon.web.components.button.cancel.label"/>
 	<cti:msg2 var="cancelButtonTitle" key=".filterShortcutClose"/>
 	
-	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
+	<d:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
 		options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
                                           {text: '${resetButton}', click: function() { yukon.WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
                                           {text: '${filterButton}', click: function() { yukon.WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
@@ -66,14 +66,14 @@
 			</div>
 			<div class="tac hint"><cti:msg2 key=".filterShortcutOpen"/></div>
 		</form:form>
-	</dialog:inline>
+	</d:inline>
     <%@ include file="leakAlgorithmDialog.jspf"%>
 	
 	<c:set var="popupTitleArgs" value=""/>
 	<c:if test="${not empty exportData.scheduleName}">
 		<c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
 	</c:if>
-	<dialog:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
+	<d:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
 		options="{width: 650, 'buttons': [{text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}, 
                                           {text: '${empty jobId ? scheduleButton : updateButton}', click: function() {yukon.WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton primary action'}]}">
 		
@@ -97,7 +97,7 @@
 			</div>
             <div class="tac hint"><cti:msg2 key=".scheduleShortcutOpen"/></div>
 		</form:form>
-	</dialog:inline>
+	</d:inline>
 
 	<form:form id="resetForm" action="report" method="get">
 		<input type="hidden" name="resetReport" value="true"/>

@@ -8,7 +8,7 @@
 <c:set var="settings_section_class" value="f-settings_section"/>
 <c:set var="processors_section_class" value="f-processors_section"/>
 
-<dialog:inline okEvent="none" nameKey="settings.helpDialog" on=".f-open_settings_help" options="{width: 550}">
+<d:inline okEvent="none" nameKey="settings.helpDialog" on=".f-open_settings_help" options="{width: 550}">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".deviceGroup"><i:inline key=".deviceGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".deviceGroupCount"><i:inline key=".deviceGroupCount.help"/></tags:nameValue2>
@@ -17,14 +17,14 @@
         <tags:nameValue2 nameKey=".violationsCount"><i:inline key=".violationsCount.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".monitoring"><i:inline key=".monitoring.help"/></tags:nameValue2>
     </tags:nameValueContainer2>
-</dialog:inline>
+</d:inline>
 
-<dialog:inline okEvent="none" nameKey="processors.helpDialog" on=".f-open_processors_help" options="{width: 550}">
+<d:inline okEvent="none" nameKey="processors.helpDialog" on=".f-open_processors_help" options="{width: 550}">
     <h3><i:inline key=".processors.helpDialog.findingViolations.title"/></h3>
     <p class="stacked"><i:inline key=".processors.helpDialog.findingViolations.body"/></p>
     <h3><i:inline key=".processors.helpDialog.addingRemoving.title"/></h3>
     <p><i:inline key=".processors.helpDialog.addingRemoving.body"/></p>
-</dialog:inline>
+</d:inline>
 
 <!-- supported count i18n text for use in yukon.device_data_monitor.js -->
 <cti:msg2 var="missing_i18n_text" key=".missingOrNoStateGroup"/>
