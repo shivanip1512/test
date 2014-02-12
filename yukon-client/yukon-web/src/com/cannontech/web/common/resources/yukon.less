@@ -495,6 +495,9 @@ hr.dashed, .divider.dashed {border-style: dashed none none none;}
     -webkit-animation-iteration-count: infinite; 
 }
 .ltie10 .pulse-opacity, .ltie10 .blink-shadow {border: 2px solid @red;}
+.toggle-on-off .button:focus {outline: none;}
+.toggle-on-off .yes.on .b-label, .toggle-on-off .yes.on:hover .b-label {color: @green};
+.toggle-on-off .no.on .b-label, .toggle-on-off .no.on:hover .b-label {color: @red};
 
 /* COLOR PICKER */
 .color-picker {
@@ -574,7 +577,7 @@ tr:hover .show-on-hover,
 .title-bar:hover .show-on-hover, 
 .has-show-on-hover:hover .show-on-hover,
 li:hover .show-on-hover {visibility: visible;}
-.has-actions .action-column {width:56px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
+.has-actions .action-column {width:42px;} /* only use when you need the action icon to have it's own column, ie: you don't know which column would be the last column */
 
 .dropdown-menu {display: none;position: absolute;left: auto;top: 100%;text-align: left;z-index: 1000;float: left;min-width: 130px;padding: 4px 0;margin: 1px 0 0;list-style: none;background-color: #fff;border: 1px solid #ccc;border-radius: 2px;box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);background-clip: padding-box;font-size: 13px;}
 .dropdown-menu.long-menu-list {font-size: 11px;}

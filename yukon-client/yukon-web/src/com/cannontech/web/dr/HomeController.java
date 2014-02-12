@@ -1,10 +1,11 @@
 package com.cannontech.web.dr;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.joda.time.LocalTime;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,11 +24,17 @@ import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
+import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.PreferenceOnOff;
+import com.cannontech.system.OnOff;
+import com.cannontech.system.SystemJob;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -41,6 +48,7 @@ public class HomeController {
     @Autowired private UserPageDao userPageDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
+    @Autowired private ScheduledRepeatingJobDao jobDao;
 
     @RequestMapping("/home")
     public String home(ModelMap model, 
@@ -48,7 +56,7 @@ public class HomeController {
                     String favSort, 
                     Boolean favDescending, 
                     String rvSort,
-                    Boolean rvDescending) {
+                    Boolean rvDescending) throws ParseException {
         
         LiteYukonUser user = userContext.getYukonUser();
         List<DisplayablePao> favorites = userPageDao.getDrFavorites(user);
@@ -84,16 +92,36 @@ public class HomeController {
         model.addAttribute("recents", recentlyViewed);
         
         /** RF BROADCAST PERMORMANCE */
-        PreferenceOnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
-        if (rfPerformance == PreferenceOnOff.ON) {
-            LocalTime testSchedule = new LocalTime(5, 0);
+        OnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, OnOff.class);
+        if (rfPerformance == OnOff.ON) {
 
             PerformanceVerificationAverageReports averageReports = performanceVerificationService.getAverageReports();
 
-            model.addAttribute("testSchedule", testSchedule);
             model.addAttribute("last24Hr", averageReports.getLastDay());
             model.addAttribute("last7Days", averageReports.getLastSevenDays());
             model.addAttribute("last30Days", averageReports.getLastThirtyDays());
+            
+            ScheduledRepeatingJob testCommandJob = jobDao.getById(SystemJob.RF_BROADCAST_PERFORMANCE.getJobId());
+            ScheduledRepeatingJob emailJob = jobDao.getById(SystemJob.RF_BROADCAST_PERFORMANCE_EMAIL.getJobId());
+            
+            String[] time = StringUtils.split(testCommandJob.getCronString(), " ");
+            int minutes = Integer.parseInt(time[1]);
+            int hours = Integer.parseInt(time[2]);
+            RfPerformanceSettings settings = new RfPerformanceSettings();
+            settings.setTime((hours * 60) + minutes); // minutes from midnight
+            
+            settings.setEmail(!emailJob.isDisabled());
+            
+            String notifs = emailJob.getJobProperties().get("notificationGroups");
+            if (StringUtils.isNotBlank(notifs)) {
+                List<String> groupIdStrings = Lists.newArrayList(notifs.split(","));
+                List<Integer> groupIds = Lists.transform(groupIdStrings, new Function<String, Integer>(){
+                    @Override public Integer apply(String input) {return Integer.parseInt(input);}
+                });
+                settings.setNotifGroupIds(groupIds);
+            }
+            
+            model.addAttribute("settings", settings);
         }
 
         return "dr/home.jsp";

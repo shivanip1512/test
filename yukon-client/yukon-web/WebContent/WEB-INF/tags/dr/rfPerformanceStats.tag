@@ -7,7 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <c:set var="successWidth" value="${test.percentSuccess * 100}"/>
-<c:set var="failedWidth" value="${100 - successWidth}"/>
+<c:set var="failedWidth" value="${test.percentFailed * 100}"/>
 
 <div class="progress" style="width: 80px;float:left;">
     <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${test.percentSuccess}%"
@@ -16,7 +16,7 @@
          aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%"></div>
 </div>
 <div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.statsTooltip"/>">
-    <span style="margin-right: 10px;">
+    <span style="margin-right: 10px;width:48px;display: inline-block;">
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
     <span class="label label-success">${test.numSuccesses}</span>

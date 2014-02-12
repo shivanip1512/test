@@ -236,11 +236,11 @@
             
             <!-- Save/Update -->
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:button nameKey="save" name="create" type="submit" classes="primary action"/>
+                <cti:button nameKey="save" name="create" type="submit" classes="primary action" busy="true"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT">
-                <cti:button nameKey="save" name="update" type="submit"/>
-                <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" />
+                <cti:button nameKey="save" name="update" type="submit" classes="primary action" busy="true"/>
+                <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" classes="delete"/>
                 <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${numberOfInventoryInServiceCompany}"/>
             </cti:displayForPageEditModes>
 

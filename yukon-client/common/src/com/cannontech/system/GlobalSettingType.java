@@ -105,7 +105,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     OPT_OUTS_COUNT(GlobalSettingSubCategory.DR, booleanType(), true),
     LAST_COMMUNICATION_HOURS(GlobalSettingSubCategory.DR, integerType(), 60),
     LAST_RUNTIME_HOURS(GlobalSettingSubCategory.DR, integerType(), 168),
-    RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(PreferenceOnOff.class), PreferenceOnOff.OFF),
+    RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(OnOff.class), OnOff.OFF),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),

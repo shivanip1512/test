@@ -26,7 +26,7 @@ import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy;
-import com.cannontech.system.PreferenceOnOff;
+import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
@@ -42,9 +42,9 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     @Override
     @Transactional
     public void sendPerformanceVerificationMessage() {
-        PreferenceOnOff preference = globalSettingDao.getEnum(RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
+        OnOff preference = globalSettingDao.getEnum(RF_BROADCAST_PERFORMANCE, OnOff.class);
         
-        if (preference == PreferenceOnOff.ON) {
+        if (preference == OnOff.ON) {
             try {
                 log.debug("Using broadcast messaging for performance verification command.");
 

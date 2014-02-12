@@ -2,7 +2,7 @@ package com.cannontech.system;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum PreferenceOnOff implements DisplayableEnum {
+public enum OnOff implements DisplayableEnum {
     ON,
     OFF;
 

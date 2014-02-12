@@ -15,7 +15,7 @@
             <input type="hidden" name="parentId" value="${parentId}">
         </c:if>
     
-        <div class="column-12-12">
+        <div class="column-12-12 clearfix">
         
             <div class="column one">
                     
@@ -71,7 +71,7 @@
         </div>
         
         <div class="page-action-area">
-            <cti:button nameKey="save" type="submit" name="save"/>
+            <cti:button nameKey="save" type="submit" name="save" classes="primary action" busy="true"/>
             <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </div>
     

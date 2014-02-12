@@ -5,8 +5,6 @@
 
 <cti:standardPage module="amr" page="phaseDetect.home">
     
-    <cti:includeCss link="/WebConfig/yukon/styles/yukon.css"/>
-
     <cti:url var="routesUrl" value="/amr/phaseDetect/routes"/>
 
     <script type="text/javascript">

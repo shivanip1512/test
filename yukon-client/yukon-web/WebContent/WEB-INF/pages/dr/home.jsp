@@ -6,10 +6,15 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="home">
+    
+    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
+    <cti:includeScript link="/JavaScript/yukon/yukon.dr.dashboard.js"/>
+
     <tags:simpleDialog id="drDialog"/>
 
     <div class="column-12-12">
@@ -93,11 +98,44 @@
                         <a href="javascript:void(0);"><i:inline key=".rfPerformance.details"/></a>
                         <cti:button nameKey="rfPerformance.configure" id="b-broadcast-config" icon="icon-cog-edit"/>
                     </div>
-                    <d:inline okEvent="yukon.dr.performance.config.save" 
+                    <d:inline okEvent="submit" 
                               nameKey="rfPerformance.configure" 
                               on="#b-broadcast-config"
-                              options="{width: 500}">
-                              
+                              options="{width:500}"
+                              classes="f-broadcast-config">
+                            <form:form action="rf/performance" method="POST" commandName="settings">
+                                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                                    <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
+                                        <div class="column-6-18 clearfix stacked">
+                                            <div class="column one">
+                                                <span class="f-time-label fwb">&nbsp;</span>
+                                                <tags:hidden path="time" id="rf-performance-command-time"/>
+                                            </div>
+                                            <div class="column two nogutter">
+                                                <div class="f-time-slider" style="margin-top: 7px;"></div>
+                                            </div>
+                                        </div>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
+                                        <tags:hidden path="email" id="rf-performance-email"/>
+                                        <div class="button-group toggle-on-off">
+                                            <cti:button nameKey="on" classes="on yes M0"/>
+                                            <cti:button nameKey="off" classes="no M0"/>
+                                        </div>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="f-notif-group">
+                                        <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
+                                        <tags:pickerDialog type="notificationGroupPicker" 
+                                                           id="notificationGroupPicker"
+                                                           linkType="selection"
+                                                           selectionProperty="name"
+                                                           allowEmptySelection="true"
+                                                           multiSelectMode="true"
+                                                           destinationFieldId="rf-performance-notif-group-ids"
+                                                           initialIds="${settings.notifGroupIds}"/>
+                                    </tags:nameValue2>
+                                </tags:nameValueContainer2>
+                            </form:form>
                     </d:inline>
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>

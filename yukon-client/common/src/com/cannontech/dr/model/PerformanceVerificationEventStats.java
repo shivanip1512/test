@@ -31,4 +31,12 @@ public final class PerformanceVerificationEventStats {
         }
         return (double) numSuccesses / total;
     }
+    
+    public double getPercentFailed() {
+        int total = (numSuccesses + numFailures);
+        if (total <= 0) {
+            return 0.0;
+        }
+        return (double) numFailures / total;
+    }
 }

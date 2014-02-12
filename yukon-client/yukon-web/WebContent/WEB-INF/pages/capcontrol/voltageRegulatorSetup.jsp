@@ -127,7 +127,7 @@
                     <f:verbatim>
                         <script type="text/javascript">
                             var filterType;
-                            picker[rowNumber] = new Picker('OK', 'Cancel', 'filterablePointPicker', '', 'picker[' + rowNumber + ']', 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
+                            picker[rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', '', 'picker[' + rowNumber + ']', 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
                             picker[rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
                             filterType = document.getElementById('filterType[' + rowNumber + ']').value;
                             picker[rowNumber].extraArgs = filterType;

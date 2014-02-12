@@ -198,7 +198,7 @@
                 </cti:url>
             </c:when>
             <c:otherwise>
-                <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
+                <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" classes="primary action"/>
                 <cti:url var="backUrl" value="/meter/start"/>
             </c:otherwise>
         </c:choose>

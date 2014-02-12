@@ -120,7 +120,7 @@
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>
-                    <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" />
+                    <cti:button nameKey="save" type="submit" busy="true" data-disable-group="actionButtons" classes="primary action"/>
                 </c:otherwise>
             </c:choose>
             <cti:url var="backUrl" value="/meter/start"/>

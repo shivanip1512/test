@@ -328,7 +328,7 @@ function assignPrograms(devices) {
     </cti:displayForPageEditModes>
 
     <cti:displayForPageEditModes modes="CREATE,EDIT">
-        <cti:button nameKey="save" name="save" type="submit" class="primary action"/>
+        <cti:button nameKey="save" name="save" type="submit" classes="primary action" busy="true"/>
         <c:set var="isCreate" value="${empty applianceCategoryId || applianceCategoryId == 0}"/>
         <c:if test="${isCreate}">
             <cti:url var="backUrl" value="list">
@@ -336,7 +336,7 @@ function assignPrograms(devices) {
             </cti:url>
         </c:if>
         <c:if test="${!isCreate}">
-            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit"/>
+            <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${applianceCategory.name}"/>
             <cti:url var="backUrl" value="view">
                 <cti:param name="ecId" value="${ecId}"/>

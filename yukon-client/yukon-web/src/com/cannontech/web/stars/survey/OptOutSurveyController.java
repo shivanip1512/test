@@ -139,7 +139,7 @@ public class OptOutSurveyController {
             new YukonMessageSourceResolvable(baseKey + ".optOutSurveyDeleted", survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
 
-        return Collections.singletonMap("action", "relad");
+        return Collections.singletonMap("action", "reload");
     }
 
     @RequestMapping("edit")
@@ -192,7 +192,7 @@ public class OptOutSurveyController {
         flashScope.setConfirm(confirmMsg);
 
         resp.setContentType("application/json");
-        resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "relad")));
+        resp.getWriter().print(JsonUtils.toJson(Collections.singletonMap("action", "reload")));
         resp.getWriter().close();
         return null;
     }

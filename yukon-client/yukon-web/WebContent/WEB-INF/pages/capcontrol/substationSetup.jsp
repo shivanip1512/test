@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationVoltReductionPointPicker = new Picker('OK', 'Cancel', 'voltReductionPointPicker', '', 'substationVoltReductionPointPicker', 'pointName:substationVoltReductionPoint;deviceName:substationDevice');
+        var substationVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationVoltReductionPointPicker', 'pointName:substationVoltReductionPoint;deviceName:substationDevice');
         substationVoltReductionPointPicker.destinationFieldId = 'substationVoltReductionPointValue';
     </script>
 </f:verbatim>

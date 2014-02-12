@@ -38,7 +38,7 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
-import com.cannontech.system.PreferenceOnOff;
+import com.cannontech.system.OnOff;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailHtmlMessage;
 import com.cannontech.tools.email.EmailService;
@@ -76,8 +76,8 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     
     @Override
     public void start() {
-        PreferenceOnOff preference = globalSettingDao.getEnum(RF_BROADCAST_PERFORMANCE, PreferenceOnOff.class);
-        if (preference.equals(PreferenceOnOff.ON)) {
+        OnOff preference = globalSettingDao.getEnum(RF_BROADCAST_PERFORMANCE, OnOff.class);
+        if (preference.equals(OnOff.ON)) {
             EmailHtmlMessage htmlMessage = generateEmail();
             sendEmails(htmlMessage);
         }

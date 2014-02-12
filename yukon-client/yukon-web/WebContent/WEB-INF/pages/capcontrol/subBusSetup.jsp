@@ -5,31 +5,31 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', 'voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
+        var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
         substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
         substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
         
-        var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', 'voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
+        var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
         substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
         substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
         
-        var sub_Var_PointPicker = new Picker('OK', 'Cancel', 'varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
+        var sub_Var_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
         sub_Var_PointPicker.destinationFieldId = 'var_point';
         sub_Var_PointPicker.memoryGroup = 'pointPicker';
         
-        var sub_Var_PhaseB_PointPicker = new Picker('OK', 'Cancel', 'varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
+        var sub_Var_PhaseB_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
         sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
         sub_Var_PhaseB_PointPicker.memoryGroup = 'pointPicker';
         
-        var sub_Var_PhaseC_PointPicker = new Picker('OK', 'Cancel', 'varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 'pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
+        var sub_Var_PhaseC_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 'pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
         sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
         sub_Var_PhaseC_PointPicker.memoryGroup = 'pointPicker';
         
-        var subWattPointPicker = new Picker('OK', 'Cancel', 'wattPointPicker', '', 'subWattPointPicker', 'pointName:subWattPoint;deviceName:subWattDevice');
+        var subWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'subWattPointPicker', 'pointName:subWattPoint;deviceName:subWattDevice');
         subWattPointPicker.destinationFieldId = 'watt_point';
         subWattPointPicker.memoryGroup = 'pointPicker';
         
-        var subVoltPointPicker = new Picker('OK', 'Cancel', 'voltPointPicker', '', 'subVoltPointPicker', 'pointName:subVoltPoint;deviceName:subVoltDevice');
+        var subVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'subVoltPointPicker', 'pointName:subVoltPoint;deviceName:subVoltDevice');
         subVoltPointPicker.destinationFieldId = 'volt_point';
         subVoltPointPicker.memoryGroup = 'pointPicker';
     </script>

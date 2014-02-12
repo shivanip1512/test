@@ -28,7 +28,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <cti:button nameKey="update" type="submit" />
+        <cti:button nameKey="update" type="submit" classes="primary action" busy="true"/>
         <cti:url value="toggleJobEnabled" var="toggleJobEnabled">
             <cti:param name="jobId" value="${job.id}" />
         </cti:url>
