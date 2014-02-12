@@ -1,24 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_dv_versacom
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.11.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_dv_versacom.h"
 #include "resolvers.h"
 #include "logger.h"
-
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -263,7 +250,7 @@ bool CtiTableVersacomLoadGroup::Delete()
 
     deleter << getDeviceID();
 
-    return deleter.execute();
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 string CtiTableVersacomLoadGroup::getTableName()

@@ -4,6 +4,7 @@
 #include "dbaccess.h"
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -122,16 +123,7 @@ bool CtiTableMCSimpleSchedule::Update()
         << getRepeatInterval()
         << getScheduleID();
 
-    bool success = executeUpdater(updater);
-
-    if( ! success )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << updater.asString() << endl;
-    }
-
-    return success;
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 }
 
 bool CtiTableMCSimpleSchedule::Insert()
@@ -148,16 +140,7 @@ bool CtiTableMCSimpleSchedule::Insert()
         << getStopCommand()
         << getRepeatInterval();
 
-    bool success = inserter.execute();
-
-    if( ! success )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << inserter.asString() << endl;
-    }
-
-    return success;
+    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 }
 
 bool CtiTableMCSimpleSchedule::Delete()
@@ -169,16 +152,9 @@ bool CtiTableMCSimpleSchedule::Delete()
 
     deleter << getScheduleID();
 
-    bool ret_val = deleter.execute();
-
-    if( !ret_val )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
-    }
-
-    return ret_val;
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
-CtiTableMCSimpleSchedule::~CtiTableMCSimpleSchedule() {};
+
+CtiTableMCSimpleSchedule::~CtiTableMCSimpleSchedule()
+{};
 

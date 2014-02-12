@@ -6,6 +6,7 @@
 #include "tbl_dyn_ptalarming.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
@@ -96,24 +97,11 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
     getLogType() <<
     getUser();
 
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 
-    bool success = inserter.execute();
-
-    if( ! success )     // Error occured!
+    if( success )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
-    else
-    {
-        resetDirty(FALSE);
+        setDirty(false);
     }
 
     return success;
@@ -185,14 +173,7 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
         << getPointID()
         << getAlarmCondition();
 
-    bool success = executeUpdater(updater);
-
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl;
-    }
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::UpdateOptions().enableDebug( isDebugLudicrous() ));
 
     if( success )
     {
@@ -217,14 +198,7 @@ bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
         << pointid
         << alarm_condition;
 
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
-    }
-
-    return deleter.execute();
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 }
 
 string CtiTableDynamicPointAlarming::getSQLCoreStatement() const

@@ -16,6 +16,7 @@
 #include "utility.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::endl;
 
@@ -118,7 +119,7 @@ void CtiCCArea::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if ( isDirty() )
+    if( isDirty() )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -137,18 +138,9 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 
             updater << additionalFlags << getVoltReductionControlValue() << getPaoId();
 
-            if(updater.execute())    // No error occured!
+            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
             {
-                setDirty(false);
-            }
-            else
-            {
-                setDirty(true);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << updateSql << endl;
-                }
+                setDirty(false); // No error occured!
             }
         }
         else
@@ -164,32 +156,14 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 
             dbInserter << getPaoId() << addFlags <<  getVoltReductionControlValue();
 
-            if( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << dbInserter.asString() << endl;
-                }
-            }
-
-            if(dbInserter.execute())    // No error occured!
+            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
-                setDirty(false);
-            }
-            else
-            {
-                setDirty(true);
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << insertSql << endl;
-                    }
-                }
+                setDirty(false); // No error occured!
             }
         }
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
+
+        getOperationStats().dumpDynamicData(conn, currentDateTime); // FIXME : put this outside if statement?
     }
 }
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)

@@ -22,6 +22,7 @@
 #include "calcthread.h"
 #include "database_writer.h"
 #include "database_reader.h"
+#include "database_util.h"
 
 using namespace std;
 using Cti::ThreadStatusKeeper;
@@ -1969,7 +1970,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         for( iter = unlistedPoints.begin(); iter != unlistedPoints.end(); iter++ )
         {
             writer << iter->first << iter->second;
-            if( !writer.execute() )
+            if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__ ))
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - error while inserting in CalcHistoricalUpdatedTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1983,7 +1984,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
         for( iter = updatedPoints.begin(); iter != updatedPoints.end(); iter++ )
         {
             writer << iter->second << iter->first;
-            writer.execute();
+            Cti::Database::executeCommand( writer, __FILE__, __LINE__ );
         }
 
     }

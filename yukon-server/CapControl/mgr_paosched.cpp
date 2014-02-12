@@ -11,6 +11,7 @@
 #include "database_transaction.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h" 
@@ -873,20 +874,9 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                         << currentSchedule->getLastRunTime()
                         << currentSchedule->getScheduleId();
 
-                    bool success = executeUpdater(updater);
-
-                    if( success )
+                    if( Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
                     {
                         currentSchedule->setDirty(false);
-                    }
-                    else
-                    {
-                        currentSchedule->setDirty(true);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  " << updater.asString() << endl;
-                        }
                     }
                 }
                 //delete currentSchedule;

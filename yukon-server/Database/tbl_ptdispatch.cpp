@@ -9,6 +9,7 @@ using namespace std;
 #include "tbl_ptdispatch.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "ctidate.h"
 #include "ctitime.h"
 
@@ -176,17 +177,11 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
         << getTimeStampMillis()
         << getPointID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( success )    // No error occured!
     {
-        resetDirty(FALSE);
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl;
+        setDirty(false);
     }
 
     return success;
@@ -211,17 +206,11 @@ bool CtiTablePointDispatch::Insert(Cti::Database::DatabaseConnection &conn)
         << getLastAlarmLogID()
         << getTimeStampMillis();
 
-    bool success = inserter.execute();
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 
     if( success )    // No error occured!
     {
-        resetDirty(FALSE);
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
+        setDirty(false);
     }
 
     return success;

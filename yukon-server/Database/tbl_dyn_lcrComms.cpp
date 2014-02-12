@@ -59,7 +59,7 @@ bool CtiTableDynamicLcrCommunications::prepareTableForUpdates()
         Cti::Database::DatabaseConnection   connection;
         Cti::Database::DatabaseWriter       writer( connection, sql );
 
-        _needPreInsert = ! executeDbCommand( writer, true );
+        _needPreInsert = ! Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(true) );
     }
 
     return ! _needPreInsert;
@@ -110,15 +110,7 @@ void CtiTableDynamicLcrCommunications::updateTime( const std::string column_name
             << new_time
             << new_time;
 
-        if ( ! executeDbCommand( writer, true ) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout
-                << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__
-                << ")\n **** Dynamic LCR communications: Update failed for column: "
-                << column_name << " ****" << std::endl;
-        }
+        Cti::Database::executeCommand( writer, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(true) );
     }
 }
 

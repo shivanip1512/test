@@ -1,17 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmcontrolareatrigger.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMControlAreaTrigger.
-                        CtiLMControlAreaTrigger maintains the state and handles
-                        the persistence of control area triggers in Load
-                        Management.
-
-        Initial Date:  8/18/2000
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2000
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -24,6 +10,7 @@
 #include "loadmanager.h"
 #include "utility.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -798,21 +785,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
             << getLastPeakPointValueTimestamp()
             << getTriggerId();
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString() << endl;
-        }
-
-        if( ! updater.execute() )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
-            return;
-        }
+        Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB));
     }
     else
     {
@@ -834,23 +807,10 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
             << getLastPeakPointValueTimestamp()
             << getTriggerId();
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
+            _insertDynamicDataFlag = false; // No error occured!
         }
-
-        if( ! inserter.execute() )
-        {
-            string loggedSQLstring = inserter.asString();
-            {
-                dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
-            return;
-        }
-
-        _insertDynamicDataFlag = FALSE;
     }
 }
 

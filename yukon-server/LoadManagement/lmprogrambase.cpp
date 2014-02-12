@@ -14,6 +14,7 @@
 #include "utility.h"
 #include "lmutility.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::transform;
 using std::string;
@@ -967,19 +968,8 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << currentDateTime
             << getPAOId();
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString() << endl;
-        }
-
-        if( ! updater.execute() )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
             return;
         }
     }
@@ -1003,25 +993,12 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << ( getManualControlReceivedFlag() ? std::string("Y") : std::string("N") )
             << currentDateTime;
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
-        }
-
-        if( ! inserter.execute() )
-        {
-            string loggedSQLstring = inserter.asString();
-            {
-                dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
             return;
         }
-
-        _insertDynamicDataFlag = FALSE;
     }
-
+    
     resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
 }
 

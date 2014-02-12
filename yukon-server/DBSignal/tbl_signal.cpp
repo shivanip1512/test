@@ -1,10 +1,11 @@
 #include "precompiled.h"
-#include "tbl_signal.h"
 
+#include "tbl_signal.h"
 #include "dbaccess.h"
 #include "logger.h"
 #include "database_writer.h"
 #include "database_reader.h"
+#include "database_util.h"
 
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
@@ -130,14 +131,7 @@ void CtiTableSignal::Insert(Cti::Database::DatabaseConnection &conn)
         << getUser()
         << getMillis();
 
-    bool success = inserter.execute();
-
-    if( !success )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** SQL Insert Error." << endl;
-        dout << inserter.asString() << endl;
-    }
+    Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 }
 
 void CtiTableSignal::Insert()

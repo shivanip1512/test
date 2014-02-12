@@ -71,8 +71,8 @@ private:
 
    std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
 
-   void getDirtyRecordList(std::list<CtiTablePointDispatch*> &updateList);
-   void writeRecordsToDB  (std::list<CtiTablePointDispatch*> &updateList);
+   void getDirtyRecordList(std::list<CtiDynamicPointDispatchSPtr> &updateList);
+   void writeRecordsToDB  (std::list<CtiDynamicPointDispatchSPtr> &updateList);
    void removeOldDynamicData();
 
    CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;

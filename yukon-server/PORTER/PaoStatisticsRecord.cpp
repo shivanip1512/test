@@ -3,6 +3,7 @@
 #include "PaoStatisticsRecord.h"
 
 #include "database_writer.h"
+#include "database_util.h"
 #include "ctidate.h"
 
 #include "dsm2err.h"  //  for GetErrorType, please fix me
@@ -227,7 +228,7 @@ bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
         return false;
     }
 
-    if( ! writer.execute() )
+    if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__ ))
     {
         return false;
     }
@@ -284,15 +285,13 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
     writer
         << _row_id;
 
-    if( ! executeUpdater(writer) )
+    if( ! Cti::Database::executeUpdater( writer, __FILE__, __LINE__ ))
     {
         std::string error_sql = writer.asString();
-
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "Statistics Update Error " << endl << error_sql << endl;
         }
-
         return false;
     }
 
@@ -332,7 +331,7 @@ bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
         << getStatisticTypeString(_type)
         << _interval_start;
 
-    return executeUpdater(writer);
+    return Database::executeUpdater( writer, __FILE__, __LINE__ );
 }
 
 bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)

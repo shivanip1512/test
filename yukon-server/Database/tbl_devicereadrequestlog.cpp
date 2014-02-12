@@ -3,9 +3,9 @@
 #include "tbl_devicereadrequestlog.h"
 #include "logger.h"
 #include "dbaccess.h"
-
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 
@@ -127,7 +127,7 @@ bool CtiTblDeviceReadRequestLog::Insert()
         << getStopTime()
         << getReadJobId();
 
-    return inserter.execute();
+    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 }
 
 bool CtiTblDeviceReadRequestLog::Update()
@@ -153,6 +153,6 @@ bool CtiTblDeviceReadRequestLog::Update()
         << getReadJobId()
         << getRequestLogId();
 
-    return executeUpdater(updater);
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 }
 

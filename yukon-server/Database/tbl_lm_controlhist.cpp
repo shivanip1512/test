@@ -7,6 +7,7 @@
 #include "ctidate.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 #include <iostream>
 #include <sstream>
@@ -370,7 +371,7 @@ bool CtiTableLMControlHistory::deleteOutstandingControls()
 
     deleter << LMAR_DISPATCH_SHUTDOWN;
 
-    return deleter.execute();
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 /*
@@ -393,21 +394,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
         << LMAR_DISPATCH_SHUTDOWN
         << CtiTime();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
-
-    if( ! success )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** CtiTableLMControlHistory::updateCompletedOutstandingControls update not ok **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return success;
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug(true) );
 }
 
 
@@ -597,7 +584,7 @@ bool CtiTableLMControlHistory::Update()
         << getControlPriority()
         << getPAOID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( success )
     {
@@ -860,7 +847,7 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
         << getControlPriority()
         << getPAOID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( ! success )
     {

@@ -3,9 +3,9 @@
 #include "tbl_devicereadjoblog.h"
 #include "logger.h"
 #include "dbaccess.h"
-
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 
@@ -99,7 +99,7 @@ bool CtiTblDeviceReadJobLog::Insert()
         << getStartTime()
         << getStopTime();
 
-    return inserter.execute();
+    return Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 }
 
 bool CtiTblDeviceReadJobLog::UpdateStopTime()
@@ -117,6 +117,6 @@ bool CtiTblDeviceReadJobLog::UpdateStopTime()
         << getStopTime()
         << getJobLogId();
 
-    return executeUpdater(updater);
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 }
 

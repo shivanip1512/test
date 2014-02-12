@@ -1,17 +1,3 @@
-
-/*---------------------------------------------------------------------------
-        Filename:  ccsparea.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiCCSpecial.
-                        CtiCCSpecial maintains the state and handles
-                        the persistence of substation buses for Cap Control.
-
-        Initial Date:  8/28/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <rw/tpsrtvec.h>
@@ -31,6 +17,7 @@
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::endl;
 
@@ -117,12 +104,10 @@ void CtiCCSpecial::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if ( isDirty() )
+    if( isDirty() )
     {
         if( !_insertDynamicDataFlag )
         {
-
-
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (getOvUvDisabledFlag()?'Y':'N');
             string additionalFlags = string(char2string(*addFlags));
@@ -134,21 +119,9 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             updater << additionalFlags << getVoltReductionControlValue() << getPaoId();
 
-            if(updater.execute())    // No error occured!
+            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
             {
-                setDirty(false);
-            }
-            else
-            {
-                
-                setDirty(true);
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << updaterSql << endl;
-                    }
-                }
+                setDirty(false); // No error occured!
             }
         }
         else
@@ -164,44 +137,20 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             inserter << getPaoId() << addFlags << getVoltReductionControlValue();
 
-            if( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserterSql << endl;
-                }
-            }
-
-            if(inserter.execute())    // No error occured!
+            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
-                setDirty(false);            
-            }
-            else
-            {
-                setDirty(true);
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << inserterSql << endl;
-                    }
-                }
+                setDirty(false); // No error occured!
             }
         }
 
         getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
+
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)
 {
     CtiCCAreaBase::setDynamicData(rdr);
     _insertDynamicDataFlag = false;
     setDirty(false);
-
-
-
 }
-
-
-

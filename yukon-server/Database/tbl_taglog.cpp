@@ -6,6 +6,7 @@
 #include "tbl_taglog.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -120,24 +121,11 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 
-    bool success = inserter.execute();
-
-    if( ! success )    // Error occured!
+    if( success )    // no error occured!
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
-    else
-    {
-        resetDirty(FALSE);
+        setDirty(false);
     }
 
     return success;
@@ -194,7 +182,7 @@ bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getLogId();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( success )
     {

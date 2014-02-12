@@ -15,6 +15,7 @@
 #include "utility.h"
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "mgr_config.h"
 
 using namespace std;
@@ -512,7 +513,7 @@ void CtiDeviceBase::purgeDynamicPaoInfo()
     deleter << getID()
             << owner;
 
-    deleter.execute();
+    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 void CtiDeviceBase::purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key)
@@ -545,7 +546,7 @@ void CtiDeviceBase::purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key)
             << keyname
             << owner;
 
-    deleter.execute();
+    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 string CtiDeviceBase::getSQLCoreStatement() const

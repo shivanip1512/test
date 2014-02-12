@@ -4,10 +4,10 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "tbl_pao.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::transform;
 using std::map;
@@ -245,7 +245,7 @@ bool CtiTblPAO::Insert()
         << getDisableFlagStr()
         << getStatisticsStr();
 
-    bool success = inserter.execute();
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 
     if ( success )
     {
@@ -282,7 +282,7 @@ bool CtiTblPAO::Update()
         << getStatisticsStr()
         << getID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( success )
     {
@@ -301,7 +301,7 @@ bool CtiTblPAO::Delete()
 
     deleter << getID();
 
-    return deleter.execute();
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
 }
 
 

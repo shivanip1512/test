@@ -1,24 +1,14 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lmprogramhistory
-*
-* Date:   12/8/2008
-*
-* Copyright (c) 2008 Cooper Industries, All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "row_reader.h"
-
-
 #include "tbl_lmprogramhistory.h"
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "logger.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::transform;
 using std::string;
@@ -82,10 +72,8 @@ bool CtiTableLMProgramHistory::Insert()
             << _programName
             << _programID;
 
-        if( ! inserter.execute() )
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - SQL Error while inserting in LMProgramHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             //We had an error, force a reload
             CurrentLMProgramHistoryId = 0;
             CurrentLMGearHistoryId    = 0;
@@ -108,14 +96,10 @@ bool CtiTableLMProgramHistory::Insert()
         << _gearID
         << _reason;
 
-    bool success = inserter.execute();
-
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 
     if( ! success )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - SQL Error while inserting in LMProgramGearHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
         //We had an error, force a reload
         CurrentLMProgramHistoryId = 0;
         CurrentLMGearHistoryId    = 0;

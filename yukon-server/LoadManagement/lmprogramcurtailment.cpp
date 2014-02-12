@@ -1,14 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmprogramcurtailment.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMProgramCurtailment.
-
-        Initial Date:  3/24/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -27,6 +16,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -822,14 +812,8 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
         << getPAOId()
         << getCurtailReferenceId();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
-
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+    
     if( ! success )
     {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
@@ -884,20 +868,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
                 << getRunStatus()
                 << getAdditionalInfo();
 
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString() << endl;
-            }
-
-            if( ! inserter.execute() )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << loggedSQLstring << endl;
-                }
-            }
+            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
         }
     }
 }

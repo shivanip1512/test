@@ -47,6 +47,7 @@
 #include "database_reader.h"
 #include "database_transaction.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 #include "connection.h"
 #include "dbaccess.h"
@@ -5642,7 +5643,8 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            paobjectSuccess = executeUpdater(updater);
+            //FIXME : expected zero rows affected ?
+            paobjectSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
 
         {
@@ -5654,7 +5656,8 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
                 << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
                 << did;
 
-            deviceSuccess = executeUpdater(updater);
+            //FIXME : expected zero rows affected ?
+            deviceSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
     }
 
@@ -5688,7 +5691,8 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_POINT_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            pointSuccess = executeUpdater(updater);
+            //FIXME : expected zero rows affected ?
+            pointSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
@@ -5702,7 +5706,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
                 << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? std::string("Y") : std::string("N") )
                 << pid;
 
-            pointStatusSuccess = executeUpdater(updater);
+            pointStatusSuccess = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
         }
     }
 

@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "tbl_dv_scandata.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -196,7 +197,7 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
         << getNextScan(3)
         << getDeviceID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if ( success )
     {
@@ -233,7 +234,7 @@ bool CtiTableDeviceScanData::Insert()
         << getNextScan(2)
         << getNextScan(3);
 
-    bool success = inserter.execute();
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 
     if ( success )
     {

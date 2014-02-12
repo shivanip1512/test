@@ -15,6 +15,7 @@
 #include "resolvers.h"
 #include "utility.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "MsgVerifyBanks.h"
 
 using std::endl;
@@ -170,7 +171,7 @@ void CtiCCSubstation::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if ( _dirty )
+    if( _dirty )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -192,17 +193,9 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
 
             updater << _additionalFlags <<  _saEnabledId << getPaoId();
 
-            if(updater.execute())    // No error occured!
+            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
             {
-                _dirty = false;
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << updaterSql << endl;
-                }
+                _dirty = false; // No error occured!
             }
         }
         else
@@ -218,28 +211,10 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
 
             inserter << getPaoId() << addFlags << _saEnabledId;
 
-            if( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserter.asString() << endl;
-                }
-            }
-
-            if(inserter.execute())    // No error occured!
+            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
-                _dirty = false;
-            }
-            else
-            {
-
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << loggedSQLstring << endl;
-                }
+                _dirty = false; // No error occured!
             }
         }
 

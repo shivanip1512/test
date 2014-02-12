@@ -1,9 +1,11 @@
 #include "precompiled.h"
+
 #include "tbl_pt_accumhistory.h"
 #include "dbaccess.h"
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 
@@ -92,7 +94,7 @@ bool CtiTablePointAccumulatorHistory::Update()
         << getPresentPulseCount()
         << getPointID();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if ( success )
     {
@@ -115,11 +117,11 @@ bool CtiTablePointAccumulatorHistory::Insert()
         << getPreviousPulseCount()
         << getPresentPulseCount();
 
-    bool success = inserter.execute();
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
 
     if ( success )
     {
-        setDirty(FALSE);
+        setDirty(false);
     }
 
     return success;

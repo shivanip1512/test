@@ -174,7 +174,7 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
     const bool showDebug = (_CC_DEBUG & (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE))
                             == (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE);
 
-    bool success = executeDbCommand(dbUpdater, showDebug);
+    bool success = executeCommand( dbUpdater, __FILE__, __LINE__, CommandOptions().enableDebug( showDebug ));
 
     if (success)
     {
@@ -214,7 +214,7 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
                << pointResponse.getDelta()
                << tempString;
 
-    bool success = executeDbCommand(dbInserter,(_CC_DEBUG & CC_DEBUG_DATABASE));
+    bool success = executeCommand( dbInserter, __FILE__, __LINE__, CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE));
 
     return success;
 }
@@ -240,7 +240,7 @@ bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseC
 
 bool PointResponseDatabaseDao::performDatabaseOperation(DatabaseReader& reader, vector<PointResponse>& pointResponses)
 {
-    bool success = executeDbCommand(reader,(_CC_DEBUG & CC_DEBUG_DATABASE));
+    bool success = executeCommand( reader, __FILE__, __LINE__, CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE));
 
     if (success)
     {

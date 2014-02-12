@@ -44,7 +44,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
-#include "database_transaction.h"
+#include "database_util.h"
 #include "ctibase.h"
 #include "logger.h"
 #include "msg_dbchg.h"
@@ -2087,13 +2087,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
         << ( controlArea->getDisableFlag() ? std::string("Y") : std::string("N") )
         << controlArea->getPAOId();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 
     if ( success )
     {
@@ -2128,13 +2122,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
         << ( program->getDisableFlag() ? std::string("Y") : std::string("N") )
         << program->getPAOId();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 
     if ( success )
     {
@@ -2169,13 +2157,7 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
         << ( group->getDisableFlag() ? std::string("Y") : std::string("N") )
         << group->getPAOId();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 
     if ( success )
     {
@@ -2214,13 +2196,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         << trigger->getPAOId()
         << trigger->getTriggerNumber();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 
     if ( success )
     {

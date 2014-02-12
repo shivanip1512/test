@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangehourlycustomer.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMEnergyExchangeHourlyCustomer.
-                        CtiLMEnergyExchangeHourlyCustomer maintains the state and handles
-                        the persistence of groups in Load Management.
-
-        Initial Date:  5/15/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -21,6 +8,7 @@
 #include "resolvers.h"
 #include "database_connection.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::endl;
 
@@ -263,13 +251,7 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
         << getHour()
         << getAmountCommitted();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << inserter.asString() << endl;
-    }
-
-    inserter.execute();
+    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------
@@ -298,13 +280,7 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
         << getRevisionNumber()
         << getHour();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    updater.execute();
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 }
 
 // Static Members

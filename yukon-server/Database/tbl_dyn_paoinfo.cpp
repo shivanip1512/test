@@ -6,6 +6,7 @@
 #include "tbl_dyn_paoinfo.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 #include <boost/assign.hpp>
 #include <boost/optional.hpp>
@@ -597,24 +598,11 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
             << tmp_value
             << CtiTime();
 
-        if(isDebugLudicrous())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
-        }
+        success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 
-        success = inserter.execute();
-
-        if( ! success )    // error occured!
+        if( success )    // no error occured!
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
-        }
-        else
-        {
-            resetDirty(FALSE);
+            setDirty(false);
         }
     }
     else
@@ -674,7 +662,7 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
             << *tmp_owner
             << *tmp_key;
 
-        success = executeUpdater(updater);
+        success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
         if( success )
         {

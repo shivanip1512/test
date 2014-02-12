@@ -6,6 +6,7 @@
 #include "tbl_dyn_pttag.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::string;
 using std::endl;
@@ -112,24 +113,11 @@ bool CtiTableDynamicTag::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
+    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 
-    bool success = inserter.execute();
-
-    if( ! success )    // error occured!
+    if( success )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
-    else
-    {
-        resetDirty(FALSE);
+        setDirty(false);
     }
 
     return success;
@@ -184,7 +172,7 @@ bool CtiTableDynamicTag::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getInstanceId();
 
-    bool success = executeUpdater(updater);
+    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
     if( success )
     {
@@ -212,14 +200,7 @@ bool CtiTableDynamicTag::Delete(int instance)
 
     deleter << instance;
 
-    if(isDebugLudicrous())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
-    }
-
-    return deleter.execute();
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
 }
 
 string CtiTableDynamicTag::getSQLCoreStatement()

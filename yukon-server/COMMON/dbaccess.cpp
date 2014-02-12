@@ -231,10 +231,3 @@ void releaseDBConnection(SAConnection *connection)
         dout << " **** CHECKPOINT **** Attempted to release a connection that could not be found " << __FILE__ << " " << __LINE__ << endl;
     }
 }
-
-DLLEXPORT
-bool executeUpdater( Cti::Database::DatabaseWriter &updater )
-{
-    return updater.execute() && (updater.rowsAffected() > 0);
-}
-

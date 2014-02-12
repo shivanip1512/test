@@ -1,16 +1,3 @@
-/*---------------------------------------------------------------------------
-        Filename:  lmenergyexchangeofferrevision.cpp
-
-        Programmer:  Josh Wolberg
-
-        Description:    Source file for CtiLMEnergyExchangeOfferRevision.
-                        CtiLMEnergyExchangeOfferRevision maintains the state and handles
-                        the persistence of groups in Load Management.
-
-        Initial Date:  5/9/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -24,6 +11,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 using std::vector;
 using std::string;
@@ -416,20 +404,7 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
         << getOfferId()
         << getRevisionNumber();
 
-    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << updater.asString() << endl;
-    }
-
-    if( ! updater.execute() )
-    {
-        string loggedSQLstring = updater.asString();
-        {
-            dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << loggedSQLstring << endl;
-        }
-    }
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 }
 
 /*---------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 #include "database_reader.h"
 #include "database_transaction.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "logger.h"
 #include "numstr.h"
 #include "pointdefs.h"
@@ -422,7 +423,7 @@ INT SynchronizedIdGen(string name, int values_needed)
 
             updater << values_needed << name;
 
-            status = executeUpdater(updater);
+            status = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
 
             if(status)
             {

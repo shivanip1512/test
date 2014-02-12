@@ -9,6 +9,7 @@
 #include "numstr.h"
 #include "ctidate.h"
 #include "database_writer.h"
+#include "database_util.h"
 
 #include <algorithm>
 
@@ -1298,19 +1299,8 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
             << getLastStopTimeSent()
             << getPAOId();
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << updater.asString() << endl;
-        }
-
-        if( ! updater.execute() )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
             return;
         }
     }
@@ -1341,19 +1331,8 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
             << getDailyOps()
             << getLastStopTimeSent();
 
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
-        }
-
-        if( ! inserter.execute() )
-        {
-            string loggedSQLstring = inserter.asString();
-            {
-                dout << CtiTime() << " **** SQL Insert Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
             return;
         }
 

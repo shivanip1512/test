@@ -24,5 +24,3 @@ IM_EX_CTIBASE void releaseDBConnection(SAConnection *connection);
 
 IM_EX_CTIBASE std::string assignSQLPlaceholders(const std::string &sql);
 
-IM_EX_CTIBASE bool executeUpdater( Cti::Database::DatabaseWriter &updater );
-

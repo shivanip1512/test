@@ -5,6 +5,7 @@
 #include "dev_cbc7020.h"
 #include "dev_cbc8020.h"
 #include "database_writer.h"
+#include "database_util.h"
 #include "ccutil.h"
 
 using std::string;
@@ -207,18 +208,9 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             << getPointValueByAttribute(PointAttribute::UDPPortNumber)
             << _paoid;
 
-        if(updater.execute())    // No error occured!
+        if( Cti::Database::executeCommand( updater, __FILE__, __LINE__ ))
         {
-            _dirty = false;
-        }
-        else
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
+            _dirty = false; // No error occured!
         }
     }
     else
@@ -271,28 +263,10 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                  << getPointValueByAttribute(PointAttribute::UDPIpAddress)
                  << getPointValueByAttribute(PointAttribute::UDPPortNumber);
 
-        if( _CC_DEBUG & CC_DEBUG_DATABASE )
-        {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        if(dbInserter.execute())    // No error occured!
+        if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
         {
             _insertDynamicDataFlag = false;
-            _dirty = false;
-        }
-        else
-        {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
+            _dirty = false; // No error occured!
         }
     }
 }
