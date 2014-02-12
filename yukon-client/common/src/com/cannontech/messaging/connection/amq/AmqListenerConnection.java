@@ -1,6 +1,5 @@
 package com.cannontech.messaging.connection.amq;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,30 +13,32 @@ import javax.jms.MessageListener;
 
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import com.cannontech.event.Event;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.ListenerConnection;
+import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.event.InboundConnectionEvent;
 import com.cannontech.messaging.connection.event.InboundConnectionEventHandler;
-import com.cannontech.messaging.connection.event.ConnectionEventHandler;
 import com.cannontech.messaging.connection.transport.amq.AmqConsumerTransport;
 
 public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTransport> implements ListenerConnection,
     ConnectionEventHandler {
 
-    private static final long REQUEST_EXPIRE_TIME_MILLIS = 1000 * 30; // 30 seconds - filter duplicate request younger then this
+    private static final long REQUEST_EXPIRE_TIME_SECONDS = 30; // filter duplicate request younger then this
     
     protected final InboundConnectionEvent inboundConnectionEvent;
     private final List<AmqServerConnection> serverConnectionList;
-    private final Map<Destination, Date> requestTimeMap;
+    private final Map<Destination, Instant> requestTimeMap;
 
     public AmqListenerConnection(String name, String queueName) {
         super(name, queueName);
         setManagedConnection(true);
         inboundConnectionEvent = new InboundConnectionEvent();
         serverConnectionList = new LinkedList<AmqServerConnection>();
-        requestTimeMap = new HashMap<Destination, Date>();
+        requestTimeMap = new HashMap<Destination, Instant>();
     }
 
     @Override
@@ -63,14 +64,14 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
                 return;
             }
 
-            final Date now = new Date();
-            final Date expired = new Date( now.getTime() - REQUEST_EXPIRE_TIME_MILLIS );
+            final Instant now = new Instant();
+            final Instant expired = now.minus( Duration.standardSeconds( REQUEST_EXPIRE_TIME_SECONDS ));
 
             // clean up expired
-            Iterator<Map.Entry<Destination, Date>> iterator = requestTimeMap.entrySet().iterator();
+            Iterator<Map.Entry<Destination, Instant>> iterator = requestTimeMap.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<Destination, Date> entry = iterator.next();
-                if (entry.getValue().before(expired)) {
+                Map.Entry<Destination, Instant> entry = iterator.next();
+                if (!entry.getValue().isAfter(expired)) {
                     iterator.remove();
                 }
             }
