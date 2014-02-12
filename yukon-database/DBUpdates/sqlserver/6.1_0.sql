@@ -208,6 +208,13 @@ INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-1, 'rfnPerformanceVerificat
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
 /* End YUK-13008 */
 
+/* Start YUK-12485 */
+DELETE FROM GlobalSetting
+WHERE Name IN ('DISPATCH_MACHINE', 'DISPATCH_PORT', 'PORTER_MACHINE', 'PORTER_PORT',
+'MACS_MACHINE', 'MACS_PORT', 'CAP_CONTROL_MACHINE', 'CAP_CONTROL_PORT', 'LOADCONTROL_MACHINE',
+'LOADCONTROL_PORT', 'NOTIFICATION_PORT', 'NOTIFICATION_HOST');
+/* End YUK-12485 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
