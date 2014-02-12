@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
@@ -53,33 +52,6 @@ public class MockLmHardwareConfigurationDao implements LMHardwareConfigurationDa
      */
     public void setPaoType(PaoType paoType) {
         this.paoType = paoType;
-    }
-    
-    @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Iterable<Integer> loadGroupIds) {
-        Set<Integer> deviceIds = Sets.newHashSet();
-        for(Integer loadGroupId : loadGroupIds) {
-            Collection<Integer> inventory = loadGroupToInventoryMap.get(loadGroupId);
-            for(Integer inventoryId : inventory) {
-                deviceIds.add(inventoryToDeviceMap.get(inventoryId));
-            }
-        }
-        return getRelayToDeviceMapByDeviceIds(deviceIds);
-    }
-
-    @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Iterable<Integer> deviceIds) {
-        Multimap<Integer, PaoIdentifier> relayToDeviceMap = ArrayListMultimap.create();
-        for(Integer deviceId : deviceIds) {
-            if(deviceId != 0) {
-                Integer inventoryId = deviceToInventoryMap.get(deviceId);
-                Map<Integer, Integer> relayToApplianceMap = inventoryRelayApplianceMap.get(inventoryId);
-                for(Integer relay : relayToApplianceMap.keySet()) {
-                    relayToDeviceMap.put(relay, new PaoIdentifier(deviceId, paoType));
-                }
-            }
-        }
-        return relayToDeviceMap;
     }
 
     @Override

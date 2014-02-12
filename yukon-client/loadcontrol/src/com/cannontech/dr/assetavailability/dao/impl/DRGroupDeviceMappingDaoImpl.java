@@ -15,12 +15,12 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
@@ -49,6 +49,7 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
         return deviceIds;
     }
     
+    @Override
     public Set<YukonPao> getDevicesForGrouping(PaoIdentifier paoIdentifier) {
         Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
         
@@ -66,6 +67,7 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         };
         List<YukonPao> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<YukonPao>() {
+            @Override
             public YukonPao mapRow(YukonResultSet rs) throws SQLException {
                 int paoId = rs.getInt("PaObjectId");
                 PaoType paoType = rs.getEnum("Type", PaoType.class);
@@ -89,17 +91,14 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         };
         
-        List<Pair<Integer, Integer>> idsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, Integer>>() {
-            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
-                int deviceId = rs.getInt("DeviceId");
-                int inventoryId = rs.getInt("InventoryId");
-                return new Pair<Integer, Integer>(inventoryId, deviceId);
+        final Map<Integer, Integer> idsMap = Maps.newHashMap();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                idsMap.put(rs.getInt("InventoryId"), rs.getInt("DeviceId"));
             }
         });
-        Map<Integer, Integer> idsMap = Maps.newHashMap();
-        for(Pair<Integer, Integer> pair : idsList) {
-            idsMap.put(pair.getFirst(), pair.getSecond());
-        }
+        
         return idsMap;
     }
     

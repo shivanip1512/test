@@ -17,6 +17,19 @@ public final class InventoryRelayAppliances {
         }
     }
     
+    public InventoryRelayAppliances() {}
+    
+    public void add(int inventoryId, int relay, int applianceId, int applianceCategoryId) {
+        if(map.containsKey(inventoryId)) {
+            map.get(inventoryId).put(relay, applianceId);
+        } else {
+            Map<Integer, Integer> relayMap = Maps.newHashMap();
+            relayMap.put(relay, applianceId);
+            map.put(inventoryId, relayMap);
+        }
+        applianceToCategoryMap.put(applianceId, applianceCategoryId);
+    }
+    
     public void add(InventoryRelayAppliance ira) {
         if(map.containsKey(ira.getInventoryId())) {
             map.get(ira.getInventoryId()).put(ira.getRelay(), ira.getApplianceId());

@@ -14,10 +14,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -26,6 +23,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -33,7 +31,6 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategory;
-import com.cannontech.dr.assetavailability.InventoryRelayAppliance;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
@@ -249,52 +246,15 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             }
         };
         
-        List<Pair<Integer, Integer>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<Pair<Integer, Integer>>() {
-            @Override
-            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
-                return new Pair<Integer, Integer>(rs.getInt("InventoryId"), rs.getInt("ApplianceCategoryId"));
-            }
-        });
         //ArrayListMultimap allows duplicate entries - this is very important, as an inventory may have multiple
         //appliances attached with the same applianceCategoryId, so duplicates must be supported.
-        Multimap<Integer, Integer> resultMultiMap = ArrayListMultimap.create();
-        for(Pair<Integer, Integer> pair : resultsList) {
-            resultMultiMap.put(pair.getFirst(), pair.getSecond());
-        }
-        return resultMultiMap;
-    }
-    
-    @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByDeviceIds(Iterable<Integer> deviceIds) {
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+        final Multimap<Integer, Integer> resultMultiMap = ArrayListMultimap.create();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowCallbackHandler() {
             @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
-                sql.append("FROM LMHardwareConfiguration lmhc");
-                sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
-                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-                sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
-                sql.append("WHERE DeviceId").in(subList);
-                return sql;
-            }
-        };
-        
-        List<Pair<Integer, PaoIdentifier>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
-            @Override
-            public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                int relay = rs.getInt("Relay");
-                int paoId = rs.getInt("DeviceId");
-                PaoType paoType = rs.getEnum("Type", PaoType.class);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
-                return new Pair<Integer, PaoIdentifier>(relay, paoIdentifier);
+            public void processRow(YukonResultSet rs) throws SQLException {
+                resultMultiMap.put(rs.getInt("InventoryId"), rs.getInt("ApplianceCategoryId"));
             }
         });
-        
-        Multimap<Integer, PaoIdentifier> resultMultiMap = ArrayListMultimap.create();
-        for(Pair<Integer, PaoIdentifier> pair : resultsList) {
-            resultMultiMap.put(pair.getFirst(), pair.getSecond());
-        }
         return resultMultiMap;
     }
     
@@ -314,54 +274,14 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             }
         };
         
-        List<Pair<Integer, Integer>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+        final Map<Integer, Integer> resultMap = Maps.newHashMap();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
             @Override
-            public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
-                int deviceId = rs.getInt("DeviceId");
-                int relay = rs.getInt("Relay");
-                return new Pair<Integer, Integer>(deviceId, relay);
+            public void processRow(YukonResultSet rs) throws SQLException {
+                resultMap.put(rs.getInt("DeviceId"), rs.getInt("Relay"));
             }
         });
-        
-        Map<Integer, Integer> resultMap = Maps.newHashMap();
-        for(Pair<Integer, Integer> pair : resultsList) {
-            resultMap.put(pair.getFirst(), pair.getSecond());
-        }
         return resultMap;
-    }
-    
-    @Override
-    public Multimap<Integer, PaoIdentifier> getRelayToDeviceMapByLoadGroups(Iterable<Integer> loadGroupIds) {
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT DISTINCT DeviceId, ypo.Type, lmhc.LoadNumber AS Relay");
-                sql.append("FROM LMHardwareConfiguration lmhc");
-                sql.append("JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryID = lmhc.InventoryId");
-                sql.append("JOIN InventoryBase ib ON ib.InventoryId = lmhc.InventoryId");
-                sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = ib.DeviceId");
-                sql.append("WHERE LmGroupId").in(subList);
-                return sql;
-            }
-        };
-        
-        List<Pair<Integer, PaoIdentifier>> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowMapper<Pair<Integer, PaoIdentifier>>() {
-            @Override
-            public Pair<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                int relay = rs.getInt("Relay");
-                int paoId = rs.getInt("DeviceId");
-                PaoType paoType = rs.getEnum("Type", PaoType.class);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
-                return new Pair<Integer, PaoIdentifier>(relay, paoIdentifier);
-            }
-        });
-        
-        Multimap<Integer, PaoIdentifier> resultMultiMap = ArrayListMultimap.create();
-        for(Pair<Integer, PaoIdentifier> pair : resultsList) {
-            resultMultiMap.put(pair.getFirst(), pair.getSecond());
-        }
-        return resultMultiMap;
     }
     
     @Override
@@ -378,14 +298,14 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             }
         };
         
-        List<InventoryRelayAppliance> resultsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds,
-                                                                              new YukonRowMapper<InventoryRelayAppliance>() {
+        final InventoryRelayAppliances ira = new InventoryRelayAppliances();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowCallbackHandler() {
             @Override
-            public InventoryRelayAppliance mapRow(YukonResultSet rs) throws SQLException {
-                return new InventoryRelayAppliance(rs.getInt("InventoryId"), rs.getInt("Relay"), rs.getInt("ApplianceId"), rs.getInt("ApplianceCategoryId"));
+            public void processRow(YukonResultSet rs) throws SQLException {
+                ira.add(rs.getInt("InventoryId"), rs.getInt("Relay"), rs.getInt("ApplianceId"), rs.getInt("ApplianceCategoryId"));
             }
         });
         
-        return new InventoryRelayAppliances(resultsList);
+        return ira;
     }
 }
