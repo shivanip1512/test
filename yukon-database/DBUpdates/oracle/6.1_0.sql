@@ -176,6 +176,20 @@ ALTER TABLE YukonUser
 MODIFY Password NVARCHAR2(128);
 /* End YUK-12995 */
 
+/* Start YUK-12999 */
+ALTER TABLE Job
+MODIFY UserID NUMBER NULL;
+
+ALTER TABLE Job
+MODIFY Locale VARCHAR2(10) NULL;
+
+ALTER TABLE Job
+MODIFY TimeZone VARCHAR2(40) NULL;
+
+ALTER TABLE Job
+MODIFY ThemeName VARCHAR2(60) NULL;
+/* End YUK-12999 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

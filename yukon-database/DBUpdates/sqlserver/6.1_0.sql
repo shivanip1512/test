@@ -175,14 +175,28 @@ ALTER TABLE DynamicLcrCommunications
       REFERENCES Device (DeviceId)
       ON DELETE CASCADE;
 /* End YUK-12961 */
-      
-/* Start YUK-12995 */      
+
+/* Start YUK-12995 */
 ALTER TABLE Yukonuser
 ALTER COLUMN Password NVARCHAR(128) NOT NULL;
 
 ALTER TABLE PasswordHistory
 ALTER COLUMN Password NVARCHAR(128) NOT NULL;
 /* End YUK-12995 */
+
+/* Start YUK-12999 */
+ALTER TABLE Job
+ALTER COLUMN UserId NUMERIC NULL;
+
+ALTER TABLE Job
+ALTER COLUMN Locale VARCHAR(10) NULL;
+
+ALTER TABLE Job
+ALTER COLUMN TimeZone VARCHAR(40) NULL;
+
+ALTER TABLE Job
+ALTER COLUMN ThemeName VARCHAR(60) NULL;
+/* End YUK-12999 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
