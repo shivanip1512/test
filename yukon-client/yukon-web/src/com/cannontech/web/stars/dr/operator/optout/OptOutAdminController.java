@@ -196,15 +196,15 @@ public class OptOutAdminController {
             try {
                 
                 optOutService.changeOptOutEnabledStateForTodayByProgramName(user, optOutEnabled, programName);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm." + optOutEnabled.toString(), programName));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm." + optOutEnabled.toString(), programName));
                 
             } catch (ProgramNotFoundException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.error.programNotFound", programName));
             }
 
         } else {
             optOutService.changeOptOutEnabledStateForToday(user, optOutEnabled);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm."+ optOutEnabled.toString() +".allPrograms"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm."+ optOutEnabled.toString() +".allPrograms"));
         }
         
         return "redirect:/stars/operator/optOut/admin";
@@ -226,15 +226,15 @@ public class OptOutAdminController {
             try {
                 
                 optOutService.cancelAllOptOutsByProgramName(programName, user);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts", programName));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.successfullyCanceledCurrentOptOuts", programName));
                 
             } catch (ProgramNotFoundException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.error.programNotFound", programName));
             }
 
         } else {
             optOutService.cancelAllOptOuts(user);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
         }
 
         return "redirect:/stars/operator/optOut/admin";
@@ -268,20 +268,20 @@ public class OptOutAdminController {
             try {
                 
                 optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts", programName));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.countingTodaysOptOuts", programName));
                 if (!countBool) {
-                    flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts", programName));
+                    flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.notCountingTodaysOptOuts", programName));
                 }
                 
             } catch (ProgramNotFoundException e) {
-                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.error.programNotFound", programName));
             }
 
         } else {
             optOutService.changeOptOutCountStateForToday(user, countBool);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.countingTodaysOptOuts.allPrograms"));
             if (!countBool) {
-                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms"));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms"));
             }
         }
         

@@ -45,7 +45,7 @@ public enum OptOutCounts implements DisplayableEnum {
 	
 	public abstract boolean isCounts();
 	
-	private final static String keyPrefix = "yukon.web.modules.dr.optOut.optOutCountsEnum.";
+	private final static String keyPrefix = "yukon.web.modules.operator.optOut.optOutCountsEnum.";
 
 	@Override
     public String getFormatKey() {

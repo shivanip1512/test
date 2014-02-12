@@ -41,11 +41,11 @@ function createJSON() {
 			<span class="error"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
-        <h3><cti:msg key="yukon.dr.operator.optoutlist.header"/></h3>
+        <h3><cti:msg key="yukon.web.modules.operator.optoutlist.header"/></h3>
     
-        <cti:msg key="yukon.dr.operator.optoutlist.description"/>
+        <cti:msg key="yukon.web.modules.operator.optoutlist.description"/>
         <c:if test="${!empty alreadyOptedOutItems}">
-            <br><cti:msg key="yukon.dr.operator.optoutlist.someAlreadyOptedOut"/>
+            <br><cti:msg key="yukon.web.modules.operator.optOut.inventoryList.someAlreadyOptedOut"/>
         </c:if>
 
         <br>
@@ -57,8 +57,8 @@ function createJSON() {
                 <table class="results-table" align="center" width="99%">
                     <tr>
                         <th></th>
-                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.hardware"/></th>
-                        <th align="left"><cti:msg key="yukon.dr.operator.optoutlist.programAssigned"/></th>
+                        <th align="left"><cti:msg key="yukon.web.modules.operator.optoutlist.hardware"/></th>
+                        <th align="left"><cti:msg key="yukon.web.modules.operator.optoutlist.programAssigned"/></th>
                     </tr>
                     <c:forEach var="displayableInventory" items="${displayableInventories}">
                         <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
@@ -108,10 +108,10 @@ function createJSON() {
 
             <br>
             <span style="padding-right: 0.5em;">
-                <input type="submit" value="<cti:msg key='yukon.dr.operator.optoutlist.save'/>"></input>
+                <input type="submit" value="<cti:msg key='yukon.web.modules.operator.optoutlist.save'/>"></input>
             </span>    
             <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp"/>
-            <input type="button" value="<cti:msg key='yukon.dr.operator.optoutlist.cancel'/>"
+            <input type="button" value="<cti:msg key='yukon.web.modules.operator.optoutlist.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';"></input>
             
             <input type="hidden" name="durationInDays" value="${durationInDays}"></input>

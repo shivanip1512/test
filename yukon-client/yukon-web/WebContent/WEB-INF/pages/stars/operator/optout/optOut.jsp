@@ -6,24 +6,24 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
+<h3><cti:msg key="yukon.web.modules.operator.optOut.header"/></h3>
 
 <c:if test="${!empty currentOptOutList && allOptedOut}">
-    <cti:msg key="yukon.dr.operator.optout.allOptedOut"/>
+    <cti:msg key="yukon.web.modules.operator.optOut.allOptedOut"/>
 </c:if>
 <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
-    <cti:msg key="yukon.dr.operator.optout.noOptOutsAvailable"/>
+    <cti:msg key="yukon.web.modules.operator.optOut.noOptOutsAvailable"/>
 </c:if>
 
 <c:if test="${!allOptedOut}">
-    <cti:msg key="yukon.dr.operator.optout.description"/><br><br>
+    <cti:msg key="yukon.web.modules.operator.optOut.description"/><br><br>
 
     <form action="/stars/operator/optout/optout2" method="POST">
         <cti:csrfToken/>
         <table>
             <tr>
                 <td align="right">
-                    <cti:msg key="yukon.dr.operator.optout.startDate"/>
+                    <cti:msg key="yukon.web.modules.operator.optOut.startDate"/>
                 </td>
 
                 <cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
@@ -44,7 +44,7 @@
 
             <tr>
                 <td align="right">
-                    <cti:msg key="yukon.dr.operator.optout.duration"/>
+                    <cti:msg key="yukon.web.modules.operator.optOut.duration"/>
                 </td>
 
                 <td align="left">
@@ -52,7 +52,7 @@
                         
                         <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
                         
-                           <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
+                           <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.web.modules.operator.optOut.day' : 'yukon.web.modules.operator.optOut.days' }"/>
                         
                            <option value="${optOutPeriod}"><spring:escapeBody htmlEscape="true">${optOutPeriod}</spring:escapeBody><cti:msg key="${key}"/></option>
                         
@@ -65,7 +65,7 @@
             <tr>
                 <td align="center" colspan="2">
                     <br>
-                    <input type="submit" value="<cti:msg key='yukon.dr.operator.optout.apply'/>" class="button">
+                    <input type="submit" value="<cti:msg key='yukon.web.modules.operator.optOut.apply'/>" class="button">
                 </td>
             </tr>
         </table>
@@ -75,18 +75,18 @@
 
 <br><br>
 <!-- Current Opt Outs -->
-<cti:msg key="yukon.dr.operator.optout.currentOptOuts"/>
+<cti:msg key="yukon.web.modules.operator.optOut.currentOptOuts"/>
 
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
         <table id="deviceTable" class="results-table">
             <thead>
                 <tr>
-                    <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.status"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.actions"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.device"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.program"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.status"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.dateActive"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.actions"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -107,13 +107,13 @@
                             <form action="/stars/operator/optout/cancel" method="post">
                                 <cti:csrfToken/>
                                 <input type="hidden" name="eventId" value="${optOut.eventId}">
-                                <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.cancel"/>" class="button">
+                                <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.cancel"/>" class="button">
                             </form>
                             <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <form action="/stars/operator/optout/repeat" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.repeat"/>" class="button">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.repeat"/>" class="button">
                                 </form>
                             </c:if>
                         </td>
@@ -123,25 +123,25 @@
         </table>
     </c:when>
     <c:otherwise>
-        <br><cti:msg key="yukon.dr.operator.optout.noCurrentOptOuts"/>
+        <br><cti:msg key="yukon.web.modules.operator.optOut.noCurrentOptOuts"/>
     </c:otherwise>
 </c:choose>
 
 <br><br>
 <!-- Opt Out Limits -->
-<cti:msg key="yukon.dr.operator.optout.optOutLimits"/>
+<cti:msg key="yukon.web.modules.operator.optOut.optOutLimits"/>
 
 <table id="deviceTable" class="results-table">
     <thead>
         <tr>
-            <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-            <th><cti:msg key="yukon.dr.operator.optout.used"/></th>
+            <th><cti:msg key="yukon.web.modules.operator.optOut.device"/></th>
+            <th><cti:msg key="yukon.web.modules.operator.optOut.used"/></th>
             <c:if test="${!noOptOutLimits}">
-                <th><cti:msg key="yukon.dr.operator.optout.allowAdditional"/></th>
+                <th><cti:msg key="yukon.web.modules.operator.optOut.allowAdditional"/></th>
             </c:if>
-            <th><cti:msg key="yukon.dr.operator.optout.remaining"/></th>
+            <th><cti:msg key="yukon.web.modules.operator.optOut.remaining"/></th>
             <c:if test="${!noOptOutLimits}">
-                <th><cti:msg key="yukon.dr.operator.optout.reset"/></th>
+                <th><cti:msg key="yukon.web.modules.operator.optOut.reset"/></th>
             </c:if>
         </tr>
     </thead>
@@ -156,14 +156,14 @@
                         <form action="/stars/operator/optOut/allowAnother" method="post">
                             <cti:csrfToken/>
                             <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                            <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.allowAnother"/>" class="button">
+                            <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.allowAnother"/>" class="button">
                         </form>
                     </td>
                 </c:if>
                 <td>
                     <c:choose>
                         <c:when test="${noOptOutLimits}">
-                            <cti:msg key="yukon.dr.operator.optout.unlimitedRemaining"/>
+                            <cti:msg key="yukon.web.modules.operator.optOut.unlimitedRemaining"/>
                         </c:when>
                         <c:otherwise>
                             ${optOutCounts[inventory.inventoryId].remainingOptOuts}
@@ -174,13 +174,13 @@
                     <td>
                        <c:choose>
                            <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-                               <cti:msg key="yukon.dr.operator.optout.atLimit"/>
+                               <cti:msg key="yukon.web.modules.operator.optOut.atLimit"/>
                            </c:when>
                            <c:otherwise>
                                 <form action="/stars/operator/optOut/resetToLimit" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.dr.operator.optout.clear"/>" class="button">
+                                    <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.clear"/>" class="button">
                                 </form>
                            </c:otherwise>
                        </c:choose>
@@ -193,17 +193,17 @@
 
 <br><br>
 <!-- Opt Out History -->
-<cti:msg key="yukon.dr.operator.optout.optOutHistory"/>
+<cti:msg key="yukon.web.modules.operator.optOut.optOutHistory"/>
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
         <table id="deviceTable" class="results-table">
             <thead>
                 <tr>
-                    <th><cti:msg key="yukon.dr.operator.optout.device"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.program"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.dateScheduled"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.dateActive"/></th>
-                    <th><cti:msg key="yukon.dr.operator.optout.durationHeader"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.device"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.program"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.dateScheduled"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.dateActive"/></th>
+                    <th><cti:msg key="yukon.web.modules.operator.optOut.durationHeader"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -225,7 +225,7 @@
                         <td>
                             <c:choose>
                                 <c:when test="${optOut.state == 'SCHEDULE_CANCELED'}">
-                                    <cti:msg key="yukon.dr.operator.optout.canceled"/>
+                                    <cti:msg key="yukon.web.modules.operator.optOut.canceled"/>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:formatTimePeriod startDate="${optOut.startDate}" endDate="${optOut.stopDate}" type="DH"/>
@@ -236,11 +236,11 @@
                 </c:forEach>
             </tbody>
         </table>
-        <input type="button" name="viewAll" value="<cti:msg key="yukon.dr.operator.optout.viewAll" />" onClick="location='OptOutHistory.jsp'" class="button">
+        <input type="button" name="viewAll" value="<cti:msg key="yukon.web.modules.operator.optOut.viewAll" />" onClick="location='OptOutHistory.jsp'" class="button">
         <br><br>
     </c:when>
     <c:otherwise>
-        <br><cti:msg key="yukon.dr.operator.optout.noPreviousOptOuts"/>
+        <br><cti:msg key="yukon.web.modules.operator.optOut.noPreviousOptOuts"/>
     </c:otherwise>
 </c:choose>
     
