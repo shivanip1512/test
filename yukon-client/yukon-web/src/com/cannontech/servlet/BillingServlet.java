@@ -17,9 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.mainprograms.BillingBean;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.security.csrf.CsrfTokenService;
+
 
 public class BillingServlet extends HttpServlet
 {
@@ -44,8 +43,6 @@ public class BillingServlet extends HttpServlet
  */
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        CsrfTokenService csrfTokenService = YukonSpringHook.getBean(CsrfTokenService.class);
-        csrfTokenService.validateToken(req);
         javax.servlet.http.HttpSession session = req.getSession(false);
 
         Enumeration<?> enum1 = req.getParameterNames();
