@@ -70,6 +70,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         
         //Object to store communication and non-zero runtime times for insertion into DynamicLcrCommunications
         AssetAvailabilityPointDataTimes assetAvailabilityTimes = new AssetAvailabilityPointDataTimes(device.getPaoIdentifier().getPaoId());
+        //This timestamp is created by the LCR when the report is generated. The message is then held by the node until
+        //its reporting interval arrives. This could be improved by getting the timestamp from the gateway if/when Yukon
+        //and Network Manager share that information.
         assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
         
         rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
