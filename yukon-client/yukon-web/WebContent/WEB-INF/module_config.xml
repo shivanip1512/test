@@ -425,6 +425,9 @@
       <page name="home" type="BASIC">
         <link>/dr/home</link>
         <pages>
+          <page name="rf.details" type="BASIC">
+            <link>/dr/rf/details</link>
+          </page>
           <page name="scenarioList" type="BASIC">
             <link>/dr/scenario/list</link>
             <pages>

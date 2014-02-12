@@ -1,4 +1,3 @@
-
 /**
  * Singleton that manages the javascript for DR Dashboard
  * 
@@ -6,10 +5,7 @@
  * @requires jQuery UI 1.9.2+
  */
 
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
-
+yukon.namespace('yukon.dr');
 yukon.namespace('yukon.dr.dashboard');
 
 yukon.dr.dashboard = (function () {

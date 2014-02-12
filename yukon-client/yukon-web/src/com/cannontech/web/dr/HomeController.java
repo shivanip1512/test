@@ -93,8 +93,10 @@ public class HomeController {
         
         /** RF BROADCAST PERMORMANCE */
         OnOff rfPerformance = globalSettingDao.getEnum(GlobalSettingType.RF_BROADCAST_PERFORMANCE, OnOff.class);
-        if (rfPerformance == OnOff.ON) {
-
+        boolean showRfPerformance = (rfPerformance == OnOff.ON);
+        model.addAttribute("showRfPerformance", showRfPerformance);
+        
+        if (showRfPerformance) {
             PerformanceVerificationAverageReports averageReports = performanceVerificationService.getAverageReports();
 
             model.addAttribute("last24Hr", averageReports.getLastDay());
@@ -123,7 +125,7 @@ public class HomeController {
             
             model.addAttribute("settings", settings);
         }
-
+        
         return "dr/home.jsp";
     }
     

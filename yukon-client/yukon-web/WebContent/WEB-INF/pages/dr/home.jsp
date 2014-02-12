@@ -76,7 +76,7 @@
                 </c:if>
             </tags:sectionContainer2>
             
-            <cti:checkRolesAndProperties value="DEMAND_RESPONSE">
+            <c:if test="${showRfPerformance}">
                 <tags:sectionContainer2 nameKey="rfPerformance">
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
@@ -95,7 +95,7 @@
                         </tags:nameValueContainer2>
                     </div>
                     <div class="action-area">
-                        <a href="javascript:void(0);"><i:inline key=".rfPerformance.details"/></a>
+                        <a href="/dr/rf/details"><i:inline key=".rfPerformance.details"/></a>
                         <cti:button nameKey="rfPerformance.configure" id="b-broadcast-config" icon="icon-cog-edit"/>
                     </div>
                     <d:inline okEvent="submit" 
@@ -103,42 +103,42 @@
                               on="#b-broadcast-config"
                               options="{width:500}"
                               classes="f-broadcast-config">
-                            <form:form action="rf/performance" method="POST" commandName="settings">
-                                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                                    <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
-                                        <div class="column-6-18 clearfix stacked">
-                                            <div class="column one">
-                                                <span class="f-time-label fwb">&nbsp;</span>
-                                                <tags:hidden path="time" id="rf-performance-command-time"/>
-                                            </div>
-                                            <div class="column two nogutter">
-                                                <div class="f-time-slider" style="margin-top: 7px;"></div>
-                                            </div>
+                        <form:form action="rf/performance" method="POST" commandName="settings">
+                            <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
+                                    <div class="column-6-18 clearfix stacked">
+                                        <div class="column one">
+                                            <span class="f-time-label fwb">&nbsp;</span>
+                                            <tags:hidden path="time" id="rf-performance-command-time"/>
                                         </div>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
-                                        <tags:hidden path="email" id="rf-performance-email"/>
-                                        <div class="button-group toggle-on-off">
-                                            <cti:button nameKey="on" classes="on yes M0"/>
-                                            <cti:button nameKey="off" classes="no M0"/>
+                                        <div class="column two nogutter">
+                                            <div class="f-time-slider" style="margin-top: 7px;"></div>
                                         </div>
-                                    </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="f-notif-group">
-                                        <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
-                                        <tags:pickerDialog type="notificationGroupPicker" 
-                                                           id="notificationGroupPicker"
-                                                           linkType="selection"
-                                                           selectionProperty="name"
-                                                           allowEmptySelection="true"
-                                                           multiSelectMode="true"
-                                                           destinationFieldId="rf-performance-notif-group-ids"
-                                                           initialIds="${settings.notifGroupIds}"/>
-                                    </tags:nameValue2>
-                                </tags:nameValueContainer2>
-                            </form:form>
+                                    </div>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.emailResults">
+                                    <tags:hidden path="email" id="rf-performance-email"/>
+                                    <div class="button-group toggle-on-off">
+                                        <cti:button nameKey="on" classes="on yes M0"/>
+                                        <cti:button nameKey="off" classes="no M0"/>
+                                    </div>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="f-notif-group">
+                                    <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
+                                    <tags:pickerDialog type="notificationGroupPicker" 
+                                                       id="notificationGroupPicker"
+                                                       linkType="selection"
+                                                       selectionProperty="name"
+                                                       allowEmptySelection="true"
+                                                       multiSelectMode="true"
+                                                       destinationFieldId="rf-performance-notif-group-ids"
+                                                       initialIds="${settings.notifGroupIds}"/>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </form:form>
                     </d:inline>
                 </tags:sectionContainer2>
-            </cti:checkRolesAndProperties>
+            </c:if>
         </div>
         <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="quickSearches" styleClass="stacked">
