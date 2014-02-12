@@ -35,6 +35,19 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
 
+    private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
+        @Override
+        public RfnDevice mapRow(YukonResultSet rs) throws SQLException {
+            
+            PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                     rs.getStringSafe("Manufacturer"), 
+                                                     rs.getStringSafe("Model"));
+            RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
+            return rfnDevice;
+        }
+    };
+    
     @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -82,18 +95,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("WHERE rfn.DeviceId").eq(paoId);
         
         try {
-            RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnDevice>() {
-                @Override
-                public RfnDevice mapRow(YukonResultSet rs) throws SQLException {
-                    
-                    PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
-                    RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
-                                                             rs.getStringSafe("Manufacturer"), 
-                                                             rs.getStringSafe("Model"));
-                    RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
-                    return rfnDevice;
-                }
-            });
+            RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown rfn meter Id " + paoId + ". RfnAddress may be empty.");
