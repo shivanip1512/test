@@ -198,6 +198,11 @@ ALTER TABLE Job
 ALTER COLUMN ThemeName VARCHAR(60) NULL;
 /* End YUK-12999 */
 
+/* Start YUK-13016 */
+INSERT INTO Job (Jobid, BeanName, Disabled) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N');
+INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
+/* End YUK-13016 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
