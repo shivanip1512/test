@@ -195,7 +195,6 @@ public class YukonSecurityController {
     public String saveNewKey(HttpServletRequest request, ModelMap model,
                              EncryptionKey encryptionKey, BindingResult bindingResult,
                              FlashScope flashScope, YukonUserContext userContext) throws IOException, CryptoException, JDOMException, DecoderException {
-        csrfTokenService.validateToken(request);
         addKeyValidator.validate(encryptionKey, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -279,7 +278,6 @@ public class YukonSecurityController {
     public String deleteKey(HttpServletRequest request, ModelMap model, 
                             FlashScope flashScope, Integer encryptionKeyId,
                             YukonUserContext userContext) {
-        csrfTokenService.validateToken(request);
         // Check to make sure key isn't being used before we delete it
         for (EncryptedRoute e : encryptedRouteDao.getAllEncryptedRoutes()) {
             if (e.getEncryptionKeyId()!= null && e.getEncryptionKeyId().equals(encryptionKeyId)) {
@@ -298,7 +296,6 @@ public class YukonSecurityController {
     @ResponseBody 
     public Map<String, Object> getPublicKey(HttpServletRequest request, boolean generateNewKey, YukonUserContext userContext) 
                 throws CryptoException {
-        csrfTokenService.validateToken(request);
         if(generateNewKey) {
             rsaKeyfileService.generateNewKeyPair();
         }
@@ -324,7 +321,6 @@ public class YukonSecurityController {
     public String importKeyFile(HttpServletRequest request, ModelMap model, FileImportBindingBean fileImportBindingBean,
                                 BindingResult bindingResult, FlashScope flashScope, 
                                 YukonUserContext userContext) {
-        csrfTokenService.validateToken(request);
         if (!ServletFileUpload.isMultipartContent(request)) {
             model.addAttribute("showDialog", "importKey");
             return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean,flashScope, userContext);     

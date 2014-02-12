@@ -184,7 +184,6 @@ public class OperatorLoginController {
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-        csrfTokenService.validateToken(request);
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
 
@@ -203,7 +202,6 @@ public class OperatorLoginController {
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-        csrfTokenService.validateToken(request);
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
 

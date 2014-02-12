@@ -359,8 +359,7 @@ public class OperatorAccountController {
 	                            HttpServletRequest request,
 	                            final HttpSession session,
 	                            final LiteYukonUser user) throws ServletRequestBindingException {
-	    csrfTokenService.validateToken(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
 	    
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
 	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
@@ -468,7 +467,6 @@ public class OperatorAccountController {
 	// ACCOUNT EDIT PAGE
 	@RequestMapping("edit")
     public String edit(HttpServletRequest request, int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
-	    csrfTokenService.validateToken(request);
 	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
 	    model.addAttribute("mode", PageEditMode.EDIT);
 	    setupAccountPage(model, context, fragment, accountId);
@@ -615,7 +613,6 @@ public class OperatorAccountController {
 					    		final HttpSession session) throws ServletRequestBindingException {
 	    
 	    /* Verify the user has permission to edit accounts */
-        csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
@@ -753,7 +750,6 @@ public class OperatorAccountController {
                                YukonUserContext userContext,
                                FlashScope flashScope,
                                AccountInfoFragment accountInfoFragment) {
-        csrfTokenService.validateToken(request);
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteYukonUser custYukonUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
@@ -775,7 +771,6 @@ public class OperatorAccountController {
     							ModelMap modelMap, 
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
-	    csrfTokenService.validateToken(request);
 	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 	    accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
 		accountService.deleteAccount(accountId, userContext.getYukonUser());

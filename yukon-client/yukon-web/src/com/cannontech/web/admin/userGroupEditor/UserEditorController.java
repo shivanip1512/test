@@ -88,7 +88,6 @@ public class UserEditorController {
     /* User Editor Edit Page */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(HttpServletRequest request, YukonUserContext userContext, ModelMap model, int userId) {
-        csrfTokenService.validateToken(request);
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(userId);
         User user = new User(yukonUserDao.getLiteYukonUser(userId), userAuthenticationInfo);
         setupModelMap(model, user, PageEditMode.EDIT, userContext);
@@ -133,7 +132,6 @@ public class UserEditorController {
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, YukonUserContext userContext, @ModelAttribute User user, BindingResult result, ModelMap model, FlashScope flash) {
-        csrfTokenService.validateToken(request);
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(user.getUserId());
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserId());
         user.updateForSave(yukonUser, userAuthenticationInfo);
@@ -169,7 +167,6 @@ public class UserEditorController {
     @RequestMapping(value="changePassword", method=RequestMethod.POST)
     public String changePassword(HttpServletRequest request, YukonUserContext userContext, ModelMap model,
                                 FlashScope flash, int userId, @ModelAttribute Password password, BindingResult result) {
-        csrfTokenService.validateToken(request);
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userId);
         PasswordValidator validator = new PasswordValidator(yukonUser,  "password", "confirmPassword");
         validator.validate(password, result);

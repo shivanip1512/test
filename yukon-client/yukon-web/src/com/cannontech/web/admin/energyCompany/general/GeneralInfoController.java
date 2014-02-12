@@ -132,7 +132,6 @@ public class GeneralInfoController {
     @RequestMapping(value="delete", params="delete")
     public String delete(ModelMap model, YukonUserContext context, FlashScope flashScope, HttpServletRequest request,
                          int ecId, EnergyCompanyInfoFragment fragment) {
-        csrfTokenService.validateToken(request);
         LiteYukonUser user = context.getYukonUser();
         energyCompanyService.verifyViewPageAccess(user, ecId);
 

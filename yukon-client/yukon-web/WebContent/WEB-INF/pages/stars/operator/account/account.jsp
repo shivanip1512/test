@@ -192,8 +192,7 @@
         </cti:displayForPageEditModes>
         
         <form:form id="updateForm" commandName="accountGeneral" action="${action}">
-            <cti:csrfToken/>
-        
+            
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="loginMode" value="${loginMode}">
             

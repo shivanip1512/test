@@ -121,7 +121,6 @@ public class RolePropertyController {
     @RequestMapping(value="update", method=RequestMethod.POST, params="save")
     public String save(HttpServletRequest request, @ModelAttribute("command")GroupRolePropertyEditorBean command, BindingResult result, 
                        YukonUserContext context, ModelMap map, FlashScope flashScope, int roleGroupId, int roleId) throws Exception {
-        csrfTokenService.validateToken(request);
         LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(roleId);
         if (result.hasErrors()) {
@@ -145,7 +144,6 @@ public class RolePropertyController {
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="delete")
     public String delete(HttpServletRequest request, ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
-        csrfTokenService.validateToken(request);
         rolePropertyEditorDao.removeRoleFromGroup(roleGroupId, roleId);
         map.addAttribute("roleGroupId", roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));

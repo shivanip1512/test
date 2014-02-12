@@ -89,7 +89,6 @@ public class UserGroupEditorController {
     /* User Editor Edit Page */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(HttpServletRequest request, ModelMap model, int userGroupId) throws SQLException {
-        csrfTokenService.validateToken(request);
         UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
         model.addAttribute("userGroupId", userGroupId);
@@ -114,7 +113,6 @@ public class UserGroupEditorController {
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, @ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
-        csrfTokenService.validateToken(request);        
         userGroupValidator.validate(userGroup, result);
         
         if (result.hasErrors()) {
@@ -185,7 +183,6 @@ public class UserGroupEditorController {
     
     @RequestMapping(value="addRoleGroups", method=RequestMethod.POST)
     public String addRoleGroups(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, String roleGroupIds) throws SQLException {
-        csrfTokenService.validateToken(request);
         List<Integer> roleGroupIdsList = parseIntStringForList(roleGroupIds);
         
         if (!roleGroupIdsList.isEmpty()) {
@@ -222,7 +219,6 @@ public class UserGroupEditorController {
 
     @RequestMapping(value="removeRoleGroup", method=RequestMethod.POST)
     public String removeRoleGroup(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
-        csrfTokenService.validateToken(request);
         userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
         model.addAttribute("userGroupId", userGroupId);
@@ -258,7 +254,6 @@ public class UserGroupEditorController {
     /* Remove User From User Group */
     @RequestMapping(value="removeUser", method=RequestMethod.POST, params="remove")
     public String removeUser(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
-        csrfTokenService.validateToken(request);
         yukonUserDao.removeUserFromUserGroup(remove);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
@@ -269,7 +264,6 @@ public class UserGroupEditorController {
     /* Add User To User Group */
     @RequestMapping(value="addUsers", method=RequestMethod.POST)
     public String addUsers(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, String userIds) {
-        csrfTokenService.validateToken(request);
         List<Integer> userIdList = StringUtils.parseIntStringForList(userIds);
         for (Integer userId : userIdList) {
             yukonUserDao.updateUserGroupId(userId, userGroupId);
