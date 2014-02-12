@@ -22,6 +22,8 @@ using std::vector;
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 extern std::set<long> _CHANGED_GROUP_LIST;
 
@@ -870,7 +872,15 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
         control_str = "control restore";
     }
 
-    CtiRequestMsg* req_msg = CTIDBG_new CtiRequestMsg(getPAOId(), control_str, 0,0,0,0,0,0, priority);
+    CtiRequestMsg* req_msg = CTIDBG_new CtiRequestMsg(getPAOId(),
+                                                      control_str,
+                                                      0,
+                                                      0,
+                                                      0,
+                                                      MacroOffset::none,
+                                                      0,
+                                                      0,
+                                                      priority);
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

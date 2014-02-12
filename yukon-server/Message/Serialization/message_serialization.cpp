@@ -378,7 +378,7 @@ IM_EX_MSG MessagePtr<Thrift::Request>::type populateThrift( const ::CtiRequestMs
     omsg->__set__deviceId               ( imsg.DeviceId() );
     omsg->__set__commandString          ( imsg.CommandString() );
     omsg->__set__routeId                ( imsg.RouteId() );
-    omsg->__set__macroOffset            ( imsg.MacroOffset() );
+    omsg->__set__macroOffset            ( imsg.MacroOffset() ? *imsg.MacroOffset() + 1 : 0 ); // macro offset in the thrift object is one based (zero when none)
     omsg->__set__attemptNum             ( imsg.AttemptNum() );
     omsg->__set__groupMessageId         ( imsg.GroupMessageId() );
     omsg->__set__userMessageId          ( imsg.UserMessageId() );
@@ -395,7 +395,7 @@ IM_EX_MSG MessagePtr<::CtiRequestMsg>::type populateMessage( const Thrift::Reque
     omsg->setDeviceId                   ( imsg._deviceId );
     omsg->setCommandString              ( imsg._commandString );
     omsg->setRouteId                    ( imsg._routeId );
-    omsg->setMacroOffset                ( imsg._macroOffset );
+    omsg->setMacroOffset                ( imsg._macroOffset ? MacroOffset(imsg._macroOffset-1) : MacroOffset::none ); // macro offset in the thrift object is one based (zero when none)
     omsg->setAttemptNum                 ( imsg._attemptNum );
     omsg->setGroupMessageId             ( imsg._groupMessageId );
     omsg->setUserMessageId              ( imsg._userMessageId );
@@ -418,7 +418,7 @@ IM_EX_MSG MessagePtr<Thrift::Return>::type populateThrift( const ::CtiReturnMsg&
     omsg->__set__resultString           ( imsg.ResultString() );
     omsg->__set__status                 ( imsg.Status() );
     omsg->__set__routeId                ( imsg.RouteID() );
-    omsg->__set__macroOffset            ( imsg.MacroOffset() );
+    omsg->__set__macroOffset            ( imsg.MacroOffset() ? *imsg.MacroOffset() + 1 : 0 );  // macro offset in the thrift object is one based (zero when none)
     omsg->__set__attemptNum             ( imsg.AttemptNum() );
     omsg->__set__groupMessageId         ( imsg.GroupMessageId() );
     omsg->__set__userMessageId          ( imsg.UserMessageId() );
@@ -437,7 +437,7 @@ IM_EX_MSG MessagePtr<::CtiReturnMsg>::type populateMessage( const Thrift::Return
     omsg->setResultString               ( imsg._resultString );
     omsg->setStatus                     ( imsg._status );
     omsg->setRouteID                    ( imsg._routeId );
-    omsg->setMacroOffset                ( imsg._macroOffset );
+    omsg->setMacroOffset                ( imsg._macroOffset ? MacroOffset(imsg._macroOffset-1) : MacroOffset::none ); // macro offset in the thrift object is one based, if zero disabled
     omsg->setAttemptNum                 ( imsg._attemptNum );
     omsg->setGroupMessageId             ( imsg._groupMessageId );
     omsg->setUserMessageId              ( imsg._userMessageId );

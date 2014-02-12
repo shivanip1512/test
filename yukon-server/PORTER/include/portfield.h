@@ -1,6 +1,7 @@
 #pragma once
 
 #include "optional.h"
+#include "macro_offset.h"
 
 bool isTimedOut( const CtiTime &start_time, const unsigned int &duration_seconds);
 bool deviceCanSurviveThisStatus(INT status);
@@ -18,7 +19,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 INT NonWrapDecode(const INMESS *InMessage, CtiDeviceSPtr &Device);
 INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
 INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceSPtr &Device);
-Cti::Optional<repeater_info> findRepeaterInRouteByAddress(const int routeId, const int macroOffset, const unsigned echo_address);
+Cti::Optional<repeater_info> findRepeaterInRouteByAddress(const int routeId, const Cti::MacroOffset &macroOffset, const unsigned echo_address);
 INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 
 INT InitializeHandshake (CtiPortSPtr aPortRecord, CtiDeviceSPtr aIEDDevice, std::list< CtiMessage* > &traceList);

@@ -21,6 +21,8 @@
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 
 DEFINE_COLLECTABLE( CtiLMGroupSA305, CTILMGROUPSA305_ID )
@@ -65,7 +67,15 @@ CtiRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate, LO
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -92,7 +102,15 @@ CtiRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG pe
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -119,7 +137,15 @@ CtiRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG per
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending adaptive alg command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -138,7 +164,15 @@ CtiRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG she
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -157,7 +191,15 @@ CtiRequestMsg* CtiLMGroupSA305::createMasterCycleRequestMsg(LONG offTime, LONG p
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*---------------------------------------------------------------------------

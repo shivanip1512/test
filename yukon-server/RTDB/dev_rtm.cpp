@@ -115,7 +115,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                             string("RTM Devices do not support this command."),
                                                             nRet,
                                                             OutMessage->Request.RouteID,
-                                                            OutMessage->Request.MacroOffset,
+                                                            OutMessage->Request.RetryMacroOffset,
                                                             OutMessage->Request.Attempt,
                                                             OutMessage->Request.GrpMsgID,
                                                             OutMessage->Request.UserID,
@@ -141,7 +141,7 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                     string("RTM Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
-                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.RetryMacroOffset,
                                                     OutMessage->Request.Attempt,
                                                     OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
@@ -170,7 +170,17 @@ INT CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      nRet,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -203,7 +213,7 @@ INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                                        getName() + " / scan successful, " + CtiNumStr(InMessage->Buffer.InMessage[0]) + " codes returned",
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
-                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);
@@ -221,7 +231,7 @@ INT CtiDeviceRTM::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                                        resultString,
                                                        ErrReturn,
                                                        InMessage->Return.RouteID,
-                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);

@@ -278,7 +278,7 @@ public:
     Cti::Config::DeviceConfigSPtr getDeviceConfig();//Configs are now thread safe!
     virtual Cti::DeviceQueueInterface* getDeviceQueueHandler();
 
-    virtual ULONG selectInitialMacroRouteOffset(LONG routeid) const;
+    virtual Cti::MacroOffset selectInitialMacroRouteOffset(LONG routeid) const;
 
     bool isTAP() const;
     virtual bool isDialup()   const;
@@ -376,7 +376,7 @@ inline bool CtiDeviceBase::isSingle() const                 { CtiLockGuard<CtiMu
 
 inline int     CtiDeviceBase::getCurrentTrxID() const         { CtiLockGuard<CtiMutex> guard(_classMutex); return _currTrxID;}
 inline int     CtiDeviceBase::getResponsesOnTrxID() const     { CtiLockGuard<CtiMutex> guard(_classMutex); return _responsesOnTrxID;}
-inline ULONG   CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return 0; }
+inline Cti::MacroOffset  CtiDeviceBase::selectInitialMacroRouteOffset(LONG routeid = 0) const   { return Cti::MacroOffset::none; }
 inline INT     CtiDeviceBase::getBaudRate() const             { return 0; }
 inline INT     CtiDeviceBase::getBits() const                 { return 8; }
 inline INT     CtiDeviceBase::getStopBits() const             { return ONESTOPBIT; }

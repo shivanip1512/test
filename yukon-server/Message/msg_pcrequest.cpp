@@ -58,12 +58,12 @@ CtiRequestMsg& CtiRequestMsg::setRouteId(long route_id)
     return *this;
 }
 
-int CtiRequestMsg::MacroOffset() const
+Cti::MacroOffset CtiRequestMsg::MacroOffset() const
 {
     return _macro_offset;
 }
 
-CtiRequestMsg& CtiRequestMsg::setMacroOffset(int macro_offset)
+CtiRequestMsg& CtiRequestMsg::setMacroOffset(const Cti::MacroOffset& macro_offset)
 {
     _macro_offset = macro_offset;
     return *this;
@@ -128,7 +128,7 @@ void CtiRequestMsg::dump() const
    dout << " Device ID                     " << _device_id << endl;
    dout << " Command String                " << _command_string << endl;
    dout << " Route ID                      " << _route_id << endl;
-   dout << " Macro Offset                  " << _macro_offset << endl;
+   dout << " Macro Offset                  " << (_macro_offset ? CtiNumStr(*_macro_offset) : string("none")) << endl;
    dout << " Attempt Number                " << _attempt_num << endl;
    dout << " Message Group ID              " << _group_message_id << endl;
    dout << " User Message ID               " << _user_message_id << endl;
@@ -141,7 +141,7 @@ CtiRequestMsg::CtiRequestMsg() :
  _user_message_id(0),
  _group_message_id(0),
  _route_id(0),
- _macro_offset(0),
+ _macro_offset(Cti::MacroOffset::none),
  _attempt_num(0),
  _options_field(0),
  CtiMessage(0)
@@ -152,7 +152,7 @@ CtiRequestMsg::CtiRequestMsg(long device_id,
                long user_message_id,
                long group_message_id,
                long route_id,
-               int macro_offset,
+               Cti::MacroOffset macro_offset,
                int attempt_num,
                int options_field,
                int priority_base) :

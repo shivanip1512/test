@@ -636,7 +636,7 @@ INT MctDevice::GeneralScan(CtiRequestMsg *pReq,
             OutMessage->Sequence  = EmetconProtocol::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
-            OutMessage->Request.MacroOffset = 0;
+            OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -697,7 +697,7 @@ INT MctDevice::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->Sequence  = EmetconProtocol::Scan_Integrity;     // Helps us figure it out later!;
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
-            OutMessage->Request.MacroOffset = 0;
+            OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -757,7 +757,7 @@ INT MctDevice::AccumulatorScan(CtiRequestMsg *pReq,
             OutMessage->Sequence  = EmetconProtocol::Scan_Accum;
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
-            OutMessage->Request.MacroOffset = 0;
+            OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -819,7 +819,7 @@ INT MctDevice::LoadProfileScan(CtiRequestMsg *pReq,
             OutMessage->Sequence  = EmetconProtocol::Scan_LoadProfile;
             OutMessage->Retry     = 0;  // 20020906 CGP
             OutMessage->Request.RouteID   = getRouteID();
-            OutMessage->Request.MacroOffset = 0;
+            OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;
@@ -1065,7 +1065,7 @@ INT MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMe
                                                 string(),
                                                 InMessage.EventCode & 0x7fff,
                                                 InMessage.Return.RouteID,
-                                                InMessage.Return.MacroOffset,
+                                                InMessage.Return.RetryMacroOffset,
                                                 InMessage.Return.Attempt,
                                                 InMessage.Return.GrpMsgID,
                                                 InMessage.Return.UserID);
@@ -2071,7 +2071,7 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                                                    string(),
                                                    nRet,
                                                    OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.RetryMacroOffset,
                                                    OutMessage->Request.Attempt,
                                                    OutMessage->Request.GrpMsgID,
                                                    OutMessage->Request.UserID,
@@ -3253,7 +3253,7 @@ INT MctDevice::decodeControlDisconnect(const INMESS *InMessage, CtiTime &TimeNow
                 InMessage->Return.UserID,
                 InMessage->Return.GrpMsgID,
                 getRouteID(),
-                0,
+                MacroOffset::none,
                 0,
                 InMessage->Return.OptionsField,
                 InMessage->Priority));

@@ -548,7 +548,7 @@ INT CtiDeviceSchlumberger::ErrorDecode (const INMESS        &InMessage,
                                             string(),
                                             InMessage.EventCode & 0x7fff,
                                             InMessage.Return.RouteID,
-                                            InMessage.Return.MacroOffset,
+                                            InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
                                             InMessage.Return.GrpMsgID,
                                             InMessage.Return.UserID);

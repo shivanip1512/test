@@ -520,7 +520,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                                                         string("TNPP Devices do not support this command (yet?)").c_str(),
                                                         nRet,
                                                         OutMessage->Request.RouteID,
-                                                        OutMessage->Request.MacroOffset,
+                                                        OutMessage->Request.RetryMacroOffset,
                                                         OutMessage->Request.Attempt,
                                                         OutMessage->Request.GrpMsgID,
                                                         OutMessage->Request.UserID,

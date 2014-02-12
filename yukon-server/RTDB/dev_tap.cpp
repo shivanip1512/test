@@ -59,7 +59,7 @@ INT CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPa
                                             string(),
                                             nRet,
                                             OutMessage->Request.RouteID,
-                                            OutMessage->Request.MacroOffset,
+                                            OutMessage->Request.RetryMacroOffset,
                                             OutMessage->Request.Attempt,
                                             OutMessage->Request.GrpMsgID,
                                             OutMessage->Request.UserID,

@@ -23,6 +23,8 @@
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 
 DEFINE_COLLECTABLE( CtiLMGroupVersacom, CTILMGROUPVERSACOM_ID )
@@ -71,7 +73,15 @@ CtiRequestMsg* CtiLMGroupVersacom::createTimeRefreshRequestMsg(LONG refreshRate,
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -98,7 +108,15 @@ CtiRequestMsg* CtiLMGroupVersacom::createSmartCycleRequestMsg(LONG percent, LONG
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -120,7 +138,15 @@ CtiRequestMsg* CtiLMGroupVersacom::createRotationRequestMsg(LONG sendRate, LONG 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -142,7 +168,15 @@ CtiRequestMsg* CtiLMGroupVersacom::createMasterCycleRequestMsg(LONG offTime, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*---------------------------------------------------------------------------

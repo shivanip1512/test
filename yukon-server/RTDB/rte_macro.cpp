@@ -29,6 +29,8 @@
 using std::endl;
 using std::list;
 
+using Cti::MacroOffset;
+
 CtiRouteMacro::CtiRouteMacro()
 {
 }
@@ -94,8 +96,7 @@ void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NORMAL;
-    int onebasedoffset = (OutMessage->Request.MacroOffset) > 0 ? OutMessage->Request.MacroOffset : pReq->MacroOffset();
-    int offset = onebasedoffset - 1; // This is a targeted request..  Incomming offset is ONE based.
+    MacroOffset offset = (OutMessage->Request.RetryMacroOffset) ? OutMessage->Request.RetryMacroOffset : pReq->MacroOffset();
 
     try
     {
@@ -105,11 +106,11 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         allroutes |= (OutMessage->MessageFlags & MessageFlag_BroadcastOnMacroSubroutes) != 0;
 
         CtiLockGuard< CtiMutex > listguard(getRouteListMux());
-        if( !allroutes && (OutMessage->EventCode & RESULT) &&  onebasedoffset > 0 )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
+        if( !allroutes && (OutMessage->EventCode & RESULT) && offset )       // If this is a two way request we want to walk the routelist.  Otherwise send on all subroutes.
         {
-            if( offset < RoutePtrList.length())
+            if( *offset < RoutePtrList.length() )
             {
-                CtiRouteSPtr pRoute = RoutePtrList[offset];
+                CtiRouteSPtr pRoute = RoutePtrList[*offset];
 
                 if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
                 {
@@ -119,15 +120,14 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                         if(NewOMess)
                         {
-                            if(onebasedoffset < RoutePtrList.length())
+                            if( *offset < RoutePtrList.length()-1 )
                             {
-                                NewOMess->Request.MacroOffset = onebasedoffset + 1;    // Ask for this next (if needed) please.
+                                NewOMess->Request.RetryMacroOffset = *offset + 1;    // Ask for this next (if needed) please.
                             }
                             else
                             {
-                                NewOMess->Request.MacroOffset = 0;    // None left MAKE IT STOP!.
+                                NewOMess->Request.RetryMacroOffset = MacroOffset::none;    // None left MAKE IT STOP!.
                             }
-
 
                             if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                             {
@@ -137,7 +137,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                             int status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
-                            if(status == DEVICEINHIBITED && NewOMess && NewOMess->Request.MacroOffset != 0)
+                            if(status == DEVICEINHIBITED && NewOMess && NewOMess->Request.RetryMacroOffset )
                             {
                                 std::list< CtiMessage* >::iterator iter;
                                 for(iter = retList.begin(); iter != retList.end(); iter++)
@@ -201,8 +201,8 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                     if(NewOMess)
                     {
-                        NewOMess->Request.RouteID     = pRoute->getRouteID();
-                        NewOMess->Request.MacroOffset = 0; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
+                        NewOMess->Request.RouteID          = pRoute->getRouteID();
+                        NewOMess->Request.RetryMacroOffset = MacroOffset::none; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
 
                         if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                         {
@@ -267,16 +267,12 @@ void CtiRouteMacro::DecodeMacroReader(Cti::RowReader &rdr)
 
 bool CtiRouteMacro::processAdditionalRoutes( const INMESS *InMessage ) const
 {
-    bool bret = false;
-
-    if(InMessage->Return.MacroOffset > 0)
+    if( ! InMessage->Return.RetryMacroOffset )
     {
-        if(getRoutePtrList().entries() >= InMessage->Return.MacroOffset )
-        {
-            bret = true;
-        }
+        return false;
     }
-    return bret;
+
+    return ( getRoutePtrList().entries() > *InMessage->Return.RetryMacroOffset );
 }
 
 CtiMutex& CtiRouteMacro::getRouteListMux()

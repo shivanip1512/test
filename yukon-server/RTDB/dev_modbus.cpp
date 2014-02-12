@@ -588,7 +588,7 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                          result_string.data(),
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
@@ -608,7 +608,7 @@ INT ModbusDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                          resultString,
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
@@ -630,7 +630,7 @@ INT ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                                               string(),
                                               InMessage.EventCode & 0x7fff,
                                               InMessage.Return.RouteID,
-                                              InMessage.Return.MacroOffset,
+                                              InMessage.Return.RetryMacroOffset,
                                               InMessage.Return.Attempt,
                                               InMessage.Return.GrpMsgID,
                                               InMessage.Return.UserID);

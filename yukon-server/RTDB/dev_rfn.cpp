@@ -110,7 +110,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
                         errorDescription,
                         errorCode,
                         0,
-                        0,
+                        MacroOffset::none,
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
@@ -129,7 +129,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
                         CtiNumStr(numRequests) + (numRequests == 1?" command":" commands") + " queued for device",
                         NoError,
                         0,
-                        0,
+                        MacroOffset::none,
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));
@@ -303,7 +303,7 @@ void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser
                         result,
                         nRet,
                         0,
-                        0,
+                        MacroOffset::none,
                         0,
                         pReq->GroupMessageId(),
                         pReq->UserMessageId()));

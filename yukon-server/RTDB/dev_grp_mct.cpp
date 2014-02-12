@@ -180,7 +180,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                          resultString,
                                          nRet,
                                          OutMessage->Request.RouteID,
-                                         OutMessage->Request.MacroOffset,
+                                         OutMessage->Request.RetryMacroOffset,
                                          OutMessage->Request.Attempt,
                                          OutMessage->Request.GrpMsgID,
                                          OutMessage->Request.UserID,
@@ -249,7 +249,18 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                  *  Form up the reply here since the ExecuteRequest funciton will consume the
                  *  OutMessage.
                  */
-                pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.GrpMsgID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
+                pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                               string(pOut->Request.CommandStr),
+                                               Route->getName(),
+                                               nRet,
+                                               pOut->Request.RouteID,
+                                               pOut->Request.RetryMacroOffset,
+                                               pOut->Request.Attempt,
+                                               pOut->Request.GrpMsgID,
+                                               pOut->Request.UserID,
+                                               pOut->Request.SOE,
+                                               CtiMultiMsg_vec());
+
                 // Start the control request on its route(s)
                 if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
                 {
@@ -285,7 +296,7 @@ INT CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &pa
                                                       resultString,
                                                       nRet,
                                                       pOut->Request.RouteID,
-                                                      pOut->Request.MacroOffset,
+                                                      pOut->Request.RetryMacroOffset,
                                                       pOut->Request.Attempt,
                                                       pOut->Request.GrpMsgID,
                                                       pOut->Request.UserID,

@@ -67,7 +67,17 @@ INT MctBroadcastDevice::executePutConfig(CtiRequestMsg                  *pReq,
     CtiTime NowTime;
     CtiDate NowDate(NowTime);  //  unlikely they'd be out of sync, but just to make sure...
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ), string(OutMessage->Request.CommandStr), string(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec( ));
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.RetryMacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.GrpMsgID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
 
     if(parse.isKeyValid("rawloc"))
     {

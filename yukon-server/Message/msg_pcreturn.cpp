@@ -67,12 +67,12 @@ CtiReturnMsg& CtiReturnMsg::setRouteID(int route)
     return *this;
 }
 
-int CtiReturnMsg::MacroOffset() const
+Cti::MacroOffset CtiReturnMsg::MacroOffset() const
 {
     return _macro_offset;
 }
 
-CtiReturnMsg& CtiReturnMsg::setMacroOffset(int macro_offset)
+CtiReturnMsg& CtiReturnMsg::setMacroOffset(const Cti::MacroOffset& macro_offset)
 {
     _macro_offset = macro_offset;
     return *this;
@@ -155,7 +155,7 @@ void CtiReturnMsg::dump() const
    dout << " Result String                 " << _result_string << endl;
    dout << " Status                        " << _status << endl;
    dout << " Route ID                      " << _routeid << endl;
-   dout << " Macro Offset                  " << _macro_offset << endl;
+   dout << " Macro Offset                  " << (_macro_offset ? CtiNumStr(*_macro_offset) : string("none")) << endl;
    dout << " Attempt Number                " << _attempt_num << endl;
    dout << " Expect More                   " << _expectMore << endl;           // Another message shall be coming listen for more!
    dout << " Group Message ID              " << _group_message_id << endl;
@@ -168,7 +168,7 @@ CtiReturnMsg::CtiReturnMsg() :
     _device_id(-1L),
     _status(0),
     _routeid(0),
-    _macro_offset(0),
+    _macro_offset(Cti::MacroOffset::none),
     _attempt_num(0),
     _group_message_id(0),
     _user_message_id(0)
@@ -180,7 +180,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
                  const string& result_string,
                  int status,
                  int routeid,
-                 int macro_offset,
+                 Cti::MacroOffset macro_offset,
                  int attempt_num,
                  long group_message_id,
                  long user_message_id,
@@ -212,7 +212,7 @@ CtiReturnMsg::CtiReturnMsg(long device_id,
      _result_string(result_string),
      _status(status),
      _routeid(pil_echo.RouteID),
-     _macro_offset(pil_echo.MacroOffset),
+     _macro_offset(pil_echo.RetryMacroOffset),
      _attempt_num(pil_echo.Attempt),
      _group_message_id(pil_echo.GrpMsgID),
      _user_message_id(pil_echo.UserID)

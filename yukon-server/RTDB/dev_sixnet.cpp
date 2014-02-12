@@ -1800,7 +1800,7 @@ INT CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow
                                             GetErrorString(InMessage.EventCode & 0x7fff),
                                             InMessage.EventCode & 0x7fff,
                                             InMessage.Return.RouteID,
-                                            InMessage.Return.MacroOffset,
+                                            InMessage.Return.RetryMacroOffset,
                                             InMessage.Return.Attempt,
                                             InMessage.Return.GrpMsgID,
                                             InMessage.Return.UserID);
@@ -1871,7 +1871,7 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
                                             string(),
                                             InMessage->EventCode & 0x7fff,
                                             InMessage->Return.RouteID,
-                                            InMessage->Return.MacroOffset,
+                                            InMessage->Return.RetryMacroOffset,
                                             InMessage->Return.Attempt,
                                             InMessage->Return.GrpMsgID,
                                             InMessage->Return.UserID);
@@ -1913,7 +1913,15 @@ INT CtiDeviceSixnet::decodeResultLoadProfile (const INMESS *InMessage, CtiTime &
                     val = pSxnt->val;
                 }
 
-                pRetMsg = CTIDBG_new CtiReturnMsg(getID(), string(InMessage->Return.CommandStr), resString, InMessage->EventCode & 0x7fff, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt,InMessage->Return.GrpMsgID,InMessage->Return.UserID);
+                pRetMsg = CTIDBG_new CtiReturnMsg(getID(),
+                                                  string(InMessage->Return.CommandStr),
+                                                  resString,
+                                                  InMessage->EventCode & 0x7fff,
+                                                  InMessage->Return.RouteID,
+                                                  InMessage->Return.RetryMacroOffset,
+                                                  InMessage->Return.Attempt,
+                                                  InMessage->Return.GrpMsgID,
+                                                  InMessage->Return.UserID);
 
                 //create a new data message
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, pPoint->getType(), resString, TAG_POINT_LOAD_PROFILE_DATA);

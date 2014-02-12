@@ -696,7 +696,7 @@ void PilServer::handleInMessageResult(const INMESS *InMessage)
                     "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage->DeviceID),
                     IDNF,
                     InMessage->Return.RouteID,
-                    InMessage->Return.MacroOffset,
+                    InMessage->Return.RetryMacroOffset,
                     InMessage->Return.Attempt,
                     InMessage->Return.GrpMsgID,
                     InMessage->Return.UserID,
@@ -800,7 +800,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         result.commandResult.description,
                         result.status,
                         0,
-                        0,
+                        MacroOffset::none,
                         0,
                         result.request.groupMessageId,
                         result.request.userMessageId));

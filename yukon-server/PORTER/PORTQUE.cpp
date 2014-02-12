@@ -41,6 +41,7 @@
 using namespace std;
 using Cti::ThreadStatusKeeper;
 using Cti::Porter::PorterStatisticsManager;
+using Cti::MacroOffset;
 
 extern CtiPortManager            PortManager;
 extern map<long, CtiPortShare *> PortShareManager;
@@ -1921,7 +1922,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
         dout << CtiTime() << " OutMessage being cleaned up. " << endl;
     }
 
-    OutMessage->Request.MacroOffset = 0; //Do not resend this on macro route!
+    OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
     SendError( OutMessage, ErrorQueuePurged );
     // delete OutMessage;
 
@@ -1938,7 +1939,7 @@ void cancelOutMessages(void *doSendError, void* om)
         dout << CtiTime() << " OutMessage being cleaned up. " << endl;
     }
 
-    OutMessage->Request.MacroOffset = 0; //Do not resend this on macro route!
+    OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
 
     if( doSendError != 0 )
     {

@@ -77,7 +77,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                          "(none)",
                                          0,
                                          OutMessage->Request.RouteID,
-                                         OutMessage->Request.MacroOffset,
+                                         OutMessage->Request.RetryMacroOffset,
                                          OutMessage->Request.Attempt,
                                          OutMessage->Request.GrpMsgID,
                                          OutMessage->Request.UserID,
@@ -110,7 +110,18 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
                             OutMessage->Request.ProtocolInfo.Emetcon.IO       = OutMessage->Buffer.BSt.IO;
 
-                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0, string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+                            CtiReturnMsg * pRet = CTIDBG_new CtiReturnMsg(0,
+                                                                          string(OutMessage->Request.CommandStr),
+                                                                          Route->getName(),
+                                                                          nRet,
+                                                                          OutMessage->Request.RouteID,
+                                                                          OutMessage->Request.RetryMacroOffset,
+                                                                          OutMessage->Request.Attempt,
+                                                                          OutMessage->Request.GrpMsgID,
+                                                                          OutMessage->Request.UserID,
+                                                                          OutMessage->Request.SOE,
+                                                                          CtiMultiMsg_vec());
+
                             if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
                             {
                                 string resultString = getName() + ": ERROR " + CtiNumStr(nRet) + " (" + GetErrorString(nRet) + ") performing command on route " + Route->getName().data();
@@ -191,7 +202,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             status = ErrorInvalidRequest;
 
                             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                                       string(OutMessage->Request.CommandStr),
+                                                                       problem,
+                                                                       status,
+                                                                       OutMessage->Request.RouteID,
+                                                                       OutMessage->Request.RetryMacroOffset,
+                                                                       OutMessage->Request.Attempt,
+                                                                       OutMessage->Request.GrpMsgID,
+                                                                       OutMessage->Request.UserID,
+                                                                       OutMessage->Request.SOE,
+                                                                       CtiMultiMsg_vec()));
                         }
 
                         OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -250,7 +271,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         status = ErrorInvalidRequest;
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                                   string(OutMessage->Request.CommandStr),
+                                                                   problem,
+                                                                   status,
+                                                                   OutMessage->Request.RouteID,
+                                                                   OutMessage->Request.RetryMacroOffset,
+                                                                   OutMessage->Request.Attempt,
+                                                                   OutMessage->Request.GrpMsgID,
+                                                                   OutMessage->Request.UserID,
+                                                                   OutMessage->Request.SOE,
+                                                                   CtiMultiMsg_vec()));
                     }
 
                     /*
@@ -369,7 +400,18 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                             status = ErrorInvalidRequest;
 
                             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+                            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                                       string(OutMessage->Request.CommandStr),
+                                                                       problem,
+                                                                       status,
+                                                                       OutMessage->Request.RouteID,
+                                                                       OutMessage->Request.RetryMacroOffset,
+                                                                       OutMessage->Request.Attempt,
+                                                                       OutMessage->Request.GrpMsgID,
+                                                                       OutMessage->Request.UserID,
+                                                                       OutMessage->Request.SOE,
+                                                                       CtiMultiMsg_vec()));
                         }
 
                         OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -391,7 +433,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                                                          resultString,
                                                                          BADPARAM,
                                                                          OutMessage->Request.RouteID,
-                                                                         OutMessage->Request.MacroOffset,
+                                                                         OutMessage->Request.RetryMacroOffset,
                                                                          OutMessage->Request.Attempt,
                                                                          OutMessage->Request.GrpMsgID,
                                                                          OutMessage->Request.UserID,
@@ -463,7 +505,18 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     {
                         status = ErrorInvalidRequest;
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                                   string(OutMessage->Request.CommandStr),
+                                                                   problem,
+                                                                   status,
+                                                                   OutMessage->Request.RouteID,
+                                                                   OutMessage->Request.RetryMacroOffset,
+                                                                   OutMessage->Request.Attempt,
+                                                                   OutMessage->Request.GrpMsgID,
+                                                                   OutMessage->Request.UserID,
+                                                                   OutMessage->Request.SOE,
+                                                                   CtiMultiMsg_vec()));
                     }
 
                     /*
@@ -492,7 +545,18 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         status = ErrorInvalidRequest;
 
                         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), problem, LoadMgmtLogType, SignalEvent, pReq->getUser()));
-                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), problem,  status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+                        retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                                   string(OutMessage->Request.CommandStr),
+                                                                   problem,
+                                                                   status,
+                                                                   OutMessage->Request.RouteID,
+                                                                   OutMessage->Request.RetryMacroOffset,
+                                                                   OutMessage->Request.Attempt,
+                                                                   OutMessage->Request.GrpMsgID,
+                                                                   OutMessage->Request.UserID,
+                                                                   OutMessage->Request.SOE,
+                                                                   CtiMultiMsg_vec()));
                     }
 
                     OutMessage->Retry = 2;                      // Default to two tries per route!
@@ -523,7 +587,17 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         {
             status = NoExecuteRequestMethod;
 
-            retList.push_back( CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), string("System Devices do not support this command (yet?)"), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+            retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
+                                                       string(OutMessage->Request.CommandStr),
+                                                       string("System Devices do not support this command (yet?)"),
+                                                       status,
+                                                       OutMessage->Request.RouteID,
+                                                       OutMessage->Request.RetryMacroOffset,
+                                                       OutMessage->Request.Attempt,
+                                                       OutMessage->Request.GrpMsgID,
+                                                       OutMessage->Request.UserID,
+                                                       OutMessage->Request.SOE,
+                                                       CtiMultiMsg_vec()));
             break;
         }
     }
@@ -576,7 +650,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                                  string("Bad route specified for execution on the \"system\" device"),
                                                  status,
                                                  OutMessage->Request.RouteID,
-                                                 OutMessage->Request.MacroOffset,
+                                                 OutMessage->Request.RetryMacroOffset,
                                                  OutMessage->Request.Attempt,
                                                  OutMessage->Request.GrpMsgID,
                                                  OutMessage->Request.UserID,
@@ -604,7 +678,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                                  "System has no default routes",
                                                  status,
                                                  OutMessage->Request.RouteID,
-                                                 OutMessage->Request.MacroOffset,
+                                                 OutMessage->Request.RetryMacroOffset,
                                                  OutMessage->Request.Attempt,
                                                  OutMessage->Request.GrpMsgID,
                                                  OutMessage->Request.UserID,

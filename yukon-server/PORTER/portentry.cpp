@@ -734,12 +734,12 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
         // Re-establish the connection on the beastie..
         pReq.setRouteId( OutMessage.Request.RouteID );
 
-        if(OutMessage.Request.MacroOffset == 0)
+        if( ! OutMessage.Request.RetryMacroOffset )
         {
-            OutMessage.Request.MacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+            OutMessage.Request.RetryMacroOffset = Dev->selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
         }
 
-        pReq.setMacroOffset( OutMessage.Request.MacroOffset );
+        pReq.setMacroOffset( OutMessage.Request.RetryMacroOffset );
 
         pReq.setMessagePriority(OutMessage.Priority);
 

@@ -328,7 +328,17 @@ INT CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -394,7 +404,17 @@ INT CtiRouteXCU::assembleRippleRequest(CtiRequestMsg               *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -536,7 +556,17 @@ INT CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg               *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -565,7 +595,17 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
      * Addressing variables SHALL have been assigned at an earlier level!
      */
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     //  the incoming device ID is the LM group that initiated this request, but we must save it from being overwritten
     int saveDevId = OutMessage->DeviceID;
@@ -907,7 +947,17 @@ INT CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -1003,7 +1053,17 @@ INT CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -1121,7 +1181,17 @@ INT CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {

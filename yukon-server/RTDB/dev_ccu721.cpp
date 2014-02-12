@@ -142,7 +142,7 @@ INT Ccu721Device::ResultDecode( const INMESS *InMessage, CtiTime &Now, list<CtiM
                                                   string((const char *)(InMessage->Buffer.InMessage + InMessage_StringOffset)),
                                                   InMessage->EventCode & 0x7fff,
                                                   InMessage->Return.RouteID,
-                                                  InMessage->Return.MacroOffset,
+                                                  InMessage->Return.RetryMacroOffset,
                                                   InMessage->Return.Attempt,
                                                   InMessage->Return.GrpMsgID,
                                                   InMessage->Return.UserID));

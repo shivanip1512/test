@@ -203,7 +203,18 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     Route->getName(),
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.RetryMacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.GrpMsgID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     CtiMultiMsg_vec());
+
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -229,7 +240,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
-                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,
                                                      OutMessage->Request.GrpMsgID,
                                                      OutMessage->Request.UserID,
@@ -323,7 +334,18 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), 
+                                                     string(OutMessage->Request.CommandStr), 
+                                                     Route->getName(), 
+                                                     nRet, 
+                                                     OutMessage->Request.RouteID, 
+                                                     OutMessage->Request.RetryMacroOffset,
+                                                     OutMessage->Request.Attempt, 
+                                                     OutMessage->Request.GrpMsgID, 
+                                                     OutMessage->Request.UserID, 
+                                                     OutMessage->Request.SOE, 
+                                                     CtiMultiMsg_vec());
+                                                     
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -350,7 +372,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
-                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,
                                                      OutMessage->Request.GrpMsgID,
                                                      OutMessage->Request.UserID,
@@ -515,7 +537,18 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
          *  Form up the reply here since the ExecuteRequest funciton will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     Route->getName(),
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.RetryMacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.GrpMsgID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     CtiMultiMsg_vec());
+
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
@@ -542,7 +575,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
-                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,
                                                      OutMessage->Request.GrpMsgID,
                                                      OutMessage->Request.UserID,

@@ -22,7 +22,7 @@ using std::endl;
 using std::list;
 
 using Cti::Logging::Vector::Hex::operator<<;
-
+using Cti::MacroOffset;
 
 INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
 {
@@ -40,7 +40,17 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         sendDRMessage(OutMessage->Priority, DEFAULT_EXPIRATION_20_MINUTES, payload);
 
         resultString = "Device: " + getName() + " -- Raw ASCII Command sent \n\"" + outputValue + "\"";
-        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
+                                                  string(OutMessage->Request.CommandStr),
+                                                  resultString,
+                                                  nRet,
+                                                  0,
+                                                  MacroOffset::none,
+                                                  OutMessage->Request.Attempt,
+                                                  OutMessage->Request.GrpMsgID,
+                                                  OutMessage->Request.UserID,
+                                                  OutMessage->Request.SOE,
+                                                  CtiMultiMsg_vec()));
 
         return nRet;
     }
@@ -60,7 +70,17 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         sendDRMessage(OutMessage->Priority, DEFAULT_EXPIRATION_20_MINUTES, payload);
 
         resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
-        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
+                                                  string(OutMessage->Request.CommandStr),
+                                                  resultString,
+                                                  nRet,
+                                                  0,
+                                                  MacroOffset::none,
+                                                  OutMessage->Request.Attempt,
+                                                  OutMessage->Request.GrpMsgID,
+                                                  OutMessage->Request.UserID,
+                                                  OutMessage->Request.SOE,
+                                                  CtiMultiMsg_vec()));
 
         return nRet;
     }
@@ -96,7 +116,17 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
             }
 
             resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
-            retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+            retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      nRet,
+                                                      0,
+                                                      MacroOffset::none,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec()));
 
             string desc = "Route: RF Network";
             string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + GetErrorString(nRet);
@@ -122,7 +152,17 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
             resultString += " \n" + xcom.getMessageAsString();
         }
 
-        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
+                                                  string(OutMessage->Request.CommandStr),
+                                                  resultString,
+                                                  nRet,
+                                                  0,
+                                                  MacroOffset::none,
+                                                  OutMessage->Request.Attempt,
+                                                  OutMessage->Request.GrpMsgID,
+                                                  OutMessage->Request.UserID,
+                                                  OutMessage->Request.SOE,
+                                                  CtiMultiMsg_vec()));
 
         return nRet;
     }

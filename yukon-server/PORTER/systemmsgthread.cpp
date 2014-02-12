@@ -236,7 +236,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
                     for each( OUTMESS *tempOM in omList )
                     {
-                        tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
+                        tempOM->Request.RetryMacroOffset = MacroOffset::none; //No resubmitting this request, it is dead!
                         cancelOutMessages((void *)1,tempOM);
                     }
                 }

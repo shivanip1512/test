@@ -208,7 +208,7 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
                                                 resultString,
                                                 nRet,
                                                 OutMessage->Request.RouteID,
-                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.RetryMacroOffset,
                                                 OutMessage->Request.Attempt,
                                                 OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
@@ -504,7 +504,7 @@ int DlcBaseDevice::findAndDecodeCommand(const INMESS &InMessage, CtiTime TimeNow
             //  If there were no errors, start the command on the first macro route
             if( ! InMessage.EventCode )
             {
-                OutMessage->Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
+                OutMessage->Request.RetryMacroOffset = selectInitialMacroRouteOffset(OutMessage->Request.RouteID);
             }
 
             fillOutMessage(*OutMessage, *ptr);
@@ -591,9 +591,9 @@ void DlcBaseDevice::fillOutMessage(OUTMESS &OutMessage, DlcCommand::request_t &r
 
     OutMessage.Request.RouteID     = getRouteID();
 
-    if( ! OutMessage.Request.MacroOffset )
+    if( ! OutMessage.Request.RetryMacroOffset )
     {
-        OutMessage.Request.MacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
+        OutMessage.Request.RetryMacroOffset = selectInitialMacroRouteOffset(OutMessage.Request.RouteID);
     }
 
     OutMessage.Buffer.BSt.Function = request.function();
@@ -770,7 +770,18 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
              *  Form up the reply here since the ExecuteRequest funciton will consume the
              *  OutMessage.
              */
-            pRet = CTIDBG_new CtiReturnMsg(getID(), string(pOut->Request.CommandStr), Route->getName(), nRet, pOut->Request.RouteID, pOut->Request.MacroOffset, pOut->Request.Attempt, pOut->Request.GrpMsgID, pOut->Request.UserID, pOut->Request.SOE, CtiMultiMsg_vec());
+            pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                           string(pOut->Request.CommandStr),
+                                           Route->getName(),
+                                           nRet,
+                                           pOut->Request.RouteID,
+                                           pOut->Request.RetryMacroOffset,
+                                           pOut->Request.Attempt,
+                                           pOut->Request.GrpMsgID,
+                                           pOut->Request.UserID,
+                                           pOut->Request.SOE,
+                                           CtiMultiMsg_vec());
+
             // Start the control request on its route(s)
             if( (nRet = Route->ExecuteRequest(pReq, parse, pOut, vgList, retList, outList)) )
             {
@@ -804,7 +815,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                            resultString,
                                            nRet,
                                            pOut->Request.RouteID,
-                                           pOut->Request.MacroOffset,
+                                           pOut->Request.RetryMacroOffset,
                                            pOut->Request.Attempt,
                                            pOut->Request.GrpMsgID,
                                            pOut->Request.UserID,
@@ -830,7 +841,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
 bool DlcBaseDevice::processAdditionalRoutes( const INMESS *InMessage, int nRet ) const
 {
-    if( InMessage->Return.MacroOffset == 0 )
+    if( ! InMessage->Return.RetryMacroOffset )
     {
         return false;
     }
@@ -854,25 +865,19 @@ bool DlcBaseDevice::processAdditionalRoutes( const INMESS *InMessage, int nRet )
 }
 
 
-inline ULONG DlcBaseDevice::selectInitialMacroRouteOffset(LONG routeid) const
+inline MacroOffset DlcBaseDevice::selectInitialMacroRouteOffset(LONG routeid) const
 {
-    ULONG offset = 0;
-
     CtiRouteSPtr Route;
 
     if(routeid > 0 && (Route = CtiDeviceBase::getRoute( routeid )) )    // This is "this's" route
     {
         if(Route->getType() == RouteTypeMacro)
         {
-            offset = 1;
+            return MacroOffset(0);
         }
     }
-    else
-    {
-        offset = 0;
-    }
 
-    return offset;
+    return MacroOffset::none;
 }
 
 

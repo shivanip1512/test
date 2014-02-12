@@ -132,7 +132,7 @@ INT CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &par
                                                 string("System V RTUs do not support this command"),
                                                 nRet,
                                                 OutMessage->Request.RouteID,
-                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.RetryMacroOffset,
                                                 OutMessage->Request.Attempt,
                                                 OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,

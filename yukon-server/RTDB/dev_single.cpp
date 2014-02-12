@@ -156,7 +156,7 @@ INT CtiDeviceSingle::initiateAccumulatorScan(list< OUTMESS* > &outList, INT Scan
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
                                              getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-                                             0,                        // This is no longer relavant
+                                             MacroOffset::none,        // This is no longer relavant
                                              0,                        // Try the zeroeth macro offset.
                                              1);                       // One attempt on this route.
 
@@ -281,7 +281,7 @@ INT CtiDeviceSingle::initiateIntegrityScan(list< OUTMESS* > &outList, INT ScanPr
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
                                              getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-                                             0,                        // This is no longer relavant
+                                             MacroOffset::none,        // This is no longer relavant
                                              0,                        // Try the zeroeth macro offset.
                                              1);                       // One attempt on this route.
 
@@ -404,7 +404,7 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
                                              getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-                                             0,                        // This is no longer relavant
+                                             MacroOffset::none,        // This is no longer relavant
                                              0,                        // Try the zeroeth macro offset.
                                              1);                       // One attempt on this route.
 
@@ -555,7 +555,7 @@ INT CtiDeviceSingle::initiateLoadProfileScan(list< OUTMESS* > &outList, INT Scan
                                              0,                        // This is a number used to track the message on the outbound request.
                                              0,                        // Client can track this request with this number
                                              getRouteID(),             // This is a specific route is desired.. Scanner does not have this ability
-                                             0,                        // This is no longer relavant
+                                             MacroOffset::none,        // This is no longer relavant
                                              0,                        // Try the zeroeth macro offset.
                                              1);                       // One attempt on this route.
 
@@ -808,13 +808,31 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
 
             InEchoToOut( *InMessage, OutTemplate );
 
-            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, string(InMessage->Return.CommandStr), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.OptionsField, InMessage->Priority);
+            CtiRequestMsg *pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID,
+                                                           string(InMessage->Return.CommandStr),
+                                                           InMessage->Return.UserID,
+                                                           InMessage->Return.GrpMsgID,
+                                                           InMessage->Return.RouteID,
+                                                           InMessage->Return.RetryMacroOffset,
+                                                           InMessage->Return.Attempt,
+                                                           InMessage->Return.OptionsField,
+                                                           InMessage->Priority);
 
             pReq->setConnectionHandle( InMessage->Return.Connection );
 
             {
                 string msg;
-                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg( getID(), CmdStr, string("Macro offset ") + CtiNumStr(InMessage->Return.MacroOffset - 1) + string(" failed. Attempting next offset."), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+                CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
+                                                            CmdStr,
+                                                            string("Macro offset ") + CtiNumStr(*InMessage->Return.RetryMacroOffset - 1) + string(" failed. Attempting next offset."),
+                                                            nRet,
+                                                            InMessage->Return.RouteID,
+                                                            InMessage->Return.RetryMacroOffset,
+                                                            InMessage->Return.Attempt,
+                                                            InMessage->Return.GrpMsgID,
+                                                            InMessage->Return.UserID,
+                                                            InMessage->Return.SOE,
+                                                            CtiMultiMsg_vec());
 
                 msg = Ret->ResultString() + "\nError " + CtiNumStr(nRet) + ": " + GetErrorString(nRet);
 
@@ -881,7 +899,17 @@ INT CtiDeviceSingle::ProcessResult(const INMESS *InMessage,
                 dout << TimeNow << " Error (" << (InMessage->EventCode & ~DECODED)  << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
             }
 
-            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(  getID(), CmdStr, GetErrorString(nRet), nRet, InMessage->Return.RouteID, InMessage->Return.MacroOffset, InMessage->Return.Attempt, InMessage->Return.GrpMsgID, InMessage->Return.UserID, InMessage->Return.SOE, CtiMultiMsg_vec());
+            CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
+                                                        CmdStr,
+                                                        GetErrorString(nRet),
+                                                        nRet,
+                                                        InMessage->Return.RouteID,
+                                                        InMessage->Return.RetryMacroOffset,
+                                                        InMessage->Return.Attempt,
+                                                        InMessage->Return.GrpMsgID,
+                                                        InMessage->Return.UserID,
+                                                        InMessage->Return.SOE,
+                                                        CtiMultiMsg_vec());
 
             if( nRet == EWORDRCV && InMessage->Buffer.RepeaterError.ESt )
             {

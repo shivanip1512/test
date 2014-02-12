@@ -165,7 +165,7 @@ INT CtiDeviceBase::beginExecuteRequestFromTemplate(CtiRequestMsg *pReq,
                                                              getName() + string(": ") + GetErrorString(status),
                                                              status,
                                                              OutMessage->Request.RouteID,
-                                                             OutMessage->Request.MacroOffset,
+                                                             OutMessage->Request.RetryMacroOffset,
                                                              OutMessage->Request.Attempt,
                                                              OutMessage->Request.GrpMsgID,
                                                              OutMessage->Request.UserID,
@@ -200,22 +200,22 @@ void CtiDeviceBase::propagateRequest(OUTMESS *pOM, CtiRequestMsg *pReq )
     if(pOM != NULL && pReq != NULL)
     {
         /* Copy over some of the standard stuff. */
-        pOM->DeviceID              = getID();
-        pOM->TargetID              = getID();
+        pOM->DeviceID                   = getID();
+        pOM->TargetID                   = getID();
         EstablishOutMessagePriority( pOM, pReq->getMessagePriority() );
 
         /* Fill out the PIL_ECHO structure elements */
         strncpy(pOM->Request.CommandStr, pReq->CommandString().c_str(), sizeof(pOM->Request.CommandStr) - 1);
 
-        pOM->Request.Connection    = pReq->getConnectionHandle();
-        pOM->Request.RouteID       = pReq->RouteId();               // This is the current route being done.
-        pOM->Request.MacroOffset   = pReq->MacroOffset();
-        pOM->Request.Attempt       = pReq->AttemptNum();
-        pOM->Request.GrpMsgID         = pReq->GroupMessageId();
-        pOM->Request.UserID        = pReq->UserMessageId();
-        pOM->Request.SOE           = pReq->getSOE();
+        pOM->Request.Connection         = pReq->getConnectionHandle();
+        pOM->Request.RouteID            = pReq->RouteId();               // This is the current route being done.
+        pOM->Request.RetryMacroOffset   = pReq->MacroOffset();
+        pOM->Request.Attempt            = pReq->AttemptNum();
+        pOM->Request.GrpMsgID           = pReq->GroupMessageId();
+        pOM->Request.UserID             = pReq->UserMessageId();
+        pOM->Request.SOE                = pReq->getSOE();
 
-        pOM->Request.CheckSum      = getUniqueIdentifier();
+        pOM->Request.CheckSum           = getUniqueIdentifier();
     }
 
     return;
@@ -314,7 +314,7 @@ INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq,
                                                  resultString,
                                                  NoExecuteRequestMethod,
                                                  tempOut->Request.RouteID,
-                                                 tempOut->Request.MacroOffset,
+                                                 tempOut->Request.RetryMacroOffset,
                                                  tempOut->Request.Attempt,
                                                  tempOut->Request.GrpMsgID,
                                                  tempOut->Request.UserID,
@@ -848,7 +848,7 @@ INT CtiDeviceBase::checkForInhibitedDevice(CtiMessageList &retList, const OUTMES
                                                      getName() + string(": ") + GetErrorString(status),
                                                      status,
                                                      OutMessage->Request.RouteID,
-                                                     OutMessage->Request.MacroOffset,
+                                                     OutMessage->Request.RetryMacroOffset,
                                                      OutMessage->Request.Attempt,
                                                      OutMessage->Request.GrpMsgID,
                                                      OutMessage->Request.UserID,

@@ -158,7 +158,7 @@ INT CtiDeviceRTC::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                     string("RTC Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
-                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.RetryMacroOffset,
                                                     OutMessage->Request.Attempt,
                                                     OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
@@ -220,7 +220,7 @@ INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                                        getName() + " / operation complete",
                                                        InMessage->EventCode & 0x7fff,
                                                        InMessage->Return.RouteID,
-                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);
@@ -238,7 +238,7 @@ INT CtiDeviceRTC::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                                        resultString,
                                                        ErrReturn,
                                                        InMessage->Return.RouteID,
-                                                       InMessage->Return.MacroOffset,
+                                                       InMessage->Return.RetryMacroOffset,
                                                        InMessage->Return.Attempt,
                                                        InMessage->Return.GrpMsgID,
                                                        InMessage->Return.UserID);
@@ -260,7 +260,7 @@ INT CtiDeviceRTC::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                                                      string(),
                                                      InMessage.EventCode & 0x7fff,
                                                      InMessage.Return.RouteID,
-                                                     InMessage.Return.MacroOffset,
+                                                     InMessage.Return.RetryMacroOffset,
                                                      InMessage.Return.Attempt,
                                                      InMessage.Return.GrpMsgID,
                                                      InMessage.Return.UserID);

@@ -27,6 +27,8 @@ using namespace Cti::LoadManagement;
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 #define ROUNDING_SECONDS (60*57) //Round up on minute 58 or greater
 
@@ -73,7 +75,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRat
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -105,7 +115,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -137,7 +155,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -233,7 +259,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending target cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -252,7 +286,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -271,7 +313,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -411,7 +461,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, L
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 //Create a setpoint message using slopes instead of absolute values.
@@ -583,7 +641,15 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
     }
     if( retFlag )
     {
-        return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+        return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                        controlString,
+                                        0,
+                                        0,
+                                        0,
+                                        MacroOffset::none,
+                                        0,
+                                        0,
+                                        priority);
     }
     else
     {

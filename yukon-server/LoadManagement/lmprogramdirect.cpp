@@ -39,6 +39,8 @@ using std::endl;
 using std::vector;
 using std::set;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
 
@@ -5667,7 +5669,16 @@ bool CtiLMProgramDirect::restoreGroup(CtiTime currentTime, CtiLMGroupPtr& lm_gro
             dout << CtiTime() << " Sending restore command to  LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
 
-        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(),
+                                                             controlString,
+                                                             0,
+                                                             0,
+                                                             0,
+                                                             MacroOffset::none,
+                                                             0,
+                                                             0,
+                                                             priority);
+
         lm_group->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         setLastControlSent(CtiTime());
@@ -5694,7 +5705,16 @@ bool CtiLMProgramDirect::terminateGroup(CtiTime currentTime, CtiLMGroupPtr& lm_g
             dout << CtiTime() << " Sending terminate to LM Group: " << lm_group->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
         }
 
-        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(), controlString,0,0,0,0,0,0,priority);
+        CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(lm_group->getPAOId(),
+                                                             controlString,
+                                                             0,
+                                                             0,
+                                                             0,
+                                                             MacroOffset::none,
+                                                             0,
+                                                             0,
+                                                             priority);
+
         lm_group->setLastControlString(requestMsg->CommandString());
         multiPilMsg->insert( requestMsg );
         CtiTime now;

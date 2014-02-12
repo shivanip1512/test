@@ -540,7 +540,7 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                                             string(),
                                             nRet,
                                             OutMessage->Request.RouteID,
-                                            OutMessage->Request.MacroOffset,
+                                            OutMessage->Request.RetryMacroOffset,
                                             OutMessage->Request.Attempt,
                                             OutMessage->Request.GrpMsgID,
                                             OutMessage->Request.UserID,

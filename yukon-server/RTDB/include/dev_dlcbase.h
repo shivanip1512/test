@@ -158,7 +158,7 @@ public:
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     virtual bool processAdditionalRoutes( const INMESS *InMessage, int nRet ) const;
-    virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;
+    virtual MacroOffset selectInitialMacroRouteOffset(LONG routeid = 0) const;
 };
 
 }

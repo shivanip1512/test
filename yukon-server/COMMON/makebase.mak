@@ -57,6 +57,7 @@ fileint.obj \
 guard.obj \
 hash_functions.obj \
 logger.obj \
+macro_offset.obj \
 master.obj \
 millisecond_timer.obj \
 mutex.obj \

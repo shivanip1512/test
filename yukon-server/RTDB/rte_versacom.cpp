@@ -231,7 +231,17 @@ INT CtiRouteVersacom::ExecuteRequest(CtiRequestMsg                  *pReq,
     }
 
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -343,7 +353,17 @@ INT CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg                  *pR
         resultString = "Route " + getName() + " did not transmit Versacom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {

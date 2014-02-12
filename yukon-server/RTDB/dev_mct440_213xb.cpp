@@ -3812,7 +3812,7 @@ int Mct440_213xBDevice::decodeGetConfigOptions(const INMESS   *InMessage,
                                                                      InMessage->Return.UserID,
                                                                      InMessage->Return.GrpMsgID,
                                                                      InMessage->Return.RouteID,
-                                                                     0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                                     MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                      0,
                                                                      InMessage->Return.OptionsField,
                                                                      InMessage->Priority));
@@ -4416,7 +4416,7 @@ INT Mct440_213xBDevice::decodePutConfig(const INMESS   *InMessage,
                                                                          InMessage->Return.UserID,
                                                                          InMessage->Return.GrpMsgID,
                                                                          InMessage->Return.RouteID,
-                                                                         0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                                         MacroOffset::none,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
                                                                          0,
                                                                          InMessage->Return.OptionsField,
                                                                          InMessage->Priority));

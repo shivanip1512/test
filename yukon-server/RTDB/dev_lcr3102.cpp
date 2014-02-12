@@ -1062,7 +1062,7 @@ INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->Sequence  = EmetconProtocol::Scan_Integrity;
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
-            OutMessage->Request.MacroOffset = 0;
+            OutMessage->Request.RetryMacroOffset = MacroOffset::none;
 
             // Tell the porter side to complete the assembly of the message.
             OutMessage->Request.BuildIt = TRUE;

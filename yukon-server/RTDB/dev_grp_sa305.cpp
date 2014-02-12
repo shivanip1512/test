@@ -206,7 +206,17 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
          *  Form up the reply here since the ExecuteRequest function will consume the
          *  OutMessage.
          */
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), Route->getName(), nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     Route->getName(),
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.RetryMacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.GrpMsgID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     CtiMultiMsg_vec());
 
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
@@ -229,7 +239,17 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         nRet = NoRouteGroupDevice;
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
-        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
+                                                     string(OutMessage->Request.CommandStr),
+                                                     resultString,
+                                                     nRet,
+                                                     OutMessage->Request.RouteID,
+                                                     OutMessage->Request.RetryMacroOffset,
+                                                     OutMessage->Request.Attempt,
+                                                     OutMessage->Request.GrpMsgID,
+                                                     OutMessage->Request.UserID,
+                                                     OutMessage->Request.SOE,
+                                                     CtiMultiMsg_vec());
         retList.push_back( pRet );
 
         if(OutMessage)

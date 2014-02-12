@@ -309,7 +309,17 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
         resultString = "Route " + getName() + " did not transmit Versacom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {
@@ -453,7 +463,16 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     //  Only send a notice if the response from this request will be sent back to the client
     if( OutMessage->Request.Connection )
     {
-        CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), "Emetcon DLC command sent on route " + getName(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID,
+                                                   string(OutMessage->Request.CommandStr),
+                                                   "Emetcon DLC command sent on route " + getName(),
+                                                   status, OutMessage->Request.RouteID,
+                                                   OutMessage->Request.RetryMacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.GrpMsgID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec());
 
         if( (OutMessage->MessageFlags & MessageFlag_ExpectMore)
             || parse.isTwoWay()
@@ -868,7 +887,17 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
             //really not sure what to do here
             status = BADRANGE;
             resultString = "Message length was too large for expresscom in emetcon message. Length: " + CtiNumStr(size) + " Maximum: " + CtiNumStr(MAX_EXPRESSCOM_IN_EMETCON_LENGTH);
-            CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+            CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                              string(OutMessage->Request.CommandStr),
+                                                              resultString,
+                                                              status,
+                                                              OutMessage->Request.RouteID,
+                                                              OutMessage->Request.RetryMacroOffset,
+                                                              OutMessage->Request.Attempt,
+                                                              OutMessage->Request.GrpMsgID,
+                                                              OutMessage->Request.UserID,
+                                                              OutMessage->Request.SOE,
+                                                              CtiMultiMsg_vec());
 
             if(retReturn)
             {
@@ -887,7 +916,17 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
         status = BADPARAM;
         resultString = "Bad parameter in Expresscom command: \"" + parse.getCommandStr()+ "\" failed. Error " + CtiNumStr(status) + " - " + GetErrorString(status);
 
-        CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                          string(OutMessage->Request.CommandStr),
+                                                          resultString,
+                                                          status,
+                                                          OutMessage->Request.RouteID,
+                                                          OutMessage->Request.RetryMacroOffset,
+                                                          OutMessage->Request.Attempt,
+                                                          OutMessage->Request.GrpMsgID,
+                                                          OutMessage->Request.UserID,
+                                                          OutMessage->Request.SOE,
+                                                          CtiMultiMsg_vec());
 
         if(retReturn)
         {
@@ -912,7 +951,17 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
         resultString = "Route " + getName() + " did not transmit Expresscom commands";
     }
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      string(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {

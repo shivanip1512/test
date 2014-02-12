@@ -257,7 +257,17 @@ INT CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *pReq,
     }
 
 
-    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, CtiString(OutMessage->Request.CommandStr), resultString, status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+    CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                                      CtiString(OutMessage->Request.CommandStr),
+                                                      resultString,
+                                                      status,
+                                                      OutMessage->Request.RouteID,
+                                                      OutMessage->Request.RetryMacroOffset,
+                                                      OutMessage->Request.Attempt,
+                                                      OutMessage->Request.GrpMsgID,
+                                                      OutMessage->Request.UserID,
+                                                      OutMessage->Request.SOE,
+                                                      CtiMultiMsg_vec());
 
     if(retReturn)
     {

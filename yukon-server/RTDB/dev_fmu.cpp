@@ -166,7 +166,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                             string("FMU Devices do not support this command."),
                                                             nRet,
                                                             OutMessage->Request.RouteID,
-                                                            OutMessage->Request.MacroOffset,
+                                                            OutMessage->Request.RetryMacroOffset,
                                                             OutMessage->Request.Attempt,
                                                             OutMessage->Request.GrpMsgID,
                                                             OutMessage->Request.UserID,
@@ -248,7 +248,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                         string("FMU Devices do not support this command (yet?)"),
                                                         nRet,
                                                         OutMessage->Request.RouteID,
-                                                        OutMessage->Request.MacroOffset,
+                                                        OutMessage->Request.RetryMacroOffset,
                                                         OutMessage->Request.Attempt,
                                                         OutMessage->Request.GrpMsgID,
                                                         OutMessage->Request.UserID,
@@ -277,7 +277,7 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
                                                     string("FMU Devices do not support this command (yet?)"),
                                                     nRet,
                                                     OutMessage->Request.RouteID,
-                                                    OutMessage->Request.MacroOffset,
+                                                    OutMessage->Request.RetryMacroOffset,
                                                     OutMessage->Request.Attempt,
                                                     OutMessage->Request.GrpMsgID,
                                                     OutMessage->Request.UserID,
@@ -312,7 +312,17 @@ INT CtiDeviceFMU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     CtiReturnMsg *retReturn = NULL;
     if( OutMessage )
     {
-        retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+        retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
+                                            string(OutMessage->Request.CommandStr),
+                                            resultString,
+                                            nRet,
+                                            OutMessage->Request.RouteID,
+                                            OutMessage->Request.RetryMacroOffset,
+                                            OutMessage->Request.Attempt,
+                                            OutMessage->Request.GrpMsgID,
+                                            OutMessage->Request.UserID,
+                                            OutMessage->Request.SOE,
+                                            CtiMultiMsg_vec());
     }
 
     if( retReturn != NULL )
@@ -360,7 +370,7 @@ INT CtiDeviceFMU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                          result_string.data(),
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
@@ -380,7 +390,7 @@ INT CtiDeviceFMU::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< 
                                          resultString,
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
@@ -401,7 +411,7 @@ INT CtiDeviceFMU::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, li
                                                      string(),
                                                      InMessage.EventCode & 0x7fff,
                                                      InMessage.Return.RouteID,
-                                                     InMessage.Return.MacroOffset,
+                                                     InMessage.Return.RetryMacroOffset,
                                                      InMessage.Return.Attempt,
                                                      InMessage.Return.GrpMsgID,
                                                      InMessage.Return.UserID);

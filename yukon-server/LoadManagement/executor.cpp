@@ -45,6 +45,8 @@ using std::vector;
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 
 /*===========================================================================
@@ -840,7 +842,15 @@ void CtiLMCommandExecutor::RestoreGroup()
                         {
                             int priority = 11;
                             string controlString = "control restore";
-                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(),
+                                                                                 controlString,
+                                                                                 0,
+                                                                                 0,
+                                                                                 0,
+                                                                                 MacroOffset::none,
+                                                                                 0,
+                                                                                 0,
+                                                                                 priority);
 
                             if( routeId > 0 )
                             {
@@ -1007,7 +1017,15 @@ void CtiLMCommandExecutor::DisableGroup()
                             {
                                 int priority = 11;
                                 string controlString = "control restore";
-                                CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                                CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(),
+                                                                                     controlString,
+                                                                                     0,
+                                                                                     0,
+                                                                                     0,
+                                                                                     MacroOffset::none,
+                                                                                     0,
+                                                                                     0,
+                                                                                     priority);
 
                                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
@@ -1102,7 +1120,15 @@ void CtiLMCommandExecutor::ConfirmGroup()
                             }
                             int priority = 11;
                             string controlString = currentLMGroup->getLastControlString();
-                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(), controlString,0,0,0,0,0,0,priority);
+                            CtiRequestMsg* requestMsg = CTIDBG_new CtiRequestMsg(currentLMGroup->getPAOId(),
+                                                                                 controlString,
+                                                                                 0,
+                                                                                 0,
+                                                                                 0,
+                                                                                 MacroOffset::none,
+                                                                                 0,
+                                                                                 0,
+                                                                                 priority);
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {

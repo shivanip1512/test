@@ -22,6 +22,8 @@
 using std::string;
 using std::endl;
 
+using Cti::MacroOffset;
+
 extern ULONG _LM_DEBUG;
 
 DEFINE_COLLECTABLE( CtiLMGroupRipple, CTILMGROUPRIPPLE_ID )
@@ -91,7 +93,15 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(LONG refreshRate, L
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -125,7 +135,15 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(LONG sendRate, LONG sh
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*-------------------------------------------------------------------------
@@ -143,7 +161,15 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
     }
-    return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    return CTIDBG_new CtiRequestMsg(getPAOId(),
+                                    controlString,
+                                    0,
+                                    0,
+                                    0,
+                                    MacroOffset::none,
+                                    0,
+                                    0,
+                                    priority);
 }
 
 /*---------------------------------------------------------------------------

@@ -381,12 +381,16 @@ struct TestCase<CtiRequestMsg> : public TestCase<CtiMessage>
         GenerateRandom( imsg._device_id );
         GenerateRandom( imsg._command_string );
         GenerateRandom( imsg._route_id );
-        GenerateRandom( imsg._macro_offset );
+
+        if( GenerateRandom<bool>() )
+        {
+            imsg._macro_offset = GenerateRandom<unsigned>();
+        }
+
         GenerateRandom( imsg._attempt_num );
         GenerateRandom( imsg._group_message_id );
         GenerateRandom( imsg._user_message_id );
         GenerateRandom( imsg._options_field );
-
     }
 
     void Compare()
@@ -915,7 +919,12 @@ struct TestCase<CtiReturnMsg> : public TestCase<CtiMultiMsg>
         GenerateRandom( imsg._result_string );
         GenerateRandom( imsg._status );
         GenerateRandom( imsg._routeid );
-        GenerateRandom( imsg._macro_offset );
+
+        if( GenerateRandom<bool>() )
+        {
+            imsg._macro_offset = GenerateRandom<unsigned>();
+        }
+
         GenerateRandom( imsg._attempt_num );
         GenerateRandom( imsg._expectMore );
         GenerateRandom( imsg._group_message_id );

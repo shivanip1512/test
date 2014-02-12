@@ -1325,7 +1325,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                                         im->Buffer.RepeaterError.Details =
                                             findRepeaterInRouteByAddress(
                                                 om->Request.RouteID,
-                                                om->Request.MacroOffset,
+                                                om->Request.RetryMacroOffset,
                                                 im->Buffer.RepeaterError.ESt->echo_address);
                                     }
 
@@ -2916,7 +2916,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         InMessage->Buffer.RepeaterError.Details =
                             findRepeaterInRouteByAddress(
                                 OutMessage->Request.RouteID,
-                                OutMessage->Request.MacroOffset,
+                                OutMessage->Request.RetryMacroOffset,
                                 InMessage->Buffer.RepeaterError.ESt->echo_address);
 
                     }
@@ -3027,7 +3027,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                                 InMessage->Buffer.RepeaterError.Details =
                                     findRepeaterInRouteByAddress(
                                         OutMessage->Request.RouteID,
-                                        OutMessage->Request.MacroOffset,
+                                        OutMessage->Request.RetryMacroOffset,
                                         ESt.echo_address);
                             }
                             else
@@ -3255,11 +3255,11 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 }
 
 
-Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const int macroOffset, const unsigned echo_address )
+Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, const MacroOffset& macroOffset, const unsigned echo_address )
 {
     CtiRouteSPtr route = RouteManager.getRouteById(routeId);
 
-    if( macroOffset > 0 )
+    if( macroOffset )
     {
         if( route->getType() == RouteTypeMacro )
         {
@@ -3267,9 +3267,9 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, co
 
             CtiRouteMacro::CtiRoutePtrList_t routeList = macroRoute->getRoutePtrList();
 
-            if( macroOffset <= routeList.entries() )
+            if( *macroOffset < routeList.entries() )
             {
-                route = routeList[macroOffset - 1];
+                route = routeList[*macroOffset];
             }
         }
     }

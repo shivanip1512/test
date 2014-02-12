@@ -606,7 +606,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                                                 resultString,
                                                 nRet,
                                                 OutMessage->Request.RouteID,
-                                                OutMessage->Request.MacroOffset,
+                                                OutMessage->Request.RetryMacroOffset,
                                                 OutMessage->Request.Attempt,
                                                 OutMessage->Request.GrpMsgID,
                                                 OutMessage->Request.UserID,
@@ -1069,7 +1069,7 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
                                          result_string.c_str(),
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
@@ -1089,7 +1089,7 @@ INT DnpDevice::ResultDecode(const INMESS *InMessage, CtiTime &TimeNow, list< Cti
                                          resultString,
                                          InMessage->EventCode & 0x7fff,
                                          InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
+                                         InMessage->Return.RetryMacroOffset,
                                          InMessage->Return.Attempt,
                                          InMessage->Return.GrpMsgID,
                                          InMessage->Return.UserID);
