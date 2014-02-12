@@ -196,7 +196,7 @@
                                 </cti:url>
                                 <li>
                                     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-stop-blue"
+                                        dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
                                         labelKey=".actions.stop"/>
                                 </li>
                                 <li>
