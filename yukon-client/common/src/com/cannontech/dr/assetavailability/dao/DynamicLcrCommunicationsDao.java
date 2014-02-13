@@ -26,9 +26,9 @@ public interface DynamicLcrCommunicationsDao {
     public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds);
     
     /**
-     * Inserts last communication time, last non-zero run time, and last non-zero runtime for each relay for the
-     * specified device. If no entry exists for the device, one will be created. If an entry does exist, it will be
-     * updated.
+     * Inserts last communication time, last non-zero run time, and last non-zero relay runtimes for the
+     * specified device. If no entry exists for the device, one will be created. If an entry does exist, each column
+     * will only be updated if the value in the database is older than the value being inserted.
      */
     public void insertData(AssetAvailabilityPointDataTimes times);
 }
