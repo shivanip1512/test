@@ -110,28 +110,16 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        if (!isLoggedIn(request)) {
-            boolean success = false;
-
-            // Send error response or redirect to login page if we fail to log them in.
-            if (!success) {
-                success = doRememberMeCookieLogin(request, response);
-            }
-
-            if (!success) {
-                success = doDefaultParameterLogin(request);
-            }
-
-            if (!success) {
-             // If we got here, they couldn't be authenticated, send an error response or redirect to login page.
+        if (!isJsessionCookieLoggedIn(request)
+            && !doRememberMeCookieLogin(request, response)
+            && !doDefaultParameterLogin(request)) {
+                 // If we got here, they couldn't be authenticated, send an error response or redirect to login page.
                 log.debug("All login attempts failed, returning error");
                 doLoginRedirect(isAjaxRequest, request, response);
                 return;
-            }
-
-            log.debug("Proceeding with request after successful handler login");
         }
 
+        log.debug("Proceeding with request after successful handler login");
         // At this point the user has been authenticated, check for timeout and authorization.
         LiteYukonUser user = attachYukonUserContext(request, true).getYukonUser();
 
@@ -222,7 +210,7 @@ public class LoginFilter implements Filter {
         }
     }
 
-    private boolean isLoggedIn(ServletRequest request) {
+    private boolean isJsessionCookieLoggedIn(ServletRequest request) {
         try {
             ServletUtil.getYukonUser(request);
             return true;
