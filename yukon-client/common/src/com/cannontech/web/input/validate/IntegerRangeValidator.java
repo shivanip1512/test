@@ -37,17 +37,11 @@ public class IntegerRangeValidator implements InputValidator<Integer> {
             return;
         }
 
-        if (value < minValue) {
+        if (value < minValue || value > maxValue) {
             errors.rejectValue(path,
                                "yukon.web.input.error.outOfRangeInt",
                                new Object[] { displayName, minValue, maxValue},
-                               "The input value must be greater than or equal to " + minValue);
-        }
-        if (value > maxValue) {
-            errors.rejectValue(path,
-                               "yukon.web.input.error.outOfRangeInt",
-                               new Object[] { displayName, minValue, maxValue },
-                               "The input value must be less than or equal to " + maxValue);
+                               "Must be an integer value between " + minValue + " and " + maxValue + ", inclusive.");
         }
     }
 }
