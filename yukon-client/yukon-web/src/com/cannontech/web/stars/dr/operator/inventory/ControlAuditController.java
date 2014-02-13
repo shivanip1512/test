@@ -94,7 +94,7 @@ public class ControlAuditController {
 
             if (from != null && to != null) {
                 if (from.isAfter(to)) {
-                    YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.secondAfterFirst", "to", "from");
+                    YukonValidationUtils.rejectValues(errors, BASE_ERROR_KEY + ".date.fromAfterTo", "to", "from");
                 }
             }
         }
