@@ -104,7 +104,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 }
                 /** Handle Broadcast Verification Messages */
                 Schema schema = exiParsingService.getSchema(payload);
-                if (schema.supportsBroadcastVerificationMessages()) {
+                if (Schema.supportsBroadcastVerificationMessages(schema)) {
                     Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
                         .mapBroadcastVerificationMessages(decodedPayload);
                     Range<Instant> range = rfnLcrDataMappingService

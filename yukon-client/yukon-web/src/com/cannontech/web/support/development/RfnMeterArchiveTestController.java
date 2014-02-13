@@ -80,7 +80,8 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendPerformanceVerification")
-    public String sendPerformanceVerification() {
+    public String sendPerformanceVerification(ModelMap model) {
+        model.addAttribute("drReports", DRReport.values());
         performanceVerificationService.sendPerformanceVerificationMessage();
         return "development/rfn/viewLcrReadArchive.jsp";
     }

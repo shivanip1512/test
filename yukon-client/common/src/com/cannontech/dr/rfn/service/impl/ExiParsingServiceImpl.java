@@ -46,7 +46,6 @@ public class ExiParsingServiceImpl implements ExiParsingService {
        
         private final String version;
         private final String schema;
-        private boolean supportsBroadcastVerificationMessages;
         private static final String classpath = "classpath:com/cannontech/dr/rfn/endpoint/";
         private static final Map<String, Schema> lookupByVersion;
         
@@ -61,10 +60,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         
         private Schema(String version, String schema) {
             this.version = version;
-            this.schema = schema; 
-            if(!"0.0.2".equals(version)){
-            	this.supportsBroadcastVerificationMessages = true;
-            }
+            this.schema = schema;
         }
 
         public String getVersion() {
@@ -73,12 +69,17 @@ public class ExiParsingServiceImpl implements ExiParsingService {
 
         public String getLocation() {
             return classpath + schema;
-        }  
+        } 
         
-        public boolean supportsBroadcastVerificationMessages() {
-            return supportsBroadcastVerificationMessages;
-        }  
-        
+        public static boolean supportsBroadcastVerificationMessages(Schema schema) {
+            switch (schema) {
+            case SCHEMA_0_0_3:
+                return true;
+            default:
+                return false;
+            }
+        }
+
         public static Schema getSchema(String schemaVersion){
         	return lookupByVersion.get(schemaVersion);
         }
@@ -89,7 +90,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     @Autowired ResourceLoader loader;
     private static final Logger log = YukonLogManager.getLogger(ExiParsingService.class);
     
-    private Map<String, EXISchema> schemas = new HashMap<String, EXISchema>();
+    private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
     	
@@ -101,8 +102,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     	
         //Get the schema version from the header
         byte[] header = Arrays.copyOfRange(data, 0, 4);
-        String schemaVersion = getSchemaVersion(header);
-        EXISchema exiSchema = getLcrReadingSchema(schemaVersion);
+        Schema schema = getSchema(header);
+        EXISchema exiSchema = getExiSchema(schema);
         
         // Create grammar using RF LCR reading schema & default options.
         short options = GrammarOptions.DEFAULT_OPTIONS;
@@ -159,9 +160,9 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     }
     
     /**
-     * This method is used to parse the schema version from the header and return a schema version in X.X.X format.
+     * Parse the schema version from the header and return a schema
      */
-    private String getSchemaVersion(byte[] exiHeader){
+    private Schema parseSchema(byte[] exiHeader){
     	ByteBuffer header = ByteBuffer.wrap(exiHeader);
         StringBuilder version = new StringBuilder();
         ByteBuffer majorMinorBuffer = ByteBuffer.allocate(1);
@@ -177,7 +178,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         revisionBuffer.put(header.array(), 3, 1);
         version.append(revisionBuffer.get(0));        
         log.debug("Parsed schema version: " + version);
-        return version.toString();
+        return Schema.getSchema(version.toString());
     }
     
     /**
@@ -191,7 +192,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
      * 
      * @return The EXISchema object representation of the file rfnLcrExiMessageSchema.xsd.
      */
-    private EXISchema getLcrReadingSchema(String version) {
+    private EXISchema getExiSchema(Schema schema) {
         // Serialize the EXI schemas once and then re-use it
         if (schemas.isEmpty()) {
             EXISchemaFactory factory = new EXISchemaFactory();
@@ -199,8 +200,8 @@ public class ExiParsingServiceImpl implements ExiParsingService {
                 try {
                     Resource informingSchemaResource = loader.getResource(location.getLocation());
                     InputSource is = new InputSource(informingSchemaResource.getInputStream());
-                    EXISchema schema = factory.compile(is);
-                    schemas.put(location.getVersion(), schema);
+                    EXISchema exiSchema = factory.compile(is);
+                    schemas.put(location, exiSchema);
                 } catch (EXISchemaFactoryException | IOException e) {
                     throw new RuntimeException("Error creating EXI schema version:"
                                                + location.getVersion() + " location:"
@@ -208,17 +209,17 @@ public class ExiParsingServiceImpl implements ExiParsingService {
                 }
             }
         }
-        EXISchema schema = schemas.get(version);
-        if(schema == null){
-            throw new RuntimeException("There is no EXI schema for version "+version);
+        EXISchema exiSchema = schemas.get(schema);
+        if (exiSchema == null) {
+            throw new RuntimeException("There is no EXI schema for version " + schema.getVersion());
         }
-        log.debug("Retrieved schema version: " + version);
-        return schema;
+        log.debug("Retrieved schema version: " + schema.getVersion());
+        return exiSchema;
     }
 
     @Override
     public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException {
-        EXISchema schema = getLcrReadingSchema("0.0.3");
+        EXISchema schema = getExiSchema(Schema.SCHEMA_0_0_3);
         short defaultOptions = GrammarOptions.DEFAULT_OPTIONS;
         GrammarCache grammarCache = new GrammarCache(schema, defaultOptions);
         
@@ -243,8 +244,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
         } else {
             header = Arrays.copyOfRange(payload, 0, 4);
         }
-        String schemaVersion = getSchemaVersion(header);
-        return Schema.getSchema(schemaVersion);
+        return parseSchema(header);
     }
 
 }
