@@ -130,7 +130,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
 
             if (canBroadcast(command)) {
                 RfnExpressComBroadcastRequest request = new RfnExpressComBroadcastRequest();
-                request.setRfnMessageClass(RfnMessageClass.NONE);
+                request.setRfnMessageClass(RfnMessageClass.DR);
                 request.setExpirationDuration(-1); // Messages will not expire.
                 int commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_LM_HARDWARE_COMMAND", 
                         CommandRequestExecutionDefaults.getPriority(DeviceRequestType.LM_HARDWARE_COMMAND));
