@@ -26,6 +26,7 @@ import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
@@ -61,31 +62,46 @@ public class RfPerformanceController {
     @RequestMapping(value="/rf/performance", method=RequestMethod.POST)
     public String saveSettings(@ModelAttribute("settings") RfPerformanceSettings settings, YukonUserContext userContext, FlashScope flash) {
         
-        LocalTime time = LocalTime.MIDNIGHT.plusMinutes(settings.getTime());
+        LocalTime commandTime = LocalTime.MIDNIGHT.plusMinutes(settings.getTime());
+        LocalTime emailTime = LocalTime.MIDNIGHT.plusMinutes(settings.getEmailTime());
         
-        StringBuilder cron = new StringBuilder("0 ");
-        cron.append(time.getMinuteOfHour() + " ");
-        cron.append(time.getHourOfDay() + " * * ?");
+        StringBuilder commandCron = new StringBuilder("0 ");
+        commandCron.append(commandTime.getMinuteOfHour() + " ");
+        commandCron.append(commandTime.getHourOfDay() + " * * ?");
         
-        log.debug("Cron update: '" + cron.toString() + "'");
+        StringBuilder emailCron = new StringBuilder("0 ");
+        emailCron.append(emailTime.getMinuteOfHour() + " ");
+        emailCron.append(emailTime.getHourOfDay() + " * * ?");
         
-        ScheduledRepeatingJob testCommandJob = getJob(rfnVerificationJobDef);
-        testCommandJob.setSystemUser(true);  // important!
-        
-        ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
-        emailJob.setSystemUser(true); // important!
-        emailJob.getJobProperties().put("notificationGroups", StringUtils.join(settings.getNotifGroupIds(), ","));
-//        emailJob.getJobProperties().put("additionalEmails", "");
+        ScheduledRepeatingJob commandJob = getJob(rfnVerificationJobDef);
+        commandJob.setSystemUser(true);  // important!
         
         try {
-            if (!cron.toString().equals(testCommandJob.getCronString())) {
-                jobManager.replaceScheduledJob(testCommandJob.getId(), 
+            if (!commandCron.toString().equals(commandJob.getCronString())) {
+                jobManager.replaceScheduledJob(commandJob.getId(), 
                                                rfnVerificationJobDef, 
-                                               testCommandJob.getJobDefinition().createBean(), 
-                                               cron.toString(), 
+                                               commandJob.getJobDefinition().createBean(), 
+                                               commandCron.toString(), 
                                                null); // system user!
             }
             
+            ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
+            emailJob.setSystemUser(true); // important!
+            emailJob.getJobProperties().put("notificationGroups", StringUtils.join(settings.getNotifGroupIds(), ","));
+//            emailJob.getJobProperties().put("additionalEmails", "");
+            if (!emailCron.toString().equals(emailJob.getCronString())) {
+                jobManager.replaceScheduledJob(emailJob.getId(), 
+                        rfnEmailJobDef, 
+                        emailJob.getJobDefinition().createBean(), 
+                        emailCron.toString(), 
+                        null); // system user!
+                
+                emailJob = getJob(rfnEmailJobDef);
+            }
+            
+            // Always call one of these since we may need to update
+            // job properties and these two methods end up saving 
+            // everything about the job (hacky)
             if (settings.isEmail()) {
                 jobManager.enableJob(emailJob);
             } else {

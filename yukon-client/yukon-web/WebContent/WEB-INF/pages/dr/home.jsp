@@ -123,6 +123,17 @@
                                         <cti:button nameKey="off" classes="no M0"/>
                                     </div>
                                 </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".rfPerformance.configure.dailyEmail" rowClass="f-email-schedule">
+                                    <div class="column-6-18 clearfix stacked">
+                                        <div class="column one">
+                                            <span class="f-email-time-label fwb">&nbsp;</span>
+                                            <tags:hidden path="emailTime" id="rf-performance-email-time"/>
+                                        </div>
+                                        <div class="column two nogutter">
+                                            <div class="f-email-time-slider" style="margin-top: 7px;"></div>
+                                        </div>
+                                    </div>
+                                </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.notifGroups" rowClass="f-notif-group">
                                     <tags:hidden path="notifGroupIds" id="rf-performance-notif-group-ids"/>
                                     <tags:pickerDialog type="notificationGroupPicker" 

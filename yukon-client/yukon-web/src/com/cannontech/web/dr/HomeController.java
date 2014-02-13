@@ -114,11 +114,17 @@ public class HomeController {
             ScheduledRepeatingJob testCommandJob = getJob(rfnVerificationJobDef);
             ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
             
+            RfPerformanceSettings settings = new RfPerformanceSettings();
+            
             String[] time = StringUtils.split(testCommandJob.getCronString(), " ");
             int minutes = Integer.parseInt(time[1]);
             int hours = Integer.parseInt(time[2]);
-            RfPerformanceSettings settings = new RfPerformanceSettings();
             settings.setTime((hours * 60) + minutes); // minutes from midnight
+            
+            String[] emailTime = StringUtils.split(emailJob.getCronString(), " ");
+            minutes = Integer.parseInt(emailTime[1]);
+            hours = Integer.parseInt(emailTime[2]);
+            settings.setEmailTime((hours * 60) + minutes); // minutes from midnight
             
             settings.setEmail(!emailJob.isDisabled());
             

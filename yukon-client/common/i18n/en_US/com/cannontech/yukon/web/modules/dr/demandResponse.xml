@@ -438,6 +438,7 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.dailyTestCommand">Daily Test Command</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.emailResults">Email Results</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.notifGroups">Notification Groups</entry>
+<entry key="yukon.web.modules.dr.home.rfPerformance.configure.dailyEmail">Daily Email</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.success">Broadcast Performance Configuration Saved</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.failed">Broadcast Performance Configuration Failed</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.successful">Successful</entry>

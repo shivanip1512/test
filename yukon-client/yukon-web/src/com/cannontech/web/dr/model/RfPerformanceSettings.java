@@ -5,6 +5,7 @@ import java.util.List;
 public class RfPerformanceSettings {
     
     private int time;
+    private int emailTime;
     private boolean email;
     private List<Integer> notifGroupIds;
     
@@ -14,6 +15,14 @@ public class RfPerformanceSettings {
     
     public void setTime(int time) {
         this.time = time;
+    }
+    
+    public int getEmailTime() {
+        return emailTime;
+    }
+    
+    public void setEmailTime(int emailTime) {
+        this.emailTime = emailTime;
     }
     
     public boolean isEmail() {
@@ -31,10 +40,12 @@ public class RfPerformanceSettings {
     public void setNotifGroupIds(List<Integer> notifGroupIds) {
         this.notifGroupIds = notifGroupIds;
     }
-    
+
     @Override
     public String toString() {
-        return String.format("RfBroadcastPerformanceSettings [time=%s, email=%s, notifGroupIds=%s]", time, email, notifGroupIds);
+        return String
+                .format("RfPerformanceSettings [time=%s, emailTime=%s, email=%s, notifGroupIds=%s]",
+                        time, emailTime, email, notifGroupIds);
     }
     
 }
