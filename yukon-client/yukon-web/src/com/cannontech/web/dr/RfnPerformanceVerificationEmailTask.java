@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -100,7 +99,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         List<String> notifEmailsAddresses = new ArrayList<>();
         for (LiteNotificationGroup notifGroup : notifGroups) {
             if (!notifGroup.isDisabled()) {
-                List<String> notifEmails = Arrays.asList(notificationGroupDao.getNotifEmailsByLiteGroup(notifGroup));
+                List<String> notifEmails = notificationGroupDao.getContactNoficationEmails(notifGroup);
                 notifEmailsAddresses.addAll(notifEmails);
             } else {
                 log.info("Not sending emails because notification group is disabled: group=" + notifGroup);

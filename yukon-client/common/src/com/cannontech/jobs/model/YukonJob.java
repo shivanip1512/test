@@ -60,6 +60,11 @@ public class YukonJob {
 
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
+
+        if (userContext == null) {
+            isSystemUser = true;
+            this.userContext = YukonUserContext.system;
+        }
     }
 
     public YukonUserContext getUserContext() {

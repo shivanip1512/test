@@ -1,11 +1,12 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 
 public interface NotificationGroupDao {
-    String[] getNotifEmailsByLiteGroup(LiteNotificationGroup notificationGroup);
+    List<String> getContactNoficationEmails(LiteNotificationGroup notificationGroup);
 
     LiteNotificationGroup getLiteNotificationGroup(int groupId);
 

@@ -3,6 +3,7 @@ package com.cannontech.jobs.service.impl;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,8 @@ public class JobManagerImpl implements JobManager {
 
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
             new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
+    
+    private final Map<String, String> EMPTY_PROPERTY_MAP = new HashMap<>();
 
     // JobId -> ScheduledJobInfoImpl
     private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
@@ -214,11 +217,6 @@ public class JobManagerImpl implements JobManager {
     }
 
     @Override
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
-        return scheduleJob(jobDefinition, task, time, YukonUserContext.system);
-    }
-
-    @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time,
         YukonUserContext userContext) {
         log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
@@ -236,27 +234,38 @@ public class JobManagerImpl implements JobManager {
     @Override
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task,
         String cronExpression, YukonUserContext userContext) {
+        return replaceScheduledJob(jobId, jobDefinition, task, cronExpression, userContext, EMPTY_PROPERTY_MAP);
+    }
+    
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
+                                        YukonTask task, String cronExpression,
+                                        YukonUserContext userContext,
+                                        Map<String, String> jobProperties) {
         YukonJob job = getJob(jobId);
         deleteJob(job);
-        YukonJob scheduledJob = scheduleJob(jobDefinition, task, cronExpression, userContext);
+        YukonJob scheduledJob = scheduleJob(jobDefinition, task, cronExpression, userContext, jobProperties);
         return scheduledJob;
     }
-
+    
     @Override
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
-        return scheduleJob(jobDefinition, task, cronExpression, YukonUserContext.system);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
+                                String cronExpression, YukonUserContext userContext) {
+        return scheduleJob(jobDefinition, task, cronExpression, userContext, EMPTY_PROPERTY_MAP);
     }
 
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression,
-        YukonUserContext userContext) {
+        YukonUserContext userContext, Map<String, String> jobProperties) {
         log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression="
             + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
         
-        // this is a system job if the context is null
-        repeatingJob.setSystemUser(userContext == null);
+        if (repeatingJob.getJobProperties().isEmpty()) {
+            // Use what the caller gave us
+            repeatingJob.setJobProperties(jobProperties);
+        }
 
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);

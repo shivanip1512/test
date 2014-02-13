@@ -3,6 +3,7 @@ package com.cannontech.jobs.service.impl;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -91,28 +92,31 @@ public class JobManagerStub implements JobManager {
 
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
-            YukonTask task, Date time) {
-        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
-    }
-
-    @Override
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
             YukonTask task, Date time, YukonUserContext userContext) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
-
+    
     @Override
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
-            YukonTask task, String cronExpression) {
-        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
-    }
-
-    @Override
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition,
-            YukonTask task, String cronExpression, YukonUserContext userContext) {
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
+                                String cronExpression, YukonUserContext userContext,
+                                Map<String, String> jobProperties) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
     
+    @Override
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
+                                String cronExpression, YukonUserContext userContext) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+    
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
+                                        YukonTask task, String cronExpression,
+                                        YukonUserContext userContext,
+                                        Map<String, String> jobProperties) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
     @Override
     public Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
     	throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);

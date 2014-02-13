@@ -9,36 +9,30 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
-import com.cannontech.database.data.notification.NotifDestinationMap;
+import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class NotificationGroupDaoImpl implements NotificationGroupDao {
     private IDatabaseCache databaseCache;
-
+    
     @Override
-    public String[] getNotifEmailsByLiteGroup(LiteNotificationGroup notificationGroup) {
-        List<String> emailList = new ArrayList<>(8);
-
+    public List<String> getContactNoficationEmails(LiteNotificationGroup notificationGroup) {
+        List<String> emailList = new ArrayList<>();
+        
         synchronized (databaseCache) {
-            for (NotifDestinationMap notifDest : notificationGroup.getNotifDestinationMap()) {
-                LiteContactNotification lcn = databaseCache.getAllContactNotifsMap().get(notifDest.getRecipientID());
+            for (ContactNotifGroupMap notifDest : notificationGroup.getContactMap()) {
+                LiteContactNotification lcn = databaseCache.getAllContactNotifsMap().get(notifDest.getContactID());
 
                 // we have an email address, add it to our list
                 if (lcn.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) {
                     emailList.add(lcn.getNotification());
                 }
             }
-
         }
-
-        String[] emailArray = new String[emailList.size()];
-        if (!emailList.isEmpty()) {
-            emailArray = emailList.toArray(emailArray);
-        }
-
-        return emailArray;
+        
+        return emailList;
     }
-
+    
     @Override
     public LiteNotificationGroup getLiteNotificationGroup(int groupId) {
         synchronized (databaseCache) {

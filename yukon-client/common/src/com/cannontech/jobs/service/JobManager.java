@@ -3,6 +3,7 @@ package com.cannontech.jobs.service;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
@@ -19,11 +20,11 @@ public interface JobManager {
 
     public static final String JOB_MANAGER_DISABLED_KEY = "JOB_MANAGER_DISABLED";
     
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time);
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext);
-    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression);
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
+    public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext, Map<String, String> jobProperties);
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext);
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext, Map<String, String> jobProperties);
     
     public void enableJob(YukonJob job);
     public void disableJob(YukonJob job);
