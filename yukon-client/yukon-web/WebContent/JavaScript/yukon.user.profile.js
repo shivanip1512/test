@@ -1,4 +1,12 @@
+/**
+ * Singleton that manages the user profile page
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.UserPreferences');
+
 yukon.UserPreferences = (function () {
     /**
      * Singleton that manages the javascript in User Preferences

@@ -1,3 +1,11 @@
+/**
+ * Singleton that contains more ui utility functionality
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
+yukon.namespace('yukon.ui');
 yukon.namespace('yukon.ui.aux');
 
 yukon.ui.aux = (function () {

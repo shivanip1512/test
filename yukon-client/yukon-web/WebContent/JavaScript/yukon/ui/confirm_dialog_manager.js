@@ -1,10 +1,10 @@
-/*  confirm_dialog_manager.js
+/** 
+ * Singleton to manage confirming an action with a special dialog
  * 
- * requirements:
- *      jQueryUI 1.8.16+
+ * @requires jQueryUI 1.8.16+
  *      
  * abstract:
- *      Manages the display and event handling of the confirmation dialog box in standard.jsp
+ *      Manages the display and event handling of the confirmation dialog box
  *      
  * usage:
  *      Simply including this file will initialize the singleton and register event listeners for
@@ -14,7 +14,9 @@
  *          * registering a new confirmation object
  *          * closing the dialog
  */
+
 yukon.namespace('yukon.modules.DialogConfirmationManager');
+
 yukon.modules.DialogConfirmationManager = function (mod) {
     var _initialized = false,
         _current_dialog = null,

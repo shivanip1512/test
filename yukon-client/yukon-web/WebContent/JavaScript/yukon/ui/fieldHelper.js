@@ -1,12 +1,12 @@
-/*
- * Requirements: 
- *      - jQuery 1.6+
- *      - /JavaScript/yukon/ui/general.js [for the trigger()]
- * 
+/**
  * Singleton for UI functionality editing focusableFieldHolders
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
  */
 
 yukon.modules.FieldHelper = function (mod) {
+    
     var _initialized = false,
         _timeout = null,
         _timeoutArgs = null;

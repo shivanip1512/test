@@ -1,6 +1,6 @@
 
 /**
- * Singleton that manages the javascript for Yukon themes
+ * Singleton that manages the Yukon theming feature
  * 
  * @requires jQuery 1.8.3+
  * @requires jQuery UI 1.9.2+
@@ -9,10 +9,6 @@
  * @requires JQUERY_FILE_UPLOAD
  * @requires JQUERY_SPECTRUM
  */
-
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
 
 yukon.namespace('yukon.Themes');
 

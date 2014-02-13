@@ -1,10 +1,14 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages survey editing
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
+yukon.namespace('yukon.Surveys');
 yukon.namespace('yukon.Surveys.Edit');
 
 yukon.Surveys.Edit = (function () {
-
 
     var _moveUpIcon,
         _moveDownIcon,

@@ -1,7 +1,13 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the survey list page
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
+yukon.namespace('yukon.Surveys');
 yukon.namespace('yukon.Surveys.List');
+
 yukon.Surveys.List = (function () {
     mod = {
         init: function () {

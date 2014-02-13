@@ -1,3 +1,10 @@
+/**
+ * Singleton that manages the device data monitor feature
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.DeviceDataMonitor');
 
 yukon.DeviceDataMonitor = (function () {

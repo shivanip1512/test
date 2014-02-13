@@ -1,13 +1,9 @@
-
 /**
- * Singleton that manages the javascript for Yukon Status Response Monitor
+ * Singleton that manages the status point monitor feature
  * 
  * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
  */
-
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
 
 yukon.namespace('yukon.StatusPointMonitor');
 

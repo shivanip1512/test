@@ -7,10 +7,18 @@ public final class PerformanceVerificationEventMessageStats {
     private final PerformanceVerificationEventMessage eventMessage;
     private final PerformanceVerificationEventStats eventStats;
 
-    public PerformanceVerificationEventMessageStats(long messageId, Instant timeMessageSent, int numSuccesses, 
-                                                    int numFailures, int numUnknowns) {
+    public PerformanceVerificationEventMessageStats(long messageId, 
+                                                    Instant timeMessageSent, 
+                                                    int numSuccesses, 
+                                                    int numFailures, 
+                                                    int numUnknowns) {
+        
         eventMessage = new PerformanceVerificationEventMessage(messageId, timeMessageSent);
         eventStats = new PerformanceVerificationEventStats(numSuccesses, numFailures, numUnknowns);
+    }
+    
+    public PerformanceVerificationEventStats getEventStats() {
+        return eventStats;
     }
 
     public long getMessageId() {
@@ -36,4 +44,5 @@ public final class PerformanceVerificationEventMessageStats {
     public double getPercentSuccess() {
         return eventStats.getPercentSuccess();
     }
+    
 }

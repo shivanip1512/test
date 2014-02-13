@@ -1,7 +1,12 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the ivvc pages in capcontrol
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.Ivvc.Zone');
+
 yukon.Ivvc.Zone = (function () {
 
     var _zoneId,

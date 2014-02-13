@@ -1,7 +1,13 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the survey opt out page
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
+yukon.namespace('yukon.Surveys');
 yukon.namespace('yukon.Surveys.OptOut');
+
 yukon.Surveys.OptOut = (function () {
 
     var mod = {

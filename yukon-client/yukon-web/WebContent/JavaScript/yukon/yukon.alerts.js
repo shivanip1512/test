@@ -1,14 +1,12 @@
-
 /**
- * Singleton that manages the javascript for Yukon alerts
+ * Singleton that manages the Yukon alerts
  * 
- * @requires jQuery 1.6+
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
  */
 
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
 yukon.namespace('yukon.Alerts');
+
 yukon.Alerts = (function () {
         var _initialized = false,
         _countInitialized = false,

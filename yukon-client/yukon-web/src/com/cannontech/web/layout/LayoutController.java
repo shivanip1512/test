@@ -116,7 +116,7 @@ public class LayoutController {
         }
         builder.add("/JavaScript/CtiMenu.js");
         builder.add("/JavaScript/dataUpdater.js");
-        builder.add("/JavaScript/dropdown_actions.js");
+        builder.add("/JavaScript/yukon/yukon.dropdown.js");
         builder.add("/JavaScript/simpleCookies.js");
         builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/yukon/util/analytics_manager.js");

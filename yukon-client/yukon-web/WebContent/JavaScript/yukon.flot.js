@@ -1,15 +1,15 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the yukon's FlotCharts implementation
+ * 
+ * @class yukon.Flot javascript
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
+yukon.namespace('yukon.Flot');
 
 yukon.Flot = (function () {
-    /**
-     * Singleton that manages the javascript of our FlotCharts implementation
-     * 
-     * @class yukon.Flot javascript
-     * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
-     * @requires jQuery 1.6+
-     */
+    
     var _initialized = false,
         /* selectors */
         _selector_chart_container = ".flotchart_container",

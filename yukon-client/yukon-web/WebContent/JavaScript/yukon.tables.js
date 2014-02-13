@@ -1,29 +1,38 @@
-// The following function creates a table given an array of row data
-// and an array that specifies the order of the columns. An example
-// dataArray may look like this:
-//    [{'firstname': 'Tom', 'lastname': 'Mack'},
-//     {'firstname': 'Jon', 'lastname': 'Dayton'},
-//     {'firstname': 'Aaron', 'lastname': 'Solberg'}]
-// An example outputCols might then look like this:
-//    [{'title': 'First Name', 'field': 'firstname'},
-//     {'title': 'Last Name', 'field': 'lastname'}]
-// Note that the keys and values from the dataArray are completely
-// arbitrary. On the other hand, the outputCols array must have 
-// 'title', 'field', and (optionally) 'link' keys for each entry
-// and the value of the 'field' key must match a key in the dataArray.
-// The rowCallback is a function of the following form:
-//    function(rowElement, data) {
-//        if (data.firstname == 'Tom') {
-//            rowElement.addClassName('awesome'); # causes <tr class="awesome"> ... </tr> to be output
-//        }
-//     }
-// An unattached table DOM element is returned from this function.
+/**
+ * Singleton that can produce tables from data in an array
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.Tables');
 
 yukon.Tables = (function () {
     var mod;
 
     mod = {
+            
+        // The following function creates a table given an array of row data
+        // and an array that specifies the order of the columns. An example
+        // dataArray may look like this:
+        //    [{'firstname': 'Tom', 'lastname': 'Mack'},
+        //     {'firstname': 'Jon', 'lastname': 'Dayton'},
+        //     {'firstname': 'Aaron', 'lastname': 'Solberg'}]
+        // An example outputCols might then look like this:
+        //    [{'title': 'First Name', 'field': 'firstname'},
+        //     {'title': 'Last Name', 'field': 'lastname'}]
+        //
+        // Note that the keys and values from the dataArray are completely
+        // arbitrary. On the other hand, the outputCols array must have 
+        // 'title', 'field', and (optionally) 'link' keys for each entry
+        // and the value of the 'field' key must match a key in the dataArray.
+        // The rowCallback is a function of the following form:
+        //     function(rowElement, data) {
+        //         if (data.firstname == 'Tom') {
+        //             rowElement.addClassName('awesome'); # causes <tr class="awesome"> ... </tr> to be output
+        //         }
+        //     }
+        // An unattached table DOM element is returned from this function.
         createHtmlTableFromJson: function (dataArray, outputCols, rowCallback) {
             var resultTable = document.createElement("table"),
                 resultTableHead = document.createElement("thead"),

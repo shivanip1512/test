@@ -1,7 +1,12 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the data view feature (TDC)
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.Tdc');
+
 yukon.Tdc = (function () {
     var _playAudio = function() {
         try {

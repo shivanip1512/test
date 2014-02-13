@@ -1,14 +1,13 @@
+/**
+ * Singleton that manages the old ami billing pages
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.MeteringBilling');
 
 yukon.MeteringBilling = (function() {
-    
-    /**
-     * Singleton that manages the javascript in User Preferences
-     * 
-     * @class User Preferences javascript
-     * @requires jQuery 1.8+
-     */
-    /* PRIVATE VARIABLES METHODS */
 
     var _STOP_EVENT = function(event) {
             event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue

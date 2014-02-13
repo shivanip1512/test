@@ -1,4 +1,10 @@
-// general-purpose module for non-ui functionality
+/**
+ * Singleton that manages all Yukon javascript functionality
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 var yukon = (function (yukonMod) {
     return yukonMod;
 })(yukon || {});

@@ -1,3 +1,10 @@
+/**
+ * Singleton that manages the password updating
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 var yukon = (function (yukonMod) {
     return yukonMod;
 })(yukon || {});

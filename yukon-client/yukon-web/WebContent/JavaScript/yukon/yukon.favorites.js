@@ -1,7 +1,12 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages Yukon favorites feature
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.Favorites');
+
 yukon.Favorites = (function () {
 
     var _dataFavoriteButton = function (button) {

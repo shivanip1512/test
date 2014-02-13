@@ -1,7 +1,12 @@
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+/**
+ * Singleton that manages the all capcontrol pages functionality
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
+
 yukon.namespace('yukon.CapControl');
+
 yukon.CapControl = (function () {
 
     var lock_buttons = function(el_id) {

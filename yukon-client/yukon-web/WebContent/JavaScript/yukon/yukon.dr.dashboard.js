@@ -27,18 +27,18 @@ yukon.dr.dashboard = (function () {
                 value: _initialTime,
                 step: 15,
                 slide: function(event, ui) {
-                    var currentTime = timeFormatter.formatTime(ui.value, parseInt(0/60));
+                    var currentTime = timeFormatter.formatTime(ui.value, 0);
                     jQuery(_timeSelector).html(currentTime);
                     jQuery('#rf-performance-command-time').val(ui.value);
                 },
                 change: function(event, ui) {
-                    var currentTime = timeFormatter.formatTime(ui.value, parseInt(0/60));
+                    var currentTime = timeFormatter.formatTime(ui.value, 0);
                     jQuery(_timeSelector).html(currentTime);
                     jQuery('#rf-performance-command-time').val(ui.value);
                 }
             });
             /** Setup the time label */
-            jQuery(_timeSelector).html(timeFormatter.formatTime(_initialTime, parseInt(0/60)));
+            jQuery(_timeSelector).html(timeFormatter.formatTime(_initialTime, 0));
             
             /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
             jQuery(document).on('click', '.f-broadcast-config .toggle-on-off .button', function() {

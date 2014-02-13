@@ -1,5 +1,9 @@
 /**
- * JavaScript for the dropdown.tag, ajaxDropdown.tag, and criteria.tag
+ * JavaScript for the dropdown menus in Yukon
+ * 
+ * Tags: dropdown.tag, ajaxDropdown.tag, and criteria.tag
+ * 
+ * @requires jQuery 1.8.3+
  */
 jQuery(function() {
     
@@ -66,9 +70,7 @@ jQuery(function() {
         }
     }
     
-    /**
-     * Retrieve a menu via ajax and open it.
-     */
+    /** Retrieve a menu via ajax and open it. */
     function ajaxMenuOpen(target, e) {
         var menu = target.data('menu'),
             params;
@@ -121,6 +123,12 @@ jQuery(function() {
             jQuery('ul.dropdown-menu').hide();
             jQuery('.dropdown-container').removeClass('menu-open');
         }
+    });
+    
+    /** Show menu in tables on right click */
+    jQuery(document).on('contextmenu', '.has-actions tr', function(event) {
+        event.preventDefault();
+        jQuery(this).find('.dropdown-container').trigger('click');
     });
     
     /** Handle option selections for criteria buttons */
