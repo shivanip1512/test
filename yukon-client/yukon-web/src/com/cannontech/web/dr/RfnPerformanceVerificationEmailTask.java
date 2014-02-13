@@ -1,6 +1,7 @@
 package com.cannontech.web.dr;
 
 import static com.cannontech.system.GlobalSettingType.*;
+import static org.apache.commons.lang.StringUtils.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -77,9 +78,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     @Override
     public void start() {
         OnOff preference = globalSettingDao.getEnum(RF_BROADCAST_PERFORMANCE, OnOff.class);
-        if (preference.equals(OnOff.ON)) {
-            EmailHtmlMessage htmlMessage = generateEmail();
-            sendEmails(htmlMessage);
+        if (preference.isOn()) {
+            EmailHtmlMessage template = generateEmail();
+            sendEmails(template);
         }
     }
     
@@ -106,9 +107,11 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
             }
         }
         
-        List<String> additionalEmailAddresses = StringUtils.parseStringsForList(additionalEmails, ", ");
-        if (!additionalEmailAddresses.isEmpty()) {
-            notifEmailsAddresses.addAll(additionalEmailAddresses);
+        if (!isEmpty(additionalEmails)) {
+            List<String> additionalEmailAddresses = StringUtils.parseStringsForList(additionalEmails, ", ");
+            if (!additionalEmailAddresses.isEmpty()) {
+                notifEmailsAddresses.addAll(additionalEmailAddresses);
+            }
         }
 
         for (String emailTo : notifEmailsAddresses) {

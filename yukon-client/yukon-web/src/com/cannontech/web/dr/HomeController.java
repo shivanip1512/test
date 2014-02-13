@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,16 +25,18 @@ import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
-import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.service.JobManager;
+import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.OnOff;
-import com.cannontech.system.SystemJob;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
@@ -48,7 +51,12 @@ public class HomeController {
     @Autowired private UserPageDao userPageDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
-    @Autowired private ScheduledRepeatingJobDao jobDao;
+    @Autowired private JobManager jobManager;
+
+    @Autowired @Qualifier("rfnPerformanceVerification")
+        private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
+    @Autowired @Qualifier("rfnPerformanceVerificationEmail")
+        private YukonJobDefinition<RfnPerformanceVerificationEmailTask> rfnEmailJobDef;
 
     @RequestMapping("/home")
     public String home(ModelMap model, 
@@ -103,8 +111,8 @@ public class HomeController {
             model.addAttribute("last7Days", averageReports.getLastSevenDays());
             model.addAttribute("last30Days", averageReports.getLastThirtyDays());
             
-            ScheduledRepeatingJob testCommandJob = jobDao.getById(SystemJob.RF_BROADCAST_PERFORMANCE.getJobId());
-            ScheduledRepeatingJob emailJob = jobDao.getById(SystemJob.RF_BROADCAST_PERFORMANCE_EMAIL.getJobId());
+            ScheduledRepeatingJob testCommandJob = getJob(rfnVerificationJobDef);
+            ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
             
             String[] time = StringUtils.split(testCommandJob.getCronString(), " ");
             int minutes = Integer.parseInt(time[1]);
@@ -151,5 +159,9 @@ public class HomeController {
 
         return "redirect:" + link;
     }
-
+    
+    private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {
+        List<ScheduledRepeatingJob> activeJobs = jobManager.getNotDeletedRepeatingJobsByDefinition(jobDefinition);
+        return Iterables.getOnlyElement(activeJobs);
+    }
 }

@@ -254,6 +254,9 @@ public class JobManagerImpl implements JobManager {
             + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
+        
+        // this is a system job if the context is null
+        repeatingJob.setSystemUser(userContext == null);
 
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);

@@ -14,4 +14,7 @@ public enum OnOff implements DisplayableEnum {
         return "yukon.web.defaults.off";
     }
 
+    public boolean isOn() {
+        return this == ON;
+    }
 }
