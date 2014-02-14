@@ -3,7 +3,7 @@ package com.cannontech.dr.rfn.model;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum UnknownStatus implements DisplayableEnum {
-    
+
     ACTIVE,
     INACTIVE,
     UNAVAILABLE,

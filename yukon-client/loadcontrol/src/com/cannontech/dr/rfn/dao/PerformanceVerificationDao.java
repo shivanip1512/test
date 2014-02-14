@@ -8,7 +8,7 @@ import org.joda.time.Instant;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
-import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.UnknownDevices;
+import com.cannontech.dr.rfn.model.UnknownDevices;
 
 public interface PerformanceVerificationDao {
 

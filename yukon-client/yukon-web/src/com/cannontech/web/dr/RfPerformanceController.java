@@ -1,7 +1,6 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +31,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
-import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.UnknownDevices;
 import com.cannontech.dr.rfn.model.UnknownDevice;
+import com.cannontech.dr.rfn.model.UnknownDevices;
 import com.cannontech.dr.rfn.model.UnknownStatus;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -48,16 +47,16 @@ import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class RfPerformanceController {
 
-    private static final String KEY_BASE = "yukon.web.modules.dr.home.rfPerformance.";
-    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private static final String baseKey = "yukon.web.modules.dr.home.rfPerformance.";
     private static final Logger log = YukonLogManager.getLogger(RfPerformanceController.class);
     
     @Autowired private PaoDao paoDao;
@@ -129,9 +128,9 @@ public class RfPerformanceController {
             // job properties and these two methods end up saving 
             // everything about the job (hacky)
             
-            flash.setConfirm(new YukonMessageSourceResolvable(KEY_BASE + "configure.success"));
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "configure.success"));
         } catch (Exception e) {
-            flash.setError(new YukonMessageSourceResolvable(KEY_BASE + "configure.failed"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "configure.failed"));
             log.error("Failed to update RF Broadcast Performance Email Job", e);
         }
         
@@ -141,8 +140,8 @@ public class RfPerformanceController {
     @RequestMapping(value="/rf/details", method=RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required=false) Instant from, @RequestParam(required=false) Instant to) {
         
-        if (from == null) from =  new Instant().minus(Duration.standardDays(7));
-        if (to == null) to =  new Instant();
+        if (from == null) from = new Instant().minus(Duration.standardDays(7));
+        if (to == null) to = new Instant();
         to = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
         
         model.addAttribute("from", from);
@@ -177,43 +176,44 @@ public class RfPerformanceController {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         
         UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
-        SearchResults<UnknownDevice> result = SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getDevices());
+        SearchResults<UnknownDevice> result = 
+                SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getUnknownDevices());
         
         model.addAttribute("result", result);
         
         List<Map<String, Object>> data = new ArrayList<>();
-        Map<String, Object> stat = new HashMap<>();
         
+        Map<String, Object> stat = Maps.newHashMapWithExpectedSize(3);
         stat.put("label", accessor.getMessage(UnknownStatus.ACTIVE));
-        stat.put("data", unknownDevices.getTotalActive());
+        stat.put("data", unknownDevices.getNumActive());
         stat.put("color", "#009933");
         data.add(stat);
         
-        stat = new HashMap<>();
+        stat = Maps.newHashMapWithExpectedSize(3);
         stat.put("label", accessor.getMessage(UnknownStatus.INACTIVE));
-        stat.put("data", unknownDevices.getTotalInactive());
+        stat.put("data", unknownDevices.getNumInactive());
         stat.put("color", "#888888");
         data.add(stat);
         
-        stat = new HashMap<>();
+        stat = Maps.newHashMapWithExpectedSize(3);
         stat.put("label", accessor.getMessage(UnknownStatus.UNAVAILABLE));
-        stat.put("data", unknownDevices.getTotalUnavailable());
+        stat.put("data", unknownDevices.getNumUnavailable());
         stat.put("color", "#fb8521");
         data.add(stat);
         
-        stat = new HashMap<>();
+        stat = Maps.newHashMapWithExpectedSize(3);
         stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_NEW));
-        stat.put("data", unknownDevices.getTotalUnreportedNew());
+        stat.put("data", unknownDevices.getNumUnreportedNew());
         stat.put("color", "#4d90fe");
         data.add(stat);
         
-        stat = new HashMap<>();
+        stat = Maps.newHashMapWithExpectedSize(3);
         stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_OLD));
-        stat.put("data", unknownDevices.getTotalUnreportedOld());
+        stat.put("data", unknownDevices.getNumUnreportedOld());
         stat.put("color", "#D14836");
         data.add(stat);
         
-        resp.addHeader("X-JSON", jsonObjectMapper.writeValueAsString(data));
+        resp.addHeader("X-JSON", JsonUtils.toJson(data));
         model.addAttribute("test", test);
         model.addAttribute("unknownDevices", unknownDevices);
 

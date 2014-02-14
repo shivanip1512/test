@@ -1,12 +1,7 @@
 package com.cannontech.dr.rfn.dao.impl;
 
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.ACTIVE;
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.INACTIVE;
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.UNAVAILABLE;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.FAILURE;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS_UNENROLLED;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.*;
+import static com.cannontech.dr.rfn.model.UnknownStatus.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,12 +24,13 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.UnknownDevice;
+import com.cannontech.dr.rfn.model.UnknownDevices;
+import com.cannontech.dr.rfn.model.UnknownDevicesBuilder;
 import com.cannontech.dr.rfn.model.UnknownStatus;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -111,19 +107,25 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         Instant now = new Instant();
         Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
         Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
+        Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RBED.DeviceId, YPO.Type,");
         sql.append("   CASE");
-        sql.append("      WHEN LastCommunication IS NOT NULL OR LastNonZeroRuntime IS NOT NULL THEN");
+        sql.append("      WHEN LastCommunication IS NOT NULL THEN");
         sql.append("      CASE");
         sql.append("         WHEN LastNonZeroRuntime IS NOT NULL");
         sql.append("              AND LastNonZeroRuntime").gt(runtimeWindowEnd);
         sql.append("              AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
         sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
-        sql.append("         WHEN LastCommunication").lt(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
+        sql.append("         WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
         sql.append("      END");
-        sql.append("   END AS AssetAvailabilityStatus");
+        sql.append("      WHEN LastCommunication IS NULL THEN");
+        sql.append("      CASE");
+        sql.append("          WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+        sql.append("          WHEN InstallDate IS NULL OR IstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+        sql.append("       END");
+        sql.append("   END AS UnknownStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
         sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
@@ -131,85 +133,17 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
-        final UnknownDevices devices = new UnknownDevices();
-        devices.setDevices(jdbcTemplate.query(sql, new YukonRowMapper<UnknownDevice>() {
+        final UnknownDevicesBuilder unknownDeviceBuilder = new UnknownDevicesBuilder();
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public UnknownDevice mapRow(YukonResultSet rs) throws SQLException {
-                UnknownDevice device = new UnknownDevice();
-                
+            public void processRow(YukonResultSet rs) throws SQLException {
                 PaoIdentifier pao = new PaoIdentifier(rs.getInt("DeviceId"), rs.getEnum("Type", PaoType.class));
-                device.setPao(pao);
-                
-                AssetAvailabilityStatus status = rs.getEnum("AssetAvailabilityStatus", AssetAvailabilityStatus.class);
-                if (status == null) {
-                    // TODO Dan
-                    device.setUnknownStatus(UnknownStatus.UNREPORTED_NEW); // or UNREPORTED_OLD (greater than 4 days)
-                    devices.setTotalUnreportedNew(devices.getTotalUnreportedNew() + 1);
-                } else {
-                    device.setUnknownStatus(UnknownStatus.valueOf(status.name()));
-                    switch (status) {
-                    case ACTIVE:
-                        devices.setTotalActive(devices.getTotalActive() + 1);
-                        break;
-                    case INACTIVE:
-                        devices.setTotalInactive(devices.getTotalInactive() + 1);
-                    case UNAVAILABLE:
-                        devices.setTotalUnavailable(devices.getTotalUnavailable() + 1);
-                    }
-                }
-                
-                return device;
+                UnknownStatus status = rs.getEnum("UnknownStatus", UnknownStatus.class);
+                unknownDeviceBuilder.addUnknownDevice(new UnknownDevice(pao, status));
             }
-        }));
-        
-        return devices;
-    }
-    public class UnknownDevices {
-        
-        private List<UnknownDevice> devices = new ArrayList<>();
-        private int totalUnavailable;
-        private int totalActive;
-        private int totalInactive;
-        private int totalUnreportedNew;
-        private int totalUnreportedOld;
-        
-        public List<UnknownDevice> getDevices() {
-            return devices;
-        }
-        public void setDevices(List<UnknownDevice> devices) {
-            this.devices = devices;
-        }
-        public int getTotalUnavailable() {
-            return totalUnavailable;
-        }
-        public void setTotalUnavailable(int totalUnavailable) {
-            this.totalUnavailable = totalUnavailable;
-        }
-        public int getTotalActive() {
-            return totalActive;
-        }
-        public void setTotalActive(int totalActive) {
-            this.totalActive = totalActive;
-        }
-        public int getTotalInactive() {
-            return totalInactive;
-        }
-        public void setTotalInactive(int totalInactive) {
-            this.totalInactive = totalInactive;
-        }
-        public int getTotalUnreportedNew() {
-            return totalUnreportedNew;
-        }
-        public void setTotalUnreportedNew(int totalUnreportedNew) {
-            this.totalUnreportedNew = totalUnreportedNew;
-        }
-        public int getTotalUnreportedOld() {
-            return totalUnreportedOld;
-        }
-        public void setTotalUnreportedOld(int totalUnreportedOld) {
-            this.totalUnreportedOld = totalUnreportedOld;
-        }
-        
+        });
+
+        return unknownDeviceBuilder.build();
     }
 
     @Override
