@@ -45,8 +45,8 @@ std::auto_ptr<const RfnBroadcastMessage> RfnBroadcastMessage::createMessage( int
     std::auto_ptr<RfnBroadcastMessage> retVal(new RfnBroadcastMessage());
 
     // This value is global and shared amongst all RFNBroadcastMessage's. If it needs to be shared with other message types in the future
-    // this code will not be sufficient.
-    retVal->messageId = (short) InterlockedIncrement(&GlobalMessageId);
+    // this code will not be sufficient. Currently Java uses all negative values of short and C++ uses all positive values of short
+    retVal->messageId = ((short) InterlockedIncrement(&GlobalMessageId)) & 0x7FFF;
 
     retVal->messagePriority = messagePriority;
     retVal->rfnMessageClass = rfnMessageClass;
