@@ -142,12 +142,12 @@ public class RfPerformanceController {
         
         if (from == null) from =  new Instant().minus(Duration.standardDays(7));
         if (to == null) to =  new Instant();
-        to = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
+        Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
         
         model.addAttribute("from", from);
         model.addAttribute("to", to);
         
-        List<PerformanceVerificationEventMessageStats> tests = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, to));
+        List<PerformanceVerificationEventMessageStats> tests = rfPerformanceDao.getReports(Range.inclusiveExclusive(from, toFullDay));
         model.addAttribute("tests", tests);
         
         int totalSuccess = 0;
