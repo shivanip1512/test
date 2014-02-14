@@ -122,7 +122,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("      WHEN LastCommunication IS NULL THEN");
         sql.append("      CASE");
         sql.append("          WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
-        sql.append("          WHEN InstallDate IS NULL OR IstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+        sql.append("          WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
         sql.append("       END");
         sql.append("   END AS UnknownStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
