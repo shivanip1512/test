@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -82,7 +83,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
                 byte[] payload = readingArchiveRequest.getData().getPayload();
                 try {
-                    log.debug("device:"+rfnDevice);
+                    if(log.isTraceEnabled()) {
+                        log.trace(rfnDevice + " payload: 0x" + DatatypeConverter.printHexBinary(payload));
+                    } else {
+                        log.debug("decoding: " + rfnDevice);
+                    }
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
                     log.error("Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);

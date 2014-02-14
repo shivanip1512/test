@@ -92,14 +92,15 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
+    @Override
     public SimpleXPathTemplate parseRfLcrReading(byte[] payload) {
-    	
-    	byte[] data = Arrays.copyOf(payload, payload.length);
-    	if(data[0] == expresscomPayloadHeader){
-    		// Trim 3-byte Expresscom header from the payload
-    		data = Arrays.copyOfRange(data, 3, data.length);
-    	}
-    	
+
+        byte[] data = Arrays.copyOf(payload, payload.length);
+        if (data[0] == expresscomPayloadHeader) {
+            // Trim 3-byte Expresscom header from the payload
+            data = Arrays.copyOfRange(data, 3, data.length);
+        }
+
         //Get the schema version from the header
         byte[] header = Arrays.copyOfRange(data, 0, 4);
         Schema schema = getSchema(header);
@@ -148,9 +149,9 @@ public class ExiParsingServiceImpl implements ExiParsingService {
             throw new ParseExiException("Error while parsing the RF LCR payload.", e);
         }
        
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
             final String reconstitutedString = xmlWriter.getBuffer().toString();
-            log.debug("Incoming RF LCR payload xml: " + reconstitutedString);
+            log.trace("Decoded RFN LCR payload XML: " + reconstitutedString);
         }
         
         // Convert transformed output to SimpleXPathTemplate.
