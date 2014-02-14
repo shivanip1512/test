@@ -17,7 +17,13 @@ yukon.dr.rf.performance = (function () {
             
         init: function() {
             
-            
+            /** Handle click for unknown popup */
+            jQuery(document).on('click', '.f-unknown', function(event) {
+                var popup = jQuery('#unknown-popup');
+                popup.load('/dr/rf/details/unknown/' + jQuery(this).data('test'), function (resp, status, xhr) {
+                    popup.dialog({width: 600});
+                });
+            });
         }
         
     };

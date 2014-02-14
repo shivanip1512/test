@@ -10,7 +10,6 @@
 
 <cti:standardPage module="dr" page="rf.details">
     
-    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/JavaScript/yukon/yukon.dr.rf.performance.js"/>
     
     <div class="clearfix column-16-8 stacked">
@@ -43,10 +42,13 @@
             <c:forEach items="${tests}" var="test">
                 <tr>
                     <td><cti:formatDate type="FULL" value="${test.timeMessageSent}"/></td>
-                    <td><dr:rfPerformanceStats test="${test.eventStats}"/></td>
+                    <td>
+                        <dr:rfPerformanceStats test="${test.eventStats}"/>
+                        <c:if test="${test.numUnknowns > 0}"><a href="javascript:void(0);" class="fr f-unknown" data-test="${test.messageId}"><i:inline key=".showUnknown"/></a></c:if>
+                    </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    
+    <div id="unknown-popup" title="<cti:msg2 key=".unknownBreakdown"/>" data-reloadable></div>
 </cti:standardPage>

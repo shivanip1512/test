@@ -457,6 +457,12 @@ More deail is available on the <a href="">Broadcast Verification Report</a> page
 <entry key="yukon.web.modules.dr.rf.details.numTests">Tests Found</entry>
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
+<entry key="yukon.web.modules.dr.rf.details.showUnknown">Show Unknown</entry>
+<entry key="yukon.web.modules.dr.rf.details.unknownBreakdown">Unknown Breakdown</entry>
+<entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
+<entry key="yukon.web.modules.dr.rf.details.unknownType">Unknown Type</entry>
+<entry key="yukon.web.modules.dr.rf.details.neverReported">Never Reported</entry>
+<entry key="yukon.web.modules.dr.rf.details.actionUnknown.label">Inventory Action</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

@@ -11,6 +11,7 @@
 <entry key="yukon.common.search.placeholder">search</entry>
 
 <entry key="yukon.common.deviceName">Device Name</entry>
+<entry key="yukon.common.deviceType">Device Type</entry>
 <entry key="yukon.common.device">Device</entry>
 <entry key="yukon.common.point">Point</entry>
 <entry key="yukon.common.route">Route</entry>

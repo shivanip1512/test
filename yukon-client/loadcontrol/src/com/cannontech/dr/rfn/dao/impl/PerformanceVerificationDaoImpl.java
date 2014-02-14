@@ -169,27 +169,27 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public List<Long> getValidEventIdsForDevice(int deviceId, Iterable<Long> eventIds) {
         //12 message ids maximum we can get from device
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");
         sql.append("FROM RfnBroadcastEventDeviceStatus");
         sql.append("WHERE  DeviceId").eq(deviceId);
         sql.append("AND RfnBroadcastEventId").in(eventIds);
-		return jdbcTemplate.query(sql, RowMapper.LONG);
+        return jdbcTemplate.query(sql, RowMapper.LONG);
     }
     
     @Override
     public List<Long> getValidEventIds(Iterable<Long> eventIds) {
         //12 message ids maximum we can get from device
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RfnBroadcastEventId");
         sql.append("FROM RfnBroadcastEvent");
         sql.append("WHERE RfnBroadcastEventId").in(eventIds);
-		return jdbcTemplate.query(sql, RowMapper.LONG);
+        return jdbcTemplate.query(sql, RowMapper.LONG);
     }
     
     @Override
     public void createUnenrolledEventResultStatus(int deviceId, long messageId, Instant deviceReceivedTime) {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.insertInto("RfnBroadcastEventDeviceStatus");
         params.addValue("DeviceId", deviceId);
         params.addValue("RfnBroadcastEventId", messageId);
@@ -201,25 +201,25 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     
     @Override
     public void setEventResultStatusToSuccessful(int deviceId, Map<Long, Instant> verificationMsgs) {
-		for (long eventId : verificationMsgs.keySet()) {
-			SqlStatementBuilder sql = new SqlStatementBuilder();
-			SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
-			params.addValue("Result", SUCCESS);
-			params.addValue("DeviceReceivedTime", verificationMsgs.get(eventId));
-			sql.append("WHERE  DeviceId").eq(deviceId);
-			sql.append("AND RfnBroadcastEventId").eq(eventId);
-			sql.append("AND Result").neq_k(SUCCESS);
-			sql.append("AND Result").neq_k(SUCCESS_UNENROLLED);
+        for (long eventId : verificationMsgs.keySet()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
+            params.addValue("Result", SUCCESS);
+            params.addValue("DeviceReceivedTime", verificationMsgs.get(eventId));
+            sql.append("WHERE  DeviceId").eq(deviceId);
+            sql.append("AND RfnBroadcastEventId").eq(eventId);
+            sql.append("AND Result").neq_k(SUCCESS);
+            sql.append("AND Result").neq_k(SUCCESS_UNENROLLED);
 
-			jdbcTemplate.update(sql);
-		}
+            jdbcTemplate.update(sql);
+        }
     }
     
     @Override
-	public void setEventResultStatusToFailure(int deviceId, Range<Instant> range) {
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
-		params.addValue("Result", FAILURE);
+    public void setEventResultStatusToFailure(int deviceId, Range<Instant> range) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params = sql.update("RfnBroadcastEventDeviceStatus");
+        params.addValue("Result", FAILURE);
         sql.append("WHERE DeviceId").eq(deviceId);
         sql.append("   AND Result").eq_k(UNKNOWN);
         sql.append("   AND RfnBroadcastEventId IN (SELECT RfnBroadcastEventId");
@@ -228,9 +228,9 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("                               AND EventSendTime").lt(range.getMax()).append(")");
         
         
-		
-		jdbcTemplate.update(sql);
-	}
+        
+        jdbcTemplate.update(sql);
+    }
     
     private Instant getCommunicationWindowEnd(Instant now) {
         return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
