@@ -293,11 +293,6 @@ public class ControlAuditController {
         UNSUPPORTED
     }
     
-    public enum Direction {
-        NEXT,
-        PREV,
-    }
-    
     @InitBinder
     public void initBinder(final HttpServletRequest request, WebDataBinder binder, final YukonUserContext context) {
         PropertyEditor propertyEditor = datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, context, BlankMode.NULL);

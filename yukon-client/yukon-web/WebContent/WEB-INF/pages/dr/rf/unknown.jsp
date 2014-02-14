@@ -31,7 +31,8 @@
     
     <div class="action-area">
         <cti:button nameKey="close" classes="f-close"/>
-        <cti:button nameKey="download" icon="icon-page-white-excel"/>
-        <cti:button nameKey="actionUnknown" icon="icon-cog-go"/>
+        <cti:button nameKey="download" icon="icon-page-white-excel" href="/dr/rf/details/unknown/${test}/download"/>
+        <cti:button nameKey="inventoryAction" icon="icon-cog-go" href="/dr/rf/details/unknown/${test}/inventoryAction" busy="true"/>
+        <cti:button nameKey="collectionAction" icon="icon-cog-go" href="/dr/rf/details/unknown/${test}/collectionAction" busy="true"/>
     </div>
 </cti:msgScope>

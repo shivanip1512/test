@@ -109,7 +109,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RBED.DeviceId, YPO.Type,");
+        sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName,");
         sql.append("   CASE");
         sql.append("      WHEN LastCommunication IS NOT NULL THEN");
         sql.append("      CASE");
@@ -132,6 +132,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
+        sql.append("ORDER BY PaoName");
 
         final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {

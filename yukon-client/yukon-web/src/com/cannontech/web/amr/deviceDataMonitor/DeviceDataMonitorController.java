@@ -16,7 +16,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

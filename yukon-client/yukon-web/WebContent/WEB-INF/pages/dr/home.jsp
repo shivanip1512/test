@@ -81,15 +81,15 @@
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
                             <tr>
-                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last24Hr"/>:</a></td>
+                                <td class="name"><a href="/dr/rf/details/day"><i:inline key=".rfPerformance.last24Hr"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last24Hr}"/></td>
                             </tr>
                             <tr>
-                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last7Days"/>:</a></td>
+                                <td class="name"><a href="/dr/rf/details/week"><i:inline key=".rfPerformance.last7Days"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last7Days}"/></td>
                             </tr>
                             <tr>
-                                <td class="name"><a href="javascript:void(0);"><i:inline key=".rfPerformance.last30Days"/>:</a></td>
+                                <td class="name"><a href="/dr/rf/details/month"><i:inline key=".rfPerformance.last30Days"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last30Days}"/></td>
                             </tr>
                         </tags:nameValueContainer2>

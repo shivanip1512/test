@@ -28,13 +28,13 @@
     <i:inline key="yukon.common.collection.inventory.selectedInventoryPopup.linkLabel"/>
 </span>
 <span class="smallLink">
-	<i:inline key="${inventoryCollection.description}"/>
-	<c:if test="${count > 0}">
-		<div class="dib">
-			<cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
-			<a href="javascript:void(0);" title="${magTitle}" class="f-showSelectedInventory dib" data-function-arguments="{'id':'${id}', 'url':'${selectedInventoryTableUrl}'}"><i class="icon icon-magnifier"></i></a>
-		</div>
-	</c:if>
+    <i:inline key="${inventoryCollection.description}"/>
+    <c:if test="${count > 0}">
+        <div class="dib">
+            <cti:msg2 var="magTitle" key="yukon.common.collection.inventory.selectedInventoryPopup.magnifierTitle"/>
+            <a href="javascript:void(0);" title="${magTitle}" class="f-showSelectedInventory dib" data-function-arguments="{'id':'${id}', 'url':'${selectedInventoryTableUrl}'}"><i class="icon icon-magnifier"></i></a>
+        </div>
+    </c:if>
 </span>
 
 <br>

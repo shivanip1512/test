@@ -3,9 +3,10 @@ package com.cannontech.stars.model;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
 
-public class LiteLmHardware implements YukonInventory{
+public class LiteLmHardware implements YukonInventory {
 
     private InventoryIdentifier identifier;
+    private int deviceId; // zero if not a 'YukonPAObject'
     private String serialNumber;
     private String label;
     private int accountId;
@@ -18,6 +19,14 @@ public class LiteLmHardware implements YukonInventory{
     
     public void setIdentifier(InventoryIdentifier identifier) {
         this.identifier = identifier;
+    }
+    
+    public int getDeviceId() {
+        return deviceId;
+    }
+    
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
     }
     
     public String getSerialNumber() {
