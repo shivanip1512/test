@@ -30,7 +30,6 @@ import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.UnknownDevice;
 import com.cannontech.dr.rfn.model.UnknownDevices;
-import com.cannontech.dr.rfn.model.UnknownDevicesBuilder;
 import com.cannontech.dr.rfn.model.UnknownStatus;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -133,7 +132,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
-        final UnknownDevicesBuilder unknownDeviceBuilder = new UnknownDevicesBuilder();
+        final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
