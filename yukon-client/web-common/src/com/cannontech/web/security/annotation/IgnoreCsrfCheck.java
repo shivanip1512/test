@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
 /**
  * Ignores CSRF token checking. This is useful for our swing clients which do not have access to updated csrf tokens
  * 
@@ -16,4 +14,6 @@ import java.lang.annotation.Target;
  * 
  * See WebSecurityInterceptor.
  */
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface IgnoreCsrfCheck {/*empty*/}
