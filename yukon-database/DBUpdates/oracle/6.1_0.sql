@@ -216,6 +216,89 @@ UPDATE YukonGroupRole SET Value = REPLACE (Value, 'stop', '"stop"')   WHERE Role
 UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE RolePropertyId = -40056;
 /* End YUK-12662 */
 
+/* Start YUK-12892 */
+/* @start-block */
+DECLARE v_duplicateCount NUMBER;
+BEGIN
+    SELECT COUNT(PAOName) INTO v_duplicateCount 
+    FROM (
+        SELECT YPAO1.PAOName, 
+            CAST(CAST(YPAO1.PAOName AS NUMBER) AS VARCHAR2(64)) AS TruncatedDuplicateSerialNumber
+        FROM YukonPAObject YPAO1, YukonPAObject YPAO2
+        WHERE YPAO1.PAOClass = 'RFMESH'
+          AND YPAO1.PAOName LIKE '0%'
+          AND CAST(CAST(YPAO1.PAOName AS NUMBER) AS VARCHAR2(64)) = YPAO2.PAOName
+          AND NOT (CAST(CAST(YPAO1.PAOName AS NUMBER) AS VARCHAR2(64)) = YPAO1.PAOName)) T;
+    
+    IF v_duplicateCount > 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'There are devices in the YukonPAObject table that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.');
+    END IF;
+END;
+/
+/* @end-block */
+
+UPDATE RfnAddress
+SET SerialNumber = (CAST(CAST(SerialNumber AS NUMBER) AS VARCHAR2(64)))
+WHERE SerialNumber LIKE '0%';
+
+/* @start-block */
+DECLARE
+    v_deviceId NUMBER;
+    
+    CURSOR duplicate_serial_curs IS (
+        SELECT DeviceId
+          FROM InventoryBase IB
+          JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
+          WHERE DeviceLabel LIKE '0%' 
+            AND YPO.PAOClass = 'RFMESH'
+            AND DeviceLabel = YPO.PAOName);
+BEGIN
+    OPEN duplicate_serial_curs;
+    LOOP
+        FETCH duplicate_serial_curs INTO v_deviceId;
+        EXIT WHEN duplicate_serial_curs%NOTFOUND;
+        
+        UPDATE InventoryBase
+        SET DeviceLabel = (CAST(CAST(DeviceLabel AS NUMBER) AS VARCHAR2(64)))
+        WHERE DeviceId = v_deviceId;
+    END LOOP;
+    CLOSE duplicate_serial_curs;
+END;
+/
+/* @end-block */
+ 
+/* @start-block */
+DECLARE
+    v_inventoryId NUMBER;
+    
+    CURSOR duplicate_serial_curs IS (
+        SELECT LMB.InventoryId
+        FROM LMHardwareBase LMB
+            JOIN InventoryBase IB ON IB.InventoryID = LMB.InventoryID
+            JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
+        WHERE ManufacturerSerialNumber LIKE '0%' 
+          AND YPO.PAOClass = 'RFMESH');
+BEGIN
+    OPEN duplicate_serial_curs;
+    LOOP
+        FETCH duplicate_serial_curs INTO v_inventoryId;
+        EXIT WHEN duplicate_serial_curs%NOTFOUND;
+        
+        UPDATE LMHardwareBase
+        SET ManufacturerSerialNumber = (CAST(CAST(ManufacturerSerialNumber AS NUMBER) AS VARCHAR2(64)))
+        WHERE InventoryId = v_inventoryId;
+    END LOOP;
+    CLOSE duplicate_serial_curs;
+END;
+/
+/* @end-block */
+ 
+UPDATE YukonPAObject
+SET PAOName = (CAST(CAST(PAOName AS NUMBER) AS VARCHAR2(64)))
+WHERE PAOName LIKE '0%' 
+  AND PAOClass = 'RFMESH';
+/* End YUK-12892 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
