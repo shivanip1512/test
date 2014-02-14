@@ -52,5 +52,5 @@
             </c:forEach>
         </tbody>
     </table>
-    <div id="unknown-popup" title="<cti:msg2 key=".unknownBreakdown"/>" data-reloadable></div>
+    <div id="unknown-popup" title="<cti:msg2 key=".unknownBreakdown"/>"></div>
 </cti:standardPage>

@@ -23,7 +23,7 @@ yukon.dr.rf.performance = (function () {
                 var popup = jQuery('#unknown-popup');
                 popup.load('/dr/rf/details/unknown/' + jQuery(this).data('test'), function (resp, status, xhr) {
                     var data = xhr.getResponseHeader('X-JSON');
-                    popup.dialog({width: 600});
+                    popup.dialog({width: 700});
                     jQuery.plot('.f-unknown-pie', JSON.parse(data), {
                         series: {
                             pie: {

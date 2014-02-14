@@ -140,8 +140,8 @@ public class RfPerformanceController {
     @RequestMapping(value="/rf/details", method=RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required=false) Instant from, @RequestParam(required=false) Instant to) {
         
-        if (from == null) from = new Instant().minus(Duration.standardDays(7));
-        if (to == null) to = new Instant();
+        if (from == null) from =  new Instant().minus(Duration.standardDays(7));
+        if (to == null) to =  new Instant();
         to = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
         
         model.addAttribute("from", from);
@@ -164,6 +164,22 @@ public class RfPerformanceController {
         model.addAttribute("totalUnknown", totalUnknown);
         
         return "dr/rf/details.jsp";
+    }
+    
+    @RequestMapping(value="/rf/details/unknown/{test}/page", method=RequestMethod.GET)
+    public String unknownPage(ModelMap model,
+            YukonUserContext userContext,
+            @PathVariable long test, 
+            @RequestParam(defaultValue="10") Integer itemsPerPage, 
+            @RequestParam(defaultValue="1") Integer page) {
+        
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        SearchResults<UnknownDevice> result = SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getUnknownDevices());
+        
+        model.addAttribute("result", result);
+        model.addAttribute("test", test);
+        
+        return "dr/rf/page.jsp";
     }
     
     @RequestMapping(value="/rf/details/unknown/{test}", method=RequestMethod.GET)

@@ -42,10 +42,10 @@ if (!Object.create) {
             if (arguments.length != 1) {
                 throw new Error('Object.create implementation only accepts one parameter.');
             }
-            F.prototype = o
-            return new F()
-        }
-    })()
+            F.prototype = o;
+            return new F();
+        };
+    })();
 }
 
 /** Yukon Module */
@@ -261,24 +261,24 @@ yukon.modules.ui = function (mod) {
 
     mod.autoWire = function () {
         var html;
-        // register listeners
         
-        // Setup tipsy tooltips, all elements with a 'title' attribute
-        // will have a nice looking tooltip.
-        // To give an item a custom tooltip, give it a class of 'f-has-tooltip'
-        // and precede it, in the markup, with an item of class f-tooltip that
-        // has the content in HTML. The code below searches backward in the
-        // document for the element with class f-tooltip
-        //
-        // tipsy initialization:
-        //   attaches tooltip handlers to all elements with a class of f-has-tooltip
-        //   or a title attribute
         jQuery (function () {
             
+            /** Add placeholdr functionality if needed */
             if (!Modernizr.input.placeholder) {
                 jQuery('input, textarea').placeholder();
             }
             
+            /** Add fancy tooltip support (tipsy)
+             *  To give an item a custom tooltip, give it a class of 'f-has-tooltip'
+             *  and precede it, in the markup, with an item of class f-tooltip that
+             *  has the content in HTML. The code below searches backward in the
+             *  document for the element with class f-tooltip
+             * 
+             *  tipsy initialization:
+             *    attaches tooltip handlers to all elements with a class of f-has-tooltip
+             *    or a title attribute
+             */
             var tooltipTargets = ['.f-has-tooltip'],// use browser-native tooltips for all but the fancy HTML ones
                 resetTipsyInner = function () {
                     // voodoo so inner div has full height of its container
@@ -314,16 +314,18 @@ yukon.modules.ui = function (mod) {
             });
         });
 
-        /* initialize our keyboard table traversal (j/k keys) */
+        /** Initialize our keyboard table traversal (j/k keys) */
         jQuery(".compact-results-table.f-traversable").traverse('tr', {
             table_row_helper: true
         });
         
-        //ajaxPage TODO Convert these to the use the one below and delete it
+        /** ajaxPage TODO Convert these to the use the one below and delete it */
         jQuery(document).on('click', '.f-ajaxPage', function (e) {
             jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
+        
+        /** Reload or page a container */
         jQuery(document).on('click', '[data-reload]', function(event) {
             var elem = jQuery(event.currentTarget),
             url = elem.data('reload'),
@@ -343,17 +345,17 @@ yukon.modules.ui = function (mod) {
             return false;
         });
 
-        //buttons that redirect the page on click
+        /** Buttons that redirect the page on click */
         jQuery(document).on('click', 'button[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
         
-        // page blockers
+        /** Page blockers */
         jQuery(document).on('click', '.f-blocker', mod.block);
         jQuery(document).on('resize', '#modal-glass', mod.blockPage);
         
-        // clear page blocker
+        /** Clear page blocker */
         jQuery(document).on('click', '.f-clearBlocker', mod.unblockPage);
     
-        // Disable a form element after clicked
+        /** Disable a form element after clicked */
         jQuery(document).on('click', '.f-disable-after-click', function () {
             var button = jQuery(this),
                 group,
@@ -386,9 +388,9 @@ yukon.modules.ui = function (mod) {
             return false;
         });
     
-        //prevent forms from submitting via enter key
+        /** Prevent forms from submitting via enter key */
         jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
-            //allow override submission elements
+            // allow override submission elements
             if (jQuery(e.target).hasClass("f-allowSubmitViaEnterKey")) {
                 return true;
             }
@@ -397,36 +399,17 @@ yukon.modules.ui = function (mod) {
             }
         });
     
-        jQuery(document).on('click', '.f-setHomePage', function (event) {
-            var userId = jQuery("#changeHomepage_userId").val(),
-                send = document.location.href;
-            event.preventDefault ? event.preventDefault() : event.returnValue = false;  // IE8 requires returnValue
-            event.stopPropagation();
-
-            jQuery.ajax({
-                type: "POST",
-                url: "/user/updatePreference.json",
-                data: {'userId': userId, 'prefName': 'HOME_URL', 'prefValue': send}
-            }).done( function (data) {
-                if (data.success) {
-                    alert("SAVED");
-                } else {
-                    alert("INTERNAL ERROR #9471: FAILED SAVING");
-                }
-            }).fail( function (nada) {
-                alert("INTERNAL ERROR #9472: FAILED SAVING");
-            });
-            return false;
+        /** Close 'Apps' popup */
+        jQuery('.f-closeYukonApplicationDialog').click(function () {
+            jQuery('#yukonApplicationDialog').dialog('close');
+        });
+        
+        /** Close a dialog */
+        jQuery(document).on('click', '.f-close', function (event) {
+            jQuery(this).closest('.ui-dialog-content').dialog('close');
         });
 
-        jQuery(".f-closeYukonApplicationDialog").click(function () {
-            jQuery("#yukonApplicationDialog").dialog("close");
-        });
-
-        // resize it with the window
-
-        // resize blocked elements w/ page resize
- 
+        /** Format phone numbers initially and on input blur */
         jQuery('input.f-formatPhone').each( function (idx, elem) {
             mod.formatPhone(elem);
         });
@@ -434,6 +417,7 @@ yukon.modules.ui = function (mod) {
             mod.formatPhone(event.target);
         });
 
+        /** Disable or enable all form controls */
         jQuery('input.f-toggle:checkbox').each(function (idx, elem) {
             jQuery(elem).on('change', function (e) {
                 mod.toggleInputs(e.target);
@@ -444,16 +428,17 @@ yukon.modules.ui = function (mod) {
             mod.toggleInputs(elem);
         });
 
+        /** Select all ? */
         jQuery("input.f-selectAll").each(function (index, input) {
             jQuery(input).on('focus', function (elem) {
                 elem.target.select();
             });
         });
 
-        /* Focus the designated input element */
+        /** Focus the designated input element */
         mod._autofocus();
 
-        /* Init page 'Actions' button */
+        /** Init page 'Actions' button */
         html = jQuery('#f-page-actions')[0];
         if (typeof html !== 'undefined') {
             jQuery('#f-page-actions').remove();
@@ -465,14 +450,14 @@ yukon.modules.ui = function (mod) {
             jQuery('#b-page-actions').show();
         }
 
-        /* Init page buttons */
+        /** Init page buttons */
         html = jQuery('#f-page-buttons')[0];
         if (typeof html !== 'undefined') {
             jQuery('#f-page-buttons').remove();
             jQuery('.page-actions').append(html.innerHTML);
         }
         
-        /* Add additional options to page 'Actions' button */
+        /** Add additional options to page 'Actions' button */
         var additionalActions = jQuery('.f-page-additional-actions');
         additionalActions.each( function(index, html) {
             if (typeof html !== 'undefined') {
@@ -499,17 +484,13 @@ yukon.modules.ui = function (mod) {
         }
     };
 
-    /*
-     * Sets the focus to the first input/textarea found on the page having a class of "error"
-     */
+    /** Sets the focus to the first input/textarea found on the page having a class of "error" */
     mod.focusFirstError = function () {
         mod._setFocusFirstError();
         mod._autofocus();
     };
 
-    /*
-     * Applies the "f-focus" class to the first input/textarea element having a class of "error"
-     */
+    /** Applies the "f-focus" class to the first input/textarea element having a class of "error" */
     mod._setFocusFirstError = function () {
         var error_field = jQuery("input.error, textarea.error").first();
         if (error_field.length === 1) {
@@ -518,6 +499,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Block out the closest valid container, or the page */
     mod.block = function (event) {
        var blockElement = jQuery(event.target).closest(".f-block-this")[0];
        if (blockElement) {
@@ -526,7 +508,8 @@ yukon.modules.ui = function (mod) {
            mod.pageGlass.show();
        }
     };
-
+    
+    /** Unblock the closest valid container, or the page */
     mod.unblock = function (event) {
         var blockElement = jQuery(event.target).closest(".f-block-this")[0];
         if (blockElement) {
@@ -536,22 +519,27 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Block out the whole page */
     mod.blockPage = function (args) {
         mod.pageGlass.show();
     };
 
+    /** Unblock the whole page */
     mod.unblockPage = function () {
         mod.pageGlass.hide();
     };
 
+    /** Add a success 'flash scope' message */
     mod.flashSuccess = function (markup) {
         jQuery(".main-container").addMessage({message: markup, messageClass: "success"});
     };
 
+    /** Add an error 'flash scope' message */
     mod.flashError = function (markup) {
         jQuery(".main-container").addMessage({message: markup, messageClass: "error"});
     };
 
+    /** Format a phone number input */
     mod.formatPhone = function (input) {
         // strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, ""),
@@ -572,6 +560,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Disable or enable all inputs in a contianer */
     mod.toggleInputs = function (input) {
         // find matching inputs. Note: jQuery next gets the immediately following
         // sibling, so we have to use nextAll here.
@@ -591,6 +580,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Pad a string */
     mod.pad = function (number, length) {
 
         var str = '' + number;
@@ -600,6 +590,7 @@ yukon.modules.ui = function (mod) {
         return str;
     };
 
+    /** Format time, (do we still need timeFormatter.js?) */
     mod.formatTime = function (time, opts) {
         var timeStr = ''; 
         if (!opts) {
@@ -627,7 +618,8 @@ yukon.modules.ui = function (mod) {
         return timeStr;
     };
 
-    mod.getParameterByName = function ( name ) {
+    /** Retrieve a request parameter by name */
+    mod.getParameterByName = function (name) {
         var regexS,
             regex,
             results;
@@ -642,6 +634,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Manages wizard style paging, useful in complex popups. */
     mod.wizard = {
         _initialized: false,
 
@@ -715,6 +708,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Object to glass out an element, used by #block and #unblock */
     mod.elementGlass = {
         show: function (element) {
             var element = jQuery(element),
@@ -746,6 +740,7 @@ yukon.modules.ui = function (mod) {
         }
     };
 
+    /** Object to glass out the page, used by #block and #unblock */
     mod.pageGlass = {
         show : function (args) {
             var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args),
@@ -859,7 +854,7 @@ yukon.modules.ui = function (mod) {
     };
 };
 
-// merge created sandbox module with existing yukon barebones module
+/** Merge created sandbox module with existing yukon barebones module */
 Sandbox('base', function (basemod) {
     jQuery.extend(yukon, basemod);
 });
@@ -868,6 +863,7 @@ Sandbox('ui', function (uimod) {
     yukon.ui = uimod; // so for now, 90 references to yukon.ui don't have to be changed
 });
 
+/** Add some helpful functionality to jQuery */
 jQuery.fn.selectText = function () {
     var text = this[0],
         range,
@@ -884,7 +880,7 @@ jQuery.fn.selectText = function () {
         selection.addRange(range);
     }
 };
-// toggleDisabled, flashColor, flashYellow and flashColor are moving to jqueryAddons.js
+/** toggleDisabled, flashColor, flashYellow and flashColor are moving to jqueryAddons.js */
 jQuery.fn.toggleDisabled = function () {
     return this.each(function () {
         if (jQuery(this).is(":input")) {
@@ -918,7 +914,7 @@ jQuery.fn.flashYellow = function (duration) {
     });
 };
 
-// initialize the lib
+/** Initialize the lib */
 jQuery(document).ready(function () {
     yukon.ui.init();
     yukon.ui.initSitewideSearchAutocomplete();
@@ -926,4 +922,3 @@ jQuery(document).ready(function () {
     //turn off ajax caching application-wide by default
     jQuery.ajaxSetup({cache: false});
 });
-

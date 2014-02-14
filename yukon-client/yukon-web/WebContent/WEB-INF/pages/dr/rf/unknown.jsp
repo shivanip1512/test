@@ -25,27 +25,12 @@
         </div>
     </div>
     
-    <table class="compact-results-table">
-        <thead>
-            <tr>
-                <th><i:inline key="yukon.common.deviceName"/></th>
-                <th><i:inline key="yukon.common.deviceType"/></th>
-                <th><i:inline key=".unknownType"/></th>
-            </tr>
-        </thead>
-        <tfoot></tfoot>
-        <tbody>
-            <c:forEach items="${result.resultList}" var="row">
-                <tr>
-                    <td><cti:deviceName deviceId="${row.pao.paoIdentifier.paoId}"/></td>
-                    <td>${row.pao.paoIdentifier.paoType.paoTypeName}</td>
-                    <td><i:inline key="${row.unknownStatus}"/></td>
-                </tr>
-            </c:forEach>
-        </tbody>
-    </table>
-    <tags:pagingResultsControls result="${result}" baseUrl="/dr/rf/details/unknown/${test}"/>
+    <div data-reloadable>
+        <%@ include file="page.jsp" %>
+    </div>
+    
     <div class="action-area">
+        <cti:button nameKey="close" classes="f-close"/>
         <cti:button nameKey="download" icon="icon-page-white-excel"/>
         <cti:button nameKey="actionUnknown" icon="icon-cog-go"/>
     </div>
