@@ -1,16 +1,56 @@
 package com.cannontech.dr.rfn.service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.openexi.proc.common.EXIOptionsException;
 import org.openexi.sax.TransmogrifierException;
 
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl.Schema;
+import com.google.common.collect.ImmutableMap;
 
 public interface ExiParsingService {
 
+    enum Schema {
+        SCHEMA_0_0_2("0.0.2", "rfnLcrExiMessageSchema_v0_0_2.xsd"),
+        SCHEMA_0_0_3("0.0.3", "rfnLcrExiMessageSchema_v0_0_3.xsd");
+       
+        private final String version;
+        private final String schema;
+        private static final String classpath = "classpath:com/cannontech/dr/rfn/endpoint/";
+        private static final Map<String, Schema> lookupByVersion;
+        
+        static {
+            ImmutableMap.Builder<String, Schema> builder = ImmutableMap.builder();
+            for (Schema schema : values()) {
+                builder.put(schema.getVersion(), schema);
+            }
+            lookupByVersion = builder.build();
+        }
+        
+        private Schema(String version, String schema) {
+            this.version = version;
+            this.schema = schema;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public String getLocation() {
+            return classpath + schema;
+        } 
+        
+        public boolean supportsBroadcastVerificationMessages() {
+           return this == SCHEMA_0_0_3;
+        }
+
+        public static Schema getSchema(String schemaVersion){
+            return lookupByVersion.get(schemaVersion);
+        }
+    }
+    
     /**
      * This method takes an encoded EXI message as a byte array and converts it
      *  into a SimpleXPathTemplate which can be queried using XPath statements.
@@ -34,5 +74,5 @@ public interface ExiParsingService {
      */
     public byte[] encodePayload(String xmlPayload) throws TransmogrifierException, EXIOptionsException, IOException;
     
-    public Schema getSchema(byte[] payload);
+    Schema getSchema(byte[] payload);
 }

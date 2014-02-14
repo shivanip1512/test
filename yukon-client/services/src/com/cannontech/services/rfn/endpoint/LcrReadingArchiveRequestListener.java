@@ -29,9 +29,9 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.dr.rfn.service.ExiParsingService;
+import com.cannontech.dr.rfn.service.ExiParsingService.Schema;
 import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
-import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl.Schema;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -109,7 +109,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 }
                 /** Handle Broadcast Verification Messages */
                 Schema schema = exiParsingService.getSchema(payload);
-                if (Schema.supportsBroadcastVerificationMessages(schema)) {
+                if (schema.supportsBroadcastVerificationMessages()) {
                     Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
                         .mapBroadcastVerificationMessages(decodedPayload);
                     Range<Instant> range = rfnLcrDataMappingService

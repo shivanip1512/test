@@ -35,55 +35,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseExiException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.service.ExiParsingService;
-import com.google.common.collect.ImmutableMap;
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class ExiParsingServiceImpl implements ExiParsingService {
-    
-    public enum Schema {
-        SCHEMA_0_0_2("0.0.2", "rfnLcrExiMessageSchema_v0_0_2.xsd"),
-        SCHEMA_0_0_3("0.0.3", "rfnLcrExiMessageSchema_v0_0_3.xsd");
-       
-        private final String version;
-        private final String schema;
-        private static final String classpath = "classpath:com/cannontech/dr/rfn/endpoint/";
-        private static final Map<String, Schema> lookupByVersion;
-        
-		static {
-			ImmutableMap.Builder<String, Schema> builder = ImmutableMap
-					.builder();
-			for (Schema schema : values()) {
-				builder.put(schema.getVersion(), schema);
-			}
-			lookupByVersion = builder.build();
-		}
-        
-        private Schema(String version, String schema) {
-            this.version = version;
-            this.schema = schema;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        public String getLocation() {
-            return classpath + schema;
-        } 
-        
-        public static boolean supportsBroadcastVerificationMessages(Schema schema) {
-            switch (schema) {
-            case SCHEMA_0_0_3:
-                return true;
-            default:
-                return false;
-            }
-        }
-
-        public static Schema getSchema(String schemaVersion){
-        	return lookupByVersion.get(schemaVersion);
-        }
-    }
     
     private final static byte expresscomPayloadHeader = (byte) 0xE2;
     

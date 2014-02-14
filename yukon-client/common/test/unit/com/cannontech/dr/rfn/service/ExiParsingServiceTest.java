@@ -5,8 +5,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.cannontech.dr.rfn.service.ExiParsingService.Schema;
 import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl;
-import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl.Schema;
 
 public class ExiParsingServiceTest {
     private final ExiParsingServiceImpl exiParsingService = new ExiParsingServiceImpl();
