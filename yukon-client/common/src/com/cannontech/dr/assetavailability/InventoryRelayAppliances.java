@@ -1,5 +1,6 @@
 package com.cannontech.dr.assetavailability;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,7 +13,7 @@ public final class InventoryRelayAppliances {
     private final Map<Integer, Integer> applianceToCategoryMap = Maps.newHashMap();
     
     public InventoryRelayAppliances(Iterable<InventoryRelayAppliance> iras) {
-        for(InventoryRelayAppliance ira : iras) {
+        for (InventoryRelayAppliance ira : iras) {
             add(ira);
         }
     }
@@ -20,10 +21,10 @@ public final class InventoryRelayAppliances {
     public InventoryRelayAppliances() {}
     
     public void add(int inventoryId, int relay, int applianceId, int applianceCategoryId) {
-        if(map.containsKey(inventoryId)) {
+        if (map.containsKey(inventoryId)) {
             map.get(inventoryId).put(relay, applianceId);
         } else {
-            Map<Integer, Integer> relayMap = Maps.newHashMap();
+            Map<Integer, Integer> relayMap = new HashMap<>();
             relayMap.put(relay, applianceId);
             map.put(inventoryId, relayMap);
         }
@@ -31,10 +32,10 @@ public final class InventoryRelayAppliances {
     }
     
     public void add(InventoryRelayAppliance ira) {
-        if(map.containsKey(ira.getInventoryId())) {
+        if (map.containsKey(ira.getInventoryId())) {
             map.get(ira.getInventoryId()).put(ira.getRelay(), ira.getApplianceId());
         } else {
-            Map<Integer, Integer> relayMap = Maps.newHashMap();
+            Map<Integer, Integer> relayMap = new HashMap<>();
             relayMap.put(ira.getRelay(), ira.getApplianceId());
             map.put(ira.getInventoryId(), relayMap);
         }
@@ -52,7 +53,7 @@ public final class InventoryRelayAppliances {
     
     public Multimap<Integer, Integer> getInventoryToApplianceMultimap() {
         Multimap<Integer, Integer> multimap = ArrayListMultimap.create();
-        for(Entry<Integer, Map<Integer, Integer>> entry : map.entrySet()) {
+        for (Entry<Integer, Map<Integer, Integer>> entry : map.entrySet()) {
             multimap.putAll(entry.getKey(), entry.getValue().values());
         }
         return multimap;
