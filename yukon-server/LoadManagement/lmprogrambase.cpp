@@ -968,7 +968,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << currentDateTime
             << getPAOId();
 
-        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
             return; // Error occured!
         }
@@ -993,7 +993,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << ( getManualControlReceivedFlag() ? std::string("Y") : std::string("N") )
             << currentDateTime;
 
-        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
             return; // Error occured!
         }

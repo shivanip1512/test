@@ -271,7 +271,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
         << getPAOId()
         << getOfferId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         // If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
@@ -322,7 +322,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
                 << getRunStatus()
                 << getOfferDate();
 
-            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
         }
     }
 }

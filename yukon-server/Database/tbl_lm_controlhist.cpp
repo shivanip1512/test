@@ -394,7 +394,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
         << LMAR_DISPATCH_SHUTDOWN
         << CtiTime();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug::Enable );
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Enable );
 }
 
 

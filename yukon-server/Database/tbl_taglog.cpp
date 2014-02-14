@@ -121,7 +121,7 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
     {
         return false;
     }

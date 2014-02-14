@@ -596,7 +596,7 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
             << tmp_value
             << CtiTime();
 
-        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() )))
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug( isDebugLudicrous() )))
         {
             return false;
         }
@@ -660,8 +660,9 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
 
         if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
         {
-            // return Insert(conn);        // Try a vanilla insert if the update failed!
             return false;
+            // we'll be doing this in mgr_device, because we need to assign a new entryid on insert
+            // return Insert(conn);        // Try a vanilla insert if the update failed!
         }
 
         setDirty(false);

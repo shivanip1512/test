@@ -137,7 +137,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             inserter << getPaoId() << addFlags << getVoltReductionControlValue();
 
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
                 setDirty(false); // No error occured!

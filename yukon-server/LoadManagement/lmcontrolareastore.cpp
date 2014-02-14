@@ -2087,7 +2087,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
         << ( controlArea->getDisableFlag() ? std::string("Y") : std::string("N") )
         << controlArea->getPAOId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         return false;
     }
@@ -2122,7 +2122,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
         << ( program->getDisableFlag() ? std::string("Y") : std::string("N") )
         << program->getPAOId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         return false;
     }
@@ -2157,7 +2157,7 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
         << ( group->getDisableFlag() ? std::string("Y") : std::string("N") )
         << group->getPAOId();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         return false;
     }
@@ -2196,7 +2196,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         << trigger->getPAOId()
         << trigger->getTriggerNumber();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
         return false;
     }

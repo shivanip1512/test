@@ -228,7 +228,7 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
         << getCustomerDemandLevel()
         << ( ( getAckLateFlag() ? std::string("Y") : std::string("N") ) );
 
-    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB));
+    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------
@@ -266,7 +266,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(Cti::Database::D
         << getCustomerId()
         << getCurtailReferenceId();
 
-    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------

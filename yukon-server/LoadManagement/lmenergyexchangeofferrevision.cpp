@@ -404,7 +404,7 @@ void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable(
         << getOfferId()
         << getRevisionNumber();
 
-    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------

@@ -10,16 +10,16 @@ namespace Database {
 namespace Detail {
 
 /**
- * Commands Optional Parameters
+ * Commands parameters
  */
 enum CommandParamEnum
 {
-    ShowDebug,
-    RowsAffectedExpected
+    LogDebug,
+    LogNoRowsAffected
 };
 
 /**
- * Command flag default template implementation using Disable / Enable options
+ * Commands parameter default template implementation using Disable/Enable options
  */
 template<CommandParamEnum>
 struct CommandParam
@@ -29,7 +29,7 @@ struct CommandParam
         Enable
     };
 
-    CommandParam() : _option(Disable) // initializes to disable by default
+    CommandParam() : _option(Disable) // initialize to Disable by default
     {}
 
     template <typename T>
@@ -51,7 +51,7 @@ struct CommandParam
         return *this;
     }
 
-    /// casting to Option enum
+    /// casting to Options enum
     operator Options() const
     {
         return _option;
@@ -63,18 +63,17 @@ private:
 
 } // namespace Detail
 
-typedef Detail::CommandParam <Detail::ShowDebug>            ShowDebug;
-typedef Detail::CommandParam <Detail::RowsAffectedExpected> RowsAffectedExpected;
+typedef Detail::CommandParam <Detail::LogDebug>          LogDebug;
+typedef Detail::CommandParam <Detail::LogNoRowsAffected> LogNoRowsAffected;
 
 /**
  * Execute a read or a write command
- *
  * @return true if no error, false otherwise
  */
 template <class T>
-bool executeCommand( T& command, const char* file, const int line, const ShowDebug::Options showDebug = ShowDebug::Disable )
+bool executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug )
 {
-    if( showDebug == ShowDebug::Enable )
+    if( logDebug == LogDebug::Enable )
     {
         std::string loggedSQLstring = command.asString();
         {
@@ -99,25 +98,33 @@ bool executeCommand( T& command, const char* file, const int line, const ShowDeb
 }
 
 /**
+ * Overload of executeCommand() with default LogDebug
+ */
+template <class T>
+bool executeCommand( T& command, const char* file, const int line )
+{
+    return executeCommand( command, file, line, LogDebug::Disable );
+}
+
+/**
  * Execute a database update command
- *
  * @return true if no error and rows have been affected, false otherwise
  */
-inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const ShowDebug::Options showDebug = ShowDebug::Disable, const RowsAffectedExpected::Options rowsAffectedExpected = RowsAffectedExpected::Enable )
+inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug, const LogNoRowsAffected::Options logNoRowsAffected )
 {
-    if( ! executeCommand( updater, file, line, showDebug ))
+    if( ! executeCommand( updater, file, line, logDebug ))
     {
         return false;
     }
 
     if( ! updater.rowsAffected() )
     {
-        if( rowsAffectedExpected == RowsAffectedExpected::Enable )
+        if( logNoRowsAffected == LogNoRowsAffected::Enable )
         {
             std::string loggedSQLstring = updater.asString();
             {
                 CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " **** ERROR **** DB Update no rows affected : " << file << " (" << line << ")" << std::endl
+                dout << CtiTime() << " **** ERROR **** DB update no rows affected : " << file << " (" << line << ")" << std::endl
                      << loggedSQLstring << std::endl;
             }
         }
@@ -125,6 +132,22 @@ inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int
     }
 
     return true;
+}
+
+/**
+ * Overload of executeUpdater() with default LogDebug and LogNoRowsAffected
+ */
+inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line )
+{
+    return executeUpdater( updater, file, line, LogDebug::Disable, LogNoRowsAffected::Enable  );
+}
+
+/**
+ * Overload of executeUpdater() with default LogNoRowsAffected
+ */
+inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug )
+{
+    return executeUpdater( updater, file, line, logDebug, LogNoRowsAffected::Enable );
 }
 
 } // namespace Database
