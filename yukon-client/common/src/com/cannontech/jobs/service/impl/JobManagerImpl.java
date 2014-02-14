@@ -2,8 +2,8 @@ package com.cannontech.jobs.service.impl;
 
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class JobManagerImpl implements JobManager {
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
             new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
     
-    private final Map<String, String> EMPTY_PROPERTY_MAP = new HashMap<>();
+    private static final Map<String, String> emptyPropertyMap = Collections.emptyMap();
 
     // JobId -> ScheduledJobInfoImpl
     private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
@@ -234,7 +234,7 @@ public class JobManagerImpl implements JobManager {
     @Override
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task,
         String cronExpression, YukonUserContext userContext) {
-        return replaceScheduledJob(jobId, jobDefinition, task, cronExpression, userContext, EMPTY_PROPERTY_MAP);
+        return replaceScheduledJob(jobId, jobDefinition, task, cronExpression, userContext, emptyPropertyMap);
     }
     
     @Override
@@ -251,7 +251,7 @@ public class JobManagerImpl implements JobManager {
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
                                 String cronExpression, YukonUserContext userContext) {
-        return scheduleJob(jobDefinition, task, cronExpression, userContext, EMPTY_PROPERTY_MAP);
+        return scheduleJob(jobDefinition, task, cronExpression, userContext, emptyPropertyMap);
     }
 
     @Override

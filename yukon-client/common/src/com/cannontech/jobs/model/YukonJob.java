@@ -58,6 +58,16 @@ public class YukonJob {
         this.deleted = deleted;
     }
 
+    /**
+     * Another workaround until a true system user is created. Calling this method with a
+     * null value indicates that the job is a system job, and sets the <code>isSystemUser</code>
+     * variable to true. This method should never be called using {@link YukonUserContext#system} 
+     * as a parameter, because it will be possible to incorrectly set the state of the 
+     * <code>isSystemUser</code> variable in the job. Because of all this, a job may have a user
+     * context with a userId equal to the yukon userid for two reasons; either the job is actually
+     * owned by the yukon user (in which case the <code>isSystemUser</code> variable should be false)
+     * or the job is a system job and the <code>isSystemUser</code> variable should be set to true.
+     */
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
 
