@@ -19,13 +19,21 @@ yukon.dr.rf.performance = (function () {
             
             /** Handle click for unknown popup */
             jQuery(document).on('click', '.f-unknown', function(event) {
+                
                 var popup = jQuery('#unknown-popup');
                 popup.load('/dr/rf/details/unknown/' + jQuery(this).data('test'), function (resp, status, xhr) {
+                    var data = xhr.getResponseHeader('X-JSON');
                     popup.dialog({width: 600});
+                    jQuery.plot('.f-unknown-pie', JSON.parse(data), {
+                        series: {
+                            pie: {
+                                show: true
+                            }
+                        }
+                    });
                 });
             });
         }
-        
     };
     return mod;
 }());

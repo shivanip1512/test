@@ -1,9 +1,11 @@
 package com.cannontech.web.dr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -24,14 +26,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.UnknownDevices;
+import com.cannontech.dr.rfn.model.UnknownDevice;
+import com.cannontech.dr.rfn.model.UnknownStatus;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -45,20 +48,21 @@ import com.cannontech.web.dr.model.RfPerformanceSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class RfPerformanceController {
 
     private static final String KEY_BASE = "yukon.web.modules.dr.home.rfPerformance.";
-    
+    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
     private static final Logger log = YukonLogManager.getLogger(RfPerformanceController.class);
     
-    @Autowired private ScheduledRepeatingJobDao jobDao;
-    @Autowired private JobManager jobManager;
     @Autowired private PaoDao paoDao;
+    @Autowired private JobManager jobManager;
+    @Autowired private ScheduledRepeatingJobDao jobDao;
     @Autowired private PerformanceVerificationDao rfPerformanceDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
@@ -164,54 +168,56 @@ public class RfPerformanceController {
     }
     
     @RequestMapping(value="/rf/details/unknown/{test}", method=RequestMethod.GET)
-    public String unknown(ModelMap model,
+    public String unknown(ModelMap model, HttpServletResponse resp,
             YukonUserContext userContext,
             @PathVariable long test, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) {
+            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         
-        Set<Entry<Integer, AssetAvailabilityStatus>> rows = rfPerformanceDao.getDevicesWithUnknownStatus(test).entrySet();
-        SearchResults<Entry<Integer, AssetAvailabilityStatus>> results = SearchResults.pageBasedForWholeList(page, itemsPerPage, Lists.newArrayList(rows));
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        SearchResults<UnknownDevice> result = SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getDevices());
         
-        List<UnknownDevice> devices = new ArrayList<>();
-        for (Entry<Integer, AssetAvailabilityStatus> result : results.getResultList()) {
-            
-            UnknownDevice device = new UnknownDevice();
-            YukonPao pao = paoDao.getYukonPao(result.getKey());
-            device.setPao(pao);
-            
-            AssetAvailabilityStatus status = result.getValue();
-            if (status == null) {
-                device.setUnknownType(accessor.getMessage("yukon.web.modules.dr.rf.details.neverReported"));
-            } else {
-                device.setUnknownType(accessor.getMessage(status));
-            }
-            devices.add(device);
-        }
+        model.addAttribute("result", result);
         
-        model.addAttribute("result", SearchResults.pageBasedForSublist(devices, page, itemsPerPage, rows.size()));
+        List<Map<String, Object>> data = new ArrayList<>();
+        Map<String, Object> stat = new HashMap<>();
+        
+        stat.put("label", accessor.getMessage(UnknownStatus.ACTIVE));
+        stat.put("data", unknownDevices.getTotalActive());
+        stat.put("color", "#009933");
+        data.add(stat);
+        
+        stat = new HashMap<>();
+        stat.put("label", accessor.getMessage(UnknownStatus.INACTIVE));
+        stat.put("data", unknownDevices.getTotalInactive());
+        stat.put("color", "#888888");
+        data.add(stat);
+        
+        stat = new HashMap<>();
+        stat.put("label", accessor.getMessage(UnknownStatus.UNAVAILABLE));
+        stat.put("data", unknownDevices.getTotalUnavailable());
+        stat.put("color", "#fb8521");
+        data.add(stat);
+        
+        stat = new HashMap<>();
+        stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_NEW));
+        stat.put("data", unknownDevices.getTotalUnreportedNew());
+        stat.put("color", "#4d90fe");
+        data.add(stat);
+        
+        stat = new HashMap<>();
+        stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_OLD));
+        stat.put("data", unknownDevices.getTotalUnreportedOld());
+        stat.put("color", "#D14836");
+        data.add(stat);
+        
+        resp.addHeader("X-JSON", jsonObjectMapper.writeValueAsString(data));
         model.addAttribute("test", test);
-        
+        model.addAttribute("unknownDevices", unknownDevices);
+
         return "dr/rf/unknown.jsp";
-    }
-    
-    public class UnknownDevice {
-        private YukonPao pao;
-        private String unknownType;
-        public YukonPao getPao() {
-            return pao;
-        }
-        public void setPao(YukonPao pao) {
-            this.pao = pao;
-        }
-        public String getUnknownType() {
-            return unknownType;
-        }
-        public void setUnknownType(String unknownType) {
-            this.unknownType = unknownType;
-        }
     }
     
     private ScheduledRepeatingJob getJob(YukonJobDefinition<? extends YukonTask> jobDefinition) {

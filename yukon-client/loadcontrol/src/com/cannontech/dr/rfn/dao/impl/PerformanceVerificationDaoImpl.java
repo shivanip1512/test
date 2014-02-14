@@ -1,7 +1,12 @@
 package com.cannontech.dr.rfn.dao.impl;
 
-import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.*;
-import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.*;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.ACTIVE;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.INACTIVE;
+import static com.cannontech.dr.assetavailability.AssetAvailabilityStatus.UNAVAILABLE;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.FAILURE;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.SUCCESS_UNENROLLED;
+import static com.cannontech.dr.model.PerformanceVerificationMessageStatus.UNKNOWN;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +18,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -28,6 +34,8 @@ import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
 import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
+import com.cannontech.dr.rfn.model.UnknownDevice;
+import com.cannontech.dr.rfn.model.UnknownStatus;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.Maps;
@@ -99,13 +107,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
 
     @Override
-    public Map<Integer, AssetAvailabilityStatus> getDevicesWithUnknownStatus(long messageId) {
+    public UnknownDevices getDevicesWithUnknownStatus(long messageId) {
         Instant now = new Instant();
         Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
         Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RBED.DeviceId,");
+        sql.append("SELECT RBED.DeviceId, YPO.Type,");
         sql.append("   CASE");
         sql.append("      WHEN LastCommunication IS NOT NULL OR LastNonZeroRuntime IS NOT NULL THEN");
         sql.append("      CASE");
@@ -118,20 +126,90 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("   END AS AssetAvailabilityStatus");
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
+        sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
         sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         sql.append("AND Result").eq_k(UNKNOWN);
 
-        final Map<Integer, AssetAvailabilityStatus> assetAvailability = new HashMap<>();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        final UnknownDevices devices = new UnknownDevices();
+        devices.setDevices(jdbcTemplate.query(sql, new YukonRowMapper<UnknownDevice>() {
             @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                assetAvailability.put(rs.getInt("DeviceId"),
-                                      rs.getEnum("AssetAvailabilityStatus", AssetAvailabilityStatus.class));
+            public UnknownDevice mapRow(YukonResultSet rs) throws SQLException {
+                UnknownDevice device = new UnknownDevice();
+                
+                PaoIdentifier pao = new PaoIdentifier(rs.getInt("DeviceId"), rs.getEnum("Type", PaoType.class));
+                device.setPao(pao);
+                
+                AssetAvailabilityStatus status = rs.getEnum("AssetAvailabilityStatus", AssetAvailabilityStatus.class);
+                if (status == null) {
+                    // TODO Dan
+                    device.setUnknownStatus(UnknownStatus.UNREPORTED_NEW); // or UNREPORTED_OLD (greater than 4 days)
+                    devices.setTotalUnreportedNew(devices.getTotalUnreportedNew() + 1);
+                } else {
+                    device.setUnknownStatus(UnknownStatus.valueOf(status.name()));
+                    switch (status) {
+                    case ACTIVE:
+                        devices.setTotalActive(devices.getTotalActive() + 1);
+                        break;
+                    case INACTIVE:
+                        devices.setTotalInactive(devices.getTotalInactive() + 1);
+                    case UNAVAILABLE:
+                        devices.setTotalUnavailable(devices.getTotalUnavailable() + 1);
+                    }
+                }
+                
+                return device;
             }
-        });
+        }));
         
-        return assetAvailability;
+        return devices;
+    }
+    public class UnknownDevices {
+        
+        private List<UnknownDevice> devices = new ArrayList<>();
+        private int totalUnavailable;
+        private int totalActive;
+        private int totalInactive;
+        private int totalUnreportedNew;
+        private int totalUnreportedOld;
+        
+        public List<UnknownDevice> getDevices() {
+            return devices;
+        }
+        public void setDevices(List<UnknownDevice> devices) {
+            this.devices = devices;
+        }
+        public int getTotalUnavailable() {
+            return totalUnavailable;
+        }
+        public void setTotalUnavailable(int totalUnavailable) {
+            this.totalUnavailable = totalUnavailable;
+        }
+        public int getTotalActive() {
+            return totalActive;
+        }
+        public void setTotalActive(int totalActive) {
+            this.totalActive = totalActive;
+        }
+        public int getTotalInactive() {
+            return totalInactive;
+        }
+        public void setTotalInactive(int totalInactive) {
+            this.totalInactive = totalInactive;
+        }
+        public int getTotalUnreportedNew() {
+            return totalUnreportedNew;
+        }
+        public void setTotalUnreportedNew(int totalUnreportedNew) {
+            this.totalUnreportedNew = totalUnreportedNew;
+        }
+        public int getTotalUnreportedOld() {
+            return totalUnreportedOld;
+        }
+        public void setTotalUnreportedOld(int totalUnreportedOld) {
+            this.totalUnreportedOld = totalUnreportedOld;
+        }
+        
     }
 
     @Override

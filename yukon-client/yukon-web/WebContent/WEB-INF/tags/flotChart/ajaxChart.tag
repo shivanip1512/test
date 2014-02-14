@@ -21,16 +21,15 @@ jQuery(function() {
     var chartId = '${chartId}';
     jQuery.ajax({
         url: '${url}',
-        dataType : 'json',
-        success: function(data) {
-            yukon.Flot.addChart({
-                chartId: chartId,
-                type: data.type,
-                data: data.datas,
-                options: data.options
-            });
-            yukon.Flot.charts[chartId].methods.plotGraph(chartId);
-        }
+        dataType : 'json'
+    }).done(function(data) {
+        yukon.Flot.addChart({
+            chartId: chartId,
+            type: data.type,
+            data: data.datas,
+            options: data.options
+        });
+        yukon.Flot.charts[chartId].methods.plotGraph(chartId);
     });
 });
 </script>

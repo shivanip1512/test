@@ -169,7 +169,8 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compact-results-table.separated tr:not(:last-child) {border-bottom: 1px dashed #ccc;}
 .compact-results-table.no-stripes tr {background-color: white;}
 .compact-results-paging {border-top: 1px solid #ccc;}
-.compact-results-paging .paging-area {float: right;margin: -1px 50px 0 0;border: 1px solid #ccc;border-style: none solid solid solid;padding: 5px 10px;background-color: white;}
+.compact-results-paging .paging-area {float: right;margin: 0 50px 0 0;padding: 5px 10px;background-color: white;}
+.compact-results-paging .paging-area .button:focus {outline: none;}
 .compact-results-paging span {line-height: 16px;}
 .compact-results-paging .page-num-text {margin: 0 10px;}
 .name-value-table .name, .property-list .name {min-width: 140px;}
@@ -359,11 +360,12 @@ ol.error{list-style-type: none;}
 input.error {background: pink;border-color: @red;}
 
 .state-box {
-    width: 14px;
-    height: 14px;
-    border: 1px solid #555;
-    display: inline-block !important;
+    border: 1px solid white;
+    display: inline-block!important;
+    height: 1em;
     margin: 1px 0 0 0;
+    outline: 1px solid #555;
+    width: 1em;
     
     &.green {background-color: @green;}
     &.red {background-color: @red;}

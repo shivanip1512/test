@@ -10,6 +10,8 @@
 
 <cti:standardPage module="dr" page="rf.details">
     
+    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
     <cti:includeScript link="/JavaScript/yukon/yukon.dr.rf.performance.js"/>
     
     <div class="clearfix column-16-8 stacked">
@@ -17,10 +19,10 @@
             <form action="/dr/rf/details">
                 <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                     <tags:nameValue2 nameKey=".dateRange">
-                            <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" wrapperClasses="dib fl">
-                                <div class="dib fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></div>
-                            </dt:dateRange>
-                            <cti:button nameKey="update" type="submit" busy="true" classes="action primary"/>
+                        <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" wrapperClasses="dib fl">
+                            <div class="dib fl" style="margin-right: 5px;"><i:inline key="yukon.common.to"/></div>
+                        </dt:dateRange>
+                        <cti:button nameKey="update" type="submit" busy="true" classes="action primary"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".numTests">${fn:length(tests)}</tags:nameValue2>
                 </tags:nameValueContainer2>

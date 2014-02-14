@@ -6,9 +6,9 @@ import java.util.Map;
 import org.joda.time.Instant;
 
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
+import com.cannontech.dr.rfn.dao.impl.PerformanceVerificationDaoImpl.UnknownDevices;
 
 public interface PerformanceVerificationDao {
 
@@ -38,9 +38,9 @@ public interface PerformanceVerificationDao {
     void writeNewVerificationEventForEnrolledDevices(long messageId);
 
     /**
-     * @return list of device ids which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
+     * @return list of devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
      */
-    Map<Integer, AssetAvailabilityStatus> getDevicesWithUnknownStatus(long messageId);
+    UnknownDevices getDevicesWithUnknownStatus(long messageId);
     
     /**
 	 *Looks up all the event ids for this device and returns the ones that are valid.
