@@ -37,28 +37,28 @@ import com.google.common.collect.Ordering;
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
 @RequestMapping("/veeReview/*")
 public class VeeReviewController {
-	
-	@Autowired private RphTagUiDao rphTagUiDao;
-	@Autowired private RawPointHistoryDao rawPointHistoryDao;
-	@Autowired private ValidationHelperService validationHelperService;
-	
-	private int sumOfSelectedTagCounts = 0;
+    
+    @Autowired private RphTagUiDao rphTagUiDao;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private ValidationHelperService validationHelperService;
+    
+    private int sumOfSelectedTagCounts = 0;
 
-	private static enum ActionType {
-		DELETE,
-		ACCEPT;
-	}
-	
-	private static Ordering<ReviewPoint> reviewPointingOrdering = Ordering.natural().onResultOf(new Function<ReviewPoint, Comparable<RphTag>>() {
-		@Override
-		public Comparable<RphTag> apply(ReviewPoint arg0) {
-			return arg0.getRphTag();
-		}
-	});
-	
-	private void setUpModel(HttpServletRequest request, ModelMap model, int pageNumber, int itemsPerPage) {
-	    
-	    List<RphTag> selectedTags = getSelectedTags(request);
+    private static enum ActionType {
+        DELETE,
+        ACCEPT;
+    }
+    
+    private static Ordering<ReviewPoint> reviewPointingOrdering = Ordering.natural().onResultOf(new Function<ReviewPoint, Comparable<RphTag>>() {
+        @Override
+        public Comparable<RphTag> apply(ReviewPoint arg0) {
+            return arg0.getRphTag();
+        }
+    });
+    
+    private void setUpModel(HttpServletRequest request, ModelMap model, int pageNumber, int itemsPerPage) {
+        
+        List<RphTag> selectedTags = getSelectedTags(request);
         SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(pageNumber, itemsPerPage, selectedTags);
         List<ReviewPoint> allReviewPoints = searchResults.getResultList();
         
@@ -138,22 +138,22 @@ public class VeeReviewController {
         SearchResults<ExtendedReviewPoint> pagedRows = SearchResults.pageBasedForSublist(extendedReviewPoints, pageNumber, itemsPerPage,
                 sumOfSelectedTagCounts);
         model.addAttribute("result", pagedRows);
-	    
-	}
-	
-	@RequestMapping("home")
+        
+    }
+    
+    @RequestMapping("home")
     public String home(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
         setUpModel(request, model, page, itemsPerPage);
         // get review points
         return "vee/review/review.jsp";
     }
-	
-	@RequestMapping("reviewTable")
+    
+    @RequestMapping("reviewTable")
     public String reviewTable(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
-	    setUpModel(request,  model, page, itemsPerPage);
+        setUpModel(request,  model, page, itemsPerPage);
         return "vee/review/reviewTable.jsp";
     }
-	@RequestMapping("save")
+    @RequestMapping("save")
     public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user,@RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) throws Exception {
         // gather changeIds
         List<Long> deleteChangeIds = Lists.newArrayList();
@@ -161,134 +161,134 @@ public class VeeReviewController {
         
         Map<String, String> actionParameters = ServletUtil.getStringParameters(request, "ACTION_");
         for (String changeIdStr : actionParameters.keySet()) {
-        	
-        	String actionTypeStr = actionParameters.get(changeIdStr);
-        	if (!StringUtils.isBlank(actionTypeStr)) {
-	        	ActionType actionType = ActionType.valueOf(actionTypeStr);
-	        	if (ActionType.DELETE.equals(actionType)) {
-	        		deleteChangeIds.add(Long.valueOf(changeIdStr));
-	        	} else if (ActionType.ACCEPT.equals(actionType)) {
-	        		acceptChangeIds.add(Long.valueOf(changeIdStr));
-	        	}
-        	}
+            
+            String actionTypeStr = actionParameters.get(changeIdStr);
+            if (!StringUtils.isBlank(actionTypeStr)) {
+                ActionType actionType = ActionType.valueOf(actionTypeStr);
+                if (ActionType.DELETE.equals(actionType)) {
+                    deleteChangeIds.add(Long.valueOf(changeIdStr));
+                } else if (ActionType.ACCEPT.equals(actionType)) {
+                    acceptChangeIds.add(Long.valueOf(changeIdStr));
+                }
+            }
         }
         
         // delete
         for (long deleteChangeId : deleteChangeIds) {
-        	validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
+            validationHelperService.deleteRawPointHistoryRow(deleteChangeId, user);
         }
         
         // accept
         for (long acceptChangeId : acceptChangeIds) {
-        	validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
+            validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
         }
         
         // mav
         for (RphTag tag : getSelectedTags(request)) {
-        	model.addAttribute(tag.name(), true);
+            model.addAttribute(tag.name(), true);
         }
         setUpModel(request,  model, page, itemsPerPage);
         return "vee/review/reviewTable.jsp";
-	}
-	
-	private void addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
-		sumOfSelectedTagCounts = 0;
-		List<DisplayType> displayTypes = new ArrayList<DisplayType>();
-		for (RphTag tag : RphTag.getAllValidation()) {
-			boolean checked = false;
-			if (selectedTags.contains(tag)) {
-				checked = true;
-				sumOfSelectedTagCounts += tagCounts.get(tag);
-			}
-			displayTypes.add(new DisplayType(tag, checked, tagCounts.get(tag)));
-		}
-		
-		model.addAttribute("totalTagCount", sumOfSelectedTagCounts);
-		model.addAttribute("displayTypes", displayTypes);
-	}
-	
-	public class DisplayType {
-		
-		private RphTag rphTag;
-		private boolean checked;
-		private int count;
-		
-		public DisplayType(RphTag rphTag, boolean checked, int count) {
-			this.rphTag = rphTag;
-			this.checked = checked;
-			this.count = count;
-		}
-		
-		public RphTag getRphTag() {
-			return rphTag;
-		}
-		public boolean isChecked() {
-			return checked;
-		}
-		public int getCount() {
-			return count;
-		}
-	}
-	
-	private List<RphTag> getSelectedTags(HttpServletRequest request) {
-		
-		List<RphTag> tags = new ArrayList<RphTag>();
+    }
+    
+    private void addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
+        sumOfSelectedTagCounts = 0;
+        List<DisplayType> displayTypes = new ArrayList<DisplayType>();
+        for (RphTag tag : RphTag.getAllValidation()) {
+            boolean checked = false;
+            if (selectedTags.contains(tag)) {
+                checked = true;
+                sumOfSelectedTagCounts += tagCounts.get(tag);
+            }
+            displayTypes.add(new DisplayType(tag, checked, tagCounts.get(tag)));
+        }
+        
+        model.addAttribute("totalTagCount", sumOfSelectedTagCounts);
+        model.addAttribute("displayTypes", displayTypes);
+    }
+    
+    public class DisplayType {
+        
+        private RphTag rphTag;
+        private boolean checked;
+        private int count;
+        
+        public DisplayType(RphTag rphTag, boolean checked, int count) {
+            this.rphTag = rphTag;
+            this.checked = checked;
+            this.count = count;
+        }
+        
+        public RphTag getRphTag() {
+            return rphTag;
+        }
+        public boolean isChecked() {
+            return checked;
+        }
+        public int getCount() {
+            return count;
+        }
+    }
+    
+    private List<RphTag> getSelectedTags(HttpServletRequest request) {
+        
+        List<RphTag> tags = new ArrayList<RphTag>();
 
-		for (RphTag rphTag : RphTag.getAllValidation()) {
-			
-			boolean tagChecked = ServletRequestUtils.getBooleanParameter(request, rphTag.name(), false);
-			if (tagChecked) {
-				tags.add(rphTag);
-			}
-		}
-		
-		if (tags.size() == 0) {
-			tags.addAll(RphTag.getAllValidation());
-		}
-		
-		return tags;
-	}
-	
-	public class ExtendedReviewPoint {
-		
-		private ReviewPoint reviewPoint;
-		private PointValueHolder prevPointValue;
-		private PointValueHolder nextPointValue;
-		private List<RphTag> otherTags;
-		
-		public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue, List<RphTag> otherTags) {
-			this.reviewPoint = reviewPoint;
-			this.prevPointValue = prevPointValue;
-			this.nextPointValue = nextPointValue;
-			this.otherTags = otherTags;
-		}
-		
-		public ReviewPoint getReviewPoint() {
-			return reviewPoint;
-		}
-		public PointValueHolder getPrevPointValue() {
-			return prevPointValue;
-		}
-		public PointValueHolder getNextPointValue() {
-			return nextPointValue;
-		}
-		public List<RphTag> getOtherTags() {
-			return otherTags;
-		}
-	}
-	
-	@Autowired
-	public void setRphTagUiDao(RphTagUiDao rphTagUiDao) {
-		this.rphTagUiDao = rphTagUiDao;
-	}
-	
-	@Autowired
-	public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-		this.rawPointHistoryDao = rawPointHistoryDao;
-	}
-	
-	@Autowired
-	public void setValidationHelperService(ValidationHelperService validationHelperService) {
+        for (RphTag rphTag : RphTag.getAllValidation()) {
+            
+            boolean tagChecked = ServletRequestUtils.getBooleanParameter(request, rphTag.name(), false);
+            if (tagChecked) {
+                tags.add(rphTag);
+            }
+        }
+        
+        if (tags.size() == 0) {
+            tags.addAll(RphTag.getAllValidation());
+        }
+        
+        return tags;
+    }
+    
+    public class ExtendedReviewPoint {
+        
+        private ReviewPoint reviewPoint;
+        private PointValueHolder prevPointValue;
+        private PointValueHolder nextPointValue;
+        private List<RphTag> otherTags;
+        
+        public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue, List<RphTag> otherTags) {
+            this.reviewPoint = reviewPoint;
+            this.prevPointValue = prevPointValue;
+            this.nextPointValue = nextPointValue;
+            this.otherTags = otherTags;
+        }
+        
+        public ReviewPoint getReviewPoint() {
+            return reviewPoint;
+        }
+        public PointValueHolder getPrevPointValue() {
+            return prevPointValue;
+        }
+        public PointValueHolder getNextPointValue() {
+            return nextPointValue;
+        }
+        public List<RphTag> getOtherTags() {
+            return otherTags;
+        }
+    }
+    
+    @Autowired
+    public void setRphTagUiDao(RphTagUiDao rphTagUiDao) {
+        this.rphTagUiDao = rphTagUiDao;
+    }
+    
+    @Autowired
+    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
+        this.rawPointHistoryDao = rawPointHistoryDao;
+    }
+    
+    @Autowired
+    public void setValidationHelperService(ValidationHelperService validationHelperService) {
         this.validationHelperService = validationHelperService;
     }
 }
