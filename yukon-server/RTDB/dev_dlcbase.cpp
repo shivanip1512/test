@@ -873,7 +873,7 @@ inline MacroOffset DlcBaseDevice::selectInitialMacroRouteOffset(LONG routeid) co
     {
         if(Route->getType() == RouteTypeMacro)
         {
-            return MacroOffset(0);
+            return MacroOffset(0); // Pick the first sub-route in the macro
         }
     }
 

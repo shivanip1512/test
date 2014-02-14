@@ -120,7 +120,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
                         if(NewOMess)
                         {
-                            if( *offset < RoutePtrList.length()-1 )
+                            if( (*offset + 1) < RoutePtrList.length() )
                             {
                                 NewOMess->Request.RetryMacroOffset = *offset + 1;    // Ask for this next (if needed) please.
                             }
@@ -202,7 +202,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                     if(NewOMess)
                     {
                         NewOMess->Request.RouteID          = pRoute->getRouteID();
-                        NewOMess->Request.RetryMacroOffset = MacroOffset::none; // 20020523 CGP  Oh golly. We say zero since we already will be hitting them on the way by. // i+1;
+                        NewOMess->Request.RetryMacroOffset = MacroOffset::none; // No retry offset necessary, since we are already broadcasting to all routes
 
                         if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                         {
@@ -272,7 +272,7 @@ bool CtiRouteMacro::processAdditionalRoutes( const INMESS *InMessage ) const
         return false;
     }
 
-    return ( getRoutePtrList().entries() > *InMessage->Return.RetryMacroOffset );
+    return (*InMessage->Return.RetryMacroOffset <= getRoutePtrList().entries());
 }
 
 CtiMutex& CtiRouteMacro::getRouteListMux()
