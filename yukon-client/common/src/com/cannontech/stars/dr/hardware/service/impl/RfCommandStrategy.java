@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     private static final Logger log = YukonLogManager.getLogger(RfCommandStrategy.class);
     private static final LogHelper logHelper = LogHelper.getInstance(log);
+    private static final AtomicInteger nextMessageId = new AtomicInteger(0);
 
     @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
@@ -132,6 +134,8 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
                 RfnExpressComBroadcastRequest request = new RfnExpressComBroadcastRequest();
                 request.setRfnMessageClass(RfnMessageClass.DR);
                 request.setExpirationDuration(-1); // Messages will not expire.
+                // C++ will use unique positive values, Java gets the unique negative values
+                request.setMessageId((short)(nextMessageId.incrementAndGet() | 0x8000));
                 int commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_LM_HARDWARE_COMMAND", 
                         CommandRequestExecutionDefaults.getPriority(DeviceRequestType.LM_HARDWARE_COMMAND));
                 request.setMessagePriority(commandPriority);
