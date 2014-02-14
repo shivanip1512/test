@@ -90,7 +90,12 @@ public interface SqlBuilder {
      * @return
      */
     public SqlBuilder in(Iterable<?> list);
-    
+
+    /**
+     * Append a list of enums as constants.
+     */
+    public SqlBuilder in_k(Iterable<? extends Enum<?>> list);
+
     public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
     
     /**

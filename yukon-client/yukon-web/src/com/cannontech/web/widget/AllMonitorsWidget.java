@@ -24,6 +24,7 @@ import com.cannontech.amr.tamperFlagProcessing.TamperFlagMonitor;
 import com.cannontech.amr.tamperFlagProcessing.dao.TamperFlagMonitorDao;
 import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
 import com.cannontech.common.events.loggers.OutageEventLogService;
+import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.dao.ValidationMonitorDao;
 import com.cannontech.common.validation.dao.ValidationMonitorNotFoundException;
 import com.cannontech.common.validation.model.ValidationMonitor;
@@ -58,6 +59,8 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
     @Autowired protected ValidationMonitorDao validationMonitorDao;
     @Autowired private ValidationMonitorService validationMonitorService;
     @Autowired private OutageEventLogService outageEventLogService;
+    
+    @Autowired private RphTagUiDao rphTagUiDao;
 
     @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext context) {
@@ -86,6 +89,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         
         List<ValidationMonitor> validationMonitors = validationMonitorDao.getAll();
         model.addAttribute("validationMonitors", validationMonitors);
+        
     }
 
     @RequestMapping("toggleEnabledDeviceData")

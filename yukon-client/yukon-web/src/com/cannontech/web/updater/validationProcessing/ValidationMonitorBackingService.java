@@ -20,10 +20,16 @@ public class ValidationMonitorBackingService implements UpdateBackingService {
     
     @Override
     public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-
+        
+        int validationMonitorId = 0;
+        String updaterTypeStr = null;
         String[] idParts = StringUtils.split(identifier, "/");
-        int validationMonitorId = Integer.parseInt(idParts[0]);
-        String updaterTypeStr = idParts[1];
+        if (idParts.length == 1) {
+            updaterTypeStr = idParts[0];
+        } else {
+            validationMonitorId = Integer.parseInt(idParts[0]);
+            updaterTypeStr = idParts[1];
+        }
         
         ValidationMonitorUpdaterTypeEnum updaterType = ValidationMonitorUpdaterTypeEnum.valueOf(updaterTypeStr);
         ValidationProcessingUpdaterHandler handler = handlersMap.get(updaterType);
@@ -50,5 +56,3 @@ public class ValidationMonitorBackingService implements UpdateBackingService {
         this.handlers = handlers;
     }
 }
-
-

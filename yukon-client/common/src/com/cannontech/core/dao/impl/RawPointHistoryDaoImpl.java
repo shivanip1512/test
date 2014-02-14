@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +17,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -90,12 +88,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             final LiteRPHQualityRowMapper liteRPHQualityRowMapper = new LiteRPHQualityRowMapper();
 
             @Override
-            public Map.Entry<Integer, PointValueQualityHolder> mapRow(YukonResultSet rs)
-                    throws SQLException {
+            public Map.Entry<Integer, PointValueQualityHolder> mapRow(YukonResultSet rs) throws SQLException {
                 int paObjectId = rs.getInt("PAObjectID");
 
-                PointValueQualityHolder pointValueQualityHolder =
-                    liteRPHQualityRowMapper.mapRow(rs.getResultSet(), 0);
+                PointValueQualityHolder pointValueQualityHolder = liteRPHQualityRowMapper.mapRow(rs);
                 return Maps.immutableEntry(paObjectId, pointValueQualityHolder);
             }
         };
@@ -834,11 +830,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     /**
      * Helper class which maps a result set row into a PointValueHolder
      */
-    private class LiteRphRowMapper implements ParameterizedRowMapper<PointValueHolder> {
-
+    private class LiteRphRowMapper implements YukonRowMapper<PointValueHolder> {
         @Override
-        public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
-
+        public PointValueQualityHolder mapRow(YukonResultSet rs) throws SQLException {
             PointValueBuilder builder = PointValueBuilder.create();
             builder.withResultSet(rs);
             builder.withType(rs.getString("pointtype"));
@@ -846,10 +840,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
     }
     
-    private class LiteRPHQualityRowMapper implements ParameterizedRowMapper<PointValueQualityHolder> {
-
+    private class LiteRPHQualityRowMapper implements YukonRowMapper<PointValueQualityHolder> {
         @Override
-        public PointValueQualityHolder mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public PointValueQualityHolder mapRow(YukonResultSet rs) throws SQLException {
             PointValueBuilder builder = PointValueBuilder.create();
             builder.withResultSet(rs);
             builder.withType(rs.getString("pointtype"));

@@ -18,7 +18,7 @@
             </list>
         </property>
     </bean>
-    
+
     <bean id="requestDataValueProcessor" class="com.cannontech.web.security.csrf.CsrfRequestDataValueProcessor"/>
     
     <bean id="webSecurityInterceptor" class="com.cannontech.web.security.WebSecurityInterceptor"/>
@@ -954,6 +954,13 @@
     <bean id="validationMonitorBackingService" class="com.cannontech.web.updater.validationProcessing.ValidationMonitorBackingService">
     </bean>
     <bean id="monitoringCountValidationProcessingUpdaterHandler" class="com.cannontech.web.updater.validationProcessing.handler.MonitoringCountValidationProcessingUpdaterHandler"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.TotalViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.UnreasonableUpViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.UnreasonableDownViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeekUpViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.PeekDownViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.ChangeOutViolationsProcessor"/>
+    <bean class="com.cannontech.web.updater.validationProcessing.handler.ShowViolationsProcessor"/>
     
     <!-- jobs -->
     <bean id="jobBackingService" class="com.cannontech.web.updater.job.JobBackingService">
@@ -1127,7 +1134,7 @@
     <bean id="pageTitleTagPrototype" class="com.cannontech.web.i18n.PageTitleTag"/>
 
     <bean id="csrfTokenTagPrototype" class="com.cannontech.web.taglib.CsrfTokenTag"/>
-    
+
     <bean class="com.cannontech.web.security.csrf.impl.CsrfTokenServiceImpl"/>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
@@ -1421,9 +1428,9 @@
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
     <bean id="passwordResetService" class="com.cannontech.web.stars.service.impl.PasswordResetServiceImpl" />
     <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl"/>
-
+    
     <bean class="com.cannontech.web.login.impl.LoginCookieHelperImpl"/>
-
+    
     <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer"/>
     
     <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">

@@ -287,7 +287,30 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         addString(") ");
         return this;
     }
-    
+
+    @Override
+    public SqlStatementBuilder in_k(Iterable<? extends Enum<?>> constants) {
+        addString("in (");
+
+        Iterator<? extends Enum<?>> iter = constants.iterator();
+        if (!iter.hasNext()) {
+            addString("null");
+            return this;
+        } 
+
+        while (iter.hasNext()) {
+            Enum<?> argument = iter.next();
+            appendArgument_k(argument);
+            if (iter.hasNext()) {
+                addString(",");
+            }
+        }
+
+        addString(") ");
+
+        return this;
+    }
+
     @Override
     public SqlStatementBuilder notIn(Iterable<?> list) {
         addString("not ");

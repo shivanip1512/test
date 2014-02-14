@@ -149,7 +149,12 @@ public class VendorSpecificSqlBuilderFactory {
         public SqlBuilder in(Iterable<?> list) {
             return this;
         }
-        
+
+        @Override
+        public SqlBuilder in_k(Iterable<? extends Enum<?>> list) {
+            return this;
+        }
+
         @Override
         public SqlBuilder notIn(Iterable<?> list) {
             return null;

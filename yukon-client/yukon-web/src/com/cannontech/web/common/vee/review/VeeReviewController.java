@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
@@ -37,12 +38,11 @@ import com.google.common.collect.Ordering;
 @RequestMapping("/veeReview/*")
 public class VeeReviewController {
 	
-	private RphTagUiDao rphTagUiDao;
-	private RawPointHistoryDao rawPointHistoryDao;
-	private ValidationHelperService validationHelperService;
+	@Autowired private RphTagUiDao rphTagUiDao;
+	@Autowired private RawPointHistoryDao rawPointHistoryDao;
+	@Autowired private ValidationHelperService validationHelperService;
 	
-	private static int IDEAL_PAGE_COUNT = 15;
-	private static int OVER_RETRIEVE_FACTOR = 3;
+	private int sumOfSelectedTagCounts = 0;
 
 	private static enum ActionType {
 		DELETE,
@@ -56,101 +56,105 @@ public class VeeReviewController {
 		}
 	});
 	
-	@RequestMapping("home")
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("vee/review/review.jsp");
-        int afterPaoId = ServletRequestUtils.getIntParameter(request, "afterPaoId", 0);
-
-        // get review points
-        List<RphTag> selectedTags = getSelectedTags(request);
-        List<ReviewPoint> allReviewPoints = rphTagUiDao.getReviewPoints(afterPaoId, IDEAL_PAGE_COUNT * OVER_RETRIEVE_FACTOR, selectedTags, false);
+	private void setUpModel(HttpServletRequest request, ModelMap model, int pageNumber, int itemsPerPage) {
+	    
+	    List<RphTag> selectedTags = getSelectedTags(request);
+        SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(pageNumber, itemsPerPage, selectedTags);
+        List<ReviewPoint> allReviewPoints = searchResults.getResultList();
         
         // group by device for the purpose of the narrowing step, this way the changeIds used as (linked) map keys stay in device order
         ListMultimap<String, ReviewPoint> rpsByName = LinkedListMultimap.create();
         for (ReviewPoint rp : allReviewPoints) {
-        	rpsByName.put(rp.getDisplayablePao().getName(), rp);
+            rpsByName.put(rp.getDisplayablePao().getName(), rp);
         }
         
         // narrow - group by changeId
         // loop over rpsByName by key to keep order intact
         ListMultimap<Long, ReviewPoint> commonChangeIdReviewPoints = LinkedListMultimap.create();
         for (String nameKey : rpsByName.keySet()) {
-        	List<ReviewPoint> rpsForName = rpsByName.get(nameKey);
-	        for (ReviewPoint rp : rpsForName) {
-	        	commonChangeIdReviewPoints.put(rp.getChangeId(), rp);
-	        }
+            List<ReviewPoint> rpsForName = rpsByName.get(nameKey);
+            for (ReviewPoint rp : rpsForName) {
+                commonChangeIdReviewPoints.put(rp.getChangeId(), rp);
+            }
         }
         
         // narrow - if changeId has multiple review points only keep the one with highest display precedence
-        // add keepers until the next distinct device and count >= IDEAL_PAGE_COUNT
+        // add keepers until the next distinct device and count >= PAGE_COUNT
         int lastPaoId = 0;
         List<ReviewPoint> keepReviewPoints = new ArrayList<ReviewPoint>();
         for (long changeId : commonChangeIdReviewPoints.keySet()) {
-        	
-        	List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
-        	ReviewPoint keeper = reviewPointingOrdering.min(rpList);
-        	
-        	int keeperPaoId = keeper.getDisplayablePao().getPaoIdentifier().getPaoId();
-        	if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= IDEAL_PAGE_COUNT) {
-        		break;
-        	}
-        	
-        	keepReviewPoints.add(keeper);
-        	lastPaoId = keeperPaoId;
+            
+            List<ReviewPoint> rpList = commonChangeIdReviewPoints.get(changeId);
+            ReviewPoint keeper = reviewPointingOrdering.min(rpList);
+            
+            int keeperPaoId = keeper.getDisplayablePao().getPaoIdentifier().getPaoId();
+            if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= itemsPerPage) {
+                break;
+            }
+            
+            keepReviewPoints.add(keeper);
+            lastPaoId = keeperPaoId;
         }
         
         // make extended
         List<ExtendedReviewPoint> extendedReviewPoints = new ArrayList<ExtendedReviewPoint>();
         for (ReviewPoint rp : keepReviewPoints) {
-        	
-        	List<RphTag> otherTags = Lists.newArrayList();
-        	List<ReviewPoint> rpsWithCommonChangeId = commonChangeIdReviewPoints.get(rp.getChangeId());
-        	for (ReviewPoint rpCommon : rpsWithCommonChangeId) {
-        		if (!rpCommon.equals(rp)) {
-        			otherTags.add(rpCommon.getRphTag());
-        		}
-        	}
-        	
-        	AdjacentPointValues adjacentPointValues = rawPointHistoryDao.getAdjacentPointValues(rp.getPointValue());
-        	ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.getPreceding(), adjacentPointValues.getSucceeding(), otherTags);
-        	extendedReviewPoints.add(extRp);
+            
+            List<RphTag> otherTags = Lists.newArrayList();
+            List<ReviewPoint> rpsWithCommonChangeId = commonChangeIdReviewPoints.get(rp.getChangeId());
+            for (ReviewPoint rpCommon : rpsWithCommonChangeId) {
+                if (!rpCommon.equals(rp)) {
+                    otherTags.add(rpCommon.getRphTag());
+                }
+            }
+            
+            AdjacentPointValues adjacentPointValues = rawPointHistoryDao.getAdjacentPointValues(rp.getPointValue());
+            ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.getPreceding(), adjacentPointValues.getSucceeding(), otherTags);
+            extendedReviewPoints.add(extRp);
         }
         
         // group by device for display
-        int finalPaoId = 0;
         Map<String, List<ExtendedReviewPoint>> groupedExtendedReviewPoints = new LinkedHashMap<String, List<ExtendedReviewPoint>>();
         for (ExtendedReviewPoint extRp : extendedReviewPoints) {
-        	
-        	String nameKey = extRp.getReviewPoint().getDisplayablePao().getName();
-        	if (groupedExtendedReviewPoints.get(nameKey) == null) {
-        		List<ExtendedReviewPoint> extRps = new ArrayList<ExtendedReviewPoint>();
-        		groupedExtendedReviewPoints.put(nameKey, extRps);
-        	}
-        	groupedExtendedReviewPoints.get(nameKey).add(extRp);
-        	
-        	finalPaoId = extRp.getReviewPoint().getDisplayablePao().getPaoIdentifier().getPaoId();
+            
+            String nameKey = extRp.getReviewPoint().getDisplayablePao().getName();
+            if (groupedExtendedReviewPoints.get(nameKey) == null) {
+                List<ExtendedReviewPoint> extRps = new ArrayList<ExtendedReviewPoint>();
+                groupedExtendedReviewPoints.put(nameKey, extRps);
+            }
+            groupedExtendedReviewPoints.get(nameKey).add(extRp);
+            
         }
         
         // tag counts
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
-        mav.addObject("tagCounts", tagCounts);
+        model.addAttribute("tagCounts", tagCounts);
         
         // mav
-        mav.addObject("afterPaoId", afterPaoId);
-        mav.addObject("nextPaoId", finalPaoId);
-        addDisplayTypesToMav(selectedTags, tagCounts, mav);
-        mav.addObject("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
+        addDisplayTypesToModel(selectedTags, tagCounts, model);
+        model.addAttribute("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
         
-        return mav;
+        //for pagination
+        SearchResults<ExtendedReviewPoint> pagedRows = SearchResults.pageBasedForSublist(extendedReviewPoints, pageNumber, itemsPerPage,
+                sumOfSelectedTagCounts);
+        model.addAttribute("result", pagedRows);
+	    
+	}
+	
+	@RequestMapping("home")
+    public String home(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
+        setUpModel(request, model, page, itemsPerPage);
+        // get review points
+        return "vee/review/review.jsp";
     }
 	
+	@RequestMapping("reviewTable")
+    public String reviewTable(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
+	    setUpModel(request,  model, page, itemsPerPage);
+        return "vee/review/reviewTable.jsp";
+    }
 	@RequestMapping("save")
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("redirect:home");
-        int afterPaoId = ServletRequestUtils.getIntParameter(request, "afterPaoId", 0);
-        
+    public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user,@RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) throws Exception {
         // gather changeIds
         List<Long> deleteChangeIds = Lists.newArrayList();
         List<Long> acceptChangeIds = Lists.newArrayList();
@@ -180,26 +184,27 @@ public class VeeReviewController {
         }
         
         // mav
-        mav.addObject("afterPaoId", afterPaoId);
         for (RphTag tag : getSelectedTags(request)) {
-        	mav.addObject(tag.name(), true);
+        	model.addAttribute(tag.name(), true);
         }
-        
-        return mav;
+        setUpModel(request,  model, page, itemsPerPage);
+        return "vee/review/reviewTable.jsp";
 	}
 	
-	private void addDisplayTypesToMav(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelAndView mav) {
-		
+	private void addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
+		sumOfSelectedTagCounts = 0;
 		List<DisplayType> displayTypes = new ArrayList<DisplayType>();
 		for (RphTag tag : RphTag.getAllValidation()) {
 			boolean checked = false;
 			if (selectedTags.contains(tag)) {
 				checked = true;
+				sumOfSelectedTagCounts += tagCounts.get(tag);
 			}
 			displayTypes.add(new DisplayType(tag, checked, tagCounts.get(tag)));
 		}
 		
-		mav.addObject("displayTypes", displayTypes);
+		model.addAttribute("totalTagCount", sumOfSelectedTagCounts);
+		model.addAttribute("displayTypes", displayTypes);
 	}
 	
 	public class DisplayType {

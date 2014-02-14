@@ -1,12 +1,12 @@
 package com.cannontech.core.dynamic;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.point.PointType;
 
 public class PointValueBuilder {
@@ -30,9 +30,9 @@ public class PointValueBuilder {
      * @return
      * @throws SQLException
      */
-    public PointValueBuilder withResultSet(ResultSet rs) throws SQLException {
+    public PointValueBuilder withResultSet(YukonResultSet rs) throws SQLException {
         pointId = rs.getInt("pointid");
-        timeStamp = rs.getTimestamp("timestamp");
+        timeStamp = rs.getDate("timestamp");
         pointQuality = PointQuality.getPointQuality(rs.getInt("Quality"));
         value = rs.getDouble("value");
         return this;

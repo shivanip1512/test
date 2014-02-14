@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
 
 public interface RphTagUiDao {
-    List<ReviewPoint> getReviewPoints(int afterPaoId, int pageCount, List<RphTag> tags, boolean includeOk);
+    SearchResults<ReviewPoint> getReviewPoints(int page, int itemsPerPage, List<RphTag> tags);
 
     Map<RphTag, Integer> getAllValidationTagCounts();
 

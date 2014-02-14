@@ -514,10 +514,11 @@
 <div class="action-area">
     <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
         <c:if test="${not empty validationMonitors}">
-            <cti:msgScope paths="widgets.validationMonitorsWidget">
+            <cti:classUpdater type="VALIDATION_PROCESSING" identifier="SHOW_VIOLATIONS">
                 <cti:url var="reviewUrl" value="/common/veeReview/home"/>
-                <a href="${reviewUrl}"><i:inline key=".review"/></a>
-            </cti:msgScope>
+                <a href="${reviewUrl}"><i:inline key="yukon.web.widgets.validationMonitorsWidget.review"/></a>
+                <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="TOTAL_VIOLATIONS" styleClass="label label-danger"/>
+            </cti:classUpdater>
         </c:if>
     </cti:checkRolesAndProperties>
     <c:if test="${not isSubscribedWidget}">

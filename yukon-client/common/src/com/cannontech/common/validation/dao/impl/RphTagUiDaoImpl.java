@@ -1,136 +1,116 @@
 package com.cannontech.common.validation.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
 import com.cannontech.common.validation.model.RphTag;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.LongRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private PaoLoadingService paoLoadingService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoLoadingService paoLoadingService;
 
     @Override
-    public List<ReviewPoint> getReviewPoints(int afterPaoId, int pageCount, List<RphTag> tags, boolean includeOk) {
+    public SearchResults<ReviewPoint> getReviewPoints(int page, int itemsPerPage, List<RphTag> tags) {
+        int startRow = page-1;
+        int endRow = itemsPerPage;
+        if (page > 1) {
+            startRow = (page-1) * itemsPerPage;
+            endRow = page * itemsPerPage-1;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rt.*, rph.*, ypo.PAObjectID, ypo.PaoName, ypo.Type, p.PointType");
+        sql.append("SELECT * FROM (");
+        sql.append("SELECT rt.TagName, rph.*, ypo.PaobjectId, ypo.PaoName, ypo.Type, p.PointType,");
+        sql.append("ROW_NUMBER() OVER (ORDER BY ypo.PAObjectID, rph.ChangeId, rph.TimeStamp, rt.TagName) AS rn");
         sql.append("FROM RphTag rt");
         sql.append(    "JOIN RawPointHistory rph ON (rph.ChangeId = rt.ChangeId)");
         sql.append(    "JOIN Point p ON (rph.PointId = p.PointId)");
-        sql.append(    "JOIN YukonPAObject ypo ON (p.PAObjectID = ypo.PAObjectID)");
+        sql.append(    "JOIN YukonPaobject ypo ON (p.PaobjectID = ypo.PaobjectId)");
 
-        sql.append("WHERE ypo.PAObjectID").gt(afterPaoId);
+        //following four lines are here because the tables are not sane
+        //when accepted another row is added to RphTag under changeId for 'OK' 
+        //this means the same changeId has 'OK' and some other not ok value
+        //we don't want any Ids that have any rows with OK attached to them
+        sql.append("AND rt.ChangeId NOT IN (");
+        sql.append("    SELECT rt2.ChangeId FROM RphTag rt2 ");
+        sql.append("    WHERE rt2.TagName ").eq(RphTag.OK);
+        sql.append(")");
+        
+        sql.append("WHERE rt.TagName").neq(RphTag.OK);
+        sql.append(    "AND rt.TagName").in_k(tags);
 
-        if (!includeOk) {
-            sql.append("AND rt.ChangeId NOT IN (");
-            sql.append("	SELECT rt2.ChangeId FROM RphTag rt2 ");
-            sql.append("	WHERE rt2.TagName ").eq(RphTag.OK);
-            sql.append(")");
-        }
-
-        sql.append("AND rt.TagName").neq(RphTag.OK);
-
-        if (tags != null && tags.size() > 0) {
-            sql.append("AND rt.TagName IN (");
-            int i = 1;
-            for (RphTag tag : tags) {
-                sql.append("'" + tag + "'");
-                if (i != tags.size()) {
-                    sql.append(", ");
-                }
-                i++;
-            }
-            sql.append(")");
-        }
-
-        sql.append("ORDER BY ypo.PAObjectID, rph.ChangeId, rph.TimeStamp, rt.TagName");
+        sql.append(") results");
+        sql.append("WHERE rn BETWEEN " + startRow + " AND " + endRow);
 
         // get
-        PaoProvidingReviewPointsRse rse = new PaoProvidingReviewPointsRse(
-                pageCount);
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+        ReviewPointRowMapper rowMapper = new ReviewPointRowMapper();
+        List<ReviewPoint> reviewPoints = yukonJdbcTemplate.query(sql, rowMapper);
 
-        List<ReviewPoint> reviewPoints = rse.getResultList();
-        List<PaoIdentifier> paos = rse.getPaos();
+        Collection<YukonPao> paos = rowMapper.reviewPointsByPao.keySet();
 
-        Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup = paoLoadingService.getDisplayableDeviceLookup(paos);
-        for (int i = 0; i < reviewPoints.size(); i++) {
-            PaoIdentifier paoIdentifier = paos.get(i);
-            DisplayablePao displayablePao = displayableDeviceLookup.get(paoIdentifier);
-            reviewPoints.get(i).setDisplayablePao(displayablePao);
+        Map<PaoIdentifier, DisplayablePao> displayablePaos = paoLoadingService.getDisplayableDeviceLookup(paos);
+        for (Map.Entry<PaoIdentifier, DisplayablePao> entry : displayablePaos.entrySet()) {
+            PaoIdentifier pao = entry.getKey();
+            DisplayablePao displayablePao = entry.getValue();
+            for (ReviewPoint reviewPoint : rowMapper.reviewPointsByPao.get(pao)) {
+                reviewPoint.setDisplayablePao(displayablePao);
+            }
         }
 
-        return reviewPoints;
+        SearchResults<ReviewPoint> results = SearchResults.pageBasedForSublist(reviewPoints, page, itemsPerPage, reviewPoints.size());
+        return results;
     }
 
-    private final class PaoProvidingReviewPointsRse implements ResultSetExtractor {
-        private List<PaoIdentifier> paos = new ArrayList<PaoIdentifier>();
-        private List<ReviewPoint> resultList = new ArrayList<ReviewPoint>();
-        private int pageCount;
-
-        private PaoProvidingReviewPointsRse(int pageCount) {
-            this.pageCount = pageCount;
-        }
+    private final class ReviewPointRowMapper implements YukonRowMapper<ReviewPoint> {
+        // The displayablePao property does not get set on ReviewPoint.  Keep a map of PaoIdentifier by changeId
+        // we can call paoLoadingService later to get displayablePaos.
+        Multimap<YukonPao, ReviewPoint> reviewPointsByPao = ArrayListMultimap.create();
 
         @Override
-        public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-            YukonPaoRowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
-            while (rs.next() && pageCount-- > 0) {
-                // displayablePao does not get set on ReviewPoint
-                // build list of PaoIdentifier so that paoLoadingService can be
-                // used to get displayablePaos later and set them on
-                // ReviewPoints
-                PaoIdentifier paoIdentifier = yukonPaoRowMapper.mapRow(rs, 0);
-                paos.add(paoIdentifier);
+        public ReviewPoint mapRow(YukonResultSet rs) throws SQLException {
+            PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
 
-                ReviewPoint rp = new ReviewPoint();
-                rp.setChangeId(rs.getLong("ChangeId"));
-                rp.setRphTag(RphTag.valueOf(rs.getString("TagName")));
+            ReviewPoint reviewPoint = new ReviewPoint();
+            long changeId = rs.getLong("ChangeId");
+            reviewPoint.setChangeId(changeId);
+            reviewPoint.setRphTag(rs.getEnum("TagName", RphTag.class));
 
-                PointValueBuilder builder = PointValueBuilder.create();
-                builder.withResultSet(rs);
-                builder.withType(rs.getString("pointtype"));
-                PointValueQualityHolder pvqh = builder.build();
+            PointValueBuilder builder = PointValueBuilder.create();
+            builder.withResultSet(rs);
+            builder.withType(rs.getString("pointtype"));
+            PointValueQualityHolder pvqh = builder.build();
 
-                rp.setPointValue(pvqh);
+            reviewPoint.setPointValue(pvqh);
+            reviewPointsByPao.put(paoIdentifier, reviewPoint);
 
-                resultList.add(rp);
-            }
-
-            return resultList;
-        }
-
-        public List<ReviewPoint> getResultList() {
-            return resultList;
-        }
-
-        public List<PaoIdentifier> getPaos() {
-            return paos;
+            return reviewPoint;
         }
     }
 
+    @Override
     public Map<RphTag, Integer> getAllValidationTagCounts() {
-
         Map<RphTag, Integer> countMap = Maps.newHashMapWithExpectedSize(RphTag.getAllValidation().size());
 
         for (RphTag rphTag : RphTag.getAllValidation()) {
@@ -166,17 +146,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append("group by ChangeId");
         sql.append("having count(*)").eq(set.size());
 
-        List<Long> result = yukonJdbcTemplate.query(sql, new LongRowMapper());
+        List<Long> result = yukonJdbcTemplate.query(sql, RowMapper.LONG);
         return result;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
     }
 }
