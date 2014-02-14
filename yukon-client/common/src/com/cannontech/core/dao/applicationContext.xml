@@ -64,9 +64,7 @@
     <property name="paoDao" ref="paoDao"/>    
     <property name="transactionTemplate" ref="transactionTemplate"/>    
   </bean>
-  <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl" >
-    <property name="databaseCache" ref="databaseCache"/>    
-  </bean>  
+  <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl"/>
   <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
   	<property name="authDao" ref="authDao"/>
     <property name="jdbcOps" ref="jdbcTemplate"/> 

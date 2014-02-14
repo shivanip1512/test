@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotificationGroupDao;
@@ -14,7 +15,7 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class NotificationGroupDaoImpl implements NotificationGroupDao {
-    private IDatabaseCache databaseCache;
+    @Autowired private IDatabaseCache databaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
@@ -49,9 +50,5 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
         List<LiteNotificationGroup> allContactNotificationGroups = databaseCache.getAllContactNotificationGroups();
         Set<LiteNotificationGroup> hashSet = new HashSet<LiteNotificationGroup>(allContactNotificationGroups);
         return hashSet;
-    }
-
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
     }
 }

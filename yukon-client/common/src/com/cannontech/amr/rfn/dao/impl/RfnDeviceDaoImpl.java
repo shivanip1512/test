@@ -22,7 +22,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -30,8 +30,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
-    
-    private final Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
+    private final static Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
+
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
 
@@ -60,7 +60,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append(  "and rfn.Model").eq(rfnIdentifier.getSensorModel());
         
         try {
-            PaoIdentifier pao = jdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
+            PaoIdentifier pao = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
             RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
@@ -196,5 +196,4 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public String getFormattedDeviceName(RfnDevice device) throws IllegalArgumentException{
         return device.getName();
     }
-    
 }
