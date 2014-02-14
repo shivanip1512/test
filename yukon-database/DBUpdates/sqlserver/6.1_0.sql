@@ -224,8 +224,56 @@ UPDATE YukonGroupRole SET Value = REPLACE (Value, 'stop', '"stop"')   WHERE Role
 UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE RolePropertyId = -40056;
 /* End YUK-12662 */
 
+/* Start YUK-12892 */
+/* @start-block */
+DECLARE
+    @errorCount NUMERIC;
+BEGIN
+SELECT @errorCount = COUNT(PAOName) 
+FROM (
+    SELECT YPAO1.PAOName, 
+        CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) AS TruncatedDuplicateSerialNumber
+    FROM YukonPAObject YPAO1, YukonPAObject YPAO2
+    WHERE YPAO1.PAOClass = 'RFMESH'
+      AND YPAO1.PAOName LIKE '0%'
+      AND CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) = YPAO2.PAOName
+      AND NOT (CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) = YPAO1.PAOName)) T;
+    
+    IF @errorCount > 0
+    BEGIN
+        RAISERROR('There are devices in the YukonPAObject table that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.', 16, 1);
+    END 
+END;
+/* @end-block */
+
+UPDATE RfnAddress
+SET SerialNumber = (CAST(CAST(SerialNumber AS NUMERIC) AS VARCHAR))
+WHERE SerialNumber LIKE '0%';
+ 
+UPDATE InventoryBase
+SET DeviceLabel = (CAST(CAST(DeviceLabel AS NUMERIC) AS VARCHAR))
+FROM InventoryBase IB
+    JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
+WHERE DeviceLabel LIKE '0%' 
+  AND YPO.PAOClass = 'RFMESH'
+  AND DeviceLabel = YPO.PAOName;
+ 
+UPDATE LMHardwareBase
+SET ManufacturerSerialNumber = (CAST(CAST(ManufacturerSerialNumber AS NUMERIC) AS VARCHAR))
+FROM LMHardwareBase LMB
+    JOIN InventoryBase IB ON IB.InventoryID = LMB.InventoryID
+    JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
+WHERE ManufacturerSerialNumber LIKE '0%' 
+  AND YPO.PAOClass = 'RFMESH';
+ 
+UPDATE YukonPAObject
+SET PAOName = (CAST(CAST(PAOName AS NUMERIC) AS VARCHAR))
+WHERE PAOName LIKE '0%' 
+  AND PAOClass = 'RFMESH';
+/* End YUK-12892 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.1', '15-FEB-2014', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.1', '15-FEB-2014', 'Latest Update', 0, GETDATE());
