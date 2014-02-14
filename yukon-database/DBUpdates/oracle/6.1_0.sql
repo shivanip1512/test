@@ -207,6 +207,15 @@ WHERE Name IN ('DISPATCH_MACHINE', 'DISPATCH_PORT', 'PORTER_MACHINE', 'PORTER_PO
 'LOADCONTROL_PORT', 'NOTIFICATION_PORT', 'NOTIFICATION_HOST');
 /* End YUK-12485 */
 
+/* Start YUK-12662 */
+UPDATE YukonGroupRole SET Value = REPLACE (Value, '''', '') WHERE RolePropertyId = -40056;
+UPDATE YukonGroupRole SET Value = REPLACE (Value, '"', '')  WHERE RolePropertyId = -40056;
+UPDATE YukonGroupRole SET Value = REPLACE (Value, ';', ',') WHERE RolePropertyId = -40056;
+UPDATE YukonGroupRole SET Value = REPLACE (Value, 'start', '"start"') WHERE RolePropertyId = -40056;
+UPDATE YukonGroupRole SET Value = REPLACE (Value, 'stop', '"stop"')   WHERE RolePropertyId = -40056;
+UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE RolePropertyId = -40056;
+/* End YUK-12662 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
