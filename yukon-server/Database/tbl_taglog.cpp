@@ -121,14 +121,14 @@ bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
         << getReferenceStr()
         << getTaggedForStr();
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
-
-    if( success )    // no error occured!
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() )))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
@@ -182,18 +182,14 @@ bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
         << getTaggedForStr()
         << getLogId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(false);
-    }
-    else
-    {
-        success = Insert(conn);        // Try a vanilla insert if the update failed!
+        return Insert(conn); // Try a vanilla insert if the update failed!
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // Update was successful!
 }
 
 int CtiTableTagLog::getLogId() const        // no two tags share the same one

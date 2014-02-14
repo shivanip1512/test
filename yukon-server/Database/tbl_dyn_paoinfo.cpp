@@ -563,8 +563,6 @@ string CtiTableDynamicPaoInfo::getTableName()
 
 bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    bool success = true;
-
     boost::optional<string> tmp_owner, tmp_key;
     string tmp_value;
 
@@ -598,12 +596,12 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
             << tmp_value
             << CtiTime();
 
-        success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
-
-        if( success )    // no error occured!
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() )))
         {
-            setDirty(false);
+            return false;
         }
+
+        setDirty(false);
     }
     else
     {
@@ -616,13 +614,11 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
         }
     }
 
-    return success;
+    return true; // No error occured!
 }
 
 bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
 {
-    bool success = true;
-
     boost::optional<string> tmp_owner, tmp_key;
     string tmp_value;
 
@@ -662,17 +658,13 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
             << *tmp_owner
             << *tmp_key;
 
-        success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-        if( success )
+        if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
         {
-            setDirty(false);
+            // return Insert(conn);        // Try a vanilla insert if the update failed!
+            return false;
         }
-        //  we'll be doing this in mgr_device, because we need to assign a new entryid on insert
-/*        else
-        {
-            stat = Insert(conn);        // Try a vanilla insert if the update failed!
-        }*/
+
+        setDirty(false);
     }
     else
     {
@@ -685,7 +677,7 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn)
         }
     }
 
-    return success;
+    return true; // No error occured!
 }
 
 string CtiTableDynamicPaoInfo::getSQLCoreStatement(CtiApplication_t _app_id)

@@ -197,14 +197,14 @@ bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
         << getNextScan(3)
         << getDeviceID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if ( success )
+    if ( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTableDeviceScanData::Update()
@@ -234,14 +234,14 @@ bool CtiTableDeviceScanData::Insert()
         << getNextScan(2)
         << getNextScan(3);
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
-
-    if ( success )
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 void CtiTableDeviceScanData::DecodeDatabaseReader(Cti::RowReader& rdr )

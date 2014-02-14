@@ -94,14 +94,14 @@ bool CtiTablePointAccumulatorHistory::Update()
         << getPresentPulseCount()
         << getPointID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(FALSE);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTablePointAccumulatorHistory::Insert()
@@ -117,14 +117,14 @@ bool CtiTablePointAccumulatorHistory::Insert()
         << getPreviousPulseCount()
         << getPresentPulseCount();
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
-
-    if ( success )
+    if ( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(Cti::RowReader& rdr )

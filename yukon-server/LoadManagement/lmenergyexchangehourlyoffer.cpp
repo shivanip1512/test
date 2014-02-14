@@ -262,7 +262,7 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
         << getPrice()
         << getAmountRequested();
 
-    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 }
 
 /*---------------------------------------------------------------------------
@@ -291,7 +291,7 @@ void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
         << getRevisionNumber()
         << getHour();
 
-    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 }
 
 /*---------------------------------------------------------------------------

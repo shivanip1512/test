@@ -3181,18 +3181,18 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
 
     updater << (string)(bus->getVerificationFlag()?"Y":"N") << bus->getPaoId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
-                                                  bus->getPaoCategory(), bus->getPaoType(),
-                                                  ChangeTypeUpdate);
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return success;
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                              bus->getPaoCategory(), bus->getPaoType(),
+                                              ChangeTypeUpdate);
+    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true; // No error occured!
 }
 
 // Updates the yukonpaobject table with the paoid and disable flag given.
@@ -3268,19 +3268,19 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 
     updater << capbank->getOperationalState() << capbank->getPaoId();
 
-    bool updateSuccessful = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if ( updateSuccessful )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
-                                                      capbank->getPaoCategory(),
-                                                      capbank->getPaoType(),
-                                                      ChangeTypeUpdate);
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return updateSuccessful;
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPaoId(), ChangePAODb,
+                                                  capbank->getPaoCategory(),
+                                                  capbank->getPaoType(),
+                                                  ChangeTypeUpdate);
+    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true;
 }
 
 /*---------------------------------------------------------------------------
@@ -3338,7 +3338,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-    bool insertSuccessful = false;
+    bool insertSuccessful = true;
 
     Cti::Database::DatabaseConnection   connection;
     {
@@ -3365,7 +3365,10 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
                  << currentCapBank->getCloseOrder()
                  << currentCapBank->getTripOrder();
 
-        insertSuccessful = Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ );
+        if( ! Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ ))
+        {
+            insertSuccessful = false;
+        }
     }
 
     CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(feeder->getPaoId(), ChangePAODb,

@@ -442,7 +442,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
                 }
             }
 
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
                 _dirty = false; // No error occured!

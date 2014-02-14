@@ -5979,7 +5979,7 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
             << _phaseBvalueBeforeControl
             << _phaseCvalueBeforeControl;
 
-            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ , Cti::Database::CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
+            if( Cti::Database::executeCommand( dbInserter, __FILE__, __LINE__ , Cti::Database::ShowDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
             {
                 _insertDynamicDataFlag = false;
                 _dirty = false; // No error occured!

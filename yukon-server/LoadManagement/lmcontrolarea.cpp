@@ -2586,7 +2586,7 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
                 << _currentdailystoptime
                 << getPAOId();
 
-            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
+            if( Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
             {
                 setDirty(false); // No error occured!
             }
@@ -2613,7 +2613,7 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
                 << _currentdailystarttime
                 << _currentdailystoptime;
 
-            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
+            if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
             {
                 _insertDynamicDataFlag = false;
                 setDirty(false); // No error occured!

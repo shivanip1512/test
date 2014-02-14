@@ -968,9 +968,9 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << currentDateTime
             << getPAOId();
 
-        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
+        if( ! Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
-            return;
+            return; // Error occured!
         }
     }
     else
@@ -993,10 +993,12 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
             << ( getManualControlReceivedFlag() ? std::string("Y") : std::string("N") )
             << currentDateTime;
 
-        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )) )
+        if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
         {
-            return;
+            return; // Error occured!
         }
+
+        _insertDynamicDataFlag = false;
     }
     
     resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.

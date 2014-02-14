@@ -394,7 +394,7 @@ bool CtiTableLMControlHistory::updateCompletedOutstandingControls()
         << LMAR_DISPATCH_SHUTDOWN
         << CtiTime();
 
-    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug(true) );
+    return Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug::Enable );
 }
 
 
@@ -584,14 +584,14 @@ bool CtiTableLMControlHistory::Update()
         << getControlPriority()
         << getPAOID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 CtiTableLMControlHistory& CtiTableLMControlHistory::incrementTimes(const CtiTime &logTime, const LONG increment, bool season_reset )
@@ -847,14 +847,12 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
         << getControlPriority()
         << getPAOID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if( ! success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        InsertDynamic(conn);        // Try a vanilla insert if the update failed!
+        return InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return success;
+    return true;
 }
 
 

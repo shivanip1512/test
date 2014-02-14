@@ -245,14 +245,14 @@ bool CtiTblPAO::Insert()
         << getDisableFlagStr()
         << getStatisticsStr();
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
-
-    if ( success )
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTblPAO::Update()
@@ -282,14 +282,14 @@ bool CtiTblPAO::Update()
         << getStatisticsStr()
         << getID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTblPAO::Delete()

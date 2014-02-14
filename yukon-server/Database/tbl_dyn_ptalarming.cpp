@@ -97,14 +97,14 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
     getLogType() <<
     getUser();
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
-
-    if( success )
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() )))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &conn)
@@ -173,18 +173,13 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
         << getPointID()
         << getAlarmCondition();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::UpdateOptions().enableDebug( isDebugLudicrous() ));
-
-    if( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::ShowDebug( isDebugLudicrous() )))
     {
-        setDirty(false);
-    }
-    else
-    {
-        success = Insert(conn);        // Try a vanilla insert if the update failed!
+        return Insert(conn); // Try a vanilla insert if the update failed!
     }
 
-    return success;
+    setDirty(false);
+    return true;
 }
 
 bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
@@ -198,7 +193,7 @@ bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
         << pointid
         << alarm_condition;
 
-    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( isDebugLudicrous() ));
+    return Cti::Database::executeCommand( deleter, __FILE__, __LINE__, Cti::Database::ShowDebug( isDebugLudicrous() ));
 }
 
 string CtiTableDynamicPointAlarming::getSQLCoreStatement() const

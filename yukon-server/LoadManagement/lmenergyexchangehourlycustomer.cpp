@@ -251,7 +251,7 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
         << getHour()
         << getAmountCommitted();
 
-    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
+    Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
 /*---------------------------------------------------------------------------
@@ -280,7 +280,7 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
         << getRevisionNumber()
         << getHour();
 
-    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+    Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
 }
 
 // Static Members

@@ -7,38 +7,74 @@
 namespace Cti {
 namespace Database {
 
-/**
- * Execute database command options
- */
-struct CommandOptions
-{
-    bool _enableDebug;  // enable debug print
+namespace Detail {
 
-    CommandOptions() :
-        _enableDebug(false)
+/**
+ * Commands Optional Parameters
+ */
+enum CommandParamEnum
+{
+    ShowDebug,
+    RowsAffectedExpected
+};
+
+/**
+ * Command flag default template implementation using Disable / Enable options
+ */
+template<CommandParamEnum>
+struct CommandParam
+{
+    enum Options {
+        Disable,
+        Enable
+    };
+
+    CommandParam() : _option(Disable) // initializes to disable by default
     {}
 
-    CommandOptions& enableDebug( bool enableDebug )
+    template <typename T>
+    CommandParam( T value )
     {
-        _enableDebug = enableDebug;
+        *this = value;
+    }
+
+    /// overload assignment operator for an option
+    CommandParam& operator=( const Options option )
+    {
+        _option = option;
+    }
+
+    /// overload assignment operator for a bool
+    CommandParam& operator=( const bool isEnable )
+    {
+        _option = isEnable ? Enable : Disable;
         return *this;
     }
+
+    /// casting to Option enum
+    operator Options() const
+    {
+        return _option;
+    }
+
+private:
+    Options _option;
 };
+
+} // namespace Detail
+
+typedef Detail::CommandParam <Detail::ShowDebug>            ShowDebug;
+typedef Detail::CommandParam <Detail::RowsAffectedExpected> RowsAffectedExpected;
 
 /**
  * Execute a read or a write command
  *
- * @param command
- * @param file
- * @param line
- * @param enableDebug
- *
- * @return true if no execution error, false otherwise
+ * @return true if no error, false otherwise
  */
 template <class T>
-bool executeCommand( T& command, const char* file, const int line, const CommandOptions options = CommandOptions() )
+bool executeCommand( T& command, const char* file, const int line, const ShowDebug::Options showDebug = ShowDebug::Disable )
 {
-    if( options._enableDebug )
+    if( showDebug == ShowDebug::Enable )
     {
         std::string loggedSQLstring = command.asString();
         {
@@ -63,54 +99,20 @@ bool executeCommand( T& command, const char* file, const int line, const Command
 }
 
 /**
- * Execute database update options
- */
-struct UpdateOptions : protected CommandOptions
-{
-    bool _rowsAffectedExpected; // report an error if no rows have been affected
-
-    UpdateOptions() :
-        _rowsAffectedExpected(true)
-    {}
-
-    UpdateOptions& enableDebug( bool enableDebug )
-    {
-        CommandOptions::enableDebug( enableDebug );
-        return *this;
-    }
-
-    UpdateOptions& rowsAffectedExpected( bool rowsAffectedExpected )
-    {
-        _rowsAffectedExpected = rowsAffectedExpected;
-        return *this;
-    }
-
-    const CommandOptions& getCommandOptions() const
-    {
-        return *this;
-    }
-};
-
-/**
  * Execute a database update command
- *
- * @param updater
- * @param file
- * @param line
- * @param options
  *
  * @return true if no error and rows have been affected, false otherwise
  */
-inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const UpdateOptions options = UpdateOptions() )
+inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, const ShowDebug::Options showDebug = ShowDebug::Disable, const RowsAffectedExpected::Options rowsAffectedExpected = RowsAffectedExpected::Enable )
 {
-    if( ! executeCommand(updater, file, line, options.getCommandOptions() ))
+    if( ! executeCommand( updater, file, line, showDebug ))
     {
         return false;
     }
 
     if( ! updater.rowsAffected() )
     {
-        if( options._rowsAffectedExpected )
+        if( rowsAffectedExpected == RowsAffectedExpected::Enable )
         {
             std::string loggedSQLstring = updater.asString();
             {
@@ -125,5 +127,5 @@ inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int
     return true;
 }
 
-}
-}
+} // namespace Database
+} // namespace Cti

@@ -177,14 +177,14 @@ bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
         << getTimeStampMillis()
         << getPointID();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__ );
-
-    if( success )    // No error occured!
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 
@@ -206,14 +206,14 @@ bool CtiTablePointDispatch::Insert(Cti::Database::DatabaseConnection &conn)
         << getLastAlarmLogID()
         << getTimeStampMillis();
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
-
-    if( success )    // No error occured!
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
     {
-        setDirty(false);
+        return false;
     }
 
-    return success;
+    setDirty(false);
+    
+    return true; // No error occured!
 }
 
 LONG CtiTablePointDispatch::getPointID() const

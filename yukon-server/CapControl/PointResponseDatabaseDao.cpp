@@ -171,22 +171,11 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
               << pointResponse.getPointId();
 
     // require both of these flags to show the debug on an update
-    const bool showDebug = (_CC_DEBUG & (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE))
-                            == (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE);
+    const ShowDebug showDebug = (_CC_DEBUG & (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE))
+                                == (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE);
 
-    bool success = executeCommand( dbUpdater, __FILE__, __LINE__, CommandOptions().enableDebug( showDebug ));
-
-    if (success)
-    {
-        int rowsAffected = dbUpdater.rowsAffected();
-        if (rowsAffected == 0)
-        {
-            //Nothing to update. Quietly return false;
-            return false;
-        }
-    }
-
-    return success;
+    // if Nothing to update. Quietly return false;
+    return executeUpdater( dbUpdater, __FILE__, __LINE__, showDebug, RowsAffectedExpected::Disable );
 }
 
 bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
@@ -214,9 +203,7 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
                << pointResponse.getDelta()
                << tempString;
 
-    bool success = executeCommand( dbInserter, __FILE__, __LINE__, CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE));
-
-    return success;
+    return executeCommand( dbInserter, __FILE__, __LINE__, ShowDebug(_CC_DEBUG & CC_DEBUG_DATABASE) );
 }
 
 bool PointResponseDatabaseDao::save(PointResponse pointResponse)
@@ -228,26 +215,24 @@ bool PointResponseDatabaseDao::save(PointResponse pointResponse)
 bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
 {
     //Attempt to update, if false insert it.
-    bool ret = update(databaseConnection,pointResponse);
-
-    if (ret == false)
+    if( ! update( databaseConnection,pointResponse ))
     {
-        ret = insert(databaseConnection,pointResponse);
+        return insert(databaseConnection,pointResponse);
     }
 
-    return ret;
+    return true; // Update was successful!
 }
 
 bool PointResponseDatabaseDao::performDatabaseOperation(DatabaseReader& reader, vector<PointResponse>& pointResponses)
 {
-    bool success = executeCommand( reader, __FILE__, __LINE__, CommandOptions().enableDebug(_CC_DEBUG & CC_DEBUG_DATABASE));
-
-    if (success)
+    if( ! executeCommand( reader, __FILE__, __LINE__, ShowDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
     {
-        buildPointResponseFromReader(reader,pointResponses);
+        return false;
     }
 
-    return success;
+    buildPointResponseFromReader(reader,pointResponses);
+    
+    return true; // No error occured!
 }
 
 void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& reader, vector<PointResponse>& pointResponses)

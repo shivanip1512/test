@@ -285,17 +285,7 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
     writer
         << _row_id;
 
-    if( ! Cti::Database::executeUpdater( writer, __FILE__, __LINE__ ))
-    {
-        std::string error_sql = writer.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Update Error " << endl << error_sql << endl;
-        }
-        return false;
-    }
-
-    return true;
+    return Cti::Database::executeUpdater( writer, __FILE__, __LINE__ );
 }
 
 bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)

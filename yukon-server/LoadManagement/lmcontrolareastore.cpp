@@ -2087,18 +2087,18 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
         << ( controlArea->getDisableFlag() ? std::string("Y") : std::string("N") )
         << controlArea->getPAOId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return success;
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                         controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true; // No error occured!
 }
 
 /*---------------------------------------------------------------------------
@@ -2122,18 +2122,18 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
         << ( program->getDisableFlag() ? std::string("Y") : std::string("N") )
         << program->getPAOId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
-                                                             program->getPAOCategory(), program->getPAOTypeString(),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return success;
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
+                                                         program->getPAOCategory(), program->getPAOTypeString(),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true; // No error occured!
 }
 
 /*---------------------------------------------------------------------------
@@ -2157,18 +2157,18 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
         << ( group->getDisableFlag() ? std::string("Y") : std::string("N") )
         << group->getPAOId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
-                                                             group->getPAOCategory(), group->getPAOTypeString(),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return success;
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
+                                                         group->getPAOCategory(), group->getPAOTypeString(),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true;
 }
 
 /*---------------------------------------------------------------------------
@@ -2196,18 +2196,18 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         << trigger->getPAOId()
         << trigger->getTriggerNumber();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-
-    if ( success )
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
     {
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+        return false;
     }
 
-    return success;
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                         controlArea->getPAOCategory(), controlArea->getPAOTypeString(),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return true;
 }
 
 /*---------------------------------------------------------------------------

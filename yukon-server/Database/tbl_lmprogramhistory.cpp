@@ -96,16 +96,15 @@ bool CtiTableLMProgramHistory::Insert()
         << _gearID
         << _reason;
 
-    bool success = Cti::Database::executeCommand( inserter, __FILE__, __LINE__ );
-
-    if( ! success )
+    if( ! Cti::Database::executeCommand( inserter, __FILE__, __LINE__ ))
     {
         //We had an error, force a reload
         CurrentLMProgramHistoryId = 0;
         CurrentLMGearHistoryId    = 0;
+        return false;
     }
 
-    return success;
+    return true; // No error occured!
 }
 
 // Get the next program id from local store or the database

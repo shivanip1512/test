@@ -812,10 +812,9 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
         << getPAOId()
         << getCurtailReferenceId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-    
-    if( ! success )
-    {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    {
+        // If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
         static const string sql =  "SELECT CPA.curtailreferenceid "
                                    "FROM lmcurtailprogramactivity CPA "
@@ -868,7 +867,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
                 << getRunStatus()
                 << getAdditionalInfo();
 
-            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
         }
     }
 }

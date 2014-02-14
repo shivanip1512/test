@@ -271,10 +271,9 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
         << getPAOId()
         << getOfferId();
 
-    bool success = Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::UpdateOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
-
-    if( ! success )
-    {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) ))
+    {
+        // If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
 
         static const string sql =  "SELECT XPO.offerid "
                                    "FROM lmenergyexchangeprogramoffer XPO "
@@ -323,7 +322,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
                 << getRunStatus()
                 << getOfferDate();
 
-            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB ));
+            Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
         }
     }
 }

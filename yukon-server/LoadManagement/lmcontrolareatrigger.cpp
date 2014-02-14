@@ -785,7 +785,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
             << getLastPeakPointValueTimestamp()
             << getTriggerId();
 
-        Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB));
+        Cti::Database::executeCommand( updater, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB));
     }
     else
     {
@@ -807,9 +807,9 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
             << getLastPeakPointValueTimestamp()
             << getTriggerId();
 
-        if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::CommandOptions().enableDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
+        if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::ShowDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB)) )
         {
-            _insertDynamicDataFlag = false; // No error occured!
+            _insertDynamicDataFlag = false; // Insert successful!
         }
     }
 }
