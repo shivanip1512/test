@@ -1,14 +1,8 @@
 <html>
-    <style>
-        table {border-collapse: collapse; margin-bottom: 15px; border-spacing: 0;}
-        th {padding: 5px 5px; text-align: left;border-bottom: solid 1px;}
-        td {padding: 5px 15px; text-align: right;}
-        table tr:nth-child(even) {background-color: #f6f6f6;}
-    </style>
     <p>
         {header}
     </p>
-    <table>
+    <table style="border-collapse: collapse; margin-bottom: 15px; border-spacing: 0;">
         <thead>
             {theader}
         </thead>

@@ -4,11 +4,12 @@ import static com.cannontech.system.GlobalSettingType.*;
 import static org.apache.commons.lang.StringUtils.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateMidnight;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,6 +27,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.Range;
@@ -34,7 +38,9 @@ import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.dr.model.MutablePerformanceVerificationEventStats;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
+import com.cannontech.dr.model.PerformanceVerificationEventStats;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
@@ -47,13 +53,16 @@ import com.cannontech.user.YukonUserContext;
 public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     private final static Logger log = YukonLogManager.getLogger(RfnPerformanceVerificationEmailTask.class);
 
-    private static final String rowTemplate = "<tr>" +
-            "<{cell}>{date}</{cell}>" +
-            "<{cell}>{successful}</{cell}>" +
-            "<{cell}>{failure}</{cell}>" +
-            "<{cell}>{unknown}</{cell}>" +
-            "<{cell}>{percentage}</{cell}>" +
+    private static final String rowTemplate = "<tr style=\"{rowStyle}\">" +
+            "<{cell} style=\"{cellStyle}\">{date}</{cell}>" +
+            "<{cell} style=\"{cellStyle}\">{successful}</{cell}>" +
+            "<{cell} style=\"{cellStyle}\">{failure}</{cell}>" +
+            "<{cell} style=\"{cellStyle}\">{unknown}</{cell}>" +
+            "<{cell} style=\"{cellStyle}\">{percentage}</{cell}>" +
             "</tr>";
+    private static final String trStyle_Alt ="background-color: #f6f6f6;";
+    private static final String tdStyle ="line-height: 18px; padding: 0px 15px; text-align: right;";
+    private static final String thStyle ="line-height: 18px; padding: 0px 15px; text-align: left; border-bottom: solid 1px;";
     
     private final static InternetAddress[] EMPTY_TO = new InternetAddress[] { new InternetAddress() };
     
@@ -64,6 +73,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     @Autowired private EmailService emailService;
     @Autowired private NotificationGroupDao notificationGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private ConfigurationSource configurationSource;
     
     private final Resource emailTemplate;
     
@@ -134,7 +144,9 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(YukonUserContext.system);
  
         Map<String, Object> theaderData = new HashMap<>();
+        theaderData.put("rowStyle", "");
         theaderData.put("cell", "th");
+        theaderData.put("cellStyle", thStyle);
         theaderData.put("date", accessor.getMessage("yukon.web.defaults.date"));
         theaderData.put("successful", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.successful"));
         theaderData.put("failure", accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.failure"));
@@ -149,40 +161,64 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
 
         List<PerformanceVerificationEventMessageStats> reports = performanceVerificationDao.getReports(reportDates);
 
-        Comparator<PerformanceVerificationEventMessageStats> mostRecentFirst =
-                new Comparator<PerformanceVerificationEventMessageStats>() {
-            @Override
-            public int compare(PerformanceVerificationEventMessageStats event1,
-                               PerformanceVerificationEventMessageStats event2) {
-                return - event1.getTimeMessageSent().compareTo(event2.getTimeMessageSent());
-            }
-        };
-        Collections.sort(reports, mostRecentFirst);
-
-        StringBuilder tbody = new StringBuilder();
-
+        Map<DateMidnight,MutablePerformanceVerificationEventStats> dateToReportMap = new HashMap<>();
         for (PerformanceVerificationEventMessageStats report : reports) {
-            Instant date = report.getTimeMessageSent();
+            DateMidnight day = report.getTimeMessageSent().toDateTime().toDateMidnight();
+            MutablePerformanceVerificationEventStats stats = dateToReportMap.get(day);
+
+            if (stats == null) {
+                stats = new MutablePerformanceVerificationEventStats();
+                stats.addStats(report.getNumSuccesses(), report.getNumFailures(), report.getNumUnknowns());
+                dateToReportMap.put(day, stats);
+            } else  {
+                stats.addStats(report.getNumSuccesses(), report.getNumFailures(), report.getNumUnknowns());
+            }
+        }
+
+        List<DateMidnight> eventDates = new ArrayList<>(dateToReportMap.keySet());
+        Collections.sort(eventDates, Collections.reverseOrder());
+
+        boolean oddNumberedRow = false;
+        StringBuilder tbody = new StringBuilder();
+        for (DateMidnight date : eventDates) {
+
+            PerformanceVerificationEventStats eventStats = dateToReportMap.get(date).getImmutable();
             String formattedDate = dateFormatter.format(date.toDate());
-            double percentSuccess = report.getPercentSuccess();
+            double percentSuccess = eventStats.getPercentSuccess();
             String precentageStr = MessageFormat.format("{0, number,##.#%}", percentSuccess);
 
             Map<String, Object> templateData = new HashMap<>();
+            if (oddNumberedRow) {
+                templateData.put("rowStyle", "");
+            } else {
+                templateData.put("rowStyle", trStyle_Alt);
+            }
             templateData.put("cell", "td");
+            templateData.put("cellStyle", tdStyle);
             templateData.put("date", formattedDate);
-            templateData.put("successful", report.getNumSuccesses());
-            templateData.put("failure", report.getNumFailures());
-            templateData.put("unknown", report.getNumUnknowns());
+            templateData.put("successful", eventStats.getNumSuccesses());
+            templateData.put("failure", eventStats.getNumFailures());
+            templateData.put("unknown", eventStats.getNumUnknowns());
             templateData.put("percentage", precentageStr);
             String rowText = tp.process(rowTemplate, templateData);
             tbody.append(rowText).append("\n");
+            oddNumberedRow = !oddNumberedRow;
         }
 
         String formattedDate = dateTimeFormatter.print(now);
 
-        // TODO Header has a link. Where should the link go?
+        String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL);
+        if (baseUrl == null){
+            baseUrl = "http://localhost:8080";
+            log.error("Expected master.cfg entry for YUKON_EXTERNAL_URL. None was found. Defaulting to " + baseUrl);
+        }
+
+        String yesterdayParam = instantToDateUrlParam(yesterday);
+        String lastWeekParam = instantToDateUrlParam(lastWeek);
+        String linkUrl = baseUrl + "/dr/rf/details?from=" + lastWeekParam + "&to=" + yesterdayParam;
+
         String subject = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.subject");
-        String header = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.header");
+        String header = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.header", linkUrl);
         String footer = accessor.getMessage("yukon.web.modules.dr.home.rfPerformance.email.footer", formattedDate);
 
         Map<String, String> emailData = new HashMap<>();
@@ -206,6 +242,19 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
             throw new RuntimeException(e);
         }
     };
+
+    private String instantToDateUrlParam(Instant instant) {
+        DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormatEnum.DATE, YukonUserContext.system);
+        String unescaped = dateFormatter.format(instant.toDate());
+        String escaped = null;
+        try {
+            escaped = URLEncoder.encode(unescaped, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Unreachable. UTF-8 must be supported
+            throw new RuntimeException(e);
+        }
+        return escaped;
+    }
     
     public String getNotificationGroups() {
         return notificationGroups;
