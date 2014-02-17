@@ -1,3 +1,5 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
@@ -70,20 +72,17 @@ function changeStatus(form) {
                   <tr> 
                     <td valign="top" bgcolor="#FFFFFF"> 
                       <table width="360" border="0" cellspacing="0" cellpadding="3" align="center" class="TableCell">
-<%
-    String autoGen = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN, liteEC.getUser());
-	if (autoGen == null || CtiUtilities.isFalse(autoGen)) {
-%>
+                        <cti:checkRolesAndProperties value="OPERATOR_ORDER_NUMBER_AUTO_GEN">
+                            <tr> 
+                              <td width="100" class="SubtitleHeader"> 
+                                <div align="right">*Work Order #:</div>
+                              </td>
+                              <td width="248"> 
+                                <input type="text" name="OrderNo" size="14" maxlength="20" onchange="setContentChanged(true)">
+                              </td>
+                            </tr>
+                        </cti:checkRolesAndProperties>
                         <tr> 
-                          <td width="100" class="SubtitleHeader"> 
-                            <div align="right">*Work Order #:</div>
-                          </td>
-                          <td width="248"> 
-                            <input type="text" name="OrderNo" size="14" maxlength="20" onchange="setContentChanged(true)">
-                          </td>
-                        </tr>
-						<% } %>
-						<tr> 
                           <td width="100" class="TableCell"> 
                             <div align="right">Account #:</div>
                           </td>

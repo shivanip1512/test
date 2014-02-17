@@ -42,7 +42,7 @@
     />
     <div class="clearfix">
         <div class="category fl">
-            <a href="theme" class="icon icon-32 fl icon-32-brush"></a>
+            <a href="/adminSetup/config/themes" class="icon icon-32 fl icon-32-brush"></a>
             <div class="fl meta">
                 <div><a class="title" href="/adminSetup/config/themes"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>

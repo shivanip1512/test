@@ -232,7 +232,7 @@ public class GroupMeterReadController {
 		mav.addObject("selectedAttributeStrs", selectedAttributeStrs);
 	}
 	
-	// RESULT LIST
+	@RequestMapping("resultsList")
 	public ModelAndView resultsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadResults.jsp");

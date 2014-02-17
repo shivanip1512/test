@@ -10,7 +10,7 @@
 
     <div class="clearfix box">
         <div class="category fl">
-            <a href="weather" class="icon icon-32 fl icon-32-key"></a>
+            <a href="/adminSetup/config/security/view" class="icon icon-32 fl icon-32-key"></a>
             <div class="box fl meta">
                 <div><a class="title" href="/adminSetup/config/security/view"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.SECURITY.description"/></div>
