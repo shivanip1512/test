@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
@@ -60,7 +61,6 @@ import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCol
 import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.WebFileUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -91,7 +91,7 @@ public class RfPerformanceController {
      * Update settings for rf performance test command and email generation
      */
     @RequestMapping(value="/rf/performance", method=RequestMethod.POST)
-    public String saveSettings(@ModelAttribute("settings") RfPerformanceSettings settings, YukonUserContext userContext, FlashScope flash) {
+    public String saveSettings(@ModelAttribute("settings") RfPerformanceSettings settings, FlashScope flash) {
         
         LocalTime commandTime = LocalTime.MIDNIGHT.plusMinutes(settings.getTime());
         LocalTime emailTime = LocalTime.MIDNIGHT.plusMinutes(settings.getEmailTime());
@@ -118,21 +118,20 @@ public class RfPerformanceController {
             
             ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
             emailJob.getJobProperties().put("notificationGroups", StringUtils.join(settings.getNotifGroupIds(), ","));
-//            emailJob.getJobProperties().put("additionalEmails", "");
             
             if (settings.isEmail()) {
                 // Email setting is enabled. We might need to update the cron string.
-            if (!emailCron.toString().equals(emailJob.getCronString())) {
-                jobManager.replaceScheduledJob(emailJob.getId(), 
-                        rfnEmailJobDef, 
-                        emailJob.getJobDefinition().createBean(), 
-                        emailCron.toString(), 
+                if (!emailCron.toString().equals(emailJob.getCronString())) {
+                    jobManager.replaceScheduledJob(emailJob.getId(), 
+                            rfnEmailJobDef, 
+                            emailJob.getJobDefinition().createBean(), 
+                            emailCron.toString(), 
                             null,
                             emailJob.getJobProperties()); 
-                
-                emailJob = getJob(rfnEmailJobDef);
-            }
-            
+
+                    emailJob = getJob(rfnEmailJobDef);
+                }
+
                 if (emailJob.isDisabled()) {
                     jobManager.enableJob(emailJob);
                 }
@@ -300,7 +299,7 @@ public class RfPerformanceController {
     public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable long test) throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
+        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
         
         Map<Integer, UnknownDevice> deviceMap = Maps.newHashMapWithExpectedSize(unknownDevices.getUnknownDevices().size());
         List<PaoIdentifier> paos = new ArrayList<>(unknownDevices.getUnknownDevices().size());
@@ -335,14 +334,9 @@ public class RfPerformanceController {
     @RequestMapping("/rf/details/unknown/{test}/inventoryAction")
     public String inventoryAction(ModelMap model, YukonUserContext userContext, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
-        List<Integer> deviceIds = Lists.transform(unknownDevices.getUnknownDevices(), new Function<UnknownDevice, Integer>() {
-            @Override
-            public Integer apply(UnknownDevice input) {
-                return input.getPao().getPaoIdentifier().getPaoId();
-            }
-            
-        });
+        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
+        List<Integer> deviceIds = Lists.transform(unknownDevices.getUnknownDevices(),
+                                                  PaoUtils.getYukonPaoToPaoIdFunction());
         List<InventoryIdentifier> inventory = inventoryDao.getYukonInventoryForDeviceIds(deviceIds);
         
         String description = resolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.modules.dr.rf.details.actionUnknown.description");
@@ -355,15 +349,9 @@ public class RfPerformanceController {
     @RequestMapping("/rf/details/unknown/{test}/collectionAction")
     public String collectionAction(ModelMap model, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
-        List<YukonPao> paos = Lists.transform(unknownDevices.getUnknownDevices(), new Function<UnknownDevice, YukonPao>() {
-            @Override
-            public YukonPao apply(UnknownDevice input) {
-                return input.getPao();
-            }
-            
-        });
-        
+        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
+
+        List<? extends YukonPao> paos = unknownDevices.getUnknownDevices();
         DeviceCollection temporaryCollection = deviceMemoryCollectionProducer.createDeviceCollection(paos);
         model.addAttribute("deviceCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());

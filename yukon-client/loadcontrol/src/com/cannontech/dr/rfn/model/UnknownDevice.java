@@ -1,8 +1,9 @@
 package com.cannontech.dr.rfn.model;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 
-public final class UnknownDevice {
+public final class UnknownDevice implements YukonPao {
 
     private final YukonPao pao;
     private final UnknownStatus unknownStatus;
@@ -18,5 +19,10 @@ public final class UnknownDevice {
 
     public UnknownStatus getUnknownStatus() {
         return unknownStatus;
+    }
+
+    @Override
+    public PaoIdentifier getPaoIdentifier() {
+        return pao.getPaoIdentifier();
     }
 }

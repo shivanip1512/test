@@ -77,7 +77,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
         return DeviceCollectionById.create(DeviceCollectionType.memory, deviceList);
     }
     
-    public DeviceCollection createDeviceCollection(final Iterable<YukonPao> paos) {
+    public DeviceCollection createDeviceCollection(final Iterable<? extends YukonPao> paos) {
         
         final String key = UUID.randomUUID().toString();
         final List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
