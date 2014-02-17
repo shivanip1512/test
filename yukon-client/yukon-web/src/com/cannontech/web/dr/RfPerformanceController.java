@@ -158,7 +158,7 @@ public class RfPerformanceController {
     public String detailsDay(ModelMap model) {
         
         Instant to = new Instant();
-        model.addAttribute("to", new Instant());
+        model.addAttribute("to", to);
         Instant from = to.minus(Duration.standardDays(1));
         model.addAttribute("from", from);
         
@@ -171,7 +171,7 @@ public class RfPerformanceController {
     public String detailsWeek(ModelMap model) {
         
         Instant to = new Instant();
-        model.addAttribute("to", new Instant());
+        model.addAttribute("to", to);
         Instant from = to.minus(Duration.standardDays(7));
         model.addAttribute("from", from);
         
@@ -184,7 +184,7 @@ public class RfPerformanceController {
     public String detailsMonth(ModelMap model) {
         
         Instant to = new Instant();
-        model.addAttribute("to", new Instant());
+        model.addAttribute("to",to);
         Instant from = to.minus(Duration.standardDays(30));
         model.addAttribute("from", from);
         

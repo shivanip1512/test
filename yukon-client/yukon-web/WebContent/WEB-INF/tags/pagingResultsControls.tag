@@ -45,7 +45,7 @@
                     </button>
                 </c:when>
                 <c:otherwise>
-                    <button class="button naked" disabled="disabled">
+                    <button class="button naked fade-half" disabled="disabled">
                         <i class="icon icon-resultset-previous"></i>
                         <span class="b-label"><i:inline key="yukon.common.paging.previous"/></span>
                     </button>
