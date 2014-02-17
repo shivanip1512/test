@@ -199,16 +199,6 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
-    @Override
-    public int getPointDataOffset(LitePoint litePoint) {
-        return 0;
-    }
-
-    @Override
-    public double getPointMultiplier(LitePoint litePoint) {
-        return 0;
-    }
-
 	@Override
     public List<LitePoint> searchByName(String name, String paoClass) {
 		return null;

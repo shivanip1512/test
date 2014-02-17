@@ -211,15 +211,15 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
         if (point.getPointType() == PointTypes.ANALOG_POINT) {
             try {
-                offset = pointDao.getPointDataOffset(point);
-            } catch (NotFoundException e) {
+                offset = (int)(double)point.getDataOffset();
+            } catch (NullPointerException e) {
                 log.error(" Data Offset for " + itemName + " was not found in the database.");
                 return;
             }
 
             try {
-                multiplier = pointDao.getPointMultiplier(point);
-            } catch (NotFoundException e) {
+                multiplier = point.getMultiplier();
+            } catch (NullPointerException e) {
                 log.error(" Multiplier for " + itemName + " was not found in the database.");
                 return;
             }

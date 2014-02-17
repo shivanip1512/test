@@ -208,15 +208,19 @@ public class UpdateUtil {
     		}
     		
     		if( (displayAttrib & PointAttributes.MULTIPLIER) != 0 ) {
-    		    double mult = YukonSpringHook.getBean(PointDao.class).getPointMultiplier(lp);
-                text += Double.toString(mult);
-                prev = true;
+    		    Double mult = lp.getMultiplier();
+                if (mult != null) {
+                    text += Double.toString(mult);
+                    prev = true;
+                }
     		}
     		
     		if( (displayAttrib & PointAttributes.DATA_OFFSET) != 0 ) {
-		        int offset = YukonSpringHook.getBean(PointDao.class).getPointDataOffset(lp);
-                text += Integer.toString(offset);
-                prev = true;
+		        Double offset = lp.getDataOffset();
+                if (offset != null) {
+                    text += String.format("%.0f", offset);
+                    prev = true;
+                }
     		}
     		
     		if( (displayAttrib & PointAttributes.ALARM_TEXT) != 0 ) {

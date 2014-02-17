@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.PointDao;
@@ -18,40 +16,34 @@ import com.cannontech.yukon.IServerConnection;
 
 public class PointDataGenerator implements PointValueUpdater {
     private Logger log = YukonLogManager.getLogger(PointDataGenerator.class);
-    private IServerConnection dispatchConnection;
     private PointDao pointDao;
     private DynamicDataSource dynamicDataSource;
     private int type;
     private int offset;
     private boolean cachePoints = true;
     private boolean invertStatus = false;
-    private Map<Integer, PointHolder> paoIdToPoint = new HashMap<Integer, PointHolder>(); // use only in synchronized in method
-    
-    private class PointHolder {
-        LitePoint point = null;
-        double multiplier = 1;
-    }
+    private Map<Integer, LitePoint> paoIdToPoint = new HashMap<Integer, LitePoint>(); // use only in synchronized in method
     
     public void writePointDataMessage(LiteYukonPAObject lpao, double rawValue, Date time) {
-        PointHolder holder = getPointForPaoId(lpao);
-        if (holder == null) {
+        LitePoint point = getPointForPaoId(lpao);
+        if (point == null) {
             return;
         }
-        if(holder.point.getPointID() != 0) {
+        if(point.getPointID() != 0) {
             PointData pointData = new PointData();
-            pointData.setId(holder.point.getPointID());
+            pointData.setId(point.getPointID());
             pointData.setPointQuality(PointQuality.Normal);
             pointData.setType(type);
             double value = rawValue;
-            value *= holder.multiplier;
+            Double multiplier = point.getMultiplier();
+            if (multiplier != null) {
+                value *= point.getMultiplier();
+            }
             pointData.setValue(value);
 
             pointData.setTime(time);
-            log.info("Updating " + lpao.getPaoName() + " point " + holder.point.getPointID() + ": " + holder.point.getPointName() + " with value=" + value);
-            // dispatchConnection.write(pointData);
+            log.info("Updating " + lpao.getPaoName() + " point " + point.getPointID() + ": " + point.getPointName() + " with value=" + value);
             dynamicDataSource.putValue(pointData);
-            
-            // PointValueHolder pvh = dynamicDataSource.getPointValue(lpao.getLiteID());
         }
     }
 
@@ -59,23 +51,22 @@ public class PointDataGenerator implements PointValueUpdater {
         writePointDataMessage(lpao, (value != invertStatus) ? 1 : 0, time);
     }
     
-    private synchronized PointHolder getPointForPaoId(LiteYukonPAObject lpao) {
+    private synchronized LitePoint getPointForPaoId(LiteYukonPAObject lpao) {
     	if (lpao == null) {
     		log.info("No device found for pao ");
     		return null;
     	}
-        PointHolder holder;
+        LitePoint point;
         if (cachePoints) {
-            holder = paoIdToPoint.get(lpao.getLiteID());
-            if (holder != null) {
-                return holder;
+            point = paoIdToPoint.get(lpao.getLiteID());
+            if (point != null) {
+                return point;
             }
         }
-        holder = new PointHolder();
         // find status point
         
         int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, type);
-        LitePoint point = pointDao.getLitePoint(pointId);
+        point = pointDao.getLitePoint(pointId);
         if (point == null) {
             log.warn("Unable to find point. DeviceId=" + lpao.getLiteID() 
                      + ", offset=" + offset + ", type=" + type);
@@ -83,20 +74,10 @@ public class PointDataGenerator implements PointValueUpdater {
         }
         log.debug("Got point " + point.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
         
-        holder.point = point;
-        try {
-            holder.multiplier = pointDao.getPointMultiplier(point);
-        } catch (DataAccessException e) {
-        }
-
         if (cachePoints) {
-            paoIdToPoint.put(lpao.getLiteID(), holder);
+            paoIdToPoint.put(lpao.getLiteID(), point);
         }
-        return holder;
-    }
-
-    public void setDispatchConnection(IServerConnection dispatchConnection) {
-        this.dispatchConnection = dispatchConnection;
+        return point;
     }
 
     public void setInvertStatus(boolean invertStatus) {

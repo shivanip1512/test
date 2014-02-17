@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -105,16 +106,30 @@ public class PointDaoImpl implements PointDao {
     }
     
     private static final String litePointSql = 
-        "SELECT P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+        "SELECT " +
+                "P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, " +
+                "UM.FORMULA, UM.UOMID, " +
+                "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, " +
+                "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " +
         " FROM " +         
-        "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
-        "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID ) ";
+        "( POINT P " +
+        "LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
+        "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID " + 
+        "LEFT OUTER JOIN POINTANALOG PA ON P.POINTID = PA.POINTID " +
+        "LEFT OUTER JOIN POINTACCUMULATOR PAC ON P.POINTID = PAC.POINTID ) ";
 
     private static final String litePointPaoSql = 
-        "SELECT P.POINTID, POINTNAME, POINTTYPE, YPO.PAOBJECTID, POINTOFFSET, STATEGROUPID, UM.FORMULA, UM.UOMID" +
+        "SELECT " +
+                "P.POINTID, POINTNAME, POINTTYPE, YPO.PAOBJECTID, POINTOFFSET, STATEGROUPID, " +
+                "UM.FORMULA, UM.UOMID, " +
+                "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, " +
+                "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " +
         " FROM " +    
-        "( POINT P LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
+        "( POINT P " +
+        "LEFT OUTER JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " +
         "LEFT OUTER JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID " +
+        "LEFT OUTER JOIN POINTANALOG PA ON P.POINTID = PA.POINTID " +
+        "LEFT OUTER JOIN POINTACCUMULATOR PAC ON P.POINTID = PAC.POINTID " +
         "LEFT OUTER JOIN YUKONPAOBJECT YPO ON P.PAOBJECTID=YPO.PAOBJECTID ) ";
     
     private static final YukonRowMapper<LitePoint> litePointYukonRowMapper =
@@ -827,20 +842,6 @@ public class PointDaoImpl implements PointDao {
     }
     
     @Override
-    public int getPointDataOffset(LitePoint litePoint) {
-        int pointId = litePoint.getPointID();
-        int pointType = litePoint.getPointType();
-
-        if (pointType == PointTypes.ANALOG_POINT) {
-            return getAnalogPointDataOffset(pointId);
-        } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {
-            return getAccumulatorPointDataOffset(pointId);
-        } else {
-            throw new NotFoundException( "Point DataOffset not found for Id: " + pointId + " and Type " + pointType + ".");
-        }
-    }
-    
-    @Override
     public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
         return pointId != 0;
@@ -945,57 +946,6 @@ public class PointDaoImpl implements PointDao {
         return builder;
     }
     
-    private int getAccumulatorPointDataOffset(int pointId) {
-        try {
-            String sql = "select dataoffset from pointaccumulator where pointid=?";
-            return jdbcOps.queryForInt(sql, new Object[] {pointId});
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException( "Accumulator Point DataOffset not found for Id: " + pointId + ".");
-        }
-    }
-    
-    private int getAnalogPointDataOffset(int pointId) {
-        try {
-            String sql = "select dataoffset from pointanalog where pointid=?";
-            return jdbcOps.queryForInt(sql, new Object[] {pointId});
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException( "Analog Point DataOffset not found for Id: " + pointId + ".");
-        }
-    }
-   
-    
-    @Override
-    public double getPointMultiplier(LitePoint litePoint) {
-        int pointId = litePoint.getPointID();
-        int pointType = litePoint.getPointType();
-
-        if (pointType == PointTypes.ANALOG_POINT) {
-            return getAnalogPointMultiplier(pointId);
-        } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT || pointType == PointTypes.DEMAND_ACCUMULATOR_POINT) {
-            return getAccumulatorPointMultiplier(pointId);
-        } else {
-            throw new NotFoundException( "Point DataOffset not found for Id: " + pointId + " and Type " + pointType + ".");
-        }
-    }
-    
-    private double getAccumulatorPointMultiplier(int pointId) {
-        try {
-            String sql = "select multiplier from pointaccumulator where pointid=?";
-            return jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException( "Accumulator Point DataOffset not found for Id: " + pointId + ".");
-        }
-    }
-    
-    private double getAnalogPointMultiplier(int pointId) {
-        try {
-            String sql = "select multiplier from pointanalog where pointid=?";
-            return jdbcOps.queryForObject(sql, new Object[] {pointId}, Double.class);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException( "Analog Point DataOffset not found for Id: " + pointId + ".");
-        }
-    }
-
     private static LitePoint createLitePoint(Map<LitePoint, LitePoint> alreadyCreated, YukonResultSet rset) throws SQLException {
         LitePoint litePoint = createLitePoint(rset);
         LitePoint retVal = alreadyCreated.get(litePoint);
@@ -1028,6 +978,15 @@ public class PointDaoImpl implements PointDao {
 
         LitePoint lp = new LitePoint(pointId, pointName, pointType.getPointTypeId(), paobjectId,
                                      pointOffset, stateGroupId, tags, uofmId);
+
+        if (pointType == PointType.Analog) {
+            lp.setMultiplier(rset.getNullableDouble("analogMultiplier"));
+            lp.setDataOffset(rset.getNullableDouble("analogOffset"));
+        } else if (pointType == PointType.PulseAccumulator || pointType == PointType.DemandAccumulator) {
+            lp.setMultiplier(rset.getNullableDouble("accumulatorMultiplier"));
+            lp.setDataOffset(rset.getNullableDouble("accumulatorOffset"));
+        }
+
         return lp;
     }
 

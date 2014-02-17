@@ -16,6 +16,8 @@ public class LitePoint extends LiteBase
 	private int pointOffset = 0;
 	private int stateGroupID = 0;
 	private int uofmID = -1;
+    private Double multiplier = null;
+    private Double dataOffset = null;
 	
 	
 	boolean showPointOffsets = true;
@@ -154,6 +156,14 @@ public int getStateGroupID() {
  */
 public long getTags() {
 	return tags;
+}
+
+public Double getMultiplier() {
+    return multiplier;
+}
+
+public Double getDataOffset() {
+    return dataOffset;
 }
 
 private synchronized void loadPointTags( String databaseAlias )
@@ -350,6 +360,16 @@ public void setStateGroupID(int newStateGroupID) {
 public void setTags(long newtags)
 {
 	tags = newtags;
+}
+
+public void setMultiplier(Double newmultiplier)
+{
+    multiplier = newmultiplier;
+}
+
+public void setDataOffset(Double newdataoffset)
+{
+    dataOffset = newdataoffset;
 }
 /**
  * This method was created by Cannon Technologies Inc.

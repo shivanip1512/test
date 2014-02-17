@@ -31,6 +31,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -93,19 +94,28 @@ public class RfnChannelDataConverter {
             }
             LogHelper.debug(log, "Got PointValueHandler %s", pointValueHandler);
             
-            int pointId;
             PaoPointIdentifier ppi = pointValueHandler.getPaoPointIdentifier();
+            LitePoint point;
             try {
-                pointId = pointDao.getPointId(ppi);
+                point = pointDao.getLitePoint(ppi);
             } catch (NotFoundException e) {
                 LogHelper.debug(log, "Unable to find point for channelData: %s", channelData);
                 continue;
             }
             
             PointData pointData = new PointData();
-            pointData.setId(pointId);
+            pointData.setId(point.getPointID());
             pointData.setPointQuality(PointQuality.Normal);
             double value = pointValueHandler.convert(channelData.getValue());
+
+            Double multiplier = point.getMultiplier();
+            if (multiplier != null) {
+                value *= point.getMultiplier();
+            }
+            Double dataOffset = point.getDataOffset();
+            if (dataOffset != null) {
+                value += point.getDataOffset();
+            }
             pointData.setValue(value);
             if (channelData instanceof DatedChannelData) {
                 DatedChannelData dated = (DatedChannelData)channelData;
