@@ -102,7 +102,7 @@ function showStack( chkBox ) {
     <b>Yukon Version:</b> <%= VersionTools.getYUKON_VERSION()%>
     <br><b>Yukon Version Details:</b> <%= VersionTools.getYukonDetails() %>
     <br><b>Status code:</b> <%= status_code.toString()%>
-    <br><b>Message</b>: <spring:escapeBody htmlEscape="true"><%= message.toString()%></spring:escapeBody>
+    <br><b>Message</b>: <span id="rootErrorMessage"><spring:escapeBody htmlEscape="true"><%= message.toString()%></spring:escapeBody></span>
     <br><b>Error type</b>: <%= error_type.toString()%>
     <br><b>Request URI</b>: <%= request_uri.toString()%>
     <%= ServletUtil.printNiceHtmlStackTrace(throwable)%>
