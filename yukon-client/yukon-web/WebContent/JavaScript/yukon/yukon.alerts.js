@@ -35,18 +35,20 @@ yukon.Alerts = (function () {
             if (count > 0) {
                 button.addClass('red');
                 button.show();
-                button.removeClass('flash animated');
                 if (_countInitialized && _oldCount < count) {
                     if(jQuery('[data-alert-flash]').attr('data-alert-flash') === 'true') {
                         button.addClass('flash');
                         button.addClass('animated');
+                        setTimeout(function(){ 
+                                button.removeClass('flash animated'); 
+                            }, 1000);
                     }
                     if (jQuery('[data-alert-sound]').attr('data-alert-sound') === 'true') {
                         jQuery('#alert-audio')[0].play();
                     }
                 }
             } else {
-                button.removeClass('red');  
+                button.removeClass('red flash animated');
                 button.hide();
             }
             _oldCount = count;
