@@ -50,6 +50,7 @@ public class NotificationServer {
         }
         catch (Throwable t) {
             log.error("There was an error starting up the Notification Server", t);
+            System.exit(1);
         }
     }
 
@@ -91,17 +92,18 @@ public class NotificationServer {
                 server.close();
                 server = null;
             }
-            
+
             // shutdown output handler
             outputHelper.shutdown();
+
+            notify(); // notify main thread
+
+            log.info("Stopped notification server: " + zServer);
         }
         catch (Exception e) {
-            // No op
+            log.error("Error while stopping notification server: "+ zServer, e);
+            System.exit(1);
         }
-
-        log.info("Stopped notification server: " + zServer);
-
-        notify(); // notify main thread
     }
 
     public boolean isRunning() {
