@@ -40,7 +40,7 @@ public interface PerformanceVerificationDao {
     /**
      * @return list of devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
      */
-    UnknownDevices getDevicesWithUnknownStatus(long messageId);
+    UnknownDevices getDevicesWithUnknownStatus(long messageId, int itemsPerPage, int pageNum);
     
     /**
 	 *Looks up all the event ids for this device and returns the ones that are valid.

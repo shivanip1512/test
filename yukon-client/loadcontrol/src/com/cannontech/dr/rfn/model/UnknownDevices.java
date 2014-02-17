@@ -7,15 +7,17 @@ import com.google.common.collect.ImmutableList;
 
 public final class UnknownDevices {
     private final List<UnknownDevice> unknownDevices;
+    private final int numTotalBeforePaging;
     private final int numUnavailable;
     private final int numActive;
     private final int numInactive;
     private final int numUnreportedNew;
     private final int numUnreportedOld;
 
-    public UnknownDevices(List<UnknownDevice> unknownDevices, int numUnavailable, int numActive, 
-                          int numInactive, int numUnreportedNew, int numUnreportedOld) {
+    public UnknownDevices(List<UnknownDevice> unknownDevices, int numTotalBeforePaging, int numUnavailable,
+                          int numActive, int numInactive, int numUnreportedNew, int numUnreportedOld) {
         this.unknownDevices = ImmutableList.copyOf(unknownDevices);
+        this.numTotalBeforePaging = numTotalBeforePaging;
         this.numUnavailable = numUnavailable;
         this.numActive = numActive;
         this.numInactive = numInactive;
@@ -46,7 +48,11 @@ public final class UnknownDevices {
     public int getNumUnreportedOld() {
         return numUnreportedOld;
     }
-    
+
+    public int getNumTotalBeforePaging() {
+        return numTotalBeforePaging;
+    }
+
     public static class Builder {
         private List<UnknownDevice> unknownDevices = new ArrayList<>();
         private int numUnavailable;
@@ -54,7 +60,8 @@ public final class UnknownDevices {
         private int numInactive;
         private int numUnreportedNew;
         private int numUnreportedOld;
-        
+        private int numTotalBeforePaging;
+
         public void addUnknownDevice(UnknownDevice unknownDevice) {
             unknownDevices.add(unknownDevice);
             switch (unknownDevice.getUnknownStatus()) {
@@ -65,9 +72,13 @@ public final class UnknownDevices {
                 case UNREPORTED_OLD: numUnreportedOld++; break;
             }
         }
-        
+
+        public void setNumTotalBeforePaging(int num) {
+            numTotalBeforePaging = num;
+        }
+
         public UnknownDevices build() {
-            return new UnknownDevices(unknownDevices, numUnavailable,
+            return new UnknownDevices(unknownDevices, numTotalBeforePaging, numUnavailable,
                                       numActive, numInactive, numUnreportedNew, numUnreportedOld);
         }
     }

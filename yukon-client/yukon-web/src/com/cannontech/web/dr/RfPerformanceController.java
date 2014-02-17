@@ -2,7 +2,6 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -228,14 +227,14 @@ public class RfPerformanceController {
     
     @RequestMapping(value="/rf/details/unknown/{test}/page", method=RequestMethod.GET)
     public String unknownPage(ModelMap model,
-            YukonUserContext userContext,
             @PathVariable long test, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
             @RequestParam(defaultValue="1") Integer page) {
-        
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
-        SearchResults<UnknownDevice> result = SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getUnknownDevices());
-        
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+        SearchResults<UnknownDevice> result = 
+                SearchResults.pageBasedForSublist(unknownDevices.getUnknownDevices(), page, itemsPerPage,
+                                          unknownDevices.getNumTotalBeforePaging());
+
         model.addAttribute("result", result);
         model.addAttribute("test", test);
         
@@ -248,12 +247,13 @@ public class RfPerformanceController {
             @PathVariable long test, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
             @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
-        
+
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-        
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+
         SearchResults<UnknownDevice> result = 
-                SearchResults.pageBasedForWholeList(page, itemsPerPage, unknownDevices.getUnknownDevices());
+                SearchResults.pageBasedForSublist(unknownDevices.getUnknownDevices(), page, itemsPerPage,
+                                          unknownDevices.getNumTotalBeforePaging());
         
         model.addAttribute("result", result);
         
@@ -300,9 +300,9 @@ public class RfPerformanceController {
     public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable long test) throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
         
-        Map<Integer, UnknownDevice> deviceMap = new HashMap<>(unknownDevices.getUnknownDevices().size());
+        Map<Integer, UnknownDevice> deviceMap = Maps.newHashMapWithExpectedSize(unknownDevices.getUnknownDevices().size());
         List<PaoIdentifier> paos = new ArrayList<>(unknownDevices.getUnknownDevices().size());
         for (UnknownDevice device : unknownDevices.getUnknownDevices()) {
             deviceMap.put(device.getPao().getPaoIdentifier().getPaoId(), device);
@@ -335,7 +335,7 @@ public class RfPerformanceController {
     @RequestMapping("/rf/details/unknown/{test}/inventoryAction")
     public String inventoryAction(ModelMap model, YukonUserContext userContext, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
         List<Integer> deviceIds = Lists.transform(unknownDevices.getUnknownDevices(), new Function<UnknownDevice, Integer>() {
             @Override
             public Integer apply(UnknownDevice input) {
@@ -353,9 +353,9 @@ public class RfPerformanceController {
     }
     
     @RequestMapping("/rf/details/unknown/{test}/collectionAction")
-    public String collectionAction(ModelMap model, YukonUserContext userContext, @PathVariable long test) {
+    public String collectionAction(ModelMap model, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test);
+        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, Integer.MAX_VALUE, 1);
         List<YukonPao> paos = Lists.transform(unknownDevices.getUnknownDevices(), new Function<UnknownDevice, YukonPao>() {
             @Override
             public YukonPao apply(UnknownDevice input) {

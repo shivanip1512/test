@@ -102,37 +102,46 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
 
     @Override
-    public UnknownDevices getDevicesWithUnknownStatus(long messageId) {
+    public UnknownDevices getDevicesWithUnknownStatus(long messageId, int itemsPerPage, int pageNum) {
+        int startRow = pageNum-1;
+        int endRow = itemsPerPage;
+        if (pageNum > 1) {
+            startRow = (pageNum-1) * itemsPerPage;
+            endRow = pageNum * itemsPerPage-1;
+        }
         Instant now = new Instant();
         Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
         Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
         Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName,");
-        sql.append("   CASE");
+        sql.append("SELECT DeviceId, Type, PaoName, UnknownStatus FROM (");
+        sql.append("  SELECT ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum, RBED.DeviceId, YPO.Type, YPO.PaoName,");
+        sql.append("     CASE");
         sql.append("      WHEN LastCommunication IS NOT NULL THEN");
         sql.append("      CASE");
-        sql.append("         WHEN LastNonZeroRuntime IS NOT NULL");
-        sql.append("              AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("              AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
-        sql.append("         WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
-        sql.append("         WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
+        sql.append("       WHEN LastNonZeroRuntime IS NOT NULL");
+        sql.append("          AND LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("          AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
+        sql.append("       WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
+        sql.append("       WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
         sql.append("      END");
         sql.append("      WHEN LastCommunication IS NULL THEN");
         sql.append("      CASE");
-        sql.append("          WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
-        sql.append("          WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+        sql.append("        WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+        sql.append("        WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
         sql.append("       END");
-        sql.append("   END AS UnknownStatus");
-        sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
-        sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
-        sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
-        sql.append("JOIN InventoryBase IB ON IB.DeviceID = RBED.DeviceId");
-        sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
-        sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
-        sql.append("AND Result").eq_k(UNKNOWN);
-        sql.append("ORDER BY PaoName");
+        sql.append("     END AS UnknownStatus");
+        sql.append("  FROM RfnBroadcastEventDeviceStatus RBED");
+        sql.append("  JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
+        sql.append("  JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
+        sql.append("  JOIN InventoryBase IB ON IB.DeviceID = RBED.DeviceId");
+        sql.append("  LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
+        sql.append("  WHERE RBED.RfnBroadcastEventId").eq(messageId);
+        sql.append("  AND Result").eq_k(UNKNOWN);
+        sql.append(") AS tbl");
+        sql.append("WHERE tbl.RowNum BETWEEN").append(startRow);
+        sql.append("  AND").append(endRow);
 
         final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -143,6 +152,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
                 unknownDeviceBuilder.addUnknownDevice(new UnknownDevice(pao, status));
             }
         });
+
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT count(*) FROM RfnBroadcastEventDeviceStatus");
+        sql.append("WHERE RfnBroadcastEventId").eq(messageId);
+        sql.append("AND Result").eq_k(UNKNOWN);
+        int totalNum = jdbcTemplate.queryForInt(sql);
+        unknownDeviceBuilder.setNumTotalBeforePaging(totalNum);
 
         return unknownDeviceBuilder.build();
     }
