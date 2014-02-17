@@ -448,7 +448,7 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.subject">RF Performance Results</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.header"><![CDATA[
 Daily performance report is available.<br />
-More deail is available on the <a href="{0}">Broadcast Performance Details</a> page.
+More detail is available on the <a href="{0}">Broadcast Performance Details</a> page.
 ]]></entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.footer">This email was generated at {0}</entry>
 
