@@ -12,6 +12,7 @@ import java.util.Map;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -102,6 +103,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
 
     @Override
+    @Transactional
     public UnknownDevices getDevicesWithUnknownStatus(long messageId, int itemsPerPage, int pageNum) {
         int startRow = pageNum-1;
         int endRow = itemsPerPage;
