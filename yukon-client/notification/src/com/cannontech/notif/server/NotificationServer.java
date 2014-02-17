@@ -2,6 +2,8 @@ package com.cannontech.notif.server;
 
 import java.io.IOException;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +41,12 @@ public class NotificationServer {
             NotificationServer ns = YukonSpringHook.getBean("notificationServer", NotificationServer.class);
 
             ns.start();
+
+            synchronized (ns) {
+                while (ns.isRunning()) {
+                   ns.wait();
+                }
+            }
         }
         catch (Throwable t) {
             log.error("There was an error starting up the Notification Server", t);
@@ -55,57 +63,45 @@ public class NotificationServer {
      * Start the notification server. If this fails with an exception, no threads will have been started.
      * @throws IOException
      */
-    public void start() {
-        try {
-            ListenerConnectionFactory notifListenerFactory = connFactorySvc.findListenerConnectionFactory("NotifListener");
+    private synchronized void start() {
+        ListenerConnectionFactory notifListenerFactory = connFactorySvc.findListenerConnectionFactory("NotifListener");
 
-            server = notifListenerFactory.createListenerConnection();
-            server.setName("NotifListener");
-            server.getInboundConnectionEvent().registerHandler(eventHandler);
-            server.getConnectionEvent().registerHandler(eventHandler);
+        server = notifListenerFactory.createListenerConnection();
+        server.setName("NotifListener");
+        server.getInboundConnectionEvent().registerHandler(eventHandler);
+        server.getConnectionEvent().registerHandler(eventHandler);
 
-            server.start();
+        server.start();
 
-            // server = new ServerSocket(getPort(), getBacklog(), null);
+        // start output handlers
+        outputHelper.startup();
 
-            // start output handlers
-            outputHelper.startup();
-
-            log.info("Started Notification server: " + server);
-        }
-        catch (Exception e) {
-            try {
-                if (server != null) {
-                    server.close();
-                    server = null;
-                }
-            }
-            catch (Throwable e1) {
-                // No op
-            }
-
-            throw new RuntimeException(e);
-        }
+        log.info("Started notification server: " + server);
     }
 
     /**
      * Shutdown the notification server
      */
-    public void stop() {
-        try {
+    @PreDestroy
+    public synchronized void shutdown() {
+        String zServer = (server != null) ? server.toString() : "not started";
 
+        try {
             if (server != null) {
                 server.close();
                 server = null;
             }
-
-            // shutdown voice handler
+            
+            // shutdown output handler
             outputHelper.shutdown();
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+            // No op
+        }
 
-        log.info("Stopped Notification server: " + server);
+        log.info("Stopped notification server: " + zServer);
 
+        notify(); // notify main thread
     }
 
     public boolean isRunning() {
