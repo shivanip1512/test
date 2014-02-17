@@ -11,7 +11,7 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    jQuery('#tabs').tabs({'class': 'section', 'cookie' : {}});
+    jQuery('#tabs').tabs({'class': 'section'});
 });
 </script>
 

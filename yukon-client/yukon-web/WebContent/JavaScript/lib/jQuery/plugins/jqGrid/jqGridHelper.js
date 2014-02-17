@@ -1,7 +1,11 @@
 /**
-*   jqGrid helper - constructor functions for Yukon
-*/
+ * Singleton that manages the helper functions for jq grid library
+ * 
+ * @requires jQuery 1.8.3+
+ * @requires jQuery UI 1.9.2+
+ */
 
+yukon.namespace('yukon.GridHelper');
 
 yukon.GridHelper = {
         createGrid: function(args){
@@ -11,7 +15,7 @@ yukon.GridHelper = {
             }
             
             if(args.refreshRate){
-                setInterval('yukon.GridHelper._refresh("'+ args.id +'")', args.refreshRate)
+                setInterval('yukon.GridHelper._refresh("'+ args.id +'")', args.refreshRate);
             }
         },
 
@@ -38,15 +42,15 @@ yukon.GridHelper = {
                     /*pagination*/
                     pagination:true,
                     page: 1,
-                	rowNum: 50,
-                	rowList: [20,50,100],
-                	loadonce:true,
-                	viewrecords: false,
-                	gridview: true,
-                	pagerpos: 'right',
-                	/*end pagination*/
+                    rowNum: 50,
+                    rowList: [20,50,100],
+                    loadonce:true,
+                    viewrecords: false,
+                    gridview: true,
+                    pagerpos: 'right',
+                    /*end pagination*/
 
-                	scroll: false,
+                    scroll: false,
                     toolbar: args.toolbar || [false, ""],
                     url: args.url
                   };
@@ -94,10 +98,10 @@ yukon.GridHelper = {
 var jqGridHelper = yukon.GridHelper;
 
 jQuery(window).resize(function() {
-	jQuery('.ui-jqgrid-btable').each(function(index, elem){
-	var parent = jQuery(elem).closest(".jqgrid-container");
-		if(parent.length > 0){
-			jQuery(elem).setGridWidth(parent.width(), true);
-		}
-	});
+    jQuery('.ui-jqgrid-btable').each(function(index, elem){
+    var parent = jQuery(elem).closest(".jqgrid-container");
+        if(parent.length > 0){
+            jQuery(elem).setGridWidth(parent.width(), true);
+        }
+    });
 });

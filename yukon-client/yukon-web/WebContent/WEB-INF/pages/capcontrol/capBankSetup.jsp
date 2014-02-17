@@ -414,7 +414,7 @@
 		</x:column>
 	</x:panelGrid>
 	<f:verbatim>
-        <div id="orphanedCBCContent" class="popup simple-popup" style="display: none;">
+        <div id="orphanedCBCContent" class="old-popup" style="display: none;">
             <div class="titled-container box-container">
 
                 <div class="title-bar">

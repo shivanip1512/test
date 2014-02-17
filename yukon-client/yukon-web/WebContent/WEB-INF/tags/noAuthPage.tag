@@ -19,7 +19,7 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/buttons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
         
         <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
@@ -30,8 +30,7 @@
         <cti:includeScript link="JQUERY" force="true"/>
         <cti:includeScript link="JQUERY_UI" force="true"/>
         <cti:includeScript link="JQUERY_UI_DIALOG_HELPER" force="true"/>
-        <cti:includeScript link="JQUERY_UI_CHECK_ALL" force="true"/>
-        <cti:includeScript link="JQUERY_UI_ACTION_WHEN" force="true"/>
+        <cti:includeScript link="JQUERY_CHECK_ALL" force="true"/>
         <cti:includeScript link="JQUERY_FORM" force="true"/>
         <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
         <cti:includeScript link="JQUERY_TRAVERSABLE" force="true"/>

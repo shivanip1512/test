@@ -71,20 +71,22 @@
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
-                <form:input id="${id}" 
-                            path="${path}" 
-                            value="${dateTimeValue}"
-                            cssClass="f-dateTimePicker f-dateTimePickerUI dateTimePicker ${cssClass}"
-                            disabled="${pageScope.disabled}"
-                            data-date-time-format="${jsDateTimeFormat}"
-                            data-max-date="${pageScope.maxFormattedDate}"
-                            data-min-date="${pageScope.minFormattedDate}"
-                            data-step-hour="${pageScope.stepHour}"
-                            data-step-minute="${pageScope.stepMinute}"
-                            data-time-zone-short="${timeZoneShort}"
-                            data-time-zone-full="${timeZoneFull}"
-                            data-class="${pageScope.cssDialogClass}" 
-                            autocomplete="off"/>
+                <span class="datetimeEntry_wrap">
+                    <form:input id="${id}" 
+                        path="${path}" 
+                        value="${dateTimeValue}"
+                        cssClass="f-dateTimePicker f-dateTimePickerUI dateTimePicker ${cssClass}"
+                        disabled="${pageScope.disabled}"
+                        data-date-time-format="${jsDateTimeFormat}"
+                        data-max-date="${pageScope.maxFormattedDate}"
+                        data-min-date="${pageScope.minFormattedDate}"
+                        data-step-hour="${pageScope.stepHour}"
+                        data-step-minute="${pageScope.stepMinute}"
+                        data-time-zone-short="${timeZoneShort}"
+                        data-time-zone-full="${timeZoneFull}"
+                        data-class="${pageScope.cssDialogClass}" 
+                        autocomplete="off"/>
+                </span>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
                 <br>
@@ -99,8 +101,8 @@
                 ${dateTimeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                
-                <input    id="${id}" 
+                <span class="datetimeEntry_wrap">
+                    <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"
                         class="f-dateTimePicker f-dateTimePickerUI dateTimePicker ${cssClass}"
@@ -114,7 +116,7 @@
                         data-time-zone-short="${timeZoneShort}"
                         data-time-zone-full="${timeZoneFull}"
                         autocomplete="off"/>
-                        
+                </span>
             </cti:displayForPageEditModes>
     </c:otherwise>
 </c:choose>

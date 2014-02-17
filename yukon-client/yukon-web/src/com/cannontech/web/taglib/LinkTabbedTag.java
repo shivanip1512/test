@@ -29,10 +29,11 @@ import org.apache.commons.lang.StringUtils;
 
  */
 public class LinkTabbedTag extends BodyTagSupport {
-    private enum Mode{ box, section };
+    
+    private enum Mode {box, section};
 
-    private Mode mode = Mode.box;
-    private String classes = "";
+    private Mode mode = Mode.section;
+    private String classes = "tabbed-container link-tabbed-container ui-tabs ui-widget ui-widget-content ui-corner-all";
     private List<LinkTabTag> tabs = new ArrayList<LinkTabTag>();
     private String id="";
 
@@ -64,24 +65,28 @@ public class LinkTabbedTag extends BodyTagSupport {
     }
 
     public int doEndTag() throws JspException {
+        
         try {
-            final boolean doHeaderOutline = this.mode.equals(Mode.section);
-            String divCss = this.classes +" tabbedContainer ui-tabs-box ui-tabs ui-widget ui-widget-content ui-corner-all" + (doHeaderOutline ? " ui-tabs-header" : "");
+            
+            if (mode == Mode.section) classes += " section";
             id = ! StringUtils.isEmpty(id) ? id : "linkTabbedControl_"+ UniqueIdentifierTag.generateIdentifier(pageContext, "tabbedContentSelectorContainer_");
-            pageContext.getOut().println("<div id=\"" + id + "\" class=\""+ divCss +"\">");
+            
+            pageContext.getOut().println("<div id=\"" + id + "\" class=\"" + classes + "\">");
             pageContext.getOut().println("<ul class=\"ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all\">");
+            
             final String activeCss = " ui-tabs-active ui-state-active";
             boolean notYetSelected = true;
+            
             for (LinkTabTag tab : tabs) {
                 boolean isSelected = tab.isInitiallySelected() && notYetSelected;
                 String css = "ui-state-default ui-corner-top";
                 String tag = "a href=\"" + tab.getTabHref() + "\"";
                 if (isSelected) {
-                    css += " "+ activeCss;
+                    css += " " + activeCss;
                     tag = "a href=\"javascript:void(0);\"";
                 }
                 String tid = "";
-                if (! StringUtils.isEmpty(tab.getTabId())) {
+                if (!StringUtils.isEmpty(tab.getTabId())) {
                     tid = " id=\""+ tab.getTabId() +"\"";
                 }
                 pageContext.getOut().println("<li role=\"tab\" "+ tid +" class=\""+ css +"\"><"+ tag +" class=\"ui-tabs-anchor\">" + tab.getSelectorName() + "</a></li>");
@@ -105,4 +110,5 @@ public class LinkTabbedTag extends BodyTagSupport {
     public void setId(String id) {
         this.id = id;
     }
+
 }

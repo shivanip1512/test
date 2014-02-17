@@ -390,7 +390,7 @@ yukon.modules.ui = function (mod) {
     
         /** Prevent forms from submitting via enter key */
         jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
-            // allow override submission elements
+            //allow override submission elements
             if (jQuery(e.target).hasClass("f-allowSubmitViaEnterKey")) {
                 return true;
             }
@@ -402,8 +402,8 @@ yukon.modules.ui = function (mod) {
         /** Close 'Apps' popup */
         jQuery('.f-closeYukonApplicationDialog').click(function () {
             jQuery('#yukonApplicationDialog').dialog('close');
-        });
-        
+            });
+
         /** Close a dialog */
         jQuery(document).on('click', '.f-close', function (event) {
             jQuery(this).closest('.ui-dialog-content').dialog('close');
@@ -465,6 +465,8 @@ yukon.modules.ui = function (mod) {
                 jQuery(html).remove();
             }
         });
+        
+        jQuery('.tabbed-container.f-init').tabs().show();
     };
 
     mod._AUTOFOCUS_TRIES = 0;
@@ -508,7 +510,7 @@ yukon.modules.ui = function (mod) {
            mod.pageGlass.show();
        }
     };
-    
+
     /** Unblock the closest valid container, or the page */
     mod.unblock = function (event) {
         var blockElement = jQuery(event.target).closest(".f-block-this")[0];
@@ -619,7 +621,7 @@ yukon.modules.ui = function (mod) {
     };
 
     /** Retrieve a request parameter by name */
-    mod.getParameterByName = function (name) {
+    mod.getParameterByName = function ( name ) {
         var regexS,
             regex,
             results;
@@ -922,3 +924,4 @@ jQuery(document).ready(function () {
     //turn off ajax caching application-wide by default
     jQuery.ajaxSetup({cache: false});
 });
+

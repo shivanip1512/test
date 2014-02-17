@@ -94,8 +94,7 @@ public class LayoutController {
         }
         builder.add(JsLibrary.JQUERY_UI.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
-        builder.add(JsLibrary.JQUERY_UI_CHECK_ALL.getPath());
-        builder.add(JsLibrary.JQUERY_UI_ACTION_WHEN.getPath());
+        builder.add(JsLibrary.JQUERY_CHECK_ALL.getPath());
         builder.add(JsLibrary.JQUERY_FORM.getPath());
         builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
         builder.add(JsLibrary.JQUERY_TRAVERSABLE.getPath());
@@ -314,7 +313,7 @@ public class LayoutController {
         }
         
         map.addAttribute("currentTime", new Date());
-        
+
         map.addAttribute("alertSounds", prefService.getDefaultNotificationAlertSound(yukonUser));
         map.addAttribute("alertFlash", prefService.getDefaultNotificationAlertFlash(yukonUser));
 

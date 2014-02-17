@@ -12,9 +12,7 @@
 
     <script type="text/javascript">
         jQuery(function() {
-            jQuery('#tabs').tabs({
-                'cookie' : {}
-            });
+            jQuery('#tabs').tabs();
         });
     </script>
 
@@ -22,7 +20,7 @@
         <cti:button type="submit" name="task" value="DUMP" nameKey="dumpKeys" />
     </form:form>
 
-    <div id="tabs" class="tabbedContainer clearfix">
+    <div id="tabs" class="tabbed-container clearfix">
         <ul>
             <li><a href="#searchTab"><i:inline key=".search" /></a></li>
             <li><a href="#compareTab"><i:inline key=".compare" /></a></li>

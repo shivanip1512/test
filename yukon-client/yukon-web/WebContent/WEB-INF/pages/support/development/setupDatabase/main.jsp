@@ -73,7 +73,7 @@
 
 <script type="text/javascript">
     jQuery(function() {
-        jQuery('#tabs').tabs({'cookie' : {}, fx: { height: 'toggle', duration: 200 }});
+        jQuery('#tabs').tabs({show: {height: 'toggle', duration: 200}});
 
             var ajaxSubmitOptions = {
                 beforeSubmit:  beforeSubmit,        // pre-submit callback 
@@ -140,15 +140,15 @@
                   url: "checkAvailability",
                   dataType: "json"
                 }).done(function (data) {
-                    setWidgetAvailability(jQuery("#roleProperties"), data.roleProperties);
-                    setWidgetAvailability(jQuery("#capControl"), data.capControl, data.capControlProgress);
-                    setWidgetAvailability(jQuery("#amr"), data.amr);
-                    setWidgetAvailability(jQuery("#stars"), data.stars, data.starsProgress);
-                    setWidgetAvailability(jQuery("#eventLog"), data.eventLog, data.eventLogProgress);
+                    setWidgetAvailability(jQuery("#roleProperties"),data.roleProperties);
+                    setWidgetAvailability(jQuery("#capControl"),data.capControl, data.capControlProgress);
+                    setWidgetAvailability(jQuery("#amr"),data.amr);
+                    setWidgetAvailability(jQuery("#stars"),data.stars,data.starsProgress);
+                    setWidgetAvailability(jQuery("#eventLog"),data.eventLog, data.eventLogProgress);
                 });
               }
             checkAvailability();
-            setInterval(checkAvailability, 1500);
+            setInterval(checkAvailability,1500);
     	});
     </script>
 

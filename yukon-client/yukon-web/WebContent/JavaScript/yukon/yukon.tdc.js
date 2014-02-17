@@ -45,8 +45,7 @@ yukon.Tdc = (function () {
             }, 4000);
 
             jQuery('#display_tabs').tabs({
-                'class' : 'section',
-                'cookie' : {}
+                'class' : 'section'
             });
        
             jQuery('#b_mute').click(function (e) {

@@ -71,20 +71,22 @@
                 ${status.value}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <form:input id="${id}" 
-                            path="${path}"
-                            value="${timeValue}"
-                            cssClass="f-timePicker f-timePickerUI timePicker ${cssClass}"
-                            disabled="${pageScope.disabled}"
-                            data-date-time-format="${jsDateTimeFormat}"
-                            data-max-date="${maxFormattedDate}"
-                            data-min-date="${minFormattedDate}"
-                            data-step-hour="${pageScope.stepHour}"
-                            data-step-minute="${pageScope.stepMinute}"
-                            data-time-zone-short="${timeZoneShort}"
-                            data-time-zone-full="${timeZoneFull}"
-                            data-class="${pageScope.cssDialogClass}"
-                            autocomplete="off" />
+                <span class="datetimeEntry_wrap">
+                    <form:input id="${id}" 
+                        path="${path}"
+                        value="${timeValue}"
+                        cssClass="f-timePicker f-timePickerUI timePicker ${cssClass}"
+                        disabled="${pageScope.disabled}"
+                        data-date-time-format="${jsDateTimeFormat}"
+                        data-max-date="${maxFormattedDate}"
+                        data-min-date="${minFormattedDate}"
+                        data-step-hour="${pageScope.stepHour}"
+                        data-step-minute="${pageScope.stepMinute}"
+                        data-time-zone-short="${timeZoneShort}"
+                        data-time-zone-full="${timeZoneFull}"
+                        data-class="${pageScope.cssDialogClass}"
+                        autocomplete="off" />
+                </span>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
                 <br>
@@ -97,7 +99,8 @@
                 ${timeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <input    id="${id}" 
+                <span class="datetimeEntry_wrap">
+                    <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"
                         class="f-timePicker f-timePickerUI timePicker ${cssClass}"
@@ -111,6 +114,7 @@
                         data-time-zone-short="${timeZoneShort}"
                         data-time-zone-full="${timeZoneFull}"
                         autocomplete="off" />
+                </span>
             </cti:displayForPageEditModes>
     </c:otherwise>
 </c:choose>

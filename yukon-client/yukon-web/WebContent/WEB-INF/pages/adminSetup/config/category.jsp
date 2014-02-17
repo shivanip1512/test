@@ -8,7 +8,6 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="config.category">
-<cti:includeScript link="JQUERY_STICKY_PANEL" />
 
 <script>
 jQuery(function() {

@@ -54,7 +54,7 @@
     <cti:msg2 var="boxTitle" key=".gearAdjustments"/>
     <tags:boxContainer title="${boxTitle}">
 	    <div class="scroll-medium">
-		    <table class="compact-results-table">
+		    <table class="compact-results-table no-stripes">
                 <thead>
 			        <tr>
 			            <th><cti:msg2 key=".timeFrame"/></th>

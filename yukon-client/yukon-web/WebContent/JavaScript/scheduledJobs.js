@@ -1,7 +1,7 @@
 var stopJobId;
 
-
 jQuery(function() {
+    
     jQuery(document).on('yukonDialogConfirmOk', function(event) {
         event.preventDefault();
         //close the dialog
@@ -18,26 +18,26 @@ jQuery(function() {
         var stopButton = event.currentTarget;
         stopJobId = stopButton.id.replace('cancel_', '');
     });
-});
-
-jQuery('button.toggleEnabled').live('click', function(event) {
-    var toggleButton = event.currentTarget;
-    var jobId = toggleButton.id.substring(7); //omit "toggle_"
-    jQuery.ajax({
-        url: "toggleEnabled",
-        dataType: 'json',
-        data: {'jobId': jobId},
-        success: function(data) {
-            if (data.jobEnabled === false) {
-                jQuery(toggleButton).closest('tr').addClass('subtle');
-                jQuery('#disableSpan_' + jobId).hide();
-                jQuery('#enableSpan_' + jobId).show();
-            } else {
-                jQuery(toggleButton).closest('tr').removeClass('subtle');
-                jQuery('#disableSpan_' + jobId).show();
-                jQuery('#enableSpan_' + jobId).hide();
+    
+    jQuery(document).on('click', 'button.toggleEnabled', function(event) {
+        var toggleButton = event.currentTarget;
+        var jobId = toggleButton.id.substring(7); //omit "toggle_"
+        jQuery.ajax({
+            url: "toggleEnabled",
+            dataType: 'json',
+            data: {'jobId': jobId},
+            success: function(data) {
+                if (data.jobEnabled === false) {
+                    jQuery(toggleButton).closest('tr').addClass('subtle');
+                    jQuery('#disableSpan_' + jobId).hide();
+                    jQuery('#enableSpan_' + jobId).show();
+                } else {
+                    jQuery(toggleButton).closest('tr').removeClass('subtle');
+                    jQuery('#disableSpan_' + jobId).show();
+                    jQuery('#enableSpan_' + jobId).hide();
+                }
             }
-        }
+        });
     });
 });
 

@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 
-
 /**
  * @param selectorName Human-readable text
  * @param selectorKey  i18n key: used to make human-readable text and overwrite selectorName.

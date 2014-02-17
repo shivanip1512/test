@@ -28,15 +28,12 @@
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/buttons.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/icons.css"/>" >
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/lib/jQuery/yukon/jquery-ui-1.9.2.custom.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQueryUI/jquery-ui-1.10.4.custom.min.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/tipsy/stylesheets/tipsy.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/lib/jQuery/plugins/spectrum/spectrum.css"/>" >
         
         <c:set var="browser" value="${header['User-Agent']}" scope="session"/>
         
-        <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
-        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>" >
-
         <!-- Module CSS files from module_config.xml -->
         <c:forEach items="${moduleConfigCss}" var="file">
             <link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
@@ -51,6 +48,9 @@
         <c:forEach items="${loginGroupCss}" var="file">
             <link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
+        
+        <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
+        <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/overrides.css"/>" >
         
         <!-- Some prerequisite globals -->
         <script type="text/javascript">
@@ -122,7 +122,7 @@
     </div>
     <div class="page-title-bar">
         <div class="inner clearfix">
-            <c:if test="${not empty pageDetail.pageHeading}">
+	        <c:if test="${not empty pageDetail.pageHeading}">
                 <c:if test="${canFavorite}">
                     <cti:button id="favButton" 
                         classes="b-favorite" 
@@ -132,19 +132,19 @@
                         data-name="${info.pageName}" 
                         data-label-args="${labelArgs}" />
                 </c:if>
-                <h1 class="page-heading">
-                    ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
-                    <spring:escapeBody htmlEscape="true">
-                    ${pageDetail.pageHeading}
-                    </spring:escapeBody>
-                    ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
-                </h1>
-            </c:if>
+			    <h1 class="page-heading">
+			        ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
+			        <spring:escapeBody htmlEscape="true">
+			        ${pageDetail.pageHeading}
+			        </spring:escapeBody>
+			        ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
+			    </h1>
+			</c:if>
             <div class="page-actions">
                 <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
                 <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
-        </div>
+		</div>
     </div>
 </header>
 

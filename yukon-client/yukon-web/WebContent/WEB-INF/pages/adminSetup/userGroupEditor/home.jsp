@@ -16,8 +16,7 @@
 
     <script type="text/javascript">
         jQuery(function() {
-            jQuery('#tabs').tabs({'cookie' : {},
-                 'show' : function(event, ui) {
+            jQuery('#tabs').tabs({'show' : function(event, ui) {
                       window[ui.panel.id + "Picker"].show.call(window[ui.panel.id + "Picker"]);
                   }});
         });

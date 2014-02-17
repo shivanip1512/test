@@ -415,7 +415,7 @@
         	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/ui" />
         	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/util" />
         	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js" />
-        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQueryUI/plugins/dialog-helper.js" />
         	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
     	</jsdoctoolkit>
     </target>
