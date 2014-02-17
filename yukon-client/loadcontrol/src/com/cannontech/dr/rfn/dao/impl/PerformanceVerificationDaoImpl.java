@@ -146,7 +146,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                PaoIdentifier pao = new PaoIdentifier(rs.getInt("DeviceId"), rs.getEnum("Type", PaoType.class));
+                PaoIdentifier pao = rs.getPaoIdentifier("deviceId", "type");
                 UnknownStatus status = rs.getEnum("UnknownStatus", UnknownStatus.class);
                 unknownDeviceBuilder.addUnknownDevice(new UnknownDevice(pao, status));
             }
