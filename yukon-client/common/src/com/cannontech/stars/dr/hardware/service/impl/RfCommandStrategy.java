@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -43,7 +44,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     
     private static final Logger log = YukonLogManager.getLogger(RfCommandStrategy.class);
     private static final LogHelper logHelper = LogHelper.getInstance(log);
-    private static final AtomicInteger nextMessageId = new AtomicInteger(0);
+    private static final AtomicInteger nextMessageId = new AtomicInteger((int)new Instant().getMillis());
 
     @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
