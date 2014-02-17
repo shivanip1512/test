@@ -272,7 +272,7 @@ bool CtiRouteMacro::processAdditionalRoutes( const INMESS *InMessage ) const
         return false;
     }
 
-    return (*InMessage->Return.RetryMacroOffset <= getRoutePtrList().entries());
+    return (*InMessage->Return.RetryMacroOffset < getRoutePtrList().entries());
 }
 
 CtiMutex& CtiRouteMacro::getRouteListMux()
