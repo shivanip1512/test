@@ -293,17 +293,16 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         addString("in (");
 
         Iterator<? extends Enum<?>> iter = constants.iterator();
-        if (!iter.hasNext()) {
-            addString("null");
-            return this;
-        } 
-
-        while (iter.hasNext()) {
-            Enum<?> argument = iter.next();
-            appendArgument_k(argument);
-            if (iter.hasNext()) {
-                addString(",");
+        if (iter.hasNext()) {
+            while (iter.hasNext()) {
+                Enum<?> argument = iter.next();
+                appendArgument_k(argument);
+                if (iter.hasNext()) {
+                    addString(",");
+                }
             }
+        } else {
+            addString("null");
         }
 
         addString(") ");
