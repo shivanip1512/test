@@ -161,38 +161,35 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
 
         List<PerformanceVerificationEventMessageStats> reports = performanceVerificationDao.getReports(reportDates);
 
-        Map<DateMidnight,MutablePerformanceVerificationEventStats> dateToReportMap = new HashMap<>();
+        Map<DateMidnight,MutablePerformanceVerificationEventStats> eventStatsByDate = new HashMap<>();
         for (PerformanceVerificationEventMessageStats report : reports) {
             DateMidnight day = report.getTimeMessageSent().toDateTime().toDateMidnight();
-            MutablePerformanceVerificationEventStats stats = dateToReportMap.get(day);
+            MutablePerformanceVerificationEventStats stats = eventStatsByDate.get(day);
 
             if (stats == null) {
                 stats = new MutablePerformanceVerificationEventStats();
                 stats.addStats(report.getNumSuccesses(), report.getNumFailures(), report.getNumUnknowns());
-                dateToReportMap.put(day, stats);
+                eventStatsByDate.put(day, stats);
             } else  {
                 stats.addStats(report.getNumSuccesses(), report.getNumFailures(), report.getNumUnknowns());
             }
         }
 
-        List<DateMidnight> eventDates = new ArrayList<>(dateToReportMap.keySet());
+        List<DateMidnight> eventDates = new ArrayList<>(eventStatsByDate.keySet());
         Collections.sort(eventDates, Collections.reverseOrder());
 
-        boolean oddNumberedRow = false;
+        boolean altStyledRow = false;
         StringBuilder tbody = new StringBuilder();
         for (DateMidnight date : eventDates) {
 
-            PerformanceVerificationEventStats eventStats = dateToReportMap.get(date).getImmutable();
+            PerformanceVerificationEventStats eventStats = eventStatsByDate.get(date).getImmutable();
             String formattedDate = dateFormatter.format(date.toDate());
             double percentSuccess = eventStats.getPercentSuccess();
             String precentageStr = MessageFormat.format("{0, number,##.#%}", percentSuccess);
+            String rowStyle = altStyledRow ? trStyle_Alt : "";
 
             Map<String, Object> templateData = new HashMap<>();
-            if (oddNumberedRow) {
-                templateData.put("rowStyle", "");
-            } else {
-                templateData.put("rowStyle", trStyle_Alt);
-            }
+            templateData.put("rowStyle", rowStyle);
             templateData.put("cell", "td");
             templateData.put("cellStyle", tdStyle);
             templateData.put("date", formattedDate);
@@ -202,7 +199,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
             templateData.put("percentage", precentageStr);
             String rowText = tp.process(rowTemplate, templateData);
             tbody.append(rowText).append("\n");
-            oddNumberedRow = !oddNumberedRow;
+            altStyledRow = !altStyledRow;
         }
 
         String formattedDate = dateTimeFormatter.print(now);
@@ -235,8 +232,7 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
         }
 
         try {
-            EmailHtmlMessage htmlMessage = new EmailHtmlMessage(EMPTY_TO, subject, htmlBody, htmlBody);
-            return htmlMessage;
+            return new EmailHtmlMessage(EMPTY_TO, subject, htmlBody, htmlBody);
         } catch (MessagingException e) {
             // Unreachable. Only throws exception when it can't parse a 'from' address, which is null in this case.
             throw new RuntimeException(e);
@@ -246,14 +242,12 @@ public class RfnPerformanceVerificationEmailTask extends YukonTaskBase {
     private String instantToDateUrlParam(Instant instant) {
         DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormatEnum.DATE, YukonUserContext.system);
         String unescaped = dateFormatter.format(instant.toDate());
-        String escaped = null;
         try {
-            escaped = URLEncoder.encode(unescaped, "UTF-8");
+            return URLEncoder.encode(unescaped, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             // Unreachable. UTF-8 must be supported
             throw new RuntimeException(e);
         }
-        return escaped;
     }
     
     public String getNotificationGroups() {
