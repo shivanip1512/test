@@ -59,6 +59,8 @@ public interface PerformanceVerificationDao {
      */
     UnknownDevices getAllDevicesWithUnknownStatus(long messageId);
     
+    int getNumberOfDevices(long messageId, PerformanceVerificationMessageStatus status);
+    
     /**
 	 *Looks up all the event ids for this device and returns the ones that are valid.
 	 */

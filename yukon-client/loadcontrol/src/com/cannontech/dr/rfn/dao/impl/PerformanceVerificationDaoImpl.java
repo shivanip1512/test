@@ -148,10 +148,18 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
                 unknownDeviceBuilder.addUnknownDevice(new UnknownDevice(pao, status));
             }
         });
-
         addUnknownCounts(messageId, unknownDeviceBuilder);
 
         return unknownDeviceBuilder.build();
+    }
+
+    @Override
+    public int getNumberOfDevices(long messageId, PerformanceVerificationMessageStatus status) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*) from RfnBroadcastEventDeviceStatus");
+        sql.append("WHERE RfnBroadcastEventId").eq(messageId);
+        sql.append("AND RESULT").eq_k(status);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     private void addUnknownCounts(long messageId, final UnknownDevices.Builder builder) {
@@ -217,24 +225,24 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
         if (isPaged) {
-            sql.append(", ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
+            sql.append(",ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
         }
         if (messageStatus == UNKNOWN) {
-            sql.append(",  CASE");
-            sql.append("    WHEN LastCommunication IS NOT NULL THEN");
-            sql.append("    CASE");
-            sql.append("      WHEN LastNonZeroRuntime IS NOT NULL");
-            sql.append("         AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-            sql.append("         AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
-            sql.append("      WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
-            sql.append("      WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
-            sql.append("    END");
-            sql.append("    WHEN LastCommunication IS NULL THEN");
-            sql.append("    CASE");
-            sql.append("      WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
-            sql.append("      WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
-            sql.append("    END");
-            sql.append("  END AS UnknownStatus");
+            sql.append(",CASE");
+            sql.append("  WHEN LastCommunication IS NOT NULL THEN");
+            sql.append("  CASE");
+            sql.append("    WHEN LastNonZeroRuntime IS NOT NULL");
+            sql.append("       AND LastNonZeroRuntime").gt(runtimeWindowEnd);
+            sql.append("       AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
+            sql.append("    WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
+            sql.append("    WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
+            sql.append("  END");
+            sql.append("  WHEN LastCommunication IS NULL THEN");
+            sql.append("  CASE");
+            sql.append("    WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+            sql.append("    WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+            sql.append("  END");
+            sql.append("END AS UnknownStatus");
         }
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
