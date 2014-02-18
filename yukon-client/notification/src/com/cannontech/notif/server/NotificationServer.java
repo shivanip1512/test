@@ -30,7 +30,7 @@ public class NotificationServer {
     @Autowired private NotificationMessageHandler messageHandler;
     @Autowired private OutputHandlerHelper outputHelper;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired public ConnectionFactoryService connFactorySvc;
+    @Autowired private ConnectionFactoryService connFactorySvc;
 
     public static void main(String[] argsv) {
         try {
