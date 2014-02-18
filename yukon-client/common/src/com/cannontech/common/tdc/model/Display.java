@@ -3,6 +3,8 @@ package com.cannontech.common.tdc.model;
 import java.util.List;
 
 
+import java.util.NoSuchElementException;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -59,15 +61,16 @@ public class Display {
     }
     
     public boolean hasColumn(final ColumnType type) {
-        Column column = Iterables.find(columns, new Predicate<Column>() {
-            @Override
-            public boolean apply(Column c) {
-                return c.getType() == type;
-            }
-        });
-        if (column == null) {
+        try {
+            Iterables.find(columns, new Predicate<Column>() {
+                @Override
+                public boolean apply(Column c) {
+                    return c.getType() == type;
+                }
+            });
+            return true;
+        } catch (NoSuchElementException e) {
             return false;
         }
-        return true;
     }
 }
