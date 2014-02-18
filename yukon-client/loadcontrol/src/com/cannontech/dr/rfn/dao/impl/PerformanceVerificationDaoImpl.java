@@ -129,12 +129,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
 
-        sql = new SqlStatementBuilder();
-        sql.append("SELECT count(*) FROM RfnBroadcastEventDeviceStatus");
-        sql.append("WHERE RfnBroadcastEventId").eq(messageId);
-        sql.append("AND Result").eq_k(UNKNOWN);
-        int totalNum = jdbcTemplate.queryForInt(sql);
-        unknownDeviceBuilder.setNumTotalBeforePaging(totalNum);
+        addUnknownCounts(messageId, unknownDeviceBuilder);
 
         return unknownDeviceBuilder.build();
     }
@@ -154,14 +149,24 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             }
         });
 
-        sql = new SqlStatementBuilder();
-        sql.append("SELECT count(*) FROM RfnBroadcastEventDeviceStatus");
-        sql.append("WHERE RfnBroadcastEventId").eq(messageId);
-        sql.append("AND Result").eq_k(UNKNOWN);
-        int totalNum = jdbcTemplate.queryForInt(sql);
-        unknownDeviceBuilder.setNumTotalBeforePaging(totalNum);
+        addUnknownCounts(messageId, unknownDeviceBuilder);
 
         return unknownDeviceBuilder.build();
+    }
+
+    private void addUnknownCounts(long messageId, final UnknownDevices.Builder builder) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Count(*) as count, UnknownStatus FROM (");
+        addSelectDevices(sql, messageId, UNKNOWN, false);
+        sql.append(") AS tbl");
+        sql.append("Group By UnknownStatus");
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                builder.setCountForStatus(rs.getEnum("UnknownStatus", UnknownStatus.class), rs.getInt("count"));
+            }
+        });
     }
 
     @Override
