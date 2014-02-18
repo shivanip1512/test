@@ -6,11 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
-import com.cannontech.core.authentication.service.PasswordEncrypter;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class LocalHashV2AuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
+public class LocalHashV2AuthenticationService implements AuthenticationProvider, PasswordSetProvider{
     private final StrongPasswordEncryptor digester = new StrongPasswordEncryptor();
 
     @Autowired private YukonUserPasswordDao yukonUserPasswordDao;
@@ -31,16 +30,5 @@ public class LocalHashV2AuthenticationService implements AuthenticationProvider,
     public boolean comparePassword(LiteYukonUser yukonUser, String newPassword,
         String previousDigest) {
         return digester.checkPassword(newPassword, previousDigest);
-    }
-
-    /**
-     * Encrypt the given password.  This is exposed as an extra public method (which is not part of
-     * {@link AuthenticationProvider}) because it is only needed when we are encrypting old plain text passwords
-     * from the database.  We can't use {@link #setPassword(LiteYukonUser, String)} because this encrypting
-     * should not change the password changed date.  See YUK-11346. 
-     */
-    @Override
-    public String encryptPassword(String password) {
-        return digester.encryptPassword(password);
     }
 }

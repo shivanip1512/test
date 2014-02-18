@@ -66,9 +66,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException,
             PasswordExpiredException {
-        boolean authUpdateCheck = false;
-        boolean UserLoginCheck = false;
-        // see if login attempt allowed and track the attempt
+        boolean isPasswordMatchedWithOldAuthType = false;
+        boolean isPasswordMatched = false;
+     // see if login attempt allowed and track the attempt
         authenticationThrottleService.loginAttempted(username);
 
         // find user in database
@@ -96,8 +96,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
             authType = authenticationInfo.getAuthType();
         } else if (authType != supportingAuthType) {
-            authUpdateCheck = compareHistoricPassword(user, password, authType);
-            if (!authUpdateCheck) {
+            isPasswordMatchedWithOldAuthType = verifyPasswordWithOldAuthType(user, password, authType);
+            if (!isPasswordMatchedWithOldAuthType) {
                 log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
                 throw new BadAuthenticationException();
             }
@@ -106,16 +106,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (provider == null) {
             throw new RuntimeException("Unknown AuthType: userid=" + user.getUserID() + ", authtype=" + supportingAuthType);
         }
-        if (authUpdateCheck) {
+        if (isPasswordMatchedWithOldAuthType) {
             PasswordEncrypter passwordEncrypter = (PasswordEncrypter) providerMap.get(supportingAuthType);
             String newDigest = passwordEncrypter.encryptPassword(password);
             yukonUserPasswordDao.setPassword(user, supportingAuthType, newDigest);
         } else {
-            UserLoginCheck = provider.login(user, password);
+            isPasswordMatched = provider.login(user, password);
         }
 
         // Attempt login; remove throttle if login successful.
-        if (UserLoginCheck || authUpdateCheck) {
+        if (isPasswordMatched || isPasswordMatchedWithOldAuthType) {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
             
@@ -245,13 +245,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthType encryptedAuthType = AuthenticationCategory.ENCRYPTED.getSupportingAuthType();
         PasswordEncrypter provider = (PasswordEncrypter) providerMap.get(encryptedAuthType);
         String newDigest = provider.encryptPassword(password);
-        yukonUserPasswordDao.setPasswordWithoutHistory(user,encryptedAuthType, newDigest);
+        yukonUserPasswordDao.setPasswordWithoutHistory(user, encryptedAuthType, newDigest);
     }
     
-    public boolean compareHistoricPassword(LiteYukonUser yukonUser, String password, AuthType historicAuthType) {
-        String storePassword = yukonUserPasswordDao.getDigest(yukonUser);
+    private boolean verifyPasswordWithOldAuthType(LiteYukonUser user, String password, AuthType historicAuthType) {
+        String storePassword = yukonUserPasswordDao.getDigest(user);
         PasswordSetProvider historicProvider = (PasswordSetProvider) providerMap.get(historicAuthType);
-        return historicProvider.comparePassword(yukonUser, password, storePassword);
+        return historicProvider.comparePassword(user, password, storePassword);
     }
 
     @Override

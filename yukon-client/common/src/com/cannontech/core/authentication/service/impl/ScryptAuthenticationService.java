@@ -17,8 +17,8 @@ import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class ScryptAuthenticationService implements AuthenticationProvider, PasswordSetProvider, PasswordEncrypter {
-    @Autowired
-    protected YukonUserPasswordDao yukonUserPasswordDao;
+    
+    @Autowired private YukonUserPasswordDao userPasswordDao;
     private static final int derivedKeyLength = 32;
     /**
      * Default encryption values.Changing below these parameter values will make different hashing
@@ -31,22 +31,28 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
     @Override
     public void setPassword(LiteYukonUser user, String newPassword) {
         String digest = encryptPassword(newPassword, cpuCostParam, memoryCostParam, parallelParam);
-        yukonUserPasswordDao.setPassword(user, AuthType.SCRYPT, digest);
+        userPasswordDao.setPassword(user, AuthType.SCRYPT, digest);
     }
 
     @Override
     public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousDigest) {
-        boolean methodCheck = false;
-        return checkPassword(previousDigest, newPassword, yukonUser, methodCheck);
+        boolean isSetPasswordRequired = false;
+        return checkPassword(previousDigest, newPassword, yukonUser, isSetPasswordRequired);
     }
 
     @Override
     public boolean login(LiteYukonUser user, String password) {
-        boolean methodCheck = true;
-        String digest = yukonUserPasswordDao.getDigest(user);
-        return checkPassword(digest, password, user, methodCheck);
+        boolean isSetPasswordRequired = true;
+        String digest = userPasswordDao.getDigest(user);
+        return checkPassword(digest, password, user, isSetPasswordRequired);
     }
-
+    
+    /**
+     * Encrypt the given password. This is exposed as an extra public method (which is not part of
+     * {@link AuthenticationProvider}) because it is only needed when we are encrypting old plain
+     * text passwords from the database. We can't use {@link #setPassword(LiteYukonUser, String)} because this
+     * encrypting should not change the password changed date.
+     */
     @Override
     public String encryptPassword(String password) {
         return encryptPassword(password, cpuCostParam, memoryCostParam, parallelParam);
@@ -83,8 +89,8 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
      * Returns the boolean check depends upon the stored password.
      * @throws IllegalStateException
      */
-    private boolean checkPassword(String digest, String password, LiteYukonUser user, boolean methodCheck) {
-        boolean loginCheck = false;
+    private boolean checkPassword(String digest, String password, LiteYukonUser user, boolean isSetPasswordRequired) {
+        boolean isPasswordMatched = false;
         String[] digestParts = digest.split("\\$");
         int storedCpuCostParam = Integer.parseInt(digestParts[1]);
         int storedMemoryCostParam = Integer.parseInt(digestParts[2]);
@@ -97,19 +103,19 @@ public class ScryptAuthenticationService implements AuthenticationProvider, Pass
                 byte[] fullHashedPasswordString =
                     SCrypt.generate(password.getBytes("UTF-8"), salt, cpuCostParam, memoryCostParam, parallelParam,
                                     derivedKeyLength);
-                loginCheck = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
+                isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
             } else {
                 byte[] fullHashedPasswordString =
                     SCrypt.generate(password.getBytes("UTF-8"), salt, storedCpuCostParam, storedMemoryCostParam,
                                     storedParallelParam, derivedKeyLength);
-                loginCheck = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
-                if (loginCheck && methodCheck) {
+                isPasswordMatched = Arrays.equals(fullHashedPasswordString, fullStoredHashedPasswordString);
+                if (isPasswordMatched && isSetPasswordRequired) {
                     setPassword(user, password);
                 }
             }
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException("JVM Doest not support UTF-8 ?");
         }
-        return loginCheck;
+        return isPasswordMatched;
     }
 }
