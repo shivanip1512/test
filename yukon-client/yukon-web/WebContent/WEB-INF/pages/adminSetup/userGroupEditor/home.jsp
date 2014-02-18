@@ -16,9 +16,10 @@
 
     <script type="text/javascript">
         jQuery(function() {
-            jQuery('#tabs').tabs({'show' : function(event, ui) {
-                      window[ui.panel.id + "Picker"].show.call(window[ui.panel.id + "Picker"]);
-                  }});
+            window['userPicker'].show.call(window['userPicker']);
+            window['userGroupPicker'].show.call(window['userGroupPicker']);
+            window['roleGroupPicker'].show.call(window['roleGroupPicker']);
+            jQuery('#tabs').tabs();
         });
         function editUser () {
             window.location.href = '${userUrl}?userId=' + jQuery('#userId').val();
