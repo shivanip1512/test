@@ -84,7 +84,6 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
         sql.append("SELECT d.Pointid, d.Deviceid, d.Pointtype, d.Pointname, d.Devicename, d.Pointstate, d.Devicecurrentstate");
         sql.append("FROM Display2waydata_view d join display2waydata y on d.Pointid = y.pointid");
         sql.append(" WHERE y.Displaynum").eq(display.getDisplayId());
-        sql.append(" AND d.Pointid > 0");
         sql.append("ORDER BY y.Ordering");
         List<DisplayData> displayData = yukonJdbcTemplate.query(sql, createCustomRowMapper);
         List<Integer> pointIds =

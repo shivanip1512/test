@@ -150,6 +150,10 @@ public class DisplayData {
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
     }
+    
+    public boolean isBlank(){
+        return pointId == 0;
+    }
 
     @Override
     public int hashCode() {
