@@ -112,7 +112,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, Type, PaoName, UnknownStatus FROM (");
-        addSelectUnknownForMessageId(sql, messageId, true);
+        addSelectDevices(sql, messageId, UNKNOWN, true);
         sql.append(") AS tbl");
         sql.append("WHERE tbl.RowNum BETWEEN").append(startRow);
         sql.append("  AND").append(endRow);
@@ -140,7 +140,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public UnknownDevices getAllDevicesWithUnknownStatus(long messageId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        addSelectUnknownForMessageId(sql, messageId, false);
+        addSelectDevices(sql, messageId, UNKNOWN, false);
 
         final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -162,38 +162,80 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         return unknownDeviceBuilder.build();
     }
 
-    private void addSelectUnknownForMessageId(SqlStatementBuilder sql, long messageId, boolean isPaged) {
+    @Override
+    public List<PaoIdentifier> getAllDevicesWithStatus(long messageId,
+            PerformanceVerificationMessageStatus status) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        addSelectDevices(sql, messageId, status, false);
+        return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
+            @Override
+            public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getPaoIdentifier("DeviceId", "Type");
+            }
+        });
+    }
+
+    @Override
+    public List<PaoIdentifier> getDevicesWithStatus(long messageId,
+                                                    PerformanceVerificationMessageStatus status,
+                                                    int itemsPerPage, int pageNum) {
+        int startRow = pageNum-1;
+        int endRow = itemsPerPage;
+        if (pageNum > 1) {
+            startRow = (pageNum-1) * itemsPerPage;
+            endRow = pageNum * itemsPerPage-1;
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId, Type FROM (");
+        addSelectDevices(sql, messageId, status, true);
+        sql.append(") AS tbl");
+        sql.append("WHERE tbl.RowNum BETWEEN").append(startRow);
+        sql.append("  AND").append(endRow);
+        return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
+            @Override
+            public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {
+                return rs.getPaoIdentifier("DeviceId", "Type");
+            }
+        });
+
+    }
+
+    private void addSelectDevices(SqlStatementBuilder sql, long messageId,
+            PerformanceVerificationMessageStatus messageStatus, boolean isPaged) {
         Instant now = new Instant();
         Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
         Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
         Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
 
-        sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName,");
+        sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
         if (isPaged) {
-            sql.append("ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum, ");
+            sql.append("ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
         }
-        sql.append("  CASE");
-        sql.append("    WHEN LastCommunication IS NOT NULL THEN");
-        sql.append("    CASE");
-        sql.append("      WHEN LastNonZeroRuntime IS NOT NULL");
-        sql.append("         AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("         AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
-        sql.append("      WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
-        sql.append("      WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
-        sql.append("    END");
-        sql.append("    WHEN LastCommunication IS NULL THEN");
-        sql.append("    CASE");
-        sql.append("      WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
-        sql.append("      WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
-        sql.append("    END");
-        sql.append("  END AS UnknownStatus");
+        if (messageStatus == UNKNOWN) {
+            sql.append(",  CASE");
+            sql.append("    WHEN LastCommunication IS NOT NULL THEN");
+            sql.append("    CASE");
+            sql.append("      WHEN LastNonZeroRuntime IS NOT NULL");
+            sql.append("         AND LastNonZeroRuntime").gt(runtimeWindowEnd);
+            sql.append("         AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
+            sql.append("      WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
+            sql.append("      WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
+            sql.append("    END");
+            sql.append("    WHEN LastCommunication IS NULL THEN");
+            sql.append("    CASE");
+            sql.append("      WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+            sql.append("      WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+            sql.append("    END");
+            sql.append("  END AS UnknownStatus");
+        }
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
         sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
         sql.append("JOIN InventoryBase IB ON IB.DeviceID = RBED.DeviceId");
         sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
-        sql.append("AND Result").eq_k(UNKNOWN);
+        sql.append("AND Result").eq_k(messageStatus);
     }
     
     @Override

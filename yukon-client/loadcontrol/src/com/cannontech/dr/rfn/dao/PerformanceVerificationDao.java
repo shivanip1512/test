@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
+import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.model.UnknownDevices;
 
 public interface PerformanceVerificationDao {
@@ -36,6 +38,16 @@ public interface PerformanceVerificationDao {
      * @param messageId the unique message id of the event
      */
     void writeNewVerificationEventForEnrolledDevices(long messageId);
+
+    /**
+     * @return list of all devices with status for rf broadcast message with id {@code messageId}.
+     */
+    List<PaoIdentifier> getAllDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status);
+    
+    /**
+     * @return list sorted by PaoName of devices withs tatus for rf broadcast message with id {@code messageId}.
+     */
+    List<PaoIdentifier> getDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status, int itemsPerPage, int pageNum);
 
     /**
      * @return list sorted by PaoName of devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
@@ -72,5 +84,4 @@ public interface PerformanceVerificationDao {
 	 */
 	
 	void setEventResultStatusToFailure(int deviceId, Range<Instant> range);
-
 }
