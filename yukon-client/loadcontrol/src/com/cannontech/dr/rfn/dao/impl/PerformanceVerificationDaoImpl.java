@@ -74,11 +74,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         List<PerformanceVerificationEventMessageStats> reports = new ArrayList<>();
         for (PerformanceVerificationEventMessage messageSent : messagesSent) {
             Map<PerformanceVerificationMessageStatus, Integer> counts = stats.get(messageSent.getMessageId());
-            reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
-                                                                 messageSent.getTimeMessageSent(),
-                                                                 counts.get(SUCCESS),
-                                                                 counts.get(FAILURE),
-                                                                 counts.get(UNKNOWN)));
+            if (counts != null) {
+                reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
+                                                                     messageSent.getTimeMessageSent(),
+                                                                     counts.get(SUCCESS),
+                                                                     counts.get(FAILURE),
+                                                                     counts.get(UNKNOWN)));
+            }
         }
 
         return reports;
@@ -210,7 +212,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
         if (isPaged) {
-            sql.append("ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
+            sql.append(", ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
         }
         if (messageStatus == UNKNOWN) {
             sql.append(",  CASE");
