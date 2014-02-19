@@ -3,6 +3,7 @@ package com.cannontech.web.picker.v2;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +11,11 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGroup> {
     @Autowired private NotificationGroupDao notificationGroupDao;
@@ -31,13 +36,31 @@ public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGr
     @Override
     public SearchResults<UltraLightNotificationGroup> search(String ss, int start, int count, String extraArgs,
             YukonUserContext userContext) {
-        return SearchResults.indexBasedForWholeList(start, count, getAllNotificationGroups());
+        final String lcSS = ss.toLowerCase();
+        Predicate<UltraLightNotificationGroup> idPredicate = new Predicate<UltraLightNotificationGroup>() {
+            @Override
+            public boolean apply(UltraLightNotificationGroup notificationGroup) {
+                return notificationGroup.getName().toLowerCase().contains(lcSS);
+            }
+        };
+        List<UltraLightNotificationGroup> notificationGroups =
+            Lists.newArrayList(Iterables.filter(getAllNotificationGroups(), idPredicate));
+        return SearchResults.indexBasedForWholeList(start, count, notificationGroups);
     }
 
     @Override
     public SearchResults<UltraLightNotificationGroup> search(Iterable<Integer> initialIds, String extraArgs,
             YukonUserContext userContext) {
-        return SearchResults.pageBasedForWholeList(1, Integer.MAX_VALUE, getAllNotificationGroups());
+        final Set<Integer> initialIdsSet = ImmutableSet.copyOf(initialIds);
+        Predicate<UltraLightNotificationGroup> idPredicate = new Predicate<UltraLightNotificationGroup>() {
+            @Override
+            public boolean apply(UltraLightNotificationGroup notificationGroup) {
+                return initialIdsSet.contains(notificationGroup.getNotificationGroupId());
+            }
+        };
+        List<UltraLightNotificationGroup> notificationGroups =
+            Lists.newArrayList(Iterables.filter(getAllNotificationGroups(), idPredicate));
+        return SearchResults.pageBasedForWholeList(1, Integer.MAX_VALUE, notificationGroups);
     }
 
     private List<UltraLightNotificationGroup> getAllNotificationGroups() {

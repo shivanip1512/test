@@ -26,7 +26,7 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
         sql.append("   JOIN ContactNotifGroupMap GM ON NG.NotificationGroupID = GM.NotificationGroupID");
         sql.append("   JOIN ContactNotification CN ON GM.ContactID = CN.ContactID");
         sql.append("WHERE NG.NotificationGroupID").eq(notificationGroup.getNotificationGroupID());
-        sql.append("   AND CN.NotificationCategoryID").eq(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        sql.append("   AND CN.NotificationCategoryID").eq_k(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
         
         return jdbcTemplate.query(sql, RowMapper.STRING);
     }

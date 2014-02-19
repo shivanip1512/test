@@ -123,11 +123,13 @@ public class RfPerformanceController {
             }
             
             ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
+            String notifGroups = StringUtils.join(settings.getNotifGroupIds(), ",");
+            boolean notifGroupsChanged = !notifGroups.equals(emailJob.getJobProperties().get("notificationGroups"));
             emailJob.getJobProperties().put("notificationGroups", StringUtils.join(settings.getNotifGroupIds(), ","));
             
             if (settings.isEmail()) {
-                // Email setting is enabled. We might need to update the cron string.
-                if (!emailCron.toString().equals(emailJob.getCronString())) {
+                // Email setting is enabled. We might need to update the cron string or notification groups.
+                if (!emailCron.toString().equals(emailJob.getCronString()) || notifGroupsChanged) {
                     jobManager.replaceScheduledJob(emailJob.getId(), 
                             rfnEmailJobDef, 
                             emailJob.getJobDefinition().createBean(), 
