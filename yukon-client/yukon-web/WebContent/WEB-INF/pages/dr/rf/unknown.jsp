@@ -1,11 +1,12 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.dr.rf.details">
-    <input type="hidden" class="f-title" value="${title}">
+    <input type="hidden" class="f-title" value="${fn:escapeXml(title)}">
     <div class="column-12-12 clearfix stacked">
         <div class="column one">
             <tags:nameValueContainer2>

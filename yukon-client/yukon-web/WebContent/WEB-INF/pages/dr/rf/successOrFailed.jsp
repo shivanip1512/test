@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.dr.rf.details">
-    <input type="hidden" class="f-title" value="${title}">
+    <input type="hidden" class="f-title" value="${fn:escapeXml(title)}">
     
     <div data-reloadable>
         <%@ include file="successOrFailedPage.jsp" %>

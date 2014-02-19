@@ -248,12 +248,12 @@ public class RfPerformanceController {
     
     /** Handles the popup for failed and success list */
     @RequestMapping(value="/rf/details/{type}/{test}", method=RequestMethod.GET)
-    public String popup(ModelMap model, HttpServletResponse resp,
+    public String popup(ModelMap model,
             YukonUserContext userContext,
             @PathVariable long test, 
             @PathVariable String type, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
+            @RequestParam(defaultValue="1") Integer page) {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
