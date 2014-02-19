@@ -256,11 +256,9 @@ public class LoginFilter implements Filter {
             } catch (PasswordExpiredException e) {
                 log.error("The password for " + userPass.getUsername() + " is expired.");
             }
+            //cookie login failed, remove cookies.
+            ServletUtil.deleteAllCookies(request, response);
         }
-
-        //cookie login failed, remove cookies.
-        ServletUtil.deleteAllCookies(request, response);
-
         return false;
     }
 
