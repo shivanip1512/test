@@ -259,7 +259,9 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");
         sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
         sql.append("JOIN InventoryBase IB ON IB.DeviceID = RBED.DeviceId");
-        sql.append("JOIN LmHardwareControlGroup LHCG on LHCG.InventoryID = IB.InventoryID");
+        if (messageStatus == UNKNOWN) {
+            sql.append("JOIN LmHardwareControlGroup LHCG on LHCG.InventoryID = IB.InventoryID");
+        }
         sql.append("LEFT JOIN DynamicLcrCommunications DLC ON DLC.deviceId = RBED.DeviceId");
         sql.append("WHERE RBED.RfnBroadcastEventId").eq(messageId);
         if (messageStatus == UNKNOWN) {
