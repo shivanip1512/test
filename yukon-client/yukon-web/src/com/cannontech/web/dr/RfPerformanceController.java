@@ -232,115 +232,132 @@ public class RfPerformanceController {
         model.addAttribute("totalUnknown", totalUnknown);
     }
     
-    @RequestMapping(value="/rf/details/unknown/{test}/page", method=RequestMethod.GET)
-    public String unknownPage(ModelMap model,
+    @RequestMapping(value="/rf/details/{type}/{test}/page", method=RequestMethod.GET)
+    public String page(ModelMap model,
+            @PathVariable String type, 
             @PathVariable long test, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
             @RequestParam(defaultValue="1") Integer page) {
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
-        SearchResults<UnknownDevice> result = 
-                SearchResults.pageBasedForSublist(unknownDevices.getUnknownDevices(), page, itemsPerPage,
-                                          unknownDevices.getNumTotalBeforePaging());
+        
+        List<PaoIdentifier> paos = new ArrayList<>();
+        PerformanceVerificationMessageStatus status;
+        
+        if (type.equals("unknown")) {
+            model.addAttribute("unknown", true);
+            UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            Map<Integer, UnknownDevice> unknowns = new HashMap<>();
+            for (UnknownDevice device : devices.getUnknownDevices()) {
+                unknowns.put(device.getPaoIdentifier().getPaoId(), device);
+                paos.add(device.getPaoIdentifier());
+            }
+            model.addAttribute("unknowns", unknowns);
+            status = PerformanceVerificationMessageStatus.UNKNOWN;
+        } else if (type.equalsIgnoreCase("failed")) {
+            status = PerformanceVerificationMessageStatus.FAILURE;
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+        } else {
+            status = PerformanceVerificationMessageStatus.SUCCESS;
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+        }
 
+        List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
+        int totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
+        SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
+        
+        model.addAttribute("type", type);
         model.addAttribute("result", result);
         model.addAttribute("test", test);
         
-        return "dr/rf/page.jsp";
+        return "dr/rf/table.jsp";
     }
     
-    /** Handles the popup for failed and success list */
     @RequestMapping(value="/rf/details/{type}/{test}", method=RequestMethod.GET)
     public String popup(ModelMap model,
+            HttpServletResponse resp,
             YukonUserContext userContext,
             @PathVariable long test, 
             @PathVariable String type, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) {
+            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
+        
+        List<PaoIdentifier> paos = new ArrayList<>();
+        PerformanceVerificationMessageStatus status;
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
+        model.addAttribute("title", accessor.getMessage(detailsKey + type + ".popup.title", eventTime));
         
-        PerformanceVerificationMessageStatus status;
         if (type.equalsIgnoreCase("failed")) {
-            model.addAttribute("type", "failed");
+            
             status = PerformanceVerificationMessageStatus.FAILURE;
-            model.addAttribute("title", accessor.getMessage(detailsKey + "failed.popup.title", eventTime));
-        } else {
-            model.addAttribute("type", "success");
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            
+        } else if (type.equalsIgnoreCase("success")) {
+            
             status = PerformanceVerificationMessageStatus.SUCCESS;
-            model.addAttribute("title", accessor.getMessage(detailsKey + "success.popup.title", eventTime));
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            
+        } else {
+            
+            model.addAttribute("unknown", true);
+            status = PerformanceVerificationMessageStatus.UNKNOWN;
+            UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            model.addAttribute("unknownStats", devices);
+            
+            Map<Integer, UnknownDevice> unknowns = new HashMap<>();
+            for (UnknownDevice device : devices.getUnknownDevices()) {
+                unknowns.put(device.getPaoIdentifier().getPaoId(), device);
+                paos.add(device.getPaoIdentifier());
+            }
+            model.addAttribute("unknowns", unknowns);
+            
+            // build json for pie chart
+            List<Map<String, Object>> data = new ArrayList<>();
+            
+            Map<String, Object> stat = Maps.newHashMapWithExpectedSize(3);
+            stat.put("label", accessor.getMessage(UnknownStatus.ACTIVE));
+            stat.put("data", devices.getNumActive());
+            stat.put("color", "#009933");
+            data.add(stat);
+            
+            stat = Maps.newHashMapWithExpectedSize(3);
+            stat.put("label", accessor.getMessage(UnknownStatus.INACTIVE));
+            stat.put("data", devices.getNumInactive());
+            stat.put("color", "#888888");
+            data.add(stat);
+            
+            stat = Maps.newHashMapWithExpectedSize(3);
+            stat.put("label", accessor.getMessage(UnknownStatus.UNAVAILABLE));
+            stat.put("data", devices.getNumUnavailable());
+            stat.put("color", "#fb8521");
+            data.add(stat);
+            
+            stat = Maps.newHashMapWithExpectedSize(3);
+            stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_NEW));
+            stat.put("data", devices.getNumUnreportedNew());
+            stat.put("color", "#4d90fe");
+            data.add(stat);
+            
+            stat = Maps.newHashMapWithExpectedSize(3);
+            stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_OLD));
+            stat.put("data", devices.getNumUnreportedOld());
+            stat.put("color", "#d14836");
+            data.add(stat);
+            
+            resp.addHeader("X-JSON", JsonUtils.toJson(data));
+            
         }
-        
-        List<PaoIdentifier> paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
         
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
         int totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
         
+        model.addAttribute("type", type);
         model.addAttribute("result", result);
         model.addAttribute("test", test);
         model.addAttribute("devices", hardwares);
         
-        return "dr/rf/successOrFailed.jsp";
-    }
-    
-    /** Handles the popup for the unknown list */
-    @RequestMapping(value="/rf/details/unknown/{test}", method=RequestMethod.GET)
-    public String unknown(ModelMap model, HttpServletResponse resp,
-            YukonUserContext userContext,
-            @PathVariable long test, 
-            @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
-
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
-        UnknownDevices unknownDevices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
-
-        SearchResults<UnknownDevice> result = 
-                SearchResults.pageBasedForSublist(unknownDevices.getUnknownDevices(), page, itemsPerPage,
-                                          unknownDevices.getNumTotalBeforePaging());
-        
-        model.addAttribute("result", result);
-        
-        List<Map<String, Object>> data = new ArrayList<>();
-        
-        Map<String, Object> stat = Maps.newHashMapWithExpectedSize(3);
-        stat.put("label", accessor.getMessage(UnknownStatus.ACTIVE));
-        stat.put("data", unknownDevices.getNumActive());
-        stat.put("color", "#009933");
-        data.add(stat);
-        
-        stat = Maps.newHashMapWithExpectedSize(3);
-        stat.put("label", accessor.getMessage(UnknownStatus.INACTIVE));
-        stat.put("data", unknownDevices.getNumInactive());
-        stat.put("color", "#888888");
-        data.add(stat);
-        
-        stat = Maps.newHashMapWithExpectedSize(3);
-        stat.put("label", accessor.getMessage(UnknownStatus.UNAVAILABLE));
-        stat.put("data", unknownDevices.getNumUnavailable());
-        stat.put("color", "#fb8521");
-        data.add(stat);
-        
-        stat = Maps.newHashMapWithExpectedSize(3);
-        stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_NEW));
-        stat.put("data", unknownDevices.getNumUnreportedNew());
-        stat.put("color", "#4d90fe");
-        data.add(stat);
-        
-        stat = Maps.newHashMapWithExpectedSize(3);
-        stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_OLD));
-        stat.put("data", unknownDevices.getNumUnreportedOld());
-        stat.put("color", "#D14836");
-        data.add(stat);
-        
-        resp.addHeader("X-JSON", JsonUtils.toJson(data));
-        model.addAttribute("test", test);
-        model.addAttribute("unknownDevices", unknownDevices);
-        
-        String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
-        model.addAttribute("title", accessor.getMessage(detailsKey + "unknown.popup.title", eventTime));
-
-        return "dr/rf/unknown.jsp";
+        return "dr/rf/popup.jsp";
     }
     
     @RequestMapping("/rf/details/{type}/{test}/download")
