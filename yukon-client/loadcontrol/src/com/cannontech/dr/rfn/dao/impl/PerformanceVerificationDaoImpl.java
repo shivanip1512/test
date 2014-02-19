@@ -250,7 +250,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             sql.append("    END");
             sql.append("    WHEN LastCommunication IS NULL THEN");
             sql.append("    CASE");
-            sql.append("      WHEN GroupEnrollStart IS NULL AND GroupEnrollStart").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+            sql.append("      WHEN GroupEnrollStart IS NULL OR GroupEnrollStart").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
             sql.append("      WHEN GroupEnrollStart").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
             sql.append("    END");
             sql.append("  END AS UnknownStatus");
