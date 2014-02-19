@@ -458,13 +458,20 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.rf.details.eventTime">Event Time</entry>
 <entry key="yukon.web.modules.dr.rf.details.results">Results</entry>
 <entry key="yukon.web.modules.dr.rf.details.showUnknown">Show Unknown</entry>
-<entry key="yukon.web.modules.dr.rf.details.unknownBreakdown">Unknown Breakdown</entry>
+<entry key="yukon.web.modules.dr.rf.details.showSuccess">Show Success</entry>
+<entry key="yukon.web.modules.dr.rf.details.showFailed">Show Failed</entry>
 <entry key="yukon.web.modules.dr.rf.details.device">Device</entry>
-<entry key="yukon.web.modules.dr.rf.details.unknownType">Unknown Type</entry>
+<entry key="yukon.web.modules.dr.rf.details.accountNo">Account No.</entry>
+<entry key="yukon.web.modules.dr.rf.details.unknownType">Current Status</entry>
 <entry key="yukon.web.modules.dr.rf.details.neverReported">Never Reported</entry>
 <entry key="yukon.web.modules.dr.rf.details.inventoryAction.label">Inventory Action</entry>
 <entry key="yukon.web.modules.dr.rf.details.collectionAction.label">Collection Action</entry>
-<entry key="yukon.web.modules.dr.rf.details.actionUnknown.description">RF Performance (Unknown)</entry>
+<entry key="yukon.web.modules.dr.rf.details.action.unknown.description">RF Performance (Unknown)</entry>
+<entry key="yukon.web.modules.dr.rf.details.action.failed.description">RF Performance (Failed)</entry>
+<entry key="yukon.web.modules.dr.rf.details.action.success.description">RF Performance (Successful)</entry>
+<entry key="yukon.web.modules.dr.rf.details.failed.popup.title">Failed Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.unknown.popup.title">Unknown Devices ({0})</entry>
+<entry key="yukon.web.modules.dr.rf.details.success.popup.title">Successful Devices ({0})</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

@@ -458,12 +458,9 @@ yukon.modules.ui = function (mod) {
         }
         
         /** Add additional options to page 'Actions' button */
-        var additionalActions = jQuery('.f-page-additional-actions');
-        additionalActions.each( function(index, html) {
-            if (typeof html !== 'undefined') {
-                jQuery('#b-page-actions .dropdown-menu').append(html.innerHTML);
-                jQuery(html).remove();
-            }
+        jQuery('.f-page-additional-actions').each(function(index, elem) {
+            jQuery('#b-page-actions .dropdown-menu').append(elem.innerHTML);
+            jQuery(elem).remove();
         });
         
         jQuery('.tabbed-container.f-init').tabs().show();

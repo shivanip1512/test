@@ -17,21 +17,43 @@ yukon.dr.rf.performance = (function () {
             
         init: function() {
             
-            /** Handle click for unknown popup */
-            jQuery(document).on('click', '.f-unknown', function(event) {
+            /** 
+             * Handle click for success, failed, and unknown popups.
+             * The unknown popup is slightly different and has a pie chart */
+            jQuery(document).on('click', '.f-success, .f-failed, .f-unknown', function(event) {
                 
-                var popup = jQuery('#unknown-popup');
-                popup.load('/dr/rf/details/unknown/' + jQuery(this).data('test'), function (resp, status, xhr) {
-                    var data = xhr.getResponseHeader('X-JSON');
-                    popup.dialog({width: 700});
-                    jQuery.plot('.f-unknown-pie', JSON.parse(data), {
-                        series: {
-                            pie: {
-                                show: true
+                var popup = jQuery('#devices-popup'),
+                    url = '/dr/rf/details',
+                    hasChart = false;
+                
+                /* Build url */
+                if (jQuery(this).hasClass('f-success')) {
+                    url += '/success/';
+                } else if (jQuery(this).hasClass('f-failed')){
+                    url += '/failed/';
+                } else {
+                    url += '/unknown/';
+                    hasChart = true;
+                }
+                url += jQuery(this).closest('[data-test]').data('test');
+                
+                /* Load popup */
+                popup.load(url, function (resp, status, xhr) {
+                    popup.dialog({width: 700, title: popup.find('.f-title').val()});
+                    // generate pie chart
+                    if (hasChart) {
+                        jQuery.plot('.f-pie-chart', JSON.parse(xhr.getResponseHeader('X-JSON')), {
+                            series: {
+                                pie: {
+                                    show: true
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 });
+                
+                // just to hide the menu
+                popup.trigger('click');
             });
         }
     };

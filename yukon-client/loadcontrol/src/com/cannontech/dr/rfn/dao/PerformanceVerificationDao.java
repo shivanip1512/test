@@ -84,6 +84,11 @@ public interface PerformanceVerificationDao {
 	/**
 	 * This method marks device as failure
 	 */
-	
 	void setEventResultStatusToFailure(int deviceId, Range<Instant> range);
+	
+	/**
+     * Returns the event time for an event (messageId)
+     */
+    Instant getEventTime(long messageId);
+
 }

@@ -117,7 +117,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, RPH1.POINTID, RPH1.TIMESTAMP, Inventory.PointType, RPH1.Value");
         sql.append("FROM RAWPOINTHISTORY RPH1,");
         
-        sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, HB.ManufacturerSerialNumber, ");
+        sql.append("  (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, IB.DeviceID, HB.ManufacturerSerialNumber, ");
         sql.append("          IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType");
         sql.append("   FROM InventoryBase IB");
         sql.append("     JOIN YukonPAObject YPO on YPO.PAObjectID = IB.DeviceID");
@@ -149,7 +149,7 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("  AND RPH1.Value").neq_k(Commissioned.CONNECTED.getRawState());
         
         sql.append("UNION");
-        sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, Inventory.ManufacturerSerialNumber,");
+        sql.append("(SELECT Inventory.EnergyCompanyID, Inventory.AccountID, Inventory.InventoryID, Inventory.DeviceID, Inventory.ManufacturerSerialNumber,");
         sql.append("Inventory.LMHardwareTypeID, Inventory.DeviceLabel, Inventory.POINTID, NULL as TIMESTAMP, Inventory.POINTTYPE, NULL as Value");
         sql.append("FROM");
         sql.append("   (SELECT ECTA.EnergyCompanyID, IB.AccountId, IB.InventoryID, IB.DeviceID, HB.ManufacturerSerialNumber, IB.DeviceLabel, HB.LMHardwareTypeID, P.PointId, P.PointType FROM InventoryBase IB");

@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -32,7 +33,7 @@
         </div>
     </div>
     
-    <table class="compact-results-table">
+    <table class="compact-results-table has-actions">
         <thead>
             <tr>
                 <th><i:inline key=".eventTime"/></th>
@@ -46,11 +47,21 @@
                     <td><cti:formatDate type="FULL" value="${test.timeMessageSent}"/></td>
                     <td>
                         <dr:rfPerformanceStats test="${test.eventStats}"/>
-                        <c:if test="${test.numUnknowns > 0}"><a href="javascript:void(0);" class="fr f-unknown" data-test="${test.messageId}"><i:inline key=".showUnknown"/></a></c:if>
+                        <cm:dropdown containerCssClass="fr" menuCssClass="no-icons">
+                            <c:if test="${test.numUnknowns > 0}">
+                                <cm:dropdownOption key=".showUnknown" classes="f-unknown" data-test="${test.messageId}"/>
+                            </c:if>
+                            <c:if test="${test.numFailures > 0}">
+                                <cm:dropdownOption key=".showFailed" classes="f-failed" data-test="${test.messageId}"/>
+                            </c:if>
+                            <c:if test="${test.numSuccesses > 0}">
+                                <cm:dropdownOption key=".showSuccess" classes="f-success" data-test="${test.messageId}"/>
+                            </c:if>
+                        </cm:dropdown>
                     </td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    <div id="unknown-popup" title="<cti:msg2 key=".unknownBreakdown"/>"></div>
+    <div id="devices-popup"></div>
 </cti:standardPage>

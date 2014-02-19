@@ -75,15 +75,26 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         for (PerformanceVerificationEventMessage messageSent : messagesSent) {
             Map<PerformanceVerificationMessageStatus, Integer> counts = stats.get(messageSent.getMessageId());
             if (counts != null) {
-                reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
-                                                                     messageSent.getTimeMessageSent(),
-                                                                     counts.get(SUCCESS),
-                                                                     counts.get(FAILURE),
-                                                                     counts.get(UNKNOWN)));
-            }
+            reports.add(new PerformanceVerificationEventMessageStats(messageSent.getMessageId(),
+                                                                 messageSent.getTimeMessageSent(),
+                                                                 counts.get(SUCCESS),
+                                                                 counts.get(FAILURE),
+                                                                 counts.get(UNKNOWN)));
+        }
         }
 
         return reports;
+    }
+    
+    @Override
+    public Instant getEventTime(long messageId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EventSendTime");
+        sql.append("FROM RfnBroadcastEvent");
+        sql.append("WHERE RfnBroadcastEventId").eq(messageId);
+        
+        return jdbcTemplate.queryForObject(sql, RowMapper.INSTANT);
     }
 
     @Override
@@ -229,20 +240,20 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         }
         if (messageStatus == UNKNOWN) {
             sql.append(",CASE");
-            sql.append("  WHEN LastCommunication IS NOT NULL THEN");
-            sql.append("  CASE");
-            sql.append("    WHEN LastNonZeroRuntime IS NOT NULL");
-            sql.append("       AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-            sql.append("       AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
-            sql.append("    WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
-            sql.append("    WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
-            sql.append("  END");
-            sql.append("  WHEN LastCommunication IS NULL THEN");
-            sql.append("  CASE");
-            sql.append("    WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
-            sql.append("    WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
-            sql.append("  END");
-            sql.append("END AS UnknownStatus");
+        sql.append("    WHEN LastCommunication IS NOT NULL THEN");
+        sql.append("    CASE");
+        sql.append("      WHEN LastNonZeroRuntime IS NOT NULL");
+        sql.append("         AND LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("         AND lastcommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(ACTIVE);
+        sql.append("      WHEN LastCommunication").gt(communicatingWindowEnd).append("THEN").appendArgument_k(INACTIVE);
+        sql.append("      WHEN LastCommunication").lte(communicatingWindowEnd).append("THEN").appendArgument_k(UNAVAILABLE);
+        sql.append("    END");
+        sql.append("    WHEN LastCommunication IS NULL THEN");
+        sql.append("    CASE");
+        sql.append("      WHEN InstallDate IS NOT NULL AND InstallDate").gte(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_NEW);
+        sql.append("      WHEN InstallDate IS NULL OR InstallDate").lt(newDeviceWindowEnd).append("THEN").appendArgument_k(UNREPORTED_OLD);
+        sql.append("    END");
+        sql.append("  END AS UnknownStatus");
         }
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN RfnBroadcastEvent RBE ON RBED.RfnBroadcastEventId = RBE.RfnBroadcastEventId");

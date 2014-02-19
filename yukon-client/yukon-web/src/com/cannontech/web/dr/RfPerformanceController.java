@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,10 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.model.PerformanceVerificationEventMessageStats;
+import com.cannontech.dr.model.PerformanceVerificationMessageStatus;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
 import com.cannontech.dr.rfn.model.UnknownDevice;
 import com.cannontech.dr.rfn.model.UnknownDevices;
@@ -69,7 +73,8 @@ import com.google.common.collect.Maps;
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class RfPerformanceController {
 
-    private static final String baseKey = "yukon.web.modules.dr.home.rfPerformance.";
+    private static final String homeKey = "yukon.web.modules.dr.home.rfPerformance.";
+    private static final String detailsKey = "yukon.web.modules.dr.rf.details.";
     private static final Logger log = YukonLogManager.getLogger(RfPerformanceController.class);
     
     @Autowired private PaoDao paoDao;
@@ -81,6 +86,7 @@ public class RfPerformanceController {
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DateFormattingService dateFormattingService;
     
     @Autowired @Qualifier("rfnPerformanceVerification")
         private YukonJobDefinition<RfnPerformanceVerificationTask> rfnVerificationJobDef;
@@ -143,9 +149,9 @@ public class RfPerformanceController {
             // job properties and these two methods end up saving 
             // everything about the job (hacky)
             
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "configure.success"));
+            flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "configure.success"));
         } catch (Exception e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "configure.failed"));
+            flash.setError(new YukonMessageSourceResolvable(homeKey + "configure.failed"));
             log.error("Failed to update RF Broadcast Performance Email Job", e);
         }
         
@@ -240,6 +246,43 @@ public class RfPerformanceController {
         return "dr/rf/page.jsp";
     }
     
+    /** Handles the popup for failed and success list */
+    @RequestMapping(value="/rf/details/{type}/{test}", method=RequestMethod.GET)
+    public String popup(ModelMap model, HttpServletResponse resp,
+            YukonUserContext userContext,
+            @PathVariable long test, 
+            @PathVariable String type, 
+            @RequestParam(defaultValue="10") Integer itemsPerPage, 
+            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
+        
+        PerformanceVerificationMessageStatus status;
+        if (type.equalsIgnoreCase("failed")) {
+            model.addAttribute("type", "failed");
+            status = PerformanceVerificationMessageStatus.FAILURE;
+            model.addAttribute("title", accessor.getMessage(detailsKey + "failed.popup.title", eventTime));
+        } else {
+            model.addAttribute("type", "success");
+            status = PerformanceVerificationMessageStatus.SUCCESS;
+            model.addAttribute("title", accessor.getMessage(detailsKey + "success.popup.title", eventTime));
+        }
+        
+        List<PaoIdentifier> paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+        
+        List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
+        int totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
+        SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
+        
+        model.addAttribute("result", result);
+        model.addAttribute("test", test);
+        model.addAttribute("devices", hardwares);
+        
+        return "dr/rf/successOrFailed.jsp";
+    }
+    
+    /** Handles the popup for the unknown list */
     @RequestMapping(value="/rf/details/unknown/{test}", method=RequestMethod.GET)
     public String unknown(ModelMap model, HttpServletResponse resp,
             YukonUserContext userContext,
@@ -291,70 +334,100 @@ public class RfPerformanceController {
         resp.addHeader("X-JSON", JsonUtils.toJson(data));
         model.addAttribute("test", test);
         model.addAttribute("unknownDevices", unknownDevices);
+        
+        String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
+        model.addAttribute("title", accessor.getMessage(detailsKey + "unknown.popup.title", eventTime));
 
         return "dr/rf/unknown.jsp";
     }
     
-    @RequestMapping("/rf/details/unknown/{test}/download")
-    public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable long test) throws IOException {
+    @RequestMapping("/rf/details/{type}/{test}/download")
+    public void download(HttpServletResponse response, YukonUserContext userContext, @PathVariable String type, @PathVariable long test) throws IOException {
+        
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        boolean isUnknown = type.equalsIgnoreCase("unknown");
+        List<PaoIdentifier> paos = new ArrayList<>();
+        Map<Integer, UnknownDevice> deviceMap = new HashMap<>();
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
-        
-        Map<Integer, UnknownDevice> deviceMap = Maps.newHashMapWithExpectedSize(unknownDevices.getUnknownDevices().size());
-        List<PaoIdentifier> paos = new ArrayList<>(unknownDevices.getUnknownDevices().size());
-        for (UnknownDevice device : unknownDevices.getUnknownDevices()) {
-            deviceMap.put(device.getPao().getPaoIdentifier().getPaoId(), device);
-            paos.add(device.getPao().getPaoIdentifier());
+        if (isUnknown) {
+            UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
+            for (UnknownDevice device : unknownDevices.getUnknownDevices()) {
+                deviceMap.put(device.getPao().getPaoIdentifier().getPaoId(), device);
+                paos.add(device.getPao().getPaoIdentifier());
+            }
+        } else {
+            if (type.equalsIgnoreCase("failed")) {
+                paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
+            } else {
+                paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
+            }
         }
         
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
         
-        String[] headerRow = new String[4];
+        String[] headerRow = new String[isUnknown ? 4 : 3];
         
         headerRow[0] = "SERIAL_NUMBER";
         headerRow[1] = "DEVICE_TYPE";
         headerRow[2] = "ACCOUNT_NUMBER";
-        headerRow[3] = "UNKNOWN_STATUS";
+        if (isUnknown) headerRow[3] = "UNKNOWN_STATUS";
         
         List<String[]> dataRows = Lists.newArrayList();
-        for(LiteLmHardware hardware: hardwares) {
+        for (LiteLmHardware hardware: hardwares) {
             String[] dataRow = new String[4];
             dataRow[0] = hardware.getSerialNumber();
             dataRow[1] = accessor.getMessage(hardware.getInventoryIdentifier().getHardwareType());
             dataRow[2] = hardware.getAccountNo();
-            dataRow[3] = deviceMap.get(hardware.getDeviceId()).getUnknownStatus().name();
+            if (isUnknown) dataRow[3] = accessor.getMessage(deviceMap.get(hardware.getDeviceId()).getUnknownStatus());
             dataRows.add(dataRow);
         }
         
         //write out the file
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_Unknown.csv");
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "RfBroadcastPerformance_" + type + ".csv");
     }
     
-    @RequestMapping("/rf/details/unknown/{test}/inventoryAction")
-    public String inventoryAction(ModelMap model, YukonUserContext userContext, @PathVariable long test) {
+    @RequestMapping("/rf/details/{type}/{test}/inventoryAction")
+    public String inventoryAction(ModelMap model, YukonUserContext userContext, @PathVariable String type, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
-        List<Integer> deviceIds = Lists.transform(unknownDevices.getUnknownDevices(),
-                                                  PaoUtils.getYukonPaoToPaoIdFunction());
+        List<? extends YukonPao> paos;
+        
+        if (type.equalsIgnoreCase("unknown")) {
+            paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
+        } else if (type.equalsIgnoreCase("failed")) {
+            paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
+        } else {
+            paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
+        }
+
+        List<Integer> deviceIds = Lists.transform(paos, PaoUtils.getYukonPaoToPaoIdFunction());
         List<InventoryIdentifier> inventory = inventoryDao.getYukonInventoryForDeviceIds(deviceIds);
         
-        String description = resolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.modules.dr.rf.details.actionUnknown.description");
+        String description = resolver.getMessageSourceAccessor(userContext).getMessage(detailsKey + "action." + type + ".description");
+        
         InventoryCollection temporaryCollection = memoryCollectionProducer.createCollection(inventory.iterator(), description);
         model.addAttribute("inventoryCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
+        
         return "redirect:/stars/operator/inventory/inventoryActions";
     }
     
-    @RequestMapping("/rf/details/unknown/{test}/collectionAction")
-    public String collectionAction(ModelMap model, @PathVariable long test) {
+    @RequestMapping("/rf/details/{type}/{test}/collectionAction")
+    public String collectionAction(ModelMap model, @PathVariable String type, @PathVariable long test) {
         
-        UnknownDevices unknownDevices = rfPerformanceDao.getAllDevicesWithUnknownStatus(test);
-
-        List<? extends YukonPao> paos = unknownDevices.getUnknownDevices();
+        List<? extends YukonPao> paos;
+        
+        if (type.equalsIgnoreCase("unknown")) {
+            paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
+        } else if (type.equalsIgnoreCase("failed")) {
+            paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
+        } else {
+            paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
+        }
+        
         DeviceCollection temporaryCollection = deviceMemoryCollectionProducer.createDeviceCollection(paos);
         model.addAttribute("deviceCollection", temporaryCollection);
         model.addAllAttributes(temporaryCollection.getCollectionParameters());
+        
         return "redirect:/bulk/collectionActions";
     }
     
