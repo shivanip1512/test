@@ -3,7 +3,6 @@ package com.cannontech.development.service;
 import java.io.IOException;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
-import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.impl.DRReport;
 
@@ -23,6 +22,6 @@ public interface RfnEventTestingService {
                                  boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative);
     
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
-    public int sendLcrReadArchive(int serialFrom, int serialTo, DRReport drReport) throws IOException;
+    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException;
     void calculationStressTest();
 }

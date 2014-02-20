@@ -178,7 +178,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             log.trace("Load group ids: " + Joiner.on(", ").join(loadGroupIds));
         }
         //Get all inventory & associated paos
+        log.debug("Asset availability: getInventoryAndDeviceIdsForLoadGroups");
         Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
+        log.debug("Asset availability: getInventoryAndDeviceIdsForLoadGroups complete.");
         Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
         SimpleAssetAvailabilitySummary aaSummary = new SimpleAssetAvailabilitySummary(inventoryIds);
         
@@ -201,6 +203,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         }
         
         //Get last communication and runtimes for 2-way devices
+        log.debug("Asset availability: calculating communicating/running");
         Set<Integer> twoWayDevices = Sets.newHashSet(inventoryAndDevices.values());
         Map<Integer, DeviceCommunicationTimes> allTimes = lcrCommunicationsDao.findTimes(twoWayDevices);
         
@@ -236,6 +239,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Set<Integer> runningInventory = getInventoryFromDevices(runningDevices, devicesAndInventory);
         aaSummary.addRunning(runningInventory);
         
+        log.debug("Done calculating asset availability summary for load groups");
         return aaSummary;
     }
     
@@ -273,6 +277,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 unavailable++;
             }
         }
+        log.debug("Done calculating asset availability total");
         return new AssetAvailabilityTotals(active, inactive, unavailable);
     }
     
@@ -309,6 +314,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             }
             results.put(deviceId, aaStatus);
         }
+        log.debug("Done calculating asset availability statuses for deviceIds");
         return results;
     }
     
@@ -318,7 +324,9 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         if(log.isTraceEnabled()) {
             log.trace("InventoryIds: " + Joiner.on(", ").join(inventoryIds));
         }
+        log.debug("Asset availability: getDeviceIds");
         Map<Integer, Integer> inventoryAndDevices = inventoryDao.getDeviceIds(inventoryIds);
+        log.debug("Asset availability: getDeviceIds complete");
         Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
         Set<Integer> deviceIds = getTwoWayInventoryDevices(inventoryAndDevices);
         
@@ -335,6 +343,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                 buildAssetAvailabilityMap(inventoryIds, optedOutInventory, oneWayInventory, inventoryAndDevices, 
                                           communicationTimes);
         
+        log.debug("Done calculating asset availability total for inventoryIds");
         return assetAvailabilityMap;
     }
     

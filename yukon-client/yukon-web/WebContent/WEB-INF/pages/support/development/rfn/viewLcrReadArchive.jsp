@@ -18,6 +18,7 @@
                         </c:forEach>
                     </select>
                 </tags:nameValue>
+                <tags:nameValue name="Days of Data"><input name="days" type="number" value="1"></tags:nameValue>
             </tags:nameValueContainer>
         </tags:nameValueContainer>
         <div class="page-action-area">

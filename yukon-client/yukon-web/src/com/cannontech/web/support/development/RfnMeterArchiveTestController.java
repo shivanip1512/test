@@ -29,9 +29,9 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
-import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
+import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -160,8 +160,8 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, String drReport) throws IOException {
-        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, DRReport.valueOf(drReport));
+    public String sendLcrReadArchive(int serialFrom, int serialTo, int days, String drReport) throws IOException {
+        rfnEventTestingService.sendLcrReadArchive(serialFrom, serialTo, days, DRReport.valueOf(drReport));
         return "redirect:viewLcrReadArchiveRequest";
     }
     

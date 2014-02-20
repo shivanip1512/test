@@ -9,10 +9,12 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -31,6 +33,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunicationsDao {
+    private static final Logger log = YukonLogManager.getLogger(DynamicLcrCommunicationsDaoImpl.class);
     private static final Function<Integer, Integer> integerIdentity = Functions.identity();
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -43,6 +46,7 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
     
     @Override
     public Map<Integer, DeviceCommunicationTimes> findTimes(Collection<Integer> deviceIds) {
+        log.debug("FindTimes begin.");
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -75,12 +79,13 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
                 results.put(deviceId, null);
             }
         }
-        
+        log.debug("FindTimes end.");
         return results;
     }
     
     @Override
     public Map<Integer, AllRelayCommunicationTimes> findAllRelayCommunicationTimes(Collection<Integer> deviceIds) {
+        log.debug("FindAllRelayCommunicationTimes begin.");
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -120,6 +125,7 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
             }
         }
         
+        log.debug("FindAllRelayCommunicationTimes end.");
         return results;
     }
     

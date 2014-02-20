@@ -201,37 +201,39 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     }
     
     @Override
-    public int sendLcrReadArchive(int serialFrom, int serialTo, DRReport drReport) throws IOException {
+    public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException {
         if (serialTo < serialFrom) {
             serialTo = serialFrom;
         }
         int numRequests = 0;
         for (int serial = serialFrom; serial <= serialTo; serial++) {
-            // Create archive request
-            RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
-            RfnLcrReading data = new RfnLcrReading();
-            
-            // Read test encoded EXI file from classpath, assign it to payload.
-            byte[] payload;
-            Resource payloadResource = loader.getResource(drReport.getClasspath());
-            if (payloadResource.exists()) {
-                payload = FileCopyUtils.copyToByteArray(payloadResource.getInputStream());
-            } else {
-                payload = new byte[64];
+            for (int i = 0; i < days; i++) {
+                // Create archive request
+                RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
+                RfnLcrReading data = new RfnLcrReading();
+                
+                // Read test encoded EXI file from classpath, assign it to payload.
+                byte[] payload;
+                Resource payloadResource = loader.getResource(drReport.getClasspath());
+                if (payloadResource.exists()) {
+                    payload = FileCopyUtils.copyToByteArray(payloadResource.getInputStream());
+                } else {
+                    payload = new byte[64];
+                }
+                long timeStamp = new Instant().minus(Duration.standardDays(i)).getMillis();
+                RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), drReport.getManufacturer(), drReport.getModel());
+                
+                // Set all data
+                data.setPayload(payload);
+                data.setTimeStamp(timeStamp);
+                readArchiveRequest.setData(data);
+                readArchiveRequest.setRfnIdentifier(rfnIdentifier);
+                readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
+                
+                // Put request on queue
+                sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+                numRequests++;
             }
-            long timeStamp = new Instant().getMillis();
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), drReport.getManufacturer(), drReport.getModel());
-            
-            // Set all data
-            data.setPayload(payload);
-            data.setTimeStamp(timeStamp);
-            readArchiveRequest.setData(data);
-            readArchiveRequest.setRfnIdentifier(rfnIdentifier);
-            readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
-            
-            // Put request on queue
-            sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
-            numRequests++;
         }
         return numRequests;
     }
