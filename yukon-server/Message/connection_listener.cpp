@@ -198,7 +198,7 @@ bool CtiListenerConnection::acceptClient()
 bool CtiListenerConnection::validateRequest( const string &replyTo )
 {
     const CtiTime now;
-    const CtiTime expired = now - (30 * 1000); // 30 seconds - filter duplicate request younger then this
+    const CtiTime expired = now - 30; // 30 seconds - filter duplicate request younger then this
 
     // clean up expired
     DestTimeMap::iterator itr = requestTimeMap.begin();
