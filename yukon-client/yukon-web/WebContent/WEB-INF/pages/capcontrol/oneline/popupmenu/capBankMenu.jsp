@@ -19,9 +19,9 @@
         </tr>
         <tr>
             <td align="center" colspan="3">
-                <cti:button label="open" onclick="submitOnelineCommand(${open})""/>
-                <cti:button label="close" onclick="submitOnelineCommand(${close})""/>
-                <cti:button label="confirm" onclick="submitOnelineCommand(${confirm})""/>
+                <cti:button label="open" onclick="submitOnelineCommand(${open})"/>
+                <cti:button label="close" onclick="submitOnelineCommand(${close})"/>
+                <cti:button label="confirm" onclick="submitOnelineCommand(${confirm})"/>
             </td>
 	   </tr>
         <tr>
