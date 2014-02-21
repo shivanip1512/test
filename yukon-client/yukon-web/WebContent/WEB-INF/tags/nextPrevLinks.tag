@@ -1,22 +1,15 @@
-<%@ tag trimDirectiveWhitespaces="true" body-content="empty"%>
+<%@ tag trimDirectiveWhitespaces="true" body-content="empty" %>
 
-<%@ attribute name="mode" required="true" %>
+<%@ attribute name="mode" required="true" description="The mode attribute can be 'jsp' or 'javascript'.If it's 'jsp', baseUrl and searchResult are required. If it's 'javascript', nextUrl and previousUrl are required." %>
 <%@ attribute name="baseUrl" %>
 <%@ attribute name="previousUrl" %>
 <%@ attribute name="nextUrl" %>
 <%@ attribute name="searchResult" type="com.cannontech.common.search.result.SearchResults" %>
-<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl"%>
-<%@ tag body-content="empty" %>
+<%@ attribute name="overrideParams" type="java.lang.Boolean" description="Ignores params from the previous request. Set to true if they are specified in the baseUrl" %>
 
-<%--
-The mode attribute can be "jsp" or "javascript".
-If it's "jsp", baseUrl and searchResult are required.
-If it's "javascript", nextUrl and previousUrl are required. 
---%>
-
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <c:set var="previousEnabled" value="true"/>
 <c:set var="nextEnabled" value="true"/>
@@ -35,8 +28,7 @@ If it's "javascript", nextUrl and previousUrl are required.
         <c:set var="nextEnabled" value="false"/>
     </c:if>
 </c:if>
-<input type="hidden" class="f-current_page_index_from_1" value="${currentPage}" />
-<span class="paging-area clearfix">
+<span class="paging-area clearfix" data-current-page="${currentPage}">
     <c:if test="${pageScope.mode == 'javascript' || !previousEnabled}">
         <tags:pageNumberLink direction="previous" enabled="false" classes="dn"/>
     </c:if>

@@ -14,7 +14,7 @@
 
 <c:if test="${result.numberOfPages > 1}">
 <div class="compact-results-paging clearfix">
-    <div class="paging-area">
+    <div class="paging-area" data-current-page="${result.currentPage}">
         <c:if test="${adjustPageCount == 'true'}">
             <span class="fl perPageArea">
                 <i:inline key="yukon.common.paging.itemsPerPage"/>&nbsp;

@@ -1,18 +1,18 @@
-<%@ tag trimDirectiveWhitespaces="true"%>
+<%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
-<%@ attribute name="helpText" required="false" type="java.lang.String"%>
-<%@ attribute name="id" required="false" type="java.lang.String"%>
-<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="title" required="false" type="java.lang.String"%>
-<%@ attribute name="titleLinkHtml" required="false" type="java.lang.String" %>
+<%@ attribute name="escapeTitle" type="java.lang.Boolean" %>
+<%@ attribute name="helpText" %>
+<%@ attribute name="id" %>
+<%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
+<%@ attribute name="showInitially" type="java.lang.Boolean" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="title" required="true" %>
+<%@ attribute name="titleLinkHtml" %>
 
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
@@ -45,8 +45,7 @@
     
     <div id="${thisId}_content" class="content clearfix">
         <jsp:doBody/>
-    </div>    
-                
+    </div>
 </div>
 <c:if test="${empty pageScope.showInitially}">
   <c:set var="showInitially" value="${true}"/> <%-- show by default --%>

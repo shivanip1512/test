@@ -122,7 +122,7 @@ yukon.MeteringBilling = (function() {
 
         _get_pagination_state = function(jQueryContainer) {
             var countPerPage = jQueryContainer.find(".perPageArea .selectedItem").text();
-            var currPage = jQueryContainer.find(".paging-area .f-current_page_index_from_1").val();
+            var currPage = jQueryContainer.find(".paging-area").data('currentPage');
             return {"page": currPage, "itemsPerPage": countPerPage};
         },
 
