@@ -15,7 +15,7 @@
 </div>
 
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:outputText rendered="#{sEconomicUserDetail.buyThroughExpired}" styleClass="jsfInfo" value="* The Buy Through election period has expired"/>
 <table class="horizBorders">
   <tr>

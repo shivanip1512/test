@@ -18,7 +18,7 @@
             fatalClass="jsfFatal"/> 
 </div>
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div>
 <t:dataTable value="#{sEconomicCreate.builder.prices}" 
              var="thisPrice" 

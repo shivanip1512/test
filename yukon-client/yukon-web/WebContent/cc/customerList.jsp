@@ -7,6 +7,7 @@
 <cti:standardMenu menuSelection="ccurt_setup|ccurt_customers"/>
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:dataList id="customerList" value="#{rCustomerList.customerList}" var="thisCustomer" layout="unorderedList">
     <h:commandLink action="#{sCustomerDetail.showCustomer}">
       <f:param name="customerId" value="#{thisCustomer.id}"/>

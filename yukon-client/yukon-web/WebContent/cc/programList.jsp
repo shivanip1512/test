@@ -8,6 +8,7 @@
 <h2>Program Setup</h2>
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:dataList id="programList" value="#{rProgramList.programTypeList}" var="thisType" layout="unorderedList">
   <h:outputText value="#{thisType.self.name}"/>
   <t:dataList value="#{thisType.children}" var="thisProgram" layout="unorderedList" styleClass="indent list_circle">

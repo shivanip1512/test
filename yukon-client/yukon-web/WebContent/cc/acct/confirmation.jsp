@@ -19,7 +19,7 @@
 </div>
 
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div class="actionButtons">
 <h:commandButton action="#{sAccountingCreate.doCreateEvent}" value="Create"/>
 <h:commandButton action="#{sAccountingCreate.cancel}" value="Cancel" immediate="true"/>

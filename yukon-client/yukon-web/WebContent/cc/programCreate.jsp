@@ -15,7 +15,7 @@
             fatalClass="jsfFatal"/> 
 </div>
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div class="section">
 <table class="horizBorders">
 <tr>

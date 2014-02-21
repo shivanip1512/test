@@ -8,6 +8,7 @@
 
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <h3>Current Events</h3>
 <t:dataTable value="#{rEventOverview.currentEventListModel}" 
              var="thisEvent"

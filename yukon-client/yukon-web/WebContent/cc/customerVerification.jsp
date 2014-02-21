@@ -18,6 +18,7 @@
             fatalClass="jsfFatal"/> 
 </div>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div id="customerTableDiv"> 
 <t:dataTable value="#{sCustomerSelectionBean.customerListModel}" var="thisCustomer" cellspacing="5">
   <t:column>

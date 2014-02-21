@@ -8,6 +8,7 @@
 <h2>Group Setup</h2>
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:dataList id="groupList" value="#{rGroupList.groupList}" var="thisGroup" layout="unorderedList">
     <h:commandLink action="#{sGroupDetail.editGroup}">
       <f:param name="groupId" value="#{thisGroup.id}"/>

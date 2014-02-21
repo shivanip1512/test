@@ -9,6 +9,7 @@
 <h2>Available Programs</h2>
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:dataTable id="programList" value="#{rProgramList.programList}" var="thisProgram" 
    styleClass="horizBorders programSelectionTable">
   <t:column styleClass="programName"><h:outputText value="#{thisProgram.programType.name}"/></t:column>

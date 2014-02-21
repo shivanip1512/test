@@ -33,6 +33,7 @@
         <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >
             <f:facet name="body">
                 <h:form id="editorForm">
+                <f:verbatim><cti:csrfToken/></f:verbatim>
                     <x:outputText styleClass="editorHeader" value="Database Copy Editor"/>
                     <x:messages id="messageList" showSummary="true" showDetail="true" styleClass="smallResults" errorClass="errorResults" layout="table"/>
 

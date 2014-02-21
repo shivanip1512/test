@@ -8,6 +8,7 @@
 
 <h2>Customer Detail: <h:outputText value="#{sCustomerDetail.customer.companyName}"/></h2>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div><h:messages /></div>
 
 <h3>Customer Data</h3>

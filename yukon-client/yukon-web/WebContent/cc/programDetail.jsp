@@ -9,6 +9,7 @@
 <cti:standardMenu menuSelection="ccurt_setup"/>
 <h2>Program Detail</h2>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div><h:messages /></div>
 
 <div class="section">

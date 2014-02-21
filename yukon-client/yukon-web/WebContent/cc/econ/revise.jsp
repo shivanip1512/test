@@ -19,7 +19,7 @@
 </div>
 
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <div>
 <t:dataTable value="#{sEconomicDetail.nextRevisionPrices}" 
              var="thisPrice" 

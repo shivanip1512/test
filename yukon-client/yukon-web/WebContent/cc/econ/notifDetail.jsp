@@ -14,6 +14,7 @@
   <t:outputText value="#{sNotifEconomicDetail.participant.customer.companyName}"/>
 </h2>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:commandLink action="#{sNotifEconomicDetail.mainEvent}" value="Return"/>
 <div class="jsfMessages"> 
 <t:messages showSummary="false" showDetail="true" 

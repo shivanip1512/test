@@ -9,6 +9,7 @@
 <h2>Events for <t:outputText value="#{sEventList.program.programType.name}"/> / <t:outputText value="#{sEventList.program.name}"/></h2>
 
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:dataTable id="eventList" 
      value="#{sEventList.eventList}" 
      var="thisEvent"

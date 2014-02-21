@@ -9,6 +9,7 @@
 
 <h2>Customer Profile</h2>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:commandButton value="Save" action="#{sCustomerProfile.save}"/>
 
 <h3>Primary Contact</h3>

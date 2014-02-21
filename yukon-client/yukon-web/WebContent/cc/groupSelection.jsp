@@ -16,6 +16,7 @@
             fatalClass="jsfFatal"/> 
 </div>
 <h:form>
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <t:selectManyCheckbox 
    id="groupList" 
    value="#{sCustomerSelectionBean.selectedGroupList}"

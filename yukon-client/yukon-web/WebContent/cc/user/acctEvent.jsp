@@ -9,7 +9,7 @@
 <div> <t:messages showDetail="true" showSummary="false" /> </div>
 
 <h:form>
-
+<f:verbatim><cti:csrfToken/></f:verbatim>
 <table class="horizBorders">
   <tr>
     <td>Event Number</td>
