@@ -107,13 +107,6 @@ public class LayoutController {
     	builder.add(JsLibrary.YUKON_ALERTS.getPath());
     	builder.add(JsLibrary.YUKON_CONFIRM.getPath());
         builder.add("/JavaScript/yukonGeneral.js");
-        
-        if (configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
-            builder.add("/JavaScript/basicLogger.js");
-        } else {
-            builder.add("/JavaScript/basicLoggerStub.js");
-        }
-        builder.add("/JavaScript/CtiMenu.js");
         builder.add("/JavaScript/dataUpdater.js");
         builder.add("/JavaScript/yukon/yukon.dropdown.js");
         builder.add("/JavaScript/simpleCookies.js");
