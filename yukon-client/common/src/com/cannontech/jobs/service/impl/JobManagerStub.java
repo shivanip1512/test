@@ -111,6 +111,12 @@ public class JobManagerStub implements JobManager {
     
     @Override
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
+                                        YukonTask task, String cronExpression) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+    
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
                                         YukonTask task, String cronExpression,
                                         YukonUserContext userContext,
                                         Map<String, String> jobProperties) {

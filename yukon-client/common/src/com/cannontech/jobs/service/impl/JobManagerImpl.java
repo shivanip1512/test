@@ -230,6 +230,12 @@ public class JobManagerImpl implements JobManager {
 
         return oneTimeJob;
     }
+    
+    @Override
+    public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition,
+                                        YukonTask task, String cronExpression) {
+        return replaceScheduledJob(jobId, jobDefinition, task, cronExpression, null, emptyPropertyMap);
+    }
 
     @Override
     public YukonJob replaceScheduledJob(int jobId, YukonJobDefinition<?> jobDefinition, YukonTask task,

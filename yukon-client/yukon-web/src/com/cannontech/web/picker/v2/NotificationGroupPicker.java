@@ -37,14 +37,14 @@ public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGr
     public SearchResults<UltraLightNotificationGroup> search(String ss, int start, int count, String extraArgs,
             YukonUserContext userContext) {
         final String lcSS = ss.toLowerCase();
-        Predicate<UltraLightNotificationGroup> idPredicate = new Predicate<UltraLightNotificationGroup>() {
+        Predicate<UltraLightNotificationGroup> searchFilterPredicate = new Predicate<UltraLightNotificationGroup>() {
             @Override
             public boolean apply(UltraLightNotificationGroup notificationGroup) {
                 return notificationGroup.getName().toLowerCase().contains(lcSS);
             }
         };
         List<UltraLightNotificationGroup> notificationGroups =
-            Lists.newArrayList(Iterables.filter(getAllNotificationGroups(), idPredicate));
+            Lists.newArrayList(Iterables.filter(getAllNotificationGroups(), searchFilterPredicate));
         return SearchResults.indexBasedForWholeList(start, count, notificationGroups);
     }
 
@@ -64,8 +64,10 @@ public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGr
     }
 
     private List<UltraLightNotificationGroup> getAllNotificationGroups() {
-        List<UltraLightNotificationGroup> notificationGroups = new ArrayList<>();
-        for (LiteNotificationGroup notificationGroup : notificationGroupDao.getAllNotificationGroups()) {
+        Set<LiteNotificationGroup> allNotificationGroups = notificationGroupDao.getAllNotificationGroups();
+        List<UltraLightNotificationGroup> notificationGroups = new ArrayList<>(allNotificationGroups.size());
+        
+        for (LiteNotificationGroup notificationGroup : allNotificationGroups) {
             notificationGroups.add(new UltraLightNotificationGroup(notificationGroup.getLiteID(),
                 notificationGroup.getNotificationGroupName()));
         }

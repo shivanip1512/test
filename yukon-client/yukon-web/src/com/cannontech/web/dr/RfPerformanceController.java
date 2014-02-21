@@ -111,24 +111,23 @@ public class RfPerformanceController {
         emailCron.append(emailTime.getHourOfDay() + " * * ?");
         
         ScheduledRepeatingJob commandJob = getJob(rfnVerificationJobDef);
-        commandJob.setSystemUser(true);  // important!
         
         try {
             if (!commandCron.toString().equals(commandJob.getCronString())) {
                 jobManager.replaceScheduledJob(commandJob.getId(), 
                                                rfnVerificationJobDef, 
                                                commandJob.getJobDefinition().createBean(), 
-                                               commandCron.toString(), 
-                                               null); // system user!
+                                               commandCron.toString());
             }
             
             ScheduledRepeatingJob emailJob = getJob(rfnEmailJobDef);
-            String notifGroups = StringUtils.join(settings.getNotifGroupIds(), ",");
-            boolean notifGroupsChanged = !notifGroups.equals(emailJob.getJobProperties().get("notificationGroups"));
-            emailJob.getJobProperties().put("notificationGroups", StringUtils.join(settings.getNotifGroupIds(), ","));
             
             if (settings.isEmail()) {
                 // Email setting is enabled. We might need to update the cron string or notification groups.
+                String notifGroups = StringUtils.join(settings.getNotifGroupIds(), ",");
+                boolean notifGroupsChanged = !notifGroups.equals(emailJob.getJobProperties().get("notificationGroups"));
+                emailJob.getJobProperties().put("notificationGroups", notifGroups);
+                
                 if (!emailCron.toString().equals(emailJob.getCronString()) || notifGroupsChanged) {
                     jobManager.replaceScheduledJob(emailJob.getId(), 
                             rfnEmailJobDef, 
@@ -137,6 +136,7 @@ public class RfPerformanceController {
                             null,
                             emailJob.getJobProperties()); 
 
+                    // Grab the newly re-scheduled version of the email job for the disabled check.
                     emailJob = getJob(rfnEmailJobDef);
                 }
 
