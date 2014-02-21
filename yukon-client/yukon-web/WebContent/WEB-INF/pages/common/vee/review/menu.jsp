@@ -68,7 +68,7 @@ Please restart the Yukon Service Manager to resume processing.
                         </label><br>
                     </c:forEach>
                             
-                    <cti:button type="submit" value="Delete" nameKey="delete">
+                    <cti:button type="submit" value="Delete" nameKey="delete"/>
                 </form>
             </tags:boxContainer>    
     </div>
