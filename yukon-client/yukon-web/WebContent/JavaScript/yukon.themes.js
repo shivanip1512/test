@@ -109,7 +109,7 @@ yukon.Themes = (function () {
                     buttons.push(okButton);
                     
                     popup.dialog({ autoOpen: false,
-                                   height: 500, 
+                                   height: 'backgrounds' === category ? 650 : 500,
                                    width: 700,
                                    modal : false,
                                    buttons : buttons });
@@ -156,7 +156,7 @@ yukon.Themes = (function () {
                 imgPicker.dialog('close');
                 input.val(selected);
                 link.attr('href', '/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected);
-                link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected);
+                link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected + '/thumb');
             });
 
             /** Build pallet icon for each theme using it's colors */
@@ -247,7 +247,7 @@ yukon.Themes = (function () {
                         copy.find('.f-category-value').text(data.result.image.category);
                         copy.find('.f-size-value').text(data.result.image.size);
                         copy.find('.simple-input-image img').attr('alt', data.result.image.name);
-                        copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id);
+                        copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id + '/thumb');
 
                         copy.insertAfter(uploadArea);
                     } else {/* ignore for now */}

@@ -1,5 +1,11 @@
 package com.cannontech.web.common.resources;
 
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -9,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,29 +59,130 @@ public class YukonImageController {
 
     private final static String keyBase = "yukon.common.imagePicker.";
 
-    @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
-    public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
-        
-        LiteYukonImage image = yid.getLiteYukonImage(id);
-        if (image == null) {
-            if (id == YukonImage.DEFAULT_LOGO.getId()) {
-                image = yid.add(YukonImage.DEFAULT_LOGO.getId(), 
-                                YukonImage.DEFAULT_LOGO.getCategory(), 
-                                YukonImage.DEFAULT_LOGO.getName(), 
-                                loader.getResource(YukonImage.DEFAULT_LOGO.getPath()));
-            } else if (id == YukonImage.DEFAULT_BACKGROUND.getId()) {
-                image = yid.add(YukonImage.DEFAULT_BACKGROUND.getId(), 
-                                YukonImage.DEFAULT_BACKGROUND.getCategory(), 
-                                YukonImage.DEFAULT_BACKGROUND.getName(), 
-                                loader.getResource(YukonImage.DEFAULT_BACKGROUND.getPath()));
-            }
-        }
-        
+    private String getImageExtension(LiteYukonImage image) {
         String name = image.getImageName();
         String ext = name.substring(name.lastIndexOf('.') + 1);
-        
+        return ext;
+    }
+
+    private String getImageContentType(LiteYukonImage image) {
+        String ext = getImageExtension(image);
         String contentType = "image/" + (ext.equals("jpg") ? "jpeg" : ext);
-        
+        return contentType;
+    }
+
+    private LiteYukonImage getFullImage(int id) throws IOException, SQLException {
+        LiteYukonImage fullImage = yid.getLiteYukonImage(id);
+        if (fullImage == null) {
+            fullImage = getDefaultImages(id);
+        }
+        return fullImage;
+    }
+
+    private enum Dimensions {
+        TARGET_HEIGHT_PIXELS(200),
+        TARGET_WIDTH_PIXELS(200);
+
+        private Dimensions(final int dimension) {
+            this.dimension = dimension;
+        }
+
+        private int dimension;
+
+        public int getDimension() {
+            return dimension;
+        }
+    };
+
+    private final Dimension DefaultDimension = new Dimension(Dimensions.TARGET_WIDTH_PIXELS.getDimension(),
+            Dimensions.TARGET_HEIGHT_PIXELS.getDimension());
+    
+    private BufferedImage scaleImage(BufferedImage src,
+        int targetWidth, int targetHeight, Object interpolationHintValue, int imageType) {
+        // Setup the rendering resources to match the source image's
+        BufferedImage result = new BufferedImage(targetWidth, targetHeight, imageType);
+        Graphics2D resultGraphics = result.createGraphics();
+
+        // Scale the image to the new buffer using the specified rendering hint.
+        resultGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                interpolationHintValue);
+        resultGraphics.drawImage(src, 0, 0, targetWidth, targetHeight, null);
+
+        // Just to be clean, explicitly dispose our temporary graphics object
+        resultGraphics.dispose();
+
+        // Return the scaled image to the caller.
+        return result;
+    }
+
+    private Dimension getScaledDimensions(BufferedImage imageSrc, Dimension defaultDimension) {
+        double currentHeight = (double) imageSrc.getHeight();
+        double currentWidth = (double) imageSrc.getWidth();
+        double requestedHeightScaling = (defaultDimension.getHeight() / currentHeight);
+        double requestedWidthScaling = (defaultDimension.getWidth() / currentWidth);
+        double actualScaling = Math.min(requestedHeightScaling, requestedWidthScaling);
+        int targetHeight = (int) Math.round(currentHeight * actualScaling);
+        int targetWidth = (int) Math.round(currentWidth * actualScaling);
+        Dimension scaledDimension = new Dimension(targetWidth, targetHeight);
+        return scaledDimension;
+    }
+
+    private LiteYukonImage getDefaultImages(int id) throws IOException, SQLException {
+        LiteYukonImage image = null;
+        if (id == YukonImage.DEFAULT_LOGO.getId()) {
+            image = yid.add(YukonImage.DEFAULT_LOGO.getId(), 
+                            YukonImage.DEFAULT_LOGO.getCategory(), 
+                            YukonImage.DEFAULT_LOGO.getName(), 
+                            loader.getResource(YukonImage.DEFAULT_LOGO.getPath()));
+        } else if (id == YukonImage.DEFAULT_BACKGROUND.getId()) {
+            image = yid.add(YukonImage.DEFAULT_BACKGROUND.getId(), 
+                            YukonImage.DEFAULT_BACKGROUND.getCategory(), 
+                            YukonImage.DEFAULT_BACKGROUND.getName(), 
+                            loader.getResource(YukonImage.DEFAULT_BACKGROUND.getPath()));
+        }
+        return image;
+    }
+
+    @RequestMapping(value="/images/{id}/thumb", method=RequestMethod.GET)
+    public void imageThumbnail(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
+
+        LiteYukonImage image = getFullImage(id);
+        String contentType = getImageContentType(image);
+        resp.setContentType(contentType);
+        ServletOutputStream out = resp.getOutputStream();
+        ByteArrayInputStream imageBytes = new ByteArrayInputStream(image.getImageValue());
+        BufferedImage scalableImage = ImageIO.read(imageBytes);
+        // Don't bother scaling down below a certain threshold.
+        if (scalableImage.getWidth() < Dimensions.TARGET_WIDTH_PIXELS.getDimension() &&
+            scalableImage.getHeight() < Dimensions.TARGET_HEIGHT_PIXELS.getDimension()) {
+            out.write(image.getImageValue());
+            out.close();
+            return;
+        }
+        // Target dimensions are smaller than one or more of the original dimensions
+        int imageType = scalableImage.getType();
+        Dimension scaledDimension = getScaledDimensions(scalableImage, DefaultDimension);
+        BufferedImage thumbImg = scaleImage(
+                scalableImage,
+                scaledDimension.width,
+                scaledDimension.height,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC,
+                imageType);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String ext = getImageExtension(image);
+        ImageIO.write(thumbImg, ext, baos);
+        baos.flush();
+        byte[] bytesImage = baos.toByteArray();
+        baos.close();
+        out.write(bytesImage);
+        out.close();
+    }
+
+    @RequestMapping(value="/images/{id}", method=RequestMethod.GET)
+    public void image(HttpServletResponse resp, @PathVariable int id) throws IOException, SQLException {
+
+        LiteYukonImage image = getFullImage(id);
+        String contentType = getImageContentType(image);
         resp.setContentType(contentType);
         ServletOutputStream out = resp.getOutputStream();
         out.write(image.getImageValue());
@@ -114,7 +222,7 @@ public class YukonImageController {
         message.put("success", true);
         return message;
     }
-    
+
     @RequestMapping(value="/images", method=RequestMethod.POST)
     public void upload(HttpServletResponse resp, HttpServletRequest req, YukonUserContext context, @RequestParam(defaultValue="logos") String category) throws IOException {
         
@@ -159,5 +267,5 @@ public class YukonImageController {
         String jsonString = JsonUtils.toJson(json);
         resp.getWriter().write(jsonString);
     }
-    
+
 }

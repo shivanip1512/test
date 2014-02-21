@@ -40,7 +40,7 @@
                     </div>
                     <div class="column two nogutter">
                         <div class="simple-input-image fr">
-                            <a href="javascript:void(0);"><img alt="${fn:escapeXml(pickerImage.image.imageName)}" src="/common/images/${pickerImage.image.imageID}"></a>
+                            <a href="javascript:void(0);"><img alt="${fn:escapeXml(pickerImage.image.imageName)}" src="/common/images/${pickerImage.image.imageID}/thumb"></a>
                         </div>
                     </div>
                 </div>

@@ -200,7 +200,14 @@
                                     <div class="column-10-14 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGIN_BACKGROUND']}"/>
-                                            <div><span class="name"><i:inline key=".backgroundImage"/></span></div>
+                                            <div>
+                                                <span class="name fl"><i:inline key=".backgroundImage"/>
+                                                </span>
+                                                <span class="fl">
+                                                    <cti:msg2 key=".background.title" var="popupTitle"/>
+                                                    <tags:helpInfoPopup title="${popupTitle}"><i:inline key=".background.helpText" /></tags:helpInfoPopup>
+                                                </span>
+                                            </div>
                                             <div><tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
                                         </div>
                                         <div class="column two nogutter">
@@ -233,7 +240,12 @@
                                     <div class="column-10-14 clearfix">
                                         <div class="column one">
                                             <c:set var="prop" value="${mappedPropertiesHelper.map['LOGO']}"/>
-                                            <div><span class="name"><i:inline key=".image"/></span></div>
+                                            <div>
+                                                <span class="name fl"><i:inline key=".image"/></span>
+                                                <span class="fl">
+                                                    <cti:msg2 key=".logo.title" var="popupTitle"/>
+                                                    <tags:helpInfoPopup title="${popupTitle}"><i:inline key=".logo.helpText" /></tags:helpInfoPopup>
+                                                </span>
                                             <div><tags:simpleInputType id="${prop.extra}" input="${prop.valueType}" path="${prop.path}" pageEditMode="${mode}"/></div>
                                         </div>
                                         <div class="column two nogutter">
