@@ -56,10 +56,10 @@ yukon.DrAssetDetails = (function() {
             _assetId = jQuery("#assetId").val();
             _itemsPerPage = jQuery("#itemsPerPage").val();
 
-            jQuery("[data-filter]").click(_doFilterTable);
-            jQuery("#dd-download").click(_downloadToCsv);
-            jQuery("#pingButton").click(_pingDevices);
-
+            jQuery(document).on('click', '[data-filter]', _doFilterTable);
+            jQuery(document).on('click', '#dd-download', _downloadToCsv);
+            jQuery(document).on('click', '#pingButton', _pingDevices);
+            
             _initialized = true;
         },
         
@@ -75,4 +75,16 @@ yukon.DrAssetDetails = (function() {
 
 jQuery(function() {
     yukon.DrAssetDetails.init();
+    
+    var aaDiv = jQuery('.f-asset-availability');
+    var paoId = jQuery('.f-pao-id').data('pao-id');
+    if (aaDiv.length) {
+        yukon.ui.elementGlass.show(aaDiv);
+        jQuery.ajax("assetAvailability", {
+            data: {'paoId': paoId}
+        }).done(function(data) {
+            aaDiv.html(data);
+            yukon.ui.elementGlass.hide(aaDiv);
+        });
+    }
 });

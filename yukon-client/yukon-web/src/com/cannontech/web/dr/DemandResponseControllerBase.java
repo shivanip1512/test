@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
@@ -42,7 +44,7 @@ import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public abstract class DemandResponseControllerBase {
-    
+    private static final Logger log = YukonLogManager.getLogger(DemandResponseControllerBase.class);
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
@@ -92,11 +94,14 @@ public abstract class DemandResponseControllerBase {
 
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
         
+        log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
         Map<Integer, SimpleAssetAvailability> resultMap = 
                 assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier());
         List<AssetAvailabilityDetails> resultList = new ArrayList<>(resultMap.size());
-
+        log.debug("Got asset availability.");
+        
         // Create set of applianceCategoryId's (& eliminates duplicates)
+        log.debug("Creating set of unique appliance category ids.");
         Set<Integer> applianceCatIds = Sets.newHashSet();
         for (SimpleAssetAvailability entry : resultMap.values()) {
             ImmutableSet<ApplianceWithRuntime> appRuntime = entry.getApplianceRuntimes();
@@ -104,50 +109,53 @@ public abstract class DemandResponseControllerBase {
                 applianceCatIds.add(dispAppRun.getApplianceCategoryId());
             }
         }
+        log.debug("Retrieving appliance category map.");
         Map<Integer, ApplianceCategory> appCatMap = applianceCategoryDao.getByApplianceCategoryIds(applianceCatIds);
+        log.debug("Retrieving hardware summaries.");
         Map<Integer, HardwareSummary> hwSumMap = inventoryDao.findHardwareSummariesById(resultMap.keySet());
         
+        log.debug("Building results list.");
         for (Map.Entry<Integer, SimpleAssetAvailability> entry : resultMap.entrySet()) {
-            
-            AssetAvailabilityDetails aaDetails = new AssetAvailabilityDetails();
-            HardwareSummary hwSum = hwSumMap.get(entry.getKey());
-
-            // Set the Serial Number and Type columns
-            aaDetails.setSerialNumber(hwSum.getSerialNumber());
-            aaDetails.setType(hwSum.getHardwareType());
-            
             SimpleAssetAvailability simpleAA = entry.getValue();
-            // set the Last Communication column
-            aaDetails.setLastComm(simpleAA.getLastCommunicationTime());
-
-            // parse through the appRuntime set to get list of appliances & last runtime.
-            ImmutableSet<ApplianceWithRuntime> appRuntime = simpleAA.getApplianceRuntimes();
-            String applianceStr = "";
-            Instant lastRun = null;
-            for (ApplianceWithRuntime awr: appRuntime) {
-                // Only get the latest last runtime.
-                Instant lnzrt = awr.getLastNonZeroRuntime();
-                if (lnzrt != null) {
-                    if (lastRun == null || lastRun.isBefore(lnzrt)) {
-                        lastRun = lnzrt;  
+            if (filterSet.contains(simpleAA.getCombinedStatus())) {
+                                   
+                AssetAvailabilityDetails aaDetails = new AssetAvailabilityDetails();
+                HardwareSummary hwSum = hwSumMap.get(entry.getKey());
+    
+                // Set the Serial Number and Type columns
+                aaDetails.setSerialNumber(hwSum.getSerialNumber());
+                aaDetails.setType(hwSum.getHardwareType());
+                
+                
+                // set the Last Communication column
+                aaDetails.setLastComm(simpleAA.getLastCommunicationTime());
+    
+                // parse through the appRuntime set to get list of appliances & last runtime.
+                ImmutableSet<ApplianceWithRuntime> appRuntime = simpleAA.getApplianceRuntimes();
+                String applianceStr = "";
+                Instant lastRun = null;
+                for (ApplianceWithRuntime awr: appRuntime) {
+                    // Only get the latest last runtime.
+                    Instant lnzrt = awr.getLastNonZeroRuntime();
+                    if (lnzrt != null) {
+                        if (lastRun == null || lastRun.isBefore(lnzrt)) {
+                            lastRun = lnzrt;  
+                        }
                     }
+                    ApplianceCategory appCat = appCatMap.get(awr.getApplianceCategoryId());
+                    // The Appliances will be a comma-separated list of the appliances for this device. 
+                    // No Internationalization since this comes from YukonSelectionList.
+                    applianceStr = (applianceStr == "") ? appCat.getDisplayName() 
+                                                        : applianceStr + ", " + appCat.getDisplayName();
                 }
-                ApplianceCategory appCat = appCatMap.get(awr.getApplianceCategoryId());
-                // The Appliances will be a comma-separated list of the appliances for this device. 
-                // No Internationalization since this comes from YukonSelectionList.
-                applianceStr = (applianceStr == "") ? appCat.getDisplayName() 
-                                                    : applianceStr + ", " + appCat.getDisplayName();
-            }
-            aaDetails.setAppliances(applianceStr);
-            aaDetails.setLastRun(lastRun);
-
-            aaDetails.setAvailability(simpleAA.getCombinedStatus());
-            if (filterSet.contains(aaDetails.getAvailability())) {
+                aaDetails.setAppliances(applianceStr);
+                aaDetails.setLastRun(lastRun);
+    
+                aaDetails.setAvailability(simpleAA.getCombinedStatus());
                 resultList.add(aaDetails);
-            } else {
-                aaDetails = null;
             }
         }
+        log.debug("Results list complete.");
         return resultList;
     }
 

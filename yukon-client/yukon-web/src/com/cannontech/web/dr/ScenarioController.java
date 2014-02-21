@@ -117,12 +117,19 @@ public class ScenarioController extends DemandResponseControllerBase {
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
-            getAssetAvailabilityInfo(scenario, model, userContext);
-        }
-        
         return "dr/scenario/detail.jsp";
     }
+    
+    @RequestMapping("/scenario/assetAvailability")
+    public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        model.addAttribute("paoId", paoId);
+        DisplayablePao scenario = scenarioDao.getScenario(paoId);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
+            getAssetAvailabilityInfo(scenario, model, userContext);
+        }
+        return "dr/assetAvailability.jsp";
+    }
+    
 
     @RequestMapping("/scenario/assetDetails")
     public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 

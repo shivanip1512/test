@@ -227,12 +227,17 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         addFilterErrorsToFlashScopeIfNecessary(model, bindingResult, flashScope);
         
-        
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+        return "dr/controlArea/detail.jsp";
+    }
+    
+    @RequestMapping("/controlArea/assetAvailability")
+    public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        model.addAttribute("paoId", paoId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(paoId);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(controlArea, model, userContext);
         }
-        
-        return "dr/controlArea/detail.jsp";
+        return "dr/assetAvailability.jsp";
     }
 
     

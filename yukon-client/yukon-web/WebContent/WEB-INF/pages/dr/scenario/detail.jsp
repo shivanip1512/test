@@ -10,6 +10,16 @@
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="YUKON_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
 
@@ -58,20 +68,12 @@
         
         <div class="fr column two nogutter">
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
+                <div class="f-pao-id" data-pao-id="${scenario.paoIdentifier.paoId}"></div>
                 <%-- Display the Asset Availability Info --%>
                 <tags:sectionContainer2 nameKey="assetAvailability">
-                    <c:choose>
-                        <c:when test="${assetTotal <= 0}">
-                            <span class="empty-list">
-                                <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
-                            </span>
-                        </c:when>
-                        <c:otherwise>
-                            <dr:assetAvailabilityStatus assetId="${scenarioId}"
-                                assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                pieJSONData="${pieJSONData}" showDetails="true"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <div class="f-asset-availability f-block-this">
+                        <i:inline key="yukon.common.loading"/>
+                    </div>
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>
             

@@ -108,14 +108,20 @@ public class LoadGroupController extends DemandResponseControllerBase {
         UiFilter<DisplayablePao> detailFilter = new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupControllerHelper.filterGroups(model, userContext, backingBean,
                                                bindingResult, detailFilter, flashScope);
-        
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
-            getAssetAvailabilityInfo(loadGroup, model, userContext);
-        }
 
         return "dr/loadGroup/detail.jsp";
     }
-
+    
+    @RequestMapping("/loadGroup/assetAvailability")
+    public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        model.addAttribute("paoId", paoId);
+        DisplayablePao loadGroup = loadGroupService.getLoadGroup(paoId);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
+            getAssetAvailabilityInfo(loadGroup, model, userContext);
+        }
+        return "dr/assetAvailability.jsp";
+    }
+    
     @RequestMapping("/loadGroup/assetDetails")
     public String assetDetails(@RequestParam(defaultValue=ITEMS_PER_PAGE) int itemsPerPage, 
                                @RequestParam(defaultValue="1") int page,

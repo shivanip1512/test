@@ -104,11 +104,17 @@ public class ProgramController extends ProgramControllerBase {
         List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         model.addAttribute("parentScenarios", parentScenarios);
         
-        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, user)) {
+        return "dr/program/detail.jsp";
+    }
+    
+    @RequestMapping("/program/assetAvailability")
+    public String assetAvailability(ModelMap model, YukonUserContext userContext, int paoId) {
+        model.addAttribute("paoId", paoId);
+        DisplayablePao program = programService.getProgram(paoId);
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(program, model, userContext);
         }
-        
-        return "dr/program/detail.jsp";
+        return "dr/assetAvailability.jsp";
     }
 
     @RequestMapping("/program/assetDetails")

@@ -6,11 +6,23 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="controlAreaDetail">
-
-    <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/hideReveal.js"/>
     <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
-
+    <cti:includeScript link="YUKON_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_SELECTION"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_AXIS_LABEL"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
+    <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
+    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+    
+    <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
+    
+    <tags:simpleDialog id="drDialog"/>
+    
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${controlAreaId}"/>
@@ -103,23 +115,15 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </div>
-
+        
         <div class="column two nogutter">
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
-                <%-- Display the Asset Availability Info --%>
+                <div class="f-pao-id" data-pao-id="${controlArea.paoIdentifier.paoId}"></div>
                 <tags:sectionContainer2 nameKey="assetAvailability">
-                    <c:choose>
-                        <c:when test="${assetTotal <= 0}">
-                            <span class="empty-list">
-                                <cti:msg2 key="yukon.web.modules.operator.hardware.assetAvailability.noDevices"/>
-                            </span>
-                        </c:when>
-                        <c:otherwise>
-                            <dr:assetAvailabilityStatus assetId="${controlAreaId}"
-                                assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                                pieJSONData="${pieJSONData}" showDetails="true"/>
-                        </c:otherwise>
-                    </c:choose>
+                    <%-- Display the Asset Availability Info --%>
+                    <div class="f-asset-availability f-block-this">
+                        <i:inline key="yukon.common.loading"/>
+                    </div>
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>
             
