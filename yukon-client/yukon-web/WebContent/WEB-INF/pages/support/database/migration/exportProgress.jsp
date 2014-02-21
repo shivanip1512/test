@@ -73,11 +73,8 @@
             <input type="hidden" name="fileKey" value="${migrationStatus.id}">
         </form>
         
-        <input type="button" id="downloadButton" value="${downloadButton}" onclick="jQuery('#downloadExportFileForm').submit();" />
+        <cti:button id="downloadButton" label="${downloadButton}" onclick="jQuery('#downloadExportFileForm').submit();"/>
 
    </tags:boxContainer>
-       
-   
-    
     
 </cti:standardPage>

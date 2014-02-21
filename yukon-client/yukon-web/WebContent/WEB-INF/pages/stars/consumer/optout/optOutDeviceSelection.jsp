@@ -94,12 +94,11 @@
                 </span>
             </c:if>
             <cti:url var="optOutUrl" value="/stars/consumer/optout" />
-            <input type="button" value="<cti:msg key='yukon.dr.consumer.optoutlist.cancel'/>"
-                   onclick="javascript:location.href='${optOutUrl}';"></input>
+            <cti:msg key="yukon.dr.consumer.optoutlist.cancel" var="cancel"/>
+            <cti:button label="${cancel}" href="${optOutUrl}"/>
 
-
-		    <form:hidden path="durationInDays"/>
-		    <form:hidden path="startDate"/>
+            <form:hidden path="durationInDays"/>
+            <form:hidden path="startDate"/>
         </form:form>
     </div>
 

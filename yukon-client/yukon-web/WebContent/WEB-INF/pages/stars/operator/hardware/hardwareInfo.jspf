@@ -297,13 +297,13 @@ jQuery(function() { updateServiceCompanyInfo();});
             <cti:displayForPageEditModes modes="EDIT">
                 <c:choose>
                     <c:when test="${not empty accountId}">
-                        <cti:button nameKey="deleteDevice" type="button" onclick="showDeletePopup()" dialogButton="true" classes="delete"/>
+                        <cti:button nameKey="deleteDevice" onclick="showDeletePopup()" dialogButton="true" classes="delete"/>
                     </c:when>
                     <c:otherwise>
                         <cti:url value="delete" var="deleteInvUrl">
                             <cti:param name="inventoryId" value="${inventoryId}"/>
                         </cti:url>
-                        <cti:button nameKey="deleteDevice" type="button" id="invDeleteBtn" dialogButton="true" href="${deleteInvUrl}"/>
+                        <cti:button nameKey="deleteDevice" id="invDeleteBtn" dialogButton="true" href="${deleteInvUrl}"/>
                         <c:if test="${hardware.hardwareType.meter}">
                             <c:set var="deleteName" value="${hardware.meterNumber}"/>
                         </c:if>

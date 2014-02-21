@@ -61,14 +61,11 @@
                     </select>
                 </td>
             </tr>
-
-            <tr>
-                <td align="center" colspan="2">
-                    <br>
-                    <input type="submit" value="<cti:msg key='yukon.web.modules.operator.optOut.apply'/>" class="button">
-                </td>
-            </tr>
         </table>
+        <div class="page-action-area">
+            <cti:msg var="apply" key="yukon.web.modules.operator.optOut.apply"/>
+            <cti:button type="submit" value="${apply}" label="${apply}"/>
+        </div>
     </form>
 </c:if>
 
@@ -107,13 +104,15 @@
                             <form action="/stars/operator/optout/cancel" method="post">
                                 <cti:csrfToken/>
                                 <input type="hidden" name="eventId" value="${optOut.eventId}">
-                                <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.cancel"/>" class="button">
+                                <cti:msg var="cancel" key="yukon.web.modules.operator.optOut.cancel"/>
+                                <cti:button type="submit" name="submit" value="${cancel}" label="${cancel}"/>
                             </form>
                             <c:if test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <form action="/stars/operator/optout/repeat" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${optOut.inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.repeat"/>" class="button">
+                                    <cti:msg var="repeat" key="yukon.web.modules.operator.optOut.repeat"/>
+                                    <cti:button type="submit" name="submit" value="${repeat}" label="${repeat}"/>
                                 </form>
                             </c:if>
                         </td>
@@ -156,7 +155,8 @@
                         <form action="/stars/operator/optOut/allowAnother" method="post">
                             <cti:csrfToken/>
                             <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                            <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.allowAnother"/>" class="button">
+                            <cti:msg key="yukon.web.modules.operator.optOut.allowAnother" var="allowAnother"/>
+                            <cti:button type="submit" name="submit" value="${allowAnother}" label="${allowAnother}"/>
                         </form>
                     </td>
                 </c:if>
@@ -180,7 +180,8 @@
                                 <form action="/stars/operator/optOut/resetToLimit" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="inventoryId" value="${inventory.inventoryId}">
-                                    <input type="submit" name="submit" value="<cti:msg key="yukon.web.modules.operator.optOut.clear"/>" class="button">
+                                    <cti:msg var="clear" key="yukon.web.modules.operator.optOut.clear"/>
+                                    <cti:button type="submit" name="submit" value="${clear}" label="${clear}"/>
                                 </form>
                            </c:otherwise>
                        </c:choose>
@@ -236,7 +237,8 @@
                 </c:forEach>
             </tbody>
         </table>
-        <input type="button" name="viewAll" value="<cti:msg key="yukon.web.modules.operator.optOut.viewAll" />" onClick="location='OptOutHistory.jsp'" class="button">
+        <cti:msg key="yukon.web.modules.operator.optOut.viewAll" var="viewAll"/>
+        <cti:button name="viewAll" value="${viewAll}" label="${viewAll}" onclick="location='OptOutHistory.jsp'"/>
         <br><br>
     </c:when>
     <c:otherwise>

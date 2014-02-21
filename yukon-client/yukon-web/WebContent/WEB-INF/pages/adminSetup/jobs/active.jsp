@@ -26,9 +26,9 @@
         <td>
             <form action="abortJob" method="post">
                 <cti:csrfToken/>
-            <input type="hidden" name="jobId" value="${job.id}"> 
-            <cti:msg2 var="abortButtonLabel" key=".abortButton"/>
-            <input type="submit" value="${abortButtonLabel}">
+                <input type="hidden" name="jobId" value="${job.id}"> 
+                <cti:msg2 var="abortButtonLabel" key=".abortButton"/>
+                <cti:button type="submit" label="${abortButtonLabel}"/>
             </form>
         </td>
       </tr>

@@ -30,12 +30,11 @@
 		</c:forEach>
 
         <div align="center">
-            <input type="submit"
-                value="<cti:msg key="yukon.dr.consumer.selectHardware.ok"/>">
+            <cti:msg key="yukon.dr.consumer.selectHardware.ok" var="ok"/>
+            <cti:msg key="yukon.dr.consumer.selectHardware.cancel" var="cancel"/>
+            <cti:button type="submit" label="${ok}"/>
             <cti:url var="cancelUrl" value="/stars/consumer/enrollment"/>
-            <input type="button"
-                value="<cti:msg key="yukon.dr.consumer.selectHardware.cancel"/>"
-                onclick="location.href='${cancelUrl}';">
+            <cti:button label="${cancel}" href="${cancelUrl}"/>
         </div>
     </form>
 

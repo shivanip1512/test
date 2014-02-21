@@ -22,7 +22,7 @@
                 
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:button nameKey="save" name="update" type="submit"/>
+                        <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <c:if test="${isUserGroupDeletable}">
                              <%-- TODO Uncomment this when we implement the role group and user delete functionality.
                              <cti:button nameKey="delete" id="deleteButton" name="delete" name="delete" type="submit"/>

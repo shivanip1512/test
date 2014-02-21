@@ -15,10 +15,10 @@
     
         <br>
         <br>
-    
-        <input type="button" value='<cti:msg key="yukon.dr.consumer.optoutresult.ok"/>'
-               onclick="location.href='/stars/consumer/optout';"></input>
+        <cti:url value="/stars/consumer/optout" var="url"/>
+        <cti:msg key="yukon.dr.consumer.optoutresult.ok" var="ok"/>
+        <cti:button label="${ok}" href="${url}"/>
     </div>
     
     
-</cti:standardPage>    
+</cti:standardPage>

@@ -604,15 +604,9 @@
             
             <br>
             
-            <table width="80%" border="0" cellpadding="5">
-                <tr>
-                    <td style="text-align: center;"> 
-                        <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"/>
-                        <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
-                    </td>
-                </tr>
-                
-            </table>
+            <div>
+                <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"/>
+                <cti:button label="${save}" onclick="saveSchedule('save');"/>
+            </div>
         </form>
     </div>
-                

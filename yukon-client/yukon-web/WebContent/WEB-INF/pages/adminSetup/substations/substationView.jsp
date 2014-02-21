@@ -3,21 +3,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
+<cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
+
 <cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
 <cti:url var="subUrl" value="/adminSetup/substations/routeMapping/edit" />
 <cti:url var="removeAllUrl" value="/adminSetup/substations/routeMapping/removeAll">
-	<cti:param name="removeAll" value=""/>
+    <cti:param name="removeAll" value=""/>
 </cti:url>
 
 
 <script type="text/javascript">
-	function removeAllCheck() {
-
-		var ok = confirm('Are you sure you want to delete all substation mappings?');
-		if (ok) {
-			window.location = '${removeAllUrl}';
-		}
-	}
+    function removeAllCheck() {
+        if (confirm('Are you sure you want to delete all substation mappings?')) {
+            window.location = '${removeAllUrl}';
+        }
+    }
 
 </script>
 
@@ -28,39 +28,39 @@
     <table>
     
     <tr>
-    	<td class="vat">
-			<select id="subSelectList" name="selection_list" size="10" style="width:200px" onclick='javascript:SubstationToRouteMappings_SelectListener("${routeUrl}")'>
-		        <c:forEach var="substation" items="${list}">
-		            <option value="${substation.id}">
-		                ${fn:escapeXml(substation.name)}
-		            </option>
-		        </c:forEach>
-		    </select>
-    	</td>
-    	<td class="vab">
-    		<input type="submit" value="Delete" name="remove" class="button"/>
-		    <br><br>
-		    <input type="button" value="Delete All" onclick="removeAllCheck();" class="button"/>
-    	</td>
+        <td class="vat">
+            <select id="subSelectList" name="selection_list" size="10" style="width:200px" onclick='javascript:SubstationToRouteMappings_SelectListener("${routeUrl}")'>
+                <c:forEach var="substation" items="${list}">
+                    <option value="${substation.id}">
+                        ${fn:escapeXml(substation.name)}
+                    </option>
+                </c:forEach>
+            </select>
+        </td>
+        <td class="vab">
+            <cti:button type="submit" nameKey="delete" name="remove" value="Delete"/>
+            <br><br>
+            <cti:button label="Delete All" onclick="removeAllCheck();"/>
+        </td>
     </tr>
         
     <tr><td><div style="height:20px;"></div></td></tr>
         
     <tr>
-    	<td>
-    		Substation Name<br>
-    		<input type="text" value="" name="name" size="20" style="width:188px;"/>
-    	</td>
-    	<td class="vab">
-    		<input id="addButton" type="submit" value="Add" name="add" class="button"/>
-    		
-    		<c:if test="${hasVendorId}"> 
-		    	
-		    	<cti:url var="mspAddUrl" value="/adminSetup/substations/routemapping/multispeak/choose"/>
-		    	<input id="mspAddButton" type="button" value="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');" class="button">
-		    </c:if>
+        <td>
+            Substation Name<br>
+            <input type="text" value="" name="name" size="20" style="width:188px;"/>
+        </td>
+        <td class="vab">
+            <cti:button id="addButton" type="submit" value="Add" name="add" nameKey="add"/>
+            
+            <c:if test="${hasVendorId}"> 
+                
+                <cti:url var="mspAddUrl" value="/adminSetup/substations/routemapping/multispeak/choose"/>
+                <cti:button id="mspAddButton" type="button" label="MSP" onclick="SubstationToRouteMappings_disableInputs(true);openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');"/>
+            </c:if>
     
-    	</td>
+        </td>
     </tr>
     
     </table>
@@ -68,6 +68,4 @@
 </form>
 
 <tags:simpleDialog id="mspAddDialog" onClose="SubstationToRouteMappings_disableInputs(false);"/>
-
-
-
+</cti:msgScope>

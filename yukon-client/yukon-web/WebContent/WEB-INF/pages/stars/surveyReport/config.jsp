@@ -212,7 +212,8 @@ function updateFieldsFromBackingBean() {
     </tags:nameValueContainer2>
 
     <div class="page-action-area">
-        <input type="submit" value="<cti:msg2 key=".showReport"/>">
+        <cti:msg2 var="showReport" key=".showReport"/>
+        <cti:button type="submit" value="${showReport}" label="${showReport}"/>
     </div>
 </form:form>
 

@@ -75,7 +75,7 @@ jQuery(function() {
                                 <c:set var="inputClass" value="${status.error ? 'error' : ''}"/>
                                 <c:set var="style" value="${empty settingsBean.settings[setting.extra].comments ? 'display:none' : ''}"/>
                                 <c:if test="${empty settingsBean.settings[setting.extra].comments}">
-                                    <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" type="button" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
+                                    <cti:button classes="f-addCommentBtn" nameKey="energyCompanySettings.addComment" name="add" value="${setting.extra}" renderMode="labeledImage" icon="icon-pencil"/>
                                 </c:if>
                                 <form:textarea rows="3" cols="27" 
                                     placeholder="comments" 

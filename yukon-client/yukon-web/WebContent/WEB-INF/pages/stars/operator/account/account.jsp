@@ -358,9 +358,8 @@
                                     <c:if test="${supportsPasswordSet and empty passwordBean}">
                                         <div class="action-area">
                                             <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
-                                            <button type="button" class="f-generatePassword">
-                                                <i:inline key=".generatePassword" />
-                                            </button>
+                                            <cti:msg2 key=".generatePassword" var="generatePword"/>
+                                            <cti:button classes="f-generatePassword" label="${generatePword}"/>
                                         </div>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
@@ -442,9 +441,8 @@
                             </tags:nameValueContainer2>
                             <div class="action-area">
                                 <label><input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/><i:inline key=".showPassword"/></label>
-                                <button type="button" class="f-generatePassword">
-                                    <i:inline key=".generatePassword" />
-                                </button>
+                                <cti:msg2 key=".generatePassword" var="generatePword"/>
+                                <cti:button classes="f-generatePassword" label="${generatePword}"/>
                             </div>
                         </form:form>
                     </d:inline>

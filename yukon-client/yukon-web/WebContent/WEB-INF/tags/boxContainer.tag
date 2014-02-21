@@ -54,7 +54,7 @@
 
 <c:if test="${(pageScope.hideEnabled == null) || pageScope.hideEnabled}">
     <script type="text/javascript">
-        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${pageScope.showInitially ? true : false}, '${cti:jsSafe(pageScope.title)}');
+        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(pageScope.title)}');
     </script>
 </c:if>
 

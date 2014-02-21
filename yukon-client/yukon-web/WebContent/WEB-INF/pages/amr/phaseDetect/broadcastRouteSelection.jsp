@@ -30,46 +30,31 @@
     <form action="/amr/phaseDetect/saveBroadcastRoutes" method="post">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
-            <table style="padding-bottom: 5px;">
+            <table class="stacked">
                 <tr>
-                    <td valign="top" class="strong-label-small">
-                        <i:inline key=".noteLabel"/>
-                    </td>
-                    <td style="font-size:11px;">
-                        <i:inline key=".noteText"/>
-                    </td>
+                    <td class="strong-label-small"><i:inline key=".noteLabel"/></td>
+                    <td><span class="note"><i:inline key=".noteText"/></span></td>
                 </tr>
             </table>
             
-            <div id="errorDiv" style="display: none;padding-bottom: 5px;">
+            <div id="errorDiv" class="dn stacked">
                 <span id="errorSpan" class="error">
                     <i:inline key=".noRouteSelected"/>
                 </span>
             </div>
             
-            <table class="results-table" style="padding-top: 5px;width: 10%;">
-                <thead>
-                    <tr>
-                        <th nowrap="nowrap">
-                            <i:inline key=".routeName"/>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody> 
-                    <c:forEach var="route" items="${routes}">
-                        <tr>
-                            <td nowrap="nowrap" style="padding-right: 10px;">
-                                <input id="read_route_${route.id}" name="read_route_${route.id}" checked="checked" type="checkbox" onclick="checkRoutes()">
-                                ${route.name}
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-                
+            <h3><i:inline key=".routeName"/></h3>
+            <ul class="simple-list">
+                <c:forEach var="route" items="${routes}">
+                    <li><label><input id="read_route_${route.id}" name="read_route_${route.id}" checked="checked" type="checkbox" onclick="checkRoutes()">${route.name}</label></li>
+                </c:forEach>
+            </ul>
         </tags:sectionContainer2>
-        <cti:button nameKey="cancelTest" type="submit" name="cancel"/>
-        <cti:button nameKey="next" type="submit" id="nextButton"/>
+        
+        <div class="page-action-area">
+            <cti:button nameKey="next" type="submit" id="nextButton" classes="primary action"/>
+            <cti:button nameKey="cancelTest" type="submit" name="cancel"/>
+        </div>
     </form>
-</cti:standardPage>
     
+</cti:standardPage>

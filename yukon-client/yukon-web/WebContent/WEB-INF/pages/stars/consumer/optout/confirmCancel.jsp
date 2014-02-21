@@ -1,9 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <c:set var="actionUrl" value="/stars/consumer/optout/deviceSelection"/>
 
@@ -16,11 +12,13 @@
         <cti:msg htmlEscape="true" key="yukon.dr.consumer.optout.confirmCancel.question" argument="${optOut.inventory.displayName}"/>
 
         <br><br>
-		<form action="/stars/consumer/optout/cancel" method="post">
+        <form action="/stars/consumer/optout/cancel" method="post">
             <cti:csrfToken/>
-			<input type="hidden" name="eventId" value="${optOut.eventId}">
-			<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancelOptOut"/>" class="button">
-			<input type="button" value="<cti:msg key="yukon.dr.consumer.optout.noCancelOptOut"/>" class="button" onclick="window.location='/stars/consumer/optout'">
-		</form>
+            <input type="hidden" name="eventId" value="${optOut.eventId}">
+            <cti:msg key="yukon.dr.consumer.optout.cancelOptOut" var="cancel"/>
+            <cti:msg key="yukon.dr.consumer.optout.noCancelOptOut" var="noCancel"/>
+            <cti:button type="submit" name="submit" label="${cancel}" value="${cancel}"/>
+            <cti:button value="${noCancel}" label="${noCancel}" href="/stars/consumer/optout"/>
+        </form>
     </div>     
-</cti:standardPage>    
+</cti:standardPage>

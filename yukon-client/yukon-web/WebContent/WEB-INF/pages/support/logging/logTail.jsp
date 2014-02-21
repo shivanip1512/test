@@ -26,9 +26,9 @@
     </tags:nameValueContainer2>
 
     <div class="stacked clearfix">
-        <cti:button nameKey="download" type="button" href="download?file=${file}" icon="icon-download"/>
-        <cti:button id="pauseBtn" type="button" nameKey="pause" icon="icon-control-pause"/>
-        <cti:button id="startBtn" type="button" nameKey="resume" icon="icon-control-play"/>
+        <cti:button nameKey="download" href="download?file=${file}" icon="icon-download"/>
+        <cti:button id="pauseBtn" nameKey="pause" icon="icon-control-pause"/>
+        <cti:button id="startBtn" nameKey="resume" icon="icon-control-play"/>
     </div>
     <div id="logOutput" class="monospace lite-container" style="overflow: auto;"></div>
 

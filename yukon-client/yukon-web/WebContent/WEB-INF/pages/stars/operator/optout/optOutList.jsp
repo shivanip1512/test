@@ -37,9 +37,9 @@ function createJSON() {
 </script>    
 
     <div align="center">
-		<c:if test="${!empty error}">
-			<span class="error"><cti:msg key="${error}"/></span><br>
-		</c:if>
+        <c:if test="${!empty error}">
+            <span class="error"><cti:msg key="${error}"/></span><br>
+        </c:if>
 
         <h3><cti:msg key="yukon.web.modules.operator.optoutlist.header"/></h3>
     
@@ -66,15 +66,15 @@ function createJSON() {
 
                         <tr>
                             <td align="left">
-                            	<c:choose>
-                            		<c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
-                            		    <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
-                            		</c:when>
-                            		<c:otherwise>
+                                <c:choose>
+                                    <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
+                                        <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
+                                    </c:when>
+                                    <c:otherwise>
                                         <input type="hidden" name="inventoryId" value="${inventoryId}"/>
                                         <input id="check_${inventoryId}" type="checkbox"></input>
-                            		</c:otherwise>
-                            	</c:choose>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td align="left" title="${displayableInventory.serialNumber}">
                                 <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
@@ -107,16 +107,13 @@ function createJSON() {
             </div>
 
             <br>
-            <span style="padding-right: 0.5em;">
-                <input type="submit" value="<cti:msg key='yukon.web.modules.operator.optoutlist.save'/>"></input>
-            </span>    
+            <cti:msg key="yukon.web.modules.operator.optoutlist.save" var="save"/>
+            <cti:msg key="yukon.web.modules.operator.optoutlist.cancel" var="cancel"/>
+            <cti:button type="submit" label="${save}"/>
             <cti:url var="optOutUrl" value="/operator/Consumer/OptOut.jsp"/>
-            <input type="button" value="<cti:msg key='yukon.web.modules.operator.optoutlist.cancel'/>"
-                   onclick="javascript:location.href='${optOutUrl}';"></input>
+            <cti:button label="${cancel}" href="${optOutUrl}"/>
             
             <input type="hidden" name="durationInDays" value="${durationInDays}"></input>
             <input type="hidden" name="startDate" value="${startDate}"></input>
         </form>
-    </div>    
-    
-    
+    </div>

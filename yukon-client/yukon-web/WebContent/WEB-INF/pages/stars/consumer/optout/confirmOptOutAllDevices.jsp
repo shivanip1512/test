@@ -57,15 +57,13 @@
             </table>
             <br>
 
-            <span style="padding-right: 0.5em;">
-                <input type="submit" value="<cti:msg key='yukon.dr.consumer.confirmOptOutAllDevices.save'/>"></input>
-            </span>
-
-            <cti:url var="optOutUrl" value="/stars/consumer/optout" />
-            <input type="button" value="<cti:msg key='yukon.dr.consumer.confirmOptOutAllDevices.cancel'/>"
-                   onclick="javascript:location.href='${optOutUrl}';"></input>
-
-
+            <div class="page-action-area">
+                <cti:msg var="save" key="yukon.dr.consumer.confirmOptOutAllDevices.save"/>
+                <cti:button type="submit" value="${save }" label="${save}"/>
+                <cti:url var="optOutUrl" value="/stars/consumer/optout"/>
+                <cti:msg key="yukon.dr.consumer.confirmOptOutAllDevices.cancel" var="cancel"/>
+                <cti:button label="${cancel}" href="${optOutUrl}"/>
+            </div>
             <form:hidden path="durationInDays"/>
             <form:hidden path="startDate"/>
         </form:form>

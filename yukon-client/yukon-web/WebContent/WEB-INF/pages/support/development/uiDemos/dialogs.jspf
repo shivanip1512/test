@@ -81,12 +81,12 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
         <input type="hidden" name="title" value="Special:Search">
         <input type="text" name="search">
         <d:confirm on="#searchWikipedia" nameKey="searchWikipedia"/>
-        <button id="searchWikipedia" type="submit">Search Wikipedia</button>
+        <cti:button id="searchWikipedia" type="submit" label="Search Wikipedia"/>
     </form>
 
     <h3>OK Submits an Other Form</h3>
     <d:confirm on="#searchWikipedia2" nameKey="searchWikipedia" />
-    <button id="searchWikipedia2" type="button" data-form="#wikipediaForm">Search Wikipedia</button>
+    <cti:button id="searchWikipedia2" data-form="#wikipediaForm" label="Search Wikipedia"/>
 </tags:sectionContainer>
 
 <tags:sectionContainer title="In-line Dialogs">

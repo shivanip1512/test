@@ -2,43 +2,30 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-	<!-- ControlHistory.tag -->
+    <!-- ControlHistory.tag -->
     <entry key="yukon.web.components.controlHistoryEvent.startDate">Start Date</entry>
     <entry key="yukon.web.components.controlHistoryEvent.endDate">End Date</entry>
     <entry key="yukon.web.components.controlHistoryEvent.gears">Gear(s)</entry>
     <entry key="yukon.web.components.controlHistoryEvent.controlDuration">Control Duration</entry>
-	<entry key="yukon.web.components.controlHistoryEvent.noControlDuringPeriod">There has been no control during this period.</entry>
+    <entry key="yukon.web.components.controlHistoryEvent.noControlDuringPeriod">There has been no control during this period.</entry>
     <entry key="yukon.web.components.controlHistoryEvent.loading">Loading…</entry>
     <entry key="yukon.web.components.controlHistoryEvent.na">N/A</entry>
     <entry key="yukon.web.components.controlHistoryEvent.detailDialog.title">Control History Detail</entry>
     <entry key="yukon.web.components.controlHistoryEvent.history">Detail</entry>
 
-	<!-- ControlHistorySummary.tag -->
+    <!-- ControlHistorySummary.tag -->
     <entry key="yukon.web.components.controlHistorySummary.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
     <entry key="yukon.web.components.controlHistorySummary.day">Day</entry>
     <entry key="yukon.web.components.controlHistorySummary.month">Month</entry>
     <entry key="yukon.web.components.controlHistorySummary.year">Year</entry>
-	<entry key="yukon.web.components.controlHistorySummary.details">details</entry>
+    <entry key="yukon.web.components.controlHistorySummary.details">details</entry>
     <entry key="yukon.web.components.controlHistorySummary.deviceRemoved">Device Removed</entry>
 
-	<entry key="yukon.web.components.controlHistorySummary.helpInfoTitle">Control History Summary Help</entry>
-	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistory">Program Based</entry>
-	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistoryText">Program based control history is based off of all the control during the service of this account. This summary will not include inventory targeted opt outs or old inventory that was enrolled in this account that no longer are a part of the account.</entry>
-	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistory">Inventory Based</entry>
-	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistoryText">Inventory based control history is only based off of history that has happened during the time the inventory has been enrolled.</entry>
-
-	<entry key="yukon.web.components.slowInput.save.label">Save</entry>
-	<entry key="yukon.web.components.slowInput.save.labelBusy">Saving</entry>
-	<entry key="yukon.web.components.slowInput.create.label">Create</entry>
-	<entry key="yukon.web.components.slowInput.create.labelBusy">Creating</entry>
-	<entry key="yukon.web.components.slowInput.delete.label">Delete</entry>
-	<entry key="yukon.web.components.slowInput.search.label">Search</entry>
-	<entry key="yukon.web.components.slowInput.search.labelBusy">Searching</entry>
-	<entry key="yukon.web.components.slowInput.add.label">Add</entry>
-	<entry key="yukon.web.components.slowInput.ok.label">OK</entry>
-	<entry key="yukon.web.components.slowInput.submit.label">Submit</entry>
-	<entry key="yukon.web.components.slowInput.cancel.label">Cancel</entry>
-	<entry key="yukon.web.components.slowInput.cancel.labelBusy">Canceling</entry>
+    <entry key="yukon.web.components.controlHistorySummary.helpInfoTitle">Control History Summary Help</entry>
+    <entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistory">Program Based</entry>
+    <entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistoryText">Program based control history is based off of all the control during the service of this account. This summary will not include inventory targeted opt outs or old inventory that was enrolled in this account that no longer are a part of the account.</entry>
+    <entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistory">Inventory Based</entry>
+    <entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistoryText">Inventory based control history is only based off of history that has happened during the time the inventory has been enrolled.</entry>
 
     <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
     <entry key="yukon.web.components.image.edit.label">Edit</entry>
@@ -52,8 +39,8 @@
     <entry key="yukon.web.components.image.filter.hoverText">Filter</entry>
     <entry key="yukon.web.components.image.filter.label">Filter</entry>
     <entry key="yukon.web.components.image.meterDetail.hoverText">Meter Detail</entry>
-	<entry key="yukon.web.components.image.up.hoverText">Move Up</entry>
-	<entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
+    <entry key="yukon.web.components.image.up.hoverText">Move Up</entry>
+    <entry key="yukon.web.components.image.down.hoverText">Move Down</entry>
     <entry key="yukon.web.components.image.selectionPicker.hoverText">Select items</entry>
     <entry key="yukon.web.components.image.selectionPicker.label">(none selected)</entry>
     <entry key="yukon.web.components.image.zoom.hoverText">View all currently selected items.</entry>
@@ -69,6 +56,7 @@
     <entry key="yukon.web.components.button.chooseMode.label">Choose Mode</entry>
     <entry key="yukon.web.components.button.clear.label">Clear</entry>
     <entry key="yukon.web.components.button.close.label">Close</entry>
+    <entry key="yukon.web.components.button.collectionAction.label">Collection Action</entry>
     <entry key="yukon.web.components.button.copy.label">Copy</entry>
     <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.csv.label">Export to CSV</entry>

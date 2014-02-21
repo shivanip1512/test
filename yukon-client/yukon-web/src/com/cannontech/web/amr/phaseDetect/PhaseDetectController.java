@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.View;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
@@ -45,6 +45,7 @@ import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
@@ -58,7 +59,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonUtils;
-import com.cannontech.web.util.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -83,16 +83,14 @@ public class PhaseDetectController {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    @Autowired private YukonUserContextMessageSourceResolver resolver = null;
     @Autowired private FlotChartService flotChartService;
-
-    private PhaseDetectResult resultCopy = null;
-    private PhaseDetectData dataCopy = null;
+    @Autowired @Qualifier("phaseDetect") private RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache;
 
     @RequestMapping("home")
-    public String home(ModelMap model, String errorMsg) throws ServletException {
+    public String home(ModelMap model, String errorMsg) {
         try {
-            phaseDetectService.getPhaseDetectData();
+            phaseDetectService.getPhaseDetectResult();
             return "redirect:testPage";
         } catch (PhaseDetectCancelledException e) {
             /* we don't have a previous test to show them. no biggie - move along */
@@ -109,7 +107,7 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("routes")
-    public String routes(ModelMap model, int substationId, HttpServletResponse response) throws ServletException {
+    public String routes(ModelMap model, int substationId, HttpServletResponse response) {
         try {
             Substation currentSubstation = substationDao.getById(substationId);
             List<Route> routes = strmDao.getRoutesBySubstationId(substationId);
@@ -135,7 +133,7 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(value="saveSubstationAndReadMethod", method=RequestMethod.POST)
-    public String saveSubstationAndReadMethod(String readPhasesWhen, Integer selectedSub, ModelMap model, HttpServletRequest request) throws ServletException {
+    public String saveSubstationAndReadMethod(String readPhasesWhen, Integer selectedSub, ModelMap model, HttpServletRequest request) {
         List<Route> routes = strmDao.getRoutesBySubstationId(selectedSub);
         List<Route> readRoutes = Lists.newArrayList();
         for(Route route : routes){
@@ -152,13 +150,11 @@ public class PhaseDetectController {
         PhaseDetectData data = new PhaseDetectData();
         PhaseDetectState state = new PhaseDetectState();
         phaseDetectService.initializeResult();
-        dataCopy = null;
-        resultCopy = null;
         data.setReadRoutes(readRoutes);
         data.setReadAfterAll(readPhasesWhen.equalsIgnoreCase("after") ? true : false);
         data.setSubstationId(selectedSub);
         data.setSubstationName(substation.getName());
-        phaseDetectService.setPhaseDetectData(data);
+        phaseDetectService.getPhaseDetectResult().setTestData(data);
         phaseDetectService.setPhaseDetectState(state);
         
         return "redirect:broadcastRouteSelection";
@@ -166,7 +162,7 @@ public class PhaseDetectController {
     
     @RequestMapping("broadcastRouteSelection")
     public String broadcastRouteSelection(ModelMap model){
-        model.addAttribute("routes", phaseDetectService.getPhaseDetectData().getReadRoutes());
+        model.addAttribute("routes", phaseDetectService.getPhaseDetectResult().getTestData().getReadRoutes());
         return "phaseDetect/broadcastRouteSelection.jsp";
     }
     
@@ -177,7 +173,7 @@ public class PhaseDetectController {
             phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
-        List<Route> routes = phaseDetectService.getPhaseDetectData().getReadRoutes();
+        List<Route> routes = phaseDetectService.getPhaseDetectResult().getTestData().getReadRoutes();
         List<Route> broadcastRoutes = Lists.newArrayList();
         for(Route route : routes){
             String value = request.getParameter("read_route_" + route.getId());
@@ -185,16 +181,15 @@ public class PhaseDetectController {
                 broadcastRoutes.add(route);
             }
         }
-        phaseDetectService.getPhaseDetectData().setBroadcastRoutes(broadcastRoutes);
+        phaseDetectService.getPhaseDetectResult().getTestData().setBroadcastRoutes(broadcastRoutes);
         return "redirect:clearPhaseData";
     }
     
     @RequestMapping("clearPhaseData")
     public String clearPhaseData(ModelMap model) {
-        model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
+        model.addAttribute("substationName", phaseDetectService.getPhaseDetectResult().getTestData().getSubstationName());
         return "phaseDetect/clearPhaseData.jsp";
     }
-    
     
     @RequestMapping(value="clear", method=RequestMethod.POST)
     public String clear(LiteYukonUser user, ModelMap model, HttpServletRequest request) throws ServletException {
@@ -221,7 +216,7 @@ public class PhaseDetectController {
     
     @RequestMapping("testSettings")
     public String testSettings(ModelMap model, HttpServletRequest request) {
-        model.addAttribute("substationName", phaseDetectService.getPhaseDetectData().getSubstationName());
+        model.addAttribute("substationName", phaseDetectService.getPhaseDetectResult().getTestData().getSubstationName());
         return "phaseDetect/testSettings.jsp";
     }
     
@@ -232,29 +227,29 @@ public class PhaseDetectController {
             phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
-        if(intervalLength < 15 || intervalLength > 60) intervalLength = 30;
-        if(deltaVoltage < -4 || deltaVoltage > 4) deltaVoltage = 2;
-        if(numIntervals < 4 || numIntervals > 6) numIntervals = 6;
-        phaseDetectService.getPhaseDetectData().setIntervalLength(intervalLength);
-        phaseDetectService.getPhaseDetectData().setDeltaVoltage(deltaVoltage);
-        phaseDetectService.getPhaseDetectData().setNumIntervals(numIntervals);
+        if (intervalLength < 15 || intervalLength > 60) intervalLength = 30;
+        if (deltaVoltage < -4 || deltaVoltage > 4) deltaVoltage = 2;
+        if (numIntervals < 4 || numIntervals > 6) numIntervals = 6;
+        phaseDetectService.getPhaseDetectResult().getTestData().setIntervalLength(intervalLength);
+        phaseDetectService.getPhaseDetectResult().getTestData().setDeltaVoltage(deltaVoltage);
+        phaseDetectService.getPhaseDetectResult().getTestData().setNumIntervals(numIntervals);
         return "redirect:testPage";
     }
     
     @RequestMapping("testPage")
     public String testPage(ModelMap model, YukonUserContext userContext) {
-        List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectData().getSubstationId());
+        List<SimpleDevice> devicesOnSub = getDevicesOnSub(phaseDetectService.getPhaseDetectResult().getTestData().getSubstationId());
         if(phaseDetectService.getPhaseDetectState() == null){
             return "redirect:home"; /* Redirect to start page if no test is in progress */
         }
 
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String errorDetectMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorDetect",
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        String errorDetectMessage = accessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorDetect",
                                                                      phaseDetectService.getPhaseDetectResult().getErrorMsg());
-        String errorReadMessage = messageSourceAccessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorRead",
+        String errorReadMessage = accessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorRead",
                                                                    phaseDetectService.getPhaseDetectResult().getErrorMsg());
         
-        model.addAttribute("data", phaseDetectService.getPhaseDetectData());
+        model.addAttribute("data", phaseDetectService.getPhaseDetectResult().getTestData());
         model.addAttribute("state", phaseDetectService.getPhaseDetectState());
         model.addAttribute("phases", Phase.getRealPhases());
         model.addAttribute("phaseA", Phase.A);
@@ -273,7 +268,7 @@ public class PhaseDetectController {
         } else {
             model.addAttribute("showReadProgress", Boolean.FALSE);
         }
-        if(phaseDetectService.getPhaseDetectData().isReadAfterAll()){
+        if(phaseDetectService.getPhaseDetectResult().getTestData().isReadAfterAll()){
             return "phaseDetect/phaseTestPage.jsp";
         } else {
             if(readCanceled){
@@ -285,20 +280,23 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(value="startTest", method=RequestMethod.POST)
-    public View startTest(String phase, ModelMap model, LiteYukonUser user) {
+    public @ResponseBody Map<String, Object> startTest(String phase, LiteYukonUser user) {
+        
+        Map<String , Object> json = new HashMap<>();
+        
         try {
             Phase phaseEnumValue = Phase.valueOf(phase);
             phaseDetectService.startPhaseDetect(user, phaseEnumValue); /* Will block until done */
-            model.addAttribute("phase", phase);
-            model.addAttribute("complete", phaseDetectService.getPhaseDetectState().isPhaseDetectComplete());
+            json.put("phase", phase);
+            json.put("complete", phaseDetectService.getPhaseDetectState().isPhaseDetectComplete());
             String errorMsg = phaseDetectService.getPhaseDetectResult().getErrorMsg();
-            if(StringUtils.isNotBlank(errorMsg)) {
-                model.addAttribute("errorOccurred", Boolean.TRUE);
-                model.addAttribute("errorMsg", StringUtils.abbreviate(errorMsg, 80));
+            if (StringUtils.isNotBlank(errorMsg)) {
+                json.put("errorOccurred", true);
+                json.put("errorMsg", StringUtils.abbreviate(errorMsg, 80));
                 phaseDetectService.getPhaseDetectState().setTestStep("send");
             } else {
-                model.addAttribute("errorOccurred", Boolean.FALSE);
-                if(phaseDetectService.getPhaseDetectData().isReadAfterAll()){
+                json.put("errorOccurred", false);
+                if(phaseDetectService.getPhaseDetectResult().getTestData().isReadAfterAll()){
                     if(phaseDetectService.getPhaseDetectState().isPhaseDetectComplete()){
                         phaseDetectService.getPhaseDetectState().setTestStep("read");
                     } else {
@@ -313,7 +311,7 @@ public class PhaseDetectController {
             log.debug("user canceled phase detection before test could be started");
         }
         
-        return new JsonView();
+        return json;
     }
     
     @RequestMapping(method=RequestMethod.POST, value="readPhase")
@@ -321,7 +319,7 @@ public class PhaseDetectController {
             throws JsonProcessingException {
         phaseDetectService.getPhaseDetectState().setReadCanceled(false);
         List<SimpleDevice> devicesOnSub = Lists.newArrayList();
-        for(Route route : phaseDetectService.getPhaseDetectData().getReadRoutes()){
+        for(Route route : phaseDetectService.getPhaseDetectResult().getTestData().getReadRoutes()){
             List<SimpleDevice> devicesOnRoute = deviceDao.getDevicesForRouteId(route.getId());
             Iterable<SimpleDevice> phaseDetectDevices = paoDefinitionDao.filterPaosForTag(devicesOnRoute, PaoTag.PHASE_DETECT);
             Iterables.addAll(devicesOnSub, phaseDetectDevices);
@@ -341,12 +339,12 @@ public class PhaseDetectController {
         }
         
         Map<String, Object> json = new HashMap<>();
-        Boolean success = StringUtils.isBlank(phaseDetectService.getPhaseDetectResult().getErrorMsg());
+        boolean success = StringUtils.isBlank(phaseDetectService.getPhaseDetectResult().getErrorMsg());
         json.put("success", success);
-        Boolean complete = phaseDetectService.getPhaseDetectState().isPhaseReadComplete();
+        boolean complete = phaseDetectService.getPhaseDetectState().isPhaseReadComplete();
         
-        if(success){
-            if(complete || phaseDetectService.getPhaseDetectData().isReadAfterAll()){
+        if (success) {
+            if (complete || phaseDetectService.getPhaseDetectResult().getTestData().isReadAfterAll()){
                 phaseDetectService.getPhaseDetectState().setTestStep("results");
             } else {
                 phaseDetectService.getPhaseDetectState().setTestStep("clear");
@@ -355,7 +353,7 @@ public class PhaseDetectController {
             phaseDetectService.getPhaseDetectState().setTestStep("read");
         }
         
-        if(!phaseDetectService.getPhaseDetectData().isReadAfterAll()){
+        if (!phaseDetectService.getPhaseDetectResult().getTestData().isReadAfterAll()) {
             json.put("phase", phase);
             json.put("complete", complete);
         }
@@ -364,26 +362,31 @@ public class PhaseDetectController {
         model.addAttribute("errorMsg", phaseDetectService.getPhaseDetectResult().getErrorMsg());
         model.addAttribute("id", phaseDetectService.getPhaseDetectResult().getCommandRequestExecutionIdentifier().getCommandRequestExecutionId());
         model.addAttribute("totalCount", devicesOnSub.size());
+        
         return "phaseDetect/readPhaseResults.jsp";
     }
     
     @RequestMapping("cancelRead")
-    public String cancelRead(ModelMap model, LiteYukonUser user){
+    public String cancelRead(ModelMap model, LiteYukonUser user) {
+        
         phaseDetectService.cancelReadPhaseDetect(user);
         phaseDetectService.getPhaseDetectState().setReadCanceled(true);
         phaseDetectService.getPhaseDetectState().setTestStep("read");
+        
         return "redirect:testPage";
     }
     
     @RequestMapping("cancelTest")
-    public String cancelTest(LiteYukonUser user){
+    public String cancelTest(LiteYukonUser user) {
+        
         phaseDetectService.cancelTest(user);
+        
         return "redirect:home";
     }
     
     @RequestMapping("sendClearFromTestPage")
-    public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response)
-            throws JsonProcessingException {
+    public String sendClearFromTestPage(LiteYukonUser user, ModelMap model, HttpServletResponse response) throws JsonProcessingException {
+        
         phaseDetectService.clearPhaseData(user);/* Will block until done */
         String errorReason = phaseDetectService.getPhaseDetectResult().getErrorMsg();
         Boolean success = StringUtils.isBlank(errorReason);
@@ -393,37 +396,45 @@ public class PhaseDetectController {
         }
         response.addHeader("X-JSON", JsonUtils.toJson(Collections.singletonMap("success", success)));
         model.addAttribute("errorReason", errorReason);
+        
         return "phaseDetect/testPageClearResult.jsp";
     }
     
     @RequestMapping("phaseDetectResults")
     public String phaseDetectResults(ModelMap model, LiteYukonUser user, HttpServletRequest request) throws ServletException {
+        
         String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
         if (cancelButton != null) { /* Cancel Test */
             phaseDetectService.cancelTest(user);
             return "redirect:home";
         }
-        if(phaseDetectService.getPhaseDetectResult() != null){
-            phaseDetectService.getPhaseDetectResult().setTestData(phaseDetectService.getPhaseDetectData());
-            String cacheKey = phaseDetectService.cacheResults();
-            model.addAttribute("cacheKey", cacheKey);
-            resultCopy = phaseDetectService.getPhaseDetectResult();
-            dataCopy = phaseDetectService.getPhaseDetectData();
+        
+        PhaseDetectResult result = null;
+        String cacheKey = null;
+        try {
+            result = phaseDetectService.getPhaseDetectResult();
+            cacheKey = phaseDetectService.cacheResults();
             phaseDetectService.setPhaseDetectResult(null);
-            phaseDetectService.setPhaseDetectData(null);
             phaseDetectService.setPhaseDetectState(null);
-        } else {
-            String cacheKey = phaseDetectService.getLastCachedResultKey();
-            if(cacheKey != null){
-                model.addAttribute("cacheKey", cacheKey);
+        } catch (PhaseDetectCancelledException e) {
+            cacheKey = phaseDetectService.getLastCachedResultKey();
+            if (cacheKey != null) {
+                result = phaseDetectResultsCache.getResult(cacheKey);
             }
         }
-        model.addAttribute("data", dataCopy);
-        model.addAttribute("result", resultCopy);
-        List<PlcMeter> phaseAMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.A));
-        List<PlcMeter> phaseBMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.B));
-        List<PlcMeter> phaseCMeters = getMeterListForGroup(resultCopy.getPhaseToGroupMap().get(Phase.C));
-        List<PlcMeter> undefinedMeters = getUndefinedMeters();
+        
+        if (result == null) {
+            throw new IllegalArgumentException("No Results");
+        }
+        
+        model.addAttribute("cacheKey", cacheKey);
+        
+        model.addAttribute("data", result.getTestData());
+        model.addAttribute("result", result);
+        List<PlcMeter> phaseAMeters = getMeterListForGroup(result.getPhaseToGroupMap().get(Phase.A));
+        List<PlcMeter> phaseBMeters = getMeterListForGroup(result.getPhaseToGroupMap().get(Phase.B));
+        List<PlcMeter> phaseCMeters = getMeterListForGroup(result.getPhaseToGroupMap().get(Phase.C));
+        List<PlcMeter> undefinedMeters = getUndefinedMeters(result);
         
         model.addAttribute("phaseAMeters", phaseAMeters);
         model.addAttribute("phaseAMetersSize", phaseAMeters.size());
@@ -434,22 +445,23 @@ public class PhaseDetectController {
         model.addAttribute("undefinedMeters", undefinedMeters);
         model.addAttribute("undefinedMetersSize", undefinedMeters.size());
         Map<PlcMeter, String> failureMetersMap = Maps.newHashMap();
-        for(SimpleDevice device : resultCopy.getFailureGroupMap().keySet()){
+        
+        for (SimpleDevice device : result.getFailureGroupMap().keySet()) {
             PlcMeter meter = meterDao.getPlcMeterForId(device.getDeviceId());
-            String error = resultCopy.getFailureGroupMap().get(device);
+            String error = result.getFailureGroupMap().get(device);
             failureMetersMap.put(meter, error);
         }
         model.addAttribute("failureMetersMap", failureMetersMap);
         model.addAttribute("failureMeters", failureMetersMap.keySet());
         model.addAttribute("failureMetersSize", failureMetersMap.keySet().size());
         
-        DeviceCollection phaseACollection = deviceGroupCollectionHelper.buildDeviceCollection(resultCopy.getPhaseToGroupMap().get(Phase.A));
+        DeviceCollection phaseACollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getPhaseToGroupMap().get(Phase.A));
         model.addAttribute("phaseACollection", phaseACollection);
         
-        DeviceCollection phaseBCollection = deviceGroupCollectionHelper.buildDeviceCollection(resultCopy.getPhaseToGroupMap().get(Phase.B));
+        DeviceCollection phaseBCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getPhaseToGroupMap().get(Phase.B));
         model.addAttribute("phaseBCollection", phaseBCollection);
         
-        DeviceCollection phaseCCollection = deviceGroupCollectionHelper.buildDeviceCollection(resultCopy.getPhaseToGroupMap().get(Phase.C));
+        DeviceCollection phaseCCollection = deviceGroupCollectionHelper.buildDeviceCollection(result.getPhaseToGroupMap().get(Phase.C));
         model.addAttribute("phaseCCollection", phaseCCollection);
         
         StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
@@ -508,13 +520,16 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("chart")
-    public @ResponseBody Map<String, Object> chart() {
-        Map<String, Integer> phaseResultsMap = getChartPhaseResults();
+    public @ResponseBody Map<String, Object> chart(String key) {
+        
+        Map<String, Integer> phaseResultsMap = getChartPhaseResults(phaseDetectResultsCache.getResult(key));
         Map<String, Object> phaseDetectResults = flotChartService.getPieGraphData(phaseResultsMap);
+        
         return phaseDetectResults;
     }
 
-    private Map<String, Integer> getChartPhaseResults() {
+    private Map<String, Integer> getChartPhaseResults(PhaseDetectResult result) {
+        
         Map<String, Integer> phaseResultsMap = Maps.newHashMap();
         try {
             DeviceGroup aGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.A);
@@ -540,10 +555,10 @@ public class PhaseDetectController {
             phaseResultsMap.put("phaseC", 0);
         }
         
-        List<PlcMeter> undefinedMeters = getUndefinedMeters();
+        List<PlcMeter> undefinedMeters = getUndefinedMeters(result);
         phaseResultsMap.put("undefined", undefinedMeters.size());
         
-        if(!dataCopy.isReadAfterAll()){
+        if (!result.getTestData().isReadAfterAll()) {
             try {
                 DeviceGroup abGroup =  deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.AB);
                 int groupABCount = deviceGroupService.getDeviceCount(Collections.singletonList(abGroup));
@@ -579,29 +594,29 @@ public class PhaseDetectController {
         return phaseResultsMap;
     }
     
-    private List<PlcMeter> getUndefinedMeters(){
-        List<SimpleDevice> allDevices = getDevicesOnSub(dataCopy.getSubstationId());
+    private List<PlcMeter> getUndefinedMeters(PhaseDetectResult result) {
+        List<SimpleDevice> allDevices = getDevicesOnSub(result.getTestData().getSubstationId());
         List<PlcMeter> undefinedMeters = Lists.newArrayList();
-        List<SimpleDevice> phaseADevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.A));
-        List<SimpleDevice> phaseBDevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.B));
-        List<SimpleDevice> phaseCDevices = deviceGroupMemberEditorDao.getChildDevices(resultCopy.getPhaseToGroupMap().get(Phase.C));
+        List<SimpleDevice> phaseADevices = deviceGroupMemberEditorDao.getChildDevices(result.getPhaseToGroupMap().get(Phase.A));
+        List<SimpleDevice> phaseBDevices = deviceGroupMemberEditorDao.getChildDevices(result.getPhaseToGroupMap().get(Phase.B));
+        List<SimpleDevice> phaseCDevices = deviceGroupMemberEditorDao.getChildDevices(result.getPhaseToGroupMap().get(Phase.C));
         List<SimpleDevice> phaseReportedDevices = Lists.newArrayList();
         phaseReportedDevices.addAll(phaseADevices);
         phaseReportedDevices.addAll(phaseBDevices);
         phaseReportedDevices.addAll(phaseCDevices);
-        phaseReportedDevices.addAll(resultCopy.getFailureGroupMap().keySet());
+        phaseReportedDevices.addAll(result.getFailureGroupMap().keySet());
         
-        for(SimpleDevice device : phaseReportedDevices){
+        for (SimpleDevice device : phaseReportedDevices) {
             allDevices.remove(device);
         }
-        for(SimpleDevice device : allDevices){
+        for (SimpleDevice device : allDevices) {
             PlcMeter meter = meterDao.getPlcMeterForId(device.getDeviceId());
             undefinedMeters.add(meter);
         }
         return undefinedMeters;
     }
     
-    private List<SimpleDevice> getDevicesOnSub(int subId){
+    private List<SimpleDevice> getDevicesOnSub(int subId) {
         List<Integer> routeIds = strmDao.getRouteIdsBySubstationId(subId);
         List<SimpleDevice> devicesOnSub = Lists.newArrayList();
         
@@ -614,7 +629,7 @@ public class PhaseDetectController {
         return devicesOnSub;
     }
     
-    private List<PlcMeter> getMeterListForGroup(StoredDeviceGroup group){
+    private List<PlcMeter> getMeterListForGroup(StoredDeviceGroup group) {
         List<SimpleDevice> devices = deviceGroupMemberEditorDao.getChildDevices(group);
         List<PlcMeter> meters = Lists.newArrayList();
         for(SimpleDevice device : devices){

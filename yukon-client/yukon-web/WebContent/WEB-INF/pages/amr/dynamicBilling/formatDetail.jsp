@@ -106,15 +106,15 @@ BILLING_ERRORS = {
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="action-area">
+                        <div class="page-action-area">
                             <cti:msg2 key=".moveUp" var="moveUp"/>
                             <cti:msg2 key=".moveDown" var="moveDown"/>
                             <cti:msg2 key=".remove" var="remove"/>
                             <cti:msg2 key=".addFields" var="addFields"/>
-                            <input type="button" class="button fl" id="upArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" value="${moveUp}" disabled="disabled">
-                            <input type="button" class="button fl" id="downArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" value="${moveDown}" disabled="disabled">
-                            <input type="button" class="button fl" id="removeButton" onclick="removeFromSelected();" value="${remove}" disabled="disabled">
-                            <input type="button" class="button fl" id="addButton" onclick="addFieldButton();" value="${addFields}">
+                            <cti:button id="upArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" label="${moveUp}" disabled="true"/>
+                            <cti:button id="downArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" label="${moveDown}" disabled="true"/>
+                            <cti:button id="removeButton" onclick="removeFromSelected();" label="${remove}" disabled="true"/>
+                            <cti:button id="addButton" onclick="addFieldButton();" label="${addFields}"/>
                             
                         </div>
                         
@@ -128,8 +128,8 @@ BILLING_ERRORS = {
                             </select>&nbsp;
                             <cti:msg2 key=".add" var="add" />
                             <cti:msg2 key=".done" var="done" />
-                            <input type="button" onclick="addToSelected('${defaultRoundingMode}');" value="${add}"><br>
-                            <input type="button" onclick="addFieldButton();" value="${done}">
+                            <cti:button onclick="addToSelected('${defaultRoundingMode}');" label="${add}"/>
+                            <cti:button onclick="addFieldButton();" label="${done}"/>
                         </div>
                     </div>
                     </ct:sectionContainer2>
@@ -289,7 +289,7 @@ BILLING_ERRORS = {
         
         <%--  FORMAT PREVIEW --%>        
         <ct:sectionContainer2 nameKey=".previewAndSave" id="dbgFormatPreview" styleClass="clear">
-            <div id="preview"></div>
+            <pre id="preview"></pre>
             <script type="text/javascript"> 
                 updatePreview();
                 updateFormatName();

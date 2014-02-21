@@ -38,8 +38,7 @@
 
      <div class="page-action-area">
          <cti:button nameKey="save" type="submit" classes="f-blocker"/>
-         
-         <button type="submit" name="cancel"><i:inline key=".cancel"/></button>
+         <cti:button type="submit" name="cancel" nameKey="cancel"/>
      </div>
 
     </tags:sectionContainer2>

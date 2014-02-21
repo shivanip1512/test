@@ -1,6 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
 
 <cti:url var="routeUrl" value="/adminSetup/substations/routeMapping/viewRoute" />
 <cti:url var="deleteUrl" value="/adminSetup/substations/routeMapping/removeRoute" />
@@ -23,21 +25,17 @@
             <td class="vab">
                 <div class="pa T0">
 	                <div style="padding-bottom: 5px">
-	                    <input type="button" value="&#9650" class="button" name="up"
-	                        onclick="javascript:yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-up" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1);"/>
 	                </div>
 	                <div>
-	                    <input type="button" value="&#9660" class="button" name="down"
-	                        onclick="javascript:yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-down" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1);"/>
 	                </div>
                 </div>
                 <div style="padding-top: 55px">
-                    <input type="button" value="Delete" class="button" name="removeRoute"
-                        onclick="javascript:SubstationToRouteMappings_removeRoute()" />
+                    <cti:button nameKey="delete" onclick="SubstationToRouteMappings_removeRoute()"/>
                 </div>
                 <div style="padding-top: 15px">
-                    <input id="update_button" type="button" class="button" value="Apply" name="Update"
-                        onclick='javascript:SubstationToRouteMappings_updateRoutes("${updateUrl}")' />
+                    <cti:button label="Apply" onclick="SubstationToRouteMappings_updateRoutes('${updateUrl}')"/>
                 </div>
             </td>
         </tr>
@@ -57,10 +55,10 @@
                 </select>
             </td>
             <td class="vab">
-                <input type="button" value="Add" name="add" class="button"
-                    onclick="javascript:SubstationToRouteMappings_addRoute()" />
+                <cti:button nameKey="add" onclick="SubstationToRouteMappings_addRoute();"/>
             </td>
         </tr>
     </table>
 
 </form>
+</cti:msgScope>

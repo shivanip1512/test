@@ -1,8 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="requestTypeLabel" key="yukon.common.device.schedules.home.requestType"/>
 <cti:msg var="attibuteRequestTypeLabel" key="yukon.common.device.schedules.home.requestType.attribute"/>
@@ -33,7 +33,7 @@
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">
-        	<div class="error stacked">${errorMsg}</div>
+            <div class="error stacked">${errorMsg}</div>
         </c:if>
         
         <%-- DEVICE GROUP JSON DATA --%>
@@ -42,173 +42,182 @@
         <%-- TOGGLE/DELETE FORMS --%>
         <form id="toggleJobEnabledForm" action="/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
             <cti:csrfToken/>
-			<input type="hidden" name="toggleJobId" value="${editJobId}">
-		</form>
-		
-		<form id="disabledAndDeleteJobForm" action="/group/scheduledGroupRequestExecution/deleteJob" method="post">
+            <input type="hidden" name="toggleJobId" value="${editJobId}">
+        </form>
+        
+        <form id="disabledAndDeleteJobForm" action="/group/scheduledGroupRequestExecution/deleteJob" method="post">
             <cti:csrfToken/>
-			<input type="hidden" name="deleteJobId" value="${editJobId}">
-		</form>
-							
+            <input type="hidden" name="deleteJobId" value="${editJobId}">
+        </form>
+                            
         <%-- TABS --%>
-		<cti:tabbedContentSelector>
-		        
-			<%-- ATTRIBUTE TAB --%>
-			<cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
-        		
-				<form id="scheduledGroupRequestExecutionForm_attr" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
-        		  <cti:csrfToken/>
-        		 	<input type="hidden" name="editJobId" value="${editJobId}">
-        		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
-        		 	<cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
-        		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
-        		 	
-        		 	<cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_" />
-        		 	<input type="hidden" name="cronTagId" value="${cronTagId_attr}">
+        <cti:tabbedContentSelector>
+                
+            <%-- ATTRIBUTE TAB --%>
+            <cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
+                
+                <form id="scheduledGroupRequestExecutionForm_attr" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
+                  <cti:csrfToken/>
+                     <input type="hidden" name="editJobId" value="${editJobId}">
+                     <input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
+                     <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
+                     <input type="hidden" name="formUniqueId" value="${formUniqueId}">
+                     
+                     <cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_" />
+                     <input type="hidden" name="cronTagId" value="${cronTagId_attr}">
                     <tags:setFormEditMode mode="${mode}" />
-        		 
-        		 	<tags:nameValueContainer>
-        		 	
-        		 		<tags:nameValue name="${scheduleNameLabel}">
-        		 			<input type="text" name="scheduleName" value="${scheduleName}">
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValueGap gapHeight="${take12}"/>
-        		 		
-        		 		<cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
-        		 		<tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
-        		 			<tags:attributeSelector fieldName="attribute" attributes="${allGroupedReadableAttributes}" 
+                 
+                     <tags:nameValueContainer>
+                     
+                         <tags:nameValue name="${scheduleNameLabel}">
+                             <input type="text" name="scheduleName" value="${scheduleName}">
+                         </tags:nameValue>
+                         
+                         <tags:nameValueGap gapHeight="${take12}"/>
+                         
+                         <cti:msg var="selectAttributeLabel" key="yukon.common.device.commander.attributeSelector.selectAttribute"/>
+                         <tags:nameValue name="${selectAttributeLabel}" nameColumnWidth="160px">
+                             <tags:attributeSelector fieldName="attribute" attributes="${allGroupedReadableAttributes}" 
                                 selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
-        		 		</tags:nameValue>
-        		 	
-        		 		<tags:nameValueGap gapHeight="${take10}"/>
-        		 		
-        		 		<tags:nameValue id="attributeDeviceGroups" name="${groupLabel}">
-        		 			<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
-												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValueGap gapHeight="${take12}"/>
-        		 		
-        		 		<tags:nameValue name="${timeFrequencyLabel}">
-        		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValue name="${retryLabel}">
-        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
-        		 		</tags:nameValue>
-        		 		
-        		 		<cti:displayForPageEditModes modes="EDIT">
-	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.schedules.state.${status}"/>
-	        		 		</tags:nameValue>
-	        		 	</cti:displayForPageEditModes>
-        		 		
-        			</tags:nameValueContainer>
-        			
-        		</form>
-        			
-                <div class="page-action-area">	
-					<cti:displayForPageEditModes modes="CREATE">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-					</cti:displayForPageEditModes>
-					
-					<cti:displayForPageEditModes modes="EDIT">
-						
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-						
-						<c:if test="${status ne 'RUNNING'}">
-						<c:choose>
-							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-							</c:when>
-							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-							</c:otherwise>
-						</c:choose>
-						</c:if>
-						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-						
+                         </tags:nameValue>
+                     
+                         <tags:nameValueGap gapHeight="${take10}"/>
+                         
+                         <tags:nameValue id="attributeDeviceGroups" name="${groupLabel}">
+                             <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
+                                                      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
+                         </tags:nameValue>
+                         
+                         <tags:nameValueGap gapHeight="${take12}"/>
+                         
+                         <tags:nameValue name="${timeFrequencyLabel}">
+                             <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+                         </tags:nameValue>
+                         
+                         <tags:nameValue name="${retryLabel}">
+                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
+                         </tags:nameValue>
+                         
+                         <cti:displayForPageEditModes modes="EDIT">
+                             <tags:nameValue name="${scheduleStateLabel}">
+                                 <cti:msg key="yukon.common.device.schedules.state.${status}"/>
+                             </tags:nameValue>
+                         </cti:displayForPageEditModes>
+                         
+                    </tags:nameValueContainer>
+                    
+                </form>
+                    
+                <div class="page-action-area">    
+                    <cti:displayForPageEditModes modes="CREATE">
+                        <cti:button onclick="jQuery('#scheduledGroupRequestExecutionForm_attr').submit();" 
+                            label="${scheduleButtonText}" 
+                            busy="true"
+                            classes="primary action"/>
+                    </cti:displayForPageEditModes>
+                    
+                    <cti:displayForPageEditModes modes="EDIT">
+                        
+                        <cti:button onclick="jQuery('#scheduledGroupRequestExecutionForm_attr').submit();" 
+                            label="${updateButtonText}" 
+                            busy="true"
+                            classes="primary action"/>
+                        <c:if test="${status ne 'RUNNING'}">
+                            <c:choose>
+                                <c:when test="${disabled}">
+                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
+                        
+                        <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
+                            label="${disableAndDeleteJobButtonText}" 
+                            busy="true" 
+                            classes="delete"/>
                     </cti:displayForPageEditModes>
                 </div>
-        	</cti:tabbedContentSelectorContent>
-        	
-        	<%-- COMMAND TAB --%>
-        	<cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
-        	
-        		<form id="scheduledGroupRequestExecutionForm_cmd" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
+            </cti:tabbedContentSelectorContent>
+            
+            <%-- COMMAND TAB --%>
+            <cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
+            
+                <form id="scheduledGroupRequestExecutionForm_cmd" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
                     <cti:csrfToken/>
-        		 	<input type="hidden" name="editJobId" value="${editJobId}">
-        		 	<input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
-        		 	<cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />
-        		 	<input type="hidden" name="formUniqueId" value="${formUniqueId}">
-        		 	
-        		 	<tags:nameValueContainer>
-        		 	
-        		 		<tags:nameValue name="${scheduleNameLabel}">
-        		 			<input type="text" name="scheduleName" value="${scheduleName}">
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValueGap gapHeight="${take12}"/>
-        		 		
-        		 		<cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-        		 		<tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
-        		 			<amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValueGap gapHeight="${take10}"/>
-        		 		
-        		 		<tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
-							<tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
-												      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValueGap gapHeight="${take12}"/>
-        		 		
-        		 		<tags:nameValue name="${timeFrequencyLabel}">
-        		 			<tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
-        		 		</tags:nameValue>
-        		 		
-        		 		<tags:nameValue name="${retryLabel}">
-        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
-        		 		</tags:nameValue>
-        		 		
-        		 		<cti:displayForPageEditModes modes="EDIT">
-	        		 		<tags:nameValue name="${scheduleStateLabel}">
-	        		 			<cti:msg key="yukon.common.device.schedules.state.${status}"/>
-	        		 		</tags:nameValue>
-	        		 	</cti:displayForPageEditModes>
-        		 		
-        			</tags:nameValueContainer>
-        			
-        		</form>
-        			
+                     <input type="hidden" name="editJobId" value="${editJobId}">
+                     <input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
+                     <cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />
+                     <input type="hidden" name="formUniqueId" value="${formUniqueId}">
+                     
+                     <tags:nameValueContainer>
+                     
+                         <tags:nameValue name="${scheduleNameLabel}">
+                             <input type="text" name="scheduleName" value="${scheduleName}">
+                         </tags:nameValue>
+                         
+                         <tags:nameValueGap gapHeight="${take12}"/>
+                         
+                         <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+                         <tags:nameValue name="${selectCommandLabel}" nameColumnWidth="160px">
+                             <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" selectedSelectValue="${commandSelectValue}" selectedCommandString="${commandString}" includeDummyOption="true"/>  
+                         </tags:nameValue>
+                         
+                         <tags:nameValueGap gapHeight="${take10}"/>
+                         
+                         <tags:nameValue id="commandDeviceGroups" name="${groupLabel}">
+                            <tags:deviceGroupNameSelector fieldName="deviceGroupName_${formUniqueId}" fieldValue="${deviceGroupName}" 
+                                                      dataJson="${groupDataJson}" linkGroupName="true" showSelectedDevicesIcon="false"/>
+                         </tags:nameValue>
+                         
+                         <tags:nameValueGap gapHeight="${take12}"/>
+                         
+                         <tags:nameValue name="${timeFrequencyLabel}">
+                             <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
+                         </tags:nameValue>
+                         
+                         <tags:nameValue name="${retryLabel}">
+                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
+                         </tags:nameValue>
+                         
+                         <cti:displayForPageEditModes modes="EDIT">
+                             <tags:nameValue name="${scheduleStateLabel}">
+                                 <cti:msg key="yukon.common.device.schedules.state.${status}"/>
+                             </tags:nameValue>
+                         </cti:displayForPageEditModes>
+                         
+                    </tags:nameValueContainer>
+                    
+                </form>
+                    
                 <div class="page-action-area">
-					<cti:displayForPageEditModes modes="CREATE">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
-					</cti:displayForPageEditModes>
-						
-					<cti:displayForPageEditModes modes="EDIT">
-	
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
-						
-						<c:if test="${status ne 'RUNNING'}">
-						<c:choose>
-							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
-							</c:when>
-							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
-							</c:otherwise>
-						</c:choose>
-						</c:if>
-						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
-	
-				     </cti:displayForPageEditModes>
-        	   </div>
-        	</cti:tabbedContentSelectorContent>
+                    <cti:displayForPageEditModes modes="CREATE">
+                        <cti:button type="submit" label="${scheduleButtonText}" busy="true" classes="primary action"/>
+                    </cti:displayForPageEditModes>
+                        
+                    <cti:displayForPageEditModes modes="EDIT">
+    
+                        <cti:button type="submit" label="${updateButtonText}" busy="true" classes="primary action"/>
+                        <c:if test="${status ne 'RUNNING'}">
+                        <c:choose>
+                            <c:when test="${disabled}">
+                                <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
+                            </c:otherwise>
+                        </c:choose>
+                        </c:if>
+                        
+                        <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
+                            label="${disableAndDeleteJobButtonText}" 
+                            busy="true"
+                            classes="delete"/>
+    
+                     </cti:displayForPageEditModes>
+               </div>
+            </cti:tabbedContentSelectorContent>
         
         </cti:tabbedContentSelector>
             

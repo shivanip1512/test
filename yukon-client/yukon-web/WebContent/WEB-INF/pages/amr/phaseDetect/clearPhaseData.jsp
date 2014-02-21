@@ -5,50 +5,23 @@
 
 <cti:standardPage module="amr" page="phaseDetect.clearPhaseData">
     
-    <script type="text/javascript">
-
-    function startSpinner() {
-        jQuery('#spinner').show();
-    }
-
-    </script>
-    
-    <cti:url var="clearURL" value="/amr/phaseDetect/clear"/>
-    <form action="/amr/phaseDetect/clear" method="post">
+    <cti:url var="clearUrl" value="/amr/phaseDetect/clear"/>
+    <form action="${clearUrl}" method="post">
         <cti:csrfToken/>
-        <tags:sectionContainer2 nameKey="clearData">
-	        <table>
-	            <tr>
-	                <td style="vertical-align: top;">
-				        <table style="padding-right: 20px;">
-				            <tr>
-				                <td>
-				                   <tags:nameValueContainer2>
-				                       <tags:nameValue2 nameKey=".substation">
-				                           ${substationName}
-				                       </tags:nameValue2>
-				                   </tags:nameValueContainer2>
-				                </td>
-				                <td style="padding-left: 10px;">
-                                    <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
-				                    <input id="clear" type="submit" value="${clearPhaseData}" onclick="startSpinner();" class="button">
-				                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-				                </td>
-				            </tr>
-			            </table>
-	                </td>
-	            </tr>
-	            <tr>    
-	                <td style="vertical-align: top;">
-	                    <div id="clearDiv">
-						    <c:if test="${not empty param.errorReason}">
-						        <span class="error"><b><i:inline key=".errorSending" arguments="${param.errorReason}"/></b></span>
-						    </c:if>
-	                    </div>
-	                </td>
-	            </tr>
-	        </table>
+        <tags:sectionContainer2 nameKey="clearData" styleClass="stacked">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".substation">${substationName}</tags:nameValue2>
+            </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
+        <div id="clearDiv">
+            <c:if test="${not empty param.errorReason}">
+                <span class="error"><b><i:inline key=".errorSending" arguments="${param.errorReason}"/></b></span>
+            </c:if>
+        </div>
+        <div class="page-action-area">
+            <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
+            <cti:button id="clear" type="submit" label="${clearPhaseData}" busy="true" classes="primary action"/>
+            <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
+        </div>
     </form>
 </cti:standardPage>

@@ -114,22 +114,25 @@
                 <tr>
                     <td style="padding-top: 3px;">
                         <cti:msg2 key=".readAfterTitle" var="readAfterTitle"/>
-                        <input type="radio" name="readPhasesWhen" value="after" 
-                            title="${readAfterTitle}" 
-                            checked="checked">
+                        <label>
+                            <input type="radio" name="readPhasesWhen" value="after" title="${readAfterTitle}" checked="checked">
                             <i:inline key=".readMetersAfterAllTests"/>
+                        </label>
                     </td>
                 </tr>
                 <tr>
                     <td style="padding-top: 3px;">
                         <cti:msg2 key=".readBetweenTitle" var="readBetweenTitle"/>
-                        <input type="radio" name="readPhasesWhen" value="between" 
-                            title="${readBetweenTitle}">
+                        <label>
+                            <input type="radio" name="readPhasesWhen" value="between" title="${readBetweenTitle}">
                             <i:inline key=".readMetersBetweenTests"/>
+                        </label>
                     </td>
                 </tr>
             </table>
         </tags:sectionContainer2>
-        <cti:button id="nextButton" nameKey="next" name="next" type="submit" disabled="true" />
+        <div class="page-action-area">
+            <cti:button id="nextButton" nameKey="next" name="next" type="submit" disabled="true" classes="primary action"/>
+        </div>
     </form>
 </cti:standardPage>

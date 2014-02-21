@@ -32,15 +32,15 @@
         <c:if test="${job.disabled}">
             <form action="enableJob" method="post">
                 <cti:csrfToken/>
-            <input type="hidden" name="jobId" value="${job.id}">
-            <input type="submit" value="Enable">
+                <input type="hidden" name="jobId" value="${job.id}">
+                <cti:button type="submit" nameKey="enable"/>
             </form>
         </c:if>
         <c:if test="${!job.disabled}">
             <form action="disableJob" method="post">
                 <cti:csrfToken/>
-            <input type="hidden" name="jobId" value="${job.id}">
-            <input type="submit" value="Disable">
+                <input type="hidden" name="jobId" value="${job.id}">
+                <cti:button type="submit" nameKey="disable"/>
             </form>
         </c:if>
         <c:choose>

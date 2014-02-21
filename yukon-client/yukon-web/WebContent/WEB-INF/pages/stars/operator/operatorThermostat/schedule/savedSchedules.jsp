@@ -114,7 +114,7 @@ jQuery(function(){
                 </div>
                 <br>
                 <c:if test="${not empty schedules}">
-                    <tags:sectionContainer2 nameKey="otherSchedules">
+                    <tags:sectionContainer2 nameKey="otherSchedules" styleClass="stacked">
                         <c:forEach var="schedule" items="${schedules}" >
                             <tags:thermostatScheduleWidget schedule="${schedule}"
                                 thermostatId="${thermostatId}"
@@ -123,7 +123,7 @@ jQuery(function(){
                                 temperatureUnit="${temperatureUnit}"
                                 actionPath="/stars/operator/thermostatSchedule"
                                 thermostatType="${thermostatType}"
-                                styleClass="vh"/>
+                                styleClass="vh stacked"/>
                         </c:forEach>    
                     </tags:sectionContainer2>
                 </c:if>

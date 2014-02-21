@@ -43,20 +43,20 @@
                 
                 <tags:nameValue2 nameKey=".dateRange">
                     <span class="dateRangeInputField">
-						<dt:dateRange startPath="startDate" endPath="stopDate" />
+                        <dt:dateRange startPath="startDate" endPath="stopDate" />
                     </span>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
 
             <div class="action-area">
-                <button type="submit"><i class="icon icon-filter"></i><span class="b-label"><i:inline key=".filterButton"/></span></button>
+                <cti:button type="submit" nameKey="filter" classes="primary action fl"/>
                 <c:choose>
                     <c:when test="${maxCsvRows > searchResult.hitCount}">
-                        <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
+                        <cti:button nameKey="download" href="${csvLink}" icon="icon-page-excel"/>
                     </c:when>
                     <c:otherwise>
-                    <cti:button nameKey="csvExport" id="csvExportButton" icon="icon-page-excel" href="${csvLink}"/>
+                        <cti:button nameKey="download" id="csvExportButton" icon="icon-page-excel" href="${csvLink}"/>
                         <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
                     </c:otherwise>
                 </c:choose>

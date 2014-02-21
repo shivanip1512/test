@@ -46,11 +46,10 @@
 
             <div>
                 <br>
-                <span style="padding-right: 0.5em;">
-                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.save'/>"></input>
-                </span>
-                <input type="button" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.cancel'/>"
-                       onclick="javascript:location.href='${optOutUrl}';"></input>
+                <cti:msg key="yukon.dr.consumer.optoutconfirm.save" var="save"/>
+                <cti:msg key="yukon.dr.consumer.optoutconfirm.cancel" var="cancel"/>
+                <cti:button type="submit" value="${save}" label="${save}"/>
+                <cti:button label="${cancel}" href="${optOutUrl}"/>
             </div>
         </form:form>
     </div>

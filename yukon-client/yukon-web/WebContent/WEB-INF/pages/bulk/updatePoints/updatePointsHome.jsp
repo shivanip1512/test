@@ -55,11 +55,19 @@ function fieldToModifyChanged() {
                     <tags:nameValue name="${maskExistingPointsOptionLabel}">
                         <c:choose>
                             <c:when test="${not maskExistingPoints}">
-                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsFalseOptionText}" title="${maskExistingPointsFalseOptionTooltip}" style="margin: 0;">
+                                <cti:button type="submit" 
+                                    name="maskExistingPointsSubmitButton" 
+                                    label="${maskExistingPointsFalseOptionText}" 
+                                    value="${maskExistingPointsFalseOptionText}" 
+                                    title="${maskExistingPointsFalseOptionTooltip}"/>
                                 <cti:icon icon="icon-help" id="mask_help" classes="cp"/>
                             </c:when>
                             <c:otherwise>
-                                <input type="submit" name="maskExistingPointsSubmitButton" value="${maskExistingPointsTrueOptionText}" title="${maskExistingPointsTrueOptionTooltip}" style="margin: 0;">
+                                <cti:button type="submit" 
+                                    name="maskExistingPointsSubmitButton" 
+                                    label="${maskExistingPointsTrueOptionText}" 
+                                    value="${maskExistingPointsTrueOptionText}" 
+                                    title="${maskExistingPointsTrueOptionTooltip}"/>
                                 <cti:icon icon="icon-help" id="mask_help" classes="cp"/>
                             </c:otherwise>
                         </c:choose>

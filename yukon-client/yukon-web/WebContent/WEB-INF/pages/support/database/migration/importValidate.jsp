@@ -153,7 +153,6 @@
             <span style="font-size:11px;">${noteText}</span>
 
         </tags:sectionContainer>
-        <br><br>
         
         <%-- COMMIT --%>
         <form id="cancelForm" action="/support/database/migration/home" method="post">
@@ -167,12 +166,11 @@
             <input type="hidden" id="warningProcessingValue" name="warningProcessingValue" value="USE_EXISTING">
         </form>
         
-        <tags:slowInput myFormId="confirmForm" label="${commitFile}"/>
-        <tags:slowInput myFormId="cancelForm" label="${cancel}"/>
+        <div class="page-action-area">
+            <cti:button onclick="jQuery('#confirmForm).submit();" label="${commitFile}"/>
+            <cti:button onclick="jQuery('#cancelForm).submit();" label="${cancel}"/>
+        </div>
 
    </tags:boxContainer>
-       
    
-    
-    
 </cti:standardPage>

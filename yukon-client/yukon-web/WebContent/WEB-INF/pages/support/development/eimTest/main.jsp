@@ -126,7 +126,8 @@ jQuery(function() {
         </tags:nameValueContainer2>
 
         <div class="page-action-area">
-            <button class="f-blocker" type="submit"><cti:msg2 key=".submitRequest"/></button>
+            <cti:msg2 var="submitRequest" key=".submitRequest"/>
+            <cti:button classes="f-blocker" type="submit" label="${submitRequest}"/>
             <label>
                 <input id="formatResponse" type="checkbox" checked="checked">
                 <i:inline key=".formatResponse"/>

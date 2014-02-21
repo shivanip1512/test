@@ -27,22 +27,21 @@
             type: 'POST',
             dataType: 'json'
         }).done( function (data, textStatus, jqXHR) {
-            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
-            if (json.errorOccurred) {
+            if (data.errorOccurred) {
                 jQuery('#spinner').hide();
-                jQuery('#actionResultDiv').html(errorDetectMessage);
+                jQuery('#actionResultDiv').html(errorDetectMsg);
                 jQuery('#actionResultDiv').show();
                 jQuery('#sendDetectButton').val(sendMsg);
                 jQuery('#sendDetectButton').prop({'disabled': false});
             } else {
                 jQuery('#sendDetectButton').val(sendMsg);
-                jQuery('#' + json.phase).show();
+                jQuery('#' + data.phase).show();
                 jQuery('#spinner').hide();
                 startTimers();
             }
         }).fail( function (jqXHR, textStatus) {
             jQuery('#spinner').hide();
-            jQuery('#actionResultDiv').html(errorDetectMessage);
+            jQuery('#actionResultDiv').html(errorDetectMsg);
             jQuery('#actionResultDiv').show();
             jQuery('#sendDetectButton').val(sendMsg);
             jQuery('#sendDetectButton').prop({'disabled': false});
@@ -113,10 +112,10 @@
                 }
             } else {
                 jQuery('#actionResultDiv').show();
-                jQuery('#actionResultDiv').html(errorReadMessage);
+                jQuery('#actionResultDiv').html(errorReadMsg);
             }
         }).fail( function (jqXHR, textStatus) {
-            jQuery('#actionResultDiv').html(errorReadMessage);
+            jQuery('#actionResultDiv').html(errorReadMsg);
             jQuery('#actionResultDiv').show();
         });
     }
@@ -160,79 +159,69 @@
                  <td style="font-size:11px;"><i:inline key=".noteText"/></td>
             </tr>
         </table>
-        <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".substation">
-                ${data.substationName}
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".intervalLength">
-                ${data.intervalLength}
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".deltaVoltage">
-                ${data.deltaVoltage}
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".numOfIntervals">
-                ${data.numIntervals}
-            </tags:nameValue2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
+            <tags:nameValue2 nameKey=".substation">${data.substationName}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".intervalLength">${data.intervalLength}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".deltaVoltage">${data.deltaVoltage}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".numOfIntervals">${data.numIntervals}</tags:nameValue2>
             <tags:nameValue2 nameKey=".phase">
-                <select id="phase" name="phase">                    
+                <select id="phase" name="phase">
                     <option <c:if test="${not empty setPhaseA}">selected</c:if> value="A">${phaseA}</option>
                     <option <c:if test="${not empty setPhaseB}">selected</c:if> value="B">${phaseB}</option>
                     <option <c:if test="${not empty setPhaseC}">selected</c:if> value="C">${phaseC}</option>
                 </select>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phaseDetectSent">
-                <b><span id="A" style="padding-right: 3px;<c:if test="${!state.phaseADetectSent}">display: none;</c:if>">
-                    <font color="green">${phaseA}</font>
-                </span>
-                <span id="B" style="padding-right: 3px;<c:if test="${!state.phaseBDetectSent}">display: none;</c:if>">
-                    <font color="green">${phaseB}</font>
-                </span>
-                <span id="C" style="padding-right: 3px;<c:if test="${!state.phaseCDetectSent}">display: none;</c:if>">
-                    <font color="green">${phaseC}</font>
-                </span></b>
+                <strong>
+                    <span id="A" class="green <c:if test="${!state.phaseADetectSent}">dn</c:if>">${phaseA}</span>&nbsp;
+                    <span id="B" class="green <c:if test="${!state.phaseBDetectSent}">dn</c:if>">${phaseB}</span>&nbsp;
+                    <span id="C" class="green <c:if test="${!state.phaseCDetectSent}">dn</c:if>">${phaseC}</span>
+                </strong>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".phasesRead">
-                <b><span id="readA" style="padding-right: 3px;<c:if test="${!state.phaseARead}">display: none;</c:if>">
-                    <font color="green">${phaseA}</font>
-                </span>
-                <span id="readB" style="padding-right: 3px;<c:if test="${!state.phaseBRead}">display: none;</c:if>">
-                    <font color="green">${phaseB}</font>
-                </span>
-                <span id="readC" style="padding-right: 3px;<c:if test="${!state.phaseCRead}">display: none;</c:if>">
-                    <font color="green">${phaseC}</font>
-                </span></b>
+                <strong>
+                    <span id="readA" class="green <c:if test="${!state.phaseARead}">dn</c:if>">${phaseA}</span>&nbsp;
+                    <span id="readB" class="green <c:if test="${!state.phaseBRead}">dn</c:if>">${phaseB}</span>&nbsp;
+                    <span id="readC" class="green <c:if test="${!state.phaseCRead}">dn</c:if>">${phaseC}</span>
+                </strong>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalTimer">
-                <b>
-                    <font id="intervalTimerFont" color="black">
+                <strong>
+                    <span id="intervalTimerFont">
                         <span id="intervalTimerSpan">${data.intervalLength}</span>
-                    </font>
-                    &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="intervalTimerNote" style="display: none;">
-                    <i:inline key=".voltIntervalNote"/></span>
-                </b>
+                    </span>&nbsp;
+                    <i:inline key=".seconds"/>&nbsp;
+                    <span id="intervalTimerNote" style="display: none;"><i:inline key=".voltIntervalNote"/></span>
+                </strong>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".detectionTimer">
                 <b>
-                    <font id="detectTimerFont" color="black">
+                    <span id="detectTimerFont">
                         <span id="detectTimerSpan">${data.intervalLength * data.numIntervals}</span>
-                    </font>
-                    &nbsp;<i:inline key=".seconds"/>&nbsp;<span id="detectTimerNote" style="display: none;">
-                    <i:inline key=".voltDetectNote"/></span>
+                    </span>&nbsp;
+                    <i:inline key=".seconds"/>&nbsp;
+                    <span id="detectTimerNote" style="display: none;"><i:inline key=".voltDetectNote"/></span>
                 </b>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".nextAction">
-                <cti:msg2 var="send" key=".send"/>
-                <cti:msg2 var="read" key=".read"/>
-                <cti:msg2 var="reset" key=".reset"/>
                 <cti:msg2 var="clearPhaseData" key=".clearPhaseData"/>
                 <c:set var="testStep" value="${state.testStep}"/>
             
                 <div id="magicButtonDiv" style="float: left;padding-right: 10px;">
                     <input type="hidden" name="complete" id="complete" value="${state.phaseDetectComplete}">
-                    <input type="button" id="sendDetectButton" <c:if test="${testStep != 'send'}">style="display: none;"</c:if> value="${send}" onclick="sendDetect();">
-                    <input type="button" id="readButton" <c:if test="${testStep != 'read'}">style="display: none;"</c:if> value="${read}" onclick="sendRead();">
-                    <input type="button" id="clearButton" <c:if test="${testStep != 'clear' && testStep != 'results'}">style="display: none;"</c:if> value="${clearPhaseData}" onclick="sendClearCommand();">
-                    <input type="button" id="resetButton" style="display: none;" value="${reset}" onclick="reset();">
+                    <c:choose>
+                        <c:when test="${testStep != 'send'}"><cti:button id="sendDetectButton" nameKey="send" onclick="sendDetect();" classes="dn"/></c:when>
+                        <c:otherwise><cti:button id="sendDetectButton" nameKey="send" onclick="sendDetect();"/></c:otherwise>
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="${testStep != 'read'}"><cti:button id="readButton" nameKey="read" onclick="sendRead();" classes="dn"/></c:when>
+                        <c:otherwise><cti:button id="readButton" nameKey="read" onclick="sendRead();"/></c:otherwise>
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="${testStep != 'clear' && testStep != 'results'}"><cti:button id="clearButton" label="${clearPhaseData}" onclick="sendClearCommand();" classes="dn"/></c:when>
+                        <c:otherwise><cti:button id="clearButton" label="${clearPhaseData}" onclick="sendClearCommand();"/></c:otherwise>
+                    </c:choose>
+                    <cti:button id="resetButton" classes="dn" nameKey="reset" onclick="reset();"/>
                     <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
@@ -243,9 +232,11 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
-    <br>
-    <form action="/amr/phaseDetect/phaseDetectResults" method="get">
-        <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
-        <cti:button nameKey="resultsButton" id="resultsButton" disabled="${testStep != 'results'}" type="submit"/>
-    </form>
+    
+    <div class="page-action-area">
+        <form action="/amr/phaseDetect/phaseDetectResults" method="get">
+            <cti:button nameKey="resultsButton" id="resultsButton" disabled="${testStep != 'results'}" type="submit" classes="primary action"/>
+            <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
+        </form>
+    </div>
 </cti:standardPage>

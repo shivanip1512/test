@@ -18,7 +18,7 @@
         <div class="page-action-area">
             <cti:button nameKey="create" type="submit" classes="primary action" busy="true"/>
             <cti:url value="/meter/start" var="cancelUrl"/>
-            <cti:button nameKey="cancel" type="button" href="${cancelUrl}" busy="true" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" href="${cancelUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
 
     </form:form>

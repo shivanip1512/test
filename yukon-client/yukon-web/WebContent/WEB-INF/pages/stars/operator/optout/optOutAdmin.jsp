@@ -304,10 +304,11 @@
                                          
                                     </div>
                                 </div>
-                                
-                                <input type="submit" name="count" value="<i:inline key=".countOptOuts.countOptOutsButton" />" class="button">
-                                <input type="submit" name="dontCount" value="<i:inline key=".countOptOuts.dontCountOptOutsButton" />" class="button">
-                            </form>       
+                                <cti:msg2 var="countOptout" key=".countOptOuts.countOptOutsButton"/>
+                                <cti:msg2 var="dontCountOptout" key=".countOptOuts.dontCountOptOutsButton"/>
+                                <cti:button type="submit" name="count" value="${countOptout}" label="${countOptout}"/>
+                                <cti:button type="submit" name="dontCount" value="${dontCountOptout}" label="${dontCountOptout}"/>
+                            </form>
                         </tags:boxContainer2>
                     </cti:checkRolesAndProperties>
                 </div>

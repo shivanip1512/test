@@ -128,15 +128,12 @@
     
     </tags:boxContainer2>
     
-    <br>
-    <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule"/>
-    <input type="submit" value="${scheduleText}" name="schedule" style="width:80px;"/>
-    
-    <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual" />
-    <input type="submit" value="${manualText}" name="manual" style="width:80px"/>
-    
-       </form>
-    
-    
+    <div class="page-action-area">
+        <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule"/>
+        <cti:button type="submit" value="${scheduleText}" name="schedule" label="${scheduleText}"/>
+        <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual"/>
+        <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual"/>
+    </div>
+</form>
 
 </cti:standardPage>

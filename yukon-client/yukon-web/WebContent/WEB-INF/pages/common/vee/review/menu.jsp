@@ -4,7 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="helperMenu" module="monitors">
-<cti:standardMenu menuSelection="validation|helper"/>
 
 <cti:breadCrumbs>
     <cti:crumbLink url="/dashboard" title="Home"  />
@@ -49,7 +48,7 @@ Please restart the Yukon Service Manager to resume processing.
                         </label><br>
                     </c:forEach>
                             
-                    <input type="submit" value="Accept">
+                    <cti:button type="submit" label="Accept"/>
                 </form>
             </tags:boxContainer>    
             <tags:boxContainer title="Delete All" styleClass="widget-container">
@@ -69,7 +68,7 @@ Please restart the Yukon Service Manager to resume processing.
                         </label><br>
                     </c:forEach>
                             
-                    <input type="submit" value="Delete">
+                    <cti:button type="submit" value="Delete" nameKey="delete">
                 </form>
             </tags:boxContainer>    
     </div>
@@ -85,11 +84,11 @@ Please restart the Yukon Service Manager to resume processing.
                 </p>
                 <form method="post" action="resetValidationEngineOneYear">
                     <cti:csrfToken/>
-                    Delete previous 12 months of tags: <input type="submit" value="Reset">
+                    Delete previous 12 months of tags: <cti:button type="submit" nameKey="reset"/>
                 </form>
                 <form method="post" action="resetValidationEngine">
                     <cti:csrfToken/>
-                    Delete all tags: <input type="submit" value="Reset">
+                    Delete all tags: <cti:button type="submit" nameKey="reset"/>
                 </form>
             </tags:boxContainer>    
     </div>

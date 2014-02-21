@@ -37,7 +37,7 @@
                 
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT">
-                        <cti:button nameKey="save" name="update" type="submit"/>
+                        <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <%-- TODO implement this later 
                         <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"/>
                         <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${groupName}"/>

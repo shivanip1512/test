@@ -507,7 +507,7 @@ This page should be tested at 1024x768.
       allowEmptySelection="true"
       multiSelectMode="true"
       initialIds="${paramValues['rememberingPickerInput']}"/>
-    <button type="submit">Submit</button>
+    <cti:button type="submit" label="Submit"/>
   </form>
 </tags:sectionContainer2>
 <br>

@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="grid" tagdir="/WEB-INF/tags/jqGrid" %>
 
@@ -34,23 +34,23 @@
 
 <%-- PURE HTML EXPORT OPTIONS --%>
 <c:if test="${pureHtml}">
-	<div class="action-area stacked">
+    <div class="action-area stacked">
         <cti:button nameKey="csv" href="${csvUrl}" icon="icon-page-white-excel"/>
         <cti:button nameKey="pdf" href="${pdfUrl}" icon="icon-pdf"/>
-	</div>
+    </div>
 </c:if>
 
 <c:choose>
 
-	<%-- jqGrid REPORT TABLE --%>
-	<c:when test="${!pureHtml}">
-	
-		<c:set var="gridWidth" value=""/>
-		<c:if test="${not empty pageScope.width}">
-			<c:set var="gridWidth" value="${pageScope.width}" />
-		</c:if>
-		
-		<grid:report title="${reportTitle}" 
+    <%-- jqGrid REPORT TABLE --%>
+    <c:when test="${!pureHtml}">
+    
+        <c:set var="gridWidth" value=""/>
+        <c:if test="${not empty pageScope.width}">
+            <c:set var="gridWidth" value="${pageScope.width}" />
+        </c:if>
+        
+        <grid:report title="${reportTitle}" 
             height="${height}" 
             width="${gridWidth}" 
             columnInfo="${columnInfo}" 
@@ -59,35 +59,35 @@
             pdfUrl="${pdfUrl}" 
             showLoadMask="${showLoadMask}" 
             refreshRate="${refreshRate}" />
-	</c:when>
-	
-	<%-- PURE HTML REPORT TABLE --%>
-	<c:otherwise>
-		
-		<table class="results-table">
-		
-		    <!-- header -->
+    </c:when>
+    
+    <%-- PURE HTML REPORT TABLE --%>
+    <c:otherwise>
+        
+        <table class="compact-results-table">
+        
+            <!-- header -->
             <thead>
-    		    <tr>
-    		        <c:forEach var="ci" items="${columnInfo}">
-    		            <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%">${ci.label}</th>
-    		        </c:forEach>
-    		    </tr>
+                <tr>
+                    <c:forEach var="ci" items="${columnInfo}">
+                        <th style="text-align:${ci.align};width:${ci.columnWidthPercentage}%">${fn:escapeXml(ci.label)}</th>
+                    </c:forEach>
+                </tr>
             </thead>
-		    <tfoot></tfoot>
+            <tfoot></tfoot>
             <tbody>
-		    <!-- data -->
-		    <c:forEach var="rowData" items="${data}">
-		        <tr>
-		            <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
-		                <td>${colData}</td>
-		            </c:forEach>
-		        </tr>
-		    </c:forEach>
-		    </tbody>
-		</table>
+            <!-- data -->
+            <c:forEach var="rowData" items="${data}">
+                <tr>
+                    <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
+                        <td>${fn:escapeXml(colData)}</td>
+                    </c:forEach>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
 
-	</c:otherwise>
+    </c:otherwise>
 
 </c:choose>
 </cti:msgScope>

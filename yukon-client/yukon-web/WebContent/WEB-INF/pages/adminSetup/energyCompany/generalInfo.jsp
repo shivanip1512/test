@@ -76,7 +76,7 @@ jQuery(function() {
                                 <cti:url value="delete" var="deleteUrl" >
                                     <cti:param name="ecId" value="${ecId}"/>
                                 </cti:url>
-                                <cti:button nameKey="delete" name="deleteConfirmation" type="button" href="${deleteUrl}" />
+                                <cti:button nameKey="delete" name="deleteConfirmation" href="${deleteUrl}" />
                             </c:if>
                             <cti:button nameKey="cancel" type="submit" name="cancel"/>
                         </cti:displayForPageEditModes>

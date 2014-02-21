@@ -1,35 +1,31 @@
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <c:forEach items="${validationErrors}" var="error">
-    <span class="internalSectionHeader" style>${error}</span>
-    <br />
+    <div class="error stacked">${error}</div>
 </c:forEach>
 
 <form action="/meter/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
     <cti:csrfToken/>
-    <input name="deviceId" type="hidden" value="${meter.deviceId}" />
+    <input name="deviceId" type="hidden" value="${meter.deviceId}">
 
-	<ct:boxContainer2 nameKey="moveOutForm" hideEnabled="false">
-	
-		<ct:nameValueContainer2>
-		
-			<ct:nameValue2 nameKey=".moveOutDate">
-			    <dt:date name="moveOutDate" value="${currentDate}" />
-			</ct:nameValue2>
-			<ct:nameValue2 nameKey=".emailNotification">
-			    <input name="emailAddress" type="text" />
-			</ct:nameValue2>
-		
-		</ct:nameValueContainer2>
-	
-	    <br /><br />
+    <tags:boxContainer2 nameKey="moveOutForm" hideEnabled="false">
+    
+        <tags:nameValueContainer2>
+        
+            <tags:nameValue2 nameKey=".moveOutDate">
+                <dt:date name="moveOutDate" value="${currentDate}" />
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".emailNotification">
+                <input name="emailAddress" type="text" />
+            </tags:nameValue2>
+        
+        </tags:nameValueContainer2>
+    
         <cti:msg2 var="moveOut" key=".moveOut"/>
-        <cti:msg2 var="movingOut" key=".movingOut"/>
-        <cti:msg2 var="moveOutDesc" key=".moveOutDesc"/>
-	    <ct:slowInput myFormId="moveOutForm" label="${moveOut}" labelBusy="${movingOut}" description="${moveOutDesc}" />
+        <cti:button label="${moveOut}" busy="true" type="submit" classes="primary action"/>
 
-	</ct:boxContainer2>
+    </tags:boxContainer2>
 </form>

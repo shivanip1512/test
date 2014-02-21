@@ -10,29 +10,28 @@
 
 <form action="/meter/moveInRequest?deviceId=${meter.deviceId}" id="moveInForm" method="post">
     <cti:csrfToken/>    
-	<tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
+    <tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
 
-		<tags:nameValueContainer2>
-		
-			<tags:nameValue2 nameKey=".meterNumber">
-				<input name="meterNumber" size="10" type="text" value="${meter.meterNumber}" />
-			</tags:nameValue2>
-			<tags:nameValue2 nameKey=".deviceName">
-			    <input name="deviceName" size="30" type="text" value="${meter.name}" />
-			</tags:nameValue2>
-			<tags:nameValue2 nameKey=".moveInDate">
-				<dt:date name="moveInDate" value="${currentDate}" />
-			</tags:nameValue2>
-			<tags:nameValue2 nameKey=".emailNotification">
-			    <input name="emailAddress" type="text" />
-			</tags:nameValue2>
+        <tags:nameValueContainer2>
+        
+            <tags:nameValue2 nameKey=".meterNumber">
+                <input name="meterNumber" size="10" type="text" value="${meter.meterNumber}" />
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".deviceName">
+                <input name="deviceName" size="30" type="text" value="${meter.name}" />
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".moveInDate">
+                <dt:date name="moveInDate" value="${currentDate}" />
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".emailNotification">
+                <input name="emailAddress" type="text" />
+            </tags:nameValue2>
 
-		</tags:nameValueContainer2>
+        </tags:nameValueContainer2>
 
-	    <br><br>
-	    <cti:msg2 var="movingIn" key=".movingIn"/>
-	    <cti:msg2 var="moveIn" key=".moveIn"/>
-	    <cti:msg2 var="moveInDesc" key=".moveInDesc"/>
-	    <tags:slowInput myFormId="moveInForm" label="${moveIn}" labelBusy="${movingIn}" description="${moveInDesc}" />
-	</tags:boxContainer2>
+        <div class="page-action-area">
+            <cti:msg2 var="moveIn" key=".moveIn"/>
+            <cti:button label="${moveIn}" type="submit" busy="true" classes="primary action"/>
+        </div>
+    </tags:boxContainer2>
 </form>

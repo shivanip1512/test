@@ -39,7 +39,7 @@
         <%-- UPLOAD FILE --%>
         <tags:nameValue name="${actionsLoadDataLabel}">
             <input type="file" name="dataFile">
-            <input type="submit" name="importFile" value="Load">
+            <cti:button type="submit" name="importFile" value="Load" label="Load"/>
             <%-- IMPORT MSG --%>
             <c:if test="${not empty msgStr}">
                 <br />
@@ -62,7 +62,7 @@
                 <option value="pendingComm">${pendingCommsLabel}</option>
                 <option value="failedComm">${failedCommsLabel}</option>
             </select>
-            <input type="submit" name="clearImports" value="Clear">
+            <cti:button type="submit" name="clearImports" value="Clear" label="Clear"/>
         </tags:nameValue>
     </tags:nameValueContainer>
 </tags:boxContainer>
@@ -103,7 +103,7 @@
             </tags:nameValue>
             
             <tags:nameValue name="${nextImportLabel}">
-                <span id="nextImportAttempt"></span>&nbsp;&nbsp;<input type="submit" name="forceManualImportEvent" value="Import Now">
+                <span id="nextImportAttempt"></span>&nbsp;&nbsp;<cti:button type="submit" name="forceManualImportEvent" value="Import Now" label="Import Now"/>
             </tags:nameValue>
             
             <tags:nameValue name="${tabularDataLabel}">

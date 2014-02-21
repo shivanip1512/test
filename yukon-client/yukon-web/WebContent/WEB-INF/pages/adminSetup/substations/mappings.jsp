@@ -1,5 +1,6 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+
 <cti:standardPage page="substationToRouteMapping" module="adminSetup">
     
     <cti:includeScript link="/JavaScript/mspmappings.js" />

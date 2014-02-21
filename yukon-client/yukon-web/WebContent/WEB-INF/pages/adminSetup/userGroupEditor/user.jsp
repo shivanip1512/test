@@ -1,10 +1,10 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="adminSetup" page="userEditor.${mode}">
 
@@ -49,8 +49,8 @@ jQuery(function() {
                 </tags:nameValue2>
             </tags:nameValueContainer2>
             <div class="action-area">
-                <cti:button nameKey="save" type="submit"/>
-                <cti:button nameKey="cancel" type="button" id="cancelChangePassword"/>
+                <cti:button nameKey="save" type="submit" classes="primary action"/>
+                <cti:button nameKey="cancel" id="cancelChangePassword"/>
             </div>
         </form:form>
     </i:simplePopup>
@@ -120,7 +120,7 @@ jQuery(function() {
                 
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:button nameKey="save" name="update" type="submit"/>
+                        <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
                         <%-- TODO implement this later <cti:button nameKey="delete" name="delete" type="submit"/> --%>
                         <cti:url var="cancelUrl" value="view">
                             <cti:param name="userId" value="${user.userId}"/>
@@ -130,7 +130,7 @@ jQuery(function() {
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
-                            <cti:button nameKey="changePassword" id="changePasswordButton" type="button" icon="icon-key"/>
+                            <cti:button nameKey="changePassword" id="changePasswordButton" icon="icon-key"/>
                         </c:if>
                     </cti:displayForPageEditModes>
                     <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>

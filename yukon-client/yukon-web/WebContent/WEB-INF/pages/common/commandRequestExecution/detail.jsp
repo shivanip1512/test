@@ -28,7 +28,6 @@
     
         <cti:crumbLink url="/dashboard" title="Home" />
         
-        
         <%-- cre list --%>
         <cti:url var="creListUrl" value="/common/commandRequestExecutionResults/list">
             <cti:param name="jobId">${jobId}</cti:param>
@@ -71,7 +70,6 @@
                 url : url,
                 data : paramObj
             }).done( function (data, textStatus, jqXHR) {
-                var json = yukon.ui.aux.getHeaderJSON(jqXHR);
                 jQuery('#detailsReportDiv').html(data);
                 jQuery('#viewHideDetailsReportButtonIndicator').hide();
                 jQuery('#detailsReportDiv').show();
@@ -102,10 +100,9 @@
     </script>
     
     <h2 title="ID: ${commandRequestExecutionId}">${pageTitle}</h2>
-    <br>
     
     <%-- CRE INFO --%>
-    <tags:sectionContainer title="${infoSectionText}" id="creInfoSection">
+    <tags:sectionContainer title="${infoSectionText}" id="creInfoSection" styleClass="stacked">
                     
         <tags:nameValueContainer>
 
@@ -131,44 +128,26 @@
             <tags:nameValue name="${infoStartTimeText}"><cti:formatDate type="DATEHM" value="${cre.startTime}" nullText="N/A"/></tags:nameValue>
             
             <tags:nameValue name="${infoStopTimeText}">
-                
                 <c:choose>
-                
-                    <c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}">
-                        N/A
-                    </c:when>
-                    
+                    <c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}"><i:inline key="yukon.web.defaults.na"/></c:when>
                     <c:otherwise>
-                        
                         <cti:dataUpdaterCallback function="countUpdateCallback()" initialize="true" isComplete="COMMAND_REQUEST_EXECUTION/${cre.id}/IS_COMPLETE" />
-                        
                         <div id="creStopTimeDiv" <c:if test="${not isComplete}">style="display:none;"</c:if>>
                             <cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${cre.id}/STOP_TIME"/>
                         </div>
-                        
                         <div id="creProgressBarDiv" <c:if test="${isComplete}">style="display:none;"</c:if>>
                             <tags:updateableProgressBar totalCount="${cre.requestCount}" countKey="COMMAND_REQUEST_EXECUTION/${cre.id}/RESULTS_COUNT"/>
                         </div>
-                        
                     </c:otherwise>
                 </c:choose>
-                
             </tags:nameValue>
-            
             <tags:nameValue name="${infoUserText}">${cre.userName}</tags:nameValue>
-        
         </tags:nameValueContainer>
-    
     </tags:sectionContainer>
-    
-    <br>
-    <br>
     
     <%-- RESULTS --%>
     <tags:sectionContainer title="${resultsSectionText}" id="creReusltsSection" helpText="${resultsSectionPopupInfoText}" >
-        
         <tags:nameValueContainer>
-
             <tags:nameValue name="${resultsTotalRequestsText}" nameColumnWidth="160px">
                 <amr:commandRequestExecutionResultsCountLink commandRequestExecutionId="${commandRequestExecutionId}" commandRequestExecutionUpdaterType="REQUEST_COUNT" linkedInitially="${requestCount > 0}"/>
             </tags:nameValue>
@@ -186,16 +165,12 @@
             </tags:nameValue>
 
             <tags:nameValue name="${resultsViewReportText}">
-            
                 <a href="javascript:void(0);" onclick="switchResultsFilterType('FAIL_STATS');">${resultsFailStatsReportText}</a>
                 <c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
                     | <a href="javascript:void(0);" onclick="switchResultsFilterType('${resultsFilterType}');">${resultsFilterType.description}</a>
                 </c:forEach>
-            
                 <img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
-            
             </tags:nameValue>
-            
         </tags:nameValueContainer>
             
         <div id="detailsReportDiv" style="display:none;">

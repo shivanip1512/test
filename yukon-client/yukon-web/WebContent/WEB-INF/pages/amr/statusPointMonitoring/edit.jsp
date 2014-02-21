@@ -177,7 +177,7 @@
             <cti:url var="backUrl" value="/amr/statusPointMonitoring/viewPage">
                 <cti:param name="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}" />
             </cti:url>
-            <cti:button nameKey="cancel" type="button" href="${backUrl }"  busy="true" data-disable-group="actionButtons"/>
+            <cti:button nameKey="cancel" href="${backUrl }" busy="true" data-disable-group="actionButtons"/>
         </div>
     </form:form>
     

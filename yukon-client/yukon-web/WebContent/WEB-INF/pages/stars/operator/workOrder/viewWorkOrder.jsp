@@ -54,7 +54,7 @@
           <input type="hidden" name="deleteWorkOrderId" value="${workOrderDto.workOrderBase.orderId}">
           <div class="action-area">
             <cti:button id="workOrderConfirmDelete" type="submit" nameKey="delete" classes="primary action"/>
-            <cti:button id="workOrderConfirmCancel" type="button" nameKey="cancel"/>  
+            <cti:button id="workOrderConfirmCancel" nameKey="cancel"/>  
           </div>
         </form>
     </i:simplePopup>

@@ -15,9 +15,8 @@
         <div><cti:msg key="${enrollmentResult}"/></div>
         <br>
         <cti:url var="okUrl" value="/stars/consumer/enrollment"/>
-        <input type="button"
-            value='<cti:msg key="yukon.dr.consumer.enrollmentResult.ok"/>'
-            onclick="location.href='${okUrl}';"></input>
+        <cti:msg key="yukon.dr.consumer.enrollmentResult.ok" var="ok"/>
+        <cti:button label="${ok}" onclick="location.href='${okUrl}';"/>
     </div>    
 
 </cti:standardPage>

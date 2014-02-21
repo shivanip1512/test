@@ -74,7 +74,7 @@
             <tr>
                 <td align="center" colspan="2">
                     <br>
-                    <input type="submit" value="Remove Login Wait" onclick="return confirmRemoveLoginWait()">
+                    <cti:button type="submit" label="Remove Login Wait" onclick="return confirmRemoveLoginWait();"/>
                 </td>
             </tr>            
         </table>

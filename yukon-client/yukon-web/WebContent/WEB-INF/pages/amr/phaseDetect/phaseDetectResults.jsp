@@ -1,442 +1,505 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="phaseDetect.results">
+    <c:if test="${not empty cacheKey}">
+        <div id="f-page-buttons">
+            <cti:simpleReportLinkFromNameTag definitionName="phaseDetectDefinition" viewType="csvView" cacheKey="${cacheKey}" var="exportUrl"/>
+            <cti:msg2 key=".exportCsv" var="exportLabel"/>
+            <cti:button label="${exportLabel}" href="${exportUrl}" icon="icon-page-white-excel"/>
+        </div>
+    </c:if>
     <tags:sectionContainer2 nameKey="detectionResults">
-        <table width="100%">
-            <c:if test="${not empty cacheKey}">
-                <tr>
-                    <td style="padding-bottom: 10px;">
-                        <cti:simpleReportLinkFromNameTag definitionName="phaseDetectDefinition" viewType="csvView" cacheKey="${cacheKey}">
-                        <i:inline key=".exportCsv"/>
-                        </cti:simpleReportLinkFromNameTag>
-                    </td>
-                </tr>
-            </c:if>
-            <tr>
-                <td width="50%" valign="top">
-                    <div>
-                        <div style="padding-bottom: 5px;">
-		                    <c:set var="showA" value="${phaseAMetersSize > 0}" />
-					        <tags:boxContainer2 nameKey="metersDetectedA" arguments="${phaseAMetersSize}" hideEnabled="true" showInitially="${showA}">
-					            <div style="max-height: 300px;overflow: auto;">
-						            <table>
+        <div class="column-12-12">
+            <div class="column one">
+            
+                <tags:boxContainer2 nameKey="metersDetectedA" arguments="${phaseAMetersSize}" hideEnabled="true" showInitially="${phaseAMetersSize > 0}">
+                    <div class="scroll-large">
+                        <table class="compact-results-table">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".meterName"/></th>
+                                    <c:if test="${!data.readAfterAll}"><th><i:inline key=".voltageReadings"/></th></c:if>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="meter" items="${phaseAMeters}">
+                                    <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
+                                    <tr>
+                                        <td>${fn:escapeXml(meter.name)}</td>
+                                        <c:if test="${!data.readAfterAll}">
+                                            <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
+                                            <td>
+                                                <i:inline key=".initial"/>&nbsp;<strong>${phaseAReading.initial}</strong>&nbsp;
+                                                <i:inline key=".last"/>&nbsp;<strong>${phaseAReading.last}</strong>&nbsp;
+                                                <i:inline key=".delta"/>&nbsp;
+                                                <c:choose>
+                                                    <c:when test="${phaseAReading.delta gt 0}">
+                                                        <c:set var="resultClass" value="success"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="resultClass" value="error"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <strong class="${resultClass}">${phaseAReading.delta}</strong>
+                                            </td>
+                                        </c:if>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <c:if test="${phaseACollection.deviceCount > 0}">
+                        <div class="action-area">
+                            <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                <cti:mapParam value="${phaseACollection.collectionParameters}"/>
+                            </cti:url>
+                            <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                            <tags:selectedDevicesPopup deviceCollection="${phaseACollection}" type="button"/>
+                        </div>
+                    </c:if>
+                </tags:boxContainer2>
+                
+                <tags:boxContainer2 nameKey="metersDetectedB" arguments="${phaseBMetersSize}" hideEnabled="true" showInitially="${phaseBMetersSize > 0}">
+                    <div class="scroll-large">
+                        <table class="compact-results-table">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".meterName"/></th>
+                                    <c:if test="${!data.readAfterAll}"><th><i:inline key=".voltageReadings"/></th></c:if>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="meter" items="${phaseBMeters}">
+                                    <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
+                                    <tr>
+                                        <td>${fn:escapeXml(meter.name)}</td>
+                                        <c:if test="${!data.readAfterAll}">
+                                            <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
+                                            <td>
+                                                <i:inline key=".initial"/>&nbsp;<strong>${phaseBReading.initial}</strong>&nbsp;
+                                                <i:inline key=".last"/>&nbsp;<strong>${phaseBReading.last}</strong>&nbsp;
+                                                <i:inline key=".delta"/>&nbsp;
+                                                <c:choose>
+                                                    <c:when test="${phaseBReading.delta gt 0}">
+                                                        <c:set var="resultClass" value="success"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="resultClass" value="error"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <strong class="${resultClass}">${phaseBReading.delta}</strong>
+                                            </td>
+                                        </c:if>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <c:if test="${phaseBCollection.deviceCount > 0}">
+                        <div class="action-area">
+                            <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                <cti:mapParam value="${phaseBCollection.collectionParameters}"/>
+                            </cti:url>
+                            <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                            <tags:selectedDevicesPopup deviceCollection="${phaseBCollection}" type="button"/>
+                        </div>
+                    </c:if>
+                </tags:boxContainer2>
+                    
+                <tags:boxContainer2 nameKey="metersDetectedC" arguments="${phaseCMetersSize}" hideEnabled="true" showInitially="${phaseCMetersSize > 0}">
+                    <div class="scroll-large">
+                        <table class="compact-results-table">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".meterName"/></th>
+                                    <c:if test="${!data.readAfterAll}"><th><i:inline key=".voltageReadings"/></th></c:if>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="meter" items="${phaseCMeters}">
+                                    <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
+                                    <tr>
+                                        <td>${fn:escapeXml(meter.name)}</td>
+                                        <c:if test="${!data.readAfterAll}">
+                                            <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
+                                            <td>
+                                                <i:inline key=".initial"/>&nbsp;<strong>${phaseCReading.initial}</strong>&nbsp;
+                                                <i:inline key=".last"/>&nbsp;<strong>${phaseCReading.last}</strong>&nbsp;
+                                                <i:inline key=".delta"/>&nbsp;
+                                                <c:choose>
+                                                    <c:when test="${phaseCReading.delta gt 0}">
+                                                        <c:set var="resultClass" value="success"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="resultClass" value="error"/>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <strong class="${resultClass}">${phaseCReading.delta}</strong>
+                                            </td>
+                                        </c:if>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <c:if test="${phaseCCollection.deviceCount > 0}">
+                        <div class="action-area">
+                            <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                <cti:mapParam value="${phaseCCollection.collectionParameters}"/>
+                            </cti:url>
+                            <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                            <tags:selectedDevicesPopup deviceCollection="${phaseCCollection}" type="button"/>
+                        </div>
+                    </c:if>
+                </tags:boxContainer2>
+                
+                <c:if test="${!data.readAfterAll}">
+                    <tags:boxContainer2 nameKey="metersDetectedAB" arguments="${phaseABMetersSize}" hideEnabled="true" showInitially="${phaseABMetersSize > 0}">
+                        <div class="scroll-large">
+                            <table class="compact-results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".meterName" /></th>
+                                        <th><i:inline key=".voltageReadings" /></th>
+                                    </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="meter" items="${phaseABMeters}">
+                                        <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}" />
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
+                                            <td>${fn:escapeXml(meter.name)}</td>
+                                            <c:set var="phaseAReading" value="${phaseToReadingMap['A']}" />
+                                            <c:set var="phaseBReading" value="${phaseToReadingMap['B']}" />
+                                            <td>
+                                                <div>
+                                                    <i:inline key=".phaseAInit" />
+                                                    &nbsp;<strong>${phaseAReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last" />
+                                                    &nbsp;<strong>${phaseAReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta" />
+                                                    &nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseAReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success" />
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error" />
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    <strong class="${resultClass}">${phaseAReading.delta}</strong>
+                                                </div>
+                                                <div>
+                                                    <i:inline key=".phaseBInit" />
+                                                    &nbsp;<strong>${phaseBReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last" />
+                                                    &nbsp;<strong>${phaseBReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta" />
+                                                    &nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseBReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success" />
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error" />
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    <strong class="${resultClass}">${phaseBReading.delta}</strong>
+                                                </div>
+                                            </td>
                                         </tr>
-							            <c:forEach var="meter" items="${phaseAMeters}">
-                                            <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-							                <tr>
-							                    <td style="padding-right: 10px;">${meter.name}</td>
-							                    <c:if test="${!data.readAfterAll}">
-                                                    <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
-                                                    <td><i:inline key=".initial"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span>
-                                                    </td>
-                                                </c:if>
-							                </tr>
-							            </c:forEach>
-						            </table>
-					            </div>
-					        </tags:boxContainer2>
-                            <c:if test="${phaseACollection.deviceCount > 0}">
-                                <div id="phaseAActionsDiv" style="padding:5px;">
-                                    <cti:link href="/bulk/collectionActions" key=".phaseA.collectionActionLabel" class="small">
-                                        <cti:mapParam value="${phaseACollection.collectionParameters}"/>
-                                    </cti:link>
-                                    <tags:selectedDevicesPopup deviceCollection="${phaseACollection}" />
-                                </div>
-                            </c:if>
-				        </div>
-				        <div style="padding-bottom: 5px;">
-					        <c:set var="showB" value="${phaseBMetersSize > 0}" />
-                            <tags:boxContainer2 nameKey="metersDetectedB" arguments="${phaseBMetersSize}" hideEnabled="true" showInitially="false">
-		                        <div style="max-height: 300px;overflow: auto;">
-			                        <table>
-                                        <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
-                                        </tr>
-			                            <c:forEach var="meter" items="${phaseBMeters}">
-                                            <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-			                                <tr>
-			                                    <td style="padding-right: 10px;">${meter.name}</td>
-			                                    <c:if test="${!data.readAfterAll}">
-                                                    <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <td><i:inline key=".initial"/>
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
-                                                    </td>
-                                                </c:if>
-			                                </tr>
-			                            </c:forEach>
-			                        </table>
-		                        </div>
-		                    </tags:boxContainer2>
-                            <c:if test="${phaseBCollection.deviceCount > 0}">
-                                <div id="phaseBActionsDiv" style="padding:5px;">
-                                    <cti:link href="/bulk/collectionActions" key=".phaseB.collectionActionLabel" class="small">
-                                        <cti:mapParam value="${phaseBCollection.collectionParameters}"/>
-                                    </cti:link>
-                                    <tags:selectedDevicesPopup deviceCollection="${phaseBCollection}" />
-                                </div>
-                            </c:if>
-	                    </div>
-	                    <div style="padding-bottom: 5px;">
-		                    <c:set var="showC" value="${phaseCMetersSize > 0}" />
-		                    <tags:boxContainer2 nameKey="metersDetectedC" arguments="${phaseCMetersSize}" hideEnabled="true" showInitially="false">
-		                        <div style="max-height: 300px;overflow: auto;">
-			                        <table>
-                                        <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                            <c:if test="${!data.readAfterAll}"><th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th></c:if>
-                                        </tr>
-			                            <c:forEach var="meter" items="${phaseCMeters}">
-                                            <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-			                                <tr>
-			                                    <td style="padding-right: 10px;">${meter.name}</td>
-			                                    <c:if test="${!data.readAfterAll}">
-                                                    <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td><i:inline key=".initial"/> 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
-                                                    </td>
-                                                </c:if>
-			                                </tr>
-			                            </c:forEach>
-			                        </table>
-		                        </div>
-		                    </tags:boxContainer2>
-                            <c:if test="${phaseCCollection.deviceCount > 0}">
-                                <div id="phaseCActionsDiv" style="padding:5px;">
-                                    <cti:link href="/bulk/collectionActions" key=".phaseC.collectionActionLabel" class="small">
-                                        <cti:mapParam value="${phaseCCollection.collectionParameters}"/>
-                                    </cti:link>
-                                    <tags:selectedDevicesPopup deviceCollection="${phaseCCollection}" />
-                                </div>
-                            </c:if>
-    	                </div>
-    	                <c:if test="${!data.readAfterAll}">
-	    	                <div style="padding-bottom: 5px;">
-	                            <c:set var="showAB" value="${phaseABMetersSize > 0}" />
-<%-- 	                            <cti:msg2 key=".metersDetectedAB" var="metersDetectedAB"/> --%>
-                                <tags:boxContainer2 nameKey="metersDetectedAB" arguments="${phaseABMetersSize}" hideEnabled="true" showInitially="${showAB}">
-	                                <div style="max-height: 300px;overflow: auto;">
-	                                    <table>
-                                            <tr>
-	                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-	                                            <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
-	                                        </tr>
-	                                        <c:forEach var="meter" items="${phaseABMeters}">
-                                                <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-	                                            <tr>
-	                                                <td style="padding-right: 10px;">${meter.name}</td>
-                                                    <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
-                                                    <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <td><i:inline key=".phaseAInit"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        <i:inline key=".phaseBInit"/> 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span>
-                                                    </td>
-	                                            </tr>
-	                                        </c:forEach>
-	                                    </table>
-	                                </div>
-	                            </tags:boxContainer2>
-                                <c:if test="${phaseABCollection.deviceCount > 0}">
-                                    <div id="phaseABActionsDiv" style="padding:5px;">
-                                        <cti:link href="/bulk/collectionActions" key=".phaseAB.collectionActionLabel" class="small">
-                                            <cti:mapParam value="${phaseABCollection.collectionParameters}"/>
-                                        </cti:link>
-                                        <tags:selectedDevicesPopup deviceCollection="${phaseABCollection}" />
-                                    </div>
-                                </c:if>
-	                        </div>
-	                        <div style="padding-bottom: 5px;">
-	                            <c:set var="showAC" value="${phaseACMetersSize > 0}" />
-                                <tags:boxContainer2 nameKey="metersDetectedAC" arguments="${phaseACMetersSize}" hideEnabled="true" showInitially="${showAC}">
-	                                <div style="max-height: 300px;overflow: auto;">
-	                                    <table>
-                                            <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
-                                            </tr>
-	                                        <c:forEach var="meter" items="${phaseACMeters}">
-                                                <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-	                                            <tr>
-	                                                <td style="padding-right: 10px;">${meter.name}</td>
-	                                                <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
-                                                    <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td><i:inline key=".phaseAInit"/> 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        <i:inline key=".phaseCInit"/> 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
-                                                    </td>
-	                                            </tr>
-	                                        </c:forEach>
-	                                    </table>
-	                                </div>
-	                            </tags:boxContainer2>
-                                <c:if test="${phaseACCollection.deviceCount > 0}">
-                                    <div id="phaseACActionsDiv" style="padding:5px;">
-                                        <cti:link href="/bulk/collectionActions" key=".phaseAC.collectionActionLabel" class="small">
-                                            <cti:mapParam value="${phaseACCollection.collectionParameters}"/>
-                                        </cti:link>
-                                        <tags:selectedDevicesPopup deviceCollection="${phaseACCollection}" />
-                                    </div>
-                                </c:if>
-	                        </div>
-	                        <div style="padding-bottom: 5px;">
-	                            <c:set var="showBC" value="${phaseBCMetersSize > 0}" />
-                                <tags:boxContainer2 nameKey="metersDetectedBC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${showBC}">
-	                                <div style="max-height: 300px;overflow: auto;">
-	                                    <table>
-                                            <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
-                                            </tr>
-	                                        <c:forEach var="meter" items="${phaseBCMeters}">
-                                                <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-	                                            <tr>
-	                                                <td style="padding-right: 10px;">${meter.name}</td>
-                                                    <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-	                                                <td><i:inline key=".phaseBInit"/> 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
-                                                        <i:inline key=".phaseCInit"/>
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
-                                                    </td>
-	                                            </tr>
-	                                        </c:forEach>
-	                                    </table>
-	                                </div>
-	                            </tags:boxContainer2>
-                                <c:if test="${phaseBCCollection.deviceCount > 0}">
-                                    <div id="phaseBCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/bulk/collectionActions" key=".phaseBC.collectionActionLabel" class="small">
-                                            <cti:mapParam value="${phaseBCCollection.collectionParameters}"/>
-                                        </cti:link>
-                                        <tags:selectedDevicesPopup deviceCollection="${phaseBCCollection}" />
-                                    </div>
-                                </c:if>
-	                        </div>
-	    	                <div style="padding-bottom: 5px;">
-	                            <c:set var="showABC" value="${phaseABCMetersSize > 0}" />
-	                            <tags:boxContainer2 nameKey="metersDetectedABC" arguments="${phaseABCMetersSize}" hideEnabled="true" showInitially="${showABC}">
-	                                <div style="max-height: 300px;overflow: auto;">
-	                                    <table>
-                                            <tr>
-                                                <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                                <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".voltageReadings"/></b></th>
-                                            </tr>
-	                                        <c:forEach var="meter" items="${phaseABCDevices}">
-                                                <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
-	                                            <tr>
-	                                                <td style="padding-right: 10px;">${meter.name}</td>
-	                                                <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
-	                                                <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
-                                                    <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
-                                                    <td><i:inline key=".phaseAInit"/> 
-                                                        <span style="font-weight: bold;">${phaseAReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseAReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseAReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseAReading.delta}</span><br>
-                                                        <i:inline key=".phaseBInit"/> 
-                                                        <span style="font-weight: bold;">${phaseBReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseBReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseBReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseBReading.delta}</span><br>
-                                                        <i:inline key=".phaseCInit"/> 
-                                                        <span style="font-weight: bold;">${phaseCReading.initial}</span> <i:inline key=".last"/>
-                                                        <span style="font-weight: bold;">${phaseCReading.last}</span> <i:inline key=".delta"/>
-                                                        <c:choose >
-                                                            <c:when test="${phaseCReading.delta gt 0}">
-                                                                <c:set var="spanClass" value="success"/>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:set var="spanClass" value="error"/>
-                                                            </c:otherwise>
-                                                        </c:choose> 
-                                                        <span style="font-weight: bold;" class="${spanClass}">${phaseCReading.delta}</span>
-                                                    </td>
-	                                            </tr>
-	                                        </c:forEach>
-	                                    </table>
-	                                </div>
-	                            </tags:boxContainer2>
-                                <c:if test="${phaseABCCollection.deviceCount > 0}">
-                                    <div id="phaseABCActionsDiv" style="padding:5px;">
-                                        <cti:link href="/bulk/collectionActions" key=".phaseABC.collectionActionLabel" class="small">
-                                            <cti:mapParam value="${phaseABCCollection.collectionParameters}"/>
-                                        </cti:link>
-                                        <tags:selectedDevicesPopup deviceCollection="${phaseABCCollection}" />
-                                    </div>
-                                </c:if>
-	                        </div>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <c:if test="${phaseABCollection.deviceCount > 0}">
+                            <div class="action-area">
+                                <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                    <cti:mapParam value="${phaseABCollection.collectionParameters}"/>
+                                </cti:url>
+                                <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                                <tags:selectedDevicesPopup deviceCollection="${phaseABCollection}" type="button"/>
+                            </div>
                         </c:if>
-    	                <div style="padding-bottom: 5px;">
-	    	                <c:set var="showUndefined" value="${undefinedMetersSize > 0}" />
-		                    <tags:boxContainer2 nameKey="metersUndefined" arguments="${undefinedMetersSize}" hideEnabled="true" showInitially="${showUndefined}">
-		                        <div style="max-height: 300px;overflow: auto;">
-			                        <table>
-			                            <c:forEach var="meter" items="${undefinedMeters}">
-			                                <tr>
-			                                    <td>${meter.name}</td>
-			                                </tr>
-			                            </c:forEach>
-			                        </table>
-		                        </div>
-		                    </tags:boxContainer2>
-                            <c:if test="${undefinedCollection.deviceCount > 0}">
-                                <div id="undefinedActionsDiv" style="padding:5px;">
-                                    <cti:link href="/bulk/collectionActions" key=".undefined.collectionActionLabel" class="small">
-                                        <cti:mapParam value="${undefinedCollection.collectionParameters}"/>
-                                    </cti:link>
-                                    <tags:selectedDevicesPopup deviceCollection="${undefinedCollection}" />
-                                </div>
-                            </c:if>
-	                    </div>
-	                    <div>
-                            <c:set var="showFailure" value="${failureMetersSize > 0}" />
-                            <tags:boxContainer2 nameKey="failureGroup" arguments="${failureMetersSize}" hideEnabled="true" showInitially="${showFailure}">
-                                <div style="max-height: 300px;overflow: auto;">
-                                    <table>
+                    </tags:boxContainer2>
+                    
+                    <%-- AC --%>
+                    <tags:boxContainer2 nameKey="metersDetectedAC" arguments="${phaseACMetersSize}" hideEnabled="true" showInitially="${phaseACMetersSize > 0}">
+                        <div class="scroll-large">
+                            <table class="compact-results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".meterName"/></th>
+                                        <th><i:inline key=".voltageReadings"/></th>
+                                    </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="meter" items="${phaseACMeters}">
+                                        <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
                                         <tr>
-                                            <th style="border-bottom: 1px solid #ccc;padding-right: 10px;"><b><i:inline key=".meterName"/></b></th>
-                                            <th style="border-bottom: 1px solid #ccc;"><b><i:inline key=".errorMsg"/></b></th>
+                                            <td>${fn:escapeXml(meter.name)}</td>
+                                            <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
+                                            <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
+                                            <td>
+                                                <div>
+                                                    <i:inline key=".phaseAInit"/>&nbsp;<strong>${phaseAReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseAReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseAReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseAReading.delta}</strong>
+                                                </div>
+                                                <div>
+                                                    <i:inline key=".phaseCInit"/>&nbsp;<strong>${phaseCReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseCReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseCReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseCReading.delta}</strong>
+                                                </div>
+                                            </td>
                                         </tr>
-                                        <c:forEach var="meter" items="${failureMeters}">
-                                            <tr>
-                                                <td style="padding-right: 10px;" nowrap="nowrap">${meter.name}</td>
-                                                <td><font color="red">${failureMetersMap[meter]}</font></td>
-                                            </tr>
-                                        </c:forEach>
-                                    </table>
-                                </div>
-                            </tags:boxContainer2>
-                            <c:if test="${failureCollection.deviceCount > 0}">
-                                <div id="failureActionsDiv" style="padding:5px;">
-                                    <cti:link href="/bulk/collectionActions" key=".failure.collectionActionLabel" class="small">
-                                        <cti:mapParam value="${failureCollection.collectionParameters}"/>
-                                    </cti:link>
-                                    <tags:selectedDevicesPopup deviceCollection="${failureCollection}" />
-                                </div>
-                            </c:if>
-	                    </div>
-			        </div>
-                </td>
-                <td height="100%" width="50%" valign="top">
-                    <!-- Pie Chart -->
-                    <c:url var="chartUrl" scope="page" value="/amr/phaseDetect/chart"/>
-                    <flot:ajaxChart url="${chartUrl}"/>
-                </td>
-            </tr>
-        </table>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <c:if test="${phaseACCollection.deviceCount > 0}">
+                            <div class="action-area">
+                                <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                    <cti:mapParam value="${phaseACCollection.collectionParameters}"/>
+                                </cti:url>
+                                <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                                <tags:selectedDevicesPopup deviceCollection="${phaseACCollection}" type="button"/>
+                            </div>
+                        </c:if>
+                    </tags:boxContainer2>
+                
+                    <%-- BC --%>
+                    <tags:boxContainer2 nameKey="metersDetectedBC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseBCMetersSize > 0}">
+                        <div class="scroll-large">
+                            <table class="compact-results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".meterName"/></th>
+                                        <th><i:inline key=".voltageReadings"/></th>
+                                    </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="meter" items="${phaseBCMeters}">
+                                        <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
+                                        <tr>
+                                            <td>${fn:escapeXml(meter.name)}</td>
+                                            <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
+                                            <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
+                                            <td>
+                                                <div>
+                                                    <i:inline key=".phaseBInit"/>&nbsp;<strong>${phaseBReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseBReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseBReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseBReading.delta}</strong>
+                                                </div>
+                                                <div>
+                                                    <i:inline key=".phaseCInit"/>&nbsp;<strong>${phaseCReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseCReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseCReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseCReading.delta}</strong>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <c:if test="${phaseBCCollection.deviceCount > 0}">
+                            <div class="action-area">
+                                <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                    <cti:mapParam value="${phaseBCCollection.collectionParameters}"/>
+                                </cti:url>
+                                <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                                <tags:selectedDevicesPopup deviceCollection="${phaseBCCollection}" type="button"/>
+                            </div>
+                        </c:if>
+                    </tags:boxContainer2>
+                    
+                    <%-- ABC --%>
+                    <tags:boxContainer2 nameKey="metersDetectedABC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseABCMetersSize > 0}">
+                        <div class="scroll-large">
+                            <table class="compact-results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".meterName"/></th>
+                                        <th><i:inline key=".voltageReadings"/></th>
+                                    </tr>
+                                </thead>
+                                <tfoot></tfoot>
+                                <tbody>
+                                    <c:forEach var="meter" items="${phaseABCMeters}">
+                                        <c:set var="phaseToReadingMap" value="${result.deviceReadingsMap[meter.deviceId]}"/>
+                                        <tr>
+                                            <td>${fn:escapeXml(meter.name)}</td>
+                                            <c:set var="phaseAReading" value="${phaseToReadingMap['A']}"/>
+                                            <c:set var="phaseBReading" value="${phaseToReadingMap['B']}"/>
+                                            <c:set var="phaseCReading" value="${phaseToReadingMap['C']}"/>
+                                            <td>
+                                                <div>
+                                                    <i:inline key=".phaseAInit"/>&nbsp;<strong>${phaseAReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseAReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseAReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseAReading.delta}</strong>
+                                                </div>
+                                                <div>
+                                                    <i:inline key=".phaseBInit"/>&nbsp;<strong>${phaseBReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseBReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseBReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseBReading.delta}</strong>
+                                                </div>
+                                                <div>
+                                                    <i:inline key=".phaseCInit"/>&nbsp;<strong>${phaseCReading.initial}</strong>&nbsp;
+                                                    <i:inline key=".last"/>&nbsp;<strong>${phaseCReading.last}</strong>&nbsp;
+                                                    <i:inline key=".delta"/>&nbsp;
+                                                    <c:choose>
+                                                        <c:when test="${phaseCReading.delta gt 0}">
+                                                            <c:set var="resultClass" value="success"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <c:set var="resultClass" value="error"/>
+                                                        </c:otherwise>
+                                                    </c:choose> 
+                                                    <strong class="${resultClass}">${phaseCReading.delta}</strong>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <c:if test="${phaseABCCollection.deviceCount > 0}">
+                            <div class="action-area">
+                                <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                    <cti:mapParam value="${phaseABCCollection.collectionParameters}"/>
+                                </cti:url>
+                                <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                                <tags:selectedDevicesPopup deviceCollection="${phaseABCCollection}" type="button"/>
+                            </div>
+                        </c:if>
+                    </tags:boxContainer2>
+                    
+                </c:if>
+
+                <tags:boxContainer2 nameKey="metersUndefined" arguments="${undefinedMetersSize}" hideEnabled="true" showInitially="${undefinedMetersSize > 0}">
+                    <div class="scroll-large">
+                        <table class="compact-results-table">
+                            <tbody>
+                                <c:forEach var="meter" items="${undefinedMeters}">
+                                    <tr><td>${fn:escapeXml(meter.name)}</td></tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <c:if test="${undefinedCollection.deviceCount > 0}">
+                        <div class="action-area">
+                            <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                <cti:mapParam value="${undefinedCollection.collectionParameters}"/>
+                            </cti:url>
+                            <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                            <tags:selectedDevicesPopup deviceCollection="${undefinedCollection}" type="button"/>
+                        </div>
+                    </c:if>
+                </tags:boxContainer2>
+                
+                <tags:boxContainer2 nameKey="failureGroup" arguments="${failureMetersSize}" hideEnabled="true" showInitially="${failureMetersSize > 0}">
+                    <div class="scroll-large">
+                        <table class="compact-results-table">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".meterName"/></th>
+                                    <th><i:inline key=".errorMsg"/></th>
+                                </tr>
+                            </thead>
+                            <tfoot></tfoot>
+                            <tbody>
+                                <c:forEach var="meter" items="${failureMeters}">
+                                    <tr>
+                                        <td>${fn:escapeXml(meter.name)}</td>
+                                        <td><span class="error">${failureMetersMap[meter]}</span></td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                    <c:if test="${failureCollection.deviceCount > 0}">
+                        <div class="action-area">
+                            <cti:url value="/bulk/collectionActions" var="actionUrl">
+                                <cti:mapParam value="${failureCollection.collectionParameters}"/>
+                            </cti:url>
+                            <cti:button nameKey="collectionAction" href="${actionUrl}" icon="icon-cog-go"/>
+                            <tags:selectedDevicesPopup deviceCollection="${failureCollection}" type="button"/>
+                        </div>
+                    </c:if>
+                </tags:boxContainer2>
+            </div>
+            
+            <div class="column two nogutter">
+                <!-- Pie Chart -->
+                <cti:url var="chartUrl" value="/amr/phaseDetect/chart">
+                    <cti:param name="key" value="${cacheKey}"/>
+                </cti:url>
+                <flot:ajaxChart url="${chartUrl}"/>
+            </div>
+        </div>
     </tags:sectionContainer2>
 </cti:standardPage>

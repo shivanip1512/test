@@ -10,7 +10,7 @@
         <form id="updateResultsForm" type="post" action="/bulk/update/upload">
             <cti:msg var="backToUploadButton" key="yukon.common.device.bulk.updateResults.backToUpload"/>
             <div class="page-action-area">
-                <button type="submit" class="button"><span class="b-label">${backToUploadButton}</span></button>
+                <cti:button type="submit" label="${backToUploadButton}"/>
             </div>
             <input type="hidden" name="ignoreInvalidCols" value="${ignoreInvalidCols}">
             <input type="hidden" name="ignoreInvalidIdentifiers" value="${ignoreInvalidIdentifiers}">

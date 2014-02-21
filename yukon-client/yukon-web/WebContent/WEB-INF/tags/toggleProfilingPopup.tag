@@ -112,5 +112,5 @@
     </div>
 
     <%-- TOGGLE BUTTON --%>
-    <input type="button" id="toggleButton${channelNum}" name="toggleButton${channelNum}" value="${toggleDesc}" onClick="javascript:doToggleScanning('${channelNum}', '${newToggleVal}');">
+    <cti:button id="toggleButton${channelNum}" label="${toggleDesc}" onclick="doToggleScanning('${channelNum}', '${newToggleVal}');" />
 </div>

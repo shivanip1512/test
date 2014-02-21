@@ -49,7 +49,7 @@
     </cti:url>
     
      <form:form commandName="operatorLogin" action="${action}" name="operatorLoginForm">
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:hidden path="userId"/>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName" id="userGroupName"/>
@@ -98,9 +98,9 @@
                         <tags:password path="password2" autocomplete="false" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
-                        <button type="button" onclick="generatePassword();"><i:inline key=".generatePassword" /></button>
-                        <br>
-                        <label>
+                        <cti:msg2 key=".generatePassword" var="pwordButton"/>
+                        <cti:button label="${pwordButton}" onclick="generatePassword();"/>
+                        <label class="fl">
                             <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
                             <i:inline key=".showPassword"/>
                         </label>

@@ -1,27 +1,28 @@
 <%@ tag dynamic-attributes="extraInputs" trimDirectiveWhitespaces="true" %>
-<%@ attribute name="action" required="true" type="java.lang.String"%>
-<%@ attribute name="groupDataJson" required="true" type="java.lang.String"%>
-<%@ attribute name="pickerType" required="true" type="java.lang.String"%>
-<%@ attribute name="blockOnSubmit" required="false" type="java.lang.Boolean"%>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ attribute name="action" required="true"%>
+<%@ attribute name="blockOnSubmit" type="java.lang.Boolean"%>
+<%@ attribute name="groupDataJson" required="true"%>
+<%@ attribute name="pickerType" required="true"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.common.device.bulk.deviceSelection">
 
-<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
-<c:set var="byAddrPopupId" value="byAddrPopup" />
+<c:set var="tree_id" value="bulkDeviceSelectionByGroupTree"/>
+<c:set var="byAddrPopupId" value="byAddrPopup"/>
 
-<cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText" />
+<cti:msg2 var="noGroupSelectedAlertText" key=".selectDevicesByGroupTree.noGroupSelectedAlertText"/>
 <cti:msg2 var="dataFileNoteAddress" key=".dataFileNote.address"/>
 <cti:msg2 var="dataFileNotePaoName" key=".dataFileNote.paoName"/>
 <cti:msg2 var="dataFileNoteDeviceId" key=".dataFileNote.deviceId"/>
 <cti:msg2 var="dataFileNoteMeterNumber" key=".dataFileNote.meterNumber"/>
 <cti:msg2 var="dataFileNoteBulk" key=".dataFileNote.bulk"/>
-<cti:msg2 key=".cancel" var="cancel" />
+<cti:msg2 key=".cancel" var="cancel"/>
 
 <script type="text/javascript">
 jQuery(function(){
@@ -179,8 +180,8 @@ function validateAddressRange() {
         <div class="page-action-area">
             <form id="selectDevicesForm" method="post" action="${action}" class="dn">
                 <cti:csrfToken/>
-                <input type="hidden" id="deviceIds" name="idList.ids" />
-                <input type="hidden" name="collectionType" value="idList" />
+                <input type="hidden" id="deviceIds" name="idList.ids"/>
+                <input type="hidden" name="collectionType" value="idList"/>
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
             </form>
             <tags:pickerDialog id="selectDevicesPicker" 
@@ -195,13 +196,13 @@ function validateAddressRange() {
         
         <%-- GROUP --%>
         <div class="page-action-area">
-            <cti:msg2 var="addDeviceTitle" key=".selectDevicesByGroupTitle" />
-            <cti:msg2 var="rootLabel" key=".selectDevicesByGroupTree.rootLabel" />
-            <cti:msg2 var="submitButtonText" key=".selectDevicesByGroupTree.submitButtonText" />
-            <cti:msg2 var="cancelButtonText" key=".selectDevicesByGroupTree.cancelButtonText" />
+            <cti:msg2 var="addDeviceTitle" key=".selectDevicesByGroupTitle"/>
+            <cti:msg2 var="rootLabel" key=".selectDevicesByGroupTree.rootLabel"/>
+            <cti:msg2 var="submitButtonText" key=".selectDevicesByGroupTree.submitButtonText"/>
+            <cti:msg2 var="cancelButtonText" key=".selectDevicesByGroupTree.cancelButtonText"/>
             
             <form id="selectDevicesByGroupForm" method="get" action="${action}">
-                <input type="hidden" name="collectionType" value="group" />
+                <input type="hidden" name="collectionType" value="group"/>
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                 <jsTree:nodeValueSelectingPopupTree fieldId="group.name"
                                                     fieldName="group.name"
@@ -225,7 +226,7 @@ function validateAddressRange() {
         <%-- ADDRESS RANGE --%>
         <div class="page-action-area">
         
-            <cti:msg2 var="selectAddressPopupTitle" key=".selectAddressPopupTitle" />
+            <cti:msg2 var="selectAddressPopupTitle" key=".selectAddressPopupTitle"/>
 
             <tags:simplePopup id="${byAddrPopupId}" title="${selectAddressPopupTitle}" styleClass="deviceSelectionPopup"  onClose="clearAddrFields('${byAddrPopupId}');">
                 <form id="addByAddressForm" method="get" action="${action}">
@@ -250,17 +251,17 @@ function validateAddressRange() {
                         <li class="dn rangeMsg endTooHigh">${endTooHigh}</li>
                     </ul>
                     
-                    <input type="hidden" name="collectionType" value="addressRange" />
+                    <input type="hidden" name="collectionType" value="addressRange"/>
                     
-                    <cti:msg2 var="startOfRangeLabel" key=".startOfRangeLabel" />
-                    <cti:msg2 var="endOfRangeLabel" key=".endOfRangeLabel" />
+                    <cti:msg2 var="startOfRangeLabel" key=".startOfRangeLabel"/>
+                    <cti:msg2 var="endOfRangeLabel" key=".endOfRangeLabel"/>
                     
                     <tags:nameValueContainer>
                         <tags:nameValue name="${startOfRangeLabel}">
-                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress outOfRange lessThanZero startTooHigh" />
+                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress outOfRange lessThanZero startTooHigh"/>
                         </tags:nameValue>
                         <tags:nameValue name="${endOfRangeLabel}">
-                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh" />
+                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh"/>
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <div class="action-area">
@@ -275,57 +276,58 @@ function validateAddressRange() {
         
         <%-- FILE UPLOAD --%>
         <div class="page-action-area">
-            <c:set var="byFileUploadId" value="byFileUpload" />
-            <cti:msg2 var="selectDataFilePopupTitle" key=".selectDataFilePopupTitle" />
+            <c:set var="byFileUploadId" value="byFileUpload"/>
+            <cti:msg2 var="selectDataFilePopupTitle" key=".selectDataFilePopupTitle"/>
             
             <tags:simplePopup id="${byFileUploadId}" title="${selectDataFilePopupTitle}" styleClass="deviceSelectionPopup">
                 <form id="addByFileUploadForm" method="post" action="${action}" enctype="multipart/form-data">
                     <cti:csrfToken/>
-                    <input type="hidden" name="collectionType" value="fileUpload" />
-                    <input type="hidden" name="isFileUpload" value="true" />
+                    <input type="hidden" name="collectionType" value="fileUpload"/>
+                    <input type="hidden" name="isFileUpload" value="true"/>
                     
-                    <cti:msg2 var="typeLabel" key=".selectDataFileType" />
-                    <cti:msg2 var="dataFileLabel" key=".selectDataFile" />
+                    <cti:msg2 var="typeLabel" key=".selectDataFileType"/>
+                    <cti:msg2 var="dataFileLabel" key=".selectDataFile"/>
                     
                     <tags:nameValueContainer>
                     
                         <tags:nameValue name="${typeLabel}">
                             <select id="${byFileUploadId}_uploadType" name="fileUpload.uploadType" onchange="updateFileNote('${byFileUploadId}')">
                                 <option value="ADDRESS">
-                                    <cti:msg2 key=".dataFileAddress" />
+                                    <cti:msg2 key=".dataFileAddress"/>
                                 </option>
                                 <option value="PAONAME">
-                                    <cti:msg2 key=".dataFileName" />
+                                    <cti:msg2 key=".dataFileName"/>
                                 </option>
                                 <option value="METERNUMBER">
-                                    <cti:msg2 key=".dataFileMeterNumber" />
+                                    <cti:msg2 key=".dataFileMeterNumber"/>
                                 </option>
                                 <option value="DEVICEID">
-                                    <cti:msg2 key=".dataFileDeviceId" />
+                                    <cti:msg2 key=".dataFileDeviceId"/>
                                 </option>
                                 <option value="BULK">
-                                    <cti:msg2 key=".dataFileBulk" />
+                                    <cti:msg2 key=".dataFileBulk"/>
                                 </option>
                             </select>
                         </tags:nameValue>
                         
                         <tags:nameValue name="${dataFileLabel}">
-                            <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40" />
+                            <input type="file" id="fileUpload.dataFile" name="fileUpload.dataFile" size="40"/>
                             <br>
                             <span id="${byFileUploadId}_fileNote" style="font-size: .7em; color: blue;">${dateFileNoteAddress}</span>
                         </tags:nameValue>
                         
                     </tags:nameValueContainer>
                     
-                    <br>
-                    <cti:msg2 var="selectDevicesPopupButtonText" key=".selectDevicesPopupButtonText" />
-                    <tags:slowInput myFormId="addByFileUploadForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
-                    <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
+                    <div class="action-area">
+                        <cti:msg2 var="selectDevicesPopupButtonText" key=".selectDevicesPopupButtonText"/>
+                        <cti:button type="submit" busy="true" label="${selectDevicesPopupButtonText}"/>
+                        <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
+                    </div>
                 </form>
             </tags:simplePopup>
             
             <cti:button nameKey="selectDevicesByFile" id="fileButton" onclick="toggleByFileUploadPopup('${byFileUploadId}');"/>
-            <span><i:inline key=".selectDevicesByFileTitle" /></span>
+            <span><i:inline key=".selectDevicesByFileTitle"/></span>
         </div>
     </div>
 </div>

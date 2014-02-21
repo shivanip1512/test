@@ -35,7 +35,7 @@
     </tags:nameValueContainer2>
     
     <div class="action-area">
-        <cti:button nameKey="stop" type="submit" id="actionSubmitButton"/>
+        <cti:button nameKey="stop" type="submit" id="actionSubmitButton" classes="primary action"/>
         <cti:button nameKey="cancel" onclick="yukon.CapControl.hideContentPopup();"/>
     </div>
     

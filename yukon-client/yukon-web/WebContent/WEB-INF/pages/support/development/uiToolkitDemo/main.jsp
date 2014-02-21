@@ -169,12 +169,12 @@ button
                 <tr>
                     <td>
                         Disable an input after clicking on it.<br/>
-                        <input type="button" class="f-disable-after-click" value="Input Tag" />
+                        <cti:button classes="f-disable-after-click" label="Input Tag"/>
                     </td>
                     <td>
                         Also works on <strong>inputs</strong> of type <strong>button</strong>.
                         <pre class="code">
-&lt;input type="button" class="f-disable-after-click"&gt;Input Tag&lt;/button&gt;
+&lt;cti:button classes="f-disable-after-click" label="Input Tag"/&gt;
                         </pre>
                     </td>
                 </tr>
@@ -358,7 +358,7 @@ button
                             page.</small>
                     </td>
                     <td>Add the <b>f-blocker</b> class to the tag/button. <br /> <br /> <pre class="code">
-&lt;button type="submit" name="button1" value="who cares?" class="f-blocker"&gt;standard&lt;/button&gt;
+&lt;cti:button type="submit" name="button1" label="standard" classes="f-blocker"/&gt;
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
                         <br /> <br /> <pre class="code">
 jQuery('#myCloseButton').on('click', function () {

@@ -102,7 +102,7 @@
     <form id="addForm" action="${addUrl}">
         <div class="action-area">
             <cti:url var="addUrl" value="/stars/optOutSurvey/edit"/>
-            <cti:button type="button" icon="icon-plus-green" classes="add-survey" nameKey="add" data-dialog-title="${addSurveyTitle}" data-add-url="${addUrl}"/>
+            <cti:button icon="icon-plus-green" classes="add-survey" nameKey="add" data-dialog-title="${addSurveyTitle}" data-add-url="${addUrl}"/>
         </div>
     </form>
 </cti:standardPage>

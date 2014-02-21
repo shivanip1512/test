@@ -109,9 +109,7 @@ jQuery(function(){
                 <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
                 <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">
                 <div class="clearfix stacked">
-                    <button type="submit" name="runProgram">
-                        <span class="b-label">${runProgramText}</span>
-                    </button>
+                    <cti:button type="submit" name="runProgram" label="${runProgramText}"/>
                 </div>
             </form>
             <cti:url var="historyUrl" value="/stars/operator/thermostat/history/view">

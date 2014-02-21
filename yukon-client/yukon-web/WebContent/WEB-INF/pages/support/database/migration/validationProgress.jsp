@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.support.databaseMigration.validationProgress.pageTitle"/>
@@ -19,10 +19,7 @@
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
     </cti:breadCrumbs>
     
-    <cti:standardMenu menuSelection="database|migration"/>
-
     <h2>${pageTitle}</h2>
-    <br>
     
     <script type="text/javascript">
 
@@ -66,13 +63,9 @@
         <br>
         <form id="importValidateForm" action="/support/database/migration/importValidate" method="get">
             <input type="hidden" name="statusKey" value="${status.id}">
+            <cti:button type="submit" busy="true" label="${viewResultButton}"/>
         </form>
-        
-        <tags:slowInput id="validateButton" myFormId="importValidateForm" label="${viewResultButton}" />
 
    </tags:boxContainer>
-       
-   
-    
-    
+
 </cti:standardPage>

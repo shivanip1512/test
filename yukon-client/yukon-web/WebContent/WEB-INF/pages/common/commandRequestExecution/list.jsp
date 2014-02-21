@@ -1,8 +1,8 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.list.pageTitle" />
 <cti:msg var="filterSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.section" />
@@ -27,25 +27,16 @@
 <cti:standardPage title="${pageTitle}" module="amr">
 <cti:msgScope paths="yukon.web.modules.amr.commandRequestExecution.results.list">
 
-    <cti:standardMenu menuSelection=""/>
-    
     <cti:breadCrumbs>
-    
         <cti:crumbLink url="/dashboard" title="Home" />
-        
-        
         <%-- cres --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
     </cti:breadCrumbs>
     
     <script type="text/javascript">
-
         function forwardToCreDetail(row, id) {
-            jQuery('#cresTable').removeClass('activeResultsTable');
             window.location = "/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
         }
-    
     </script>
     
     <h2>${pageTitle}</h2>
@@ -57,20 +48,13 @@
     </c:if>
     
     <c:if test="${singleJob}">
-        <tags:nameValueContainer>
-            <tags:nameValue name="${executionsTypeText}" nameColumnWidth="60px">
-                ${singleJobType}
-            </tags:nameValue>        
+        <tags:nameValueContainer tableClass="stacked">
+            <tags:nameValue name="${executionsTypeText}" nameColumnWidth="60px">${singleJobType}</tags:nameValue>
         </tags:nameValueContainer>
-        <br>
     </c:if>
     
-        
     <%-- FILTER POPUP --%>
     <tags:simplePopup id="filterPopup" title="${filterSectionText}" on="#filterButton">
-    
-        <form name="clearForm" id="clearForm" action="/common/commandRequestExecutionResults/list" method="get">
-        </form>
     
         <form name="filterForm" id="filterForm" action="/common/commandRequestExecutionResults/list" method="get">
         
@@ -108,22 +92,22 @@
             
             </tags:nameValueContainer>
             
-            <br>
-            <tags:slowInput myFormId="filterForm" label="${filterButtonText}" labelBusy="${filterButtonText}"/>
-            <tags:slowInput myFormId="clearForm" label="${filterClearText}" labelBusy="${filterClearText}"/>
-            <br><br>
-        
+            <div class="action-area">
+                <cti:button label="${filterButtonText}" busy="true" type="submit" classes="primary action"/>
+                <cti:url value="/common/commandRequestExecutionResults/list" var="clearUrl"/>
+                <cti:button label="${filterClearText}" href="${clearUrl}"/>
+            </div>
         </form>
         
     </tags:simplePopup>
     
     
     <%-- RESULTS TABLE --%>
-    <div style="padding-bottom:5px;">
-		<cti:button nameKey="filter" classes="navlink" renderMode="labeledImage" id="filterButton" icon="icon-filter"/>
+    <div id="f-page-buttons">
+        <cti:button nameKey="filter" id="filterButton" icon="icon-filter"/>
     </div>
 
-    <table id="cresTable" class="results-table activeResultsTable row-highlighting">
+    <table id="cresTable" class="compact-results-table row-highlighting">
         <thead>
             <tr>
                 <c:if test="${!singleJob}">
@@ -155,8 +139,6 @@
             
                 <tr class="cp" 
                     onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
-                    onmouseover="yukon.ui.aux.activeResultsTable_highLightRow(this)" 
-                    onmouseout="yukon.ui.aux.activeResultsTable_unHighLightRow(this)"
                     title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
                     
                     <c:if test="${!singleJob}">

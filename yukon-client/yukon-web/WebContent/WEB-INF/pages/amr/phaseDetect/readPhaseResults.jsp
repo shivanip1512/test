@@ -29,7 +29,11 @@
         <div style="float: left;" id ="cancelReadDiv">
             <form action="/amr/phaseDetect/cancelRead" method="get">
                 <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.cancelRead"/>
-                <input type="submit" value="${cancelRead}" <c:if test="${readComplete}">disabled</c:if> id="cancelReadButton">
+                <c:choose>
+                    <c:when test="${readComplete}"><c:set var="disabled" value="true"/></c:when>
+                    <c:otherwise><c:set var="disabled" value="false"/></c:otherwise>
+                </c:choose>
+                <cti:button type="submit" value="${cancelRead}" label="${cancelRead}" id="cancelReadButton" disabled="${disabled}"/>
             </form>
         </div>
     </c:otherwise>

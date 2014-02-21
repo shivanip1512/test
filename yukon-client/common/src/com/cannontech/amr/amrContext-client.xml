@@ -123,12 +123,10 @@
     
     <bean id="normalizedUsageService" class="com.cannontech.common.chart.service.impl.NormalizedUsageServiceImpl"/>
 
-    <!-- Phase Detect Service -->
-    <bean id="phaseDetectResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
-    
-    <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl">
-        <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
+    <bean id="phaseDetectResultsCache" class="com.cannontech.common.util.RecentResultsCache">
+        <qualifier value="phaseDetect"/>
     </bean>
+    <bean class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl"/>
 
     <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
 

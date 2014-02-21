@@ -116,7 +116,7 @@
                     </c:if>
                      <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
-                    <cti:button id="deleteButton" nameKey="delete" type="button" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
+                    <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 </c:when>
                 <c:otherwise>
@@ -124,7 +124,7 @@
                 </c:otherwise>
             </c:choose>
             <cti:url var="backUrl" value="/meter/start"/>
-            <cti:button nameKey="cancel" type="button" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" href="${backUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form>
         

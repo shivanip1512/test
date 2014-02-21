@@ -1,16 +1,16 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="user" page="profile.${mode}">
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<d:confirm on="#reset_all_preferences" nameKey="preferences.confirmResetAll" argument=""/>
+<d:confirm on="#reset_all_preferences" nameKey="preferences.confirmResetAll"/>
 
 <div class="column-12-12">
     <div class="column one">
@@ -31,42 +31,42 @@
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
                 </tags:nameValueContainer2>
-	            <div>
-	                <h4><i:inline key="yukon.web.modules.user.additionContactInfo.title" /></h4>
-	                <div style="margin-left:3px;" class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
-	                <tags:nameValueContainer2 id="contactNotifs">
-	                    <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
-	                        <c:set var="notifType" value="${contactNotif.contactNotificationType}" />
+                <div>
+                    <h4><i:inline key="yukon.web.modules.user.additionContactInfo.title"/></h4>
+                    <div style="margin-left:3px;" class="f-display_empty<c:if test="${not empty userProfile.contact.otherNotifications}"> dn</c:if>"><i:inline key="yukon.web.defaults.na"/></div>
+                    <tags:nameValueContainer2 id="contactNotifs">
+                        <c:forEach var="contactNotif" items="${userProfile.contact.otherNotifications}" varStatus="row">
+                            <c:set var="notifType" value="${contactNotif.contactNotificationType}"/>
                             <c:set var="isPhone" value='${notifType.isPhoneType() || notifType.isFaxType()}' />
-	                        <cti:displayForPageEditModes modes="EDIT">
-	                            <tr class="contactNotif">
-	                                <td class="name">
-	                                    <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
-	                                </td>
-	                                <td class="value">
-	                                    <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
-	                                </td>
-	                                <td class="actions">
-	                                    <cti:button renderMode="buttonImage" icon="icon-cross removeBtn"/>
-	                                </td>
-	                            </tr>
-	                        </cti:displayForPageEditModes>
-	                        <cti:displayForPageEditModes modes="VIEW">
-	                            <tags:nameValue2 nameKey="${contactNotif.contactNotificationType.formatKey}" rowClass="contactNotif">
-	                                <c:if test="${isPhone}">
-	                                    <cti:formatPhoneNumber value="${contactNotif.notificationValue}"/>
-	                                </c:if>
-	                                <c:if test="${! isPhone}">${fn:escapeXml(contactNotif.notificationValue)}</c:if>
-	                            </tags:nameValue2>
-	                        </cti:displayForPageEditModes>
-	                    </c:forEach>
-	                </tags:nameValueContainer2>
-	                <cti:displayForPageEditModes modes="EDIT">
-	                    <div class="action-area">
-	                        <cti:button nameKey="add" icon="icon-add" id="btn_addContactInfo"/>
-	                    </div>
-	                </cti:displayForPageEditModes>
-	            </div>
+                            <cti:displayForPageEditModes modes="EDIT">
+                                <tr class="contactNotif">
+                                    <td class="name">
+                                        <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
+                                    </td>
+                                    <td class="value">
+                                        <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
+                                    </td>
+                                    <td class="actions">
+                                        <cti:button renderMode="buttonImage" icon="icon-cross removeBtn"/>
+                                    </td>
+                                </tr>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <tags:nameValue2 nameKey="${contactNotif.contactNotificationType.formatKey}" rowClass="contactNotif">
+                                    <c:if test="${isPhone}">
+                                        <cti:formatPhoneNumber value="${contactNotif.notificationValue}"/>
+                                    </c:if>
+                                    <c:if test="${! isPhone}">${fn:escapeXml(contactNotif.notificationValue)}</c:if>
+                                </tags:nameValue2>
+                            </cti:displayForPageEditModes>
+                        </c:forEach>
+                    </tags:nameValueContainer2>
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <div class="action-area">
+                            <cti:button nameKey="add" icon="icon-add" id="btn_addContactInfo"/>
+                        </div>
+                    </cti:displayForPageEditModes>
+                </div>
             </tags:sectionContainer2>
 
 
@@ -89,7 +89,7 @@
         <cti:displayForPageEditModes modes="VIEW">
             <c:if test="${canResetPassword}">
                 <d:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
-                    <div class="column-12-12">
+                    <div class="column-14-10">
                         <div class="column one">
                             <form id="loginBackingBean">
                                 <input type="hidden" name="k" value="${changePwdKey}">
@@ -125,61 +125,68 @@
                 </d:inline>
             </c:if>
 
-            <%-- PREFERENCES SECTION currently at the bottom of the first column --%>
+            <%-- PREFERENCES SECTION --%>
             <tags:sectionContainer2 nameKey="preferences">
-                <table id="tbl_preferences"><tbody>
-                    <tr data-type="${objPrefName}" class="all-preferences-row">
-                        <td class="name"><i:inline key=".preferences.default.all"/></td>
-                        </td>
-                        <td class="value">
-                            <cti:button classes="f-pref-default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button" />
-                        </td>
-                    </tr>
-        
-                    <c:forEach var="objPrefName" items="${allPreferenceNames}" >
-                        <tr data-type="${objPrefName}">
-                            <td class="name" style="max-width: 151px"><i:inline key="${objPrefName.formatKey}"/></td>
-                            <c:set var="prefName" value="${objPrefName.toString()}" />
-                            <c:set var="isString" value='${"StringType".equals(objPrefName.valueType)}' />
-                            <c:set var="isEnum" value='${objPrefName.valueType.toString().startsWith("EnumType")}' />
-                            <c:choose>
-                                <c:when test="${isEnum}">
-                                    <td class="value selection_group">
-                                        <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : objPrefName.defaultValue}" />
-                                        <c:set var="defaultVal" value="${objPrefName.defaultValue}" />
-                                        <button class="f-pref-default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
-                                        <c:set var="prefOptions" value="${objPrefName.valueType.optionList}" />
-                                        <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}" />
-                                        <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
-                                            <cti:msg2 key="${prefOption.message}" var="prefText"/>
-                                            <c:set var="baseCss" value='${stat.first ? "left" : stat.last ? "right" : "middle"}'/>
-                                            <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}' />
-                                            <button type="button" class="${baseCss}<c:if test="${prefOption.value.equals(prefValue)}"> on</c:if>" data-value="${prefOption.value}"<c:if test="${iconOnly}"> title="${prefText}"</c:if>>
-                                                <c:choose>
-                                                    <c:when test="${iconOnly}">
-                                                        <c:set var="optMap" value='${prefDisplayOptMap.get("iconONLY")}'/><i class="icon ${optMap.get(prefOption.value)}"></i>
-                                                    </c:when>
-                                                    <c:otherwise><span class="b-label">${prefText}</span></c:otherwise>
-                                                </c:choose>
-                                            </button>
-                                        </c:forEach>
-                                    </td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td class="value">
-                                        <c:set var="defaultVal" value="${objPrefName.defaultValue}" />
-                                        <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : defaultVal}" />
-                                        <form class="f-pref-form" action="/this/is/never/called" method="PUT">
-                                            <button type="button" class="f-pref-default" data-value="${defaultVal}"><i class="icon icon-arrow-swap"></i></button>
-                                            <input type="text" name="${prefName}" value="${fn:escapeXml(prefValue)}" prev-value="${fn:escapeXml(prefValue)}" title="${fn:escapeXml(prefValue)}" style="float:left" maxlength="255">
-                                            <button type="button" class="save-preference dn" title="<cti:msg2 key="yukon.common.save" />"><i class="icon icon-disk"></i></button>
-                                        </form>
-                                    </td>
-                                </c:otherwise>
-                            </c:choose>
+                <table id="tbl_preferences" class="full-width with-form-controls">
+                    <tbody>
+                    
+                        <tr data-type="${objPrefName}" class="all-preferences-row">
+                            <td class="name"><i:inline key=".preferences.default.all"/></td>
+                            </td>
+                            <td class="value">
+                                <cti:button classes="f-pref-default" id="reset_all_preferences" icon="icon-arrow-swap" nameKey="preferences.default.all.button"/>
+                            </td>
                         </tr>
-                    </c:forEach>
-                </tbody></table>
+                        
+                        <c:forEach var="objPrefName" items="${allPreferenceNames}" >
+                            <tr data-type="${objPrefName}">
+                                <td class="name"><i:inline key="${objPrefName.formatKey}"/></td>
+                                
+                                <td class="value selection_group">
+                                    
+                                    <c:set var="prefName" value="${objPrefName.toString()}"/>
+                                    <c:set var="defaultVal" value="${objPrefName.defaultValue}"/>
+                                    <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : objPrefName.defaultValue}"/>
+                                    <c:set var="prefOptions" value="${objPrefName.valueType.optionList}"/>
+                                    <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}"/>
+                                    
+                                    <cti:button classes="f-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage"/>
+                                    
+                                    <div class="button-group dib fl">
+                                        <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
+                                        
+                                            <cti:msg2 var="prefText" key="${prefOption.message}"/>
+                                            <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}' />
+                                            
+                                            <c:choose>
+                                                <c:when test="${prefOption.value.equals(prefValue)}"><c:set var="classes" value="on"/></c:when>
+                                                <c:otherwise><c:set var="classes" value=""/></c:otherwise>
+                                            </c:choose>
+                                            <c:choose>
+                                                <c:when test="${iconOnly}">
+                                                    <c:set var="title" value="${prefText}"/>
+                                                    <c:set var="renderMode" value="buttonImage"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="title" value=""/>
+                                                    <c:set var="renderMode" value="button"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:choose>
+                                                <c:when test="${iconOnly}">
+                                                    <c:set var="optMap" value="${prefDisplayOptMap.get('iconONLY')}"/>
+                                                    <c:set var="icon" value="${optMap.get(prefOption.value)}"/>
+                                                </c:when>
+                                                <c:otherwise><c:set var="icon" value=""/></c:otherwise>
+                                            </c:choose>
+                                            <cti:button classes="${classes}" data-value="${prefOption.value}" title="${title}" renderMode="${renderMode}" label="${prefText}" icon="${icon}"/>
+                                        </c:forEach>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
     </div>
@@ -217,7 +224,7 @@
     </div>
 </div>
 
-<cti:includeScript link="/JavaScript/yukon.user.profile.js" />
+<cti:includeScript link="/JavaScript/yukon.user.profile.js"/>
 
 <%-- This template row is copied by Javascript when user adds Contact Notification Infos while editing. --%>
 <cti:displayForPageEditModes modes="EDIT">

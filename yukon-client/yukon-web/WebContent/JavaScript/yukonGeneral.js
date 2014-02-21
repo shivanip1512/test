@@ -144,14 +144,7 @@ yukon.ui.aux = (function () {
             newOpt.value = optValue;
             newOpt.text = optText;
         },
-        activeResultsTable_highLightRow : function (row) {
-            row = jQuery(row);
-            row.addClass('hover');
-        },
-        activeResultsTable_unHighLightRow : function (row) {
-            row = jQuery(row);
-            row.removeClass('hover');
-        },
+        
         cancelCommands : function (resultId, url, ccid, cancelingText, finishedText) {
 
             // save button text for restore on error

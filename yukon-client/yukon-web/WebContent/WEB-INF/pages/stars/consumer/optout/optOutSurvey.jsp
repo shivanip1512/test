@@ -11,8 +11,7 @@
 <cti:standardPage module="consumer" page="optoutconfirm">
 <cti:standardMenu/>
 <cti:flashScopeMessages/>
-<form:form id="form" commandName="optOutBackingBean" method="POST"
-    action="${actionUrl}">
+<form:form id="form" commandName="optOutBackingBean" method="POST" action="${actionUrl}">
 
     <h3><cti:msg key="yukon.dr.consumer.optoutconfirm.header"/></h3>
 
@@ -26,14 +25,13 @@
             <%@ include file="survey.jspf" %>
         </div>
 
-	    <div>
-	        <br>
-	        <span style="padding-right: 0.5em;">
-	            <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.save'/>"></input>
-	        </span>
-	        <input type="button" value="<cti:msg key='yukon.dr.consumer.optoutconfirm.cancel'/>"
-	               onclick="javascript:location.href='${optOutUrl}';"></input>
-	    </div>
+        <div>
+            <br>
+            <cti:msg key="yukon.dr.consumer.optoutconfirm.save" var="save"/>
+            <cti:msg key="yukon.dr.consumer.optoutconfirm.cancel" var="cancel"/>
+            <cti:button type="submit" label="${save}"/>
+            <cti:button label="${cancel}" href="${optOutUrl}"/>
+        </div>
     </div>
 </form:form>
 </cti:standardPage>

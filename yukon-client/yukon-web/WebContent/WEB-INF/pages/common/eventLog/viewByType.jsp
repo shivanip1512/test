@@ -104,10 +104,10 @@
     <div class="action-area stacked">
 	    <c:choose>
 	        <c:when test="${maxCsvRows > searchResult.hitCount}">
-	            <cti:button nameKey="csvExport" href="${csvLink}" icon="icon-page-excel"/>
+	            <cti:button nameKey="download" href="${csvLink}" icon="icon-page-excel"/>
 	        </c:when>
 	        <c:otherwise>
-	            <cti:button nameKey="csvExport" href="${csvLink}" id="csvExportButton" icon="icon-page-excel"/>
+	            <cti:button nameKey="download" href="${csvLink}" id="csvExportButton" icon="icon-page-excel"/>
                 <d:confirm on="#csvExportButton" nameKey="confirmExport"/>
 	        </c:otherwise>
 	    </c:choose>

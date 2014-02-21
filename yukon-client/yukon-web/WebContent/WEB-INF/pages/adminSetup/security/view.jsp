@@ -171,17 +171,14 @@
                                         <td class="remove-column">
                                             <c:choose>
                                                 <c:when test="${key.currentlyUsed}">
-                                                    <a class="button naked" disabled="disabled" title="<cti:msg2 key=".deleteKeyBtnDisabledTitle"/>">
-                                                        <i class="icon icon-cross"></i>
-                                                    </a>
+                                                    <cti:msg2 key=".deleteKeyBtnDisabledTitle" var="title"/>
+                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-cross" />
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <a type="submit" id="deleteKeyBtn_${key.encryptionKeyId}"
-                                                        href="javascript:submitForm('keys_${key.encryptionKeyId}')"
-                                                        class="button naked"
-                                                        title="<cti:msg2 key=".deleteKeyBtnTitle"/>">
-                                                        <i class="icon icon-cross"></i>
-                                                    </a>
+                                                    <cti:msg2 key=".deleteKeyBtnTitle" var="title"/>
+                                                    <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}"
+                                                        onclick="submitForm('keys_${key.encryptionKeyId}')"
+                                                        title="${title}" icon="icon-cross"/>
                                                 </c:otherwise>
                                             </c:choose>
                                     </tr>

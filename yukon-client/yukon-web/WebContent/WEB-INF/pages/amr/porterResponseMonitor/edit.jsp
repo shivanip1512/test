@@ -179,7 +179,7 @@
             <cti:url value="/amr/porterResponseMonitor/viewPage" var="viewUrl">
                 <cti:param name="monitorId" value="${monitorDto.monitorId}"/>
             </cti:url>
-            <cti:button nameKey="cancel" type="button" href="${viewUrl}" busy="true" data-disable-group="actionButtons" />
+            <cti:button nameKey="cancel" href="${viewUrl}" busy="true" data-disable-group="actionButtons" />
         </div>
     </form:form>
     

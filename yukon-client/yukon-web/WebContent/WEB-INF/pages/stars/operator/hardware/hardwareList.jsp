@@ -702,7 +702,7 @@
                                 </cti:checkRolesAndProperties>
                             </c:when>
                             <c:otherwise>
-                                <cti:button nameKey="add" type="button" icon="icon-add" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
+                                <cti:button nameKey="add" icon="icon-add" onclick="showInvCheckingPopup('gateway');" dialogButton="true"/>
                             </c:otherwise>
                         </c:choose>
                     </form>
