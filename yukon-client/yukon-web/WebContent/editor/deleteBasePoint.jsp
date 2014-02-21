@@ -25,7 +25,7 @@ deleteForm.initItem();
 
         <f:facet name="body">
             <h:form id="deleteForm">
-
+            <f:verbatim><cti:csrfToken/></f:verbatim>
             <x:outputText styleClass="editorHeader" value="Item Deletion"/>
             <f:verbatim><br/><hr/><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true"

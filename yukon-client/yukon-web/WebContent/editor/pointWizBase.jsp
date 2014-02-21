@@ -37,7 +37,7 @@
 
         <f:facet name="body">
             <h:form id="wizardForm">
-
+            <f:verbatim><cti:csrfToken/></f:verbatim>
             <f:verbatim><br/></f:verbatim>
             <x:outputText styleClass="editorHeader" value="Point Wizard"/>
             <f:verbatim><br/></f:verbatim>

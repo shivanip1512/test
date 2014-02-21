@@ -52,6 +52,7 @@
         <f:facet name="body">
             
             <h:form id="editorForm">
+                <f:verbatim><cti:csrfToken/></f:verbatim>
                 <x:inputHidden value="#{capControlForm.itemId}"/>
                 <h:inputHidden value="#{capControlForm.editorType}"/>
                 <x:htmlTag value="br"/>

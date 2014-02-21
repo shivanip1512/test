@@ -41,7 +41,7 @@
 
         <f:facet name="body">
             <h:form id="editorForm">
-
+            <f:verbatim><cti:csrfToken/></f:verbatim>
             <x:outputText styleClass="editorHeader" value="Point Editor"/>
             <f:verbatim><br/><hr/><br/></f:verbatim>
             <x:messages id="messageList" showSummary="true" showDetail="true"

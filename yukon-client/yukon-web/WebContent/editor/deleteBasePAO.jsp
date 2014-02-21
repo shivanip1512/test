@@ -30,7 +30,7 @@
 	
 	        <f:facet name="body">
 	            <h:form id="deleteForm">
-	
+	            <f:verbatim><cti:csrfToken/></f:verbatim>
 	            <x:outputText styleClass="editorHeader" value="Item Deletion"/>
 	            <x:htmlTag value="br"/>
 	            <x:htmlTag value="hr"/>

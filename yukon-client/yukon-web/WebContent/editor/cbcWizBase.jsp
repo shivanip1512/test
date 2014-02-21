@@ -28,10 +28,9 @@
 		<x:panelLayout id="page" styleClass="pageLayout"
 			headerClass="pageHeader" navigationClass="pageNavigation"
 			bodyClass="pageBody" footerClass="pageFooter">
-
 			<f:facet name="body">
 				<h:form id="wizardForm">
-
+                    <f:verbatim><cti:csrfToken/></f:verbatim>
 					<x:outputText styleClass="editorHeader" value="#{capControlForm.editorTitle} Wizard" />
 					<x:htmlTag value="br"/>
 					<x:messages id="messageList" showSummary="true" showDetail="true"
