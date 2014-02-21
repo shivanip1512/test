@@ -56,7 +56,7 @@
                         <cti:msg key="yukon.web.changelogin.save" var="save"/>
                         <cti:msg key="yukon.web.changelogin.cancel" var="cancel"/>
                         <cti:button type="submit" label="${save}"/>
-                        <cti:button type="reset" label="${cancel}">
+                        <cti:button type="reset" label="${cancel}"/>
                     </td>
                 </tr>
             </table>
