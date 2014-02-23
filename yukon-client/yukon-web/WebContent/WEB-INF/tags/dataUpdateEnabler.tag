@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ tag import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
-<cti:includeScript link="/JavaScript/dataUpdater.js"/>
+<cti:includeScript link="/JavaScript/yukon.data.updater.js"/>
 <c:url var="updateUrl" value="/updater/update" />
 
 <script type="text/javascript">

@@ -14,7 +14,7 @@
 <cti:msg var="finishedText" key="yukon.common.device.commander.results.finishedCancelingCommands" />
 
 <span>
-    <cti:button id="cancelButton${ccid}" label="${cancelButtonText}" onclick="yukon.ui.aux.cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelButtonText}','${finishedText}');"/>
+    <cti:button id="cancelButton${ccid}" label="${cancelButtonText}" onclick="yukon.ui.util.cancelCommands('${resultId}','${cancelUrl}','${ccid}','${cancelButtonText}','${finishedText}');"/>
     <img id="waitImg${ccid}" src="${waitImgUrl}" style="display:none;">
 </span>
            

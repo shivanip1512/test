@@ -41,7 +41,7 @@ jQuery(function() {
                             <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" maxlength="40"/>
                             <tags:inputNameValue nameKey=".streetAddress2" path="address.locationAddress2" size="35" maxlength="40"/>
                             <tags:inputNameValue nameKey=".city" path="address.cityName" size="32" maxlength="32"/>
-                            <tags:inputNameValue nameKey=".stateCode" path="address.stateCode" size="2" maxlength="2"/>
+                            <tags:inputNameValue nameKey=".stateCode" path="address.stateCode" size="3" maxlength="2"/>
                             <tags:inputNameValue nameKey=".zipCode" path="address.zipCode" size="12" maxlength="12"/>
                             <tags:inputNameValue nameKey=".county" path="address.county" size="30" maxlength="30"/>
                         </cti:displayForPageEditModes>
@@ -71,7 +71,7 @@ jQuery(function() {
                             </c:if>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT">
-                            <cti:button nameKey="save" type="submit" name="save"/>
+                            <cti:button nameKey="save" type="submit" name="save" classes="primary action"/>
                             <c:if test="${canDelete}">
                                 <cti:url value="delete" var="deleteUrl" >
                                     <cti:param name="ecId" value="${ecId}"/>

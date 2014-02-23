@@ -36,7 +36,7 @@
     
     <div class="action-area">
         <cti:button nameKey="stop" type="submit" id="actionSubmitButton" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="yukon.CapControl.hideContentPopup();"/>
+        <cti:button nameKey="cancel" onclick="yukon.da.hideContentPopup();"/>
     </div>
     
 </form>

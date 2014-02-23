@@ -18,7 +18,7 @@ margin: 0px;
 <c:if test="${hasCapbankControl}">
     <script type="text/javascript">
         jQuery(function() {
-            yukon.CapControl.initBankTier();
+            yukon.da.initBankTier();
         });
     </script>
 </c:if>
@@ -96,7 +96,7 @@ margin: 0px;
                 </td>
 
                 <%-- State --%>
-                <td>
+                <td class="wsnw">
                     <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR" />
                     <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
                     <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="LOCAL_FLAG"/>

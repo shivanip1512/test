@@ -9,7 +9,7 @@
 
 <c:set var="resultsId" value="${callbackResult.resultsId}" />
 
-<cti:includeScript link="/JavaScript/progressbar.js"/>
+<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 
 <script type="text/javascript">
     function refreshErrors (id) {
@@ -34,9 +34,9 @@
 
 <%-- PROGRESS --%>
 <tags:resultProgressBar totalCount="${callbackResult.totalItems}"
-    					countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
-						progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel"
-						statusTextKey="BACKGROUNDPROCESS/${resultsId}/STATUS_TEXT" />
+                        countKey="BACKGROUNDPROCESS/${resultsId}/COMPLETED_LINES"
+                        progressLabelTextKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel"
+                        statusTextKey="BACKGROUNDPROCESS/${resultsId}/STATUS_TEXT" />
       
 <%-- SUCCESS COUNT --%>
 <br>
@@ -52,7 +52,7 @@
         <tags:selectedDevicesPopup deviceCollection="${callbackResult.successDeviceCollection}" />
     </div>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['successActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_SUCCESSES" />
 
 </c:if>
 
@@ -63,34 +63,32 @@
 <%-- FAILURE DETAILS --%>
 <div id="errorActionsDiv" style="padding:4px;display:none;">
 
-    <ul class="simple-list">
-
-    <%-- FAILURE DEVICE COLLECTION --%> 
-    <c:if test="${callbackResult.failureDevicesSupported}">
-    	<li style="padding-bottom:4px;">
-		<cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
-			<cti:mapParam value="${callbackResult.failureDeviceCollection.collectionParameters}"/>
-        </cti:link>
-        <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}" /><br>
-        </li>
-    </c:if>
-       
-    <%-- FAILURE FILE DOWNLOAD --%>
-    <c:if test="${callbackResult.failureFileSupported}">
-    	<li style="padding-bottom:4px;">
-        <tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="true" />
-        </li>
-    </c:if>
-    
+    <ul class="simple-list stacked">
+        <%-- FAILURE DEVICE COLLECTION --%> 
+        <c:if test="${callbackResult.failureDevicesSupported}">
+            <li style="padding-bottom:4px;">
+                <cti:link href="/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel">
+                    <cti:mapParam value="${callbackResult.failureDeviceCollection.collectionParameters}"/>
+                </cti:link>
+                <tags:selectedDevicesPopup deviceCollection="${callbackResult.failureDeviceCollection}"/>
+            </li>
+        </c:if>
+           
+        <%-- FAILURE FILE DOWNLOAD --%>
+        <c:if test="${callbackResult.failureFileSupported}">
+            <li>
+                <tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="true" />
+            </li>
+        </c:if>
+    </ul>
     <%-- FAILURE DETAILS LINK --%>
     <c:if test="${callbackResult.failureReasonsListSupported}">
-	    <a href="javascript:void(0);" onclick="jQuery('#processingErrorsDiv${resultsId}').toggle();refreshErrors('processingErrorsDiv${resultsId}');" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" /></a>
-	    
-	    <div id="processingErrorsDiv${resultsId}" style="display:none;"></div>
-	</c:if>
-	
-	<ul>
-	
+        <a href="javascript:void(0);" onclick="jQuery('#processingErrorsDiv${resultsId}').toggle();refreshErrors('processingErrorsDiv${resultsId}');">
+            <cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" />
+        </a>
+        
+        <div id="processingErrorsDiv${resultsId}" class="dn buffered"></div>
+    </c:if>
 </div>
 
-<cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['errorActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_FAILURES" />
+<cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['errorActionsDiv'],true)" initialize="true" value="BACKGROUNDPROCESS/${resultsId}/IS_COMPLETE_WITH_FAILURES" />

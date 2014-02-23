@@ -42,7 +42,7 @@
 		    	<tr> 
 					<td width="30%" class="SubtitleHeader">Change Plan View:</td>
 					<td width="60%">
-						<select id="plans" name="plans" onchange="setContentChanged(true)">
+						<select id="plans" name="plans">
 							<c:forEach var="plan" items="${purchaseBean.availablePlans}">
 								<option value='<c:out value="${plan.purchaseID}"/>'> <c:out value="${plan.planName}"/> </option>
 							</c:forEach>
@@ -77,7 +77,7 @@
 		            	<div align="right">Plan Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentPlan.planName}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentPlan.planName}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -85,7 +85,7 @@
 	                  <div align="right">PO Number:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input type="text" name="poNumber" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPlan.poDesignation}"/>' onchange="setContentChanged(true)">
+	                  <input type="text" name="poNumber" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPlan.poDesignation}"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -93,7 +93,7 @@
 	                  <div align="right">Accounting Code:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input type="text" name="accountingCode" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPlan.accountingCode}"/>' onchange="setContentChanged(true)">
+	                  <input type="text" name="accountingCode" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPlan.accountingCode}"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -249,7 +249,7 @@
 			if (assignList.selectedIndex >= 0) 
 			{
 				assignList.remove(idx);
-				setContentChanged(true);
+				
 			}
 		}
 		
@@ -278,7 +278,7 @@
 			if (assignList.selectedIndex >= 0) 
 			{
 				assignList.remove(idx);
-				setContentChanged(true);
+				
 			}
 		}
 		
@@ -291,12 +291,12 @@
         					loadPlan(form);
         				</c:when>
                         <c:otherwise>
-                            if (warnUnsavedChanges()) location.href='/dashboard'
+                            location.href='/dashboard';
                         </c:otherwise>
                     </c:choose>
                 </c:when>
 			    <c:otherwise>
-				    if (warnUnsavedChanges()) location.href='/dashboard'
+				    location.href='/dashboard';
 			    </c:otherwise>
             </c:choose>
 		}

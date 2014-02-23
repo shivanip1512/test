@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
-    <cti:includeScript link="/JavaScript/yukon/yukon.porter.response.monitor.js"/>
+    <cti:includeScript link="/JavaScript/yukon.monitor.porter.response.js"/>
 
     <cti:url var="fullErrorCodesURL" value="/support/errorCodes/view"/>
 

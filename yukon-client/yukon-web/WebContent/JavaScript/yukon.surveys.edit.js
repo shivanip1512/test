@@ -5,10 +5,10 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.Surveys');
-yukon.namespace('yukon.Surveys.Edit');
+yukon.namespace('yukon.surveys');
+yukon.namespace('yukon.surveys.edit');
 
-yukon.Surveys.Edit = (function () {
+yukon.surveys.edit = (function () {
 
     var _moveUpIcon,
         _moveDownIcon,
@@ -227,12 +227,12 @@ yukon.Surveys.Edit = (function () {
 
             initQuestions : function () {
                 _questionTypeChanged();
-                jQuery('#questionType').change(yukon.Surveys.questionTypeChanged);
+                jQuery('#questionType').change(yukon.surveys.questionTypeChanged);
                 jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
             },
 
             initAnswerKeys : function (answerKeys) {
-                var localEdit = yukon.Surveys.Edit,
+                var localEdit = yukon.surveys.edit,
                     ii;
                 localEdit.addAnswer.nextRowIdNum = 0;
                 localEdit.addAnswer.rowIdNums = [];

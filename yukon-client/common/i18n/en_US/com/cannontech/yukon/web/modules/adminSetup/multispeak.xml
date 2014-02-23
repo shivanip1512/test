@@ -73,38 +73,37 @@
                 <br><br>
                 
                 <table class="compact-results-table">
-                
-                    <tr>
-                        <th>Substation</th>
-                        <th>Billing Cycle</th>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <ol class="examples">
-                                <li>Primary CIS vendor has meter "Meter 12345" whose Substation name is "Substation XYZ".</li>
-                                <li>"Meter 12345" exists in Yukon.</li>
-                                <li>It will be added to the "/Groups/Meters/CIS Substation/Substation XYZ" device group.</li>
-                                <li>"Meter 12345" will be removed from any other device groups under "/Groups/Meters/CIS Substation/" that it may belong to.</li>
-                            </ol>
-                        </td>
-                        
-                        <td>
-                            <ol class="examples">
-                                <li>Primary CIS vendor has meter "Meter 12345" whose Billing Cycle name is "Cycle XYZ".</li>
-                                <li>"Meter 12345" exists in Yukon.</li>
-                                <li>It will be added to the "<i><b>MSP_BILLING_CYCLE_GROUP</b></i>/Cycle XYZ" device group.
-                                <br>Note: The "Msp BillingCycle DeviceGroup" role property determines exactly which group will be use in place of <i><b>MSP_BILLING_CYCLE_GROUP</b></i>.
-                                </li>
-                                <li>"Meter 12345" will be removed from any other device groups under "<i><b>MSP_BILLING_CYCLE_GROUP</b></i>" that it may belong to.</li>
-                            </ol>
-                        </td>
-                    
-                    </tr>
-                
-                
+                    <thead>
+                        <tr>
+                            <th>Substation</th>
+                            <th>Billing Cycle</th>
+                        </tr>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ol class="examples">
+                                    <li>Primary CIS vendor has meter "Meter 12345" whose Substation name is "Substation XYZ".</li>
+                                    <li>"Meter 12345" exists in Yukon.</li>
+                                    <li>It will be added to the "/Groups/Meters/CIS Substation/Substation XYZ" device group.</li>
+                                    <li>"Meter 12345" will be removed from any other device groups under "/Groups/Meters/CIS Substation/" that it may belong to.</li>
+                                </ol>
+                            </td>
+                            
+                            <td>
+                                <ol class="examples">
+                                    <li>Primary CIS vendor has meter "Meter 12345" whose Billing Cycle name is "Cycle XYZ".</li>
+                                    <li>"Meter 12345" exists in Yukon.</li>
+                                    <li>It will be added to the "<i><b>MSP_BILLING_CYCLE_GROUP</b></i>/Cycle XYZ" device group.
+                                    <br>Note: The "Msp BillingCycle DeviceGroup" role property determines exactly which group will be use in place of <i><b>MSP_BILLING_CYCLE_GROUP</b></i>.
+                                    </li>
+                                    <li>"Meter 12345" will be removed from any other device groups under "<i><b>MSP_BILLING_CYCLE_GROUP</b></i>" that it may belong to.</li>
+                                </ol>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
-                
             </li>
             
             <li>

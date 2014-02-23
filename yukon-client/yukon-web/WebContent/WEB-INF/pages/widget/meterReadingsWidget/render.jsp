@@ -61,7 +61,7 @@ function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
     var fullIdentifier = allIdentifierValues.fullIdentifier;
 
     // adjust the drop down (won't add duplicates)
-    yukon.ui.aux.yukonGeneral_addOptionToTopOfSelect(jQuery(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
+    yukon.ui.util.yukonGeneral_addOptionToTopOfSelect(jQuery(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
 
     // update difference
     ${widgetParameters.widgetId}_updateDifference();

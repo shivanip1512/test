@@ -9,8 +9,8 @@
 
 <cti:standardPage module="adminSetup" page="applianceCategory.${mode}">
 
-<cti:includeScript link="/JavaScript/iconChooser.js"/>
-<cti:includeScript link="/JavaScript/picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.dr.icon.chooser.js"/>
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
 <tags:setFormEditMode mode="${mode}"/>
 
 <tags:simpleDialog id="acDialog"/>

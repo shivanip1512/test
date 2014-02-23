@@ -10,9 +10,9 @@
 <cti:standardPage module="capcontrol" page="ivvc.busView">
     
     <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-    <cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/dynamicTable.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+    <cti:includeScript link="/JavaScript/yukon.picker.js" />
+    <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
     
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
@@ -246,7 +246,7 @@
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${graphSettings.graphTitle}" />
 
-                    <cti:dataUpdaterCallback function="yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                                              initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

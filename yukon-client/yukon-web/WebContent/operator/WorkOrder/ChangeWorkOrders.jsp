@@ -106,7 +106,7 @@
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   	</td>
                   	<td width="75" align="right"> 
-                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='WorkOrder.jsp'">
+                    	<input type="button" name="Back" value="Back" onclick="location.href='WorkOrder.jsp'">
                   	</td>
               	</tr>
               	<tr>
@@ -181,7 +181,7 @@
 			actionTypeIDs[curIdx] = selectedActionType;
 			curIdx = actionTexts.length;
 
-			setContentChanged(true);
+			
 		}
 		
 		function deleteEntry(form) 
@@ -195,7 +195,7 @@
 				selectionIDs.splice(idx, 1);
 				actionTypeIDs.splice(idx, 1);
 				actions.selectedIndex = actions.options.length;
-				setContentChanged(true);
+				
 			}
 			
 			curIdx = actionTexts.length;
@@ -213,7 +213,7 @@
 				selectionIDs.splice(idx, selectionIDs.length);
 				actionTypeIDs.splice(idx, actionTypeIDs.length);
 				actions.selectedIndex = 0;
-				setContentChanged(true);
+				
 			}
 			
 			curIdx = actionTexts.length;

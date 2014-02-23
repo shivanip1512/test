@@ -47,7 +47,7 @@
                         <input type="file" name="dataFile" size="30px">
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true" nameKey="yukon.web.defaults.blank">
-                        <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span><cti:icon icon="icon-help" id="help_icon"/></label>
+                        <label><input type="checkbox" name="createGroups" class="fl"><span class="fl"><i:inline key=".autoCreate"/></span></label><cti:icon icon="icon-help" id="help_icon" classes="cp"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
@@ -86,22 +86,22 @@
                <tr>
                    <td class="fwb">ADDRESS</td>
                    <td><i:inline key=".address.description"/></td>
-                   <td class="tac"><cti:icon icon="icon-check" classes="fn"/></td>
+                   <td class="tac"><cti:icon icon="icon-tick" classes="fn"/></td>
                </tr>
                <tr>
                    <td class="fwb">METER_NUMBER</td>
                    <td><i:inline key=".meterNumber.description"/></td>
-                   <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
+                   <td style="text-align:center;"><cti:icon icon="icon-tick" classes="fn"/></td>
                </tr>
                <tr>
                    <td class="fwb">NAME</td>
                    <td><i:inline key=".name.description"/></td>
-                   <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
+                   <td style="text-align:center;"><cti:icon icon="icon-tick" classes="fn"/></td>
                </tr>
                <tr>
                    <td class="fwb">DEVICE_ID</td>
                    <td><i:inline key=".deviceId.description"/></td>
-                   <td style="text-align:center;"><cti:icon icon="icon-check" classes="fn"/></td>
+                   <td style="text-align:center;"><cti:icon icon="icon-tick" classes="fn"/></td>
                </tr>
                
                <tr>

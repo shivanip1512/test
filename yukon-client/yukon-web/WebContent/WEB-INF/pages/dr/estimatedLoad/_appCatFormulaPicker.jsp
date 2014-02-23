@@ -11,7 +11,7 @@
     selectionProperty="name"
     nameKey="noAssignment"
     icon="icon-plus-green"
-    endAction="yukon.DrFormula.appCatFormulaPickerClose"
+    endAction="yukon.dr.formula.appCatFormulaPickerClose"
     initialId="${appCatAssignment.formulaId}"
     allowEmptySelection="true"/>
     <c:if test="${appCatAssignment.formulaId != null}">

@@ -7,7 +7,7 @@
 
 <cti:standardPage module="adminSetup" page="survey.edit">
 
-<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 <cti:includeScript link="/JavaScript/yukon.surveys.edit.js"/>
 
 <div id="ajaxDialog"></div>
@@ -25,7 +25,7 @@
 
 <script type="text/javascript">
     jQuery(function () {
-        yukon.Surveys.Edit.init({hasBeenTaken : '${hasBeenTaken}'});
+        yukon.surveys.edit.init({hasBeenTaken : '${hasBeenTaken}'});
     });
 </script>
 

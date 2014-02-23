@@ -167,8 +167,8 @@ jQuery(function() {
                             </ul>
                         </c:if>
                         <div class="page-action-area">
-                            <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-bullet-go-down"/>
-                            <cti:button nameKey="supportBundle.ftpUploadBtn" id="ftpUploadBtn" href="javascript:void(0);" disabled="${empty bundleList}" icon="icon-bullet-go-up"/>
+                            <cti:button nameKey="supportBundle.downloadBtn" type="submit" disabled="${empty bundleList}" icon="icon-download"/>
+                            <cti:button nameKey="supportBundle.ftpUploadBtn" id="ftpUploadBtn" href="javascript:void(0);" disabled="${empty bundleList}" icon="icon-upload"/>
                         </div>
                     </form>
 

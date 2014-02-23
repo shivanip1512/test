@@ -6,7 +6,6 @@
 
 <style>
 .alarm-text .property-list:nth-child(1) {margin-right:10px;}
-.alarm-ack .button, .alarm-ack button {margin-top: 14px;}
 </style>
 
 <cti:url var="allAlarms" value="/tdc/${allAlarmsDislay}" />
@@ -22,12 +21,12 @@
                         <td><span class="${colorStateBoxes.get(alarm.pointId).get(alarm.condition)}">&nbsp;</span></td>
                         <td class="alarm-text">
                             <div class="clearfix">
-                                <ul class="property-list natural-width fl">
-                                    <li class="name name-collapse"><i:inline key="yukon.common.device"/>:</li>
+                                <ul class="property-list name-collapse natural-width fl">
+                                    <li class="name"><i:inline key="yukon.common.device"/>:</li>
                                     <li class="value">${fn:escapeXml(alarm.deviceName)}</li>
                                 </ul>
-                                <ul class="property-list natural-width fl">
-                                    <li class="name name-collapse"><i:inline key="yukon.common.point"/>:</li>
+                                <ul class="property-list name-collapse natural-width fl">
+                                    <li class="name"><i:inline key="yukon.common.point"/>:</li>
                                     <li class="value">${fn:escapeXml(alarm.pointName)}</li>
                                 </ul>
                             </div>

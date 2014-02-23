@@ -1,9 +1,9 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.startProgram">
 
@@ -93,7 +93,7 @@ jQuery( function () {
                         <tr><td>
                             <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                                 <c:forEach var="gear" varStatus="status" items="${gears}">
-                                    <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
+                                    <form:option value="${status.index + 1}">${fn:escapeXml(gear.gearName)}</form:option>
                                 </c:forEach>
                             </form:select>
                         </td></tr>

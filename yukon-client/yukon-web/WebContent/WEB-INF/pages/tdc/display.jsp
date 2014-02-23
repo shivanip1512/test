@@ -11,7 +11,7 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
+    <cti:includeScript link="/JavaScript/yukon.tdc.js" />
     <flot:defaultIncludes />
 
     <div id="f-page-buttons" class="dn">

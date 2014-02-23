@@ -1,13 +1,14 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %> <%-- Used in Trends --%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="area">
+
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
      <c:if test="${hasEditingRole}">
@@ -69,7 +70,7 @@
             <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true">
                 <div class="column-12-12 clearfix">
                     <div class="column one">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".name">
                                 <span>${fn:escapeXml(bc_areaName)}</span>
                             </tags:nameValue2>
@@ -79,7 +80,7 @@
                         </tags:nameValueContainer2>
                     </div>
                     <div class="column two nogutter">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <a id="areaState_${bc_areaId}" href="javascript:void(0);" class="subtle-link">
                                     <span id="areaState_box_${bc_areaId}" class="box state-box">&nbsp;</span>
@@ -93,7 +94,7 @@
                         </tags:nameValueContainer2>
                     </div>
                 </div>
-            <capTags:warningImg paoId="${bc_areaId}" type="${updaterType}" alertBox="true"/>
+                <capTags:warningImg paoId="${bc_areaId}" type="${updaterType}" alertBox="true"/>
             </tags:sectionContainer2>
         </div>
 
@@ -101,7 +102,7 @@
             <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true">
                 <div class="column-12-12">
                     <div class="column one">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".availableKvars">
                                 <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_AVAILABLE"/>
                             </tags:nameValue2>
@@ -111,7 +112,7 @@
                         </tags:nameValueContainer2>
                     </div>
                     <div class="column two nogutter">
-                        <tags:nameValueContainer2 tableClass="infoContainer">
+                        <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".closedKvars">
                                 <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="KVARS_CLOSED"/>
                             </tags:nameValue2>
@@ -122,7 +123,7 @@
                     </div>
                 </div>
                 <div class="clear">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
+                    <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
                             <cti:capControlValue paoId="${bc_areaId}" type="${updaterType}" format="PFACTOR"/>
                         </tags:nameValue2>

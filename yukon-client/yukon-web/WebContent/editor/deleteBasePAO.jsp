@@ -20,10 +20,10 @@
 		    deleteForm.initItem();
 		%>
 	
-	    <cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
+	    <cti:includeScript link="/JavaScript/yukon.da.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
-			    yukon.CapControl.addLockButtonForButtonGroup("buttons");
+			    yukon.da.addLockButtonForButtonGroup("buttons");
 			</script>
 		</f:verbatim>
 	    <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

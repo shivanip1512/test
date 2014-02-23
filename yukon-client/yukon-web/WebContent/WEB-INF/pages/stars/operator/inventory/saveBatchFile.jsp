@@ -34,7 +34,7 @@
     </script>
     
     <tags:boxContainer2 nameKey="title"> 
-        <div class="containerHeader">
+        <div class="note">
             <table>
                 <tr>
                     <td valign="top" colspan="2">

@@ -41,22 +41,22 @@
                         </cti:url>
                         <div class="stacked"><a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</a></div>
                         
-                        <div class="clearfix">
+                        <div class="clearfix button-group">
                             
                             <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
                             </cti:url>
-                            <cti:button nameKey="view" href="${tamperFlagGroupReportUrl}" icon="icon-folder-explore" classes="left"/>
+                            <cti:button nameKey="view" href="${tamperFlagGroupReportUrl}" icon="icon-folder-explore"/>
                             
                             <cti:url var="clearTamperFlagGroupUrl" value="/amr/tamperFlagProcessing/process/clearTamperFlagGroup">
                                 <cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
                             </cti:url>
-                            <cti:button nameKey="clear" href="${clearTamperFlagGroupUrl}" icon="icon-folder-delete" classes="middle"/>
-                            <cti:url var="otherActionsUrl" value="/bulk/collectionActions" htmlEscape="true">
+                            <cti:button nameKey="clear" href="${clearTamperFlagGroupUrl}" icon="icon-folder-delete"/>
+                            <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
                             </cti:url>
-                            <cti:button nameKey="otherActions" href="${otherActionsUrl}" icon="icon-cog" classes="right"/>
+                            <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go"/>
                         </div>
                     </tags:nameValue2>
                     

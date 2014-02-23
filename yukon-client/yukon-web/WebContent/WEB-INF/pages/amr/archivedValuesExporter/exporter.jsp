@@ -1,12 +1,12 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:standardPage module="tools" page="bulk.archivedValueExporter.${mode}">
 
@@ -151,7 +151,7 @@
     }
     
     var initialized = false;
-    jQuery(document).ready(function() {
+    jQuery(function() {
         <c:if test="${showAttributePopup}">
             <cti:msgScope paths=".${backingBean.pageNameKey},components.dialog.${backingBean.pageNameKey},components.dialog">
                 <cti:msg2 var="titleMsg" key=".title"/>
@@ -259,7 +259,7 @@
         });
         jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
             event.preventDefault();
-            yukon.DialogConfirmationManager.cancel();
+            yukon.dialogConfirm.cancel();
             submitForm(-1, 'deleteFormat');
         });
         jQuery('.f-initialFocus').focus();
@@ -475,13 +475,8 @@
         </tags:boxContainer2>
         
         <c:if test="${not empty backingBean.format.fields}">
-            <tags:boxContainer2 nameKey="preview">
-               <div class="code">
-            <!-- Please do not format this code -->
-                <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}
-</c:forEach></pre>
-               </div>
-            </tags:boxContainer2>
+            <h4><i:inline key=".preview.title"/></h4>
+            <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}</c:forEach></pre>
         </c:if>
         <div class="page-action-area">
             <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disable-after-click primary action"/>

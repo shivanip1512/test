@@ -3,7 +3,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <c:set var="showTabs" value='${pageName == "orphanedSubs" || pageName == "orphanedBuses" || pageName == "orphanedFeeders" || pageName == "orphanedBanks" || pageName == "orphanedCbcs" || pageName == "orphanedRegulators"}' />
 
@@ -69,41 +68,46 @@
             
                 <c:otherwise>
                 
-                    <table id="resTable" class="compact-results-table row-highlighting" align="center">
-                        <tr>
-                            <th><i:inline key=".name"/></th>
-                            <th nowrap="nowrap"><i:inline key=".itemType"/></th>
-                            <th><i:inline key=".description"/></th>
-                            <th><i:inline key=".parent"/></th>
-                        </tr>
-                        <c:forEach items="${searchResult.resultList}" var="row">
+                    <table id="resTable" class="compact-results-table">
+                        <thead>
                             <tr>
-                                <td nowrap="nowrap">
-                                    <c:choose>
-                                        <c:when test="${row.paobject}">
-                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
-                                                    ${fn:escapeXml(row.name)}
-                                                </a>
-                                            </cti:checkRolesAndProperties>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
-                                                    ${fn:escapeXml(row.name)}
-                                                </a>
-                                            </cti:checkRolesAndProperties>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-            	                <td nowrap="nowrap">${row.itemType}</td>
-            	                <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${row.itemDescription}</spring:escapeBody></td>
-            	                <td>${row.parentString}</td>
-            	            </tr>
-            	        </c:forEach>
-            	    </table>
+                                <th><i:inline key=".name"/></th>
+                                <th><i:inline key=".itemType"/></th>
+                                <th><i:inline key=".description"/></th>
+                                <th><i:inline key=".parent"/></th>
+                            </tr>
+                        </thead>
+                        <tfoot></tfoot>
+                        <tbody>
+                            <c:forEach items="${searchResult.resultList}" var="row">
+                                <tr>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${row.paobject}">
+                                                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                                    <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
+                                                        ${fn:escapeXml(row.name)}
+                                                    </a>
+                                                </cti:checkRolesAndProperties>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                                    <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
+                                                        ${fn:escapeXml(row.name)}
+                                                    </a>
+                                                </cti:checkRolesAndProperties>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>${row.itemType}</td>
+                                    <td>${fn:escapeXml(row.itemDescription)}</td>
+                                    <td>${row.parentString}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
                     
-            	</c:otherwise>
+                </c:otherwise>
             </c:choose>
             
         </tags:pagedBox2>

@@ -5,10 +5,10 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.Surveys');
-yukon.namespace('yukon.Surveys.List');
+yukon.namespace('yukon.surveys');
+yukon.namespace('yukon.surveys.list');
 
-yukon.Surveys.List = (function () {
+yukon.surveys.list = (function () {
     mod = {
         init: function () {
             jQuery('#addSurveyBtn').click(function () {
@@ -27,5 +27,5 @@ yukon.Surveys.List = (function () {
 }());
 
 jQuery(function () {
-    yukon.Surveys.List.init();
+    yukon.surveys.list.init();
 });

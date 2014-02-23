@@ -4,7 +4,6 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.dr.loadGroupList">
@@ -99,7 +98,7 @@
             <cti:msg2 key=".noResults" />
         </c:when>
         <c:otherwise>
-            <table id="loadGroupList" class="compact-results-table row-highlighting has-actions">
+            <table id="loadGroupList" class="compact-results-table has-actions">
                 <thead>
                     <tr>
                         <th><tags:sortLink nameKey="heading.name" baseUrl="${baseUrl}" fieldName="NAME"/></th>

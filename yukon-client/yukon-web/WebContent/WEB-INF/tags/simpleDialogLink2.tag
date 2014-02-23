@@ -11,7 +11,7 @@
 <%@ attribute name="skipLabel" type="java.lang.Boolean" %>
 <%@ attribute name="icon" description="the icon classname" %>
 
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <c:if test="${skipLabel}">
     <c:set var="renderMode" value="image"/>
 </c:if>

@@ -9,7 +9,7 @@
 <%@ attribute name="actionUrl" required="true" rtexprvalue="true" %>
 <%@ attribute name="icon" description="icon attribute of the cti:button tag" %>
 
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 
 <cti:msgScope paths=".${nameKey}">
     <cti:msg2 var="dialogTitleText" key=".title" javaScriptEscape="true"/>

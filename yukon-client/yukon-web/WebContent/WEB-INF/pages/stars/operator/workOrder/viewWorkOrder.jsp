@@ -1,13 +1,13 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <cti:standardPage module="operator" page="workOrder.${mode}">
-<tags:setFormEditMode mode="${mode}"/>
+    <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
         jQuery(function() {
@@ -79,9 +79,7 @@
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
                             <form:hidden path="workOrderBase.orderNumber"/>
-                            <tags:nameValue2 nameKey=".workOrderNumber">
-                                <spring:escapeBody htmlEscape="true">${workOrderDto.workOrderBase.orderNumber}</spring:escapeBody>
-                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".workOrderNumber">${fn:escapeXml(workOrderDto.workOrderBase.orderNumber)}</tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
                         
@@ -144,7 +142,7 @@
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="workOrderId" value="${workOrderDto.workOrderBase.orderId}"/>
                             </cti:url>
-                            <cti:button nameKey="pdfExport" href="${pdfExportUrl}" icon="icon-pdf"/>
+                            <cti:button nameKey="pdfExport" href="${pdfExportUrl}" icon="icon-pdf" busy="true"/>
                         </div>
 
                     </tags:sectionContainer2>

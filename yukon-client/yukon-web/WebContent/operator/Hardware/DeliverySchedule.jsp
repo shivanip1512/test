@@ -44,7 +44,7 @@
 		            	<div align="right">Schedule Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.scheduleName}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.scheduleName}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -71,7 +71,7 @@
 		            	<div align="right">Style Number:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="styleNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.styleNumber}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="styleNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.styleNumber}"/>'>
 		            </td>
 		        </tr>
 		      	<tr>
@@ -79,7 +79,7 @@
 		            	<div align="right">Order Number:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="orderNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.orderNumber}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="orderNumber" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.orderNumber}"/>'>
 		            </td>
 		        </tr>
 		        <tr>
@@ -87,7 +87,7 @@
 		            	<div align="right">Estimated Price Per Unit:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="pricePerUnit" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentQuotedPricePerUnit}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="pricePerUnit" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentQuotedPricePerUnit}"/>'>
 		            </td>
 		        </tr>
 	          	<tr> 
@@ -221,7 +221,7 @@
 			if (assignList.selectedIndex >= 0) 
 			{
 				assignList.remove(idx);
-				setContentChanged(true);
+				
 			}
 		}
 		
@@ -250,13 +250,13 @@
 			if (assignList.selectedIndex >= 0) 
 			{
 				assignList.remove(idx);
-				setContentChanged(true);
+				
 			}
 		}
 		
 		function back(form)
 		{
-			if (warnUnsavedChanges()) location.href='PurchaseTrack.jsp'
+			location.href='PurchaseTrack.jsp';
 		}
 		
 		function prepareSubmit(form) 

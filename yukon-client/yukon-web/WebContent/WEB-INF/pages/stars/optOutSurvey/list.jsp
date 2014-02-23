@@ -9,8 +9,8 @@
     <dt:pickerIncludes/>
 
     <tags:simpleDialog id="ajaxDialog"/>
-    <cti:includeScript link="/JavaScript/picker.js"/>
-    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
+    <cti:includeScript link="/JavaScript/yukon.picker.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
     <cti:includeScript link="/JavaScript/yukon.tables.js"/>
     <cti:includeScript link="/JavaScript/yukon.surveys.optOut.js"/>
     <cti:msg2 var="addSurveyTitle" key=".addSurveyTitle" javaScriptEscape="true"/>

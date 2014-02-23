@@ -18,7 +18,7 @@
 
     <tags:setFormEditMode mode="${mode}"/>
 
-    <cti:includeScript link="/JavaScript/drFormula.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.formula.js"/>
 
     <cti:displayForPageEditModes modes="CREATE">
         <%@ include file="formulaCreate.jspf" %>

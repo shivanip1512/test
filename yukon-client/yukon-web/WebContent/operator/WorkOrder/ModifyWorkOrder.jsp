@@ -172,12 +172,10 @@ function init() {
 }
 
 function getPrintableVersion() {
-	if (warnUnsavedChanges())
 		document.rptForm.submit();
 }
 
 function sendWorkOrder() {
-	if (warnUnsavedChanges())
 		document.woForm.submit();
 }
 </script>
@@ -277,7 +275,7 @@ function sendWorkOrder() {
                                   <div align="right">Service Type:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="ServiceType" onchange="setContentChanged(true)">
+                                  <select name="ServiceType">
                                     <%
                                         StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
                                     	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
@@ -296,7 +294,7 @@ function sendWorkOrder() {
                                   <div align="right">Ordered By:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="OrderedBy" size="14" value="<%=StringEscapeUtils.escapeHtml(liteOrder.getOrderedBy())%>" onchange="setContentChanged(true)">
+                                  <input type="text" name="OrderedBy" size="14" value="<%=StringEscapeUtils.escapeHtml(liteOrder.getOrderedBy())%>">
                                 </td>
                               </tr>
                               <tr> 
@@ -304,7 +302,7 @@ function sendWorkOrder() {
                                   <div align="right"><cti:getProperty property="ADDTL_ORDER_NUMBER_LABEL" defaultvalue="Addtl Order #"/>:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%=liteOrder.getAdditionalOrderNumber()%>" onchange="setContentChanged(true)">
+                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%=liteOrder.getAdditionalOrderNumber()%>">
                                 </td>
                               </tr>
                               
@@ -313,7 +311,7 @@ function sendWorkOrder() {
                                   <div align="right">Assigned to:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select name="ServiceCompany" onchange="changeServiceCompany(this.form);setContentChanged(true)">
+                                  <select name="ServiceCompany" onchange="changeServiceCompany(this.form);">
                                     <%
                                         for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
                                     		StarsServiceCompany company = companies.getStarsServiceCompany(i);
@@ -331,7 +329,7 @@ function sendWorkOrder() {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%=liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
+                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"><%=liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
                                 </td>
                               </tr>
 							</table>
@@ -349,7 +347,7 @@ function sendWorkOrder() {
                                   <div align="right">Current State:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <select id="CurrentStateID" name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
+                                  <select id="CurrentStateID" name="CurrentState" onchange="changeStatus(this.form);">
                                     <%
                                         StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
                                     	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
@@ -372,9 +370,9 @@ function sendWorkOrder() {
                           <tr> 
                             <td width="30%" align="right" class="TableCell">Event Date:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateEventTimestamp" size="14" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "")%>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="DateEventTimestamp" size="14" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "")%>" disabled>
                               - 
-                              <input type="text" name="TimeEventTimestamp" size="8" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "")%>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="8" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "")%>" disabled>
                             </td>
                           </tr>
                         </table>
@@ -403,7 +401,7 @@ function sendWorkOrder() {
                         <tr>
                           <td width="30%" align="right" class="TableCell">Action Taken:</td>
                           <td width="70%"> 
-                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%=liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
+                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell"><%=liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
                           </td>
                         </tr>
                       </table>
@@ -481,7 +479,7 @@ function sendWorkOrder() {
                                 <td class="TableCell" width="30%" align="right">Account 
                                   #: </td>
                                 <td class="TableCell" width="70%">
-                                  <input type="text" name="AcctNo" size="14" onchange="setContentChanged(true)">
+                                  <input type="text" name="AcctNo" size="14">
                                   <input type="button" name="Submit" value="Submit" onclick="searchAccount(this.form)">
                                 </td>
                               </tr>
@@ -499,7 +497,7 @@ function sendWorkOrder() {
                       <input type="submit" name="Save" value="Save">
                     </td>
                     <td width="15%" align="center"> 
-                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                      <input type="reset" name="Reset" value="Reset">
                     </td>
                     <td width="43%"> 
                       <input type="button" name="Delete" value="Delete" onclick="deleteWorkOrder(this.form)">

@@ -200,7 +200,7 @@
 
     <cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
     <cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
-    <!-- This okEvent value should be kept equal to yukon.DeviceDataMonitor._update_or_create_event in yukon.device_data_monitor.js -->
+    <!-- This okEvent value should be kept equal to yukon.DeviceDataMonitor._update_or_create_event in yukon.monitor.device.data.js -->
     <c:set var="okEvent" value="e_ddm_update_or_create"/>
     <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
     <c:set var="options" value="{width: 550}"/>

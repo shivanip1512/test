@@ -111,8 +111,8 @@ BILLING_ERRORS = {
                             <cti:msg2 key=".moveDown" var="moveDown"/>
                             <cti:msg2 key=".remove" var="remove"/>
                             <cti:msg2 key=".addFields" var="addFields"/>
-                            <cti:button id="upArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" label="${moveUp}" disabled="true"/>
-                            <cti:button id="downArrowButton" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" label="${moveDown}" disabled="true"/>
+                            <cti:button id="upArrowButton" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" label="${moveUp}" disabled="true"/>
+                            <cti:button id="downArrowButton" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" label="${moveDown}" disabled="true"/>
                             <cti:button id="removeButton" onclick="removeFromSelected();" label="${remove}" disabled="true"/>
                             <cti:button id="addButton" onclick="addFieldButton();" label="${addFields}"/>
                             

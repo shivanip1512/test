@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="phaseDetect.sendTest">
-<cti:includeScript link="/JavaScript/progressbar.js"/>
+<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 
 <script type="text/javascript">
     var readingMsg = '<cti:msg2 key=".reading" javaScriptEscape="true"/>';
@@ -103,7 +103,7 @@
             url: '/amr/phaseDetect/readPhase',
             type: 'POST'
         }).done(function (data, textStatus, jqXHR) {
-            var json = yukon.ui.aux.getHeaderJSON(jqXHR);
+            var json = yukon.ui.util.getHeaderJSON(jqXHR);
             if (json.success) {
                 jQuery('#readButton').val(readingMsg);
                 jQuery('#readButton').prop({'disabled': true});

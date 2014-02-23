@@ -17,13 +17,11 @@
 </cti:isPropertyFalse>
 
 <!-- Included JavaScript -->
-<cti:includeScript link="/JavaScript/da/capcontrolCommand.js"/>
-<cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
-<cti:includeScript link="/JavaScript/da/updaterFunctions.js"/>
-<cti:includeScript link="/JavaScript/cconelinepopup.js"/>
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/validation.js"/>
-<cti:includeScript link="/JavaScript/yukon.comments.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.command.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.updaters.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.comments.js"/>
 
 <!-- Beans -->
 <jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>

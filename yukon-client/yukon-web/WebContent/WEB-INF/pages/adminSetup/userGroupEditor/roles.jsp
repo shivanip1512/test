@@ -55,7 +55,7 @@
 
         <cti:button nameKey="save" name="save" type="submit" classes="primary action"/>
         <c:if test="${showDelete}">
-            <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit"/>
+            <cti:button nameKey="delete" id="deleteButton" name="delete" type="submit" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${roleGroupName}"/>
         </c:if>
         <cti:button nameKey="cancel" name="cancel" type="submit"/>

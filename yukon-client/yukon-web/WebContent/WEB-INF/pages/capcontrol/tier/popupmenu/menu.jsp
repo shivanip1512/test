@@ -5,35 +5,54 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
 
+<style>
+.menuOption {margin-top: 3px;}
+.menuOption a {
+    display: block;
+    padding: 0 15px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    color: #555;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+}
+.menuOption a:hover {
+    text-decoration: none;
+    background-color: whitesmoke;
+}
+</style>
+
 <script type="text/javascript">
 <c:if test="${showLocalControl}">
 jQuery('#localControlsOption').click(function(event) {
-    yukon.CapControl.hideMenu();
-    yukon.CapControl.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {position: "center", modal: true});
+    yukon.da.hideMenu();
+    yukon.da.getMenuFromURL('/capcontrol/menu/localControl?id=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showChangeOpState}">
 jQuery('#changeOpStateOption').click(function(event) {
-    yukon.CapControl.hideMenu();
-    yukon.CapControl.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {position: "center", modal: true});
+    yukon.da.hideMenu();
+    yukon.da.getMenuFromURL('/capcontrol/menu/opStateChange?bankId=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showResetBankOpCount}">
 jQuery('#resetBankOpCountOption').click(function(event) {
-    yukon.CapControl.hideMenu();
-    yukon.CapControl.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {position: "center", modal: true});
+    yukon.da.hideMenu();
+    yukon.da.getMenuFromURL('/capcontrol/menu/resetBankOpCount?bankId=${paoId}', event, {});
 });
 </c:if>
 <c:if test="${showRecentCommands}">
 jQuery('#recentEventsOption').click(function(event) {
-    yukon.CapControl.hideMenu();
+    yukon.da.hideMenu();
     window.location = '/capcontrol/search/recentEvents?value=${paoId}';
 });
 </c:if>
 <c:if test="${showComments}">
 jQuery('#viewCommentsOption').click(function(event) {
-    yukon.CapControl.hideMenu();
-    yukon.CapControl.showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
+    yukon.da.hideMenu();
+    yukon.da.showDialog(jQuery(event.currentTarget).find('input').val(), '/capcontrol/comments/paoComments?paoId=${paoId}', {}, "#contentPopup" );
 });
 </c:if>
 </script>

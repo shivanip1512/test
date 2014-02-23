@@ -5,17 +5,11 @@
 
 <cti:standardPage module="tools" page="bulk.routeLocateHome">
 
-<script type="text/javascript">
-function submitForm(id) {
-    document.getElementById(id).submit();
-}
-</script>
-
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.routeLocateHome" deviceCollection="${deviceCollection}">
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">
-            <div class="formErrorSummary stacked">${errorMsg}</div>
+            <div class="error stacked">${errorMsg}</div>
         </c:if>
         
         <form id="executeLocateForm" action="<cti:url value="/bulk/routeLocate/executeRouteLocation"/>">
@@ -80,7 +74,7 @@ function submitForm(id) {
                             <td class="tar">
                                 <c:set var="successFormName" value="processingExceptionForm${b.resultId}"/>
                                 
-                                <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
+                                <a href="javascript:jQuery('#${successFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
                                 <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}"/>
                                 
                                 <form id="${successFormName}" method="post" action="/bulk/collectionActions">
@@ -96,7 +90,7 @@ function submitForm(id) {
                                     
                                 <c:set var="notFoundCollectionActionFormName" value="notFoundCollectionActionFormName${b.resultId}"/>
                             
-                                <a href="javascript:submitForm('${notFoundCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/NOT_FOUND_COUNT"/></a> 
+                                <a href="javascript:jQuery('#${notFoundCollectionActionFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/NOT_FOUND_COUNT"/></a> 
                                 
                                 <tags:selectedDevicesPopup deviceCollection="${b.failureDeviceCollection}"/>
                                 

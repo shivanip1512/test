@@ -72,7 +72,7 @@
                     totalCountKey="ASSET_AVAILABILITY_READ/${assetId}/TOTAL_COUNT"
                     failureCountKey="ASSET_AVAILABILITY_READ/${assetId}/FAILED_COUNT" 
                     hideCount="true" hidePercent="false" containerClasses="dib fl" 
-                    completionCallback="yukon.DrAssetDetails.unbusyPingButton" />
+                    completionCallback="yukon.dr.assetDetails.unbusyPingButton" />
             </span>
         </div>
     </div>

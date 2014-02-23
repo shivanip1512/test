@@ -6,5 +6,5 @@
 <cti:includeScript link="JQUERY_DATE_TIME_ENTRY"/>
 <cti:includeScript link="JQUERY_MOUSEWHEEL"/>
 <cti:includeScript link="JQUERY_UI_TIME_PICKER_ADDON"/>
-<cti:includeScript link="/JavaScript/yukon/ui/dateTimePickers.js"/>
-<cti:includeScript link="/JavaScript/yukon/ui/dateTimePickers.js.jsp"/>
+<cti:includeScript link="/JavaScript/yukon.date.time.picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.date.time.picker.js.jsp"/>

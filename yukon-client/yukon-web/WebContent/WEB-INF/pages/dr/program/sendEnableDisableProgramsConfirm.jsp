@@ -43,34 +43,34 @@ jQuery(function() {
 <cti:url var="submitUrl" value="/dr/program/enableDisablePrograms"/>
 <form id="disableProgramsForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'disableProgramsForm');">
     <input type="hidden" name="enable" value="${enable}">
-    <tags:boxContainer title="${boxTitle}">
+    <tags:sectionContainer title="${boxTitle}">
         <div class="scroll-medium">
-            <table class="compact-results-table">
+            <table class="compact-results-table dashed">
                 <thead>
-	                <tr>
-	                    <th><i:inline key=".sendDisableProgramsConfirm.programName"/></th>
-	                    <th><i:inline key=".sendDisableProgramsConfirm.gears"/></th>
-	                    <th><i:inline key=".sendDisableProgramsConfirm.currentState"/></th>
-	                </tr>
+                    <tr>
+                        <th><i:inline key=".sendDisableProgramsConfirm.programName"/></th>
+                        <th><i:inline key=".sendDisableProgramsConfirm.gears"/></th>
+                        <th><i:inline key=".sendDisableProgramsConfirm.currentState"/></th>
+                    </tr>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
-	                <c:forEach var="program" varStatus="status" items="${programs}">
-	                    <tr>
-	                        <td>
-	                            <label>
-	                                <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
-	                                ${fn:escapeXml(program.name)}
-	                            </label>
-	                        </td>
-	                        <td>${fn:escapeXml(gears[status.index])}</td>
-	                        <td class="${states[status.index].styleString}"><i:inline key="${states[status.index]}"/></td>
-	                    </tr>
-	                </c:forEach>
+                    <c:forEach var="program" varStatus="status" items="${programs}">
+                        <tr>
+                            <td>
+                                <label>
+                                    <input type="checkbox" class="disableProgramCheckbox" name="disableProgram" value="${program.paoIdentifier.paoId}">
+                                    ${fn:escapeXml(program.name)}
+                                </label>
+                            </td>
+                            <td>${fn:escapeXml(gears[status.index])}</td>
+                            <td class="${states[status.index].styleString}"><i:inline key="${states[status.index]}"/></td>
+                        </tr>
+                    </c:forEach>
                 </tbody>
             </table>
         </div>
-    </tags:boxContainer>
+    </tags:sectionContainer>
 
     <label>
         <input type="checkbox" id="disableAllCheckbox">

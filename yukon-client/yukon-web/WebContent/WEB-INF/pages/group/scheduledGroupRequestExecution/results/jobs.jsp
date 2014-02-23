@@ -1,15 +1,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="schedules.all" module="tools">
     
-<cti:includeScript link="/JavaScript/scheduledJobs.js"/>
+<cti:includeScript link="/JavaScript/yukon.jobs.js"/>
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
         method="get" commandName="backingBean">
         <tags:sortFields backingBean="${backingBean}" />
 
-        <tags:nameValueContainer2 tableClass="with-form-controls">
+        <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".filter.dateRange">
                 <dt:dateRange startPath="fromDate" endPath="toDate" >
                     <span class="fl" style="margin-right: 5px;"><i:inline key=".filter.dateTo"/></span>

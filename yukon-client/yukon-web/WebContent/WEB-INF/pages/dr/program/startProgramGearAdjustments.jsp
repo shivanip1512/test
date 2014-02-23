@@ -1,8 +1,8 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.dr.program.startProgram">
 
@@ -10,8 +10,7 @@
 
 <c:if test="${!empty program}">
     <h4 class="dialogQuestion stacked">
-        <cti:msg2 key=".enterAdjustments"
-			htmlEscape="true" argument="${program.name}"/>
+        <cti:msg2 key=".enterAdjustments" htmlEscape="true" argument="${program.name}"/>
     </h4>
     <cti:url var="submitUrl" value="/dr/program/start/constraints"/>
     <dr:programStartInfo page="startProgram"/>
@@ -25,8 +24,7 @@
 </c:if>
 
 
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
+<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
 
     <input type="hidden" name="from" value="gear_adjustments"/>
     <c:if test="${!empty program}">
@@ -52,35 +50,35 @@
     <form:hidden path="addAdjustments"/>
 
     <cti:msg2 var="boxTitle" key=".gearAdjustments"/>
-    <tags:boxContainer title="${boxTitle}">
-	    <div class="scroll-medium">
-		    <table class="compact-results-table no-stripes">
+    <tags:sectionContainer title="${boxTitle}">
+        <div class="scroll-medium">
+            <table class="compact-results-table dashed">
                 <thead>
-			        <tr>
-			            <th><cti:msg2 key=".timeFrame"/></th>
-			            <th><cti:msg2 key=".adjustmentValue"/></th>
-			        </tr>
-		        </thead>
-		        <tfoot></tfoot>
-		        <tbody>
-				    <c:forEach var="gearAdjustment" varStatus="status" items="${backingBean.gearAdjustments}">
-				        <tr>
-			                <td>
-					            <form:hidden path="gearAdjustments[${status.count-1}].beginTime"/>
-					            <form:hidden path="gearAdjustments[${status.count-1}].endTime"/>
-					            <cti:formatDate type="TIME24H" value="${gearAdjustment.beginTime}"/> -
-					            <cti:formatDate type="TIME24H" value="${gearAdjustment.endTime}"/>
-			                </td>
-			                <td>
-			                    <tags:input path="gearAdjustments[${status.count-1}].adjustmentValue"
-					                maxlength="3" size="5"/><br>
-			                </td>
-				        </tr>
-				    </c:forEach>
-			    </tbody>
-		    </table>
-	    </div>
-    </tags:boxContainer>
+                    <tr>
+                        <th><cti:msg2 key=".timeFrame"/></th>
+                        <th><cti:msg2 key=".adjustmentValue"/></th>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="gearAdjustment" varStatus="status" items="${backingBean.gearAdjustments}">
+                        <tr>
+                            <td>
+                                <form:hidden path="gearAdjustments[${status.count-1}].beginTime"/>
+                                <form:hidden path="gearAdjustments[${status.count-1}].endTime"/>
+                                <cti:formatDate type="TIME24H" value="${gearAdjustment.beginTime}"/> -
+                                <cti:formatDate type="TIME24H" value="${gearAdjustment.endTime}"/>
+                            </td>
+                            <td>
+                                <tags:input path="gearAdjustments[${status.count-1}].adjustmentValue"
+                                    maxlength="3" size="5"/><br>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </tags:sectionContainer>
 
     <div class="action-area">
         <c:if test="${empty errors}">

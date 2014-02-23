@@ -4,11 +4,11 @@
 
 <%@ attribute name="passwordPolicy" required="true" type="com.cannontech.core.authentication.model.PasswordPolicy" %>
 
-<cti:includeScript link="/JavaScript/yukon/ui/updatePassword.js" force="true" />
+<cti:includeScript link="/JavaScript/yukon.ui.passwords.js" force="true" />
 
 <script>
 jQuery(function(){
-    yukon.ui.passwordManager.init({minLength: ${passwordPolicy.minPasswordLength}});
+    yukon.ui.passwords.init({minLength: ${passwordPolicy.minPasswordLength}});
     jQuery(".password_manager input.new").trigger('keyup');
 });
 </script>

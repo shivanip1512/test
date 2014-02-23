@@ -8,7 +8,7 @@
 
 <%--
     REQUIRES CONTAINER INCLUDES:
-        <cti:includeScript link="/JavaScript/cronExpressionData.js" />
+        <cti:includeScript link="/JavaScript/yukon.cron.js" />
  --%>
 
 <cti:msgScope paths="modules.amr.billing.schedule">

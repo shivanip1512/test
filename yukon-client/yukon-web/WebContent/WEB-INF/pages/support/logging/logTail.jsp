@@ -10,7 +10,7 @@
 
 <style>.logLine {white-space: pre-wrap;word-break: break-all}</style>
 
-    <cti:includeScript link="/JavaScript/logUpdater.js"/>
+    <cti:includeScript link="/JavaScript/yukon.support.logs.js"/>
     <input type="hidden" id="updateUrl" value="${updateUrl}"/>
     <input type="hidden" id="file" value="${file}"/>
 

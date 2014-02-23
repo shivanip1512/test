@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
     jQuery(function() {
-        yukon.Favorites.initSubscribe();
+        yukon.favorites.initSubscribe();
     });
 </script>
 

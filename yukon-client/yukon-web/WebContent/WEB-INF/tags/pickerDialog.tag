@@ -32,8 +32,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/picker.js"/>
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.tables.js"/>
 
 <c:set var="containerDivArg" value="null"/>
@@ -174,7 +174,7 @@
 
 <script type="text/javascript">
 try {
-    yukon.ui.aux.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
+    yukon.ui.util.callAfterMainWindowLoad(${id}.init.bind(${id}, ${viewMode}));
 } catch (callAfterLoadex) { alert("pickerDialog.tag: callAfterMainWindowLoad exception: " + callAfterLoadex); }
 
 if (${!empty excludeIds}) {

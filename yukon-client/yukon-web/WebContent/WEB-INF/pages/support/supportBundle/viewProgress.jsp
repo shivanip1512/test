@@ -64,8 +64,8 @@ function checkUpdate(){
     <form id="uploadForm" method="POST" action="downloadBundle">
         <cti:csrfToken/>
         <input type="hidden" name="fileName">
-        <cti:button nameKey="downloadBtn" disabled="true" name="download" type="submit" icon="icon-bullet-go-down"/>
-        <cti:button nameKey="ftpUploadBtn" disabled="true" id="ftpUploadBtn" href="javascript:void(0);" icon="icon-bullet-go-up"/>
+        <cti:button nameKey="downloadBtn" disabled="true" name="download" type="submit" icon="icon-download"/>
+        <cti:button nameKey="ftpUploadBtn" disabled="true" id="ftpUploadBtn" href="javascript:void(0);" icon="icon-upload"/>
     </form>
 </div>
 

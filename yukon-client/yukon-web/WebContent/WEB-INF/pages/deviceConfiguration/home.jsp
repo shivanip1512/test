@@ -72,7 +72,7 @@ function showSelectedDevices(divId, url) {
                                             <!-- Device Group popup div -->
                                             <div title="${popupTitle}" id="${id}" class="dn"></div>
                                             
-                                            <cm:dropdown icon="icon-cog" containerCssClass="fr">
+                                            <cm:dropdown containerCssClass="fr">
                                                 <cti:url var="groupUrl" value="/group/editor/home">
                                                     <cti:param name="groupName" value="/System/Device Configs/${config.name}"/>
                                                 </cti:url>
@@ -81,7 +81,7 @@ function showSelectedDevices(divId, url) {
                                                     <cti:param name="collectionType" value="group"/>
                                                     <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
                                                 </cti:url>
-                                                <cm:dropdownOption icon="icon-cog" href="${collectionsUrl}" key=".collectionAction"/>
+                                                <cm:dropdownOption icon="icon-cog-go" href="${collectionsUrl}" key=".collectionAction"/>
                                             </cm:dropdown>
                                         </td>
                                     </tr>

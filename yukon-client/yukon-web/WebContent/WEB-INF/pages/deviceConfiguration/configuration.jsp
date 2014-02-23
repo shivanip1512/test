@@ -8,8 +8,8 @@
 
 <cti:standardPage module="tools" page="configs.config.${mode}">
 
-<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
-<cti:includeScript link="/JavaScript/configurationCategory.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
+<cti:includeScript link="/JavaScript/yukon.device.config.js"/>
 
     <tags:setFormEditMode mode="${mode}"/>
     

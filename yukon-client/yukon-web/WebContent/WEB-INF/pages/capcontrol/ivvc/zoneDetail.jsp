@@ -9,13 +9,14 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.zoneDetail">
 
-    <cti:includeScript link="/JavaScript/yukon.tables.js" />
-    <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-    <cti:includeScript link="/JavaScript/dynamicTable.js"/>
-    <cti:includeScript link="/JavaScript/picker.js" />
-    <cti:includeScript link="/JavaScript/yukon.ivvc.zone.js" />
-
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
+    
+    <cti:includeScript link="/JavaScript/yukon.tables.js" />
+    <cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+    <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
+    <cti:includeScript link="/JavaScript/yukon.picker.js" />
+    <cti:includeScript link="/JavaScript/yukon.da.ivvc.js" />
+
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
 
     <!-- Zone Wizard Dialog -->
@@ -23,7 +24,7 @@
 
 <script type="text/javascript">
     jQuery( function() {
-        yukon.Ivvc.Zone.init( {timeout : '${updaterDelay}',
+        yukon.da.ivvc.init( {timeout : '${updaterDelay}',
                                controlRole : '${hasControlRole}',
                                subBusId : '${subBusId}',
                                zoneId: '${zoneId}'
@@ -187,7 +188,7 @@
                                                             <cti:icon icon="icon-bullet-red" nameKey="questionable"/>
                                                         </span>
                                                         <cti:pointValue pointId="${pointId}" format="VALUE"/>
-                                                        <cti:dataUpdaterCallback function="yukon.Ivvc.Zone.setRedBulletForPoint(${pointId})" 
+                                                        <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${pointId})" 
                                                             initialize="true" quality="POINT/${pointId}/QUALITY"/>
                                                     </c:when>
                                                     <c:otherwise>
@@ -285,7 +286,7 @@
                                                         <cti:icon icon="icon-bullet-red"/>
                                                     </span>
                                                     <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                    <cti:dataUpdaterCallback function="yukon.Ivvc.Zone.setRedBulletForPoint(${point.pointId})" 
+                                                    <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${point.pointId})" 
                                                         initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
                                                </c:when>
                                                <c:otherwise>
@@ -331,7 +332,7 @@
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${graphSettings.graphTitle}" />
 
-                    <cti:dataUpdaterCallback function="yukon.Flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
+                    <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                         initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
                 </cti:tabbedContentSelectorContent>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

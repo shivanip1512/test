@@ -220,7 +220,7 @@
             <div style="float: right;">
                 <input style="margin-right: 0.1cm" id="submitbutton" type="submit" name="Submit" value="Query Work Orders">
                 <input style="margin-right: 5.5cm" type="reset" name="Reset" value="Reset" onclick="location.reload()">
-                <input style="margin-right: 0.2cm" type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='WorkOrder.jsp'">
+                <input style="margin-right: 0.2cm" type="button" name="Back" value="Back" onclick="location.href='WorkOrder.jsp'">
             </div>
         </form>
     <div id="browserWarning" style="display:none; font-weight: bold; color: red; font-size: 14px; text-align: center; margin: 12px 0"><BR><BR>This page only works with Internet Explorer.</div>
@@ -322,7 +322,7 @@
             yukonDefIDs[curIdx] = selectedFilterType;
             curIdx = filterTexts.length;
 
-            setContentChanged(true);
+            
         }
         
         function moveUp(form) 
@@ -344,7 +344,7 @@
                 selectionIDs[idx] = selectionIDs[idx-1];
                 selectionIDs[idx-1] = value;
                 curIdx--;
-                setContentChanged(true);
+                
             }
         }
         
@@ -366,7 +366,7 @@
                 selectionIDs[idx] = selectionIDs[idx+1];
                 selectionIDs[idx+1] = value;
                 curIdx++;
-                setContentChanged(true);
+                
             }
         }
         
@@ -381,7 +381,7 @@
                 selectionIDs.splice(idx, 1);
                 yukonDefIDs.splice(idx, 1);
                 filters.selectedIndex = filters.options.length;
-                setContentChanged(true);
+                
             }
             
             curIdx = filterTexts.length;
@@ -399,7 +399,7 @@
                 selectionIDs.splice(0, selectionIDs.length);
                 yukonDefIDs.splice(0, yukonDefIDs.length);
                 filters.selectedIndex = 0;
-                setContentChanged(true);
+                
             }
             
             curIdx = filterTexts.length;

@@ -22,7 +22,7 @@
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
                     <cti:msg key="yukon.web.alerts.table.clear.tooltip" var="tt"/>
-                    <cti:icon icon="icon-accept" title="${tt}" onclick="yukon.Alerts.clearAlert(${alert.id});" classes="cp"/>
+                    <cti:icon icon="icon-accept" title="${tt}" onclick="yukon.alerts.clearAlert(${alert.id});" classes="cp"/>
                 </td>
             </tr>
         </c:forEach>

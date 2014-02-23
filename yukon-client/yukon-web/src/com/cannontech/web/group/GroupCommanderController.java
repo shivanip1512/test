@@ -74,24 +74,28 @@ public class GroupCommanderController {
 
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
-    private RolePropertyDao rolePropertyDao;
-    private CommandDao commandDao;
-    private GroupCommandExecutor groupCommandExecutor;
-    private AlertService alertService;
-    private DeviceGroupService deviceGroupService;
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private CommandDao commandDao;
+    @Autowired private AlertService alertService;
+    @Autowired private EmailService emailService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private SimpleReportOutputter simpleReportOutputter;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private PaoCommandAuthorizationService commandAuthorizationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private SimpleYukonReportDefinition<GroupCommanderSuccessResultsModel> successReportDefinition;
+    @Resource(name="groupCommanderSuccessResultDefinition")
+    public void setSuccessReportDefinition(SimpleYukonReportDefinition<GroupCommanderSuccessResultsModel> successReportDefinition) {
+        this.successReportDefinition = successReportDefinition;
+    }
     private SimpleYukonReportDefinition<GroupCommanderFailureResultsModel> failureReportDefinition;
-    private SimpleReportOutputter simpleReportOutputter;
-    
-    private EmailService emailService;
-    
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-
-    private PaoCommandAuthorizationService commandAuthorizationService;
-    
-    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Resource(name="groupCommanderFailureResultDefinition")
+    public void setFailureReportDefinition(SimpleYukonReportDefinition<GroupCommanderFailureResultsModel> failureReportDefinition) {
+        this.failureReportDefinition = failureReportDefinition;
+    }
     
     // available meter commands
     private List<LiteCommand> meterCommands;
@@ -107,37 +111,6 @@ public class GroupCommanderController {
             LiteCommand liteCmd = commandDao.getCommand(cmdId);
             this.meterCommands.add(liteCmd);
         }
-    }
-    
-    @Autowired
-    public void setCommandDao(CommandDao commandDao) {
-        this.commandDao = commandDao;
-    }
-
-    @Autowired
-    public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
-        this.groupCommandExecutor = groupCommandExecutor;
-    }
-
-    @Autowired
-	public void setCommandAuthorizationService(
-			PaoCommandAuthorizationService commandAuthorizationService) {
-		this.commandAuthorizationService = commandAuthorizationService;
-	}
-    
-    @Autowired
-    public void setAlertService(AlertService alertService) {
-        this.alertService = alertService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
-        this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
 
     @RequestMapping("collectionProcessing")
@@ -243,8 +216,8 @@ public class GroupCommanderController {
     }
 
     private void addErrorStateToMap(ModelMap map, String errorMsg, String commandSelectValue, String commandString, String groupName) {
-    	
-    	map.addAttribute("errorMsg", errorMsg);
+        
+        map.addAttribute("errorMsg", errorMsg);
         map.addAttribute("commandSelectValue", commandSelectValue);
         map.addAttribute("commandString", commandString);
         map.addAttribute("groupName", groupName);
@@ -349,52 +322,23 @@ public class GroupCommanderController {
     @RequestMapping(value={"errorsList", "successList"})
     public void results(YukonUserContext userContext, String resultKey, ModelMap map) {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
-		
+        
         /*
          *  RFN devices do not use porter. Replacing the porter error with the error from error-code.xml - Invalid Action for Device Type.
          */
         Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result
-				.getCallback().getErrors();
-		if (!errors.isEmpty()) {
-			for (SimpleDevice device : errors.keySet()) {
-				if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getErrorCode() != 2000) {
-					DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000, userContext);
-					SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
-					errors.put(device, deviceError);
-				}
-			}
-		}
-		
+                .getCallback().getErrors();
+        if (!errors.isEmpty()) {
+            for (SimpleDevice device : errors.keySet()) {
+                if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getErrorCode() != 2000) {
+                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000, userContext);
+                    SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
+                    errors.put(device, deviceError);
+                }
+            }
+        }
+        
         map.addAttribute("result", result);
     }
 
-    @Resource(name="groupCommanderSuccessResultDefinition")
-    public void setSuccessReportDefinition(SimpleYukonReportDefinition<GroupCommanderSuccessResultsModel> successReportDefinition) {
-        this.successReportDefinition = successReportDefinition;
-    }
-
-    @Resource(name="groupCommanderFailureResultDefinition")
-    public void setFailureReportDefinition(SimpleYukonReportDefinition<GroupCommanderFailureResultsModel> failureReportDefinition) {
-        this.failureReportDefinition = failureReportDefinition;
-    }
-
-    @Autowired
-    public void setSimpleReportOutputter(SimpleReportOutputter simpleReportOutputter) {
-        this.simpleReportOutputter = simpleReportOutputter;
-    }
-
-    @Autowired
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
 }

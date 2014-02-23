@@ -10,9 +10,9 @@
  * @requires JQUERY_SPECTRUM
  */
 
-yukon.namespace('yukon.Themes');
+yukon.namespace('yukon.themes');
 
-yukon.Themes = (function () {
+yukon.themes = (function () {
     
     var initialized = false,
         _chooseText = '',
@@ -268,5 +268,5 @@ yukon.Themes = (function () {
 }());
 
 jQuery(function () {
-    yukon.Themes.init(jQuery('#button-keys').data('buttonKeys'));
+    yukon.themes.init(jQuery('#button-keys').data('buttonKeys'));
 });

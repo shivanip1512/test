@@ -23,13 +23,13 @@ jQuery(function() {
         url: '${url}',
         dataType : 'json'
     }).done(function(data) {
-        yukon.Flot.addChart({
+        yukon.flot.addChart({
             chartId: chartId,
             type: data.type,
             data: data.datas,
             options: data.options
         });
-        yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+        yukon.flot.charts[chartId].methods.plotGraph(chartId);
     });
 });
 </script>

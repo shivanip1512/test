@@ -44,7 +44,7 @@
     <c:when test="${not empty reloadInterval}">
         <script>
            jQuery(function() {
-               yukon.Flot.reloadChartOnInterval({chartId: '${chartId}',
+               yukon.flot.reloadChartOnInterval({chartId: '${chartId}',
                                                  dataUrl: '${chartUrl}',
                                                  reloadInterval: ${reloadInterval} * 1000});
            });
@@ -58,13 +58,13 @@
                     url: '${chartUrl}',
                     dataType : 'json',
                     success: function(data) {
-                        yukon.Flot.addChart({
+                        yukon.flot.addChart({
                             chartId: chartId,
                             type: data.type,
                             data: data.datas,
                             options: data.options
                         });
-                        yukon.Flot.charts[chartId].methods.plotGraph(chartId);
+                        yukon.flot.charts[chartId].methods.plotGraph(chartId);
                     }
                 });
             });

@@ -3,45 +3,28 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+    
+<cti:standardPage module="amr" page="cre.list">
 
-<cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.list.pageTitle" />
-<cti:msg var="filterSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.section" />
-<cti:msg var="filerDateFromText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.dateFrom" />
-<cti:msg var="filerDateToText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.dateTo" />
-<cti:msg var="filterTypeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.type" />
-<cti:msg var="filterTypeAnyText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.typeAny" />
-<cti:msg var="filterButtonText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.button" />
-<cti:msg var="filterClearText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.clear" />
-<cti:msg var="executionsSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.section" />
-<cti:msg var="executionsTypeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.type" />
-<cti:msg var="executionsStatusText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.status" />
-<cti:msg var="executionsStartTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.startTime" />
-<cti:msg var="executionsStopTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.stopTime" />
-<cti:msg var="successCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.successCount" />
-<cti:msg var="unsupportedCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.unsupportedCount" />
-<cti:msg var="failCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.failCount" />
-<cti:msg var="totalCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.totalCount" />
-<cti:msg var="executionsUserText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.user" />
-<cti:msg var="noExecutionsText" key="yukon.web.modules.amr.commandRequestExecution.results.list.noExecutions" />
-    
-<cti:standardPage title="${pageTitle}" module="amr">
-<cti:msgScope paths="yukon.web.modules.amr.commandRequestExecution.results.list">
+    <cti:msg var="filterSectionText" key="yukon.web.modules.amr.cre.list.filter.section" />
+    <cti:msg var="filerDateFromText" key="yukon.web.modules.amr.cre.list.filter.dateFrom" />
+    <cti:msg var="filerDateToText" key="yukon.web.modules.amr.cre.list.filter.dateTo" />
+    <cti:msg var="filterTypeText" key="yukon.web.modules.amr.cre.list.filter.type" />
+    <cti:msg var="filterTypeAnyText" key="yukon.web.modules.amr.cre.list.filter.typeAny" />
+    <cti:msg var="filterButtonText" key="yukon.web.modules.amr.cre.list.filter.button" />
+    <cti:msg var="filterClearText" key="yukon.web.modules.amr.cre.list.filter.clear" />
+    <cti:msg var="executionsSectionText" key="yukon.web.modules.amr.cre.list.executions.section" />
+    <cti:msg var="executionsTypeText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.type" />
+    <cti:msg var="executionsStatusText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.status" />
+    <cti:msg var="executionsStartTimeText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.startTime" />
+    <cti:msg var="executionsStopTimeText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.stopTime" />
+    <cti:msg var="successCountText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.successCount" />
+    <cti:msg var="unsupportedCountText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.unsupportedCount" />
+    <cti:msg var="failCountText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.failCount" />
+    <cti:msg var="totalCountText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.totalCount" />
+    <cti:msg var="executionsUserText" key="yukon.web.modules.amr.cre.list.executions.tableHeader.user" />
+    <cti:msg var="noExecutionsText" key="yukon.web.modules.amr.cre.list.noExecutions" />
 
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/dashboard" title="Home" />
-        <%-- cres --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-    </cti:breadCrumbs>
-    
-    <script type="text/javascript">
-        function forwardToCreDetail(row, id) {
-            window.location = "/common/commandRequestExecutionResults/detail?commandRequestExecutionId=" + id + "&jobId=" + ${jobId};
-        }
-    </script>
-    
-    <h2>${pageTitle}</h2>
-    <br>
-    
     <c:set var="singleJob" value="false"/>
     <c:if test="${jobId > 0}">
         <c:set var="singleJob" value="true"/>
@@ -95,7 +78,7 @@
             <div class="action-area">
                 <cti:button label="${filterButtonText}" busy="true" type="submit" classes="primary action"/>
                 <cti:url value="/common/commandRequestExecutionResults/list" var="clearUrl"/>
-                <cti:button label="${filterClearText}" href="${clearUrl}"/>
+                <cti:button label="${filterClearText}" href="${clearUrl}" busy="true"/>
             </div>
         </form>
         
@@ -103,10 +86,7 @@
     
     
     <%-- RESULTS TABLE --%>
-    <div id="f-page-buttons">
-        <cti:button nameKey="filter" id="filterButton" icon="icon-filter"/>
-    </div>
-
+    <div id="f-page-buttons" class="dn"><cti:button nameKey="filter" id="filterButton" icon="icon-filter"/></div>
     <table id="cresTable" class="compact-results-table row-highlighting">
         <thead>
             <tr>
@@ -136,10 +116,11 @@
             </c:if>
         
             <c:forEach var="creWrapper" items="${creWrappers}" varStatus="status">
-            
-                <tr class="cp" 
-                    onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
-                    title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
+                <cti:url var="detailsUrl" value="/common/commandRequestExecutionResults/detail">
+                    <cti:param name="commandRequestExecutionId" value="${creWrapper.cre.id}"/>
+                    <cti:param name="jobId" value="${jobId}"/>
+                </cti:url>
+                <tr class="cp" title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}" data-href="${detailsUrl}">
                     
                     <c:if test="${!singleJob}">
                         <td>${creWrapper.cre.commandRequestExecutionType.shortName}</td>
@@ -173,5 +154,4 @@
             </c:forEach>
         </tbody>
     </table>
-</cti:msgScope>
 </cti:standardPage>

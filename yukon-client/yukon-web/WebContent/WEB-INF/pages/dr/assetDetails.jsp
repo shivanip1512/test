@@ -12,7 +12,7 @@
 <input id="assetId" type="hidden" value="${assetId}"/>
 <input id="itemsPerPage" type="hidden" value="${itemsPerPage}"/>
 
-<cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+<cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 

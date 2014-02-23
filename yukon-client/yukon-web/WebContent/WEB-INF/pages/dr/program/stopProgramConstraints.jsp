@@ -1,8 +1,8 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.dr.program.stopProgram">
 
@@ -14,8 +14,7 @@ overrideConstraintsChecked = function() {
 </script>
 
 <cti:url var="submitUrl" value="/dr/program/stop/stop"/>
-<form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitFormViaAjax('drDialog', 'stopProgramForm');">
+<form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'stopProgramForm');">
     <form:hidden path="programId"/>
     <form:hidden path="stopNow"/>
     <form:hidden path="stopDate"/>
@@ -56,7 +55,6 @@ overrideConstraintsChecked = function() {
             </label></p>
         </c:if>
     </c:if>
-    <br>
 
     <div class="action-area">
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">

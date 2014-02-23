@@ -1,27 +1,11 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Group Command Processing Result Detail" module="amr">
+<cti:standardPage module="tools" page="groupCommand.details">
 
-    <cti:standardMenu menuSelection="devicegroups|commander"/>
-
-    <%-- BREAD CRUMBS --%>
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/dashboard" title="Home" />
-        
-        <%-- commander from location --%>
-        <cti:crumbLink url="/group/commander/resultList" title="Recent Group Command Processing Results" />
-        
-        <%-- this result --%>
-        <cti:crumbLink title="Group Command Processing Result Detail"/>
-    
-    </cti:breadCrumbs>
-    
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
     
     <script type="text/javascript">
         
@@ -41,9 +25,6 @@
         }
     </script>
     
-    <h2 class="stacked">Group Command Processing Result Detail</h2>
-
-  
     <tags:sectionContainer id="commanderResultsContainer">
     
         <jsp:attribute name="title">
@@ -171,7 +152,7 @@
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','successActionsDiv','errorActionsDiv','creResultsDiv'],true)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelCommandsDiv'],false)" initialize="true" value="COMMANDER/${result.key}/IS_COMPLETE" />
       
 </cti:standardPage>

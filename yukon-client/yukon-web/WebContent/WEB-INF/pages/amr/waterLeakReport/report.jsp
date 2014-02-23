@@ -12,8 +12,8 @@
 
 <cti:standardPage page="waterLeakReport.report" module="amr">
 
-    <cti:includeScript link="/JavaScript/water_leak_report.js"/>
-    <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ami.water.leak.report.js"/>
+    <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
 
     <input type="hidden" id="hasFilterError" value="${hasFilterError}"/>
     <input type="hidden" id="hasScheduleError" value="${hasScheduleError}"/>
@@ -31,12 +31,12 @@
     
     <d:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
         options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
-                                          {text: '${resetButton}', click: function() { yukon.WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
-                                          {text: '${filterButton}', click: function() { yukon.WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
+                                          {text: '${resetButton}', click: function() { yukon.ami.waterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
+                                          {text: '${filterButton}', click: function() { yukon.ami.waterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
         <form:form id="filterForm" action="report" method="get" commandName="backingBean">
             <tags:sortFields backingBean="${backingBean}"/>
             <tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
-                groupSelectedCallback="yukon.WaterLeakReport.filter_group_selected_callback();" individualSelectedCallback="yukon.WaterLeakReport.filter_individual_selected_callback"
+                groupSelectedCallback="yukon.ami.waterLeakReport.filter_group_selected_callback();" individualSelectedCallback="yukon.ami.waterLeakReport.filter_individual_selected_callback"
                 uniqueId="filterSelector"/>
             <hr>
             <div class="under_tabs">
@@ -75,11 +75,11 @@
     </c:if>
     <d:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
         options="{width: 650, 'buttons': [{text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}, 
-                                          {text: '${empty jobId ? scheduleButton : updateButton}', click: function() {yukon.WaterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton primary action'}]}">
+                                          {text: '${empty jobId ? scheduleButton : updateButton}', click: function() {yukon.ami.waterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton primary action'}]}">
         
         <form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">
             <tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"
-                groupSelectedCallback="yukon.WaterLeakReport.schedule_group_selected_callback();" individualSelectedCallback="yukon.WaterLeakReport.schedule_individual_selected_callback"
+                groupSelectedCallback="yukon.ami.waterLeakReport.schedule_group_selected_callback();" individualSelectedCallback="yukon.ami.waterLeakReport.schedule_individual_selected_callback"
                 uniqueId="scheduleSelector"/>
             <div class="under_tabs">
                 <tags:nameValueContainer2>

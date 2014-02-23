@@ -5,8 +5,8 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:includeScript link="/JavaScript/picker.js"/>
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.picker.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 <cti:includeScript link="/JavaScript/yukon.tables.js"/>
 
 <f:subview id="regulatorView" rendered="#{capControlForm.visibleTabs['Regulator']}">

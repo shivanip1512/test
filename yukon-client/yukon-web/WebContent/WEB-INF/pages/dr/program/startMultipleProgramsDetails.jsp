@@ -1,10 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.startMultiplePrograms">
 
@@ -92,10 +91,10 @@ gearChanged = function() {
         gearNum = document.getElementById('programGear' + index).value;
         programChecked = document.getElementById('startProgramCheckbox' + index).checked;
         if(targetPrograms[index]) {
-	        if (targetPrograms[index][gearNum] && programChecked) {
-	            adjustButtonShown = true;
-	            break;
-	        }
+            if (targetPrograms[index][gearNum] && programChecked) {
+                adjustButtonShown = true;
+                break;
+            }
         }
     }
 
@@ -130,48 +129,47 @@ jQuery( function () {
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>
 
-    <table class="compact-results-table">
+    <table class="compact-results-table stacked">
         <thead>
-	        <tr>
-	            <th><cti:msg2 key=".startTime"/></th>
-	            <th><cti:msg2 key=".stopTime"/></th>
-	        </tr>
+            <tr>
+                <th><cti:msg2 key=".startTime"/></th>
+                <th><cti:msg2 key=".stopTime"/></th>
+            </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
-	        <tr valign="top">
-	            <td width="50%">
-	                <table>
-	                    <tr><td>
-	                        <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
-	                        <label for="startNowCheckbox">
-	                            <cti:msg2 key=".startNow"/>
-	                        </label>
-	                    </td></tr>
+            <tr valign="top">
+                <td width="50%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="startNow" id="startNowCheckbox" onclick="startNowChecked()"/>
+                            <label for="startNowCheckbox">
+                                <cti:msg2 key=".startNow"/>
+                            </label>
+                        </td></tr>
                         <tr>
                             <td>
                                 <dt:dateTime id="startDate" path="startDate" value="${backingBean.startDate}" disabled="true"/>
                             </td>
                         </tr>
-	                </table>
-	            </td>
-	            <td width="50%">
-	                <table>
-	                    <tr><td>
-	                        <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
-	                        <label for="scheduleStopCheckbox">
-	                            <cti:msg2 key=".scheduleStop"/>
-	                        </label>
-	                    </td></tr>
-	                    <tr><td>
+                    </table>
+                </td>
+                <td width="50%">
+                    <table>
+                        <tr><td>
+                            <form:checkbox path="scheduleStop" id="scheduleStopCheckbox" onclick="scheduleStopChecked()"/>
+                            <label for="scheduleStopCheckbox">
+                                <cti:msg2 key=".scheduleStop"/>
+                            </label>
+                        </td></tr>
+                        <tr><td>
                             <dt:dateTime id="stopDate" path="stopDate" value="${backingBean.stopDate}"/>
-	                    </td></tr>
-	                </table>
-	            </td>
-	        </tr>
+                        </td></tr>
+                    </table>
+                </td>
+            </tr>
         </tbody>
     </table>
-    <br>
 
     <script type="text/javascript">
         startNowChecked();
@@ -180,47 +178,47 @@ jQuery( function () {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
-    <div class="scroll-medium">
-    <table class="compact-results-table">
-        <thead>
-	        <tr>
-	            <th><cti:msg2 key=".startProgramName"/></th>
-	            <th><cti:msg2 key=".gear"/></th>
-	            <th><cti:msg2 key=".currentState"/></th>
-	            <c:if test="${!empty scenarioPrograms}">
-	                <th><cti:msg2 key=".startOffset"/></th>
-	                <th><cti:msg2 key=".stopOffset"/></th>
-	            </c:if>
-	        </tr>
-	    </thead>
-	    <tfoot></tfoot>
-	    <tbody>
-	        <c:forEach var="program" varStatus="status" items="${programs}">
-	            <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-	            <c:set var="gears" value="${gearsByProgramId[programId]}"/>
-	            <tr>
-	                <td>
-	                <form:hidden path="programStartInfo[${status.index}].programId"/>
-	                <form:checkbox path="programStartInfo[${status.index}].startProgram"
-	                    id="startProgramCheckbox${status.index}"
-	                    onclick="singleProgramChecked(this);"/>
-	                <label for="startProgramCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label></td>
-	                <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()" id="programGear${status.index}">
-	                    <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-	                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
-	                    </c:forEach>
-	                </form:select></td>
-	                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
-	                <c:if test="${!empty scenarioPrograms}">
-	                    <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
-	                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
-	                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
-	                </c:if>
-	            </tr>
-	        </c:forEach>
-	    </tbody>
-    </table>
-    </div>
+        <div class="scroll-medium">
+            <table class="compact-results-table dashed">
+                <thead>
+                    <tr>
+                        <th><cti:msg2 key=".startProgramName"/></th>
+                        <th><cti:msg2 key=".gear"/></th>
+                        <th><cti:msg2 key=".currentState"/></th>
+                        <c:if test="${!empty scenarioPrograms}">
+                            <th><cti:msg2 key=".startOffset"/></th>
+                            <th><cti:msg2 key=".stopOffset"/></th>
+                        </c:if>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="program" varStatus="status" items="${programs}">
+                        <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+                        <c:set var="gears" value="${gearsByProgramId[programId]}"/>
+                        <tr>
+                            <td>
+                            <form:hidden path="programStartInfo[${status.index}].programId"/>
+                            <form:checkbox path="programStartInfo[${status.index}].startProgram"
+                                id="startProgramCheckbox${status.index}"
+                                onclick="singleProgramChecked(this);"/>
+                            <label for="startProgramCheckbox${status.index}">${fn:escapeXml(program.name)}</label></td>
+                            <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()" id="programGear${status.index}">
+                                <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
+                                    <form:option value="${gearStatus.index + 1}">${fn:escapeXml(gear.gearName)}</form:option>
+                                </c:forEach>
+                            </form:select></td>
+                            <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                            <c:if test="${!empty scenarioPrograms}">
+                                <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
+                                <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>
+                                <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
+                            </c:if>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </tags:sectionContainer>
 
     <input type="checkbox" id="allProgramsCheckbox" onclick="allProgramsChecked()"/>
@@ -249,7 +247,6 @@ jQuery( function () {
             <input type="hidden" name="autoObserveConstraints" value="true"/>
         </c:if>
     </c:if>
-    <br>
 
     <div class="action-area">
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">

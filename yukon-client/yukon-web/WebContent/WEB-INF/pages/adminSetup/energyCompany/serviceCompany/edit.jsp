@@ -243,12 +243,22 @@
                 <cti:button id="deleteButton" nameKey="delete" name="delete" type="submit" classes="delete"/>
                 <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${numberOfInventoryInServiceCompany}"/>
             </cti:displayForPageEditModes>
-
+            
             <!-- Cancel -->
-            <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
-                <cti:param name="ecId" value="${ecId}"/>
-            </cti:url>
-            <cti:button nameKey="cancel" href="${serviceCompanyIndexUrl}"/>
+            <cti:displayForPageEditModes modes="CREATE,EDIT">
+                <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
+                    <cti:param name="ecId" value="${ecId}"/>
+                </cti:url>
+                <cti:button nameKey="cancel" href="${serviceCompanyIndexUrl}"/>
+            </cti:displayForPageEditModes>
+            
+            <!-- Back -->
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:url var="serviceCompanyIndexUrl" value="${baseUrl}/list">
+                    <cti:param name="ecId" value="${ecId}"/>
+                </cti:url>
+                <cti:button nameKey="back" href="${serviceCompanyIndexUrl}"/>
+            </cti:displayForPageEditModes>
         </div>
      </form:form>
   

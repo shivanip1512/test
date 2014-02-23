@@ -8,7 +8,7 @@
 <%@ attribute name="state" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" description="Used to configure the controls to a certain state. Pass a new CronExpressionTagState to configure to default state."%>
 <%@ attribute name="allowTypeChange" rtexprvalue="true" type="java.lang.Boolean" description="Allow changing between Repeating and One-Time job options."%>
 
-<cti:includeScript link="/JavaScript/cronExpressionData.js"/>
+<cti:includeScript link="/JavaScript/yukon.cron.js"/>
 
 <c:set var="allowChange" value="true"/>
 <c:if test="${!empty pageScope.allowTypeChange}">
@@ -195,7 +195,7 @@
 </div>
 
 <script type="text/javascript">
-yukon.ui.aux.callAfterMainWindowLoad(function () {
+yukon.ui.util.callAfterMainWindowLoad(function () {
     cronExpFreqChange('${id}', jQuery('#' + '${id}_cronExpFreq')[0]);
 });
 </script>

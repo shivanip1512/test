@@ -22,8 +22,8 @@
 <%@include file="scheduleAssignmentFilterPopup.jsp" %>
 
 <cti:includeScript link="/JavaScript/yukon.tables.js" />
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/picker.js" />
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.picker.js" />
 
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
 <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
@@ -47,9 +47,9 @@ jQuery(function() {
             'deviceName': deviceName
         }).done(function(json) {
             if (!json.success) {
-                yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
+                yukon.da.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
             } else {
-                yukon.CapControl.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
+                yukon.da.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
             }
         });
         
@@ -68,9 +68,9 @@ jQuery(function() {
             'deviceName': deviceName
         }).done(function(json) {
             if(!json.success) {
-                yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
+                yukon.da.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'red');
             } else {
-                yukon.CapControl.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
+                yukon.da.showAlertMessageForAction('<cti:msg2 key=".stopSchedule" javaScriptEscape="true"/>', '', json.resultText, 'green');
             }
         });
         
@@ -83,7 +83,7 @@ function setOvUv(eventId, ovuv) {
         'ovuv': ovuv
     }).done(function(json) {
         if (!json.success) {
-            yukon.CapControl.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
+            yukon.da.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
         }
     });
 }
@@ -119,12 +119,12 @@ function newScheduleAssignmentPopup(schedule, command) {
     <c:choose>
         <c:when test="${param.success}">
             <script type="text/javascript">
-                yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
+                yukon.da.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
             </script>
         </c:when>
         <c:otherwise>
             <script type="text/javascript">
-            yukon.CapControl.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
+            yukon.da.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
             </script>
         </c:otherwise>
     </c:choose>

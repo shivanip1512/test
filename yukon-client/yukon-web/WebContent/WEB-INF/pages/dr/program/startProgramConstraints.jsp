@@ -1,15 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:msgScope paths="modules.dr.program.startProgram">
 
 <cti:url var="submitUrl" value="/dr/program/start/start"/>
-<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
-    onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
+<form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}" onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <form:hidden path="programId"/>
     <form:hidden path="gearNumber"/>
     <input type="hidden" name="from" value="constraints"/>
@@ -53,7 +52,6 @@
             </label></p>
         </c:if>
     </c:if>
-    <br>
 
     <div class="action-area">
         <c:if test="${empty violations.constraintContainers || overrideAllowed}">

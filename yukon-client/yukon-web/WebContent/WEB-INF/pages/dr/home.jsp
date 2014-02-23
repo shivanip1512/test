@@ -13,7 +13,7 @@
 <cti:standardPage module="dr" page="home">
     
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
-    <cti:includeScript link="/JavaScript/yukon/yukon.dr.dashboard.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.dashboard.js"/>
 
     <tags:simpleDialog id="drDialog"/>
 

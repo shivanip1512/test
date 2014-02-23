@@ -10,7 +10,7 @@ jQuery(document).on('click', '#recentEventsView', function (event) {
 
 <tags:sectionContainer2 nameKey="busContainer" styleClass="padBottom">
     <div>
-        <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.CapControl.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
+        <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.da.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
         <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
     <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBuses recentEventsCheckboxes">
@@ -25,7 +25,7 @@ jQuery(document).on('click', '#recentEventsView', function (event) {
 
 <tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
     <div>
-        <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.CapControl.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
+        <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.da.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
         <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
     <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsFeeders recentEventsCheckboxes">
@@ -40,7 +40,7 @@ jQuery(document).on('click', '#recentEventsView', function (event) {
 
 <tags:sectionContainer2 nameKey="banksContainer">
     <div>
-        <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.CapControl.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
+        <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.da.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
         <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
     </div>
     <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBanks recentEventsCheckboxes">

@@ -10,7 +10,7 @@
 
 <cti:standardPage page="waterLeakReport.report.intervalData" module="amr">
 
-	<cti:includeScript link="/JavaScript/water_leak_report.js" />
+	<cti:includeScript link="/JavaScript/yukon.ami.water.leak.report.js" />
 
 	<form:form id="csvIntervalForm" action="csvWaterLeakIntervalData" method="get" commandName="backingBean">
 		<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />

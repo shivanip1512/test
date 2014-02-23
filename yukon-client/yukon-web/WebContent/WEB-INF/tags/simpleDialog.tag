@@ -10,7 +10,7 @@
 <%@ attribute name="styleClass" %>
 <%@ attribute name="title" %>
 
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 
 <%-- if the title is going to be specified when popping up the dialog,
      it doesn't matter what it is for now --%>

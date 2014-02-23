@@ -3,42 +3,27 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr" %>
 
-<cti:standardPage module="amr" page="commandRequestExecution.results.detail">
+<cti:standardPage module="amr" page="cre.detail">
 
-<cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.detail.pageTitle" />
-<cti:msg var="infoSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.section" />
-<cti:msg var="infoTypeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.type" />
-<cti:msg var="infoStatusText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.status" />
-<cti:msg var="infoStartTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.startTime" />
-<cti:msg var="infoStopTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.stopTime" />
-<cti:msg var="infoUserText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.user" />
-<cti:msg var="infoProgressText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.progress" />
-<cti:msg var="resultsSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.section" />
-<cti:msg var="resultsSectionPopupInfoText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.section.popupInfo" />
-<cti:msg var="resultsTotalRequestsText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.totalRequests" />
-<cti:msg var="resultsSuccessText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.success" />
-<cti:msg var="resultsFailText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.fail" />
-<cti:msg var="resultsDetailsText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.details" />
-<cti:msg var="resultsViewReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.viewReport" />
-<cti:msg var="resultsHideReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.hideReport" />
-<cti:msg var="resultsFailStatsReportText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.failStatsReport" />
-<cti:msg var="resultsUnsupportedText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.results.unsupported" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/dashboard" title="Home" />
-        
-        <%-- cre list --%>
-        <cti:url var="creListUrl" value="/common/commandRequestExecutionResults/list">
-            <cti:param name="jobId">${jobId}</cti:param>
-        </cti:url>
-        <cti:crumbLink url="${creListUrl}" title="Command Request Executions" />
-        
-        <%-- cre detail --%>
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
+<cti:msg var="infoSectionText" key="yukon.web.modules.amr.cre.detail.info.section" />
+<cti:msg var="infoTypeText" key="yukon.web.modules.amr.cre.detail.info.type" />
+<cti:msg var="infoStatusText" key="yukon.web.modules.amr.cre.detail.info.status" />
+<cti:msg var="infoStartTimeText" key="yukon.web.modules.amr.cre.detail.info.startTime" />
+<cti:msg var="infoStopTimeText" key="yukon.web.modules.amr.cre.detail.info.stopTime" />
+<cti:msg var="infoUserText" key="yukon.web.modules.amr.cre.detail.info.user" />
+<cti:msg var="infoProgressText" key="yukon.web.modules.amr.cre.detail.info.progress" />
 
+<cti:msg var="resultsSectionText" key="yukon.web.modules.amr.cre.detail.results.section" />
+<cti:msg var="resultsSectionPopupInfoText" key="yukon.web.modules.amr.cre.detail.results.section.popupInfo" />
+<cti:msg var="resultsTotalRequestsText" key="yukon.web.modules.amr.cre.detail.results.totalRequests" />
+<cti:msg var="resultsSuccessText" key="yukon.web.modules.amr.cre.detail.results.success" />
+<cti:msg var="resultsFailText" key="yukon.web.modules.amr.cre.detail.results.fail" />
+<cti:msg var="resultsDetailsText" key="yukon.web.modules.amr.cre.detail.results.details" />
+<cti:msg var="resultsViewReportText" key="yukon.web.modules.amr.cre.detail.results.viewReport" />
+<cti:msg var="resultsHideReportText" key="yukon.web.modules.amr.cre.detail.results.hideReport" />
+<cti:msg var="resultsFailStatsReportText" key="yukon.web.modules.amr.cre.detail.results.failStatsReport" />
+<cti:msg var="resultsUnsupportedText" key="yukon.web.modules.amr.cre.detail.results.unsupported" />
+    
     <script type="text/javascript">
 
         function switchResultsFilterType(resultsFilterType) {
@@ -98,8 +83,6 @@
         }
         
     </script>
-    
-    <h2 title="ID: ${commandRequestExecutionId}">${pageTitle}</h2>
     
     <%-- CRE INFO --%>
     <tags:sectionContainer title="${infoSectionText}" id="creInfoSection" styleClass="stacked">

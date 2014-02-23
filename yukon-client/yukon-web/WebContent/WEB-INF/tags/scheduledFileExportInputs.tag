@@ -1,11 +1,12 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ tag trimDirectiveWhitespaces="true" body-content="empty" %>
 
-<%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true"
-    type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
 <%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
 <script type="text/javascript">
@@ -74,8 +75,7 @@ jQuery(function() {
         <c:if test="${exportData.scheduleName == exportData.exportFileName}">
             <c:set var="checked" value=" checked=\"true\""/>
         </c:if>
-        <input id="sameAsSchedName" type="checkbox" ${checked}/>
-        <label for="sameAsSchedName"><cti:msg2 key=".sameAsScheduleName"/></label>
+        <label class="db"><input id="sameAsSchedName" type="checkbox" ${checked}/><cti:msg2 key=".sameAsScheduleName"/></label>
         <tags:input path="exportFileName" id="exportFileName" maxlength="100"/>
         <img src="${infoImg}" title="<cti:msg2 key=".exportFileNameInfo"/>"/>
     </tags:nameValue2>

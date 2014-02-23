@@ -3,7 +3,7 @@
 
 <cti:standardPage module="support" page="indexes">
 
-    <cti:includeScript link="/JavaScript/indexManager.js" />
+    <cti:includeScript link="/JavaScript/yukon.index.manager.js" />
 
     <table class="compact-results-table">
         <thead>

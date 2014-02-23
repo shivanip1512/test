@@ -18,8 +18,7 @@
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
 <cti:includeScript link="/JavaScript/yukon.tables.js"/>
-<cti:includeScript link="/JavaScript/scrollDiv.js"/>
-<cti:includeScript link="/JavaScript/da/yukon.capcontrol.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.js"/>
 
 <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 
@@ -44,8 +43,8 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-	yukon.CapControl.addLockButtonForButtonGroup("hdr_buttons");
-	yukon.CapControl.addLockButtonForButtonGroup("foot_buttons");
+	yukon.da.addLockButtonForButtonGroup("hdr_buttons");
+	yukon.da.addLockButtonForButtonGroup("foot_buttons");
 </script>
 </f:verbatim>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

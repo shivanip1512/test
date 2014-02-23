@@ -11,7 +11,7 @@
     jQuery(function() {
         jQuery('#movedCBTable').on('click', 'a.moveLink', function (event) {
             var a = event.currentTarget;
-            yukon.CapControl.getMovedBankMenu(a.id, event);
+            yukon.da.getMovedBankMenu(a.id, event);
         });
     });
     </script>

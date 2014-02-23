@@ -15,7 +15,7 @@
     </audio>
 
     <cti:includeScript link="JQUERY_COOKIE" />
-    <cti:includeScript link="/JavaScript/yukon/yukon.tdc.js" />
+    <cti:includeScript link="/JavaScript/yukon.tdc.js" />
 
     <div class="column-8-16">
         <div class="column one">
@@ -86,6 +86,6 @@
         <cti:button id="b_mute" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
         <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
       
-        <cti:dataUpdaterCallback function="yukon.Tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
+        <cti:dataUpdaterCallback function="yukon.tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
     </div>
 </cti:standardPage>

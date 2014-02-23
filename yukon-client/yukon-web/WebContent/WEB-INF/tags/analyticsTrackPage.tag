@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:includeScript link="/JavaScript/yukon/util/analytics_manager.js"/>
+<cti:includeScript link="/JavaScript/yukon.analytics.js"/>
 
 <%-- Cooper Tracking Ids --%>
 <%-- ******************* --%>
@@ -41,7 +41,7 @@
 	<%-- Only add GA if we have tracking Id(s) --%>
 	<c:if test="${fn:length(cooperTrackingId) != 0 || fn:length(additionalTrackingIds) != 0}">
 		<script>
-            yukon.AnalyticsManager.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
+            yukon.analytics.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
                 additional_tracking_ids: '${additionalTrackingIds}'});
 		</script>
 	</c:if>

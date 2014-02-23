@@ -13,7 +13,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
 
 <a href="javascript:void(0);" class="clearfix ${pageScope.styleClass}" onclick="openSimpleDialog('${pageScope.dialogId}', '${pageScope.actionUrl}', '<cti:msg2 key="${pageScope.titleKey}" javaScriptEscape="true" />')">
     <c:if test="${not empty pageScope.icon}">

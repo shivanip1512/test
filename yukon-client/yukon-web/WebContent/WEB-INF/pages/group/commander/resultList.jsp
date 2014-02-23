@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage page="groupCommand.results" module="tools">
+<cti:standardPage module="tools" page="groupCommand.results">
 
     <c:if test="${empty resultList}">
         <p><i:inline key="yukon.common.search.noResultsFound"/></p>

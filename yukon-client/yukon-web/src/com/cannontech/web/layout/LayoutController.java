@@ -106,12 +106,12 @@ public class LayoutController {
     	builder.add(JsLibrary.YUKON.getPath());
     	builder.add(JsLibrary.YUKON_ALERTS.getPath());
     	builder.add(JsLibrary.YUKON_CONFIRM.getPath());
-        builder.add("/JavaScript/yukonGeneral.js");
-        builder.add("/JavaScript/dataUpdater.js");
-        builder.add("/JavaScript/yukon/yukon.dropdown.js");
-        builder.add("/JavaScript/simpleCookies.js");
-        builder.add("/JavaScript/simpleDialog.js");
-        builder.add("/JavaScript/yukon/util/analytics_manager.js");
+        builder.add("/JavaScript/yukon.ui.util.js");
+        builder.add("/JavaScript/yukon.data.updater.js");
+        builder.add("/JavaScript/yukon.dropdown.js");
+        builder.add("/JavaScript/yukon.cookies.js");
+        builder.add("/JavaScript/yukon.dialog.js");
+        builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
         
         

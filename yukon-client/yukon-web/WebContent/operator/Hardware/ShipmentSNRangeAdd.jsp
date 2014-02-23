@@ -101,7 +101,7 @@
 		
 		function back(form)
 		{
-			if (warnUnsavedChanges()) location.href='DeliverySchedule.jsp'
+			location.href='DeliverySchedule.jsp';
 		}
 				
 	</script>

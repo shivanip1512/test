@@ -1,91 +1,83 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="changeType">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
-    <tags:boxContainer2 nameKey="changeTypeContainer" hideEnabled="false">
+    <div class="note">
+        <table>
+            <tr>
+                <td valign="top" colspan="2">
+                    <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
+                </td>
+            </tr>
+      
+            <tr>
+                <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
+                <td><i:inline key=".instructions"/></td>
+            </tr>
+        </table>
+    </div>
+
     
-        <div class="containerHeader">
-            <table>
-                <tr>
-                    <td valign="top" colspan="2">
-                        <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection"/>
-                    </td>
-                </tr>
-          
-                <tr>
-                    <td class="strong-label-small error"><i:inline key=".instructionsLabel"/></td>
-                    <td><i:inline key=".instructions"/></td>
-                </tr>
-            </table>
-        </div>
-    
-        <br>
-        
-        <c:if test="${empty task}">
-            <form action="do" method="post">
-                <cti:csrfToken/>
-                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".newType">
-                        <select name="entry">
-                            <c:forEach items="${validEntries}" var="entry">
-                                <option value="${entry.entryID}"><spring:escapeBody htmlEscape="true">${entry.entryText}</spring:escapeBody></option>
-                            </c:forEach>
-                        </select>
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-                <div class="page-action-area">
-                    <cti:button nameKey="start" type="submit" name="start"/>
-                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
-                </div>
-            </form>
-        </c:if>
-        <c:if test="${not empty task}">
-            
-            <cti:url var="newOperationSuccess" value="newOperation">
-                <cti:param name="type" value="SUCCESS"/>
-                <cti:param name="taskId" value="${task.taskId}"/>
-            </cti:url>
-            <cti:url var="newOperationUnsupported" value="newOperation">
-                <cti:param name="type" value="UNSUPPORTED"/>
-                <cti:param name="taskId" value="${task.taskId}"/>
-            </cti:url>
-            
+    <c:if test="${empty task}">
+        <form action="do" method="post">
+            <cti:csrfToken/>
+            <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".progress">
-                    <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".successful">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
-                    <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
-                        <ul class="resultList">
-                            <li>
-                                <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
-                            </li>
-                        </ul>
-                    </cti:classUpdater>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".unsupported">
-                    <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
-                    <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
-                        <ul class="resultList">
-                            <li>
-                                <a href="${newOperationUnsupported}" class="small"><i:inline key=".newOperation"/></a>
-                            </li>
-                        </ul>
-                    </cti:classUpdater>
+                <tags:nameValue2 nameKey=".newType">
+                    <select name="entry">
+                        <c:forEach items="${validEntries}" var="entry">
+                            <option value="${entry.entryID}">${fn:escapeXml(entry.entryText)}</option>
+                        </c:forEach>
+                    </select>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
+            <div class="page-action-area">
+                <cti:button nameKey="start" type="submit" name="start" classes="primary action"/>
+                <cti:button nameKey="cancel" type="submit" name="cancel"/>
+            </div>
+        </form>
+    </c:if>
+    <c:if test="${not empty task}">
         
-            <br>
-            
-            <a href="/stars/operator/inventory/home"><i:inline key=".inventoryHome"/></a>
-        </c:if>
-     </tags:boxContainer2>
+        <cti:url var="newOperationSuccess" value="newOperation">
+            <cti:param name="type" value="SUCCESS"/>
+            <cti:param name="taskId" value="${task.taskId}"/>
+        </cti:url>
+        <cti:url var="newOperationUnsupported" value="newOperation">
+            <cti:param name="type" value="UNSUPPORTED"/>
+            <cti:param name="taskId" value="${task.taskId}"/>
+        </cti:url>
+        
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".progress">
+                <tags:updateableProgressBar totalCount="${task.totalItems}" countKey="INVENTORY_TASK/${task.taskId}/ITEMS_PROCESSED"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".successful">
+                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>
+                <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
+                    <ul class="resultList">
+                        <li>
+                            <a href="${newOperationSuccess}" class="small"><i:inline key=".newOperation"/></a>
+                        </li>
+                    </ul>
+                </cti:classUpdater>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".unsupported">
+                <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>
+                <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
+                    <ul class="resultList">
+                        <li>
+                            <a href="${newOperationUnsupported}" class="small"><i:inline key=".newOperation"/></a>
+                        </li>
+                    </ul>
+                </cti:classUpdater>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        
+    </c:if>
 </cti:standardPage>

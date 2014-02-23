@@ -50,7 +50,7 @@
 		            	<div align="right">Shipment Number:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.shipmentNumber}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShipment.shipmentNumber}"/>'>
 		            </td>
 		        </tr>
 		        <tr> 
@@ -79,9 +79,9 @@
 				            	<div align="right">Serial Number Range:</div>
 				                </td>
 				            <td width="80%"> 
-				                <input type="text" name="serialStart" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>' onchange="setContentChanged(true)">
+				                <input type="text" name="serialStart" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberStart}"/>'>
 				            	<div> to </div>
-				            	<input type="text" name="serialEnd" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>' onchange="setContentChanged(true)">
+				            	<input type="text" name="serialEnd" maxlength="19" size="19" value='<c:out value="${purchaseBean.currentShipment.serialNumberEnd}"/>'>
 				            </td>
 			        	</tr>
 					</c:when>
@@ -102,7 +102,7 @@
 	                  	<div align="right">Date Ordered:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.orderedDate}" type="DATE"/>' onchange="setContentChanged(true)">
+	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.orderedDate}" type="DATE"/>'>
 	                </td>
 	          	</tr>
 		        <tr> 
@@ -110,7 +110,7 @@
 	                  	<div align="right">Ship Date:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.shipDate}" type="DATE"/>' onchange="setContentChanged(true)">
+	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.shipDate}" type="DATE"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -118,7 +118,7 @@
 	                  	<div align="right">Date Received:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.receivedDate}" type="DATE"/>' onchange="setContentChanged(true)">
+	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.receivedDate}" type="DATE"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -142,7 +142,7 @@
 		            	<div align="right">Price Per Unit (Actual):</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="pricePerUnit" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentActualPricePerUnit}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="pricePerUnit" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentActualPricePerUnit}"/>'>
 		            </td>
 		        </tr>
 		        <tr>
@@ -150,7 +150,7 @@
 		            	<div align="right">Sales Tax:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="salesTax" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSalesTax}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="salesTax" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSalesTax}"/>'>
 		            </td>
 		        </tr>
 		        <tr>
@@ -158,7 +158,7 @@
 		            	<div align="right">Shipping Charges:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="shippingCharges" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShippingCharges}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="shippingCharges" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentShippingCharges}"/>'>
 		            </td>
 		        </tr>
 		        <tr>
@@ -166,7 +166,7 @@
 		            	<div align="right">Other Charges:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="otherCharges" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentOtherCharges}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="otherCharges" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentOtherCharges}"/>'>
 		            </td>
 		        </tr>
 		        <tr>
@@ -174,7 +174,7 @@
 		            	<div align="right">TOTAL:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="total" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentTotal}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="total" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentTotal}"/>'>
 		            </td>
 		        </tr>
 		       	<tr>
@@ -184,7 +184,7 @@
 		            	<div align="right">Amount Paid:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="amountPaid" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentAmountPaid}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="amountPaid" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentAmountPaid}"/>'>
 		            </td>
 		        </tr>
 			</table>
@@ -245,7 +245,7 @@
 		
 		function back(form)
 		{
-			if (warnUnsavedChanges()) location.href='DeliverySchedule.jsp'
+			location.href='DeliverySchedule.jsp';
 		}
 				
 	</script>

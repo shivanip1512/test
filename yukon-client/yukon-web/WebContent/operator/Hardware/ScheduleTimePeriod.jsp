@@ -50,7 +50,7 @@
 		            	<div align="right">Period Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentTimePeriod.timePeriodName}"/>' onchange="setContentChanged(true)">
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentTimePeriod.timePeriodName}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -58,7 +58,7 @@
 	                  <div align="right">Quantity:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input type="text" name="quantity" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentTimePeriod.quantity}"/>' onchange="setContentChanged(true)">
+	                  <input type="text" name="quantity" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentTimePeriod.quantity}"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -66,7 +66,7 @@
 	                  	<div align="right">Expected Ship Date:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentTimePeriod.predictedShipDate}" type="DATE"/>' onchange="setContentChanged(true)">
+	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentTimePeriod.predictedShipDate}" type="DATE"/>'>
 	                </td>
 	          	</tr>
 	          	<tr> 
@@ -117,7 +117,7 @@
 		
 		function back(form)
 		{
-			if (warnUnsavedChanges()) location.href='DeliverySchedule.jsp'
+			location.href='DeliverySchedule.jsp';
 		}
 				
 	</script>

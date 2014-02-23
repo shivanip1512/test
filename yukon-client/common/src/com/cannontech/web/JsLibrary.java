@@ -54,15 +54,14 @@ public enum JsLibrary {
 
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
-    YUKON("/JavaScript/yukon/ui/general.js"),
-    YUKON_ALERTS("/JavaScript/yukon/yukon.alerts.js"),
-    YUKON_FAVORITES("/JavaScript/yukon/yukon.favorites.js"),
-    YUKON_CONFIRM("/JavaScript/yukon/ui/confirm_dialog_manager.js"),
-    YUKON_IVVC_ZONE("/JavaScript/yukon.ivvc.zone.js"),
+    YUKON("/JavaScript/yukon.js"),
+    YUKON_ALERTS("/JavaScript/yukon.alerts.js"),
+    YUKON_FAVORITES("/JavaScript/yukon.favorites.js"),
+    YUKON_CONFIRM("/JavaScript/yukon.dialog.confirm.js"),
     YUKON_SURVEYS_LIST("/JavaScript/yukon.surveys.list.js"),
     YUKON_SURVEYS_EDIT("/JavaScript/yukon.surveys.edit.js"),
     YUKON_SURVEYS_OPT_OUT("/JavaScript/yukon.surveys.optOut.js"),
-    YUKON_TIME_FORMATTER("/JavaScript/timeFormatter.js"),
+    YUKON_TIME_FORMATTER("/JavaScript/yukon.format.time.js"),
     
     MODERNIZR("/JavaScript/lib/modernizr/custom.js"),
     

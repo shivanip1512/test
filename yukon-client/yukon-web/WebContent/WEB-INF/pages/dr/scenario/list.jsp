@@ -10,8 +10,8 @@
 <cti:standardPage module="dr" page="scenarioList">
 
     <tags:simpleDialog id="drDialog" />
-    <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
     <cti:url var="baseUrl" value="/dr/scenario/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -59,7 +59,7 @@ function clearFilter() {
                 <cti:msg key="yukon.web.modules.dr.scenarioList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="scenarioList" class="compact-results-table row-highlighting has-actions">
+                <table id="scenarioList" class="compact-results-table has-actions">
                     <thead>
                         <tr>
                             <th><tags:sortLink nameKey="heading.name"
@@ -82,7 +82,7 @@ function clearFilter() {
                                 </td>
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <cti:dataUpdaterCallback
-                                        function="yukon.EstimatedLoad.displaySummaryValue"
+                                        function="yukon.dr.estimatedLoad.displaySummaryValue"
                                         identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                                     <td data-pao="${scenarioId}">
                                         <cti:icon icon="icon-error" classes="dn"/>

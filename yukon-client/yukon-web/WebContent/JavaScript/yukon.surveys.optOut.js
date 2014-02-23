@@ -5,10 +5,10 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.Surveys');
-yukon.namespace('yukon.Surveys.OptOut');
+yukon.namespace('yukon.surveys');
+yukon.namespace('yukon.surveys.OptOut');
 
-yukon.Surveys.OptOut = (function () {
+yukon.surveys.OptOut = (function () {
 
     var mod = {
         init : function () {
@@ -50,5 +50,5 @@ yukon.Surveys.OptOut = (function () {
 }());
 
 jQuery(function () {
-    yukon.Surveys.OptOut.init();
+    yukon.surveys.OptOut.init();
 });

@@ -70,7 +70,7 @@
 		
 		function back(form)
 		{
-			if (warnUnsavedChanges()) location.href='PurchaseTrack.jsp'
+			location.href='PurchaseTrack.jsp';
 		}
 				
 	</script>

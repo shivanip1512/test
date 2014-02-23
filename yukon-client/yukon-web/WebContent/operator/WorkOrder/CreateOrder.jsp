@@ -78,7 +78,7 @@ function changeStatus(form) {
                                 <div align="right">*Work Order #:</div>
                               </td>
                               <td width="248"> 
-                                <input type="text" name="OrderNo" size="14" maxlength="20" onchange="setContentChanged(true)">
+                                <input type="text" name="OrderNo" size="14" maxlength="20">
                               </td>
                             </tr>
                         </cti:checkRolesAndProperties>
@@ -87,7 +87,7 @@ function changeStatus(form) {
                             <div align="right">Account #:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="AcctNo" size="14" onchange="setContentChanged(true)">
+                            <input type="text" name="AcctNo" size="14">
                             (Optional) </td>
                         </tr>						
                         <tr> 
@@ -95,7 +95,7 @@ function changeStatus(form) {
                             <div align="right">Service Type:</div>
                           </td>
                           <td width="248"> 
-                            <select name="ServiceType" onchange="setContentChanged(true)">
+                            <select name="ServiceType">
                               <% StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
                               	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
                               		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
@@ -110,7 +110,7 @@ function changeStatus(form) {
                             <div align="right">Ordered By:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="OrderedBy" size="14" onchange="setContentChanged(true)">
+                            <input type="text" name="OrderedBy" size="14">
                           </td>
                         </tr>
                         <tr> 
@@ -118,7 +118,7 @@ function changeStatus(form) {
                             <div align="right"><cti:getProperty property="ADDTL_ORDER_NUMBER_LABEL" defaultvalue="Addtl Order #"/>:</div>
                           </td>
                           <td width="248"> 
-                            <input type="text" name="AddtlOrderNumber" size="14" onchange="setContentChanged(true)">
+                            <input type="text" name="AddtlOrderNumber" size="14">
                           </td>
                         </tr>
                         <tr> 
@@ -126,7 +126,7 @@ function changeStatus(form) {
                             <div align="right">Current State:</div>
                           </td>
                           <td width="70%"> 
-                            <select name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
+                            <select name="CurrentState" onchange="changeStatus(this.form);">
                             <% StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
                             	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
                             		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
@@ -139,9 +139,9 @@ function changeStatus(form) {
                         <tr> 
                           <td width="30%" align="right" class="TableCell">Event Date:</td>
                           <td width="70%"> 
-                            <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
+                            <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>">
                             - 
-                            <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
+                            <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>">
                           </td>
                         </tr>
                         <tr> 
@@ -149,7 +149,7 @@ function changeStatus(form) {
                             <div align="right">Assign to:</div>
                           </td>
                           <td width="248"> 
-                            <select id="ServComp" name="ServiceCompany" onchange="setContentChanged(true)" disabled>
+                            <select id="ServComp" name="ServiceCompany" disabled>
                               <% for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
 									StarsServiceCompany company = companies.getStarsServiceCompany(i);
 							  %>
@@ -163,7 +163,7 @@ function changeStatus(form) {
                             <div align="right">Notes: </div>
                           </td>
                           <td width="248"> 
-                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"></textarea>
+                            <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell"></textarea>
                           </td>
                         </tr>
                       </table>
@@ -176,7 +176,7 @@ function changeStatus(form) {
                           </td>
                           <td width="211"> 
                             <div align="left"> 
-                              <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                              <input type="reset" name="Reset" value="Reset">
                             </div>
                           </td>
                         </tr>

@@ -1,7 +1,7 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="deviceReconfigStatus">
 
@@ -18,12 +18,10 @@
     </cti:url>
 
         
-    <div class="containerHeader">
+    <div class="note stacked">
         <span class="strong-label-small"><i:inline key=".notesLabel"/></span>
         <span><i:inline key=".notes"/></span>
     </div>
-
-    <br>
     
     <tags:nameValueContainer2>
         
@@ -37,13 +35,11 @@
     
     </tags:nameValueContainer2>
     
-    <ul class="resultList">
+    <ul class="resultList stacked">
         <li>
             <tags:updateableProgressBar totalCount="${task.numberOfItems}" countKey="DEVICE_RECONFIG/${task.inventoryConfigTaskId}/ITEMS_PROCESSED"/>
         </li>
     </ul>
-    
-    <br>
     
     <tags:nameValueContainer2>
         
@@ -77,12 +73,12 @@
         </ul>
     </cti:classUpdater>
     
-    <div class="page-action-area">    
+    <div class="page-action-area">
         <form action="/stars/operator/inventory/inventoryActions/deviceReconfig/delete" method="post">
             <cti:csrfToken/>
             <input type="hidden" value="${task.inventoryConfigTaskId}" name="taskId">
             
-            <cti:button id="deleteButton" nameKey="delete" type="submit"/>
+            <cti:button id="deleteButton" nameKey="delete" type="submit" classes="delete"/>
             <d:confirm on="#deleteButton" nameKey="confirmDelete" argument="${task.taskName}"/>
     
             <cti:url value="/stars/operator/inventory/home" var="inventory_home_url" />

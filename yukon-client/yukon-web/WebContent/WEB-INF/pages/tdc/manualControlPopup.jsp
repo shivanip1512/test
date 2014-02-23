@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
     

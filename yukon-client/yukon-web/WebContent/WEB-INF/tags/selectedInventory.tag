@@ -7,7 +7,7 @@
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="inventoryCollection" required="true" type="java.lang.Object"%>
 
-<cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
+<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
 
 <c:set value="${inventoryCollection.count}" var="count"/>
 

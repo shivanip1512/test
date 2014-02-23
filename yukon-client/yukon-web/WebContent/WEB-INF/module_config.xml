@@ -21,6 +21,12 @@
     <skin name="STANDARD"/>
     <search bean="amrSearchProducer"/>
     <pages>
+      <page name="cre.list" type="BASIC">
+        <link>/common/commandRequestExecutionResults/list</link>
+        <pages>
+          <page name="cre.detail" type="BASIC"/>
+        </pages>
+      </page>
       <page name="meteringStart" type="BASIC">
         <link>/meter/start</link>
         <pages>
@@ -192,7 +198,12 @@
         <link>/group/groupMeterRead/homeGroup</link>
         <pages>
             <page name="groupMeterRead.results" type="BASIC"/>
-            <page name="groupCommand.results" type="BASIC"/>
+            <page name="groupCommand.results" type="BASIC">
+              <link>/group/commander/resultList</link>
+              <pages>
+                <page name="groupCommand.details" type="BASIC"/>
+              </pages>
+            </page>
         </pages>
       </page>
       <page name="deviceGroupUpload" type="BASIC"/>
@@ -601,7 +612,6 @@
 
   <module name="reporting">
     <skin name="STANDARD" />
-    <script file="/JavaScript/change_monitor.js" />
   </module>
 
   <module name="esub">
@@ -1323,7 +1333,7 @@
   <module name="consumer">
     <skin name="LEFT_SIDE_MENU" />
     <css file="/WebConfig/yukon/styles/consumer/StarsConsumerStyles.css" />
-    <script file="/JavaScript/hideReveal.js" />
+    <script file="/JavaScript/yukon.hide.reveal.js" />
     <menu>
       <options>
         <option name="account">

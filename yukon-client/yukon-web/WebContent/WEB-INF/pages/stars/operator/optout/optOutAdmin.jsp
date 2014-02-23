@@ -173,7 +173,7 @@
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:disabledProgramName;paoName:disabledProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">
-                                            <cti:icon nameKey="add" icon="icon-add"/> <cti:msg key=".chooseProgram"/>
+                                            <cti:icon nameKey="add" icon="icon-add"/> <cti:msg2 key=".chooseProgram"/>
                                          </tags:pickerDialog>
                                          
                                          <span id="disabledProgramNameDisplaySpan" style="font-weight:bold;"></span>
@@ -222,7 +222,7 @@
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:cancelOptOutsProgramName;paoName:cancelOptOutsProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">
-                                             <cti:icon nameKey="add" icon="icon-add"/> <cti:msg key=".chooseProgram"/>
+                                             <cti:icon nameKey="add" icon="icon-add"/> <cti:msg2 key=".chooseProgram"/>
                                          </tags:pickerDialog>
                                          
                                          <span id="cancelOptOutsProgramNameDisplaySpan" style="font-weight:bold;"></span>
@@ -297,7 +297,7 @@
                                                              immediateSelectMode="true"
                                                              extraDestinationFields="paoName:disabledCountProgramName;paoName:disabledCountProgramNameDisplaySpan"
                                                              extraArgs="${energyCompanyId}">
-                                            <cti:icon nameKey="add" icon="icon-add"/> <cti:msg key=".chooseProgram"/>
+                                            <cti:icon nameKey="add" icon="icon-add"/> <cti:msg2 key=".chooseProgram"/>
                                          </tags:pickerDialog>
                                          
                                          <span id="disabledCountProgramNameDisplaySpan" style="font-weight:bold;"></span>

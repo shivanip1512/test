@@ -1078,6 +1078,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-read{background-position: -576px -400px}
 .icon-download{background-position: -592px -400px}
 .icon-ping{background-position: -608px -400px}
+.icon-upload{background-position: -624px -400px}
 
 /* 18 pixel icons, icon blocks are 20px by 20px since the stupid sprite builder would 
 not accept 0px as a valid offset */

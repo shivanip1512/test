@@ -76,7 +76,7 @@
                     <%= ServletUtils.getProgramDisplayNames(program)[0] %>
                     </td>
                     <td width="148" class="TableCell" align="left" style="border-left:none">
-                            <select name="ControlOdds" onchange="setContentChanged(true)">
+                            <select name="ControlOdds">
                               <%
 			for (int k = 0; k < oddsList.getStarsSelectionListEntryCount(); k++) {
 				StarsSelectionListEntry entry = oddsList.getStarsSelectionListEntry(k);

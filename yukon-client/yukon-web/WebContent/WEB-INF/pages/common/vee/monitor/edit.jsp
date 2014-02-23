@@ -69,7 +69,9 @@
                     </div>
                     <div>
                         <cti:msg2 key=".rereadThreshold" var="rereadThresholdText"/>
-                        <input type="checkbox" name="reread" class="validation-value" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span> 
+                        <label>
+                            <input type="checkbox" name="reread" class="validation-value" <c:if test="${reread}">checked</c:if>><span>${rereadThresholdText}</span>
+                        </label> 
                         <tags:helpInfoPopup title="${rereadThresholdText}" iconClass="show-on-hover"><i:inline key=".rereadThreshold.helpText"/></tags:helpInfoPopup>
                     </div>
                 </tags:nameValue2>
@@ -89,7 +91,10 @@
                         <tags:helpInfoPopup title="${popupTitle}" iconClass="show-on-hover"><i:inline key=".peakHeightMinimum.helpText"/></tags:helpInfoPopup>
                     </div>
                     <div>
-                        <input type="checkbox" name="setQuestionable" <c:if test="${setQuestionable}">checked</c:if>><span><i:inline key=".setQuestionable"/></span>
+                        <label>
+                            <input type="checkbox" name="setQuestionable" <c:if test="${setQuestionable}">checked</c:if>>
+                            <i:inline key=".setQuestionable"/>
+                        </label>
                         <cti:msg2 key=".setQuestionable" var="popupTitle"/>
                         <tags:helpInfoPopup title="${popupTitle}" iconClass="show-on-hover"><i:inline key=".setQuestionable.helpText"/></tags:helpInfoPopup>
                     </div>        

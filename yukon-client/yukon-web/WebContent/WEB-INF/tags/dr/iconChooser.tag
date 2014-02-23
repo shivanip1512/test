@@ -1,10 +1,11 @@
+<%@ tag body-content="empty" %>
+
 <%@ attribute name="id" required="true" %>
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="icons" required="true" type="java.lang.Object" %>
 <%@ attribute name="selectedIcon" required="true" type="com.cannontech.stars.dr.appliance.model.IconEnum" %>
 <%@ attribute name="applianceCategoryIconMode" type="java.lang.Boolean" %>
 <%@ attribute name="value" %>
-<%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -67,7 +68,7 @@
 
 <script type="text/javascript">
 jQuery( function () {
-    yukon.ui.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
+    yukon.dr.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
         {
             <c:forEach var="icon" varStatus="status" items="${pageScope.icons}">
                 '${icon}' : '${icon.filename}'<c:if test="${!status.last}">,</c:if>

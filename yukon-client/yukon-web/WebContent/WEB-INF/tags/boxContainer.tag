@@ -14,8 +14,8 @@
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/simpleCookies.js"/>
-<cti:includeScript link="/JavaScript/hideReveal.js"/>
+<cti:includeScript link="/JavaScript/yukon.cookies.js"/>
+<cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 
 <cti:uniqueIdentifier prefix="titled-container-" var="thisId"/>
 <c:if test="${!empty pageScope.id}">

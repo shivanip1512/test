@@ -3,8 +3,6 @@
 
 <cti:standardPage title="Invalid Access Error Page" module="blank">
 
-<cti:standardMenu/>
-
 <cti:breadCrumbs>
     <cti:crumbLink url="/capcontrol/tier/areas" title="Home" />
 </cti:breadCrumbs>

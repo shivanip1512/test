@@ -50,13 +50,13 @@
                                <tags:pickerDialog
                                    id="unassignedApplianceCategoryPicker" type="unassignedApplianceCategoryPicker"
                                    linkType="button" nameKey="assignAppCat" multiSelectMode="true" icon="icon-plus-green"
-                                   endAction="yukon.DrFormula.unassignedAppCatPickerClose"/>
+                                   endAction="yukon.dr.formula.unassignedAppCatPickerClose"/>
                            </c:if>
                           <c:if test="${formulaBean.gearFormula}">
                               <tags:pickerDialog
                                   id="unassignedGearPicker" type="unassignedGearPicker"
                                   linkType="button" nameKey="assignGear" multiSelectMode="true" icon="icon-plus-green"
-                                  endAction="yukon.DrFormula.unassignedGearPickerClose"/>
+                                  endAction="yukon.dr.formula.unassignedGearPickerClose"/>
                           </c:if>
                        </div>
                 </cti:displayForPageEditModes>
@@ -103,7 +103,7 @@
     id="pointPicker"
     type="analogPointPicker"
     linkType="selection"
-    selectionProperty="pointName" endAction="yukon.DrFormula.pickerClose" /></div>
+    selectionProperty="pointName" endAction="yukon.dr.formula.pickerClose" /></div>
 
 <c:set var="tableIndex" value="-1"/>
 <c:set var="entryIndex" value="-1"/>

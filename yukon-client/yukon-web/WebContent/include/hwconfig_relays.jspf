@@ -60,19 +60,19 @@ Required variables:
         <tr align="center"> 
           <td width="30" class="HeaderCell"><%= i+1 %></td>
           <td width="<%= hasProgramSplinter?65:130 %>"> 
-            <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
+            <input type="text" name="ColdLoadPickup" value="<%= coldLoadPickup[i] %>" size="4" maxlength="10">
           </td>
 <% if (hasTamperDetect && i < 2) { %>
           <td width="65"> 
-            <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
+            <input type="text" name="TamperDetect" value="<%= tamperDetect[i] %>" size="4" maxlength="10">
           </td>
 <% } %>
 <% if (hasProgramSplinter) { %>
           <td width="65"> 
-            <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
+            <input type="text" name="XCOM_Program" value="<%= program[i] %>" size="4" maxlength="10">
           </td>
           <td width="65"> 
-            <input type="text" name="XCOM_Splinter" value="<%= splinter[i] %>" size="4" maxlength="10" onchange="setContentChanged(true)">
+            <input type="text" name="XCOM_Splinter" value="<%= splinter[i] %>" size="4" maxlength="10">
           </td>
 <% } %>
         </tr>

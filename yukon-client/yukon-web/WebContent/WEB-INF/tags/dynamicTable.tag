@@ -16,7 +16,7 @@
 <%@ attribute name="noBlockOnAdd" description="Set to true to prevent page blocking when the add button is clicked." %>
 <%@ attribute name="disableAddButton" description="Add button can be disabled if necessary, as when the table is rendered but not yet ready to have rows added." %>
 
-<cti:includeScript link="/JavaScript/dynamicTable.js"/>
+<cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
 <c:if test="${empty pageScope.addItemParameters}">
     <c:set var="addItemParameters" value="null"/>
 </c:if>
@@ -50,5 +50,5 @@ ${id} = new DynamicTable('${id}', ${fn:length(items)}, ${addItemParameters});
 </div>
 
 <script type="text/javascript">
-yukon.ui.aux.callAfterMainWindowLoad(${id}.init.bind(${id}));
+yukon.ui.util.callAfterMainWindowLoad(${id}.init.bind(${id}));
 </script>

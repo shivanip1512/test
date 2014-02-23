@@ -5,15 +5,10 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.UserPreferences');
+yukon.namespace('yukon.userProfile');
 
-yukon.UserPreferences = (function () {
-    /**
-     * Singleton that manages the javascript in User Preferences
-     * 
-     * @class User Preferences javascript
-     * @requires jQuery 1.6+
-     */
+yukon.userProfile = (function () {
+    
     /* PRIVATE VARIABLES AND METHODS */
     var _get_pref_button_with_same_option = function(jqueryElement, event) {
             var btn_sameOption = jqueryElement.closest("td").find("button:not(.f-pref-default)[data-value="+ jQuery(event.currentTarget).attr('data-value') +"]");
@@ -350,5 +345,5 @@ yukon.UserPreferences = (function () {
 })();
 
 jQuery(function() {
-    yukon.UserPreferences.init();
+    yukon.userProfile.init();
 });

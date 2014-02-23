@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -340,13 +342,8 @@ jQuery(function() {
     </div>
 
     <c:if test="${not empty allFormats}">
-        <tags:boxContainer2 nameKey="preview" styleClass="stacked clear">
-            <div class="code">
-            <!-- Please do not format this code -->
-<pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}
-</c:forEach></pre>
-            </div>
-        </tags:boxContainer2>
+        <h3><i:inline key=".preview.title"/></h3>
+        <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}</c:forEach></pre>
     </c:if>
 
 </cti:standardPage>

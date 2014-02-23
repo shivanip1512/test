@@ -25,10 +25,10 @@
             <td class="vab">
                 <div class="pa T0">
 	                <div style="padding-bottom: 5px">
-                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-up" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1);"/>
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-up" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1);"/>
 	                </div>
 	                <div>
-                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-down" onclick="yukon.ui.aux.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1);"/>
+                        <cti:button renderMode="buttonImage" icon="icon-bullet-go-down" onclick="yukon.ui.util.yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1);"/>
 	                </div>
                 </div>
                 <div style="padding-top: 55px">

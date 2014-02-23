@@ -65,12 +65,11 @@
                                 <cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
                             </cti:url>
                             <cti:button nameKey="clear" href="${clearOutagesGroupUrl}" icon="icon-folder-delete" classes="middle"/>
-                            <cti:url var="otherActionsUrl" value="/bulk/collectionActions">
+                            <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
                             </cti:url>
-                            <cti:msg2 key=".options.otherActions" var="actionsText"/>
-                            <cti:button label="${actionsText}" href="${otherActionsUrl}" icon="icon-cog" classes="right"/>
+                            <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go" classes="right"/>
                         </div>
                     </tags:nameValue2>
                     

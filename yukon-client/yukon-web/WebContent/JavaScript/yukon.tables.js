@@ -5,9 +5,9 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.Tables');
+yukon.namespace('yukon.tables');
 
-yukon.Tables = (function () {
+yukon.tables = (function () {
     var mod;
 
     mod = {

@@ -4,7 +4,7 @@
 <cti:url var="url" value="/macsscheduler/schedules/innerView"/>
 
 <cti:standardPage module="tools" page="scripts">
-    <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
+    <cti:includeScript link="/JavaScript/yukon.ami.macs.js" />
     <cti:url var="baseUrl" value="${url}">
         <cti:param name="sortBy" value="${param.sortBy}" />
         <cti:param name="descending" value="${param.descending}" />

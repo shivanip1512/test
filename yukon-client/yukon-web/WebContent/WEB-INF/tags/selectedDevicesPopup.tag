@@ -13,7 +13,7 @@
 <cti:default var="icon" value="icon-magnifier"/>
 <cti:default var="type" value="link"/>
 
-<cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
+<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
 
 <cti:uniqueIdentifier var="id" prefix="selectedDevicesPopup_"/>
 

@@ -1,15 +1,15 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
 <cti:standardPage page="bulk.archivedValueExporterScheduleSetup" module="tools">
     
     <form:form id="scheduleForm" commandName="exportData" action="doSchedule">
-        <tags:boxContainer2 nameKey="adeParameters">
+        <tags:sectionContainer2 nameKey="adeParameters">
             <tags:nameValueContainer2 id="adeParametersContainer">
                 <c:if test="${not empty jobId}">
                     <input type="hidden" name="jobId" value="${jobId}">
@@ -40,16 +40,16 @@
                     <tags:dataRange value="${dataRange}"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
-        </tags:boxContainer2>
+        </tags:sectionContainer2>
         
-        <tags:boxContainer2 nameKey="exportParameters">
+        <tags:sectionContainer2 nameKey="exportParameters">
             <tags:nameValueContainer2 id="exportParametersContainer">
                 <tags:scheduledFileExportInputs cronExpressionTagState="${cronExpressionTagState}" exportData="${exportData}" />
             </tags:nameValueContainer2>
-        </tags:boxContainer2>
+        </tags:sectionContainer2>
         
         <div class="page-action-area">
-            <cti:button nameKey="submit" type="submit" classes="action primary"/>        
+            <cti:button nameKey="submit" type="submit" classes="action primary"/>
             <cti:button nameKey="cancel" href="view"/>
         </div>
     </form:form>

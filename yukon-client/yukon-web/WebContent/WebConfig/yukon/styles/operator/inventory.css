@@ -13,10 +13,6 @@ table.selectionTable td.remove-column {
     width:100px;
 }
 
-div.containerHeader {
-    font-size: 11px;
-}
-
 td.actionCell {
     vertical-align: top;
     padding-right: 10px;
@@ -34,20 +30,6 @@ table.inventoryOperationsLayout td.last {
 }
 
 table.inventoryOperationsLayout td.last {
-    padding-left: 20px;
-}
-
-table.deviceReconfigLayout {
-    width: 100%;
-}
-
-table.deviceReconfigLayout td.first,
-table.deviceReconfigLayout td.last {
-    vertical-align: top;
-    width: 50%;
-}
-
-table.deviceReconfigLayout td.last {
     padding-left: 20px;
 }
 

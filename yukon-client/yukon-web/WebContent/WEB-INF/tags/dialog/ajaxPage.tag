@@ -15,7 +15,7 @@
 <%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
 <%@ attribute name="title" description="Dialog Title--use this if you need a dynamic title." %>
 
-<cti:includeScript link="/JavaScript/ajaxDialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 
 <c:if test="${empty pageScope.id}">
     <c:set var="id" value="ajaxDialog" />

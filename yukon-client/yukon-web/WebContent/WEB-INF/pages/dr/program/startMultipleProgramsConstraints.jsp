@@ -1,11 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <cti:msgScope paths="modules.dr.program.startMultiplePrograms">
 
@@ -13,7 +12,7 @@
 overrideAllChecked = function() {
     allChecked = document.getElementById('overrideAllConstraints').checked;
     for (index = 0; index < ${numProgramsToStart}; index++) {
-    	var checkbox = document.getElementById('programStartInfoOverride' + index);
+        var checkbox = document.getElementById('programStartInfoOverride' + index);
         if (checkbox) checkbox.checked = allChecked;
     }
 }
@@ -21,7 +20,7 @@ overrideAllChecked = function() {
 updateAllOverridesChecked = function() {
     allChecked = true;
     for (index = 0; index < ${numProgramsToStart}; index++) {
-    	var checkbox = document.getElementById('programStartInfoOverride' + index);
+        var checkbox = document.getElementById('programStartInfoOverride' + index);
         if (checkbox) {
             allChecked &= checkbox.checked;
             if (!allChecked) break;
@@ -32,7 +31,7 @@ updateAllOverridesChecked = function() {
 
 singleOverrideChecked = function(boxChecked) {
     if (document.getElementById(boxChecked).checked) {
-    	updateAllOverridesChecked();
+        updateAllOverridesChecked();
     } else {
         document.getElementById('overrideAllConstraints').checked = false;
     }
@@ -73,62 +72,62 @@ singleOverrideChecked = function(boxChecked) {
 
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
-    <div class="scroll-medium">
-    <table class="compact-results-table" id="startMultipleProgramsOverridePrograms">
-        <thead>
-	        <tr>
-	            <c:if test="${constraintsViolated}">
-	                <th><cti:msg2 key=".overrideProgramName"/></th>
-	                <th><cti:msg2 key=".violations"/></th>
-	            </c:if>
-	            <c:if test="${!constraintsViolated}">
-	                <th><cti:msg2 key=".programName"/></th>
-	            </c:if>
-	        </tr>
-	    </thead>
-	    <tfoot></tfoot>
-	    <tbody>
-        <c:set var="index" value="0"/>
-	        <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">
-	            <c:if test="${backingBean.programStartInfo[status.index].startProgram}">
-	                <c:set var="program" value="${programsByProgramId[backingBean.programStartInfo[status.index].programId]}"/>
-	                <c:set var="violationsForProgram" value="${violationsByProgramId[backingBean.programStartInfo[status.index].programId]}"/>
-	                <tr>
-	                    <c:if test="${constraintsViolated}">
-	                        <td class="override wsnw">
-	                            <c:if test="${!empty violationsForProgram && overrideAllowed}">
-	                                <form:checkbox
-	                                   id="programStartInfoOverride${index}"
-	                                   path="programStartInfo[${status.index}].overrideConstraints"
-	                                   onclick="singleOverrideChecked(this)"/>
-	                            </c:if>
-	                            <label for="programStartInfoOverride${index}">
-	                            	<spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody>
-	                            </label>
-	                        </td>
-	                        <td class="violations">
-	                            <c:if test="${empty violationsForProgram}">
-	                                <cti:msg2 key=".noConstraintsViolatedForProgram"/>
-	                            </c:if>
-	                            <c:if test="${!empty violationsForProgram}">
-	                                    <ul>
-	                                        <c:forEach var="violation" items="${violationsForProgram.constraintContainers}">
-	                                            <li><spring:escapeBody htmlEscape="true"><cti:msg2 key="${violation.constraintTemplate}"/></spring:escapeBody></li>
-	                                        </c:forEach>
-	                                    </ul>
-	                            </c:if>
-	                        </td>
-	                    </c:if>
-	                    <c:if test="${!constraintsViolated}">
-	                        <td><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></td>
-	                    </c:if>
-	                </tr>
-	                <c:set var="index" value="${index + 1}"/>
-	            </c:if>
-	        </c:forEach>
-        </tbody>
-    </table>
-    </div>
+        <div class="scroll-medium">
+            <table class="compact-results-table dashed" id="startMultipleProgramsOverridePrograms">
+                <thead>
+                    <tr>
+                        <c:if test="${constraintsViolated}">
+                            <th><cti:msg2 key=".overrideProgramName"/></th>
+                            <th><cti:msg2 key=".violations"/></th>
+                        </c:if>
+                        <c:if test="${!constraintsViolated}">
+                            <th><cti:msg2 key=".programName"/></th>
+                        </c:if>
+                    </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                <c:set var="index" value="0"/>
+                    <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">
+                        <c:if test="${backingBean.programStartInfo[status.index].startProgram}">
+                            <c:set var="program" value="${programsByProgramId[backingBean.programStartInfo[status.index].programId]}"/>
+                            <c:set var="violationsForProgram" value="${violationsByProgramId[backingBean.programStartInfo[status.index].programId]}"/>
+                            <tr>
+                                <c:if test="${constraintsViolated}">
+                                    <td class="override wsnw">
+                                        <c:if test="${!empty violationsForProgram && overrideAllowed}">
+                                            <form:checkbox
+                                               id="programStartInfoOverride${index}"
+                                               path="programStartInfo[${status.index}].overrideConstraints"
+                                               onclick="singleOverrideChecked(this)"/>
+                                        </c:if>
+                                        <label for="programStartInfoOverride${index}">
+                                            <spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody>
+                                        </label>
+                                    </td>
+                                    <td class="violations">
+                                        <c:if test="${empty violationsForProgram}">
+                                            <cti:msg2 key=".noConstraintsViolatedForProgram"/>
+                                        </c:if>
+                                        <c:if test="${!empty violationsForProgram}">
+                                                <ul>
+                                                    <c:forEach var="violation" items="${violationsForProgram.constraintContainers}">
+                                                        <li><spring:escapeBody htmlEscape="true"><cti:msg2 key="${violation.constraintTemplate}"/></spring:escapeBody></li>
+                                                    </c:forEach>
+                                                </ul>
+                                        </c:if>
+                                    </td>
+                                </c:if>
+                                <c:if test="${!constraintsViolated}">
+                                    <td><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></td>
+                                </c:if>
+                            </tr>
+                            <c:set var="index" value="${index + 1}"/>
+                        </c:if>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </tags:sectionContainer>
 
     <c:forEach var="programStartInfo" varStatus="status" items="${backingBean.programStartInfo}">

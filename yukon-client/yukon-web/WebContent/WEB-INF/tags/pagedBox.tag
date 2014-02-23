@@ -17,7 +17,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:includeScript link="/JavaScript/simpleCookies.js" />
+<cti:includeScript link="/JavaScript/yukon.cookies.js" />
 
 <div class="titled-container paged-container <c:if test="${!empty pageScope.styleClass}">${pageScope.styleClass}</c:if>" <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
     <div class="title-bar clearfix">

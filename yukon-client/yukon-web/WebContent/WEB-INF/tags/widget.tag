@@ -11,9 +11,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/widgetObject.js"/>
-<cti:includeScript link="/JavaScript/hideReveal.js"/>
+<cti:includeScript link="/JavaScript/yukon.dialog.js"/>
+<cti:includeScript link="/JavaScript/yukon.widget.js"/>
+<cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
 
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
@@ -30,7 +30,7 @@
 <c:set target="${widgetParameters}" property="jsWidget" value="jsobj_${widgetParameters.widgetId}"/>
 
 <script type="text/javascript">
-    var ${widgetParameters.jsWidget} = new JsWidgetObject("${beanInst.shortName}", ${cti:jsonString(widgetParameters)});
+    var ${widgetParameters.jsWidget} = new YukonWidget("${beanInst.shortName}", ${cti:jsonString(widgetParameters)});
     <c:if test="${beanInst.lazyLoad}">
         jQuery(function() {${widgetParameters.jsWidget}.render()});
     </c:if>

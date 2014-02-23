@@ -1,7 +1,7 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="bulk.fdrTranslationManagement">
     
@@ -60,7 +60,7 @@
                             <input type="file" name="importFile">
                         </tags:nameValue>
                         <tags:nameValue name="">
-                            <input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key=".ignoreInvalidText"/>
+                            <label><input type="checkbox" name="ignoreInvalidColumns">&nbsp;<i:inline key=".ignoreInvalidText"/></label>
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <div class="action-area">
@@ -75,7 +75,7 @@
             <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report" class="clearfix">
                 <cti:csrfToken/>
                 <div class="action-area">
-                  <cti:button type="submit" nameKey="download" icon="icon-bullet-go-down"/>
+                  <cti:button type="submit" nameKey="download" icon="icon-download"/>
                   <label>
                     <select name="reportInterface">
                         <option value="AllInterfaces"><i:inline key=".allInterfaces"/></option>
@@ -95,12 +95,15 @@
             </div>
             <i:inline key=".defaultColumnsText"/><br>
             
-            <div class="stacked">
-                <table class="results-table detail">
+            <table class="results-table detail stacked">
+                <thead>
                     <tr>
                         <th><i:inline key=".defaultColumnsHeader"/></th>
                         <th><i:inline key=".defaultColumnsDescriptionHeader"/></th>
                     </tr>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
                     <tr>
                         <td class="strong-label-small">
                             ACTION
@@ -142,39 +145,46 @@
                                 <c:forEach var="direction" varStatus="status" items="${interfaceType.supportedDirections}">"${direction.value}"<c:if test="${!status.last}">,&nbsp;</c:if></c:forEach>
                             </td>
                         </tr>
-                    </c:forEach>   
-                </table>
-            </div>
+                    </c:forEach>
+                </tbody>
+            </table>
             <div class="stacked">
                 <i:inline key=".interfaceColumnsText"/>
             </div>
-            <i:inline key=".interfaceColumnsLabel"/>
-            <select id="interfaceColumnSelector">
-                <c:forEach var="interfaceType" items="${interfaceTypes}">
-                    <option value="${interfaceType}"><i:inline key="${interfaceType}"/></option>
-                </c:forEach>
-            </select>
+            <div class="with-form-controls stacked">
+                <i:inline key=".interfaceColumnsLabel"/>
+                <select id="interfaceColumnSelector">
+                    <c:forEach var="interfaceType" items="${interfaceTypes}">
+                        <option value="${interfaceType}"><i:inline key="${interfaceType}"/></option>
+                    </c:forEach>
+                </select>
+            </div>
             <div class="stacked">
             <table class="results-table detail">
                 <c:forEach var="displayableInterface" items="${displayableInterfaces}">
-                    <tr class="interface_${displayableInterface.name}" style="display: none;">
-                        <th>
-                            ${displayableInterface.name}&nbsp;<i:inline key=".interfaceColumnsHeader"/>
-                        </th>
-                        <th>
-                            <i:inline key=".defaultColumnsDescriptionHeader"/>
-                        </th>
-                    </tr>
-                    <c:forEach var="colEntry" items="${displayableInterface.columnsAndDescriptions}">
-                        <tr class="interface_${displayableInterface.name}" style="display:none;">
-                            <td class="strong-label-small">
-                                ${colEntry.key}
-                            </td>
-                            <td>
-                                ${colEntry.value}
-                            </td>
+                    <thead>
+                        <tr class="interface_${displayableInterface.name}" style="display: none;">
+                            <th>
+                                ${displayableInterface.name}&nbsp;<i:inline key=".interfaceColumnsHeader"/>
+                            </th>
+                            <th>
+                                <i:inline key=".defaultColumnsDescriptionHeader"/>
+                            </th>
                         </tr>
-                    </c:forEach>
+                    </thead>
+                    <tfoot></tfoot>
+                    <tbody>
+                        <c:forEach var="colEntry" items="${displayableInterface.columnsAndDescriptions}">
+                            <tr class="interface_${displayableInterface.name}" style="display:none;">
+                                <td class="strong-label-small">
+                                    ${colEntry.key}
+                                </td>
+                                <td>
+                                    ${colEntry.value}
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
                 </c:forEach>
             </table>
             </div>

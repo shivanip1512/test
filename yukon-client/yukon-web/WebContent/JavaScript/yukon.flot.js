@@ -1,14 +1,14 @@
 /**
  * Singleton that manages the yukon's FlotCharts implementation
  * 
- * @class yukon.Flot javascript
+ * @class yukon.flot javascript
  * @requires jQuery 1.8.3+
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.Flot');
+yukon.namespace('yukon.flot');
 
-yukon.Flot = (function () {
+yukon.flot = (function () {
     
     var _initialized = false,
         /* selectors */
@@ -51,18 +51,18 @@ yukon.Flot = (function () {
                 obj,
                 o;
             /* before plot hook */
-            if (typeof yukonFlotMod.charts[chartId].methods.beforePlotGraph !== 'undefined') {
-                yukonFlotMod.charts[chartId].methods.beforePlotGraph();
+            if (typeof mod.charts[chartId].methods.beforePlotGraph !== 'undefined') {
+                mod.charts[chartId].methods.beforePlotGraph();
             }
             
             /* setup our data, labels, and tool tips */
-            data = yukonFlotMod.charts[chartId].methods.getFilteredGraphData(chartId);
+            data = mod.charts[chartId].methods.getFilteredGraphData(chartId);
             
             /* make a copy of data b/c setupGraph messes with it */
             data = jQuery.extend(true, [], data);
             _setupGraph(chartId, data);
             
-            graph_options = yukonFlotMod.charts[chartId].options;
+            graph_options = mod.charts[chartId].options;
             if (typeof params !== 'undefined' && typeof params.type !== 'undefined') {
                 graph_options = jQuery.extend(true, {}, graph_options, _defaults.options_type_map[params.type]); 
             }
@@ -71,26 +71,26 @@ yukon.Flot = (function () {
             }
 
             /* if the graph is being updated via ajax we want to use the same zoom level */
-            if (yukonFlotMod.charts[chartId].ranges_xaxis_from) {
+            if (mod.charts[chartId].ranges_xaxis_from) {
                 graph_options = jQuery.extend(true, {}, graph_options, {
-                    xaxis: { min: yukonFlotMod.charts[chartId].ranges_xaxis_from, max: yukonFlotMod.charts[chartId].ranges_xaxis_to }
+                    xaxis: { min: mod.charts[chartId].ranges_xaxis_from, max: mod.charts[chartId].ranges_xaxis_to }
                 });
             }
 
             chartElement = jQuery(document.getElementById(chartId));
             chartElement.empty();
             chart = jQuery.plot(chartElement, data, graph_options);
-            yukonFlotMod.charts[chartId].chart = chart;
+            mod.charts[chartId].chart = chart;
             
             /* after plot hook */
-            if (typeof yukonFlotMod.charts[chartId].methods.afterPlotGraph !== 'undefined') {
-                yukonFlotMod.charts[chartId].methods.afterPlotGraph();
+            if (typeof mod.charts[chartId].methods.afterPlotGraph !== 'undefined') {
+                mod.charts[chartId].methods.afterPlotGraph();
             }
             
             // add graph labels
             if (chart.getData().length === 0) return;
-            for (key in yukonFlotMod.charts[chartId].labels) {
-                obj = yukonFlotMod.charts[chartId].labels[key];
+            for (key in mod.charts[chartId].labels) {
+                obj = mod.charts[chartId].labels[key];
                 o = chart.pointOffset({ x: obj.x, y: obj.y,});
                 // we just append it to the chartContainer which Flot already uses for positioning
                 chartElement.append('<div style="position:absolute;left:' + (o.left - 10) +
@@ -157,9 +157,9 @@ yukon.Flot = (function () {
                     labels[data[i].title] = label_data;
                 }
             }
-            yukonFlotMod.charts[chartId].tooltipMap = tooltipMap;
-            yukonFlotMod.charts[chartId].labels = labels;
-            yukonFlotMod.charts[chartId].data = data;
+            mod.charts[chartId].tooltipMap = tooltipMap;
+            mod.charts[chartId].labels = labels;
+            mod.charts[chartId].data = data;
         },
         _getChartIdFromElement = function(elem) {
             return jQuery(elem).closest(_selector_chart_container).find(_selector_chart).attr("id");
@@ -179,7 +179,7 @@ yukon.Flot = (function () {
             return x + "" + y;
         },
         _getFilteredGraphData = function(chartId) {
-            return yukonFlotMod.charts[chartId].data_with_meta;
+            return mod.charts[chartId].data_with_meta;
         },
         /* --------------- */
         /* event handlers  */
@@ -188,9 +188,9 @@ yukon.Flot = (function () {
             var chartId;
             jQuery(_selector_show_all).show();
             chartId = this.id;
-            yukonFlotMod.charts[chartId].ranges_xaxis_from = ranges.xaxis.from; 
-            yukonFlotMod.charts[chartId].ranges_xaxis_to = ranges.xaxis.to; 
-            yukonFlotMod.charts[chartId].methods.plotGraph(chartId, {
+            mod.charts[chartId].ranges_xaxis_from = ranges.xaxis.from; 
+            mod.charts[chartId].ranges_xaxis_to = ranges.xaxis.to; 
+            mod.charts[chartId].methods.plotGraph(chartId, {
                 options: {
                     xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to}
                 }
@@ -200,17 +200,17 @@ yukon.Flot = (function () {
             var chartId;
             jQuery(this).closest(_selector_chart_container).find(_selector_show_all).hide();
             chartId = this.id;
-            yukonFlotMod.charts[chartId].ranges_xaxis_from = null; 
-            yukonFlotMod.charts[chartId].ranges_xaxis_to = null;
-            yukonFlotMod.charts[chartId].methods.plotGraph(chartId);
+            mod.charts[chartId].ranges_xaxis_from = null; 
+            mod.charts[chartId].ranges_xaxis_to = null;
+            mod.charts[chartId].methods.plotGraph(chartId);
         },
         _show_all_clicked = function() {
             var chartId;
             jQuery(this).hide();
             chartId = _getChartIdFromElement(this);
-            yukonFlotMod.charts[chartId].ranges_xaxis_from = null; 
-            yukonFlotMod.charts[chartId].ranges_xaxis_to = null;
-            yukonFlotMod.charts[chartId].methods.plotGraph(chartId);
+            mod.charts[chartId].ranges_xaxis_from = null; 
+            mod.charts[chartId].ranges_xaxis_to = null;
+            mod.charts[chartId].methods.plotGraph(chartId);
         },
         _plot_hover = function(event, pos, item) {
             var tt_key,
@@ -246,15 +246,16 @@ yukon.Flot = (function () {
                     jQuery(_selector_tooltip).remove();
                 }
                 chartId = _getChartIdFromElement(this);
-                _showTooltip(pos.pageX, pos.pageY, yukonFlotMod.charts[chartId].tooltipMap[tt_key]);
+                _showTooltip(pos.pageX, pos.pageY, mod.charts[chartId].tooltipMap[tt_key]);
             }
             else {
                 jQuery(_selector_tooltip).remove();
                 _previousHoverPoint = [];
             }
         },
-        yukonFlotMod;
-    yukonFlotMod = {
+        mod;
+        
+    mod = {
 
         charts: {},
 
@@ -328,7 +329,7 @@ yukon.Flot = (function () {
 
         /**
          * Add a flotChart. This method simply adds the options, methods, and data to the Singleton.
-         * Calling plotGraph (yukon.Flot.charts[chartId].methods.plotGraph(chartId)) is still required for the chart to show up
+         * Calling plotGraph (yukon.flot.charts[chartId].methods.plotGraph(chartId)) is still required for the chart to show up
          * 
          * Required parameters: chartId, type (bar, line, pie), data
          */
@@ -344,10 +345,10 @@ yukon.Flot = (function () {
             if (typeof data === 'undefined') throw "no data specified";
 
             /* initialization */
-            yukonFlotMod.charts[chartId] = {};
-            yukonFlotMod.charts[chartId].options = _getDefaultMergedOptions(type, options);
-            yukonFlotMod.charts[chartId].methods = jQuery.extend(true, {}, _defaults.methods, methods);
-            yukonFlotMod.charts[chartId].data_with_meta = data;
+            mod.charts[chartId] = {};
+            mod.charts[chartId].options = _getDefaultMergedOptions(type, options);
+            mod.charts[chartId].methods = jQuery.extend(true, {}, _defaults.methods, methods);
+            mod.charts[chartId].data_with_meta = data;
         },
 
         /**
@@ -364,13 +365,13 @@ yukon.Flot = (function () {
             //assumes data is of type Hash
             return function(data) {
                 newLargestTime = data.largestTime;
-                if (typeof yukonFlotMod.charts[chartId].mostRecentPointTime === 'undefined') {
-                    yukonFlotMod.charts[chartId].mostRecentPointTime = newLargestTime;
+                if (typeof mod.charts[chartId].mostRecentPointTime === 'undefined') {
+                    mod.charts[chartId].mostRecentPointTime = newLargestTime;
                 }
-                if (yukonFlotMod.charts[chartId].mostRecentPointTime > 0 &&
-                    newLargestTime > yukonFlotMod.charts[chartId].mostRecentPointTime) {
-                    yukonFlotMod.charts[chartId].mostRecentPointTime = newLargestTime;
-                    yukonFlotMod.reloadFlotChart(params);
+                if (mod.charts[chartId].mostRecentPointTime > 0 &&
+                    newLargestTime > mod.charts[chartId].mostRecentPointTime) {
+                    mod.charts[chartId].mostRecentPointTime = newLargestTime;
+                    mod.reloadFlotChart(params);
                 }
             };
         },
@@ -388,9 +389,9 @@ yukon.Flot = (function () {
             _timeoutArgs = params;
             clearTimeout(_timeout);
             _timeout = setTimeout(function () {
-                yukonFlotMod.reloadChartOnInterval(_timeoutArgs);
+                mod.reloadChartOnInterval(_timeoutArgs);
             }, params.reloadInterval);
-            yukonFlotMod.reloadFlotChart({chartId: params.chartId, dataUrl: params.dataUrl});
+            mod.reloadFlotChart({chartId: params.chartId, dataUrl: params.dataUrl});
         },
         /**
          * Reload a chart. If the chart hasn't been added yet, then it is added
@@ -404,8 +405,8 @@ yukon.Flot = (function () {
                 url: params.dataUrl,
                 success: function(data) {
                     /* if the chart hasn't been added yet, add it */
-                    if (typeof yukonFlotMod.charts[params.chartId] === 'undefined') {
-                        yukonFlotMod.addChart({
+                    if (typeof mod.charts[params.chartId] === 'undefined') {
+                        mod.addChart({
                             chartId : params.chartId,
                             type : data.type,
                             options : data.options,
@@ -413,16 +414,16 @@ yukon.Flot = (function () {
                             data : data.datas
                         });
                     }
-                    yukonFlotMod.charts[params.chartId].options = _getDefaultMergedOptions(data.type, data.options);
-                    yukonFlotMod.charts[params.chartId].data_with_meta = data.datas;
-                    yukonFlotMod.charts[params.chartId].methods.plotGraph(params.chartId);
+                    mod.charts[params.chartId].options = _getDefaultMergedOptions(data.type, data.options);
+                    mod.charts[params.chartId].data_with_meta = data.datas;
+                    mod.charts[params.chartId].methods.plotGraph(params.chartId);
                 }
             });
         }
     };
-    return yukonFlotMod;
+    return mod;
 }());
 
 jQuery(function() {
-    yukon.Flot._init();
+    yukon.flot._init();
 });

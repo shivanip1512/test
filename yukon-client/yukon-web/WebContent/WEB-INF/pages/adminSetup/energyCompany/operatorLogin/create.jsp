@@ -31,7 +31,7 @@
         };
 
         function showPassword() {
-            var yukUiAux = yukon.ui.aux;
+            var yukUiAux = yukon.ui.util;
             if(jQuery("#showPasswordCheckbox").is(":checked")) {
                 yukUiAux.changeInputType('password1', 'text');
                 yukUiAux.changeInputType('password2', 'text');

@@ -16,7 +16,7 @@
 <%@ attribute name="showSelectedDevicesIcon" %>
 <%@ attribute name="submitCallback" description="optional additional function to call when group is picked" %>
 
-<cti:includeScript link="/JavaScript/showSelectedDevices.js"/>
+<cti:includeScript link="/JavaScript/yukon.device.collection.js"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="deviceGroupNameSelectorTag_"/>
 

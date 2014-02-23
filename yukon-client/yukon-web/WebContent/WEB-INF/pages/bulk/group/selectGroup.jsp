@@ -1,5 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
@@ -28,7 +28,6 @@ function validateGroupIsSelected(btn, alertText) {
         alert(alertText);
         return false;
     }
-    btn.disabled = true;
     document.getElementById('selectGroupForm').submit();
 }
 </script>
@@ -52,9 +51,7 @@ function validateGroupIsSelected(btn, alertText) {
                                                  includeControlBar="true"/>
                             
             <div class="page-action-area">
-                <button name="addRemoveButton" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
-                    <span class="b-label">${buttonText}</span>
-                </button>
+                <cti:button label="${buttonText}" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');"/>
             </div>
         </form>
     

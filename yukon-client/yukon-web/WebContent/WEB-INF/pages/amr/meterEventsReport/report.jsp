@@ -12,7 +12,7 @@
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
-    <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
+    <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
 
     <script type="text/javascript">
         function openSchedulePopup() {

@@ -8,7 +8,7 @@
 
 <cti:standardPage module="tools" page="bulk.updatePointsHome">
 
-<cti:includeScript link="/JavaScript/addRemovePointsBulkOperation.js"/>
+<cti:includeScript link="/JavaScript/yukon.bulk.point.js"/>
 <script type="text/javascript">
 
 jQuery(function(){

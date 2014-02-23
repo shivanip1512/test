@@ -14,8 +14,8 @@
 <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
 <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
 <cti:includeScript link="${timeFormatter}"/>
-<cti:includeScript link="/JavaScript/temperature.js"/>
-<cti:includeScript link="/JavaScript/thermostatScheduleEditor.js"/>
+<cti:includeScript link="/JavaScript/yukon.temperature.js"/>
+<cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
 <cti:includeScript link="JSON"/>
 
 <cti:flashScopeMessages/>

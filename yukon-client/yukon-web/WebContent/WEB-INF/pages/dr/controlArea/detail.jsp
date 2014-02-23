@@ -6,8 +6,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dr" page="controlAreaDetail">
-    <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -16,8 +16,8 @@
     <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
     <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
-    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
     
     <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
@@ -26,7 +26,7 @@
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${controlAreaId}"/>
-    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
 
     <div class="column-12-12">
         <div class="column one">
@@ -51,7 +51,7 @@
                     </cti:checkRolesAndProperties>
                     <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                         <cti:dataUpdaterCallback
-                            function="yukon.EstimatedLoad.displaySummaryValue"
+                            function="yukon.dr.estimatedLoad.displaySummaryValue"
                             value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                         <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                             <div data-pao="${controlAreaId}">

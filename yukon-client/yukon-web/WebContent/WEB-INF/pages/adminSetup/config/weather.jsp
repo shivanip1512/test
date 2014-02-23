@@ -8,7 +8,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="config.weather">
-<cti:includeScript link="/JavaScript/adminSetupConfig.js"/>
+<cti:includeScript link="/JavaScript/yukon.weather.js"/>
 
 <div class="box clear dashboard">
     <div class="clearfix box">

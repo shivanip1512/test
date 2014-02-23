@@ -8,8 +8,8 @@
 <cti:standardPage module="dr" page="programDetail">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
-    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -18,7 +18,7 @@
     <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
     <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
@@ -64,7 +64,7 @@
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                             <cti:dataUpdaterCallback
-                                function="yukon.EstimatedLoad.displayProgramValue"
+                                function="yukon.dr.estimatedLoad.displayProgramValue"
                                 value="ESTIMATED_LOAD/${programId}/PROGRAM"
                                 initialize="true"/>
                             <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">

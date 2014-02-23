@@ -174,7 +174,7 @@ table.nowrap th, table.nowrap td {white-space: nowrap;}
 .compact-results-paging span {line-height: 16px;}
 .compact-results-paging .page-num-text {margin: 0 10px;}
 .name-value-table .name, .property-list .name {min-width: 140px;}
-.name-value-table .name.name-collapse, .property-list .name.name-collapse {min-width: inherit;}
+.name-value-table.name-collapse .name, .property-list.name-collapse .name {min-width: inherit;}
 .name-value-table .name, .property-list .name, .name {color: #777;}
 .name-value-table .value, .property-list .value {color: #333;}
 
@@ -346,7 +346,7 @@ ol.error{list-style-type: none;}
 /* FLASH SCOPES */
 .page-help, .page-warning, .page-error {line-height: 1.3em; font-size: 12px; padding: 5px 10px 5px 25px; border-radius: 2px; border-width: 1px; border-style: solid; margin-bottom: 10px;}
 .page-help ul, .page-warning ul, .page-error ul {list-style: disc inside none;}
-.page-help {border-color: @primary-color; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
+.page-help {border-color: #ccf; background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;}
 .page-warning {line-height: 1.3em; border-color: #FBB117; background: #FFFFDA url('/WebConfig/yukon/Icons/warning.gif') 5px 4px no-repeat;}
 .page-error {border-color: @red; background: #FFDDDD url('/WebConfig/yukon/Icons/error.gif') 5px 4px no-repeat;}
 
@@ -391,7 +391,7 @@ input.error {background: pink;border-color: @red;}
     > .titled-container {margin-bottom: 0;}
 } 
 
-/* FIELD HELPER (fieldHelper.js) */
+/* FIELD HELPER (yukon.field.helper.js) */
 .pointing-popup-container {height: 100px; position: absolute; right: 168px; top: 188px; width: 300px; z-index: 1007; }
 .pointing-popup-content {background: none repeat scroll 0 0 white; border: 3px solid #CCCCCC;box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); float: right; min-height: 2em; padding: 5px; width: 290px; font-size: 12px;}
 .pointing-popup-chevron {border-top: 10px solid transparent; border-bottom: 10px solid transparent;  border-right: 10px solid #CCCCCC; float: left; font-size: 0; line-height: 0; margin-top: 5px; width: 0;}

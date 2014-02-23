@@ -5,7 +5,7 @@
 
 <cti:standardPage module="adminSetup" page="deviceGroupSyncProgress">
 
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 
     <tags:sectionContainer2 nameKey="progressDetailContainer">
     
@@ -63,7 +63,7 @@
     
     </tags:sectionContainer2>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
 
 </cti:standardPage>

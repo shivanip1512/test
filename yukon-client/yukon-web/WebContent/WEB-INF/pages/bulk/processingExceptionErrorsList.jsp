@@ -1,10 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%-- line number is key plus 2. (adjust for zero-indexed map key and header row) --%>
-<div style="padding-top:10px;padding-left:6px;">
-<c:forEach var="e" items="${exceptionRowNumberMap}">
-   <div style="font-size:11px;">&bull; Line ${e.key + 2} - ${e.value.message}</div>
-</c:forEach>
-</div>
+<ul class="simple-list">
+    <c:forEach var="e" items="${exceptionRowNumberMap}">
+        <li>Line ${e.key + 2} - ${e.value.message}</li>
+    </c:forEach>
+</ul>

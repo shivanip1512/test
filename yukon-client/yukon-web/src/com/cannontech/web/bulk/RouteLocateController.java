@@ -110,7 +110,7 @@ public class RouteLocateController {
             }
             
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.routeLocateHome.noRoutesSelectedError");
+            String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.routeLocateHome.noRoutesSelectedError");
             model.addAttribute("errorMsg", errorMsg);
             
             model.addAttribute("autoUpdateRoute", autoUpdateRoute);

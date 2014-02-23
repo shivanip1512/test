@@ -13,7 +13,7 @@
 <%@ attribute name="hideCount" %>
 <%@ attribute name="completionCallback" description="Name of a javascript function to call when progress reaches 100%. The function will be called each iteration of the data updater, so the function must manage being called multiple times if needed." %>
 
-<cti:includeScript link="/JavaScript/progressbar.js"/>
+<cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
 <div class="stacked clearfix">
@@ -38,4 +38,4 @@
                                 completionCallback="${pageScope.completionCallback}" />
 </div>
 
-<cti:dataUpdaterCallback function="yukon.ui.progressBar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />
+<cti:dataUpdaterCallback function="yukon.ui.progressbar.updateProgressStatus('${pDescId}')" initialize="true" statusText="${statusTextKey}" />

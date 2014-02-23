@@ -38,11 +38,11 @@
                                     <div id="editCommentSpan_${comment.id}" style="display: none;">
                                         <input id="editComment_${comment.id}" type="text" 
                                             style="margin-right: 5px;width:350px;" 
-                                            name="editCommentInput" onKeyPress="return yukon.Comments.updateOrCancel(event, ${comment.id})" 
+                                            name="editCommentInput" onKeyPress="return yukon.da.comments.updateOrCancel(event, ${comment.id})" 
                                             value="${fn:escapeXml(comment.comment)}">
-                                        <a href="javascript:yukon.Comments.updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:yukon.Comments.cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
+                                        <a href="javascript:yukon.da.comments.updateComment(${comment.id})"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.cancelUpdate(${comment.id})"><i:inline key=".cancel"/></a>
                                     </div>
-                                    <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" <c:if test="${modifyPermission}">onclick="yukon.Comments.editComment(${comment.id})"</c:if> >
+                                    <div id="comment_${comment.id}" title="<cti:msg2 key=".clickToEdit"/>" <c:if test="${modifyPermission}">onclick="yukon.da.comments.editComment(${comment.id})"</c:if> >
                                         ${fn:escapeXml(comment.comment)}
                                     </div>
                                 </td>
@@ -62,7 +62,7 @@
                                     </c:choose>
                                 </td>
                                 <td class="remove-column">
-                                    <cti:button nameKey="remove" renderMode="image" onclick="yukon.Comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                    <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -75,12 +75,12 @@
         <div id="newRow" style="display: none;">
             <span><i:inline key=".enterText"/></span>
             <span class="textFieldLabel">
-                <input type="text" id="newCommentInput" onKeyPress="return yukon.Comments.addOrCancel(event)">
+                <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)">
             </span>
-            <span class="textFieldLabel"><a href="javascript:yukon.Comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.Comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
+            <span class="textFieldLabel"><a href="javascript:yukon.da.comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
         </div>
         <div class="compactResultsFooter">
-            <cti:button nameKey="add" icon="icon-add" onclick="javascript:yukon.Comments.showNewRow()"/>
+            <cti:button nameKey="add" icon="icon-add" onclick="javascript:yukon.da.comments.showNewRow()"/>
         </div>
     </c:if>
 </cti:msgScope>

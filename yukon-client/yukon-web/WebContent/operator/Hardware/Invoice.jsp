@@ -50,7 +50,7 @@
                         <div align="right">Invoice Designation:</div>
                         </td>
                     <td width="80%"> 
-                        <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.invoiceDesignation}"/>' onchange="setContentChanged(true)">
+                        <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.invoiceDesignation}"/>'>
                     </td>
                 </tr>
                 <tr> 
@@ -58,7 +58,7 @@
                         <div align="right">Date Submitted:</div>
                     </td>
                     <td width="80%"> 
-                      <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.dateSubmitted}" type="DATE"/>' onchange="setContentChanged(true)">
+                      <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.dateSubmitted}" type="DATE"/>'>
                     </td>
                   </tr>
                 <tr>
@@ -71,7 +71,7 @@
                                 checked="checked"
                             </c:if>
                         />
-                        <input type="text" name="authorizedBy" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedBy}"/>' onchange="setContentChanged(true)">
+                        <input type="text" name="authorizedBy" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedBy}"/>'>
                     </td>
                 </tr>
                 <tr>
@@ -79,7 +79,7 @@
                         <div align="right">Authorization Number:</div>
                         </td>
                     <td width="80%"> 
-                        <input type="text" name="authorizedNum" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedNumber}"/>' onchange="setContentChanged(true)">
+                        <input type="text" name="authorizedNum" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.authorizedNumber}"/>'>
                     </td>
                 </tr>
                 <tr>
@@ -92,7 +92,7 @@
                                 checked="checked"
                             </c:if>
                         />
-                        <input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.datePaid}" type="DATE"/>' onchange="setContentChanged(true)">
+                        <input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.datePaid}" type="DATE"/>'>
                     </td>
                 </tr>
                 <tr>
@@ -100,7 +100,7 @@
                         <div align="right">Total Quantity:</div>
                         </td>
                     <td width="80%"> 
-                        <input type="text" name="quantity" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.totalQuantity}"/>' onchange="setContentChanged(true)">
+                        <input type="text" name="quantity" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentInvoice.totalQuantity}"/>'>
                     </td>
                 </tr>
                 <tr> 
@@ -210,7 +210,7 @@
             
             if (availList.value >= 0)
                 availList.remove(idx);
-            setContentChanged(true);
+            
         }
     }
 
@@ -234,12 +234,12 @@
             
             if (assignList.value > 0)
                 assignList.remove(idx);
-            setContentChanged(true);
+            
         }
     }
     
     function back (form) {
-        if (warnUnsavedChanges()) location.href='PurchaseTrack.jsp'
+        location.href='PurchaseTrack.jsp';
     }
     
     function prepareSubmit (form) {

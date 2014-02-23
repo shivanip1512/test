@@ -34,6 +34,8 @@
     <entry key="yukon.web.modules.tools.groupCommand.results.pageName">Group Command Processing Results</entry>
     <entry key="yukon.web.modules.tools.groupCommand.results.tableHeader.command">Command</entry>
 
+    <entry key="yukon.web.modules.tools.groupCommand.details.pageHeading">Group Command Processing Details</entry>
+    <entry key="yukon.web.modules.tools.groupCommand.details.crumbTitle">Details</entry>
 
     <!-- OutageProcessingController groupMeterReadResultDetail.jsp -->
     <!-- ================================================================================================================================================= -->

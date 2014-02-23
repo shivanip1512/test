@@ -1,14 +1,15 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="substation">
+
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
 
 <flot:defaultIncludes/>
@@ -33,8 +34,8 @@
 
 <script type="text/javascript">
 jQuery(function() {
-    yukon.CapControl.checkPageExpire();
-    yukon.CapControl.initSubstation();
+    yukon.da.checkPageExpire();
+    yukon.da.initSubstation();
 });
 </script>
 
@@ -80,9 +81,9 @@ jQuery(function() {
 <div class="column-12-12">
     <div class="column one">
         <tags:sectionContainer2 nameKey="infoContainer" hideEnabled="true" styleClass="stacked">
-            <div class="clearfix">
-                <div class="dib fl" style="margin-right:5px;">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
+            <div class="column-12-12 clearfix">
+                <div class="column one">
+                    <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".name">
                             <span>${fn:escapeXml(substation.name)}</span>
                         </tags:nameValue2>
@@ -101,8 +102,8 @@ jQuery(function() {
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </div>
-                <div class="dib fl">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
+                <div class="column two nogutter">
+                    <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
                                 <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
@@ -140,7 +141,7 @@ jQuery(function() {
         <tags:sectionContainer2 nameKey="statsContainer" hideEnabled="true" styleClass="stacked">
             <div class="column-12-12">
                 <div class="column one">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
+                    <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".availableKvars">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" />
                         </tags:nameValue2>
@@ -150,7 +151,7 @@ jQuery(function() {
                     </tags:nameValueContainer2>
                 </div>
                 <div class="column two nogutter">
-                    <tags:nameValueContainer2 tableClass="infoContainer">
+                    <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".closedKvars">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" />
                         </tags:nameValue2>
@@ -161,7 +162,7 @@ jQuery(function() {
                 </div>
             </div>
             <div class="clear">
-                <tags:nameValueContainer2 tableClass="infoContainer">
+                <tags:nameValueContainer2 tableClass="name-collapse">
                     <tags:nameValue2 nameKey=".pfactorEstimated" rowClass="powerFactor">
                         <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" />
                     </tags:nameValue2>

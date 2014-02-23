@@ -8,7 +8,7 @@
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css" />
 
-    <div class="containerHeader stacked clearfix">
+    <div class="note stacked clearfix">
         <div>
             <tags:selectedInventory inventoryCollection="${inventoryCollection}" id="inventoryCollection" />
         </div>

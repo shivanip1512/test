@@ -8,8 +8,8 @@
 <cti:standardPage module="dr" page="scenarioDetail">
 
     <tags:simpleDialog id="drDialog"/>
-    <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -18,13 +18,13 @@
     <cti:includeScript link="JQUERY_FLOTCHARTS_RESIZE"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_TIME"/>
     <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/flotChart.css"/>
     
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
 
     <input id="assetId" type="hidden" value="${scenarioId}"/>
-    <cti:includeScript link="/JavaScript/drAssetDetails.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
 
     <div class="column-12-12">
         <div class="column one">
@@ -32,7 +32,7 @@
             <tags:sectionContainer2 nameKey="heading.info">
             <tags:nameValueContainer2>
                 <cti:dataUpdaterCallback
-                    function="yukon.EstimatedLoad.displaySummaryValue"
+                    function="yukon.dr.estimatedLoad.displaySummaryValue"
                     identifier="ESTIMATED_LOAD/${scenarioId}/SCENARIO"/>
                <tags:nameValue2 nameKey="yukon.web.modules.dr.estimatedLoad.info.connectedLoad">
                         <div data-pao="${scenarioId}">

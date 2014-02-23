@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/touPreviousReadings.js"/>
+<cti:includeScript link="/JavaScript/yukon.widget.tou.js"/>
 
 <c:if test="${touAttributesAvailable}">
 <cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings"><cti:param name="deviceId" value="${meter.deviceId}"/></cti:url>

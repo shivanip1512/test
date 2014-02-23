@@ -32,7 +32,7 @@
         
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/progressbar.js"/>
+    <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
     
 <script type="text/javascript">
 function refreshResults(kind, container) {
@@ -148,7 +148,7 @@ jQuery(function() {
         
     </tags:sectionContainer>
     
-    <cti:dataUpdaterCallback function="yukon.ui.progressBar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
+    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['allDevicesActionsDiv','creResultsDiv','successActionsDiv','errorActionsDiv','unsupportedActionsDiv'],true)" initialize="true" value="GROUP_METER_READ/${resultKey}/IS_COMPLETE"/>
 
 </cti:msgScope>
 </cti:standardPage>

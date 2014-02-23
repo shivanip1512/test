@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dr" page="estimatedLoad">
-    <cti:includeScript link="/JavaScript/drFormula.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.formula.js"/>
 
     <cti:tabbedContentSelector mode="section">
         <cti:msg2 var="formulasTab" key='.formulas'/>

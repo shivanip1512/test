@@ -10,8 +10,8 @@
 <cti:standardPage module="dr" page="controlAreaList">
 
     <tags:simpleDialog id="drDialog" />
-    <cti:includeScript link="/JavaScript/hideReveal.js"/>
-    <cti:includeScript link="/JavaScript/drEstimatedLoad.js"/>
+    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
 
     <c:set var="baseUrl" value="/dr/controlArea/list" />
     <cti:url var="submitUrl" value="${baseUrl}" />
@@ -116,7 +116,7 @@
                 <cti:msg key="yukon.web.modules.dr.controlAreaList.noResults" />
             </c:when>
             <c:otherwise>
-                <table id="controlAreaList" class="compact-results-table row-highlighting has-actions">
+                <table id="controlAreaList" class="compact-results-table has-actions">
                     <thead>
                         <tr>
                             <%-- Table headers - columns are hidden/shown based on role props --%>
@@ -218,7 +218,7 @@
                                             <i:inline key="yukon.web.modules.dr.estimatedLoad.calculating"/>
                                         </span>
                                         <cti:dataUpdaterCallback
-                                            function="yukon.EstimatedLoad.displaySummaryValue "
+                                            function="yukon.dr.estimatedLoad.displaySummaryValue "
                                             value="ESTIMATED_LOAD/${controlAreaId}/CONTROL_AREA"/>
                                     </td>
                                 </cti:checkRolesAndProperties>

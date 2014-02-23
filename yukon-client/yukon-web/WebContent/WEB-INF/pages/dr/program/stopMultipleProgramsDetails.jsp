@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:msgScope paths="modules.dr.program.stopMultiplePrograms">
 
@@ -221,7 +221,7 @@ jQuery( function () {
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
-    <table class="compact-results-table">
+    <table class="compact-results-table stacked">
         <tr>
             <th><cti:msg2 key=".stopTime"/></th>
         </tr>
@@ -239,68 +239,67 @@ jQuery( function () {
             </table>
         </td></tr>
     </table>
-    <br>
 
     <cti:msg2 var="boxTitle" key=".programs"/>
-    <tags:boxContainer title="${boxTitle}">
-    <div class="scroll-medium">
-    <table class="compact-results-table">
-        <tr>
-            <th><cti:msg2 key=".stopProgramName"/></th>
-            
-             <c:if test="${stopGearAllowed}">
-                <th><cti:msg2 key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl"/></th>
-             </c:if>
-            <th><cti:msg2 key=".currentState"/></th>
-            
-            <c:if test="${!empty scenarioPrograms}">
-                <th><cti:msg2 key=".stopOffset"/></th>
-            </c:if>
-        </tr>
-        <c:forEach var="program" varStatus="status" items="${programs}">
-            <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-            <c:if test="${stopGearAllowed}">
-                <c:set var="gears" value="${gearsByProgramId[programId]}"/>
-            </c:if>
-            <c:set var="currentGear" value="${currentGearByProgramId[programId]}"/>
-            <tr>
-                <td>
-                    <form:hidden path="programStopInfo[${status.index}].programId"/>
-                    <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f-singleProgramChecked"/>
-                    <label for="stopProgramCheckbox${status.index}">${program.name}</label>
-                </td>
-                <c:if test="${stopGearAllowed}">
-                    <td>
-                        <c:if test="${fn:length(gears) > 1}">
-                            <form:checkbox path="programStopInfo[${status.index}].useStopGear" id="useStopGear${status.index}" cssClass="f-useStopGearChecked"/>
-                            <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f-useStopGearCheckedTarget">
-                                <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-                                    <c:if test="${currentGear.gearNumber != gear.gearNumber}">
-                                        <form:option value="${gearStatus.index + 1}">
-                                            <spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody>
-                                        </form:option>
-                                    </c:if>
-                                </c:forEach>
-                            </form:select>
+    <tags:sectionContainer title="${boxTitle}">
+        <div class="scroll-medium">
+            <table class="compact-results-table dashed">
+                <tr>
+                    <th><cti:msg2 key=".stopProgramName"/></th>
+                    
+                     <c:if test="${stopGearAllowed}">
+                        <th><cti:msg2 key="yukon.web.modules.dr.program.changeMultipleGears.stopGearLbl"/></th>
+                     </c:if>
+                    <th><cti:msg2 key=".currentState"/></th>
+                    
+                    <c:if test="${!empty scenarioPrograms}">
+                        <th><cti:msg2 key=".stopOffset"/></th>
+                    </c:if>
+                </tr>
+                <c:forEach var="program" varStatus="status" items="${programs}">
+                    <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+                    <c:if test="${stopGearAllowed}">
+                        <c:set var="gears" value="${gearsByProgramId[programId]}"/>
+                    </c:if>
+                    <c:set var="currentGear" value="${currentGearByProgramId[programId]}"/>
+                    <tr>
+                        <td>
+                            <form:hidden path="programStopInfo[${status.index}].programId"/>
+                            <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f-singleProgramChecked"/>
+                            <label for="stopProgramCheckbox${status.index}">${program.name}</label>
+                        </td>
+                        <c:if test="${stopGearAllowed}">
+                            <td>
+                                <c:if test="${fn:length(gears) > 1}">
+                                    <form:checkbox path="programStopInfo[${status.index}].useStopGear" id="useStopGear${status.index}" cssClass="f-useStopGearChecked"/>
+                                    <form:select path="programStopInfo[${status.index}].gearNumber" id="programGear${status.index}" cssClass="f-useStopGearCheckedTarget">
+                                        <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
+                                            <c:if test="${currentGear.gearNumber != gear.gearNumber}">
+                                                <form:option value="${gearStatus.index + 1}">
+                                                    <spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody>
+                                                </form:option>
+                                            </c:if>
+                                        </c:forEach>
+                                    </form:select>
+                                </c:if>
+                                <c:if test="${fn:length(gears) < 2}">
+                                   <cti:msg2 key=".gearChangeUnavailable"/>
+                                </c:if>
+                            </td>
                         </c:if>
-                        <c:if test="${fn:length(gears) < 2}">
-                           <cti:msg2 key=".gearChangeUnavailable"/>
+                        <td>
+                            <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                            <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
+                        </td>
+                        <c:if test="${!empty scenarioPrograms}">
+                            <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
+                            <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
                         </c:if>
-                    </td>
-                </c:if>
-                <td>
-                    <cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
-                    <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
-                </td>
-                <c:if test="${!empty scenarioPrograms}">
-                    <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
-                    <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
-                </c:if>
-            </tr>
-        </c:forEach>
-    </table>
-    </div>
-    </tags:boxContainer>
+                    </tr>
+                </c:forEach>
+            </table>
+        </div>
+    </tags:sectionContainer>
 
     <input type="checkbox" id="allProgramsCheckbox"/>
     <label for="allProgramsCheckbox">
@@ -326,14 +325,13 @@ jQuery( function () {
             <cti:msg2 key=".constraintsWillBeObserved"/>
         </c:if>
     </c:if>
-    <br>
 
     <div class="action-area">
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="ok" classes="primary action" type="submit"/>
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button nameKey="next" id="nextButton" classes="primary action" type="submit"/>
         </c:if>
-        <cti:button nameKey="ok" classes="primary action" type="submit"/>
+        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

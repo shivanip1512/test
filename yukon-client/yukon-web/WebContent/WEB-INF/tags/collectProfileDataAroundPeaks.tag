@@ -15,7 +15,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
-<cti:includeScript link="/JavaScript/collectProfileDataAroundPeak.js"/>
+<cti:includeScript link="/JavaScript/yukon.peak.day.profile.js"/>
 
 <cti:formatDate var="preStartDate" value="${preResult.rangeStartDate}" type="DATE" />
 <cti:formatDate var="preStopDate" value="${preResult.rangeStopDate}" type="DATE_MIDNIGHT_PREV" />
@@ -69,7 +69,7 @@
         </select>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".peakDay">
-        <select id="${id}_selectedPeakDate" onchange="yukon.PeakDayProfile.changePeak();">
+        <select id="${id}_selectedPeakDate" onchange="yukon.ami.peakDayProfile.changePeak();">
             <c:if test="${!preResult.noData && preResult.deviceError == ''}">
                 <option value="${preResult.peakValue}" selected>${preResult.peakValue}</option>
             </c:if>
@@ -91,5 +91,5 @@
 </tags:nameValueContainer2>
 
 <div class="action-area">
-    <cti:button id="${id}_startButton" nameKey="start" onclick="yukon.PeakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');"/>
+    <cti:button id="${id}_startButton" nameKey="start" onclick="yukon.ami.peakDayProfile.peakDayProfile_start('${id}', '${profileRequestOrigin}');"/>
 </div>
