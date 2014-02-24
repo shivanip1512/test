@@ -51,7 +51,7 @@
         </c:otherwise>
     </c:choose>
     
-    <tags:boxContainer2 nameKey="${containerTitle}">
+    <tags:sectionContainer2 nameKey="${containerTitle}">
         
         <tags:nameValueContainer2>
             
@@ -103,8 +103,6 @@
         
         </tags:nameValueContainer2>
         
-        <br>
-        
         <c:choose>
             <c:when test="${prescan}">
                 <c:set var="action" value="/stars/operator/account/doAccountImport"/>
@@ -114,24 +112,20 @@
             </c:otherwise>
         </c:choose>
         
-        <form action="${action}" id="importForm">
-            <input type="hidden" value="${resultId}" name="resultId">
-              
-            <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="true"/></c:if>
-            <cti:button type="submit" id="cancelButton" name="cancelImport" nameKey="cancel"/>
-            
-            <input type="hidden" name="prescan" value="${prescan}">
-        </form>
+        <div class="page-action-area">
+            <form action="${action}" id="importForm">
+                <input type="hidden" value="${resultId}" name="resultId">
+                  
+                <c:if test="${prescan}"><cti:button type="submit" id="importButton" nameKey="import" disabled="true" classes="primary action"/></c:if>
+                <cti:button type="submit" id="cancelButton" name="cancelImport" nameKey="cancel"/>
+                
+                <input type="hidden" name="prescan" value="${prescan}">
+            </form>
+        </div>
         
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
-    <br>
-    <br>
-    
-    <a href="/stars/operator/account/accountImport"><i:inline key=".backLink"/></a>
-    
-    <br>
-    <br>
+    <a href="/stars/operator/account/accountImport" class="stacked"><i:inline key=".backLink"/></a>
     
     <div id="importErrorsDiv" style="display: none;"></div>
     

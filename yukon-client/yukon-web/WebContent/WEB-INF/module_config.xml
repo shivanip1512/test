@@ -1035,6 +1035,9 @@
             </page>
             <page name="accountImport" type="BASIC" hideSearch="true">
                 <link>/stars/operator/account/accountImport</link>
+                <pages>
+                    <page name="recentImports" type="BASIC"></page>
+                </pages>
             </page>
             <page name="accountList" type="BASIC" hideSearch="true">
                 <link>/stars/operator/account/search</link>

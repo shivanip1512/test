@@ -19,6 +19,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -98,6 +99,7 @@ public class AccountImportService {
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
         executor.execute(new Runnable() {
             public void run() {
+                result.setStartTime(new Instant());
                 processAccountImport(result, context.getYukonUser());
             }
         });
@@ -956,6 +958,8 @@ public class AccountImportService {
             }
 
             ActivityLogger.logEvent(result.getCurrentUser().getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, "");
+        } finally {
+            result.setStopTime(new Instant());
         }
         
         if (importLog != null) {

@@ -1,16 +1,16 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="operator" page="accountImport">
 
-    <cti:checkEnergyCompanyOperator showError="true" >
-        <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+    <cti:checkEnergyCompanyOperator showError="true">
+        <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT"/>
         
-    	<div class="column-12-12">
-    		<div class="column one">
+        <div class="column-12-12">
+            <div class="column one">
                 <form:form id="importForm" commandName="accountImportData" action="/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
                 
                     <%-- note --%>
@@ -26,6 +26,7 @@
                     </tags:nameValueContainer2>
                     
                     <div class="action-area stacked">
+                        <a href="imports" class="fl"><i:inline key=".recent"/></a>
                         <cti:button nameKey="prescan" type="submit" classes="f-blocker action primary"/>
                     </div>
                 </form:form>
@@ -37,9 +38,9 @@
                 <%-- instructions --%>
                 <h3><i:inline key=".instructionsLabel"/></h3>
                 <ul class="disc stacked">
-                    <li><i:inline key=".instructionsText1" /></li>
-                    <li><i:inline key=".instructionsText2" /></li>
-                    <li><i:inline key=".instructionsText3" /></li>
+                    <li><i:inline key=".instructionsText1"/></li>
+                    <li><i:inline key=".instructionsText2"/></li>
+                    <li><i:inline key=".instructionsText3"/></li>
                 </ul>
                 
                 <tags:nameValueContainer2>

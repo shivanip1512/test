@@ -10,6 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import com.cannontech.common.util.Completable;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -113,6 +116,9 @@ public class AccountImportResult implements Completable {
     
     public final String UNENROLL_CASE = "UNENROLL";
     
+    private Instant startTime;
+    private Instant stopTime;
+    private int totalCount;
     private LiteStarsEnergyCompany energyCompany = null;
     private String email = null;
     private boolean insertSpecified = false;
@@ -139,6 +145,55 @@ public class AccountImportResult implements Completable {
     private boolean canceled = false;
     public int custFileErrors = 0;
     public int hwFileErrors = 0;
+    
+    public Instant getStartTime() {
+        return startTime;
+    }
+    
+    public void setStartTime(Instant startTime) {
+        this.startTime = startTime;
+    }
+    
+    public Duration getDuration() {
+        if (startTime != null && stopTime != null) {
+            Duration duration = new Duration(startTime, stopTime);
+            if (duration.isShorterThan(Duration.standardSeconds(1))) {
+                return Duration.standardSeconds(1);
+            }
+            return duration;
+        } else {
+            return null;
+        }
+    }
+    
+    public String getFileNames() {
+        
+        String accountFile = accountFileUpload.getName();
+        String hardwareFile = hardwareFileUpload.getName();
+        String names = "";
+        
+        if (StringUtils.isNotBlank(accountFile)) names += accountFile;
+        if (StringUtils.isNotBlank(accountFile) && StringUtils.isNotBlank(hardwareFile)) names += ", ";
+        if (StringUtils.isNotBlank(hardwareFile)) names += hardwareFile;
+        
+        return names;
+    }
+    
+    public int getTotalCount() {
+        return totalCount;
+    }
+    
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+    
+    public Instant getStopTime() {
+        return stopTime;
+    }
+    
+    public void setStopTime(Instant stopTime) {
+        this.stopTime = stopTime;
+    }
 
     public LiteStarsEnergyCompany getEnergyCompany() {
         return energyCompany;

@@ -10,13 +10,13 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.naming.ConfigurationException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.jfree.util.Log;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -29,6 +29,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -136,21 +137,21 @@ public class OperatorAccountController {
         EDIT,
         VIEW;
     }
-	
-	// ACCOUNT IMPORT PAGE
-	@RequestMapping("accountImport")
-	public String accountImport(ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, String processedBeforeCancel) {
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
-	    setupAccountImportModelMap(modelMap);
-	    
-	    if(StringUtils.isNotBlank(processedBeforeCancel)){
-	        flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.canceledMessage", processedBeforeCancel), FlashScopeMessageType.WARNING);
-	    }
-	    
-	    return "operator/account/accountImport.jsp";
-	}
+    
+    // ACCOUNT IMPORT PAGE
+    @RequestMapping("accountImport")
+    public String accountImport(ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, String processedBeforeCancel) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+        setupAccountImportModelMap(modelMap);
+        
+        if(StringUtils.isNotBlank(processedBeforeCancel)){
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.accountImport.canceledMessage", processedBeforeCancel), FlashScopeMessageType.WARNING);
+        }
+        
+        return "operator/account/accountImport.jsp";
+    }
 
-	// UPLOAD IMPORT FILES
+    // UPLOAD IMPORT FILES
     @RequestMapping(value="uploadImportFiles", method=RequestMethod.POST)
     public String uploadImportFiles(HttpServletRequest request, @ModelAttribute("accountImportData") AccountImportData accountImportData, 
                                 BindingResult bindingResult,
@@ -201,6 +202,23 @@ public class OperatorAccountController {
         return "operator/account/accountImportResults.jsp";
     }
 
+    @RequestMapping("imports")
+    public String imports(ModelMap model) {
+        
+        List<AccountImportResult> completed = new ArrayList<>();
+        for (AccountImportResult result : recentResultsCache.getCompleted()) {
+            if (!result.isPrescan()) completed.add(result);
+        }
+        List<AccountImportResult> pending = new ArrayList<>();
+        for (AccountImportResult result : recentResultsCache.getPending()) {
+            if (!result.isPrescan()) pending.add(result);
+        }
+        model.addAttribute("completed", completed);
+        model.addAttribute("pending", pending);
+        
+        return "operator/account/imports.jsp";
+    }
+    
     @RequestMapping("importResult")
     @ResponseBody
     public BooleanNode importResult(String resultId) {
@@ -210,7 +228,8 @@ public class OperatorAccountController {
     
     // IMPORT ERRORS PAGE
     @RequestMapping("importErrors")
-    public String importErrors(ModelMap modelMap, String resultId) throws ServletException {
+    public String importErrors(ModelMap modelMap, String resultId) {
+        
         AccountImportResult result = recentResultsCache.getResult(resultId);
         modelMap.addAttribute("importErrors", result.getErrors());
         return "operator/account/importErrors.jsp";
@@ -219,10 +238,12 @@ public class OperatorAccountController {
     // CANCEL AN IMPORT
     @RequestMapping(value="doAccountImport", params="cancelImport")
     public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult result = recentResultsCache.getResult(resultId);
         result.cancel();
         if(!prescan) {
+            result.setStopTime(new Instant());
             modelMap.addAttribute("processedBeforeCancel", result.getPosition());
         }
         setupAccountImportModelMap(modelMap);
@@ -231,7 +252,8 @@ public class OperatorAccountController {
     
     // DO ACCOUNT IMPORT
     @RequestMapping("doAccountImport")
-    public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) throws ServletException {
+    public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) {
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), prescanResult.getEmail(), false);
@@ -241,9 +263,11 @@ public class OperatorAccountController {
 
         int hardwareLines = prescanResult.getHwLines() == null ? 0 : prescanResult.getHwLines().size() -1;
         int accountLines = prescanResult.getCustLines() == null ? 0 : prescanResult.getCustLines().size() -1;
+        int totalCount = hardwareLines + accountLines;
+        result.setTotalCount(totalCount);
             
         modelMap.addAttribute("callbackResult", result);
-        modelMap.addAttribute("totalCount", hardwareLines + accountLines);
+        modelMap.addAttribute("totalCount", totalCount);
         modelMap.addAttribute("prescan", false);
         
         if(result.getAccountFileUpload().getFile() != null) {
@@ -253,144 +277,163 @@ public class OperatorAccountController {
         return "operator/account/accountImportResults.jsp";
     }
     
-	// SEARCH PAGE
-	@RequestMapping("search")
+    // VIEW ACCOUNT IMPORT
+    @RequestMapping("imports/{resultId}")
+    public String view(ModelMap modelMap, @PathVariable String resultId, YukonUserContext userContext) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+        AccountImportResult result = recentResultsCache.getResult(resultId); 
+        
+        modelMap.addAttribute("resultId", result.getResultId());
+        modelMap.addAttribute("callbackResult", result);
+        modelMap.addAttribute("totalCount", result.getTotalCount());
+        modelMap.addAttribute("prescan", false);
+        
+        if(result.getAccountFileUpload().getFile() != null) {
+            modelMap.addAttribute("showCustomerStats", true);
+        }
+        
+        return "operator/account/accountImportResults.jsp";
+    }
+    
+    // SEARCH PAGE
+    @RequestMapping("search")
     public String search(HttpServletRequest request,
-    					Integer itemsPerPage, 
-    					Integer page,
-    					ModelMap modelMap, 
-    					YukonUserContext userContext,
-    					FlashScope flashScope) throws ServletRequestBindingException {
-		
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, userContext.getYukonUser());
-	    
-		String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
-		
-		// no search
-		if (StringUtils.isBlank(searchByStr) || !yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())) {
-			modelMap.addAttribute("accountSearchResultHolder", AccountSearchResultHolder.emptyAccountSearchResultHolder());
-			modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
-			return "operator/account/accountList.jsp";
-		}
-		
-		// searchBy, searchValue
-		OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(searchByStr);
-		String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", null);
-		
-		// paging
-		if(page == null){
+                        Integer itemsPerPage, 
+                        Integer page,
+                        ModelMap modelMap, 
+                        YukonUserContext userContext,
+                        FlashScope flashScope) throws ServletRequestBindingException {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, userContext.getYukonUser());
+        
+        String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
+        
+        // no search
+        if (StringUtils.isBlank(searchByStr) || !yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())) {
+            modelMap.addAttribute("accountSearchResultHolder", AccountSearchResultHolder.emptyAccountSearchResultHolder());
+            modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
+            return "operator/account/accountList.jsp";
+        }
+        
+        // searchBy, searchValue
+        OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(searchByStr);
+        String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", null);
+        
+        // paging
+        if(page == null){
             page = 1;
         }
         itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
         int startIndex = (page - 1) * itemsPerPage;
-		
+        
         // it is important for searching to use the energyCompany of the user
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-		AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
-		
-		boolean adminManageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, userContext.getYukonUser());
-		modelMap.addAttribute("searchMembers", adminManageMembers && energyCompany.hasChildEnergyCompanies());
-		
-		// account edit
-		if (accountSearchResultHolder.isSingleResult() && !accountSearchResultHolder.isHasWarning()) {
-			
-			AccountSearchResult accountSearchResult = accountSearchResultHolder.getAccountSearchResults().getResultList().get(0);
-			
-			modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
-			
-			return "redirect:view";
-			
-		// account list
-		} else {
-			
-			if (accountSearchResultHolder.isHasWarning()) {
-				flashScope.setWarning(Collections.singletonList(accountSearchResultHolder.getWarning()));
-			}
-			Object[] searchResultTitleArguments = new Object[]{new YukonMessageSourceResolvable(searchBy.getFormatKey()), searchValue};
-			modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
-			modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
-			modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
-			return "operator/account/accountList.jsp";
-		}
-	}
-	
-	// NEW ACCOUNT PAGE
-	@RequestMapping("accountCreate")
-    public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
-	    if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
-    	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
-    	    
-    	    boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
-    	    
-    	    /* AccountDto */
-    	    AccountDto accountDto = new AccountDto();
-    	    accountDto.setIsCommercial(false);
-    
-    	    /* OperatorGeneralUiExtras */
-    	    OperatorGeneralUiExtras uiExtras = new OperatorGeneralUiExtras();
-    	    uiExtras.setHasOddsForControlRole(hasOddForControlRole);
-    
-    	    /* LoginBackingBean */
-    	    LoginBackingBean loginBackingBean = new LoginBackingBean();
-    	    loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
-    
-    	    /* AccountGeneral */
-    	    AccountGeneral accountGeneral = new AccountGeneral();
-    	    accountGeneral.setAccountDto(new AccountDto());
-    	    accountGeneral.setOperatorGeneralUiExtras(uiExtras);
-    	    accountGeneral.setLoginBackingBean(loginBackingBean);
-    
-    	    modelMap.addAttribute("accountGeneral", accountGeneral);
+        AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
+        
+        boolean adminManageMembers = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, userContext.getYukonUser());
+        modelMap.addAttribute("searchMembers", adminManageMembers && energyCompany.hasChildEnergyCompanies());
+        
+        // account edit
+        if (accountSearchResultHolder.isSingleResult() && !accountSearchResultHolder.isHasWarning()) {
             
-    	    setupAccountCreationModelMap(modelMap, userContext.getYukonUser());
-	    }else{
-	        modelMap.addAttribute("mode", PageEditMode.CREATE);
-	    }
-	    return "operator/account/account.jsp";
-	}
-	
-	// CREATE ACCOUNT
-	@RequestMapping(method=RequestMethod.POST, value="createAccount")
-	public String createAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral,
-	                            BindingResult bindingResult,
-	                            FlashScope flashScope,
-	                            ModelMap modelMap, 
-	                            HttpServletRequest request,
-	                            final HttpSession session,
-	                            final LiteYukonUser user) throws ServletRequestBindingException {
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
-	    
+            AccountSearchResult accountSearchResult = accountSearchResultHolder.getAccountSearchResults().getResultList().get(0);
+            
+            modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
+            
+            return "redirect:view";
+            
+        // account list
+        } else {
+            
+            if (accountSearchResultHolder.isHasWarning()) {
+                flashScope.setWarning(Collections.singletonList(accountSearchResultHolder.getWarning()));
+            }
+            Object[] searchResultTitleArguments = new Object[]{new YukonMessageSourceResolvable(searchBy.getFormatKey()), searchValue};
+            modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
+            modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
+            modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
+            return "operator/account/accountList.jsp";
+        }
+    }
+    
+    // NEW ACCOUNT PAGE
+    @RequestMapping("accountCreate")
+    public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+        if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
+            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
+            
+            boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
+            
+            /* AccountDto */
+            AccountDto accountDto = new AccountDto();
+            accountDto.setIsCommercial(false);
+    
+            /* OperatorGeneralUiExtras */
+            OperatorGeneralUiExtras uiExtras = new OperatorGeneralUiExtras();
+            uiExtras.setHasOddsForControlRole(hasOddForControlRole);
+    
+            /* LoginBackingBean */
+            LoginBackingBean loginBackingBean = new LoginBackingBean();
+            loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
+    
+            /* AccountGeneral */
+            AccountGeneral accountGeneral = new AccountGeneral();
+            accountGeneral.setAccountDto(new AccountDto());
+            accountGeneral.setOperatorGeneralUiExtras(uiExtras);
+            accountGeneral.setLoginBackingBean(loginBackingBean);
+    
+            modelMap.addAttribute("accountGeneral", accountGeneral);
+            
+            setupAccountCreationModelMap(modelMap, userContext.getYukonUser());
+        }else{
+            modelMap.addAttribute("mode", PageEditMode.CREATE);
+        }
+        return "operator/account/account.jsp";
+    }
+    
+    // CREATE ACCOUNT
+    @RequestMapping(method=RequestMethod.POST, value="createAccount")
+    public String createAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral,
+                                BindingResult bindingResult,
+                                FlashScope flashScope,
+                                ModelMap modelMap, 
+                                HttpServletRequest request,
+                                final HttpSession session,
+                                final LiteYukonUser user) throws ServletRequestBindingException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
+        
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
-	    LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
+        LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
 
-	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-	    
-	    AccountDto accountDto = accountGeneral.getAccountDto();
-	    if(accountGeneral.getOperatorGeneralUiExtras().isUsePrimaryAddressForBilling()) {
-	        accountDto.setBillingAddress(accountDto.getStreetAddress());
-	    }
-	    
-	    /* UpdatableAccount */
-	    final UpdatableAccount updatableAccount = new UpdatableAccount();
-	    updatableAccount.setAccountDto(accountDto);
-	    updatableAccount.setAccountNumber(accountDto.getAccountNumber());
-	    /* Validate and Create */
-	    try {
-	    	
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        
+        AccountDto accountDto = accountGeneral.getAccountDto();
+        if(accountGeneral.getOperatorGeneralUiExtras().isUsePrimaryAddressForBilling()) {
+            accountDto.setBillingAddress(accountDto.getStreetAddress());
+        }
+        
+        /* UpdatableAccount */
+        final UpdatableAccount updatableAccount = new UpdatableAccount();
+        updatableAccount.setAccountDto(accountDto);
+        updatableAccount.setAccountNumber(accountDto.getAccountNumber());
+        /* Validate and Create */
+        try {
+            
             accountGeneralValidator.validate(accountGeneral, bindingResult);
-    	    /* This role property forces the creation of a login with the creation of an account. */
-    	    final boolean createLogin = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user)
-    	    		&& (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
-    						|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
-    						|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()));
-			if (createLogin) {
-					bindingResult.pushNestedPath("loginBackingBean");
-					usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-					passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-					bindingResult.popNestedPath();
-			}
+            /* This role property forces the creation of a login with the creation of an account. */
+            final boolean createLogin = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user)
+                    && (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
+                            || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
+                            || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()));
+            if (createLogin) {
+                    bindingResult.pushNestedPath("loginBackingBean");
+                    usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                    passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                    bindingResult.popNestedPath();
+            }
 
             if (!bindingResult.hasErrors()) {
                 
@@ -400,38 +443,38 @@ public class OperatorAccountController {
                 }
                 
                 /* Validation passed, proceed with creation */
-    	        /* IMPORTANT NOTE HERE
-    	         * 
-    	         * The AccountDto does have login fields and can be used by the AccountSevice to create/edit/delete logins
-    	         * because it was originally created for the BGE soap messaging service.  There was also a seperate operator page 
-    	         * to create/edit/delete logins which has now been rolled into the account page.  For the account page we will
-    	         * use the (refactored and moved) operator page login code, now moved to the ResidentialLoginService.  This was 
-    	         * done because the page has slightly more options for logins than the messaging service does and to ensure
-    	         * that the messaging service was not broken.  If you have set any of the login fields on the accountDto a new 
-    	         * login will get created incorrectly, much pain and suffering will follow.
-    	         * 
-    	         * TLDR - make sure you never set the login fields on the AccountDto here and only use the login fields on the LoginBackingBean */
-    	        Integer accountId = transactionTemplate.execute(new TransactionCallback<Integer>() {
-    	            
-    	            @Override
+                /* IMPORTANT NOTE HERE
+                 * 
+                 * The AccountDto does have login fields and can be used by the AccountSevice to create/edit/delete logins
+                 * because it was originally created for the BGE soap messaging service.  There was also a seperate operator page 
+                 * to create/edit/delete logins which has now been rolled into the account page.  For the account page we will
+                 * use the (refactored and moved) operator page login code, now moved to the ResidentialLoginService.  This was 
+                 * done because the page has slightly more options for logins than the messaging service does and to ensure
+                 * that the messaging service was not broken.  If you have set any of the login fields on the accountDto a new 
+                 * login will get created incorrectly, much pain and suffering will follow.
+                 * 
+                 * TLDR - make sure you never set the login fields on the AccountDto here and only use the login fields on the LoginBackingBean */
+                Integer accountId = transactionTemplate.execute(new TransactionCallback<Integer>() {
+                    
+                    @Override
                     public Integer doInTransaction(TransactionStatus status) {
-    	                /* Create the account */
-            	        int accountId = operatorAccountService.addAccount(updatableAccount, user, accountGeneral.getOperatorGeneralUiExtras());
-            	        if (createLogin) {
-            	            /* Create the login */
-            	            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
-            	            /* Added Event Log Message */
-            	        }
-            	        int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
-            	        EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
-            	                                 YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, accountId);
-            	        return accountId;
-    	            }
-    	        });
-    	        
-    	        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
-    	        modelMap.addAttribute("accountId", accountId);
-    	        return "redirect:view";
+                        /* Create the account */
+                        int accountId = operatorAccountService.addAccount(updatableAccount, user, accountGeneral.getOperatorGeneralUiExtras());
+                        if (createLogin) {
+                            /* Create the login */
+                            residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), user, accountId, energyCompany.getEnergyCompanyId());
+                            /* Added Event Log Message */
+                        }
+                        int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
+                        EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
+                                                 YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_CREATED, accountId);
+                        return accountId;
+                    }
+                });
+                
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
+                modelMap.addAttribute("accountId", accountId);
+                return "redirect:view";
             }
             
         } catch (AccountNumberUnavailableException e) {
@@ -453,28 +496,28 @@ public class OperatorAccountController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
         return "redirect:view";
-	}
-	
-	// ACCOUNT VIEW PAGE
-	@RequestMapping("view")
-	public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
-	    model.addAttribute("mode", PageEditMode.VIEW);
-	    setupAccountPage(model, context, fragment, accountId);
-	    
-	    
-	    return "operator/account/account.jsp";
-	}
-	// ACCOUNT EDIT PAGE
-	@RequestMapping("edit")
+    }
+    
+    // ACCOUNT VIEW PAGE
+    @RequestMapping("view")
+    public String view(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+        model.addAttribute("mode", PageEditMode.VIEW);
+        setupAccountPage(model, context, fragment, accountId);
+        
+        
+        return "operator/account/account.jsp";
+    }
+    // ACCOUNT EDIT PAGE
+    @RequestMapping("edit")
     public String edit(HttpServletRequest request, int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
-	    model.addAttribute("mode", PageEditMode.EDIT);
-	    setupAccountPage(model, context, fragment, accountId);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        model.addAttribute("mode", PageEditMode.EDIT);
+        setupAccountPage(model, context, fragment, accountId);
 
         return "operator/account/account.jsp";
-	}
-	
-	private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
+    }
+    
+    private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
@@ -483,12 +526,12 @@ public class OperatorAccountController {
         buildAccountDto(model, context, accountId, residentialUser, energyCompany);
         
         setupAccountModel(fragment, model, context, ecResidentialUserGroups, residentialUser);
-	}
-	
-	private void buildAccountDto(ModelMap model, YukonUserContext context, int accountId, 
-	                             LiteYukonUser residentialUser, LiteStarsEnergyCompany energyCompany) {
+    }
+    
+    private void buildAccountDto(ModelMap model, YukonUserContext context, int accountId, 
+                                 LiteYukonUser residentialUser, LiteStarsEnergyCompany energyCompany) {
 
-	    /* AccountDto */
+        /* AccountDto */
         AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), context);
 
         /* OperatorGeneralUiExtras */
@@ -522,9 +565,9 @@ public class OperatorAccountController {
         }
 
         model.addAttribute("accountGeneral", accountGeneral);
-	}
-	
-	// GENERATE PASSWORD
+    }
+    
+    // GENERATE PASSWORD
     @RequestMapping(value="generatePassword")
     public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) throws IOException {
         LiteYukonUser user = null; 
@@ -605,14 +648,14 @@ public class OperatorAccountController {
         return Collections.singletonMap("fieldErrors", errorJSON);
     }
     
-	// UPDATE ACCOUNT
+    // UPDATE ACCOUNT
     @RequestMapping(method=RequestMethod.POST, value="updateAccount")
     public String updateAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral,  BindingResult bindingResult,
-								final int accountId, ModelMap modelMap,  final YukonUserContext userContext, FlashScope flashScope,
-					    		final AccountInfoFragment accountInfoFragment, HttpServletRequest request,
-					    		final HttpSession session) throws ServletRequestBindingException {
-	    
-	    /* Verify the user has permission to edit accounts */
+                                final int accountId, ModelMap modelMap,  final YukonUserContext userContext, FlashScope flashScope,
+                                final AccountInfoFragment accountInfoFragment, HttpServletRequest request,
+                                final HttpSession session) throws ServletRequestBindingException {
+        
+        /* Verify the user has permission to edit accounts */
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
@@ -620,8 +663,8 @@ public class OperatorAccountController {
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         String currentAccountNumber = customerAccount.getAccountNumber();
-	    
-	    final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
+        
+        final String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
 
@@ -642,63 +685,63 @@ public class OperatorAccountController {
             || (residentialUser.getUserID() == UserUtils.USER_NONE_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
             || (residentialUser.getUserID() != UserUtils.USER_NONE_ID && originalUserGroup != null &&
                 !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalUserGroup.getUserGroupName()));
-		
-		/* UpdatableAccount */
-		final UpdatableAccount updatableAccount = new UpdatableAccount();
-		updatableAccount.setAccountNumber(currentAccountNumber);
-		updatableAccount.setAccountDto(accountGeneral.getAccountDto());
-		
-		accountEventLogService.accountUpdateAttempted(userContext.getYukonUser(), updatableAccount.getAccountNumber(), EventSource.OPERATOR);
-		
-		if(!ignoreLogin) {
-		    systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), EventSource.OPERATOR);
-		}
+        
+        /* UpdatableAccount */
+        final UpdatableAccount updatableAccount = new UpdatableAccount();
+        updatableAccount.setAccountNumber(currentAccountNumber);
+        updatableAccount.setAccountDto(accountGeneral.getAccountDto());
+        
+        accountEventLogService.accountUpdateAttempted(userContext.getYukonUser(), updatableAccount.getAccountNumber(), EventSource.OPERATOR);
+        
+        if(!ignoreLogin) {
+            systemEventLogService.loginChangeAttempted(userContext.getYukonUser(), residentialUser.getUsername(), EventSource.OPERATOR);
+        }
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
-		
-		/* Validate and Update */
-		try {
-			accountGeneralValidator.validate(accountGeneral, bindingResult);
-			// create new login validation - validate if one of the fields (password fields or username) is entered
-			if (hasEditLoginPrivileges && residentialUser.getUserID() == UserUtils.USER_NONE_ID 
-					&& (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
-					|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
-					|| StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()))) {
-				bindingResult.pushNestedPath("loginBackingBean");
-				usernameValidator.validate(accountGeneral.getLoginBackingBean(),bindingResult);
-				passwordValidator.validate(accountGeneral.getLoginBackingBean(),
-								bindingResult);
-				bindingResult.popNestedPath();
-			}
-			// edit login validation
-			else if(!ignoreLogin) {
-			    
-			    bindingResult.pushNestedPath("loginBackingBean");
+        
+        /* Validate and Update */
+        try {
+            accountGeneralValidator.validate(accountGeneral, bindingResult);
+            // create new login validation - validate if one of the fields (password fields or username) is entered
+            if (hasEditLoginPrivileges && residentialUser.getUserID() == UserUtils.USER_NONE_ID 
+                    && (StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword1()) 
+                    || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getPassword2())
+                    || StringUtils.isNotEmpty(accountGeneral.getLoginBackingBean().getUsername()))) {
+                bindingResult.pushNestedPath("loginBackingBean");
+                usernameValidator.validate(accountGeneral.getLoginBackingBean(),bindingResult);
+                passwordValidator.validate(accountGeneral.getLoginBackingBean(),
+                                bindingResult);
+                bindingResult.popNestedPath();
+            }
+            // edit login validation
+            else if(!ignoreLogin) {
+                
+                bindingResult.pushNestedPath("loginBackingBean");
 
-			    //When both password fields are left blank, this is a special case which means it
-			    // won't change the password, so here we don't want to do validation. 
-			    if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
-			            || StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
-			        passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-			    }
+                //When both password fields are left blank, this is a special case which means it
+                // won't change the password, so here we don't want to do validation. 
+                if (StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword1()) 
+                        || StringUtils.isNotBlank(accountGeneral.getLoginBackingBean().getPassword2())) {
+                    passwordValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                }
 
-			    usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
-			    bindingResult.popNestedPath();
-			    
-			    /* Check to see if the user is trying to modify the default user */
+                usernameValidator.validate(accountGeneral.getLoginBackingBean(), bindingResult);
+                bindingResult.popNestedPath();
+                
+                /* Check to see if the user is trying to modify the default user */
                 checkEditingDefaultUser(accountGeneral.getLoginBackingBean().getUsername());
-			}
-			
-			if (!bindingResult.hasErrors()) {
-			    
+            }
+            
+            if (!bindingResult.hasErrors()) {
+                
                 transactionTemplate.execute(new TransactionCallback<Object>() {
                     
                     @Override
                     public Object doInTransaction(TransactionStatus status) {
                         /* see IMPORTANT NOTE comment in createAccount method, same rules apply here */
-        				accountService.updateAccount(updatableAccount, accountId, userContext.getYukonUser());
-        				operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
-        				if (!ignoreLogin) {
+                        accountService.updateAccount(updatableAccount, accountId, userContext.getYukonUser());
+                        operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
+                        if (!ignoreLogin) {
                             if (LoginModeEnum.valueOf(loginMode) == LoginModeEnum.CREATE) {
                                 residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), 
                                                        userContext.getYukonUser(), 
@@ -715,34 +758,34 @@ public class OperatorAccountController {
                             int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
                             EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT, 
                                                      YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId());
-        				}
+                        }
                         return null;
                     }
                 });
-			}
-			
-		} catch (AccountNumberUnavailableException e) {
-			
-			bindingResult.rejectValue("accountDto.accountNumber", "yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable");
-		
-		} finally {
-			setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialUserGroups, residentialUser);
+            }
+            
+        } catch (AccountNumberUnavailableException e) {
+            
+            bindingResult.rejectValue("accountDto.accountNumber", "yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable");
+        
+        } finally {
+            setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialUserGroups, residentialUser);
 
-			if (bindingResult.hasErrors()) {
-				
-				List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-				flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-		        modelMap.addAttribute("mode", PageEditMode.EDIT);
-				
-				return "operator/account/account.jsp";
-			} 
-		}
-		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountUpdated"));
-		return "redirect:view";
-	}
-	
-	// DELETE LOGIN
+            if (bindingResult.hasErrors()) {
+                
+                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+                modelMap.addAttribute("mode", PageEditMode.EDIT);
+                
+                return "operator/account/account.jsp";
+            } 
+        }
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountUpdated"));
+        return "redirect:view";
+    }
+    
+    // DELETE LOGIN
     @RequestMapping(value="deleteLogin", method=RequestMethod.POST)
     public String deleteLogin(HttpServletRequest request,
                                String loginMode,
@@ -763,24 +806,24 @@ public class OperatorAccountController {
         modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
         return "redirect:view";
     }
-	
-	// DELETE ACCOUNT
-	@RequestMapping(value="deleteAccount", method=RequestMethod.POST)
+    
+    // DELETE ACCOUNT
+    @RequestMapping(value="deleteAccount", method=RequestMethod.POST)
     public String deleteAccount(HttpServletRequest request, 
                                 int accountId,
-    							ModelMap modelMap, 
-    							YukonUserContext userContext,
-    							FlashScope flashScope) throws ServletRequestBindingException {
-	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-	    accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
-		accountService.deleteAccount(accountId, userContext.getYukonUser());
-		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountDeleted"));
-		return "redirect:/stars/operator/inventory/home";
-	}
-	
-	// ACCOUNT LOG
-	@RequestMapping("accountLog")
+                                ModelMap modelMap, 
+                                YukonUserContext userContext,
+                                FlashScope flashScope) throws ServletRequestBindingException {
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
+        accountService.deleteAccount(accountId, userContext.getYukonUser());
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountDeleted"));
+        return "redirect:/stars/operator/inventory/home";
+    }
+    
+    // ACCOUNT LOG
+    @RequestMapping("accountLog")
     public String accountLog(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());
@@ -789,36 +832,36 @@ public class OperatorAccountController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/account/accountLog.jsp";
     }
-	
-	// ACCOUNT GENERAL WRAPPER
-	public static class AccountGeneral {
-		
-		private AccountDto accountDto = new AccountDto();
-		private OperatorGeneralUiExtras operatorGeneralUiExtras = new OperatorGeneralUiExtras();
-		private LoginBackingBean loginBackingBean = new LoginBackingBean();
-		
-		public AccountDto getAccountDto() {
-			return accountDto;
-		}
-		public void setAccountDto(AccountDto accountDto) {
-			this.accountDto = accountDto;
-		}
-		public OperatorGeneralUiExtras getOperatorGeneralUiExtras() {
-			return operatorGeneralUiExtras;
-		}
-		public void setOperatorGeneralUiExtras(OperatorGeneralUiExtras operatorGeneralUiExtras) {
-			this.operatorGeneralUiExtras = operatorGeneralUiExtras;
-		}
+    
+    // ACCOUNT GENERAL WRAPPER
+    public static class AccountGeneral {
+        
+        private AccountDto accountDto = new AccountDto();
+        private OperatorGeneralUiExtras operatorGeneralUiExtras = new OperatorGeneralUiExtras();
+        private LoginBackingBean loginBackingBean = new LoginBackingBean();
+        
+        public AccountDto getAccountDto() {
+            return accountDto;
+        }
+        public void setAccountDto(AccountDto accountDto) {
+            this.accountDto = accountDto;
+        }
+        public OperatorGeneralUiExtras getOperatorGeneralUiExtras() {
+            return operatorGeneralUiExtras;
+        }
+        public void setOperatorGeneralUiExtras(OperatorGeneralUiExtras operatorGeneralUiExtras) {
+            this.operatorGeneralUiExtras = operatorGeneralUiExtras;
+        }
         public void setLoginBackingBean(LoginBackingBean loginBackingBean) {
             this.loginBackingBean = loginBackingBean;
         }
         public LoginBackingBean getLoginBackingBean() {
             return loginBackingBean;
         }
-		
-	}
-	
-	private AccountImportResult initAccountImportResult(LiteYukonUser user, BulkFileUpload accountFileUpload, BulkFileUpload hardwareFileUpload, String email, boolean prescan) {
+        
+    }
+    
+    private AccountImportResult initAccountImportResult(LiteYukonUser user, BulkFileUpload accountFileUpload, BulkFileUpload hardwareFileUpload, String email, boolean prescan) {
         AccountImportResult result = new AccountImportResult();
         result.setCurrentUser(user);
         result.setAccountFileUpload(accountFileUpload);
@@ -834,16 +877,16 @@ public class OperatorAccountController {
         recentResultsCache.addResult(resultsId, result);
         return result;
     }
-	
-	private void setupAccountImportModelMap(ModelMap model) {
+    
+    private void setupAccountImportModelMap(ModelMap model) {
         AccountImportData data = new AccountImportData();
         model.addAttribute("accountImportData", data);
         model.addAttribute("accountFields", AccountImportFields.values());
         model.addAttribute("hardwareFields", HardwareImportFields.values());
     }
-	
-	private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
-	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+    
+    private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
+        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
@@ -860,9 +903,9 @@ public class OperatorAccountController {
         modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
     }
-	
-	private void setupAccountModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext,
-	                                      List<LiteUserGroup> ecResidentialUserGroups, LiteYukonUser residentialUser) {
+    
+    private void setupAccountModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext,
+                                          List<LiteUserGroup> ecResidentialUserGroups, LiteYukonUser residentialUser) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
@@ -885,22 +928,22 @@ public class OperatorAccountController {
             modelMap.addAttribute("loginMode", LoginModeEnum.EDIT);
         }
     }
-	
-	private boolean hasEditLoginPrivileges(LiteYukonUser user) {
+    
+    private boolean hasEditLoginPrivileges(LiteYukonUser user) {
         return rolePropertyDao.checkAnyProperties(user, 
                                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, 
                                                   YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD);
     }
-	
-	private void checkEditingDefaultUser(String username) {
+    
+    private void checkEditingDefaultUser(String username) {
         LiteYukonUser defaultUserCheck = yukonUserDao.findUserByUsername(username);
         
         if (defaultUserCheck != null && defaultUserCheck.getUserID() == UserUtils.USER_NONE_ID) {
             throw new RuntimeException("You cannot edit the the default user.");
         }
     }
-	
-	/**
+    
+    /**
      * Returns true if any of the login fields were changed by the user.
      * @param residentialUser
      * @param loginBackingBean
@@ -918,7 +961,7 @@ public class OperatorAccountController {
         
         return !didNotChange;
     }
-	
+    
     @Resource(name="accountImportResultsCache")
     public void setRecentResultsCache(RecentResultsCache<AccountImportResult> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;

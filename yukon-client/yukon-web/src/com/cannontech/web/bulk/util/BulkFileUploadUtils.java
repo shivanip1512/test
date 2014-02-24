@@ -30,6 +30,7 @@ public class BulkFileUploadUtils {
                     bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.emptyFile");
                 } else {
                     File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
+                    bulkFileUpload.setName(dataFile.getOriginalFilename());
                     bulkFileUpload.setFile(file);
                 }
             } catch (IOException e) {
