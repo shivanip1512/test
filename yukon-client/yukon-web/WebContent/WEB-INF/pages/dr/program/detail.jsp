@@ -100,7 +100,6 @@
         </div>
         <div class="column two nogutter">
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
-                <div class="f-pao-id" data-pao-id="${program.paoIdentifier.paoId}"></div>
                 <%-- Display the Asset Availability Info --%>
                 <tags:sectionContainer2 nameKey="assetAvailability">
                     <div class="f-asset-availability f-block-this">

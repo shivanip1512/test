@@ -118,7 +118,6 @@
         
         <div class="column two nogutter">
             <cti:checkRolesAndProperties value="SHOW_ASSET_AVAILABILITY">
-                <div class="f-pao-id" data-pao-id="${controlArea.paoIdentifier.paoId}"></div>
                 <tags:sectionContainer2 nameKey="assetAvailability">
                     <%-- Display the Asset Availability Info --%>
                     <div class="f-asset-availability f-block-this">
