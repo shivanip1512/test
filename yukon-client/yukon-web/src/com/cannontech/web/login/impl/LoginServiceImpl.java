@@ -136,8 +136,10 @@ public class LoginServiceImpl implements LoginService {
             Pair<Properties, String> p = (Pair<Properties, String>) session.getAttribute(SAVED_YUKON_USERS);
             session.invalidate();
 
-            redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
-            ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
+            redirect = request.getContextPath()
+                + rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
+            ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid="
+                + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
 
             if (p != null) {
                 Properties oldContext = p.getFirst();

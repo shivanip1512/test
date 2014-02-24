@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +25,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.userpage.service.UserPageService;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
@@ -42,10 +39,8 @@ public class HomeController {
     @Autowired private UserPageService userPageService;
 
     @RequestMapping(value = {"/home", "/index.jsp"})
-    public String home(HttpServletRequest req, LiteYukonUser user) {
-
-        String homeUrl = ServletUtil.createSafeUrl(req,
-            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
+    public String home(LiteYukonUser user) {
+        String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
 
         return "redirect:" + homeUrl;
     }
@@ -161,5 +156,4 @@ public class HomeController {
                 return userPage.getModule().getSiteMapCategory();
             }
         });
-
 }

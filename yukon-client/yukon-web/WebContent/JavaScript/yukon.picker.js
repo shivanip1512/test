@@ -379,7 +379,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         jQuery.ajax({
             dataType: "json",
-            url: '/picker/v2/search',
+            url: YG.APP_NAME + '/picker/v2/search',
             data: parameters
         }).done(function (data, status, xhrobj) {
             doOnComplete(xhrobj);
@@ -474,7 +474,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
             jQuery.ajax({
                 type: 'POST',
-                url: '/picker/v2/idSearch',
+                url: YG.APP_NAME + '/picker/v2/idSearch',
                 traditional: true, // see jQuery docs for discussion of this option
                 data: parameters
             }).done(function (data, status, xhrobj) {
@@ -586,7 +586,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
 
         onCompleteBind = yukon.doBind(onPrimeComplete, this, showPicker, initialIds, skipFocus);
-        jQuery(pickerDialogDivContainer).load('/picker/v2/build', parameters, onCompleteBind);
+        jQuery(pickerDialogDivContainer).load(YG.APP_NAME + '/picker/v2/build', parameters, onCompleteBind);
 
     },
 

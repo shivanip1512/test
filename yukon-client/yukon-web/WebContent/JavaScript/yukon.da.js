@@ -62,7 +62,7 @@ yukon.da = (function () {
             /* creation menu popup */
             jQuery('.f-cc-create').click(function() {
                 var content = jQuery('#contentPopup');
-                content.load('/capcontrol/menu/create', function() {
+                content.load(YG.APP_NAME + '/capcontrol/menu/create', function() {
                     var title = content.find('input.title').val();
                     content.dialog({title: title});
                 });
@@ -92,8 +92,8 @@ yukon.da = (function () {
                     });
                 } else {
                     moveBankOpener.click( function(event) {
-                        mod.showDialog( moveBankTitle, 
-                                    '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId), 
+                        mod.showDialog(moveBankTitle,
+                        		    YG.APP_NAME + '/capcontrol/move/bankMove?bankid=' + encodeURIComponent(bankId), 
                                     {'height': 650, 'width': 650, 'modal': true}, 
                                     '#contentPopup'); 
                     });
@@ -111,7 +111,7 @@ yukon.da = (function () {
                 });
 
                 stateMenuOpener.click( function(event){
-                    mod.getMenuFromURL('/capcontrol/menu/capBankState?id=' + bankId, event);
+                    mod.getMenuFromURL(YG.APP_NAME + '/capcontrol/menu/capBankState?id=' + bankId, event);
                 });
 
             });
@@ -229,7 +229,7 @@ yukon.da = (function () {
         },
 
         getCommandMenu : function(id, event) {
-            mod.getMenuFromURL('/capcontrol/menu/commandMenu?id=' + id, event);
+            mod.getMenuFromURL(YG.APP_NAME + '/capcontrol/menu/commandMenu?id=' + id, event);
         },
 
         checkPageExpire : function() {
@@ -240,7 +240,7 @@ yukon.da = (function () {
             });
 
             jQuery.ajax({
-                url: '/capcontrol/pageExpire',
+                url: YG.APP_NAME + '/capcontrol/pageExpire',
                 data: {'paoIds': paoIds}
             }).success(function(data) {
                 if (data.expired) {
@@ -264,7 +264,7 @@ yukon.da = (function () {
         },
 
         getMovedBankMenu : function(id, event) {
-            mod.getMenuFromURL('/capcontrol/menu/movedBankMenu?id=' + id, event);
+            mod.getMenuFromURL(YG.APP_NAME + '/capcontrol/menu/movedBankMenu?id=' + id, event);
         },
 
         checkAll: function(allCheckBox, selector) {

@@ -57,7 +57,8 @@
         var YG = {
                 PHONE: {
                     FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
-                }
+                },
+                APP_NAME: '<cti:url value="/"/>'
         };
         </script>
         <!-- Consolidated Script Files -->
@@ -108,7 +109,7 @@
             <nav role="navigation">
                 <ul>
                     <li class="logo">
-                        <a href="/home"></a>
+                        <a href="<cti:url value="/home"/>"></a>
                     </li>
                     <cti:outputContent writable="${menuRenderer}"/>
                 </ul>
@@ -199,8 +200,8 @@
     <div class="utility">
         <nav>
             <ul>
-                <li><a href="/support"><i:inline key=".support"/></a></li>
-                <li><a href="/sitemap"><i:inline key=".siteMap"/></a></li>
+                <li><a href="<cti:url value="/support"/>"><i:inline key=".support"/></a></li>
+                <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
                 <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
                     <li><a href="javascript:void(0);" id="appsLauncher"><i:inline key=".applications"/></a></li>
                     <d:inline id="yukonApplicationDialog" okEvent="none" nameKey="applications" on="#appsLauncher"
@@ -209,7 +210,7 @@
                     </d:inline>
                 </cti:checkRolesAndProperties>
                 <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-                    <li><a href="/support/development/main">Development</a></li>
+                    <li><a href="<cti:url value="/support/development/main"/>">Development</a></li>
                 </cti:checkGlobalRolesAndProperties>
                 <c:if test="${showNM}">
                     <li><a href="${nmUrl}" target="_blank"><i:inline key="yukon.common.networkManager"/></a></li>

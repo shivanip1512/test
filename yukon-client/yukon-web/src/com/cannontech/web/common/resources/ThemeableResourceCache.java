@@ -120,7 +120,7 @@ public class ThemeableResourceCache {
                 String replacement = (String)theme.getProperties().get(type);
                 
                 if (type.getInputType() instanceof ImageType) {
-                    replacement = "'/common/images/" +  replacement + "'";
+                    replacement = "'../../../common/images/" +  replacement + "'";
                 } else if (type.getInputType() instanceof PixelType) {
                     replacement = replacement + "px";
                 }

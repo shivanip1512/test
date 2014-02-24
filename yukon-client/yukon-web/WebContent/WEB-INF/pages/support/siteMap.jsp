@@ -18,7 +18,7 @@
                 <c:forEach var="wrapper" items="${category.value}">
                     <li>
                     <c:if test="${wrapper.enabled}">
-                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page}"/></a>
+                        <a href="<cti:url value="${wrapper.page.link}"/>"><i:inline key="${wrapper.page}"/></a>
                     </c:if>
                     <c:if test="${not wrapper.enabled}">
                         <cti:msg2 key=".noPermissions" argument="${wrapper.requiredPermissions}" var="perms"/>

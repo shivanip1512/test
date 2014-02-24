@@ -36,6 +36,16 @@
         <!-- Consolidated Script Files -->
         <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
+
+        <!-- Some prerequisite globals -->
+        <script type="text/javascript">
+        var YG = {
+                PHONE: {
+                    FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
+                },
+                APP_NAME: '<cti:url value="/"/>'
+        };
+        </script>
     </head>
     
 	<body class="<c:out value="${module.moduleName}"/>_module">

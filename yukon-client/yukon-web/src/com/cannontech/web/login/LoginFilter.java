@@ -162,11 +162,10 @@ public class LoginFilter implements Filter {
                 // Timeout
                 log.debug("Session Timeout for request: " + request.getRequestURI());
                 throw new SessionTimeoutException();
-            } else {
-                // Update the last activity time to now for non ajax requests.
-                if (!ajaxRequest) {
-                    sessionInfo.setLastActivityTime(new Instant());
-                }
+            }
+            // Update the last activity time to now for non ajax requests.
+            if (!ajaxRequest) {
+                sessionInfo.setLastActivityTime(new Instant());
             }
         } else {
             // Timeout
@@ -202,7 +201,7 @@ public class LoginFilter implements Filter {
             String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, unencodedNavUrl);
             String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
 
-            String redirectURL = LoginController.LOGIN_URL;
+            String redirectURL = request.getContextPath() + LoginController.LOGIN_URL;
             if (!StringUtils.isBlank(encodedNavUrl)) {
                 redirectURL += "?" + LoginController.REDIRECTED_FROM + "=" + encodedNavUrl;
             }
@@ -296,5 +295,6 @@ public class LoginFilter implements Filter {
 
     @Override
     public void destroy() {
+        // Nothing to tear down for this filter.
     }
 }
