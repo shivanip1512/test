@@ -1,12 +1,9 @@
 package com.cannontech.dr.assetavailability.service;
 
-import java.util.Collection;
 import java.util.Map;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
-import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilityTotals;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 
@@ -65,18 +62,4 @@ public interface AssetAvailabilityService {
      * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier);
-    
-    /**
-     * Retrieves the total number of active, inactive and unavailable devices in the specified 
-     * collection.
-     */
-    public AssetAvailabilityTotals getAssetAvailabilityTotal(Collection<Integer> deviceIds);
-    
-    /**
-     * Retrieves the individual active, inactive or unavailable status of the devices in the 
-     * specified collection. Note that devices that have never communicated will have a null 
-     * AssetAvailabilityStatus.
-     */
-    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Collection<Integer> deviceIds);
-
 }

@@ -1,7 +1,6 @@
 package com.cannontech.dr.assetavailability.service.impl;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,6 @@ import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
-import com.cannontech.dr.assetavailability.AssetAvailabilityTotals;
 import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
@@ -248,74 +246,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         log.debug("Calculating simple asset availability for inventory " + inventoryId);
         Map<Integer, SimpleAssetAvailability> singleValueMap = getAssetAvailability(Sets.newHashSet(inventoryId));
         return singleValueMap.get(inventoryId);
-    }
-    
-    @Override
-    public AssetAvailabilityTotals getAssetAvailabilityTotal(Collection<Integer> deviceIds) {
-        log.debug("Calculating asset availability total for deviceIds");
-        if(log.isTraceEnabled()) {
-            log.trace("DeviceIds: " + deviceIds.toArray().toString());
-        }
-        //Get communications and runtime windows
-        Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
-        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
-        
-        //Get asset availability
-        Map<Integer, DeviceCommunicationTimes> timesMap = lcrCommunicationsDao.findTimes(deviceIds);
-        int active = 0;
-        int inactive = 0;
-        int unavailable = 0;
-        for (DeviceCommunicationTimes times : timesMap.values()) {
-            if (times != null && times.getLastCommunicationTime().isAfter(communicatingWindowEnd)) {
-                if (times.getLastNonZeroRuntime().isAfter(runtimeWindowEnd)) {
-                    active++;
-                } else {
-                    inactive++;
-                }
-            } else {
-                unavailable++;
-            }
-        }
-        log.debug("Done calculating asset availability total");
-        return new AssetAvailabilityTotals(active, inactive, unavailable);
-    }
-    
-    @Override
-    public Map<Integer, AssetAvailabilityStatus> getAssetAvailabilityStatus(Collection<Integer> deviceIds) {
-        log.debug("Calculating asset availability statuses for deviceIds");
-        if(log.isTraceEnabled()) {
-            log.trace("DeviceIds: " + deviceIds.toArray().toString());
-        }
-        //Get communications and runtime windows
-        Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
-        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
-        
-        //Get communication times
-        Map<Integer, DeviceCommunicationTimes> deviceTimesMap = lcrCommunicationsDao.findTimes(deviceIds);
-        
-        //Calculate statuses
-        Map<Integer, AssetAvailabilityStatus> results = new HashMap<>();
-        for(Integer deviceId : deviceIds) {
-            AssetAvailabilityStatus aaStatus = AssetAvailabilityStatus.UNAVAILABLE;
-            DeviceCommunicationTimes times = deviceTimesMap.get(deviceId);
-            if (times == null) {
-                //Device has never communicated
-                aaStatus = null;
-            } else if (times.getLastCommunicationTime() != null &&
-                           times.getLastCommunicationTime().isAfter(communicatingWindowEnd)) {
-                if (times.getLastNonZeroRuntime() != null &&
-                        times.getLastNonZeroRuntime().isAfter(runtimeWindowEnd)) {
-                    aaStatus = AssetAvailabilityStatus.ACTIVE;
-                } else {
-                    aaStatus = AssetAvailabilityStatus.INACTIVE;
-                }
-            }
-            results.put(deviceId, aaStatus);
-        }
-        log.debug("Done calculating asset availability statuses for deviceIds");
-        return results;
     }
     
     @Override
