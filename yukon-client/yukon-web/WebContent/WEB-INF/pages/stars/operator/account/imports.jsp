@@ -27,7 +27,7 @@
                                     <c:forEach items="${completed}" var="result">
                                         <tr>
                                             <td>
-                                                <a href="/stars/operator/account/imports/${result.resultId}">${result.fileNames}</a>
+                                                <a href="/stars/operator/account/imports/${result.resultId}">${fn:escapeXml(result.fileNames)}</a>
                                             </td>
                                             <td><cti:formatDate value="${result.startTime}" type="DATEHM"/></td>
                                             <td><cti:formatDuration type="DHMS_REDUCED" value="${result.duration}"/></td>
@@ -57,7 +57,7 @@
                                     <c:forEach items="${pending}" var="result">
                                         <tr>
                                             <td>
-                                                <a href="/stars/operator/account/imports/${result.resultId}">${result.fileNames}</a>
+                                                <a href="/stars/operator/account/imports/${result.resultId}">${fn:escapeXml(result.fileNames)}</a>
                                             </td>
                                             <td><cti:formatDate value="${result.startTime}" type="DATEHM"/></td>
                                             <td><tags:updateableProgressBar totalCount="${result.totalCount}" countKey="ACCOUNT_IMPORT/${result.resultId}/COMPLETED_COUNT" hideCount="true"/></td>
