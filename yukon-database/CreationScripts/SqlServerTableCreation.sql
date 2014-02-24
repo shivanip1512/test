@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/12/2014 1:03:26 PM                         */
+/* Created on:     2/19/2014 3:31:11 PM                         */
 /*==============================================================*/
 
 
@@ -7760,7 +7760,7 @@ go
 /*==============================================================*/
 create table RfnBroadcastEvent (
    RfnBroadcastEventId  numeric              not null,
-   EventSendTime        datetime             not null,
+   EventSentTime        datetime             not null,
    constraint PK_RfnBroadcastEventId primary key (RfnBroadcastEventId)
 )
 go

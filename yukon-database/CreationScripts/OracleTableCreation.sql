@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/12/2014 1:04:00 PM                         */
+/* Created on:     2/19/2014 3:30:14 PM                         */
 /*==============================================================*/
 
 
@@ -7301,7 +7301,7 @@ create unique index Indx_RfnAdd_SerNum_Man_Mod_UNQ on RfnAddress (
 /*==============================================================*/
 create table RfnBroadcastEvent  (
    RfnBroadcastEventId  NUMBER                          not null,
-   EventSendTime        DATE                            not null,
+   EventSentTime        DATE                            not null,
    constraint PK_RfnBroadcastEventId primary key (RfnBroadcastEventId)
 );
 
