@@ -7,6 +7,7 @@ yukon.dr.assetDetails = (function() {
     _initialized = false, 
     _assetId = "", // Set in intializer
     _itemsPerPage = "", // Set in intializer
+    _aaDiv = '', // Set in initializer
     
     _getFilter = function() {
         var filter = [];
@@ -53,10 +54,21 @@ yukon.dr.assetDetails = (function() {
 
             _assetId = jQuery("#assetId").val();
             _itemsPerPage = jQuery("#itemsPerPage").val();
+            _aaDiv = jQuery('.f-asset-availability');
 
             jQuery(document).on('click', '[data-filter]', _doFilterTable);
             jQuery(document).on('click', '#dd-download', _downloadToCsv);
             jQuery(document).on('click', '#pingButton', _pingDevices);
+            
+            if (_aaDiv.length) {
+                yukon.ui.elementGlass.show(_aaDiv);
+                jQuery.ajax('assetAvailability', {
+                    data: {'paoId': _assetId}
+                }).done(function(data) {
+                    _aaDiv.html(data);
+                    yukon.ui.elementGlass.hide(_aaDiv);
+                });
+            }
             
             _initialized = true;
         },
@@ -73,16 +85,4 @@ yukon.dr.assetDetails = (function() {
 
 jQuery(function() {
     yukon.dr.assetDetails.init();
-    
-    var aaDiv = jQuery('.f-asset-availability');
-    var paoId = jQuery('.f-pao-id').data('pao-id');
-    if (aaDiv.length) {
-        yukon.ui.elementGlass.show(aaDiv);
-        jQuery.ajax("assetAvailability", {
-            data: {'paoId': paoId}
-        }).done(function(data) {
-            aaDiv.html(data);
-            yukon.ui.elementGlass.hide(aaDiv);
-        });
-    }
 });
