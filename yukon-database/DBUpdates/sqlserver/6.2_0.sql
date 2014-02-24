@@ -3,7 +3,9 @@
 /******************************************/
 
 /* Start YUK-12914 */
+/* @error ignore-begin */
 sp_rename 'RfnBroadcastEvent.EventSendTime', 'EventSentTime', 'COLUMN';
+/* @error ignore-end */
 /* End YUK-12914 */
 
 /**************************************************************/

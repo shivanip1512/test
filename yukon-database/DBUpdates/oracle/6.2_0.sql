@@ -3,8 +3,10 @@
 /******************************************/ 
 
 /* Start YUK-12914 */
+/* @error ignore-begin */
 ALTER TABLE RfnBroadcastEvent
 RENAME COLUMN EventSendTime TO EventSentTime;
+/* @error ignore-end */
 /* End YUK-12914 */
 
 /**************************************************************/
