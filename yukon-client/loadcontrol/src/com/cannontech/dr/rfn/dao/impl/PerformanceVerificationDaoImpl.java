@@ -47,8 +47,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("SELECT Result, rbed.RfnBroadcastEventId, Count(*) as count");
         sql.append("FROM RfnBroadcastEventDeviceStatus rbed");
         sql.append("JOIN RfnBroadcastEvent rbe ON rbed.RfnBroadcastEventId = rbe.RfnBroadcastEventId");
-        sql.append("WHERE EventSendTime").gt(range.getMin());
-        sql.append("AND EventSendTime").lt(range.getMax());
+        sql.append("WHERE EventSentTime").gt(range.getMin());
+        sql.append("AND EventSentTime").lt(range.getMax());
         sql.append("GROUP BY Result, rbed.RfnBroadcastEventId");
 
         final Map<Long, Map<PerformanceVerificationMessageStatus, Integer>> stats = new HashMap<>();
@@ -89,7 +89,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public Instant getEventTime(long messageId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventSendTime");
+        sql.append("SELECT EventSentTime");
         sql.append("FROM RfnBroadcastEvent");
         sql.append("WHERE RfnBroadcastEventId").eq(messageId);
         
@@ -99,16 +99,16 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public List<PerformanceVerificationEventMessage> getEventMessages(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RfnBroadcastEventId, EventSendTime");
+        sql.append("SELECT RfnBroadcastEventId, EventSentTime");
         sql.append("FROM RfnBroadcastEvent");
-        sql.append("WHERE EventSendTime").gt(range.getMin());
-        sql.append("AND EventSendTime").lt(range.getMax());
+        sql.append("WHERE EventSentTime").gt(range.getMin());
+        sql.append("AND EventSentTime").lt(range.getMax());
 
         return jdbcTemplate.query(sql, new YukonRowMapper<PerformanceVerificationEventMessage>() {
             @Override
             public PerformanceVerificationEventMessage mapRow(YukonResultSet rs) throws SQLException {
                 return new PerformanceVerificationEventMessage(rs.getLong("RfnBroadcastEventId"),
-                                                                          rs.getInstant("EventSendTime"));
+                                                                          rs.getInstant("EventSentTime"));
             }
         });
     }
@@ -292,7 +292,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         SqlParameterSink params = sql.insertInto("RfnBroadcastEvent");
         
         params.addValue("RfnBroadcastEventId", nextId);
-        params.addValue("EventSendTime", now);
+        params.addValue("EventSentTime", now);
         
         jdbcTemplate.update(sql);
         
@@ -373,8 +373,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("   AND Result").eq_k(UNKNOWN);
         sql.append("   AND RfnBroadcastEventId IN (SELECT RfnBroadcastEventId");
         sql.append("                               FROM RfnBroadcastEvent");
-        sql.append("                               WHERE EventSendTime").gte(range.getMin());
-        sql.append("                               AND EventSendTime").lt(range.getMax()).append(")");
+        sql.append("                               WHERE EventSentTime").gte(range.getMin());
+        sql.append("                               AND EventSentTime").lt(range.getMax()).append(")");
         
         
         
