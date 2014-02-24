@@ -33,6 +33,9 @@ public class NotAuthorizedException extends YukonSecurityException {
     public static NotAuthorizedException adminUser(LiteYukonUser user) {
         return new NotAuthorizedException("User " + user + " is not an administrator");
     }
+    public static NotAuthorizedException ecOperator(LiteYukonUser user) {
+        return new NotAuthorizedException("User " + user + " is not an energy company operator.");
+    }
     public static NotAuthorizedException category(LiteYukonUser user, YukonRoleCategory roleCategory) {
         return new NotAuthorizedException("User " + user + " requires a role in category " + roleCategory);
     }

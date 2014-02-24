@@ -38,6 +38,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.events.model.EventSource;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.CtiUtilities;
@@ -82,6 +83,7 @@ import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
@@ -131,6 +133,7 @@ public class OperatorAccountController {
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private YukonEnergyCompanyService yecService;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -203,7 +206,11 @@ public class OperatorAccountController {
     }
 
     @RequestMapping("imports")
-    public String imports(ModelMap model) {
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT)
+    public String imports(ModelMap model, YukonUserContext userContext) {
+        
+        boolean isEcOperator = yecService.isEnergyCompanyOperator(userContext.getYukonUser());
+        if (!isEcOperator) throw NotAuthorizedException.ecOperator(userContext.getYukonUser());
         
         List<AccountImportResult> completed = new ArrayList<>();
         for (AccountImportResult result : recentResultsCache.getCompleted()) {
