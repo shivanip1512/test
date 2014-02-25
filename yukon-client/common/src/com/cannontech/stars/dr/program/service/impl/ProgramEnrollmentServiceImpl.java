@@ -31,7 +31,6 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -95,6 +94,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
     @Autowired private ProgramDao programDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private LMHardwareControlInformationService lmHardwareControlInformationService;
 
     @Override
     @Transactional
@@ -339,117 +339,101 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         
         LiteStarsEnergyCompany energyCompany = 
             StarsDatabaseCache.getInstance().getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-        
         StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
-        List<LiteLmHardwareBase> hwsToConfig = new ArrayList<LiteLmHardwareBase>();
-        
-        /*
-         * New enrollment, opt out, and control history tracking
-         *-------------------------------------------------------------------------------
-         */
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        List<int[]> hwInfoToEnroll = new ArrayList<int[]>(3);
-        List<int[]> hwInfoToUnenroll = new ArrayList<int[]>(3);
-        final int INV = 0;
-        final int ACCT = 1;
-        final int GROUP = 2;
-        final int RELAY = 3;
-        final int PROG = 4;
-        //final int APPCAT = 5;        
-        
-        Integer accountID = new Integer( liteAcctInfo.getCustomerAccount().getAccountID() );
-        
-        Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID() );
-        Integer dftManufacturerID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID() );
-        
+        List<LiteLmHardwareBase> hwsToConfig = new ArrayList<>();
+
+        int accountID = liteAcctInfo.getCustomerAccount().getAccountID();
+
+        int dftLocationID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID();
+        int dftManufacturerID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID();
+
         // Set the termination time a little bit earlier than the signup date
         Date signupDate = new Date();
-        Date termDate = new Date( signupDate.getTime() - 1000 );
-        
+        Date termDate = new Date(signupDate.getTime() - 1000);
+
         List<LiteStarsLMProgram> progList = liteAcctInfo.getPrograms(); // List of old programs
-        List<LiteStarsAppliance> appList = new ArrayList<LiteStarsAppliance>( liteAcctInfo.getAppliances() );   // List of old appliances
+        List<LiteStarsAppliance> appList = new ArrayList<>(liteAcctInfo.getAppliances());   // List of old appliances
         appList.addAll(liteAcctInfo.getUnassignedAppliances());
-        List<LiteStarsAppliance> newAppList = new ArrayList<LiteStarsAppliance>();      // List of new appliances
-        List<LiteStarsLMProgram> newProgList = new ArrayList<LiteStarsLMProgram>(); // List of new programs
-        List<Integer> progNewEnrollList = new ArrayList<Integer>(); // List of program IDs newly enrolled in
-        List<Integer> progUnenrollList = new ArrayList<Integer>();  // List of program IDs to be unenrolled
-        
+        List<LiteStarsAppliance> newAppList = new ArrayList<>();      // List of new appliances
+        List<LiteStarsLMProgram> newProgList = new ArrayList<>(); // List of new programs
+        List<Integer> progNewEnrollList = new ArrayList<>(); // List of program IDs newly enrolled in
+        List<Integer> progUnenrollList = new ArrayList<>();  // List of program IDs to be unenrolled
+
         // The StarsSULMPrograms object after the omitted fields have been filled in
         StarsSULMPrograms processedPrograms = new StarsSULMPrograms();
-        
+
         // Map from Integer(programID) to Hashtable(Map from Integer(inventoryID) to LiteStarsAppliance)
-        Map<Integer, Map<Integer, LiteStarsAppliance>> progHwAppMap = new Hashtable<Integer, Map<Integer, LiteStarsAppliance>>();
-        
+        Map<Integer, Map<Integer, LiteStarsAppliance>> progHwAppMap = new Hashtable<>();
+
         for (int i = 0; i < programs.getSULMProgramCount(); i++) {
             SULMProgram program = programs.getSULMProgram(i);
-            processedPrograms.addSULMProgram( program );
-            
+            processedPrograms.addSULMProgram(program);
+
             // If ApplianceCategoryID is not provided, set it here
             if (!program.hasApplianceCategoryID()) {
-                LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( program.getProgramID() );
-                program.setApplianceCategoryID( liteProg.getApplianceCategoryID() );
+                LiteLMProgramWebPublishing liteProg = energyCompany.getProgram(program.getProgramID());
+                program.setApplianceCategoryID(liteProg.getApplianceCategoryID());
             }
-            
-            Map<Integer, LiteStarsAppliance> hwAppMap = progHwAppMap.get( new Integer(program.getProgramID()) );
+
+            Map<Integer, LiteStarsAppliance> hwAppMap = progHwAppMap.get(program.getProgramID());
             if (hwAppMap == null) {
-                hwAppMap = new Hashtable<Integer, LiteStarsAppliance>();
+                hwAppMap = new Hashtable<>();
                 progHwAppMap.put( new Integer(program.getProgramID()), hwAppMap );
             }
-            
+
             if (liteInv != null) {
                 // Update program enrollment for the specifed hardware only
-                program.setInventoryID( liteInv.getInventoryID() );
-            }
-            else if (!program.hasInventoryID()) {
+                program.setInventoryID(liteInv.getInventoryID());
+            } else if (!program.hasInventoryID()) {
                 // Find hardwares already assigned to this program or another program in the same category
                 Iterator<LiteStarsAppliance> it = appList.iterator();
                 while (it.hasNext()) {
                     LiteStarsAppliance liteApp = it.next();
-                    
+
                     if (liteApp.getInventoryID() > 0 &&
                         (liteApp.getProgramID() == program.getProgramID() || 
-                         liteApp.getApplianceCategory().getApplianceCategoryId() == program.getApplianceCategoryID()))
-                    {
+                         liteApp.getApplianceCategory().getApplianceCategoryId()== program.getApplianceCategoryID())) {
                         if (!program.hasInventoryID()) {
-                            if (!program.hasAddressingGroupID() && liteApp.getProgramID() == program.getProgramID())
-                                program.setAddressingGroupID( liteApp.getAddressingGroupID() );
-                            program.setInventoryID( liteApp.getInventoryID() );
-                            program.setLoadNumber( liteApp.getLoadNumber() );
-                        }
-                        else {
+                            if (!program.hasAddressingGroupID()&& liteApp.getProgramID()== program.getProgramID()) {
+                                program.setAddressingGroupID(liteApp.getAddressingGroupID());
+                            }
+                            program.setInventoryID(liteApp.getInventoryID());
+                            program.setLoadNumber(liteApp.getLoadNumber());
+                        } else {
                             SULMProgram prog = new SULMProgram();
-                            prog.setProgramID( program.getProgramID() );
-                            prog.setApplianceCategoryID( program.getApplianceCategoryID() );
-                            prog.setInventoryID( liteApp.getInventoryID() );
-                            prog.setLoadNumber( liteApp.getLoadNumber() );
+                            prog.setProgramID(program.getProgramID());
+                            prog.setApplianceCategoryID(program.getApplianceCategoryID());
+                            prog.setInventoryID(liteApp.getInventoryID());
+                            prog.setLoadNumber(liteApp.getLoadNumber());
                             if (program.hasAddressingGroupID())
-                                prog.setAddressingGroupID( program.getAddressingGroupID() );
-                            processedPrograms.addSULMProgram( prog );
+                                prog.setAddressingGroupID(program.getAddressingGroupID());
+                            processedPrograms.addSULMProgram(prog);
                         }
-                        
-                        hwAppMap.put( new Integer(liteApp.getInventoryID()), liteApp );
-                        newAppList.add( liteApp );
+
+                        hwAppMap.put(liteApp.getInventoryID(), liteApp);
+                        newAppList.add(liteApp);
                         it.remove();
                     }
                 }
-                
+
                 // If no hardware found above, then assign all hardwares
                 if (!program.hasInventoryID()) {
                 	for (Integer inventoryId : liteAcctInfo.getInventories()) {
                         if (inventoryBaseDao.getByInventoryId(inventoryId) instanceof LiteLmHardwareBase) {
                             if (!program.hasInventoryID()) {
                                 program.setInventoryID(inventoryId);
-                            }
-                            else {
+                            } else {
                                 SULMProgram prog = new SULMProgram();
-                                prog.setProgramID( program.getProgramID() );
-                                prog.setApplianceCategoryID( program.getApplianceCategoryID() );
+                                prog.setProgramID(program.getProgramID());
+                                prog.setApplianceCategoryID(program.getApplianceCategoryID());
                                 prog.setInventoryID(inventoryId);
-                                if (program.hasAddressingGroupID())
-                                    prog.setAddressingGroupID( program.getAddressingGroupID() );
-                                if (program.hasLoadNumber())
-                                    prog.setLoadNumber( program.getLoadNumber() );
-                                processedPrograms.addSULMProgram( prog );
+                                if (program.hasAddressingGroupID()) {
+                                    prog.setAddressingGroupID(program.getAddressingGroupID());
+                                }
+                                if (program.hasLoadNumber()) {
+                                    prog.setLoadNumber(program.getLoadNumber());
+                                }
+                                processedPrograms.addSULMProgram(prog);
                             }
                         }
                     }
@@ -459,41 +443,53 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             // Try to find the appliance controlled by this program and complete the request
             for (int j = 0; j < appList.size(); j++) {
                 LiteStarsAppliance liteApp = appList.get(j);
-                if (liteApp.getProgramID() == program.getProgramID() && liteApp.getInventoryID() == program.getInventoryID()) {
+                if (liteApp.getProgramID() == program.getProgramID()&& liteApp.getInventoryID() == program.getInventoryID()) {
                     if (!program.hasAddressingGroupID())
-                        program.setAddressingGroupID( liteApp.getAddressingGroupID() );
+                        program.setAddressingGroupID(liteApp.getAddressingGroupID());
 
-                    hwAppMap.put( new Integer(liteApp.getInventoryID()), liteApp );
-                    newAppList.add( liteApp );
-                    appList.remove( liteApp );
+                    hwAppMap.put(new Integer(liteApp.getInventoryID()), liteApp);
+                    newAppList.add(liteApp );
+                    appList.remove(liteApp );
                     break;
                 }
             }
         }
-        
+
         /* Remove unenrolled programs and free up appliances attached to them first,
          * so they can be reused by the new enrolled programs.
          * If liteInv is not null, only remove programs assigned to the specified hardware.
          */
-        List<LiteStarsAppliance> appsToUpdate = new ArrayList<LiteStarsAppliance>();
+        /*
+         * New enrollment, opt out, and control history tracking
+         */
+        List<int[]> hwInfoToEnroll = new ArrayList<>(3);
+        List<int[]> hwInfoToUnenroll = new ArrayList<>(3);
+        final int INV = 0;
+        final int ACCT = 1;
+        final int GROUP = 2;
+        final int RELAY = 3;
+        final int PROG = 4;
         
+        List<LiteStarsAppliance> appsToUpdate = new ArrayList<>();
         for (int i = 0; i < appList.size(); i++) {
             LiteStarsAppliance liteApp = appList.get(i);
-            newAppList.add( liteApp );
-            
-            if (liteApp.getProgramID() == 0) continue;
-            
+            newAppList.add(liteApp);
+
+            if (liteApp.getProgramID() == 0) {
+                continue;
+            }
+
             if (liteInv == null || liteApp.getInventoryID() == liteInv.getInventoryID()) {
-                Integer progID = new Integer( liteApp.getProgramID() );
-                if (!progUnenrollList.contains( progID ))
-                    progUnenrollList.add( progID );
-                
+                if (!progUnenrollList.contains(liteApp.getProgramID())) {
+                    progUnenrollList.add(liteApp.getProgramID());
+                }
+
                 if (liteApp.getInventoryID() > 0) {
-                    
                     LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(liteApp.getInventoryID());
-                    if (!hwsToConfig.contains( liteHw )) 
-                        hwsToConfig.add( liteHw );
-                        
+                    if (!hwsToConfig.contains(liteHw)) {
+                        hwsToConfig.add(liteHw);
+                    }
+
                     /* New enrollment, opt out, and control history tracking
                      *-------------------------------------------------------------------------------
                      * here we catch hardware that are ONLY be unenrolled.  If they are simply being enrolled in a different
@@ -512,33 +508,33 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     hwInfoToUnenroll.add(currentUnenrollmentInfo);
                     /*-------------------------------------------------------------------------------*/
                 }
-                
-                liteApp.setInventoryID( 0 );
-                liteApp.setProgramID( 0 );
-                liteApp.setAddressingGroupID( 0 );
-                liteApp.setLoadNumber( 0 );
-                
+
+                liteApp.setInventoryID(0);
+                liteApp.setProgramID(0);
+                liteApp.setAddressingGroupID(0);
+                liteApp.setLoadNumber(0);
+
                 // Save the appliance to update it in the database later
-                appsToUpdate.add( liteApp );
-            }
-            else {
-                LiteStarsLMProgram liteStarsProg = getLMProgram( liteAcctInfo, liteApp.getProgramID() );
-                if (!newProgList.contains( liteStarsProg ))
-                    newProgList.add( liteStarsProg );
+                appsToUpdate.add(liteApp );
+            } else {
+                LiteStarsLMProgram liteStarsProg = getLMProgram(liteAcctInfo, liteApp.getProgramID());
+                if (!newProgList.contains(liteStarsProg)) {
+                    newProgList.add(liteStarsProg );
+                }
             }
         }
-        
+
         boolean hardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
 
         for (int i = 0; i < processedPrograms.getSULMProgramCount(); i++) {
             SULMProgram program = processedPrograms.getSULMProgram(i);
-            
-            LiteLMProgramWebPublishing liteProg = energyCompany.getProgram( program.getProgramID() );
-            StarsEnrLMProgram starsProg = ServletUtils.getEnrollmentProgram(
-                    energyCompany.getStarsEnrollmentPrograms(), program.getProgramID() );
-            
+
+            LiteLMProgramWebPublishing liteProg = energyCompany.getProgram(program.getProgramID());
+            StarsEnrLMProgram starsProg = 
+                ServletUtils.getEnrollmentProgram(energyCompany.getStarsEnrollmentPrograms(), program.getProgramID());
+
             // Add the program to the new program list
-            LiteStarsLMProgram liteStarsProg = getLMProgram( liteAcctInfo, program.getProgramID() );
+            LiteStarsLMProgram liteStarsProg = getLMProgram(liteAcctInfo, program.getProgramID());
             if (liteStarsProg == null) {
                 for (int j = 0; j < newProgList.size(); j++) {
                     LiteStarsLMProgram prog = newProgList.get(j);
@@ -547,19 +543,20 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         break;
                     }
                 }
-                
-                if (liteStarsProg == null)
-                    liteStarsProg = new LiteStarsLMProgram( liteProg );
+
+                if (liteStarsProg == null) {
+                    liteStarsProg = new LiteStarsLMProgram(liteProg);
+                }
             }
-            if (!newProgList.contains( liteStarsProg ))
-                newProgList.add( liteStarsProg );
-            
+            if (!newProgList.contains(liteStarsProg)) {
+                newProgList.add(liteStarsProg );
+            }
+
             LiteLmHardwareBase liteHw = null;
             if (program.getInventoryID() > 0) {
                 try {
                     liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(program.getInventoryID());
-                }
-                catch (NotFoundException e) {
+                } catch (NotFoundException e) {
                     //not found ok, leave as null and continue
                 }
             }
@@ -567,80 +564,80 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             int relay = program.getLoadNumber();
             if (hardwareAddressingEnabled) {
                 if (liteHw != null && liteHw.getLMConfiguration() != null) {
-                    int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), relay);
-                    if (grpIDs != null && grpIDs.length >= 1){
+                    int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs(liteHw.getLMConfiguration(), relay);
+                    if (grpIDs != null && grpIDs.length >= 1) {
                         groupID = grpIDs[0];
                     }
                 }
             } else if (groupID == 0 && starsProg.getAddressingGroupCount() >= 1) {
                 groupID = starsProg.getAddressingGroup(0).getEntryID();
             }
-            liteStarsProg.setGroupID( groupID );
-            
+            liteStarsProg.setGroupID(groupID );
+
             LiteStarsAppliance liteApp = 
-                    progHwAppMap.get(new Integer(program.getProgramID())).get(program.getInventoryID());
-            
+                    progHwAppMap.get(program.getProgramID()).get(program.getInventoryID());
+
             if (liteApp == null) {
                 // Find existing appliance that could be attached to this hardware controlling this program
                 // Priority: same hardware & same program > same hardware & same category > no hardware & same program > no hardware & same category
                 for (int j = 0; j < appList.size(); j++) {
                     LiteStarsAppliance lApp = appList.get(j);
-                    
-                    if ((lApp.getInventoryID() == program.getInventoryID() || lApp.getInventoryID() == 0) && 
-                        (lApp.getProgramID() == program.getProgramID() || 
-                         lApp.getApplianceCategory().getApplianceCategoryId() == program.getApplianceCategoryID()))
-                    {
+
+                    if ((lApp.getInventoryID()== program.getInventoryID() || lApp.getInventoryID() == 0)
+                            && (lApp.getProgramID()== program.getProgramID()
+                            ||  lApp.getApplianceCategory().getApplianceCategoryId() == program.getApplianceCategoryID())) {
                         if (liteApp == null) {
                             liteApp = lApp;
                         } else if (liteApp.getInventoryID() == 0) {
-                            if (lApp.getInventoryID() > 0 || lApp.getProgramID() == program.getProgramID())
+                            if (lApp.getInventoryID()> 0 || lApp.getProgramID() == program.getProgramID()) {
                                 liteApp = lApp;
+                            }
                         } else {
-                            if (lApp.getInventoryID() > 0 && lApp.getProgramID() == program.getProgramID())
+                            if (lApp.getInventoryID()> 0 && lApp.getProgramID() == program.getProgramID()) {
                                 liteApp = lApp;
+                            }
                         }
                     }
                 }
-                
+
                 // We found an existing appliance.  Remove it from the appLists so it can't be used by another enrollment.
                 if (liteApp != null) {
                     appList.remove(liteApp);
-                    
+
                     // We only need to update the database once for this appliance
-                    if (appsToUpdate.contains( liteApp )) {
-                        appsToUpdate.remove( liteApp );
+                    if (appsToUpdate.contains(liteApp)) {
+                        appsToUpdate.remove(liteApp);
                     }
                 }
             }
-            
+
             com.cannontech.stars.database.data.appliance.ApplianceBase app = null;
-            
+
             if (liteApp != null) {
-                liteApp.setInventoryID( program.getInventoryID() );
+                liteApp.setInventoryID(program.getInventoryID());
                 int oldApplianceRelay = liteApp.getLoadNumber();
                 int oldLoadGroupId = liteApp.getAddressingGroupID();
                 int oldProgramId = liteApp.getProgramID();
-                liteApp.setLoadNumber( relay );
-                
+                liteApp.setLoadNumber(relay);
+
                 //the appliance is on a different program then the current, this is an enrollment switch
-                if (liteApp.getProgramID() != program.getProgramID()) {
+                if (liteApp.getProgramID()!= program.getProgramID()) {
                     // If the appliance is enrolled in another program, update its program enrollment
-                    Integer newProgID = new Integer( program.getProgramID() );
-                    if (!progNewEnrollList.contains( newProgID ))
-                        progNewEnrollList.add( newProgID );
-                    
-                    if (liteApp.getProgramID() != 0) {
-                        Integer oldProgID = new Integer( liteApp.getProgramID() );
-                        
-                        if (!progUnenrollList.contains( oldProgID ))
-                            progUnenrollList.add( oldProgID );
-                        
+                    if (!progNewEnrollList.contains(program.getProgramID())) {
+                        progNewEnrollList.add(program.getProgramID());
                     }
-                    
+
+                    if (liteApp.getProgramID() != 0) {
+                        if (!progUnenrollList.contains(liteApp.getProgramID())) {
+                            progUnenrollList.add(liteApp.getProgramID());
+                        }
+                    }
+
                     if (liteHw != null) {
-                        if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains( liteHw )) 
-                            hwsToConfig.add( liteHw );
-                            
+                        if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains(liteHw)) {
+                            hwsToConfig.add(liteHw);
+                        }
+
                         /* New enrollment, opt out, and control history tracking
                          * TODO Refactor this
                          *-------------------------------------------------------------------------------
@@ -655,9 +652,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         /*
                          * TODO: What about different relays?  Are we handling this correctly?
                          */
-                        if(program.getApplianceCategoryID() == liteApp.getApplianceCategory().getApplianceCategoryId() && 
-                                program.getLoadNumber() == oldApplianceRelay &&
-                                oldLoadGroupId != 0) {
+                        if(program.getApplianceCategoryID() == liteApp.getApplianceCategory().getApplianceCategoryId()
+                                && program.getLoadNumber() == oldApplianceRelay
+                                && oldLoadGroupId != 0) {
                             int[] currentUnenrollmentInformation = new int[5];
                             currentUnenrollmentInformation[INV] = liteHw.getInventoryID();
                             currentUnenrollmentInformation[ACCT] = liteHw.getAccountID();
@@ -666,43 +663,28 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             currentUnenrollmentInformation[PROG] = oldProgramId;
                             hwInfoToUnenroll.add(currentUnenrollmentInformation);
                         }
-                        /*
-                         * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
-                         * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
-                         * to specifically do a stopEnrollment.
-                         */
-                        /*for(int[] potentialUnenroll : hwInfoToUnenroll) {
-                            if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
-                                    currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
-                                    currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
-                                    currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
-                                hwInfoToUnenroll.remove(potentialUnenroll);
-                            }
-                        }*/
-                        /*-------------------------------------------------------------------------------*/
-                        
-                        liteApp.setAddressingGroupID( groupID );
+                        liteApp.setAddressingGroupID(groupID);
+                    } else {
+                        liteApp.setAddressingGroupID(0);
                     }
-                    else
-                        liteApp.setAddressingGroupID( 0 );
-                    
-                    liteApp.setProgramID( program.getProgramID() );
-                    
-                    app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+
+                    liteApp.setProgramID(program.getProgramID());
+
+                    app = (ApplianceBase) StarsLiteFactory.createDBPersistent(liteApp);
                     dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
-                }
-                else {
+                } else {
                     /* The appliance is enrolled in the same program, update the load group if necessary.
                      * If liteInv is not null, it's from the hardware configuration page;
                      * in the later case, update the group of all loads assigned to this program if necessary.
                      */
-                    if (liteHw != null && 
-                        ((program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) ||
-                         liteApp.getLoadNumber() != oldApplianceRelay)) {
-                        liteApp.setAddressingGroupID( groupID );
-                        if (!hwsToConfig.contains( liteHw )) 
-                            hwsToConfig.add( liteHw );
-                        
+                    if (liteHw != null
+                            && ((program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID)
+                                    || liteApp.getLoadNumber() != oldApplianceRelay)) {
+                        liteApp.setAddressingGroupID(groupID);
+                        if (!hwsToConfig.contains(liteHw)) {
+                            hwsToConfig.add(liteHw);
+                        }
+
                         /* New enrollment, opt out, and control history tracking
                          * TODO Refactor this
                          *-------------------------------------------------------------------------------
@@ -714,7 +696,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         currentEnrollmentInformation[RELAY] = relay;
                         currentEnrollmentInformation[PROG] = program.getProgramID();
                         hwInfoToEnroll.add(currentEnrollmentInformation);
-                        
+
                         //  We need remove the old enrollment entry to eliminate duplicate entries.
                         int[] pastEnrollmentInformation = new int [5];
                         pastEnrollmentInformation[INV] = liteHw.getInventoryID();
@@ -723,71 +705,56 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         pastEnrollmentInformation[RELAY] = oldApplianceRelay;
                         pastEnrollmentInformation[PROG] = oldProgramId;
                         hwInfoToUnenroll.add(pastEnrollmentInformation);
-                        
-                        /*
-                         * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
-                         * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
-                         * to specifically do a stopEnrollment.
-                         */
-                        /*for(int[] potentialUnenroll : hwInfoToUnenroll) {
-                            if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
-                                    currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
-                                    currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
-                                    currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
-                                hwInfoToUnenroll.remove(potentialUnenroll);
-                            }
-                                
-                        }*/
-                        /*-------------------------------------------------------------------------------*/
-                        
-                        app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+
+                        app = (ApplianceBase) StarsLiteFactory.createDBPersistent(liteApp);
                         dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
-                        
+
                         // Checks to see if there are any hardware that are enrolled in this program already and updated their 
                         // addressing group to the new supplied address group.
                         if (liteInv != null && !hardwareAddressingEnabled) {
                             for (int j = 0; j < appList.size(); j++) {
                                 LiteStarsAppliance lApp = appList.get(j);
-                                if (lApp.getProgramID() == program.getProgramID() && lApp.getInventoryID() != program.getInventoryID()) {
-                                    lApp.setAddressingGroupID( groupID );
-                                    
+                                if (lApp.getProgramID() == program.getProgramID()&& lApp.getInventoryID() != program.getInventoryID()) {
+                                    lApp.setAddressingGroupID(groupID);
+
                                     LiteLmHardwareBase lHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(lApp.getInventoryID());
-                                    if (!hwsToConfig.contains( lHw ))
-                                        hwsToConfig.add( lHw );
-                                    
-                                    app = (ApplianceBase) StarsLiteFactory.createDBPersistent( lApp );
+                                    if (!hwsToConfig.contains(lHw)) {
+                                        hwsToConfig.add(lHw);
+                                    }
+
+                                    app = (ApplianceBase)StarsLiteFactory.createDBPersistent(lApp);
                                     dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
                                 }
                             }
                         }
                     }
                 }
-            }
-            else {
-                Integer progID = new Integer( program.getProgramID() );
-                if (!progNewEnrollList.contains(progID))
-                    progNewEnrollList.add( progID );
-                
+            } else {
+                if (!progNewEnrollList.contains(program.getProgramID())) {
+                    progNewEnrollList.add(program.getProgramID());
+                }
+
                 // Create a new appliance for the program
                 app = new ApplianceBase();
                 com.cannontech.stars.database.db.appliance.ApplianceBase appDB = app.getApplianceBase();
-                
-                appDB.setAccountID( accountID );
-                appDB.setApplianceCategoryID( new Integer(program.getApplianceCategoryID()) );
-                appDB.setProgramID( progID );
-                appDB.setLocationID( dftLocationID );
-                appDB.setManufacturerID( dftManufacturerID );
-                
+
+                appDB.setAccountID(accountID);
+                appDB.setApplianceCategoryID(program.getApplianceCategoryID());
+                appDB.setProgramID(program.getProgramID());
+                appDB.setLocationID(dftLocationID );
+                appDB.setManufacturerID(dftManufacturerID);
+
                 if (liteHw != null) {
                     LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
-                    hwConfig.setInventoryID( new Integer(program.getInventoryID()) );
-                    hwConfig.setAddressingGroupID( groupID );
-                    hwConfig.setLoadNumber( new Integer(program.getLoadNumber()) );
-                    app.setLMHardwareConfig( hwConfig );
-                    
-                    if (!hwsToConfig.contains( liteHw ))
-                        hwsToConfig.add( liteHw );
-                    
+                    hwConfig.setInventoryID(program.getInventoryID());
+                    hwConfig.setAddressingGroupID(groupID);
+                    hwConfig.setLoadNumber(program.getLoadNumber());
+                    app.setLMHardwareConfig(hwConfig);
+
+                    if (!hwsToConfig.contains(liteHw)) {
+                        hwsToConfig.add(liteHw);
+                    }
+
                     /* New enrollment, opt out, and control history tracking
                      * TODO Refactor this
                      *-------------------------------------------------------------------------------
@@ -799,37 +766,23 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     currentEnrollmentInformation[RELAY] = relay;
                     currentEnrollmentInformation[PROG] = program.getProgramID();
                     hwInfoToEnroll.add(currentEnrollmentInformation);
-                    /*
-                     * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
-                     * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
-                     * to specifically do a stopEnrollment.
-                     */
-                   /* for(int[] potentialUnenroll : hwInfoToUnenroll) {
-                        if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
-                                currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
-                                currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
-                                currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
-                            hwInfoToUnenroll.remove(potentialUnenroll);
-                        }
-                    }*/
-                    /*-------------------------------------------------------------------------------*/
                 }
-                
+
                 dbPersistentDao.performDBChange(app, TransactionType.INSERT);
-                
-                liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
-                newAppList.add( liteApp );
+
+                liteApp = StarsLiteFactory.createLiteStarsAppliance(app, energyCompany);
+                newAppList.add(liteApp);
             }
         }
         
         // Update appliances saved earlier
         for (int i = 0; i < appsToUpdate.size(); i++) {
             LiteStarsAppliance liteApp = appsToUpdate.get(i);
-            
-            ApplianceBase app = (ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
+ 
+            ApplianceBase app = (ApplianceBase) StarsLiteFactory.createDBPersistent(liteApp);
             dbPersistentDao.performDBChange(app, TransactionType.UPDATE);
         }
-        
+
         // Remove redundant program IDs in the enroll and unenroll list
         Iterator<Integer> it = progNewEnrollList.iterator();
         while (it.hasNext()) {
@@ -841,7 +794,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 }
             }
         }
-        
+
         it = progUnenrollList.iterator();
         while (it.hasNext()) {
             int progID = it.next();
@@ -852,82 +805,78 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 }
             }
         }
-        
+
         // Get action & event type IDs
-        Integer progEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID() );
-        Integer signUpEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID() );
-        Integer termEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID() );
-        
+        int progEventEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID();
+        int signUpEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID();
+        int termEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
+
         com.cannontech.stars.database.data.event.LMProgramEvent event =
                 new com.cannontech.stars.database.data.event.LMProgramEvent();
         com.cannontech.stars.database.db.event.LMProgramEvent eventDB = event.getLMProgramEvent();
         com.cannontech.stars.database.db.event.LMCustomerEventBase eventBase = event.getLMCustomerEventBase();
-        
+
         // Add "sign up" event to the programs to be enrolled in
         for (int i = 0; i < progNewEnrollList.size(); i++) {
-            event.setEventID( null );
-            event.setEnergyCompanyID( yukonEnergyCompany.getEnergyCompanyId() );
-            eventDB.setAccountID( accountID );
-            eventDB.setProgramID( progNewEnrollList.get(i) );
-            eventBase.setEventTypeID( progEventEntryID );
-            eventBase.setActionID( signUpEntryID );
-            eventBase.setEventDateTime( signupDate );
+            event.setEventID(null);
+            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
+            eventDB.setAccountID(accountID);
+            eventDB.setProgramID(progNewEnrollList.get(i));
+            eventBase.setEventTypeID(progEventEntryID);
+            eventBase.setActionID(signUpEntryID);
+            eventBase.setEventDateTime(signupDate);
 
             dbPersistentDao.performDBChange(event, TransactionType.INSERT);
-            
+
             LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
-            liteAcctInfo.getProgramHistory().add( liteEvent );
+            liteAcctInfo.getProgramHistory().add(liteEvent );
         }
-        
+
         // Add "termination" event to the old program
         for (int i = 0; i < progUnenrollList.size(); i++) {
-            Integer progID = progUnenrollList.get(i);
-            
-            event.setEventID( null );
-            event.setEnergyCompanyID( yukonEnergyCompany.getEnergyCompanyId() );
-            eventDB.setAccountID( accountID );
-            eventDB.setProgramID( progID );
-            eventBase.setEventTypeID( progEventEntryID );
-            eventBase.setActionID( termEntryID );
-            eventBase.setEventDateTime( termDate );
+            event.setEventID(null);
+            event.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
+            eventDB.setAccountID(accountID);
+            eventDB.setProgramID(progUnenrollList.get(i));
+            eventBase.setEventTypeID(progEventEntryID);
+            eventBase.setActionID(termEntryID);
+            eventBase.setEventDateTime(termDate);
 
             dbPersistentDao.performDBChange(event, TransactionType.INSERT);
 
             LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) StarsLiteFactory.createLite(event);
-            liteAcctInfo.getProgramHistory().add( liteEvent );
+            liteAcctInfo.getProgramHistory().add(liteEvent );
         }
-        
+
         // Update program status
         for (int i = 0; i < newProgList.size(); i++) {
             LiteStarsLMProgram liteStarsProg = newProgList.get(i);
-            liteStarsProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
+            liteStarsProg.updateProgramStatus(liteAcctInfo.getProgramHistory());
         }
-        
-        liteAcctInfo.setPrograms( newProgList );
-        
+
+        liteAcctInfo.setPrograms(newProgList);
+
         /* New enrollment, opt out, and control history tracking
-         *-------------------------------------------------------------------------------
          */
-                        
         //unenroll
-        for(int[] currentUnenrollmentInfo : hwInfoToUnenroll) {
+        for (int[] currentUnenrollmentInfo : hwInfoToUnenroll) {
             boolean success = lmHardwareControlInformationService.stopEnrollment(currentUnenrollmentInfo[INV], 
                                                                                  currentUnenrollmentInfo[GROUP], 
                                                                                  currentUnenrollmentInfo[ACCT], 
                                                                                  currentUnenrollmentInfo[RELAY],
                                                                                  currentUnenrollmentInfo[PROG],
                                                                                  currentUser);
-            if(!success) {
-                CTILogger.error( "Enrollment STOP occurred for InventoryId: " + currentUnenrollmentInfo[INV] + 
+            if (!success) {
+                CTILogger.error("Enrollment STOP occurred for InventoryId: " + currentUnenrollmentInfo[INV] + 
                                  " LMGroupId: " + currentUnenrollmentInfo[GROUP] + 
                                  " on relay " + currentUnenrollmentInfo[RELAY] +
                                  " AccountId: " + currentUnenrollmentInfo[ACCT] + " done by user: " + 
-                                 currentUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
+                                 currentUser.getUsername()+ " but could NOT be logged to LMHardwareControlGroup table.");
             }
         }
-        
+
         //enroll
-        for(int[] currentEnrollmentInfo : hwInfoToEnroll) {
+        for (int[] currentEnrollmentInfo : hwInfoToEnroll) {
             boolean success = lmHardwareControlInformationService.startEnrollment(currentEnrollmentInfo[INV], 
                                                                                  currentEnrollmentInfo[GROUP], 
                                                                                  currentEnrollmentInfo[ACCT], 
@@ -935,18 +884,18 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                                                                  currentEnrollmentInfo[PROG],
                                                                                  currentUser,
                                                                                  hardwareAddressingEnabled);
-            if(!success) {
-                CTILogger.error( "Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 
+            if (!success) {
+                CTILogger.error("Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 
                                  " LMGroupId: " + currentEnrollmentInfo[GROUP] + 
                                  " on relay " + currentEnrollmentInfo[RELAY] +
                                  " AccountId: " + currentEnrollmentInfo[ACCT] + " done by user: " + 
                                  currentUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
             }
         }
-        
+
         return hwsToConfig;
     }
-    
+
     /**
      * This is a transplant from ProgramSignUpAciton: returns the program
      * in the program list for this account with the given program id.
