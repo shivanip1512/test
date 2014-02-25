@@ -8,17 +8,12 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery('#start').click(function(event) {
-        var lcr6200serialFrom = jQuery("input[name='Lcr6200serialFrom']").val();
-        var lcr6200serialTo = jQuery("input[name='Lcr6200serialTo']").val();
-        var lcr6600serialFrom = jQuery("input[name='Lcr6600serialFrom']").val();
-        var lcr6600serialTo = jQuery("input[name='Lcr6600serialTo']").val();
-        var messageId = jQuery("input[name='messageId']").val();
-        var messageIdTimestamp = jQuery("input[name='messageIdTimestamp']").val();
-    
-        var data = { 'lcr6200serialFrom': lcr6200serialFrom, 'lcr6200serialTo': lcr6200serialTo,
-                'lcr6600serialFrom': lcr6600serialFrom, 'lcr6600serialTo': lcr6600serialTo,
-                'messageId': messageId, 'messageIdTimestamp': messageIdTimestamp};
-        
+        var data = { 'lcr6200serialFrom': jQuery("input[name='Lcr6200serialFrom']").val(),
+                'lcr6200serialTo': jQuery("input[name='Lcr6200serialTo']").val(),
+                'lcr6600serialFrom': jQuery("input[name='Lcr6600serialFrom']").val(),
+                'lcr6600serialTo': jQuery("input[name='Lcr6600serialTo']").val(),
+                'messageId': jQuery("input[name='messageId']").val(),
+                'messageIdTimestamp': jQuery("input[name='messageIdTimestamp']").val()};
         jQuery.ajax({
             url: '/support/development/rfn/startDataSimulator',
             type: 'GET',
