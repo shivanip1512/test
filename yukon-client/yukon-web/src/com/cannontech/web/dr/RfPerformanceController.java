@@ -312,18 +312,12 @@ public class RfPerformanceController {
             model.addAttribute("unknowns", unknowns);
             
             // build json for pie chart
-            List<Map<String, Object>> data = new ArrayList<>();
+            List<Map<String, Object>> data = new ArrayList<>(4);
             
             Map<String, Object> stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.ACTIVE));
-            stat.put("data", devices.getNumActive());
+            stat.put("label", accessor.getMessage(UnknownStatus.AVAILABLE));
+            stat.put("data", devices.getNumAvailable());
             stat.put("color", "#009933");
-            data.add(stat);
-            
-            stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.INACTIVE));
-            stat.put("data", devices.getNumInactive());
-            stat.put("color", "#888888");
             data.add(stat);
             
             stat = Maps.newHashMapWithExpectedSize(3);

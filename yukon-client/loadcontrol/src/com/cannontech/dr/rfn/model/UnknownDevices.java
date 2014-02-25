@@ -8,17 +8,15 @@ import com.google.common.collect.ImmutableList;
 public final class UnknownDevices {
     private final List<UnknownDevice> unknownDevices;
     private final int numUnavailable;
-    private final int numActive;
-    private final int numInactive;
+    private final int numAvailable;
     private final int numUnreportedNew;
     private final int numUnreportedOld;
 
     public UnknownDevices(List<UnknownDevice> unknownDevices, int numUnavailable,
-                          int numActive, int numInactive, int numUnreportedNew, int numUnreportedOld) {
+                          int numAvailable, int numUnreportedNew, int numUnreportedOld) {
         this.unknownDevices = ImmutableList.copyOf(unknownDevices);
         this.numUnavailable = numUnavailable;
-        this.numActive = numActive;
-        this.numInactive = numInactive;
+        this.numAvailable = numAvailable;
         this.numUnreportedNew = numUnreportedNew;
         this.numUnreportedOld = numUnreportedOld;
     }
@@ -31,12 +29,8 @@ public final class UnknownDevices {
         return numUnavailable;
     }
 
-    public int getNumActive() {
-        return numActive;
-    }
-
-    public int getNumInactive() {
-        return numInactive;
+    public int getNumAvailable() {
+        return numAvailable;
     }
 
     public int getNumUnreportedNew() {
@@ -48,14 +42,13 @@ public final class UnknownDevices {
     }
 
     public int getNumTotalBeforePaging() {
-        return numUnavailable + numActive + numInactive + numUnreportedNew + numUnreportedOld;
+        return numUnavailable + numAvailable + numUnreportedNew + numUnreportedOld;
     }
 
     public static class Builder {
         private List<UnknownDevice> unknownDevices = new ArrayList<>();
         private int numUnavailable;
-        private int numActive;
-        private int numInactive;
+        private int numAvailable;
         private int numUnreportedNew;
         private int numUnreportedOld;
 
@@ -65,8 +58,7 @@ public final class UnknownDevices {
 
         public void setCountForStatus(UnknownStatus status, int num) {
             switch (status) {
-                case ACTIVE: numActive = num; break;
-                case INACTIVE: numInactive = num; break;
+                case AVAILABLE: numAvailable = num; break;
                 case UNAVAILABLE: numUnavailable = num; break;
                 case UNREPORTED_NEW: numUnreportedNew = num; break;
                 case UNREPORTED_OLD: numUnreportedOld = num; break;
@@ -75,7 +67,7 @@ public final class UnknownDevices {
 
         public UnknownDevices build() {
             return new UnknownDevices(unknownDevices, numUnavailable,
-                                      numActive, numInactive, numUnreportedNew, numUnreportedOld);
+                                      numAvailable, numUnreportedNew, numUnreportedOld);
         }
     }
 }

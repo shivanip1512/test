@@ -3,8 +3,7 @@
 <properties>
 
 <!-- RF DR Broadcast Performance Unknown Status -->
-<entry key="yukon.common.rfPerformance.unknownStatus.ACTIVE">Active</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.INACTIVE">Inactive</entry>
+<entry key="yukon.common.rfPerformance.unknownStatus.AVAILABLE">Available</entry>
 <entry key="yukon.common.rfPerformance.unknownStatus.UNAVAILABLE">Unavailable</entry>
 <entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW">Unreported New</entry>
 <entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW.title">Never Reported - In system less than 4 days</entry>

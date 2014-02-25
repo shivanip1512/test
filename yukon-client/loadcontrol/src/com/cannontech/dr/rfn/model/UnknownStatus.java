@@ -4,8 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum UnknownStatus implements DisplayableEnum {
 
-    ACTIVE,
-    INACTIVE,
+    AVAILABLE,
     UNAVAILABLE,
     UNREPORTED_NEW,
     UNREPORTED_OLD;

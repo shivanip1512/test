@@ -230,7 +230,6 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
                                                    long messageId, boolean isPaged) {
           Instant now = new Instant();
           Instant communicatingWindowEnd = getCommunicationWindowEnd(now);
-          Instant runtimeWindowEnd = getRuntimeWindowEnd(now);
           Instant newDeviceWindowEnd = now.minus(Duration.standardDays(4));
     
           sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
@@ -240,12 +239,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
           sql.append(",CASE");
           sql.append("    WHEN LastCommunication IS NOT NULL THEN");
           sql.append("    CASE");
-          sql.append("      WHEN LastNonZeroRuntime IS NOT NULL");
-          sql.append("         AND LastNonZeroRuntime").gt(runtimeWindowEnd);
-          sql.append("         AND lastcommunication").gt(communicatingWindowEnd);
-          sql.append("            THEN").appendArgument_k(ACTIVE);
-          sql.append("      WHEN LastCommunication").gt(communicatingWindowEnd);
-          sql.append("         THEN").appendArgument_k(INACTIVE);
+          sql.append("      WHEN lastcommunication").gt(communicatingWindowEnd);
+          sql.append("            THEN").appendArgument_k(AVAILABLE);
           sql.append("      WHEN LastCommunication").lte(communicatingWindowEnd);
           sql.append("         THEN").appendArgument_k(UNAVAILABLE);
           sql.append("    END");
@@ -375,17 +370,11 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         sql.append("                               FROM RfnBroadcastEvent");
         sql.append("                               WHERE EventSentTime").gte(range.getMin());
         sql.append("                               AND EventSentTime").lt(range.getMax()).append(")");
-        
-        
-        
+
         jdbcTemplate.update(sql);
     }
     
     private Instant getCommunicationWindowEnd(Instant now) {
         return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_COMMUNICATION_HOURS)));
-    }
-    
-    private Instant getRuntimeWindowEnd(Instant now) {
-        return now.minus(Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS)));
     }
 }

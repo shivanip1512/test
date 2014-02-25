@@ -13,9 +13,8 @@
         <div class="column-12-12 clearfix stacked">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.operator.hardware.assetAvailability.active">${unknownStats.numActive}</tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.operator.hardware.assetAvailability.inactive">${unknownStats.numInactive}</tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.operator.hardware.assetAvailability.unavailable">${unknownStats.numUnavailable}</tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.AVAILABLE">${unknownStats.numAvailable}</tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNAVAILABLE">${unknownStats.numUnavailable}</tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW">${unknownStats.numUnreportedNew}</tags:nameValue2>
                     <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNREPORTED_OLD">${unknownStats.numUnreportedOld}</tags:nameValue2>
                 </tags:nameValueContainer2>
