@@ -18,6 +18,7 @@ import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.dr.program.service.HardwareEnrollmentInfo;
        
 public class LMHardwareControlInformationServiceImpl implements LMHardwareControlInformationService {
     
@@ -26,11 +27,16 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
 	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutService optOutService;
-    
-    /*@SuppressWarnings("unused")*/
-    public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId,
-            int relay, int programId, LiteYukonUser currentUser, boolean useHardwardAddressing) {
+
+    @Override
+    public boolean startEnrollment(HardwareEnrollmentInfo enrollmentInfo,
+                                   LiteYukonUser currentUser, boolean useHardwardAddressing) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
+        int inventoryId = enrollmentInfo.getInventoryId();
+        int loadGroupId = enrollmentInfo.getLoadGroupId();
+        int accountId = enrollmentInfo.getAccountId();
+        int programId = enrollmentInfo.getProgramId();
+        int relay = enrollmentInfo.getRelayNumber();
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
             LMHardwareControlGroup existingEnrollment =
@@ -52,7 +58,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
              * properly log repetitive enrollments.
              */
-            if (existingEnrollment != null &&
+            if (existingEnrollment != null && 
                 (existingEnrollment.getLmGroupId() != loadGroupId || existingEnrollment.getRelay() != relay)) {
                 existingEnrollment.setGroupEnrollStop(now);
                 existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
@@ -75,8 +81,15 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         }
     }
     
-    public boolean stopEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, int programId, LiteYukonUser currentUser) {
+    @Override
+    public boolean stopEnrollment(HardwareEnrollmentInfo enrollmentInfo, LiteYukonUser currentUser) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
+        int inventoryId = enrollmentInfo.getInventoryId();
+        int loadGroupId = enrollmentInfo.getLoadGroupId();
+        int accountId = enrollmentInfo.getAccountId();
+        int programId = enrollmentInfo.getProgramId();
+        int relay = enrollmentInfo.getRelayNumber();
+
         boolean enrollmentEnded = false;
         try {
             Instant now = new Instant();
@@ -110,7 +123,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              */
             return enrollmentEnded;
         } catch (Exception e) {
-            logger.error("Enrollment stop occurred for InventoryId: " + inventoryId + " ProgramId: " + programId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
+            logger.error("Enrollment stop occurred for InventoryId: " + inventoryId + " ProgramId: " + programId 
+                         + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " 
+                    + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
             return false;
         }
     }
@@ -183,6 +198,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         return false;
     }
     
+    @Override
     public List<Integer> getInventoryNotOptedOutForThisProgram(int programId, int accountId) {
         Validate.notNull(programId, "ProgramId cannot be null");
         Validate.notNull(accountId, "AccountID cannot be null");

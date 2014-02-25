@@ -5,14 +5,14 @@ import java.util.List;
 import org.joda.time.Instant;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.program.service.HardwareEnrollmentInfo;
 
 
 public interface LMHardwareControlInformationService {
     
-    public boolean startEnrollment(int inventoryId, int loadGroupID, int accountId,
-            int relay, int programId, LiteYukonUser currentUser, boolean useHardwardAddressing);
+    public boolean startEnrollment(HardwareEnrollmentInfo enrollmentStartInfo, LiteYukonUser currentUser, boolean useHardwardAddressing);
     
-    public boolean stopEnrollment(int inventoryId, int loadGroupID, int accountId, int relay, int programId, LiteYukonUser currentUser);
+    public boolean stopEnrollment(HardwareEnrollmentInfo enrollmentStopInfo, LiteYukonUser currentUser);
     
     public void startOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Instant startDate);
     
