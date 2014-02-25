@@ -69,7 +69,7 @@
 						<x:inputText id="cntrlMast" styleClass="staticLabel"
 							disabled="#{!capControlForm.CBControllerEditor.editingController}"
 							value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.masterAddress}">
-							<f:validateLongRange minimum="0" maximum="9999999999" />
+							<f:validateLongRange minimum="0" maximum="65535" />
 						</x:inputText>
 		
 						<x:outputLabel for="cntrlMSlav" value="Slave Address: "
@@ -77,7 +77,7 @@
 						<x:inputText id="cntrlMSlav" styleClass="staticLabel"
 							disabled="#{!capControlForm.CBControllerEditor.editingController}"
 							value="#{capControlForm.CBControllerEditor.paoCBC.deviceAddress.slaveAddress}">
-							<f:validateLongRange minimum="0" maximum="9999999999" />
+							<f:validateLongRange minimum="0" maximum="65535" />
 						</x:inputText>
 		
 						<x:outputLabel for="cntrlComChann" value="Comm. Channel: "

@@ -29,6 +29,7 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.JTextFieldComboEditor;
@@ -2759,6 +2760,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
        {
           getPhysicalAddressLabel().setVisible(true);
           getPhysicalAddressLabel().setText("Master Address:");
+          getPhysicalAddressTextField().setDocument(new LongRangeDocument(0, 65535));
           getPhysicalAddressTextField().setVisible(true);
           getPhysicalAddressTextField().setText( ((DNPBase)rBase).getDeviceAddress().getMasterAddress().toString() );
           
@@ -2769,7 +2771,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
           getSlaveAddressComboBox().setEditable( true );
           getSlaveAddressComboBox().removeAllItems();
           com.cannontech.common.gui.util.JTextFieldComboEditor editor = new com.cannontech.common.gui.util.JTextFieldComboEditor();
-          editor.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-999999999, 999999999) );
+          editor.setDocument(new LongRangeDocument(0, 65535));
           editor.addCaretListener(eventHandler);  //be sure to fireInputUpdate() messages!
     
           getSlaveAddressComboBox().setEditor( editor );
