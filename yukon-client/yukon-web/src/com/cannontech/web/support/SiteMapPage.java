@@ -134,7 +134,7 @@ public enum SiteMapPage implements DisplayableEnum {
     CCURT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.cni", "/analysis/Reports.jsp?groupType=CCURT",
             MatchStyle.all, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP),
     SETTLEMENT_REPORTS(SiteMapCategory.ADMIN, "yukon.web.menu.config.reporting.reports.settlement", "/analysis/Reports.jsp?groupType=SETTLEMENT",
-            MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.SETTLEMENT_REPORTS_GROUP),
+            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS, YukonRoleProperty.ADMIN_REPORTS_GROUP),
     THEMES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.themes.pageName", "/adminSetup/config/themes",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
     SURVEYS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.survey.list.pageName", "/stars/survey/list",

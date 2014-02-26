@@ -130,11 +130,13 @@
         </cti:linkTab>
     </cti:checkRolesAndProperties>
 
-    <cti:checkRolesAndProperties value="SETTLEMENT_REPORTS_GROUP">
+    <cti:checkRolesAndProperties value="ENABLE_SETTLEMENTS">
+    <cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
         <cti:linkTab selectorKey="yukon.web.menu.config.reporting.reports.settlement.tab.title"
                      initiallySelected='${reportGroup == "SETTLEMENT"}'>
             <c:url value="/analysis/Reports.jsp?groupType=SETTLEMENT" />
         </cti:linkTab>
+    </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
 
     <cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">

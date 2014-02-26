@@ -91,7 +91,6 @@ public enum YukonRoleProperty {
     CAP_CONTROL_REPORTS_GROUP(REPORTING, REPORTING.getBasePropertyId() - 7, booleanType()),
     DATABASE_REPORTS_GROUP(REPORTING, REPORTING.getBasePropertyId() - 8, booleanType()),
     STARS_REPORTS_GROUP(REPORTING, REPORTING.getBasePropertyId() - 9, booleanType()),
-    SETTLEMENT_REPORTS_GROUP(REPORTING, REPORTING.getBasePropertyId() - 11, booleanType()),
     CI_CURTAILMENT_REPORTS_GROUP(REPORTING, REPORTING.getBasePropertyId() - 23, booleanType()),
     
     LOADCONTROL_EDIT(TABULAR_DISPLAY_CONSOLE, TABULAR_DISPLAY_CONSOLE.getBasePropertyId(), stringType()),
