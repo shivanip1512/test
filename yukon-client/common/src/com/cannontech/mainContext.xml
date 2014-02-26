@@ -123,11 +123,6 @@
         </constructor-arg>
     </bean>
 
-    <bean class="java.util.concurrent.ScheduledThreadPoolExecutor">
-        <qualifier value="scheduled"/>
-        <constructor-arg value="2" />
-    </bean>
-
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 
     <!--  basenames of i18n files as a  List<String>. The classpath will be changed to file in dev mode -->

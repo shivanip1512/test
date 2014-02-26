@@ -3,7 +3,6 @@ package com.cannontech.dr.rfn.service.impl;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
@@ -25,6 +24,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -50,9 +50,9 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
-    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";  
+    private final static String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";  
 
-    @Autowired private @Qualifier("scheduled") ScheduledThreadPoolExecutor executor;
+    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private RfnEventTestingService testingService;
     @Autowired private ConnectionFactory connectionFactory;
@@ -91,7 +91,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
         
         @Override
         public void run() {
-            log.trace("RFN LCR data simulator sending next message group...");
+            log.debug("RFN LCR data simulator sending next message group...");
             if (simulatorSettings != null) {
                 // Simulate the unsolicited RFN LCR read archive requests.  
                 simulateRfnLcrNetwork();
@@ -99,7 +99,7 @@ public class RfnLcrDataSimulatorServiceImpl implements RfnLcrDataSimulatorServic
                 // The simulator settings haven't been set, so we may as well shut down.
                 log.debug("RFN LCR data simulator settings have not been initialized. Messages will not be sent.");
             }
-            log.trace("RFN LCR data simulator sleeping...");
+            log.debug("RFN LCR data simulator sleeping...");
         }
         
         /**

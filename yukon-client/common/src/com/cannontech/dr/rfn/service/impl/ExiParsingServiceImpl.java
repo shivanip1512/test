@@ -42,7 +42,7 @@ public class ExiParsingServiceImpl implements ExiParsingService {
     private final static byte expresscomPayloadHeader = (byte) 0xE2;
     
     @Autowired ResourceLoader loader;
-    private static final Logger log = YukonLogManager.getLogger(ExiParsingService.class);
+    private final static Logger log = YukonLogManager.getLogger(ExiParsingServiceImpl.class);
     
     private Map<Schema, EXISchema> schemas = new HashMap<Schema, EXISchema>();
     
