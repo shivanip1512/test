@@ -15,7 +15,7 @@
             var params = {'resultId': '${resultId}'};
             jQuery.ajax({
                 dataType: "json",
-                url: '/stars/operator/account/importResult',
+                url: YG.APP_NAME + '/stars/operator/account/importResult',
                 data: params
             }).done(function(passed) {
                 if(passed === false) {
@@ -32,7 +32,7 @@
         function showErrorsTable() {
             var params = {'resultId': '${resultId}'};
             jQuery.ajax({
-                url: '/stars/operator/account/importErrors',
+                url: YG.APP_NAME + '/stars/operator/account/importErrors',
                 data: params
             }).done(function(data, status, xhrobj) {
                 jQuery('#importErrorsDiv').html(data).show();
@@ -105,10 +105,10 @@
         
         <c:choose>
             <c:when test="${prescan}">
-                <c:set var="action" value="/stars/operator/account/doAccountImport"/>
+                <cti:url var="action" value="/stars/operator/account/doAccountImport"/>
             </c:when>
             <c:otherwise>
-                <c:set var="action" value="/stars/operator/account/accountImport"/>
+                <cti:url var="action" value="/stars/operator/account/accountImport"/>
             </c:otherwise>
         </c:choose>
         
@@ -125,7 +125,7 @@
         
     </tags:sectionContainer2>
     
-    <a href="/stars/operator/account/accountImport" class="stacked"><i:inline key=".backLink"/></a>
+    <a href="<cti:url value="/stars/operator/account/accountImport"/>" class="stacked"><i:inline key=".backLink"/></a>
     
     <div id="importErrorsDiv" style="display: none;"></div>
     

@@ -11,7 +11,8 @@
         
         <div class="column-12-12">
             <div class="column one">
-                <form:form id="importForm" commandName="accountImportData" action="/stars/operator/account/uploadImportFiles" enctype="multipart/form-data">
+                <cti:url var="importUrl" value="/stars/operator/account/uploadImportFiles"/>
+                <form:form id="importForm" commandName="accountImportData" action="${importUrl}" enctype="multipart/form-data">
                 
                     <%-- note --%>
                     <div class="stacked">
