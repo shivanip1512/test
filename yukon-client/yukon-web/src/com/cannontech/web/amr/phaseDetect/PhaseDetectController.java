@@ -107,7 +107,7 @@ public class PhaseDetectController {
     }
     
     @RequestMapping("routes")
-    public String routes(ModelMap model, int substationId, HttpServletResponse response) {
+    public String routes(ModelMap model, int substationId) {
         try {
             Substation currentSubstation = substationDao.getById(substationId);
             List<Route> routes = strmDao.getRoutesBySubstationId(substationId);
@@ -133,7 +133,7 @@ public class PhaseDetectController {
     }
     
     @RequestMapping(value="saveSubstationAndReadMethod", method=RequestMethod.POST)
-    public String saveSubstationAndReadMethod(String readPhasesWhen, Integer selectedSub, ModelMap model, HttpServletRequest request) {
+    public String saveSubstationAndReadMethod(String readPhasesWhen, Integer selectedSub, HttpServletRequest request) {
         List<Route> routes = strmDao.getRoutesBySubstationId(selectedSub);
         List<Route> readRoutes = Lists.newArrayList();
         for(Route route : routes){
