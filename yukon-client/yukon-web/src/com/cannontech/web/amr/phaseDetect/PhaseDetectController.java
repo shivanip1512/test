@@ -83,7 +83,7 @@ public class PhaseDetectController {
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver = null;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver = null;
     @Autowired private FlotChartService flotChartService;
     @Autowired @Qualifier("phaseDetect") private RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache;
 
@@ -243,7 +243,7 @@ public class PhaseDetectController {
             return "redirect:home"; /* Redirect to start page if no test is in progress */
         }
 
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         String errorDetectMessage = accessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorDetect",
                                                                      phaseDetectService.getPhaseDetectResult().getErrorMsg());
         String errorReadMessage = accessor.getMessage("yukon.web.modules.amr.phaseDetect.sendTest.errorRead",
