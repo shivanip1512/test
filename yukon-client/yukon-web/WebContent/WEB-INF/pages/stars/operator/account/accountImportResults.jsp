@@ -5,6 +5,8 @@
 
 <cti:standardPage module="operator" page="accountImport">
     <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT" />
+    <cti:includeScript link="/JavaScript/yukon.hide.reveal.js"/>
+    
     <input id="prescan" type='hidden' value="${prescan}"/>
 
     <script type="text/javascript">
