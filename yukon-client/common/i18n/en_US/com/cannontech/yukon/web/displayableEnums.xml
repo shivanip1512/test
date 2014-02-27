@@ -3,12 +3,10 @@
 <properties>
 
 <!-- RF DR Broadcast Performance Unknown Status -->
-<entry key="yukon.common.rfPerformance.unknownStatus.AVAILABLE">Available</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.UNAVAILABLE">Unavailable</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW">Unreported New</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW.title">Never Reported - In system less than 4 days</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_OLD">Unreported Old</entry>
-<entry key="yukon.common.rfPerformance.unknownStatus.UNREPORTED_OLD.title">Never Reported - In system more than 4 days</entry>
+<entry key="yukon.common.rfPerformance.unknownStatus.COMMUNICATING">Communicating </entry>
+<entry key="yukon.common.rfPerformance.unknownStatus.NOT_COMMUNICATING">Not Communicating</entry>
+<entry key="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING">Recent Enrollment/New Install </entry>
+<entry key="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING.title">Never Reported - In system less than 4 days</entry>
 
 <!-- Metering -->
 <entry key="yukon.web.standardFilterBy.address">Address</entry>

@@ -7,50 +7,43 @@ import com.google.common.collect.ImmutableList;
 
 public final class UnknownDevices {
     private final List<UnknownDevice> unknownDevices;
-    private final int numUnavailable;
-    private final int numAvailable;
-    private final int numUnreportedNew;
-    private final int numUnreportedOld;
+    private final int numCommunicating;
+    private final int numNotCommunicating;
+    private final int numNewInstallNotCommunicating;
 
-    public UnknownDevices(List<UnknownDevice> unknownDevices, int numUnavailable,
-                          int numAvailable, int numUnreportedNew, int numUnreportedOld) {
+    public UnknownDevices(List<UnknownDevice> unknownDevices, int numCommunicating,
+                          int numNotCommunicating, int numNewInstallNotCommunicating) {
         this.unknownDevices = ImmutableList.copyOf(unknownDevices);
-        this.numUnavailable = numUnavailable;
-        this.numAvailable = numAvailable;
-        this.numUnreportedNew = numUnreportedNew;
-        this.numUnreportedOld = numUnreportedOld;
+        this.numCommunicating = numCommunicating;
+        this.numNotCommunicating = numNotCommunicating;
+        this.numNewInstallNotCommunicating = numNewInstallNotCommunicating;
     }
 
     public List<UnknownDevice> getUnknownDevices() {
         return unknownDevices;
     }
 
-    public int getNumUnavailable() {
-        return numUnavailable;
+    public int getNumCommunicating() {
+        return numCommunicating;
     }
 
-    public int getNumAvailable() {
-        return numAvailable;
+    public int getNumNotCommunicating() {
+        return numNotCommunicating;
     }
 
-    public int getNumUnreportedNew() {
-        return numUnreportedNew;
-    }
-
-    public int getNumUnreportedOld() {
-        return numUnreportedOld;
+    public int getNumNewInstallNotCommunicating() {
+        return numNewInstallNotCommunicating;
     }
 
     public int getNumTotalBeforePaging() {
-        return numUnavailable + numAvailable + numUnreportedNew + numUnreportedOld;
+        return numCommunicating + numNotCommunicating + numNewInstallNotCommunicating;
     }
 
     public static class Builder {
         private List<UnknownDevice> unknownDevices = new ArrayList<>();
-        private int numUnavailable;
-        private int numAvailable;
-        private int numUnreportedNew;
-        private int numUnreportedOld;
+        private int numCommunicating;
+        private int numNotCommunicating;
+        private int numNewInstallNotCommunicating;
 
         public void addUnknownDevice(UnknownDevice unknownDevice) {
             unknownDevices.add(unknownDevice);
@@ -58,16 +51,15 @@ public final class UnknownDevices {
 
         public void setCountForStatus(UnknownStatus status, int num) {
             switch (status) {
-                case AVAILABLE: numAvailable = num; break;
-                case UNAVAILABLE: numUnavailable = num; break;
-                case UNREPORTED_NEW: numUnreportedNew = num; break;
-                case UNREPORTED_OLD: numUnreportedOld = num; break;
+                case COMMUNICATING: numCommunicating = num; break;
+                case NOT_COMMUNICATING: numNotCommunicating = num; break;
+                case NEW_INSTALL_NOT_COMMUNICATING: numNewInstallNotCommunicating = num; break;
             }
         }
 
         public UnknownDevices build() {
-            return new UnknownDevices(unknownDevices, numUnavailable,
-                                      numAvailable, numUnreportedNew, numUnreportedOld);
+            return new UnknownDevices(unknownDevices, numCommunicating,
+                                      numNotCommunicating, numNewInstallNotCommunicating);
         }
     }
 }

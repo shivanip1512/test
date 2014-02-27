@@ -238,13 +238,14 @@ public class RfPerformanceController {
             @PathVariable long test, 
             @RequestParam(defaultValue="10") Integer itemsPerPage, 
             @RequestParam(defaultValue="1") Integer page) {
-        
+
         List<PaoIdentifier> paos = new ArrayList<>();
         PerformanceVerificationMessageStatus status;
-        
+        int totalCount = 0;
         if (type.equals("unknown")) {
             model.addAttribute("unknown", true);
             UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            totalCount = devices.getNumTotalBeforePaging();
             Map<Integer, UnknownDevice> unknowns = new HashMap<>();
             for (UnknownDevice device : devices.getUnknownDevices()) {
                 unknowns.put(device.getPaoIdentifier().getPaoId(), device);
@@ -255,13 +256,14 @@ public class RfPerformanceController {
         } else if (type.equalsIgnoreCase("failed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
             status = PerformanceVerificationMessageStatus.SUCCESS;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         }
 
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
-        int totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
         
         model.addAttribute("type", type);
@@ -287,21 +289,21 @@ public class RfPerformanceController {
         String eventTime = dateFormattingService.format(rfPerformanceDao.getEventTime(test), DateFormatEnum.DATEHM, userContext);
         model.addAttribute("title", accessor.getMessage(detailsKey + type + ".popup.title", eventTime));
         
+        int totalCount;
         if (type.equalsIgnoreCase("failed")) {
-            
             status = PerformanceVerificationMessageStatus.FAILURE;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
-            
+            totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else if (type.equalsIgnoreCase("success")) {
-            
             status = PerformanceVerificationMessageStatus.SUCCESS;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
-            
+            totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
-            
             model.addAttribute("unknown", true);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
             UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            totalCount = devices.getNumTotalBeforePaging();
+
             model.addAttribute("unknownStats", devices);
             
             Map<Integer, UnknownDevice> unknowns = new HashMap<>();
@@ -312,38 +314,30 @@ public class RfPerformanceController {
             model.addAttribute("unknowns", unknowns);
             
             // build json for pie chart
-            List<Map<String, Object>> data = new ArrayList<>(4);
+            List<Map<String, Object>> data = new ArrayList<>(PerformanceVerificationMessageStatus.values().length);
             
             Map<String, Object> stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.AVAILABLE));
-            stat.put("data", devices.getNumAvailable());
+            stat.put("label", accessor.getMessage(UnknownStatus.COMMUNICATING));
+            stat.put("data", devices.getNumCommunicating());
             stat.put("color", "#009933");
             data.add(stat);
             
             stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.UNAVAILABLE));
-            stat.put("data", devices.getNumUnavailable());
+            stat.put("label", accessor.getMessage(UnknownStatus.NOT_COMMUNICATING));
+            stat.put("data", devices.getNumNotCommunicating());
             stat.put("color", "#fb8521");
             data.add(stat);
             
             stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_NEW));
-            stat.put("data", devices.getNumUnreportedNew());
+            stat.put("label", accessor.getMessage(UnknownStatus.NEW_INSTALL_NOT_COMMUNICATING));
+            stat.put("data", devices.getNumNewInstallNotCommunicating());
             stat.put("color", "#4d90fe");
             data.add(stat);
-            
-            stat = Maps.newHashMapWithExpectedSize(3);
-            stat.put("label", accessor.getMessage(UnknownStatus.UNREPORTED_OLD));
-            stat.put("data", devices.getNumUnreportedOld());
-            stat.put("color", "#d14836");
-            data.add(stat);
-            
+
             resp.addHeader("X-JSON", JsonUtils.toJson(data));
-            
         }
         
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
-        int totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
         
         model.addAttribute("type", type);

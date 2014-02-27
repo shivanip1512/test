@@ -4,10 +4,9 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum UnknownStatus implements DisplayableEnum {
 
-    AVAILABLE,
-    UNAVAILABLE,
-    UNREPORTED_NEW,
-    UNREPORTED_OLD;
+    COMMUNICATING,
+    NOT_COMMUNICATING,
+    NEW_INSTALL_NOT_COMMUNICATING;
 
     @Override
     public String getFormatKey() {

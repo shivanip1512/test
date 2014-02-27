@@ -13,10 +13,15 @@
         <div class="column-12-12 clearfix stacked">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.AVAILABLE">${unknownStats.numAvailable}</tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNAVAILABLE">${unknownStats.numUnavailable}</tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNREPORTED_NEW">${unknownStats.numUnreportedNew}</tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.UNREPORTED_OLD">${unknownStats.numUnreportedOld}</tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.COMMUNICATING">
+                        ${unknownStats.numCommunicating}
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.NOT_COMMUNICATING">
+                        ${unknownStats.numNotCommunicating}
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.common.rfPerformance.unknownStatus.NEW_INSTALL_NOT_COMMUNICATING">
+                        ${unknownStats.numNewInstallNotCommunicating}
+                    </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="column two nogutter">
