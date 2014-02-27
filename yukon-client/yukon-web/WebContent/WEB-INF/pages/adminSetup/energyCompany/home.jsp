@@ -32,7 +32,10 @@ jQuery(document).on('click', 'button.loginButton',function() {
                         <c:forEach items="${companies}" var="company" varStatus="status">
                             <tr>
                                 <td>
-                                    <a href="/adminSetup/energyCompany/general/view?ecId=${company.energyCompanyId}">
+                                    <cti:url var="viewUrl" value="/adminSetup/energyCompany/general/view">
+                                        <cti:param name="ecId" value="${company.energyCompanyId}"/>
+                                    </cti:url>
+                                    <a href="${viewUrl}">
                                         <spring:escapeBody htmlEscape="true">${company.name}</spring:escapeBody>
                                     </a>
                                 </td>

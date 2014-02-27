@@ -53,7 +53,7 @@ jQuery(function() {
                 <c:forEach var="wrapper" items="${supportPages}">
                     <li>
                     <c:if test="${wrapper.enabled}">
-                        <a href="${wrapper.page.link}"><i:inline key="${wrapper.page}"/></a>
+                        <a href="<cti:url value="${wrapper.page.link}"/>"><i:inline key="${wrapper.page}"/></a>
                     </c:if>
                     <c:if test="${not wrapper.enabled}">
                         <cti:msg2 key=".siteMap.noPermissions" argument="${wrapper.requiredPermissions}" var="perms"/>
@@ -203,7 +203,7 @@ jQuery(function() {
                     <li> <a href="${url}">${logFile.identifier}</a></li>
                 </c:forEach>
             </ul>
-            <a href="/support/logging/menu?file=/&sortType=date"><i:inline key=".allLogs"/></a>
+            <a href="<cti:url value="/support/logging/menu?file=/&sortType=date"/>"><i:inline key=".allLogs"/></a>
         </tags:sectionContainer2>
         </cti:checkRolesAndProperties>
 
@@ -212,7 +212,7 @@ jQuery(function() {
                 <div class="stacked">${dbUrl}</div>
                 <div><strong><i:inline key=".databaseInfo.dbConnection.jdbcUser"/></strong></div>
                 <div class="stacked">${dbUser}</div>
-                <a href="/support/database/validate/home"><i:inline key=".databaseValidate.pageName"/></a>
+                <a href="<cti:url value="/support/database/validate/home"/>"><i:inline key=".databaseValidate.pageName"/></a>
         </tags:sectionContainer2>
     </div>
 </div>

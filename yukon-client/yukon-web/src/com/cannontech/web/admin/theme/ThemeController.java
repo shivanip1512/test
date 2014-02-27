@@ -157,20 +157,15 @@ public class ThemeController {
     }
     
     @RequestMapping(value="/config/themes/{id}", method=RequestMethod.DELETE)
-    public String delete(ModelMap model, 
-                         YukonUserContext context,
-                         FlashScope flash,
-                         @PathVariable int id) {
-        
+    public String delete(FlashScope flashScope, @PathVariable int id) {
         themeDao.deleteTheme(id);
         
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.deleted"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.config.themes.deleted"));
         return "redirect:/adminSetup/config/themes";
     }
     
     @RequestMapping(value="/config/themes/{id}/use", method=RequestMethod.GET)
-    public String use(ModelMap model, YukonUserContext context, @PathVariable int id) throws Exception {
-        
+    public String use(@PathVariable int id) throws Exception {
         themeDao.setCurrentTheme(id);
         themeableResourceCache.reloadAll();
         
@@ -202,24 +197,21 @@ public class ThemeController {
         return "/config/_imagePicker.jsp";
     }
     
-    public class ImagePickerImage {
-        private boolean deletable;
-        private LiteYukonImage image;
+    public final static class ImagePickerImage {
+        private final boolean deletable;
+        private final LiteYukonImage image;
+
         public ImagePickerImage(boolean deletable, LiteYukonImage image) {
             this.deletable = deletable;
             this.image = image;
         }
+
         public boolean isDeletable() {
             return deletable;
         }
-        public void setDeletable(boolean deletable) {
-            this.deletable = deletable;
-        }
+
         public LiteYukonImage getImage() {
             return image;
-        }
-        public void setImage(LiteYukonImage image) {
-            this.image = image;
         }
     }
     

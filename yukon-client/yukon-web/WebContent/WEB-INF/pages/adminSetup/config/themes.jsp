@@ -42,9 +42,9 @@
     />
     <div class="clearfix">
         <div class="category fl">
-            <a href="/adminSetup/config/themes" class="icon icon-32 fl icon-32-brush"></a>
+            <a href="<cti:url value="/adminSetup/config/themes"/>" class="icon icon-32 fl icon-32-brush"></a>
             <div class="fl meta">
-                <div><a class="title" href="/adminSetup/config/themes"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
+                <div><a class="title" href="<cti:url value="/adminSetup/config/themes"/>"><i:inline key="yukon.common.setting.subcategory.THEMES"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.THEMES.description"/></div>
             </div>
         </div>
@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="dib fl">
                                     <div>
-                                        <a class="dib" href="/adminSetup/config/themes/${theme.themeId}">${fn:escapeXml(theme.name)}</a>
+                                        <a class="dib" href="<cti:url value="/adminSetup/config/themes/${theme.themeId}"/>">${fn:escapeXml(theme.name)}</a>
                                     </div>
                                     <div>
                                         <c:if test="${theme.currentTheme}">
@@ -94,7 +94,8 @@
                     </c:forEach>
                     <li>
                         <div class="page-action-area">
-                            <cti:button nameKey="create" icon="icon-plus-green" href="/adminSetup/config/themes/create"/>
+                            <cti:url var="createUrl" value="/adminSetup/config/themes/create"/>
+                            <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}"/>
                         </div>
                     </li>
                 </ul>

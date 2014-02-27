@@ -4,8 +4,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:url var="previousReadingOptionsUrl" value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
-
 <tags:nameValueContainer2>
     <c:forEach items="${attributes}" var="attribute">
         <c:choose>
@@ -27,7 +25,7 @@
                     <tags:nameValue2 nameKey=".previousUsage">
                         <select onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
-                           <jsp:include page="${previousReadingOptionsUrl}" />
+                           <jsp:include page="/WEB-INF/pages/point/previousReadingsOptions.jsp"/>
                         </select>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".totalConsumption">

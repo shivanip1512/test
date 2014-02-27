@@ -23,7 +23,7 @@
     </c:when>
     <c:otherwise>
         <div class="simple-input-image" <tags:attributeHelper name="id" value="${param.id}"/>>
-            <a href="/common/images/${status.value}"><img alt="${status.value}" src="/common/images/${status.value}"></a>
+            <a href="<cti:url value="/common/images/${status.value}"/>"><img alt="${status.value}" src="<cti:url value="/common/images/${status.value}"/>"></a>
         </div>
     </c:otherwise>
 </c:choose>

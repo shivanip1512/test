@@ -83,7 +83,7 @@ public class HomeController {
         Function<UserPage, String> translator = new Function<UserPage, String>() {
             @Override
             public String apply(UserPage userPage) {
-                return userPageService.getLocalizePageTitle(userPage, userContext);
+                return userPageService.getLocalizedPageTitle(userPage, userContext);
             }
         };
         favorites = CtiUtilities.smartTranslatedSort(favorites, translator);

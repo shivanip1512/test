@@ -8,7 +8,7 @@
     });
 </script>
 
-    <form id="filterForm" action="/meter/search">
+    <form id="filterForm" action="<cti:url value="/meter/search"/>">
         <tags:nameValueContainer>
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>

@@ -106,7 +106,7 @@ public class PageDetailProducer {
 
             String link = expressionLanguageResolver.resolveElExpression(page.pageInfo.getLinkExpression(), request);
 
-            String linkText = createLink(label, link);
+            String linkText = createLink(request, label, link);
             if (page == pageToSelect) {
                 result.append("<li class=\"selected\">");
             } else {
@@ -147,7 +147,7 @@ public class PageDetailProducer {
 
         String label = getPagePart(CRUMB_TITLE, pageContext, messageSourceAccessor);
 
-        String thisCrumb = createLink(label, null);
+        String thisCrumb = createLink(request, label, null);
         String result = previousCrumbs + "<li class=\"active\">" + thisCrumb + "</li>";
         return result;
     }
@@ -155,7 +155,7 @@ public class PageDetailProducer {
     private String renderCrumbs(PageContext pageContext, HttpServletRequest request,
             MessageSourceAccessor messageSourceAccessor) {
         if (pageContext == null) {
-            return renderHomeCrumb(messageSourceAccessor);
+            return renderHomeCrumb(request, messageSourceAccessor);
         }
         String previousCrumbs = renderCrumbs(pageContext.parent, request, messageSourceAccessor);
 
@@ -169,8 +169,7 @@ public class PageDetailProducer {
             log.debug("renderCrumbs(..) failed getting/using pageInfo's link expression.", e);
         }
 
-        String thisCrumb;
-        thisCrumb = createLink(label, link);
+        String thisCrumb = createLink(request, label, link);
         String result = previousCrumbs + "<li>" + thisCrumb + "</li>";
         return result;
     }
@@ -197,14 +196,14 @@ public class PageDetailProducer {
         return result;
     }
 
-    private String renderHomeCrumb(MessageSourceAccessor messageSourceAccessor) {
+    private String renderHomeCrumb(HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         String message = messageSourceAccessor.getMessage("yukon.web.menu.home");
         String link = "/home";
 
-        return "<li>" + createLink(message, link) + "</li>";
+        return "<li>" + createLink(request, message, link) + "</li>";
     }
 
-    private String createLink(String label, String link) {
+    private String createLink(HttpServletRequest request, String label, String link) {
         // abbreviate label to prevent bread crumbs from being too long
         label = StringUtils.elideCenter(label, 60);
         String safeLabel = StringEscapeUtils.escapeHtml(label);
@@ -212,7 +211,7 @@ public class PageDetailProducer {
             return safeLabel;
         String safeLink = StringEscapeUtils.escapeHtml(link);
 
-        return "<a href=\"" + safeLink + "\">" + safeLabel + "</a>";
+        return "<a href=\"" + request.getContextPath() + safeLink + "\">" + safeLabel + "</a>";
     }
 
     private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request,

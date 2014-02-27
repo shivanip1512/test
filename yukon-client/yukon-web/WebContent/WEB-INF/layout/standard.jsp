@@ -92,7 +92,7 @@
     <div class="outer">
         <div class="inner">
             <div class="toolbar">
-                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="/search" class="yukon-search-form">
+                <form accept-charset="ISO-8859-1" enctype="application/x-www-form-urlencoded" method="get" action="<cti:url value="/search"/>" class="yukon-search-form">
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
                 <cti:button id="yukon-alert-button" data-alert-sound="${alertSounds}" data-alert-flash="${alertFlash}" classes="action dn" label="0"/>

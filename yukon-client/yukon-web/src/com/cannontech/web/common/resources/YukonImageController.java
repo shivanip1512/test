@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -116,8 +115,8 @@ public class YukonImageController {
     }
 
     private Dimension getScaledDimensions(BufferedImage imageSrc, Dimension defaultDimension) {
-        double currentHeight = (double) imageSrc.getHeight();
-        double currentWidth = (double) imageSrc.getWidth();
+        double currentHeight = imageSrc.getHeight();
+        double currentWidth = imageSrc.getWidth();
         double requestedHeightScaling = (defaultDimension.getHeight() / currentHeight);
         double requestedWidthScaling = (defaultDimension.getWidth() / currentWidth);
         double actualScaling = Math.min(requestedHeightScaling, requestedWidthScaling);
@@ -190,7 +189,7 @@ public class YukonImageController {
     }
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.DELETE)
-    public @ResponseBody Map<String, Object> delete(ModelMap model, YukonUserContext context, @PathVariable int id) {
+    public @ResponseBody Map<String, Object> delete(YukonUserContext context, @PathVariable int id) {
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         try {

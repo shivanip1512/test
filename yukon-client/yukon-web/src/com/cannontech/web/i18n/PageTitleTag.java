@@ -21,7 +21,7 @@ public class PageTitleTag extends YukonTagSupport {
 
     @Override
     public void doTag() throws JspException, IOException {
-        String pageTitle = userPageService.getLocalizePageTitle(userPage, getUserContext());
+        String pageTitle = userPageService.getLocalizedPageTitle(userPage, getUserContext());
         pageTitle = HtmlUtils.htmlEscape(pageTitle);
 
         getJspContext().getOut().print(pageTitle);

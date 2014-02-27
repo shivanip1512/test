@@ -825,7 +825,7 @@ yukon.modules.ui = function (mod) {
             source: function(request, response) {
                 jQuery.ajax({
                     type: 'get',
-                    url: "/search/autocomplete.json",
+                    url: YG.APP_NAME + '/search/autocomplete.json',
                     dataType: "json",
                     data: {
                         q: request.term

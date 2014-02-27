@@ -18,7 +18,7 @@ public class UserPageServiceImpl implements UserPageService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public String getLocalizePageTitle(UserPage userPage, YukonUserContext userContext) {
+    public String getLocalizedPageTitle(UserPage userPage, YukonUserContext userContext) {
         Module moduleBase = moduleBuilder.getModule(userPage.getModule().getName());
 
         String pageTitle = null;
