@@ -123,7 +123,7 @@ jQuery(function(){
                                 temperatureUnit="${temperatureUnit}"
                                 actionPath="/stars/operator/thermostatSchedule"
                                 thermostatType="${thermostatType}"
-                                styleClass="vh stacked"/>
+                                styleClass="vh stacked-medium"/>
                         </c:forEach>    
                     </tags:sectionContainer2>
                 </c:if>

@@ -1,21 +1,21 @@
-<%@ tag trimDirectiveWhitespaces="true"%>
+<%@ tag trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="accountId" required="true" type="java.lang.String"%>
-<%@ attribute name="actionPath" required="true" type="java.lang.String"%>
+<%@ attribute name="accountId" required="true" %>
+<%@ attribute name="actionPath" required="true" %>
 <%@ attribute name="schedule" required="true" type="com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule" %>
-<%@ attribute name="temperatureUnit" required="true" type="java.lang.String"%>
-<%@ attribute name="thermostatId" required="true" type="java.lang.String"%>
-<%@ attribute name="thermostatIds" required="true" type="java.lang.String"%>
-<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%>
+<%@ attribute name="temperatureUnit" required="true" %>
+<%@ attribute name="thermostatId" required="true" %>
+<%@ attribute name="thermostatIds" required="true" %>
+<%@ attribute name="thermostatType" required="true" type="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType" %>
 
-<%@ attribute name="customActions" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="omitEditor" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="customActions" type="java.lang.Boolean" %>
+<%@ attribute name="omitEditor" type="java.lang.Boolean" %>
+<%@ attribute name="styleClass" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
