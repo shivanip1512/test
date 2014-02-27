@@ -231,7 +231,7 @@ BEGIN
           AND NOT (CAST(CAST(YPAO1.PAOName AS NUMBER) AS VARCHAR2(64)) = YPAO1.PAOName)) T;
     
     IF v_duplicateCount > 0 THEN
-        RAISE_APPLICATION_ERROR(-20001, 'There are devices in the YukonPAObject table that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.');
+        RAISE_APPLICATION_ERROR(-20001, 'There are devices in the YukonPAObject table and related tables that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.');
     END IF;
 END;
 /

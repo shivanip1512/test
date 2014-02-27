@@ -227,21 +227,34 @@ UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE Role
 /* Start YUK-12892 */
 /* @start-block */
 DECLARE
-    @errorCount NUMERIC;
+    @errorCount NUMERIC = 0,
+    @count      NUMERIC,
+    @paoName    VARCHAR(60);
+DECLARE potential_duplicates_curs CURSOR FOR (
+       SELECT PAOName
+       FROM YukonPAObject
+       WHERE PAOClass = 'RFMESH'
+        AND PAOName LIKE '0%');
 BEGIN
-SELECT @errorCount = COUNT(PAOName) 
-FROM (
-    SELECT YPAO1.PAOName, 
-        CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) AS TruncatedDuplicateSerialNumber
-    FROM YukonPAObject YPAO1, YukonPAObject YPAO2
-    WHERE YPAO1.PAOClass = 'RFMESH'
-      AND YPAO1.PAOName LIKE '0%'
-      AND CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) = YPAO2.PAOName
-      AND NOT (CAST(CAST(YPAO1.PAOName AS NUMERIC) AS VARCHAR) = YPAO1.PAOName)) T;
-    
+    OPEN potential_duplicates_curs;
+    FETCH NEXT FROM potential_duplicates_curs INTO @paoName;
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+       SELECT @count = COUNT(PAOName)
+       FROM YukonPAObject
+       WHERE PAOName = CAST(CAST(@paoName AS NUMERIC) AS VARCHAR);
+
+       IF @count > 0
+       BEGIN
+          SET @errorCount = @errorCount + 1;
+       END
+       FETCH NEXT FROM potential_duplicates_curs INTO @paoName;
+    END
+    CLOSE potential_duplicates_curs;
+    DEALLOCATE potential_duplicates_curs;
     IF @errorCount > 0
     BEGIN
-        RAISERROR('There are devices in the YukonPAObject table that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.', 16, 1);
+        RAISERROR('There are devices in the YukonPAObject table and related tables that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.', 16, 1);
     END 
 END;
 /* @end-block */
