@@ -1,4 +1,4 @@
-package com.cannontech.web.moveInMoveOut;
+package com.cannontech.web.amr.meter;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -6,15 +6,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
@@ -39,69 +38,62 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-/**
- * Widget used to display basic device information
- */
+@Controller
 @CheckRoleProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT)
-public class MoveInMoveOutController extends MultiActionController {
+public class MoveInMoveOutController {
 
-    private DateFormattingService dateFormattingService = null;
-    private MeterDao meterDao = null;
-    private DeviceDao deviceDao = null;
-    private PaoLoadingService paoLoadingService = null;
-    private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
-    private MoveInMoveOutService moveInMoveOutService = null;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private MoveInMoveOutEmailService moveInMoveOutEmailService;
+    @Autowired private MoveInMoveOutService moveInMoveOutService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    /**
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
-    public ModelAndView moveIn(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("moveIn.jsp");
+    @RequestMapping("moveIn")
+    public String moveIn(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
 
         // Adds the group to the mav object
-        mav.addObject("meter", meter);
-        mav.addObject("deviceId", meter.getDeviceId());
-        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        mav.addObject("currentDate", new Date());
+        model.addAttribute("meter", meter);
+        model.addAttribute("deviceId", meter.getDeviceId());
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("currentDate", new Date());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
-        mav.addObject("readable", readable);
+        model.addAttribute("readable", readable);
 
-        return mav;
+        return "moveIn.jsp";
     }
 
-    /**
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
-    public ModelAndView moveInRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping("moveInRequest")
+    public String moveInRequest(HttpServletRequest request, ModelMap model) throws Exception {
 
-        ModelAndView mav = moveIn(request, response);
+        PlcMeter meter = getMeter(request);
+        SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
+        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+
+        // Adds the group to the mav object
+        model.addAttribute("meter", meter);
+        model.addAttribute("deviceId", meter.getDeviceId());
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("currentDate", new Date());
+        
+        // readable?
+        boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
+        model.addAttribute("readable", readable);
 
         // Getting all the needed form values
         PlcMeter prevMeter = getMeter(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        String deviceName = ServletRequestUtils.getStringParameter(request,
-                                                                   "deviceName");
-        String meterNumber = ServletRequestUtils.getStringParameter(request,
-                                                                    "meterNumber");
-        String emailAddress = ServletRequestUtils.getStringParameter(request,
-                                                                     "emailAddress");
-        String moveInDateStr = ServletRequestUtils.getStringParameter(request,
-                                                                      "moveInDate");
+        String deviceName = ServletRequestUtils.getStringParameter(request, "deviceName");
+        String meterNumber = ServletRequestUtils.getStringParameter(request, "meterNumber");
+        String emailAddress = ServletRequestUtils.getStringParameter(request, "emailAddress");
+        String moveInDateStr = ServletRequestUtils.getStringParameter(request, "moveInDate");
 
         Date moveInDate = null;
         if (moveInDateStr != null) {
@@ -121,8 +113,8 @@ public class MoveInMoveOutController extends MultiActionController {
         moveInForm.setMeterNumber(meterNumber);
         moveInForm.setMoveInDate(moveInDate);
         moveInForm.setPreviousMeter(prevMeter);
-        if (!varifiedParametersMoveIn(moveInForm, mav)) {
-            return mav;
+        if (!varifiedParametersMoveIn(moveInForm, model)) {
+            return "moveIn.jsp";
         }
 
         MoveInResult moveInResult = null;
@@ -130,22 +122,22 @@ public class MoveInMoveOutController extends MultiActionController {
         moveInResult.setMoveInDate(moveInDate);
         moveInMoveOutEmailService.createMoveInEmail(moveInResult, userContext);
 
-        mav.addObject("currentReading", moveInResult.getCurrentReading());
-        mav.addObject("calculatedDifference",
+        model.addAttribute("currentReading", moveInResult.getCurrentReading());
+        model.addAttribute("calculatedDifference",
                       moveInResult.getCalculatedDifference());
-        mav.addObject("previousReadingValue",
+        model.addAttribute("previousReadingValue",
                       moveInResult.getCalculatedPreviousReading());
-        mav.addObject("beginDate",
+        model.addAttribute("beginDate",
                       dateFormattingService.format(moveInForm.getMoveInDate(),
                                                        DateFormatEnum.BOTH,
                                                        userContext));
-        mav.addObject("prevMeter", moveInResult.getPreviousMeter());
-        mav.addObject("newMeter", moveInResult.getNewMeter());
-        mav.addObject("errors", moveInResult.getErrors());
-        mav.addObject("errorMessage", moveInResult.getErrorMessage());
-        mav.addObject("deviceGroups", moveInResult.getDeviceGroupsRemoved());
-        mav.addObject("submissionType", moveInResult.getSubmissionType());
-        mav.addObject("scheduled", moveInResult.isScheduled());
+        model.addAttribute("prevMeter", moveInResult.getPreviousMeter());
+        model.addAttribute("newMeter", moveInResult.getNewMeter());
+        model.addAttribute("errors", moveInResult.getErrors());
+        model.addAttribute("errorMessage", moveInResult.getErrorMessage());
+        model.addAttribute("deviceGroups", moveInResult.getDeviceGroupsRemoved());
+        model.addAttribute("submissionType", moveInResult.getSubmissionType());
+        model.addAttribute("scheduled", moveInResult.isScheduled());
         
         //Build i18n strings with multiple arguments
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -154,53 +146,59 @@ public class MoveInMoveOutController extends MultiActionController {
                                                                           dateFormattingService.format(moveInForm.getMoveInDate(),
                                                                                                        DateFormatEnum.BOTH,
                                                                                                        userContext));
-        mav.addObject("moveInSuccessMsg", moveInSuccessMsg);
+        model.addAttribute("moveInSuccessMsg", moveInSuccessMsg);
         if(moveInResult.getPreviousMeter().getName() != moveInResult.getNewMeter().getName()) {
             String renameSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveIn.rename",
                                                                        moveInResult.getPreviousMeter().getName(),
                                                                        moveInResult.getNewMeter().getName());
-            mav.addObject("renameSuccessMsg", renameSuccessMsg);
+            model.addAttribute("renameSuccessMsg", renameSuccessMsg);
         }
         if(moveInResult.getPreviousMeter().getMeterNumber() != moveInResult.getNewMeter().getMeterNumber()) {
             String newNumberSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveIn.newNumber",
                                                                           moveInResult.getPreviousMeter().getMeterNumber(),
                                                                           moveInResult.getNewMeter().getMeterNumber());
-            mav.addObject("newNumberSuccessMsg", newNumberSuccessMsg);
+            model.addAttribute("newNumberSuccessMsg", newNumberSuccessMsg);
         }
         
-        return mav;
+        return "moveIn.jsp";
     }
-
-    public ModelAndView moveOut(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("moveOut.jsp");
+    
+    @RequestMapping("moveOut")
+    public String moveOut(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
+        
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
 
         // Adds the group to the mav object
-        mav.addObject("meter", meter);
-        mav.addObject("deviceId", meter.getDeviceId());
-        mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
-        mav.addObject("currentDate", new Date());
+        model.addAttribute("meter", meter);
+        model.addAttribute("deviceId", meter.getDeviceId());
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("currentDate", new Date());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
-        mav.addObject("readable", readable);
+        model.addAttribute("readable", readable);
         
-        return mav;
+        return "moveOut.jsp";
     }
 
-    /**
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
-    public ModelAndView moveOutRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    @RequestMapping("moveOutRequest")
+    public String moveOutRequest(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
 
-        ModelAndView mav = moveOut(request, response);
+        PlcMeter meter = getMeter(request);
+        SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
+        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+
+        // Adds the group to the mav object
+        model.addAttribute("meter", meter);
+        model.addAttribute("deviceId", meter.getDeviceId());
+        model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+        model.addAttribute("currentDate", new Date());
+        
+        // readable?
+        boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
+        model.addAttribute("readable", readable);
 
         // Getting all the needed form values
         PlcMeter prevMeter = getMeter(request);
@@ -229,30 +227,30 @@ public class MoveInMoveOutController extends MultiActionController {
         moveOutForm.setMeter(prevMeter);
         moveOutForm.setMoveOutDate(moveOutDate);
 
-        if (!verifiedParametersMoveOut(moveOutForm, mav)) {
-            return mav;
+        if (!verifiedParametersMoveOut(moveOutForm, model)) {
+            return "moveOut.jsp";
         }
 
         MoveOutResult moveOutResult = null;
         moveOutResult = moveInMoveOutService.scheduleMoveOut(moveOutForm);
         moveOutResult.setMoveOutDate(moveOutDate);
-        mav.addObject("endDate",
+        model.addAttribute("endDate",
                       dateFormattingService.format(new Date(moveOutDate.getTime()),
                                                    DateFormatEnum.BOTH,
                                                    userContext));
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult,
                                                      userContext);
 
-        mav.addObject("currentReading", moveOutResult.getCurrentReading());
-        mav.addObject("calculatedUsage", moveOutResult.getCalculatedReading());
-        mav.addObject("calculatedDifference",
+        model.addAttribute("currentReading", moveOutResult.getCurrentReading());
+        model.addAttribute("calculatedUsage", moveOutResult.getCalculatedReading());
+        model.addAttribute("calculatedDifference",
                       moveOutResult.getCalculatedDifference());
-        mav.addObject("meter", moveOutResult.getPreviousMeter());
-        mav.addObject("errors", moveOutResult.getErrors());
-        mav.addObject("errorMessage", moveOutResult.getErrorMessage());
-        mav.addObject("deviceGroups", moveOutResult.getDeviceGroupsAdded());
-        mav.addObject("submissionType", moveOutResult.getSubmissionType());
-        mav.addObject("scheduled", moveOutResult.isScheduled());
+        model.addAttribute("meter", moveOutResult.getPreviousMeter());
+        model.addAttribute("errors", moveOutResult.getErrors());
+        model.addAttribute("errorMessage", moveOutResult.getErrorMessage());
+        model.addAttribute("deviceGroups", moveOutResult.getDeviceGroupsAdded());
+        model.addAttribute("submissionType", moveOutResult.getSubmissionType());
+        model.addAttribute("scheduled", moveOutResult.isScheduled());
         //Build i18n strings with multiple arguments
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String moveOutSuccessMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.moveOut.success", 
@@ -260,19 +258,16 @@ public class MoveInMoveOutController extends MultiActionController {
                                                                           dateFormattingService.format(moveOutForm.getMoveOutDate(),
                                                                                                        DateFormatEnum.BOTH,
                                                                                                        userContext));
-        mav.addObject("moveOutSuccessMsg", moveOutSuccessMsg);
-        return mav;
+        model.addAttribute("moveOutSuccessMsg", moveOutSuccessMsg);
+        
+        return "moveOut.jsp";
     }
 
     /**
      * This function verifies that all the information was correctly entered on
      * the desired move in service
-     * @param moveInFormObj
-     * @param mav
-     * @return
      */
-    private boolean varifiedParametersMoveIn(MoveInForm moveInForm,
-            ModelAndView mav) {
+    private boolean varifiedParametersMoveIn(MoveInForm moveInForm, ModelMap model) {
 
         boolean verified = true;
         List<String> validationErrors = new ArrayList<String>();
@@ -305,7 +300,7 @@ public class MoveInMoveOutController extends MultiActionController {
             }
         }
 
-        mav.addObject("validationErrors", validationErrors);
+        model.addAttribute("validationErrors", validationErrors);
 
         return verified;
     }
@@ -317,8 +312,7 @@ public class MoveInMoveOutController extends MultiActionController {
      * @param mav
      * @return
      */
-    private boolean verifiedParametersMoveOut(MoveOutForm moveOutForm,
-            ModelAndView mav) {
+    private boolean verifiedParametersMoveOut(MoveOutForm moveOutForm, ModelMap model) {
 
         boolean verified = true;
         List<String> validationErrors = new ArrayList<String>();
@@ -339,60 +333,15 @@ public class MoveInMoveOutController extends MultiActionController {
                 verified = false;
             }
         }
-        mav.addObject("validationErrors", validationErrors);
+        model.addAttribute("validationErrors", validationErrors);
 
         return verified;
     }
 
-    /**
-     * @param request
-     * @return
-     * @throws ServletRequestBindingException
-     */
-    private PlcMeter getMeter(HttpServletRequest request)
-            throws ServletRequestBindingException {
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request,
-                                                                   "deviceId");
+    private PlcMeter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         return meter;
     }
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
-    @Required
-    public void setMoveInMoveOutEmailService(
-            MoveInMoveOutEmailService moveInMoveOutEmailService) {
-        this.moveInMoveOutEmailService = moveInMoveOutEmailService;
-    }
-
-    @Required
-    public void setMoveInMoveOutService(
-            MoveInMoveOutService moveInMoveOutService) {
-        this.moveInMoveOutService = moveInMoveOutService;
-    }
     
-    @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
 }

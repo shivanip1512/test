@@ -84,7 +84,7 @@ jQuery(function() {
                 params[jQuery(this).attr('name')] = jQuery(this).val();
             });
             jQuery.ajax({
-                url: '/contextualMenu/list',
+                url: YG.APP_NAME + '/contextualMenu/list',
                 type: 'GET',
                 data: params
             }).done( function(data) {

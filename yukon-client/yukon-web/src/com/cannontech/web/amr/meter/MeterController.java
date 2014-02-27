@@ -91,8 +91,7 @@ public class MeterController extends MultiActionController {
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
-        request.getSession().setAttribute("searchResults",
-                                          url + ((urlParams != null) ? "?" + urlParams : ""));
+        request.getSession().setAttribute("searchResults", url + ((urlParams != null) ? "?" + urlParams : ""));
         
         // Get the search result count
         int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));

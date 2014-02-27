@@ -9,16 +9,11 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
        
     <!-- Loads all @Controllers from the specified packages. -->
-    <context:component-scan base-package="com.cannontech.web.amr.meter" />
+    <context:component-scan base-package="com.cannontech.web.amr.meter"/>
        
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/moveIn">MoveInMoveOutController</prop>
-                <prop key="/moveInRequest">MoveInMoveOutController</prop>
-                <prop key="/moveOut">MoveInMoveOutController</prop>
-                <prop key="/moveOutRequest">MoveInMoveOutController</prop>
-                <prop key="/highBill/*">HighBillController</prop>
                 <prop key="/*">MeterController</prop>
             </props>
         </property>
@@ -46,12 +41,4 @@
         </property>
     </bean>
     
-    <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >
-        <property name="moveInMoveOutService" ref="moveInMoveOutService" />
-        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
-        <property name="meterDao" ref="meterDao" />
-        <property name="dateFormattingService" ref="dateFormattingService" />
-    </bean>    
-    
-    <bean id="HighBillController" class="com.cannontech.web.highBill.HighBillController" />
 </beans>

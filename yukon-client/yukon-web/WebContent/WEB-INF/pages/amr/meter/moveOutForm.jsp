@@ -7,7 +7,7 @@
     <div class="error stacked">${error}</div>
 </c:forEach>
 
-<form action="/meter/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm" method="post">
+<form action="<cti:url value="/meter/moveOutRequest?deviceId=${meter.deviceId}"/>" id="moveOutForm" method="post">
     <cti:csrfToken/>
     <input name="deviceId" type="hidden" value="${meter.deviceId}">
 
@@ -16,10 +16,10 @@
         <tags:nameValueContainer2>
         
             <tags:nameValue2 nameKey=".moveOutDate">
-                <dt:date name="moveOutDate" value="${currentDate}" />
+                <dt:date name="moveOutDate" value="${currentDate}"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".emailNotification">
-                <input name="emailAddress" type="text" />
+                <input name="emailAddress" type="text">
             </tags:nameValue2>
         
         </tags:nameValueContainer2>

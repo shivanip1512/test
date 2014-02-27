@@ -25,6 +25,5 @@
 
 <%-- INITIALLY INCLUDE ONGOING JSP --%>    
 <div id="${divId}">
-    <cti:url var="ongoingProfilesUrl" value="/WEB-INF/pages/widget/pendingProfilesWidget/ongoingProfiles.jsp" />
-    <jsp:include page="${ongoingProfilesUrl}"/>
+    <jsp:include page="/WEB-INF/pages/widget/pendingProfilesWidget/ongoingProfiles.jsp"/>
 </div>

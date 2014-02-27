@@ -1,4 +1,4 @@
-package com.cannontech.web.highBill;
+package com.cannontech.web.amr.meter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,16 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -63,10 +63,11 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
+@Controller
+@RequestMapping("/highBill/*")
 @CheckRoleProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT)
-public class HighBillController extends MultiActionController {
+public class HighBillController {
 
-    // These were all @Required
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
@@ -88,28 +89,26 @@ public class HighBillController extends MultiActionController {
 
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
     
-    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
-        
-        // mav
-        ModelAndView mav = new ModelAndView("highBill.jsp");
+    @RequestMapping("view")
+    public String view(HttpServletRequest request, ModelMap model) throws ParseException, ServletRequestBindingException {
         
         // BASICS
         //-------------------------------------------
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        mav.addObject("deviceId", String.valueOf(deviceId));
+        model.addAttribute("deviceId", String.valueOf(deviceId));
         PlcMeter meter = meterDao.getPlcMeterForId(deviceId);
         
         // readable?
         boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
-        mav.addObject("readable", readable);
+        model.addAttribute("readable", readable);
         
         // point id
-        addPointIdToMav(mav, meter);
+        addPointIdToMav(model, meter);
         
         // new report or previous?
         boolean analyze = ServletRequestUtils.getBooleanParameter(request, "analyze", false);
-        mav.addObject("analyze", analyze);
+        model.addAttribute("analyze", analyze);
         
         // user email address
         LiteContact contact = yukonUserDao.getLiteContact(userContext.getYukonUser().getUserID());
@@ -120,7 +119,7 @@ public class HighBillController extends MultiActionController {
                 email = allEmailAddresses[0];
             }
         }
-        mav.addObject("email", email);
+        model.addAttribute("email", email);
         
         // CREATE POINT IF NEEDED
         //-------------------------------------------
@@ -130,7 +129,7 @@ public class HighBillController extends MultiActionController {
             attributeService.createPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
         }
         boolean lmPointExists = attributeService.pointExistsForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
-        mav.addObject("lmPointExists", lmPointExists);
+        model.addAttribute("lmPointExists", lmPointExists);
         
         // DATE RANGE
         //-------------------------------------------
@@ -163,9 +162,9 @@ public class HighBillController extends MultiActionController {
             stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
         }
         
-        mav.addObject("startDate", startDate);
-        mav.addObject("stopDate", stopDate);
-        mav.addObject("deviceName", meter.getName());
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("stopDate", stopDate);
+        model.addAttribute("deviceName", meter.getName());
         
         
         // GATHER ARCHIVED RESULTS
@@ -173,10 +172,10 @@ public class HighBillController extends MultiActionController {
         PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, userContext);
         PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, userContext);
         
-        mav.addObject("preResult", preResult);
-        mav.addObject("postResult", postResult);
-        mav.addObject("preAvailableDaysAfterPeak", getAvailableDaysAfterPeak(preResult));
-        mav.addObject("postAvailableDaysAfterPeak", getAvailableDaysAfterPeak(postResult));
+        model.addAttribute("preResult", preResult);
+        model.addAttribute("postResult", postResult);
+        model.addAttribute("preAvailableDaysAfterPeak", getAvailableDaysAfterPeak(preResult));
+        model.addAttribute("postAvailableDaysAfterPeak", getAvailableDaysAfterPeak(postResult));
         
         // remaining items are only required during "step 2" (analyze=true)
         if (analyze) {
@@ -187,12 +186,12 @@ public class HighBillController extends MultiActionController {
             int pointId = point.getPointID();
             
             // applys to both
-            mav.addObject("pointId", pointId);
-            mav.addObject("converterType", ConverterType.RAW);
-            mav.addObject("graphType", GraphType.LINE);
+            model.addAttribute("pointId", pointId);
+            model.addAttribute("converterType", ConverterType.RAW);
+            model.addAttribute("graphType", GraphType.LINE);
             
             String chartRange = ServletRequestUtils.getStringParameter(request, "chartRange", "PEAK");
-            mav.addObject("chartRange", chartRange);
+            model.addAttribute("chartRange", chartRange);
             
             // PRE CHART
             if (preResult != null && !preResult.isNoData()) {
@@ -202,11 +201,11 @@ public class HighBillController extends MultiActionController {
                 Date preChartStartDate = preChartStartStopDateHolder.getChartStartDate();
                 Date preChartStopDate = preChartStartStopDateHolder.getChartStopDate();
                 
-                mav.addObject("preChartStartDate", preChartStartDate);
-                mav.addObject("preChartStopDate", preChartStopDate);
-                mav.addObject("preChartStartDateMillis", preChartStartDate.getTime());
-                mav.addObject("preChartStopDateMillis", preChartStopDate.getTime());
-                mav.addObject("preChartInterval", calcIntervalForPeriod(preChartStartDate, preChartStopDate));
+                model.addAttribute("preChartStartDate", preChartStartDate);
+                model.addAttribute("preChartStopDate", preChartStopDate);
+                model.addAttribute("preChartStartDateMillis", preChartStartDate.getTime());
+                model.addAttribute("preChartStopDateMillis", preChartStopDate.getTime());
+                model.addAttribute("preChartInterval", calcIntervalForPeriod(preChartStartDate, preChartStopDate));
                 
                 // POST CHART
                 if (postResult != null && !postResult.isNoData()) {
@@ -216,11 +215,11 @@ public class HighBillController extends MultiActionController {
                     Date postChartStartDate = postChartStartStopDateHolder.getChartStartDate();
                     Date postChartStopDate = postChartStartStopDateHolder.getChartStopDate();
                     
-                    mav.addObject("postChartStartDate", postChartStartDate);
-                    mav.addObject("postChartStopDate", postChartStopDate);
-                    mav.addObject("postChartStartDateMillis", postChartStartDate.getTime());
-                    mav.addObject("postChartStopDateMillis", postChartStopDate.getTime());
-                    mav.addObject("postChartInterval", calcIntervalForPeriod(postChartStartDate, postChartStopDate));
+                    model.addAttribute("postChartStartDate", postChartStartDate);
+                    model.addAttribute("postChartStopDate", postChartStopDate);
+                    model.addAttribute("postChartStartDateMillis", postChartStartDate.getTime());
+                    model.addAttribute("postChartStopDateMillis", postChartStopDate.getTime());
+                    model.addAttribute("postChartInterval", calcIntervalForPeriod(postChartStartDate, postChartStopDate));
                     
                     // Get point values for each range to determine the min/max y values
                     double preMin = 0.0;
@@ -254,13 +253,13 @@ public class HighBillController extends MultiActionController {
                     
                     Double min = Math.min(preMin, postMin);
                     Double max = Math.max(preMax, postMax);
-                    mav.addObject("yMin", min.toString());
-                    mav.addObject("yMax", max.toString());
+                    model.addAttribute("yMin", min.toString());
+                    model.addAttribute("yMax", max.toString());
                 }
             }
         }
         
-        return mav;
+        return "highBill.jsp";
     }
     
     private ChartStartStopDateHolder getChartStartStopDate(PeakReportResult result, String chartRange, YukonUserContext userContext) {
@@ -334,9 +333,8 @@ public class HighBillController extends MultiActionController {
         }
     }
     
-    public ModelAndView getReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        
-        ModelAndView mav = new ModelAndView("meterReadErrors.jsp");
+    @RequestMapping("getReport")
+    public String getReport(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
         
         // basics
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -361,35 +359,35 @@ public class HighBillController extends MultiActionController {
             preCommandStartDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
         } catch (ParseException e) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart1", startDateStr);
-            mav.addObject("errorMsg", errorMsg);
-            return mav;
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterReadErrors.jsp";
         }
         
         try {
             preCommandStopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
         } catch (ParseException e) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStop1", stopDateStr);
-            mav.addObject("errorMsg", errorMsg);
-            return mav;
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterReadErrors.jsp";
         }
 
         if (preCommandStopDate.before(preCommandStartDate) || preCommandStartDate.getTime() == preCommandStopDate.getTime()) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart2");
-            mav.addObject("errorMsg", errorMsg);
-            return mav;
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterReadErrors.jsp";
         }
         
         Date today = new Date();
         if (preCommandStartDate.after(today)) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStart3");
-            mav.addObject("errorMsg", errorMsg);
-            return mav;
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterReadErrors.jsp";
         }
         
         if (preCommandStopDate.after(today)) {
             String errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.amr.highBill.errorMsgStop2");
-            mav.addObject("errorMsg", errorMsg);
-            return mav;
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterReadErrors.jsp";
         }
         
         postCommandStartDate = DateUtils.addDays(preCommandStopDate, 1);
@@ -414,8 +412,8 @@ public class HighBillController extends MultiActionController {
         } 
         catch (PeakSummaryReportRequestException e) {
             String readError = friendlyExceptionResolver.getFriendlyExceptionMessage(e);
-            mav.addObject("errorMsg", readError);
-            return mav;
+            model.addAttribute("errorMsg", readError);
+            return "meterReadErrors.jsp";
         }
         
         // error results
@@ -426,13 +424,13 @@ public class HighBillController extends MultiActionController {
         if (postResult != null && postResult.isNoData()) {
             results.add(postResult);
         }
-        mav.addObject("results", results);
+        model.addAttribute("results", results);
         
-        
-        return mav;
+        return "meterReadErrors.jsp";
     }
     
-    public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping("initiateLoadProfile")
+    public ModelAndView initiateLoadProfile(HttpServletRequest request, ModelMap model) throws Exception {
 
         ModelAndView mav = new ModelAndView(new JsonView());
 
@@ -546,21 +544,19 @@ public class HighBillController extends MultiActionController {
             returnMsg = e.getMessage();
         }
 
-        mav.addObject("returnMsg", returnMsg);
+        model.addAttribute("returnMsg", returnMsg);
         
         return mav;
     }
 
     /**
      * HELPER to get pointId, and set to mav
-     * @param mav
-     * @param deviceId
      */
-    private void addPointIdToMav(ModelAndView mav, PlcMeter meter) {
+    private void addPointIdToMav(ModelMap model, PlcMeter meter) {
         
         LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
         int pointId = point.getPointID();
-        mav.addObject("pointId", pointId);
+        model.addAttribute("pointId", pointId);
     }
     
     private List<String> getAvailableDaysAfterPeak(PeakReportResult result) {
@@ -587,9 +583,6 @@ public class HighBillController extends MultiActionController {
     
     /**
      * HELPER to calculate days between two dates
-     * @param date1
-     * @param date2
-     * @return
      */
     private long getDaysBetween(Date date1, Date date2) {
 

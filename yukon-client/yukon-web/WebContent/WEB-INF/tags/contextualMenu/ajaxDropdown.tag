@@ -1,4 +1,4 @@
-<%@ tag trimDirectiveWhitespaces="true" description="This tag is used to generate a contextual menu based on the passed in menuBeanId"%>
+<%@ tag trimDirectiveWhitespaces="true" description="This tag is used to generate a contextual menu based on the passed in menuBeanId" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>

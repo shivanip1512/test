@@ -1,10 +1,10 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="meterSearchResults">
 
@@ -12,22 +12,22 @@
 
     <script type="text/javascript">
     
-    	function forwardToMeterHome(row, id) {
-    	    jQuery('#deviceTable').removeClass('activeResultsTable');
-    		window.location = "${meterHomeUrl}?deviceId=" + id;
-    	}
+        function forwardToMeterHome(row, id) {
+            jQuery('#deviceTable').removeClass('activeResultsTable');
+            window.location = "${meterHomeUrl}?deviceId=" + id;
+        }
     
-    	function clearFilter() {
+        function clearFilter() {
     
-    		<c:forEach var="filter" items="${filterByList}">
-    		  jQuery('#${filter.name}').val('');
-    		</c:forEach>
-    		
-    		jQuery('#filterForm')[0].submit();
-    	}
-    	
+            <c:forEach var="filter" items="${filterByList}">
+              jQuery('#${filter.name}').val('');
+            </c:forEach>
+            
+            jQuery('#filterForm')[0].submit();
+        }
+        
     </script>
-	
+    
     <c:set var="baseUrl" value="/meter/search"/>
 
     <form id="filterForm" action="/meter/search">
@@ -57,14 +57,14 @@
 
     <br>
     
- 		
+         
         <%-- DATA ROWS --%>
     <c:if test="${meterSearchResults.hitCount > 0}">
         <c:set var="linkHeaderHtml">
             <span class="navLink fr">
                 <cm:deviceCollectionMenu deviceCollection="${deviceGroupCollection}"
-					key="yukon.web.modules.common.contextualMenu.actions"/>
-			</span>
+                    key="yukon.web.modules.common.contextualMenu.actions"/>
+            </span>
         </c:set>
     </c:if>
     <cti:msg2 var="meterSearchTitle" key=".meterSearchResultsTitle" />
@@ -99,8 +99,8 @@
             <c:forEach var="searchResultRow" items="${meterSearchResults.resultList}">
                 <tr>
                     <td>
-                    	<cti:paoDetailUrl yukonPao="${searchResultRow}">
-                    		<c:if test="${!empty searchResultRow.name}">${fn:escapeXml(searchResultRow.name)}</c:if>
+                        <cti:paoDetailUrl yukonPao="${searchResultRow}">
+                            <c:if test="${!empty searchResultRow.name}">${fn:escapeXml(searchResultRow.name)}</c:if>
                         </cti:paoDetailUrl>
                     </td>
                     <td><c:if test="${!empty searchResultRow.meterNumber}">${fn:escapeXml(searchResultRow.meterNumber)}</c:if></td>
@@ -118,7 +118,7 @@
                     <td colspan="5"><i:inline key=".notFound" /></td>
                 </tr>
             </c:if>
-			</tbody>
+            </tbody>
         </table>
 
     </tags:pagedBox>

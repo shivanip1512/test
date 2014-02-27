@@ -1,8 +1,8 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-    
+
 <cti:standardPage module="amr" page="manualCommand">
 
 <script language="JavaScript">
@@ -24,7 +24,7 @@ function loadCommand() {
     
     <tags:sectionContainer2 nameKey="executeCommand" styleClass="clear">
     
-        <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
+        <form name="commandForm" method="POST" action="<cti:url value="/servlet/CommanderServlet"/>">
             <cti:csrfToken/>
             <input type="hidden" name="deviceID" value="${device.yukonID}">
             <input type="hidden" name="timeOut" value="8000">
@@ -35,7 +35,7 @@ function loadCommand() {
                 <tags:nameValue2 nameKey=".commonCommands">
                     <tags:commanderPrompter/>
                     <select name="commonCommand" class="f-loadCommanderCommand" data-cmdfield="command">
-                        <option value=""><i:inline key=".selectCommand"/></option>                
+                        <option value=""><i:inline key=".selectCommand"/></option>
                         
                         <c:forEach var="command" items="${commandList}">
                             <option value="${command.command}" >${command.label}</option>

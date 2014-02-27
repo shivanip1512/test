@@ -1,10 +1,10 @@
+<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="highBill">
 
@@ -63,7 +63,7 @@ jQuery(document).on('click', '#b-get-report', function(event) {
     
     <%-- ERROR MSG --%>
     <c:if test="${errorMsg != null}">
-        <div style="color: red;margin: 10px 0px;"><i:inline key=".error" arguments="${errorMsg}"/></div>
+        <div class="error stacked"><i:inline key=".error" arguments="${errorMsg}"/></div>
     </c:if>
     
     <div class="column-14-10">
