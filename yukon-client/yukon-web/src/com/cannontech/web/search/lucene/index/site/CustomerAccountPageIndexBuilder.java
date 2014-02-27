@@ -37,7 +37,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected CustomerAccountPageIndexBuilder() {
-        super("account");
+        super("account", CHANGE_CUSTOMER_ACCOUNT_DB, CAT_CUSTOMER_ACCOUNT);
     }
 
     @Override
@@ -76,13 +76,7 @@ public class CustomerAccountPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
-        SqlStatementBuilder whereClause = null;
-
-        if (database == CHANGE_CUSTOMER_ACCOUNT_DB && CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category) ) {
-            whereClause = new SqlStatementBuilder("ca.accountId").eq(id);
-        }
-
-        return whereClause;
+        return new SqlStatementBuilder("ca.accountId").eq(id);
     }
 
     @Override

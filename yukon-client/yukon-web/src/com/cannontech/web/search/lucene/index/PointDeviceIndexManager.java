@@ -96,7 +96,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
             // Device change msg
             

@@ -102,7 +102,7 @@ public class PaoIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         if (database == DBChangeMsg.CHANGE_PAO_DB) {
             // Device change msg
             

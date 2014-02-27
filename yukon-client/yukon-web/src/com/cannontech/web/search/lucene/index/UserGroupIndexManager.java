@@ -60,7 +60,7 @@ public class UserGroupIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         if (database == DBChangeMsg.CHANGE_USER_GROUP_DB && DBChangeMsg.CAT_USER_GROUP.equalsIgnoreCase(category)) {
             return this.processUserGroupChange(id);
         }

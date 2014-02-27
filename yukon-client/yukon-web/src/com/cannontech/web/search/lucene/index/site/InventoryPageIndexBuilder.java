@@ -64,7 +64,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     protected InventoryPageIndexBuilder() {
-        super("inventory");
+        super("inventory", CHANGE_INVENTORY_DB, null);
     }
 
     @Override
@@ -145,13 +145,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     public SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
-        SqlStatementBuilder whereClause = null;
-
-        if (database == CHANGE_INVENTORY_DB) {
-            whereClause = new SqlStatementBuilder("ib.inventoryId").eq(id);
-        }
-
-        return whereClause;
+        return new SqlStatementBuilder("ib.inventoryId").eq(id);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.cannontech.web.search.lucene.index.site;
 
+import static com.cannontech.message.dispatch.message.DBChangeMsg.*;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,7 +57,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
 
     @Autowired
     public PaoPageIndexBuilder(List<PaoTypeHandler> handlers) {
-        super("pao");
+        super("pao", CHANGE_PAO_DB, null);
 
         this.handlers = handlers;
         Builder<PaoType, PaoTypeHandler> builder = ImmutableMap.builder();
@@ -108,13 +110,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
 
     @Override
     protected SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id) {
-        SqlStatementBuilder whereClause = null;
-
-        if (database == DBChangeMsg.CHANGE_PAO_DB) {
-            whereClause = new SqlStatementBuilder("ypo.paobjectId").eq(id);
-        }
-
-        return whereClause;
+        return new SqlStatementBuilder("ypo.paobjectId").eq(id);
     }
 
     @Override
@@ -154,8 +150,7 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
     }
 
     @Override
-    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
-            String type) {
+    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         // If it's a delete, we won't be able to get the type to know if we handle it or not.  That's okay though;
         // we'll just be asking Lucene to delete a non-existent row.
         if (database == DBChangeMsg.CHANGE_PAO_DB && dbChangeType != DbChangeType.DELETE) {
@@ -168,6 +163,6 @@ public class PaoPageIndexBuilder extends DbPageIndexBuilder {
                 return null;
             }
         }
-        return super.processDBChange(dbChangeType, id, database, category, type);
+        return super.processDBChange(dbChangeType, id, database, category);
     }
 }

@@ -66,7 +66,7 @@ public class LoginGroupIndexManager extends SimpleIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         if (database == DBChangeMsg.CHANGE_YUKON_USER_DB 
                && DBChangeMsg.CAT_YUKON_USER_GROUP.equalsIgnoreCase(category) ) {
             // login group change msg

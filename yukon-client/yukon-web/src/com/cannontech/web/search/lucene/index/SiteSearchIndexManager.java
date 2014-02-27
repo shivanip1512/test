@@ -163,10 +163,9 @@ public class SiteSearchIndexManager extends AbstractIndexManager {
     }
 
     @Override
-    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
-            String type) {
+    protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
         for (DbPageIndexBuilder indexBuilder : indexBuilders) {
-            IndexUpdateInfo indexUpdateInfo = indexBuilder.processDBChange(dbChangeType, id, database, category, type);
+            IndexUpdateInfo indexUpdateInfo = indexBuilder.processDBChange(dbChangeType, id, database, category);
             // We're assuming only one handler will handle a given change.
             if (indexUpdateInfo != null) {
                 return indexUpdateInfo;

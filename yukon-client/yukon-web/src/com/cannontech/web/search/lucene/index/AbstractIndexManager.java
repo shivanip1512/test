@@ -185,8 +185,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
      * @return Index update info for the dbchange or null if the change should
      *         not be processed for this index
      */
-    abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database,
-        String category, String type);
+    abstract protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category);
 
     @Override
     public void dbChangeReceived(DBChangeMsg dbChange) {
@@ -196,7 +195,7 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
 
         try {
             IndexUpdateInfo info = processDBChange(dbChange.getDbChangeType(), dbChange.getId(), dbChange.getDatabase(),
-                dbChange.getCategory(), dbChange.getObjectType());
+                dbChange.getCategory());
 
             if (info != null) {
                 boolean success = updateQueue.offer(info);

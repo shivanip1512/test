@@ -31,6 +31,10 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
 
     protected final String pageKeyBase;
 
+    // database and category of applicable DB change messages.  category can be null.
+    protected final int database;
+    protected final String category;
+
     /**
      * The "select ..." bit of the query.  This is used when rebuilding the index as well as when reading a single
      * item for a database update.
@@ -57,8 +61,10 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
             return createDocument(rs);
         }};
 
-    protected DbPageIndexBuilder(String pageKeyBase) {
+    protected DbPageIndexBuilder(String pageKeyBase, int database, String category) {
         this.pageKeyBase = pageKeyBase;
+        this.database = database;
+        this.category = category;
     }
 
     @Override
@@ -137,23 +143,38 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
      */
     protected abstract SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id);
 
-    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category,
-            String type) {
+    public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
+        if (database != this.database || this.category != null && this.category.equalsIgnoreCase(category)) {
+            // This database change isn't applicable to this index builder.
+            if (log.isTraceEnabled()) {
+                log.trace("ignoring DB change not applicable to page index builder " + pageKeyBase + "(dbChangeType="
+                    + dbChangeType + ", id=" + id +", database=" + database + ", category=" + category);
+            }
+
+            return null;
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("handling DB change in page index builder " + pageKeyBase + "(dbChangeType="
+                + dbChangeType + ", id=" + id +", database=" + database + ", category=" + category);
+        }
+
         Term deleteTerm = new Term("pageKey", createPageKey(id));
-        if (dbChangeType != DbChangeType.DELETE) {
+
+        if (dbChangeType == DbChangeType.DELETE) {
             // No new or updated documents if it's a delete...just need the deleteTerm.
             List<Document> documents = Collections.emptyList();
             return new IndexUpdateInfo(documents, deleteTerm);
-        } else {
-            SqlFragmentSource whereClause = getWhereClauseForDbChange(database, category, id);
-            if (whereClause != null) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append(getBaseQuery());
-                sql.append(getQueryTables());
-                sql.append("where").append(whereClause);
-                List<Document> documents = jdbcTemplate.query(sql, documentRowMapper);
-                return new IndexUpdateInfo(documents, deleteTerm);
-            }
+        }
+
+        SqlFragmentSource whereClause = getWhereClauseForDbChange(database, category, id);
+        if (whereClause != null) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(getBaseQuery());
+            sql.append(getQueryTables());
+            sql.append("where").append(whereClause);
+            List<Document> documents = jdbcTemplate.query(sql, documentRowMapper);
+            return new IndexUpdateInfo(documents, deleteTerm);
         }
 
         return null;
