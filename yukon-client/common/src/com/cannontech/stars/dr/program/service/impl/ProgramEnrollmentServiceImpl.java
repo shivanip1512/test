@@ -109,9 +109,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                                                final LiteYukonUser user) {
 
         final int accountId = account.getAccountId();
-        // YUK-12926
-        // We need to avoid concurrent threads trying to handle identical requests.
-        // This led to a race-condition bug which duplicated enrollments
+        // Don't allow concurrent threads to handle requests for the same account to avoid
+        // duplicate simultaneous requests which create duplicate entries in the database.
         synchronized (accountIdMutex) {
             if (!accountIdMutex.containsKey(accountId)) {
                 accountIdMutex.put(accountId, new Object());
@@ -303,9 +302,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         LiteAccountInfo liteCustomerAccount = 
                 starsCustAccountInformationDao.getByAccountId(customerAccountId);
-        // YUK-12926
-        // We need to avoid concurrent threads trying to handle identical requests.
-        // This led to a race-condition bug which duplicated enrollments
+        // Don't allow concurrent threads to handle requests for the same account to avoid
+        // duplicate simultaneous requests which create duplicate entries in the database.
         synchronized (accountIdMutex) {
             if (!accountIdMutex.containsKey(liteCustomerAccount.getAccountID())) {
                 accountIdMutex.put(liteCustomerAccount.getAccountID(), new Object());
@@ -326,7 +324,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     }    
     
     private String toProgramNameString(List<LiteStarsLMProgram> programs, String defaultValue) {
-        if (programs == null || programs.isEmpty()) return defaultValue;
+        if (programs == null || programs.isEmpty()) {
+            return defaultValue;
+        }
         final StringBuilder sb = new StringBuilder();
         for (final LiteStarsLMProgram program : programs) {
             String programName = StarsUtils.getPublishedProgramName(program.getPublishedProgram());
@@ -348,7 +348,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         for (final Program program : programs) {
             List<ControlHistory> controlHistoryList = controlHistoryMap.get(program.getProgramId());
             boolean containsOnlyNotEnrolledHistory = controlHistoryService.containsOnlyNotEnrolledHistory(controlHistoryList);
-            if (containsOnlyNotEnrolledHistory) removeList.add(program);
+            if (containsOnlyNotEnrolledHistory) {
+                removeList.add(program);
+            }
         }
 
         programs.removeAll(removeList);
@@ -431,8 +433,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             prog.setApplianceCategoryID(program.getApplianceCategoryID());
                             prog.setInventoryID(liteApp.getInventoryID());
                             prog.setLoadNumber(liteApp.getLoadNumber());
-                            if (program.hasAddressingGroupID())
+                            if (program.hasAddressingGroupID()) {
                                 prog.setAddressingGroupID(program.getAddressingGroupID());
+                            }
                             processedPrograms.addSULMProgram(prog);
                         }
 
@@ -444,7 +447,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
                 // If no hardware found above, then assign all hardwares
                 if (!program.hasInventoryID()) {
-                	for (Integer inventoryId : liteAcctInfo.getInventories()) {
+                    for (Integer inventoryId : liteAcctInfo.getInventories()) {
                         if (inventoryBaseDao.getByInventoryId(inventoryId) instanceof LiteLmHardwareBase) {
                             if (!program.hasInventoryID()) {
                                 program.setInventoryID(inventoryId);
@@ -470,8 +473,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             for (int j = 0; j < appList.size(); j++) {
                 LiteStarsAppliance liteApp = appList.get(j);
                 if (liteApp.getProgramID() == program.getProgramID() && liteApp.getInventoryID() == program.getInventoryID()) {
-                    if (!program.hasAddressingGroupID())
+                    if (!program.hasAddressingGroupID()) {
                         program.setAddressingGroupID(liteApp.getAddressingGroupID());
+                    }
 
                     hwAppMap.put(liteApp.getInventoryID(), liteApp);
                     newAppList.add(liteApp);
@@ -656,8 +660,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
                         /* New enrollment, opt out, and control history tracking
                          */
-                        hwInfoToEnroll.add(new HardwareEnrollmentInfo(liteHw.getInventoryID(),
-                            liteHw.getAccountID(), groupID, relay, liteApp.getProgramID()));
+                        hwInfoToEnroll.add(new HardwareEnrollmentInfo(liteHw.getInventoryID(), liteHw.getAccountID(),
+                            groupID, relay, program.getProgramID()));
                         /*
                          * TODO: What about different relays?  Are we handling this correctly?
                          */
