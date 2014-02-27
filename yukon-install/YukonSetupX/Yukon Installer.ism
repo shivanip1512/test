@@ -762,7 +762,7 @@
 		<col def="S255">DotNetBuildConfiguration</col>
 		<col def="S255">MsiCommandLine</col>
 		<col def="I4">ISSetupPrerequisiteLocation</col>
-		<row><td>Release 1</td><td>Media</td><td/><td>PackageName</td><td>0</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>3</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://</td><td/><td/><td/><td/><td>12</td><td/><td/><td/><td/></row>
+		<row><td>Release 1</td><td>Media</td><td/><td>PackageName</td><td>0</td><td>1033</td><td>2</td><td>1</td><td>Intel</td><td/><td>1033</td><td>3</td><td>650</td><td>0</td><td>2048</td><td/><td>0</td><td/><td>MediaLocation</td><td/><td>http://www.cooperpowereas.com</td><td/><td>&lt;BUILD_ROOT_DIR&gt;\yukon-install\InstallshieldResources\com.cannontech.pfx</td><td/><td/><td>14</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISReleasePro">
@@ -787,7 +787,7 @@
 		<col def="S255">InitDlgProductName</col>
 		<col def="I4">Attributes</col>
 		<col def="S255">CertPassword</col>
-		<row><td>Release 1</td><td>Media</td><td/><td/><td>{4503E766-6C21-4F85-8B8F-41D1F41DF830}</td><td>Setup.exe</td><td/><td/><td/><td>-1</td><td/><td>-1</td><td/><td/><td/><td/><td/><td/><td/><td>14338</td><td/></row>
+		<row><td>Release 1</td><td>Media</td><td/><td/><td>{4503E766-6C21-4F85-8B8F-41D1F41DF830}</td><td>Setup.exe</td><td/><td/><td/><td>-1</td><td/><td>-1</td><td/><td/><td/><td/><td/><td/><td/><td>14338</td><td>6CDE35CBDAD8</td></row>
 	</table>
 
 	<table name="ISReleaseProDataAsFiles">
