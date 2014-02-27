@@ -186,7 +186,7 @@
                     </c:choose>
                     
                     <cti:button id="resetButton" classes="dn" label="${reset}" onclick="reset();"/>
-                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    <img style="display: none;" id="spinner" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
                     <c:if test="${showReadProgress}">

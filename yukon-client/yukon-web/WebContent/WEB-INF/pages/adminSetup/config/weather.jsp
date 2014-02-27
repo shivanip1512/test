@@ -1,11 +1,11 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="adminSetup" page="config.weather">
 <cti:includeScript link="/JavaScript/yukon.weather.js"/>
@@ -25,7 +25,7 @@
             <%@ include file="_weatherStations.jsp" %>
         </div>
         <div id="weatherLocationsLoading">
-            <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
+            <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="<cti:msg2 key="yukon.web.components.waiting"/>"/>
             <i:inline key=".loadingWeatherLocations"/>
         </div>
         <div id="weatherLocations">

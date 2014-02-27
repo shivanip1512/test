@@ -20,7 +20,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
         <title>${pageDetail.pageTitle}</title>
-        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="<cti:url value="/favicon.ico"/>" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/resources/css/lib/bootstrap.css"/>" >
         <link rel="stylesheet" type="text/css" href="<cti:url value="/resources/css/lib/animate.css"/>" >
@@ -248,7 +248,7 @@
                 </div>
             </div>
             <div class="right">
-                <div class="branding"><a class="footer-logo" href="/home"></a></div>
+                <div class="branding"><a class="footer-logo" href="<cti:url value="/home"/>"></a></div>
             </div>
         </div>
     </div>

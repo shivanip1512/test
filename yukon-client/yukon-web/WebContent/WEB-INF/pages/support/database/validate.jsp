@@ -25,7 +25,7 @@
                 <c:if test="${displayOracleWarning}">
                     <div class="stacked"><i:inline key=".oracleWarning"/></div>
                 </c:if>
-                <i:inline key=".loading"/>&nbsp;<img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting">
+                <i:inline key=".loading"/>&nbsp;<img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting">
             </div>
     
         </c:otherwise>

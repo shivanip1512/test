@@ -152,7 +152,7 @@
                 <c:forEach var="resultsFilterType" items="${resultsFilterTypes}">
                     | <a href="javascript:void(0);" onclick="switchResultsFilterType('${resultsFilterType}');">${resultsFilterType.description}</a>
                 </c:forEach>
-                <img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
+                <img id="viewHideDetailsReportButtonIndicator" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" alt="waiting"> 
             </tags:nameValue>
         </tags:nameValueContainer>
             

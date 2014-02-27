@@ -1,6 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="pointInjection">
 
@@ -157,7 +157,7 @@ jQuery(document).on('click', '.dateTimeClear', function(event) {
 
 <table style="display:none">
 <tr id="dummyRow">
-<td colspan="9" style="text-align: center"><img src="/WebConfig/yukon/Icons/spinner.gif"></td>
+<td colspan="9" style="text-align: center"><img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>"></td>
 </tr>
 </table>
 

@@ -222,7 +222,7 @@
                         <c:otherwise><cti:button id="clearButton" label="${clearPhaseData}" onclick="sendClearCommand();"/></c:otherwise>
                     </c:choose>
                     <cti:button id="resetButton" classes="dn" nameKey="reset" onclick="reset();"/>
-                    <img style="display: none;" id="spinner" src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    <img style="display: none;" id="spinner" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </div>
                 <div id="actionResultDiv"  style="float: left;">
                     <c:if test="${showReadProgress}">

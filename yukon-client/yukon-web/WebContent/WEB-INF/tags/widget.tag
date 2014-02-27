@@ -58,7 +58,7 @@
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">
-                    <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </c:when>
                 <c:otherwise>
                     <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
@@ -72,7 +72,7 @@
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
                 <c:when test="${beanInst.lazyLoad}">
-                    <img src="<c:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
                 </c:when>
                 <c:otherwise>
                     <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>

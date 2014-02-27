@@ -12,7 +12,7 @@ function YukonWidget(shortName, parameters) {
      * Render the widget
      */
     this.render = function () {
-        var url = "/widget/" + this.shortName + "/render",
+        var url = YG.APP_NAME + '/widget/' + this.shortName + '/render',
            params = this.getWidgetParameters(),
            _self = this;
 
@@ -86,7 +86,7 @@ function YukonWidget(shortName, parameters) {
      */
     this.doDirectActionRefresh = function (cmd) {
 
-        var url = "/widget/" + this.shortName + "/" + cmd,
+        var url = YG.APP_NAME + '/widget/' + this.shortName + '/' + cmd,
             params = this.getWidgetParameters(),
             _self = this;
 
@@ -120,7 +120,7 @@ function YukonWidget(shortName, parameters) {
 
         oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
 
-        url = "/widget/" + this.shortName + "/" + args.command;
+        url = YG.APP_NAME + '/widget/' + this.shortName + '/' + args.command;
 
         jQuery.ajax({
             url : url,
@@ -138,7 +138,7 @@ function YukonWidget(shortName, parameters) {
     this.doActionUpdate = function (args) {
         
         var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters),
-            url = "/widget/" + this.shortName + "/" + args.command,
+            url = YG.APP_NAME + '/widget/' + this.shortName + '/' + args.command,
             buttonId = args.key; // key happeneds to be the button's id as well so lets just use it.
 
         jQuery.ajax({
@@ -171,7 +171,7 @@ function YukonWidget(shortName, parameters) {
         }
         oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
 
-        url = "/widget/" + this.shortName + "/" + cmd;
+        url = YG.APP_NAME + '/widget/' + this.shortName + '/' + cmd;
         return new this.periodicRefresh({'container' : containerToUse, 'url' : url, 'params' : oldParams, 'frequency' : period}, this);
     };
 
