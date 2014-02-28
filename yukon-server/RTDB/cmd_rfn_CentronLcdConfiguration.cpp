@@ -206,13 +206,26 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
 
     resultDescription << "Display metrics:" << describeMetrics(_displayMetrics);
 
+    if( _disconnectDisplay )
+    {
+        resultDescription << "\nDisconnect display: ";
+
+        if( OptionalString disconnectDisplayName = mapFind(DisconnectDisplayNames, *_disconnectDisplay) )
+        {
+            resultDescription << *disconnectDisplayName;
+        }
+        else
+        {
+            resultDescription << "Unsupported disconnect display configuration [" << (unsigned)*_disconnectDisplay << "]";
+        }
+    }
     if( _cycleTime )
     {
-        resultDescription << "\nCycle delay        : ";
+        resultDescription << "\nLCD cycle time: ";
 
         if( *_cycleTime )
         {
-            resultDescription << *_cycleTime;
+            resultDescription << (unsigned)*_cycleTime << (*_cycleTime == 1 ? " second" : " seconds");
         }
         else
         {
@@ -221,7 +234,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
     }
     if( _digitConfiguration )
     {
-        resultDescription << "\nDigit configuration: ";
+        resultDescription << "\nDisplay digits: ";
 
         if( OptionalString displayDigitName = mapFind(DisplayDigitNames, *_digitConfiguration) )
         {
@@ -229,20 +242,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
         }
         else
         {
-            resultDescription << "Unsupported display digit configuration [" << *_digitConfiguration << "]";
-        }
-    }
-    if( _disconnectDisplay )
-    {
-        resultDescription << "\nDisconnect display : ";
-
-        if( OptionalString disconnectDisplayName = mapFind(DisconnectDisplayNames, *_disconnectDisplay) )
-        {
-            resultDescription << *disconnectDisplayName;
-        }
-        else
-        {
-            resultDescription << "Unsupported disconnect display configuration [" << *_disconnectDisplay << "]";
+            resultDescription << "Unsupported display digit configuration [" << (unsigned)*_digitConfiguration << "]";
         }
     }
 
@@ -285,7 +285,7 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
     resultDescription << "\nLCD cycle time: ";
     if( cycle_time )
     {
-        resultDescription << cycle_time;
+        resultDescription << (unsigned)cycle_time << (cycle_time == 1 ? " second" : " seconds");
     }
     else
     {
