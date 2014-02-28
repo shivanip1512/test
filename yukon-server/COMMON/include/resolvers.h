@@ -52,5 +52,5 @@ IM_EX_CTIBASE INT resolveSlaveAddress(const INT DeviceType, const std::string& s
 IM_EX_CTIBASE CtiControlType_t  resolveControlType(const std::string& str);
 IM_EX_CTIBASE LONG resolveDeviceWindowType(const std::string& rwsTemp);
 
-
+IM_EX_CTIBASE bool isKnownUnsupportedDevice(const std::string& _rwsTemp);
 

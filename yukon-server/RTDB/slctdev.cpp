@@ -125,11 +125,18 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 
     NewDevice = createDeviceType(resolveDeviceType(rwsType));
 
-    if( !NewDevice )
+    if( ! NewDevice )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << "Device Factory has failed to produce for type " << rwsType << "!" << endl;
+        if( ! isKnownUnsupportedDevice(rwsType) )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Device Factory has failed to produce for type " << rwsType << "!" << endl;
+        }
+        else if( getDebugLevel() & DEBUGLEVEL_FACTORY )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Device Factory cannot produce for type " << rwsType << " : the device is unsupported!" << endl;
+        }
     }
 
     return NewDevice;
