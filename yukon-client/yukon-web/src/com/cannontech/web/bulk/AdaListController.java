@@ -77,7 +77,7 @@ public class AdaListController {
         }
         
         List<AnalysisWithDeviceCount> analysisSublist = Lists.newArrayList();
-        for(int i = startIndex; i <= endIndex; i++) {
+        for(int i = startIndex; i < endIndex; i++) {
             Analysis analysis = analyses.get(i);
             if(isAnalysisInterrupted(analysis)) {
                 archiveDataAnalysisDao.updateStatus(analysis.getAnalysisId(), AdaStatus.INTERRUPTED, null);

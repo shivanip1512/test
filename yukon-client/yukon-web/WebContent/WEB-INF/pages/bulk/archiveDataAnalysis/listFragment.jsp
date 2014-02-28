@@ -108,5 +108,5 @@
     </tbody>
 </table>
 <cti:url value="page" var="baseUrl"/>
-<tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}"/>
+<tags:pagingResultsControls adjustPageCount="true" baseUrl="${baseUrl}" result="${result}"/>
 </cti:msgScope>
