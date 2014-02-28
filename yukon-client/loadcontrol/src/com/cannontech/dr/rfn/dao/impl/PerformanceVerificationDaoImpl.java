@@ -13,6 +13,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.Range;
@@ -114,20 +115,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     }
 
     @Override
-    public UnknownDevices getDevicesWithUnknownStatus(long messageId, int itemsPerPage, int pageNum) {
-        int startRow = pageNum-1;
-        int endRow = itemsPerPage;
-        if (pageNum > 1) {
-            startRow = (pageNum-1) * itemsPerPage;
-            endRow = pageNum * itemsPerPage-1;
-        }
-
+    public UnknownDevices getDevicesWithUnknownStatus(long messageId, PagingParameters pagingParameters) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, Type, PaoName, UnknownStatus FROM (");
         addSelectDevicesWithUnknownStatus(sql, messageId, true);
         sql.append(") AS tbl");
-        sql.append("WHERE tbl.RowNum BETWEEN").append(startRow);
-        sql.append("  AND").append(endRow);
+        sql.append("WHERE tbl.RowNum BETWEEN").append(pagingParameters.getOneBasedStartIndex());
+        sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
 
         final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -203,20 +197,13 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     @Override
     public List<PaoIdentifier> getDevicesWithStatus(long messageId,
                                                     PerformanceVerificationMessageStatus status,
-                                                    int itemsPerPage, int pageNum) {
-        int startRow = pageNum-1;
-        int endRow = itemsPerPage;
-        if (pageNum > 1) {
-            startRow = (pageNum-1) * itemsPerPage;
-            endRow = pageNum * itemsPerPage-1;
-        }
-
+                                                    PagingParameters pagingParameters) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, Type FROM (");
         addSelectDevices(sql, messageId, status, true);
         sql.append(") AS tbl");
-        sql.append("WHERE tbl.RowNum BETWEEN").append(startRow);
-        sql.append("  AND").append(endRow);
+        sql.append("WHERE tbl.RowNum BETWEEN").append(pagingParameters.getOneBasedStartIndex());
+        sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
         return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
             @Override
             public PaoIdentifier mapRow(YukonResultSet rs) throws SQLException {

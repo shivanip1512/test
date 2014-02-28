@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -202,8 +203,12 @@ public class RfPerformanceController {
     @RequestMapping(value="/rf/details", method=RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required=false) Instant from, @RequestParam(required=false) Instant to) {
         
-        if (from == null) from =  new Instant().minus(Duration.standardDays(7));
-        if (to == null) to =  new Instant();
+        if (from == null) {
+            from =  new Instant().minus(Duration.standardDays(7));
+        }
+        if (to == null) {
+            to =  new Instant();
+        }
         Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().toDateMidnight().toInstant();
         
         model.addAttribute("from", from);
@@ -244,7 +249,8 @@ public class RfPerformanceController {
         int totalCount = 0;
         if (type.equals("unknown")) {
             model.addAttribute("unknown", true);
-            UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            UnknownDevices devices = 
+                    rfPerformanceDao.getDevicesWithUnknownStatus(test, new PagingParameters(itemsPerPage, page));
             totalCount = devices.getNumTotalBeforePaging();
             Map<Integer, UnknownDevice> unknowns = new HashMap<>();
             for (UnknownDevice device : devices.getUnknownDevices()) {
@@ -255,11 +261,11 @@ public class RfPerformanceController {
             status = PerformanceVerificationMessageStatus.UNKNOWN;
         } else if (type.equalsIgnoreCase("failed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
             status = PerformanceVerificationMessageStatus.SUCCESS;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         }
 
@@ -292,16 +298,17 @@ public class RfPerformanceController {
         int totalCount;
         if (type.equalsIgnoreCase("failed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else if (type.equalsIgnoreCase("success")) {
             status = PerformanceVerificationMessageStatus.SUCCESS;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, itemsPerPage, page);
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
             model.addAttribute("unknown", true);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
-            UnknownDevices devices = rfPerformanceDao.getDevicesWithUnknownStatus(test, itemsPerPage, page);
+            UnknownDevices devices = 
+                    rfPerformanceDao.getDevicesWithUnknownStatus(test, new PagingParameters(itemsPerPage, page));
             totalCount = devices.getNumTotalBeforePaging();
 
             model.addAttribute("unknownStats", devices);
@@ -377,7 +384,9 @@ public class RfPerformanceController {
         headerRow[0] = "SERIAL_NUMBER";
         headerRow[1] = "DEVICE_TYPE";
         headerRow[2] = "ACCOUNT_NUMBER";
-        if (isUnknown) headerRow[3] = "UNKNOWN_STATUS";
+        if (isUnknown) {
+            headerRow[3] = "UNKNOWN_STATUS";
+        }
         
         List<String[]> dataRows = Lists.newArrayList();
         for (LiteLmHardware hardware: hardwares) {
@@ -385,7 +394,9 @@ public class RfPerformanceController {
             dataRow[0] = hardware.getSerialNumber();
             dataRow[1] = accessor.getMessage(hardware.getInventoryIdentifier().getHardwareType());
             dataRow[2] = hardware.getAccountNo();
-            if (isUnknown) dataRow[3] = accessor.getMessage(deviceMap.get(hardware.getDeviceId()).getUnknownStatus());
+            if (isUnknown) {
+                dataRow[3] = accessor.getMessage(deviceMap.get(hardware.getDeviceId()).getUnknownStatus());
+            }
             dataRows.add(dataRow);
         }
         

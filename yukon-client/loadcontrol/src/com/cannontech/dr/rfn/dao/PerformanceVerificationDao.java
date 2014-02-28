@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
@@ -47,12 +48,12 @@ public interface PerformanceVerificationDao {
     /**
      * @return list sorted by PaoName of devices withs tatus for rf broadcast message with id {@code messageId}.
      */
-    List<PaoIdentifier> getDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status, int itemsPerPage, int pageNum);
+    List<PaoIdentifier> getDevicesWithStatus(long messageId, PerformanceVerificationMessageStatus status, PagingParameters pagingParameters);
 
     /**
      * @return list sorted by PaoName of devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
      */
-    UnknownDevices getDevicesWithUnknownStatus(long messageId, int itemsPerPage, int pageNum);
+    UnknownDevices getDevicesWithUnknownStatus(long messageId, PagingParameters pagingParameters);
     
     /**
      * @return list of all devices which have a status of 'UNKNOWN' for rf broadcast message with id {@code messageId}.
