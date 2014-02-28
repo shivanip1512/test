@@ -477,19 +477,7 @@ static const device_lookup_t device_lookups = boost::assign::map_list_of<string,
     ("sentinel",           TYPE_SENTINEL)
     ("sixnet",             TYPE_SIXNET)
     ("transdata mark-v",   TYPE_TDMARKV)
-    ("vectron",            TYPE_VECTRON)
-
-    //  --- Known unsupported Devices ---
-    //  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
-    ("digi gateway",       0)
-    ("zigbee endpoint",    0)
-    ("rfn-440-2131td",     0)
-    ("rfn-440-2132td",     0)
-    ("rfn-440-2133td",     0)
-    ("rfw-meter",          0)
-    ("lcr-6200 rfn",       0)
-    ("lcr-6600 rfn",       0)
-    ("weather location",   0);
+    ("vectron",            TYPE_VECTRON);
 
 
 INT resolveDeviceType(const string& _rwsTemp)
@@ -503,6 +491,7 @@ INT resolveDeviceType(const string& _rwsTemp)
         return itr->second;
     }
 
+    if( ! isKnownUnsupportedDevice(_rwsTemp) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Unsupported DEVICE type \"" << typestr << "\" " << endl;
@@ -511,14 +500,25 @@ INT resolveDeviceType(const string& _rwsTemp)
     return 0;
 }
 
+//  --- Known unsupported Devices ---
+//  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
+static const std::set<string> unsupported_devices = boost::assign::list_of
+    ("digi gateway")
+    ("zigbee endpoint")
+    ("rfn-440-2131td")
+    ("rfn-440-2132td")
+    ("rfn-440-2133td")
+    ("rfw-meter")
+    ("lcr-6200 rfn")
+    ("lcr-6600 rfn")
+    ("weather location");
+
 /**
  * Check if the device is known and unsupported
  */
 bool isKnownUnsupportedDevice(const string& _rwsTemp)
 {
-    boost::optional<int> deviceType = Cti::mapFind( device_lookups, _rwsTemp );
-
-    return ( deviceType && ! *deviceType );
+    return unsupported_devices.count(_rwsTemp);
 }
 
 
