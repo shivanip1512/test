@@ -1,7 +1,7 @@
 package com.cannontech.common.model;
 import static com.google.common.base.Preconditions.*;
 
-public class PagingParameters {
+public final class PagingParameters {
 
     private final int pageNumber;
     private final int numberPerPage;
