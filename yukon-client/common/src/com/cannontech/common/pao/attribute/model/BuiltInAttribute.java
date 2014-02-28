@@ -653,6 +653,7 @@ public enum BuiltInAttribute implements Attribute {
         
         rfnHardwareAttributes = ImmutableSet.of(
                 CRYSTAL_OSCILLATOR_ERROR,
+                DEVICE_TEMPERATURE,
                 EEPROM_ACCESS_ERROR,
                 IMPROPER_METER_ENGINE_OPERATION_WARNING,
                 INTERNAL_COMMUNICATION_ERROR,
