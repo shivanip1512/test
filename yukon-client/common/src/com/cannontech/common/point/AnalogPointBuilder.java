@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.AnalogPoint;
@@ -33,9 +34,19 @@ public class AnalogPointBuilder extends ScalarPointBuilder {
      */
     @Override
     public AnalogPoint build() {
-        PointBase point = PointFactory.createAnalogPoint(pointName, paoId, pointId, pointOffset, 
-                                                         unitOfMeasure, multiplier, stateGroupId, 
-                                                         decimalPlaces, archiveType, archiveInterval);
+        PointBase point =
+            PointFactory.createAnalogPoint(pointName,
+                                           paoId,
+                                           pointId,
+                                           pointOffset,
+                                           unitOfMeasure,
+                                           multiplier,
+                                           PointTemplate.DEFAULT_DATA_OFFSET,
+                                           stateGroupId,
+                                           decimalPlaces,
+                                           archiveType,
+                                           archiveInterval);
+        
         AnalogPoint analogPoint = (AnalogPoint) point;
         
         analogPoint.getPointAnalog().setDataOffset(dataOffset);

@@ -18,15 +18,20 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class PointCreationServiceImpl implements PointCreationService {
 
 	private NextValueHelper nextValueHelper = null;
-	
+
 	@Override
-	public PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset, double multiplier,
-	                             int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, StatusControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval) {
+    public PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset,
+                                 double multiplier,
+                                 int unitOfMeasure, int stateGroupId, int initialState,
+                                 int decimalPlaces, StatusControlType controlType,
+                                 PointArchiveType pointArchiveType,
+                                 PointArchiveInterval pointArchiveInterval) {
 	    return createPoint(type,
 	                       name,
 	                       paoIdentifier,
 	                       offset,
 	                       multiplier,
+	                       PointTemplate.DEFAULT_DATA_OFFSET,
 	                       unitOfMeasure,
 	                       stateGroupId,
 	                       initialState,
@@ -40,8 +45,15 @@ public class PointCreationServiceImpl implements PointCreationService {
 	                       null);
 	}
 
-    private PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset, double multiplier,
-                                  int unitOfMeasure, int stateGroupId, int initialState, int decimalPlaces, Integer controlOffset, StatusControlType controlType, ControlStateType stateZeroControl, ControlStateType stateOneControl, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
+    private PointBase createPoint(int type, String name, PaoIdentifier paoIdentifier, int offset,
+                                  double multiplier,
+                                  double dataOffset,
+                                  int unitOfMeasure, int stateGroupId, int initialState,
+                                  int decimalPlaces, Integer controlOffset,
+                                  StatusControlType controlType, ControlStateType stateZeroControl,
+                                  ControlStateType stateOneControl,
+                                  PointArchiveType pointArchiveType,
+                                  PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
         
@@ -53,6 +65,7 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                    offset,
                                                    unitOfMeasure,
                                                    multiplier,
+                                                   dataOffset,
                                                    stateGroupId,
                                                    decimalPlaces,
                                                    pointArchiveType,
@@ -128,6 +141,7 @@ public class PointCreationServiceImpl implements PointCreationService {
                                 paoIdentifier,
                                 template.getOffset(),
                                 template.getMultiplier(),
+                                template.getDataOffset(),
                                 template.getUnitOfMeasure(),
                                 template.getStateGroupId(),
                                 template.getInitialState(),

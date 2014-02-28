@@ -6088,7 +6088,14 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="4"/>
             </point>
-
+            <point type="Analog" offset="239">
+                <init>true</init>
+                <name>Device Temperature</name>
+                <multiplier value="1.8"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+                <dataOffset value="32"/>
+            </point>
 
 
             <!-- Events -->
@@ -6564,6 +6571,14 @@
                 </archive>
                 <stategroup value="Event Status"/>
             </point>
+            <point type="Status" offset="80">
+               <name>RFN High Temperature Threshold Exceeded</name>
+               <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+               </archive>
+               <stategroup value="Event Status"/>
+            </point>
 
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
@@ -6617,6 +6632,9 @@
             </attribute>
             <attribute name="RFN_OUTAGE_RESTORE_COUNT">
                 <basicLookup point="Outage Restore Count" />
+            </attribute>
+            <attribute name="DEVICE_TEMPERATURE">
+                <basicLookup point="Device Temperature" />
             </attribute>
 
             <!-- Outage Duration -->
@@ -6741,6 +6759,9 @@
             </attribute>
             <attribute name="REVERSED_PHASE_C">
                 <basicLookup point="Reversed Phase C" />
+            </attribute>
+            <attribute name="RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED">
+                <basicLookup point="RFN High Temperature Threshold Exceeded" />
             </attribute>
             <attribute name="ROM_ERROR">
                 <basicLookup point="Rom Error" />

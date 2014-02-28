@@ -177,6 +177,11 @@
                                         <xs:attribute name="initialState" type="xs:string" />
                                     </xs:complexType>
                                 </xs:element>
+                                <xs:element name="dataOffset" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:attribute name="value" type="xs:decimal" use="required" />
+                                    </xs:complexType>
+                                </xs:element>
 	                        </xs:sequence>
 							<xs:sequence>
 								<xs:element name="controlType" minOccurs="0">

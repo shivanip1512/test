@@ -935,12 +935,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
         template.setName(point.getName());
 
-        double multiplier = 1.0;
         int unitOfMeasure = UnitOfMeasure.INVALID.getId();
         int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
         
         if(point.getMultiplier() != null) {
-           multiplier = point.getMultiplier().getValue().doubleValue();
+            template.setMultiplier(point.getMultiplier().getValue().doubleValue());
+        }
+        if(point.getDataOffset() != null) {
+            template.setDataOffset(point.getDataOffset().getValue().doubleValue());
         }
         
         if(point.getUnitofmeasure() != null) {
@@ -959,7 +961,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             decimalPlaces = point.getDecimalplaces().getValue();
         }
         
-        template.setMultiplier(multiplier);
         template.setUnitOfMeasure(unitOfMeasure);
         template.setDecimalPlaces(decimalPlaces);
         

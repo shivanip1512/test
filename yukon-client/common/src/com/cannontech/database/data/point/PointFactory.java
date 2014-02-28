@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -128,6 +129,7 @@ public final class PointFactory {
                                  pointOffset,
                                  pointUnit,
                                  1.0,
+                                 PointTemplate.DEFAULT_DATA_OFFSET,
                                  stateGroupId,
                                  com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES,
                                  PointArchiveType.NONE,
@@ -136,7 +138,7 @@ public final class PointFactory {
 
     public static PointBase createAnalogPoint(String pointName, Integer paoID,
                                               Integer pointID, int pointOffset, int pointUnit,
-                                              double multiplier, int stateGroupId,
+                                              double multiplier, double dataOffset,  int stateGroupId,
                                               int decimalPlaces, PointArchiveType pointArchiveType,
                                               PointArchiveInterval pointArchiveInterval)
     {
@@ -166,6 +168,7 @@ public final class PointFactory {
                                                            new Integer(0)));
 
         ((AnalogPoint) point).getPointAnalog().setMultiplier(multiplier);
+        ((AnalogPoint) point).getPointAnalog().setDataOffset(dataOffset);
 
         return point;
     }

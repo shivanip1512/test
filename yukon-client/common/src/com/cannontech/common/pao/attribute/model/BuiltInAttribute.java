@@ -36,6 +36,7 @@ public enum BuiltInAttribute implements Attribute {
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)"),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
     DEMAND("Demand"), 
+    DEVICE_TEMPERATURE("Temperature of Device"),
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
     FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh"),
@@ -256,6 +257,7 @@ public enum BuiltInAttribute implements Attribute {
     REVERSED_PHASE_C("Reversed Phase C"),
     RFN_BLINK_COUNT("Rfn Blink Count"),
     RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count"),
+    RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED("RFN High Temperature Threshold Exceeded"),
     RFN_OUTAGE_COUNT("Rfn Outage Count"),
     RFN_OUTAGE_RESTORE_COUNT("Rfn Outage Restore Count"),
     ROM_ERROR("Rom Error"),
@@ -511,7 +513,8 @@ public enum BuiltInAttribute implements Attribute {
                 VOLTAGE_OUT_OF_LIMITS_FLAG,
                 ZERO_USAGE_FLAG,
                 ZIGBEE_LINK_STATUS,
-                TERMINAL_BLOCK_COVER_REMOVAL_FLAG);
+                TERMINAL_BLOCK_COVER_REMOVAL_FLAG,
+                RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED);
         
         relayAttributes = ImmutableSet.of(
                 RELAY_1_LOAD_SIZE,
@@ -633,6 +636,7 @@ public enum BuiltInAttribute implements Attribute {
                 WATT_HOUR_PULSE_FAILURE);
         
         rfnEventAnalogTypes = ImmutableSet.of(
+                DEVICE_TEMPERATURE,
                 OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
                 RFN_BLINK_COUNT,

@@ -16,9 +16,13 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * instances
  */
 public class PointTemplate implements Comparable<PointTemplate> {
+    
+    public static double DEFAULT_DATA_OFFSET = 0.0;
+    
     private final PointIdentifier pointIdentifier;
     private String name = null;
     private double multiplier = 1.0;
+    private double dataOffset = DEFAULT_DATA_OFFSET;
     private int unitOfMeasure = UnitOfMeasure.INVALID.getId();
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
@@ -174,6 +178,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
     public void setCalcPointInfo(CalcPointInfo calcPointInfo) {
         this.calcPointInfo = calcPointInfo;
     }
+    
+    public double getDataOffset() {
+        return dataOffset;
+    }
+
+    public void setDataOffset(double dataOffset) {
+        this.dataOffset = dataOffset;
+    }
 
     @Override
     public int compareTo(PointTemplate o) {
@@ -219,6 +231,8 @@ public class PointTemplate implements Comparable<PointTemplate> {
         if (initialState != other.initialState)
             return false;
         if (Double.doubleToLongBits(multiplier) != Double.doubleToLongBits(other.multiplier))
+            return false;
+        if (Double.doubleToLongBits(dataOffset) != Double.doubleToLongBits(other.dataOffset))
             return false;
         if (name == null) {
             if (other.name != null)
