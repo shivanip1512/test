@@ -9,6 +9,9 @@
 <cti:msgScope paths="modules.operator.enrollmentEdit,modules.operator.enrollmentList">
 <script type="text/javascript">
     inventoryIds = [];
+    <c:forEach var="item" items="${programEnrollment.inventoryEnrollments}">
+        inventoryIds.push(${item.inventoryId});
+    </c:forEach>
     updateOKButton = function () {
         var index;
         for (index = 0; index < inventoryIds.length; index++) {
@@ -90,7 +93,6 @@
                 <c:forEach var="item" varStatus="status"
                     items="${programEnrollment.inventoryEnrollments}">
                     <c:set var="inventoryId" value="${item.inventoryId}"/>
-                    <script type="text/javascript">inventoryIds.push(${item.inventoryId});</script>
                     <c:set var="displayableInventory" value="${inventoryById[inventoryId]}"/>
                     <tr>
                         <td>
