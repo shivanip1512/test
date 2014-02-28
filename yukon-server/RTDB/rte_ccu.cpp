@@ -284,7 +284,7 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
                         /* Load up the B word stuff */
                         NewOutMessage->Buffer.BSt = BSt;
 
-                        if( ! NewOutMessage->EventCode & DTRAN )
+                        if( ! (NewOutMessage->EventCode & DTRAN) )
                         {
                             // queued request retries are handled internally by the CCU-721
                             NewOutMessage->Retry = 0;
@@ -454,7 +454,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
         case TYPE_CCU721:
         {
-            if( ! OutMessage->EventCode & DTRAN )
+            if( ! (OutMessage->EventCode & DTRAN) )
             {
                 // queued request retries are handled internally by the CCU-721
                 OutMessage->Retry = 0;
@@ -735,7 +735,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                         /* Load up the B word stuff */
                         NewOutMessage->Buffer.BSt = BSt;
 
-                        if( ! NewOutMessage->EventCode & DTRAN )
+                        if( ! (NewOutMessage->EventCode & DTRAN) )
                         {
                             // queued request retries are handled internally by the CCU-721
                             NewOutMessage->Retry = 0;
@@ -880,7 +880,7 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
                             /* Load up the B word stuff */
                             NewOutMessage->Buffer.BSt = BSt;
 
-                            if( ! NewOutMessage->EventCode & DTRAN )
+                            if( ! (NewOutMessage->EventCode & DTRAN) )
                             {
                                 // queued request retries are handled internally by the CCU-721
                                 NewOutMessage->Retry = 0;
