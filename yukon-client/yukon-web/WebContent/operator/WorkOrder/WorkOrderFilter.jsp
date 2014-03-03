@@ -3,7 +3,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.web.bean.WorkOrderBean" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <jsp:useBean id="soBean" class="com.cannontech.web.bean.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="soBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>

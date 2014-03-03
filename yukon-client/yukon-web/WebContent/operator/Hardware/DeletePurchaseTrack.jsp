@@ -1,35 +1,37 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
-<cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
-	
-	<cti:includeCss link="/include/PurpleStyles.css"/>
-	<div class="headerbar">
-		<%@ include file="include/PurchaseHeaderBar.jspf" %>
-	</div>
- 	<br clear="all"> 
- 	
-	<div class="standardpurplesidebox"> 
-	</div>
 
-	<div class="standardcentralwhitebody">
-		<div align="center"> <br>
+<cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
+    
+    <cti:includeCss link="/include/PurpleStyles.css"/>
+    <div class="headerbar">
+        <%@ include file="include/PurchaseHeaderBar.jspf" %>
+    </div>
+     <br clear="all"> 
+     
+    <div class="standardpurplesidebox"> 
+    </div>
+
+    <div class="standardcentralwhitebody">
+        <div align="center"> <br>
             <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
             <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
             <br clear="all">
-    	</div>
-    	
-		<form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
+        </div>
+        
+        <form name="PForm" method="post" action="<%=request.getContextPath()%>/servlet/InventoryManager" onsubmit="return validate(this)">
             <cti:csrfToken/>
-	    	<input type="hidden" name="action" value="DeletePurchasePlanConfirmed"> 
-	    	<div align="center">
-	    		<input type="submit" name="Submit" value="Yes">
+            <input type="hidden" name="action" value="DeletePurchasePlanConfirmed"> 
+            <div align="center">
+                <input type="submit" name="Submit" value="Yes">
                  <input type="button" name="Back" value="No" onclick="back(this.form)">
-			</div>
-			<br>
-			<table width="250" border="1" cellspacing="0" cellpadding="0" align="center">
+            </div>
+            <br>
+            <table width="250" border="1" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                     <td align="center" class="HeaderCell">Delivery Schedules (will be deleted)</td>
                 </tr>
@@ -62,17 +64,17 @@
     </div>
     
     <script language="JavaScript">
-		function init() {}
-		
-		function validate(form) 
-		{
-			return true;
-		}
-		
-		function back(form)
-		{
-			location.href='PurchaseTrack.jsp';
-		}
-				
-	</script>
-</cti:standardPage>          
+        function init() {}
+        
+        function validate(form) 
+        {
+            return true;
+        }
+        
+        function back(form)
+        {
+            location.href='PurchaseTrack.jsp';
+        }
+                
+    </script>
+</cti:standardPage>
