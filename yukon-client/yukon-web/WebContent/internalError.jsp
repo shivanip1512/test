@@ -17,12 +17,16 @@
 
 <%
     String homeUrl = "/home";
+boolean showStack = false;
 try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-    homeUrl = ServletUtil.createSafeUrl(request, 
-                              rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
-} catch (NotLoggedInException ignore) { }    
+    homeUrl = ServletUtil.createSafeUrl(request, rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
+    
+    String suppressStackStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
+    showStack = !BooleanUtils.toBoolean(suppressStackStr);
+
+} catch (NotLoggedInException ignore) {}    
 
 
 Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
@@ -40,13 +44,6 @@ Object error_type = request.getAttribute("javax.servlet.error.exception_type");
 error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
 Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
 request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
-
-boolean showStack = true;
-RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-String suppressStackStr = rolePropertyDao.getPropertyStringValue(
-                                              YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, 
-                                              ServletUtil.getYukonUser(request));
-showStack = !BooleanUtils.toBoolean(suppressStackStr);
 
 String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(pageContext.getServletContext(), throwable);
 %>
