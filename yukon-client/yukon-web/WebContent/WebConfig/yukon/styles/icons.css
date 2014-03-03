@@ -1079,6 +1079,9 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-download{background-position: -592px -400px}
 .icon-ping{background-position: -608px -400px}
 .icon-upload{background-position: -624px -400px}
+.icon-date-picker{background-position: -0px -416px;width: 20px;max-width: 20px;} /* This one is 20px wide, takes up two slots */
+.icon-trend-down{background-position: -32px -416px}
+.icon-trend-up{background-position: -48px -416px}
 
 /* 18 pixel icons, icon blocks are 20px by 20px since the stupid sprite builder would 
 not accept 0px as a valid offset */
