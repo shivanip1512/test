@@ -193,9 +193,10 @@ public class LoginFilter implements Filter {
         if (isAjaxRequest || noRedirect) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Not Authenticated!");
         } else {
-            String servletPath = request.getServletPath();
+            String redirectUrl = request.getRequestURI().substring(request.getContextPath().length());
+            
             String urlParams = request.getQueryString();
-            String unencodedNavUrl = servletPath + ((urlParams != null) ? "?" + urlParams : "");
+            String unencodedNavUrl = redirectUrl + ((urlParams != null) ? "?" + urlParams : "");
             String encodedNavUrl = ServletUtil.urlEncode(unencodedNavUrl);
 
             String redirectURL = request.getContextPath() + LoginController.LOGIN_URL;
