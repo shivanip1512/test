@@ -7,7 +7,7 @@
     <c:when test="${not empty schedules && fn:length(schedules) > 0}">
         <select name="scheduleId" id="scheduleId">
             <c:forEach var="schedule" items="${schedules}">
-                <option value="${schedule.scheduleID}">${schedule.scheduleName}</option>
+                <option value="${schedule.scheduleID}">${fn:escapeXml(schedule.scheduleName)}</option>
             </c:forEach>
         </select>
 

@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="phaseDetect.sendTest">
 <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
@@ -134,7 +135,7 @@
             </tr>
         </table>
         <tags:nameValueContainer2 tableClass="with-form-controls">
-            <tags:nameValue2 nameKey=".substation">${data.substationName}</tags:nameValue2>
+            <tags:nameValue2 nameKey=".substation">${fn:escapeXml(data.substationName)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".intervalLength">${data.intervalLength}</tags:nameValue2>
             <tags:nameValue2 nameKey=".deltaVoltage">${data.deltaVoltage}</tags:nameValue2>
             <tags:nameValue2 nameKey=".numOfIntervals">${data.numIntervals}</tags:nameValue2>

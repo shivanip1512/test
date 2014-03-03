@@ -266,7 +266,7 @@ jQuery( function () {
                         <td>
                             <form:hidden path="programStopInfo[${status.index}].programId"/>
                             <form:checkbox path="programStopInfo[${status.index}].stopProgram" id="stopProgramCheckbox${status.index}" cssClass="f-singleProgramChecked"/>
-                            <label for="stopProgramCheckbox${status.index}">${program.name}</label>
+                            <label for="stopProgramCheckbox${status.index}">${fn:escapeXml(program.name)}</label>
                         </td>
                         <c:if test="${stopGearAllowed}">
                             <td>

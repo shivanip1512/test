@@ -66,7 +66,7 @@
 	                        <c:if test="${showPhoneNumber}">
 	                            <th><i:inline key=".phoneNumber"/></th>
 	                        </c:if>
-	                        <c:if test="${showLastName}">
+	                        <c:if test="${fn:escapeXml(showLastName)}">
 	                            <th><i:inline key=".lastName"/></th>
 	                        </c:if>
 	                        <c:if test="${showWorkOrder}">
@@ -135,7 +135,7 @@
 	                                <td><cti:formatPhoneNumber value="${result.phoneNumber}"/></td>
 	                            </c:if>
 	
-	                            <c:if test="${showLastName}">
+	                            <c:if test="${fn:escapeXml(showLastName)}">
 	                                <td>${fn:escapeXml(result.lastName)}</td>
 	                            </c:if>
 	

@@ -5,6 +5,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -44,7 +45,7 @@
 					<td width="60%">
 						<select id="plans" name="plans">
 							<c:forEach var="plan" items="${purchaseBean.availablePlans}">
-								<option value='<c:out value="${plan.purchaseID}"/>'> <c:out value="${plan.planName}"/> </option>
+								<option value='<c:out value="${plan.purchaseID}"/>'> <c:out value="${fn:escapeXml(plan.planName)}"/> </option>
 							</c:forEach>
 						</select>
 						<INPUT id="load" type="Button" name="load" value="Load Plan" onclick="loadPlan(this.form)"/>
@@ -77,7 +78,7 @@
 		            	<div align="right">Plan Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentPlan.planName}"/>'>
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${fn:escapeXml(purchaseBean.currentPlan.planName)}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -124,7 +125,7 @@
 		                    <div align="center">
 		                    	<select id="schedules" name="schedules" size="5" style="width:250">
 		                        	<c:forEach var="sched" items="${purchaseBean.availableSchedules}">
-										<option value='<c:out value="${sched.scheduleID}"/>'> <c:out value="${sched.scheduleName}"/> </option>
+										<option value='<c:out value="${sched.scheduleID}"/>'> <c:out value="${fn:escapeXml(sched.scheduleName)}"/> </option>
 									</c:forEach>
 								</select>
 							</div>

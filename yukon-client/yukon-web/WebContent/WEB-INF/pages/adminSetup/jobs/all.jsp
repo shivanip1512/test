@@ -64,9 +64,9 @@
     </tr>
     <c:forEach items="${allOneTime}" var="job">
       <tr>
-        <td>${job.jobDefinition.title}</td>
+        <td>${fn:escapeXml(job.jobDefinition.title)}</td>
         <td title="${job.id}">${job.beanName}</td>
-        <td>${job.userContext.yukonUser.username}</td>
+        <td>${fn:escapeXml(job.userContext.yukonUser.username)}</td>
         <td>${job.startTime}</td>
         <td><c:choose>
             <c:when test="${job.disabled}"><i:inline key=".disabled"/></c:when>

@@ -62,7 +62,7 @@ jQuery(function() {
             <table class="name-value-table natural-width">
                 <c:forEach var="liteSettlementConfig" items="${settlementDto.editableLiteSettlementConfigs}" varStatus="status">
                     <tr>
-                        <td class="name"><label>${liteSettlementConfig.fieldName}:</label></td>
+                        <td class="name"><label>${fn:escapeXml(liteSettlementConfig.fieldName)}:</label></td>
                         <td class="value">
                             <span class="focusableFieldHolder">
                                 <tags:input path="editableLiteSettlementConfigs[${status.index}].fieldValue"/>
@@ -80,12 +80,14 @@ jQuery(function() {
                 <tags:hidden path="availableRates[${availRatesStatus.index}].entryId"/>
                 <table class="name-value-table natural-width">
                     <tr>
-                        <td colspan="3" class="availableRateCheckBoxTd"><tags:checkbox path="availableRates[${availRatesStatus.index}].enabled" onclick="toggleAvailableRatesInputs(this);" /> ${availableRate.availableRateName}</td>
+                        <td colspan="3" class="availableRateCheckBoxTd"><tags:checkbox path="availableRates[${availRatesStatus.index}].enabled" 
+                            onclick="toggleAvailableRatesInputs(this);" /> ${fn:escapeXml(availableRate.availableRateName)}
+                        </td>
                     </tr>
                     <c:forEach var="liteSettlementConfig" items="${availableRate.rateConfigurations}" varStatus="rateConfigStatus">
                         <tr>
                             <td width="30"></td>
-                            <td class="name"><label>${liteSettlementConfig.fieldName}:</label></td>
+                            <td class="name"><label>${fn:escapeXml(liteSettlementConfig.fieldName)}:</label></td>
                             <td class="value">
                                 <span class="focusableFieldHolder">
                                      <form:input path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].fieldValue"/>

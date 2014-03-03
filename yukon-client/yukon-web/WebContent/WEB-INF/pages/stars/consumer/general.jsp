@@ -83,7 +83,7 @@
                                     <img src="../../../WebConfig/${program.applianceCategoryLogo}">
                                 </td>
                                 <td class="${tableDataClass}">
-                                    <b><cti:msg key="${program.displayName}"></cti:msg></b>
+                                    <b><cti:msg key="${program.displayName}" htmlEscape="true"></cti:msg></b>
                                     
                                     <c:if test="${!empty program.chanceOfControl}">
                                         <spring:escapeBody>${program.chanceOfControl}</spring:escapeBody>

@@ -147,7 +147,7 @@
                             <cti:msg key="${creWrapper.cre.commandRequestExecutionStatus.formatKey}" />
                         </span>
                     </td>
-                    <td>${creWrapper.cre.userName}</td>
+                    <td>${fn:escapeXml(creWrapper.cre.userName)}</td>
                     
                 </tr>
             

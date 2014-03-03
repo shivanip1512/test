@@ -38,7 +38,7 @@ jQuery(function() {
                 <tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE" path="workPhone"/>
                 <tags:inputNameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL" path="email"/>
                 <c:if test="${not empty username}">
-                    <tags:nameValue2 nameKey=".usernameLabel">${username}</tags:nameValue2>
+                    <tags:nameValue2 nameKey=".usernameLabel">${fn:escapeXml(username)}</tags:nameValue2>
                 </c:if>
             
             </tags:nameValueContainer2>

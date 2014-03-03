@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -62,10 +63,10 @@
                         	<c:forEach var="house" items="${purchaseBean.availableWarehouses}">
 					             <c:choose>
                                      <c:when test="${house.warehouseID == purchaseBean.currentShipment.warehouseID}">
-                                        <option value='<c:out value="${house.warehouseID}"/>' selected> <c:out value="${house.warehouseName}"/> </option>
+                                        <option value='<c:out value="${house.warehouseID}"/>' selected> <c:out value="${fn:escapeXml(house.warehouseName)}"/> </option>
 							         </c:when>
                                      <c:otherwise>
-                                        <option value='<c:out value="${house.warehouseID}"/>'> <c:out value="${house.warehouseName}"/> </option>
+                                        <option value='<c:out value="${house.warehouseID}"/>'> <c:out value="${fn:escapeXml(house.warehouseName)}"/> </option>
                                      </c:otherwise>
                                 </c:choose>
                             </c:forEach>
@@ -126,7 +127,7 @@
 	                  	<div align="right">Filing:</div>
 	                </td>
 	                <td width="80%"> 
-	                  	<div align="left" class="fieldinfo">This shipment is part of schedule <c:out value="${purchaseBean.currentSchedule.scheduleName}"/></div>
+	                  	<div align="left" class="fieldinfo">This shipment is part of schedule <c:out value="${fn:escapeXml(purchaseBean.currentSchedule.scheduleName)}"/></div>
 	                </td>
 		     	</tr>
 	        </table>

@@ -59,7 +59,7 @@
         <c:forEach var="d" items="${foundRoutes}">
             <tr>
                 <%-- device name --%>
-                <td>${d.deviceName}</td>
+                <td>${fn:escapeXml(d.deviceName)}</td>
                 
                 <%-- current route --%>
                 <td class="subtle">
@@ -123,7 +123,7 @@
             <c:forEach var="d" items="${notFoundRoutes}">
                 <tr>
                     <%-- device name --%>
-                    <td>${d.deviceName}</td>
+                    <td>${fn:escapeXml(d.deviceName)}</td>
                     
                     <%-- current route --%>
                     <td class="subtle">

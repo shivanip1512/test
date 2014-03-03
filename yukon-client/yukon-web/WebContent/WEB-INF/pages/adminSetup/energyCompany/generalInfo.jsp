@@ -117,7 +117,7 @@ jQuery(function() {
                                                         <cti:param name="ecId" value="${company.energyCompanyId}"/>
                                                     </cti:url>
                                                     <tr>
-                                                        <td><a href="${viewEcUrl}">${company.name}</a></td>
+                                                        <td><a href="${viewEcUrl}">${fn:escapeXml(company.name)}</a></td>
                                                         <c:if test="${canManageMembers}">
                                                             <td class="remove-column">
                                                                 <div class="dib">
@@ -141,7 +141,7 @@ jQuery(function() {
                                     <cti:button nameKey="add" type="submit" name="add" classes="fr" icon="icon-add"/>
                                     <select name="newMemberId" class="fr" style="margin: 0 3px 0 0;">
                                         <c:forEach items="${memberCandidates}" var="member">
-                                            <option value="${member.energyCompanyId}">${member.name}</option>
+                                            <option value="${member.energyCompanyId}">${fn:escapeXml(member.name)}</option>
                                         </c:forEach>
                                     </select>
                                 </c:if>

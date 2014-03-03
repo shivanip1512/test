@@ -11,8 +11,8 @@
     <cti:breadCrumbs>
         <cti:crumbLink url="/dashboard" title="Home" />
         <cti:crumbLink url="/group/editor/home" title="Groups Home" />
-        <cti:crumbLink url="/group/editor/home" title="${deviceGroup.fullName}">
-           <cti:param name="groupName" value="${deviceGroup.fullName}"/>
+        <cti:crumbLink url="/group/editor/home" title="${fn:escapeXml(deviceGroup.fullName)}">
+           <cti:param name="groupName" value="${fn:escapeXml(deviceGroup.fullName)}"/>
         </cti:crumbLink>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>

@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="amr" page="outageMonitorConfig.${mode}">
     
@@ -95,7 +96,7 @@
             
                 <%-- outages group --%>
                 <tags:nameValue2 nameKey=".label.outagesGroup">
-                    <div id="outageGroupNameDiv">${outageGroupBase}${name}</div>            
+                    <div id="outageGroupNameDiv">${fn:escapeXml(outageGroupBase)}${fn:escapeXml(name)}</div>            
                 </tags:nameValue2>
             
                 <%-- number of outages --%>
@@ -166,7 +167,7 @@
                     
                 <%-- schedule name --%>
                 <cti:msg2 var="scheduleNameText" key=".label.scheduleName"/>
-                <tags:nameValue name="${scheduleNameText}" id="scheduleNameTr" nameColumnWidth="250px">
+                <tags:nameValue name="${fn:escapeXml(scheduleNameText)}" id="scheduleNameTr" nameColumnWidth="250px">
                      <input type="text" name="scheduleName" value="${scheduleName}">
                  </tags:nameValue>
                  

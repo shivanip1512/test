@@ -54,7 +54,7 @@
                             <cti:button nameKey="clear" href="${clearTamperFlagGroupUrl}" icon="icon-folder-delete"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.tamperFlagMonitorName}"/>
+                                <cti:param name="group.name" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
                             </cti:url>
                             <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go"/>
                         </div>

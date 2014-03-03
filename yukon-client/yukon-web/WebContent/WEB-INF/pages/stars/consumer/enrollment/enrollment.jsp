@@ -62,7 +62,7 @@
                             <table cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="programName">
-                                        <cti:msg2 key="${enrollmentProgram.program.displayName}"/>
+                                        <cti:msg2 key="${enrollmentProgram.program.displayName}" htmlEscape="true"/>
                                     </td>
                                     <td class="programDescriptionIcon">
                                         <c:if test="${!empty enrollmentProgram.program.savingsDescriptionIcon}">

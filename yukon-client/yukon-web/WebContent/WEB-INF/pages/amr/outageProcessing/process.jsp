@@ -43,21 +43,21 @@
                     
                     <tags:nameValue2 nameKey=".mainDetail.deviceGroup">
                         <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${outageMonitor.groupName}</cti:param>
+                            <cti:param name="groupName">${fn:escapeXml(outageMonitor.groupName)}</cti:param>
                         </cti:url>
-                        <a href="${deviceGroupUrl}">${outageMonitor.groupName}</a>
+                        <a href="${deviceGroupUrl}">${fn:escapeXml(outageMonitor.groupName)}</a>
                     </tags:nameValue2>
                     
                     <tags:nameValue2 nameKey=".mainDetail.outagesGroup">
                         <cti:url var="outageGroupUrl" value="/group/editor/home">
-                            <cti:param name="groupName">${outageGroupBase}${outageMonitor.outageMonitorName}</cti:param>
+                            <cti:param name="groupName">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</cti:param>
                         </cti:url>
-                        <div class="stacked"><a href="${outageGroupUrl}">${outageGroupBase}${outageMonitor.outageMonitorName}</a></div>
+                        <div class="stacked"><a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a></div>
                         
                         <div class="clearfix">
                             
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
-                                <cti:param name="groupName" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
+                                <cti:param name="groupName" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>
                             <cti:button nameKey="view" href="${outagesGroupReportUrl}" icon="icon-folder-explore" classes="left"/>
                             
@@ -67,7 +67,7 @@
                             <cti:button nameKey="clear" href="${clearOutagesGroupUrl}" icon="icon-folder-delete" classes="middle"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions">
                                 <cti:param name="collectionType" value="group"/>
-                                <cti:param name="group.name" value="${outageGroupBase}${outageMonitor.outageMonitorName}"/>
+                                <cti:param name="group.name" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>
                             <cti:button nameKey="collectionAction" href="${collectionActionUrl}" icon="icon-cog-go" classes="right"/>
                         </div>
@@ -85,7 +85,7 @@
                         <cti:param name="groupType" value="METERING"/>
                         <cti:param name="type" value="METER_OUTAGE_LOG"/>
                         <cti:param name="selectedReportFilter" value="GROUPS"/>
-                        <cti:param name="selectedReportFilterValues" value="${outageMonitor.groupName}"/>
+                        <cti:param name="selectedReportFilterValues" value="${fn:escapeXml(outageMonitor.groupName)}"/>
                         <cti:param name="startDate" value="${startDate}"/>
                     </cti:url>
                     <a href="${reportUrl}" class="fr"><i:inline key=".reportingLink"/></a>

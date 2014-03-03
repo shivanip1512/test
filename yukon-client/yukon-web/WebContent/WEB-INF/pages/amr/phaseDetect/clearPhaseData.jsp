@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="phaseDetect.clearPhaseData">
     
@@ -10,7 +11,7 @@
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="clearData" styleClass="stacked">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".substation">${substationName}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".substation">${fn:escapeXml(substationName)}</tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         <div id="clearDiv">

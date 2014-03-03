@@ -41,7 +41,7 @@
                     
                 <%-- action icons --%>
                 <td>
-                    <cti:button nameKey="edit" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
+                    <cti:button nameKey="edit" renderMode="image" href="${viewOutageProcessingUrl}" arguments="${fn:escapeXml(monitorName)}" icon="icon-cog-go"/>
                 </td>
                 
                 <%-- monitor name --%>

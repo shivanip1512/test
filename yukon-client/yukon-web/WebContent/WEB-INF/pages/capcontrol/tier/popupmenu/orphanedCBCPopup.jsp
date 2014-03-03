@@ -9,11 +9,11 @@
         </tr>
         <c:forEach var="orphan" items="${orphans}">
             <tr>
-                <td>${orphan.deviceName}</td>
+                <td>${fn:escapeXml(orphan.deviceName)}</td>
                 <td>${orphan.pointId}</td>
                 <td>
                     <a href="javascript:void(0);" onclick="closeOrphanedCBCPopup(); setCBC('${orphan.deviceName}', '${orphan.pointId}','${orphan.pointName}');">
-                       ${orphan.pointName}
+                       ${fn:escapeXml(orphan.pointName)}
                     </a>
                 </td>
             </tr>    

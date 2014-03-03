@@ -70,7 +70,7 @@
                      <tags:nameValueContainer>
                      
                          <tags:nameValue name="${scheduleNameLabel}">
-                             <input type="text" name="scheduleName" value="${scheduleName}">
+                             <input type="text" name="scheduleName" value="${fn:escapeXml(scheduleName)}">
                          </tags:nameValue>
                          
                          <tags:nameValueGap gapHeight="${take12}"/>
@@ -154,7 +154,7 @@
                      <tags:nameValueContainer>
                      
                          <tags:nameValue name="${scheduleNameLabel}">
-                             <input type="text" name="scheduleName" value="${scheduleName}">
+                             <input type="text" name="scheduleName" value="${fn:escapeXml(scheduleName)}">
                          </tags:nameValue>
                          
                          <tags:nameValueGap gapHeight="${take12}"/>

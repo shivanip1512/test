@@ -220,7 +220,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <cti:msg2 var="editComposedLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.editComposed.linkTitle"/>
                                 
                                     <cti:url var="editComposedGroupUrl" value="/group/composedGroup/build">
-                                        <cti:param name="groupName" value="${group.fullName}" />
+                                        <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}" />
                                     </cti:url>
                                     <a title="${editComposedLinkTitle}" href="${editComposedGroupUrl}">${editComposedLinkText}</a>
                                     
@@ -277,7 +277,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <c:choose>
                                         <c:when test="${groupModifiable}">
                                             <cti:url var="addByDeviceCollectionUrl" value="/group/editor/showAddDevicesByCollection">
-                                                <cti:param name="groupName" value="${group.fullName}" />
+                                                <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}" />
                                             </cti:url>
                                             <a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">${addDevicesText}</a>
                                         </c:when>
@@ -325,7 +325,7 @@ function confirmRemoveAllDevices(confirmText) {
                     <h3><cti:msg2 key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel"/></h3>
                     <div class="groupEditorContentDetail stacked">
                         <cti:url value="/amr/reports/groupDevicesReport" var="htmlUrl">
-                            <cti:param name="groupName" value="${group.fullName}"/>
+                            <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}"/>
                         </cti:url>
                         <c:choose>
                             <c:when test="${childDeviceCount > 0}">
@@ -399,7 +399,7 @@ function confirmRemoveAllDevices(confirmText) {
                                                         <td>
                                                             <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${subGroup.value}" /></cti:url>
                                                             <span title="${fn:escapeXml(subGroup.value)}">
-                                                                <a href="${homeUrl}"><c:out value="${subGroup.key.name}"/></a>
+                                                                <a href="${homeUrl}"><c:out value="${fn:escapeXml(subGroup.key.name)}"/></a>
                                                             </span>
                                                         </td>
                                                         
@@ -455,7 +455,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     </c:when>
                                     <c:otherwise>
                                         <jsp:include page="deviceMembers.jsp">
-                                            <jsp:param name="groupName" value="${group.fullName}"/>
+                                            <jsp:param name="groupName" value="${fn:escapeXml(group.fullName)}"/>
                                         </jsp:include>
                                     </c:otherwise>
                                 </c:choose>

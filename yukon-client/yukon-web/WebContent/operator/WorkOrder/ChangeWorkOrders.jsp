@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="woManipulationBean" class="com.cannontech.stars.web.bean.ManipulationBean" scope="session"/>
 <jsp:useBean id="workOrderBean" class="com.cannontech.web.bean.WorkOrderBean" scope="session"/>
 
@@ -56,21 +57,21 @@
 						<div id='<c:out value="${changeServiceCompany}"/>' style="display:none" > 
 	                    	<select id='<c:out value="${changeServiceCompany}"/>1' name='<c:out value="${changeServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectAction(this.value)">
 	                            <c:forEach var="serviceCompany" items="${woManipulationBean.availableServiceCompanies}">
-									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
+									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${fn:escapeXml(serviceCompany.companyName)}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
 	                    <div id='<c:out value="${changeServiceType}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${changeServiceType}"/>1' name='<c:out value="${changeServiceType}"/>1' size="1" style="width: 200px" onChange="selectAction(this.value)">
 	                            <c:forEach var="serviceType" items="${woManipulationBean.availableServiceTypes.yukonListEntries}">
-									<option value='<c:out value="${serviceType.entryID}"/>'> <c:out value="${serviceType.entryText}"/> </option>
+									<option value='<c:out value="${serviceType.entryID}"/>'> <c:out value="${fn:escapeXml(serviceType.entryText)}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
 	                    <div id='<c:out value="${changeServiceStatus}"/>' style="display:true"> 
 	                    	<select id='<c:out value="${changeServiceStatus}"/>1' name='<c:out value="${changeServiceStatus}"/>1' size="1" style="width: 200px" onChange="selectAction(this.value)">
 	                            <c:forEach var="serviceStatus" items="${woManipulationBean.availableServiceStatuses.yukonListEntries}">
-									<option value='<c:out value="${serviceStatus.entryID}"/>'> <c:out value="${serviceStatus.entryText}"/> </option>
+									<option value='<c:out value="${serviceStatus.entryID}"/>'> <c:out value="${fn:escapeXml(serviceStatus.entryText)}"/> </option>
 								</c:forEach>
 							</select>
 	                    </div>

@@ -19,7 +19,7 @@
         </select>
     </c:set>
 
-    <cti:msg key="${program.displayName}" var="controlEventsTitle"/>
+    <cti:msg key="${program.displayName}" htmlEscape="true" var="controlEventsTitle"/>
     <tags:sectionContainer title="${controlEventsTitle}" escapeTitle="true" controls="${controls}" styleClass="form-controls">
         <div id="controlEventsDiv" class="f-block-this"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
     </tags:sectionContainer>

@@ -3,6 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.web.bean.WorkOrderBean" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="soBean" class="com.cannontech.web.bean.WorkOrderBean" scope="session">
 	<%-- this body is executed only if the bean is created --%>
 	<jsp:setProperty name="soBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
@@ -97,21 +98,21 @@ function showAll(form) {
 	                	<div id='<c:out value="${filterDeviceType}"/>'> 
 	                    	<select id='<c:out value="${filterDeviceType}"/>1' name='<c:out value="${filterDeviceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="deviceTypeEntry" items="${filterBean.availableDeviceTypes.yukonListEntries}">
-									<option value='<c:out value="${deviceTypeEntry.entryID}"/>'> <c:out value="${deviceTypeEntry.entryText}"/> </option>
+									<option value='<c:out value="${deviceTypeEntry.entryID}"/>'> <c:out value="${fn:escapeXml(deviceTypeEntry.entryText)}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
 	                    <div id='<c:out value="${filterServiceCompany}"/>' style="display:none" > 
 	                    	<select id='<c:out value="${filterServiceCompany}"/>1' name='<c:out value="${filterServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="serviceCompany" items="${filterBean.availableServiceCompanies}">
-									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
+									<option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${fn:escapeXml(serviceCompany.companyName)}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceStatus}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterDeviceStatus}"/>1' name='<c:out value="${filterDeviceStatus}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
 	                            <c:forEach var="deviceStatusEntry" items="${filterBean.availableDeviceStates.yukonListEntries}">
-									<option value='<c:out value="${deviceStatusEntry.entryID}"/>'> <c:out value="${deviceStatusEntry.entryText}"/> </option>
+									<option value='<c:out value="${deviceStatusEntry.entryID}"/>'> <c:out value="${fn:escapeXml(deviceStatusEntry.entryText)}"/> </option>
 								</c:forEach>
 	                      	</select>
 	                    </div>

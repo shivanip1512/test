@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage page="schedules.VIEW" module="tools">
 
@@ -86,7 +87,7 @@
                         <cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
                     </cti:url>
                     <a href="${deviceGroupUrl}">
-                        ${jobWrapper.deviceGroupName}
+                        ${fn:escapeXml(jobWrapper.deviceGroupName)}
                     </a>
                 </c:when>
                 <c:otherwise>
@@ -97,7 +98,7 @@
         
         <%-- user --%>
         <tags:nameValue name="${userText}">
-            ${jobWrapper.job.userContext.yukonUser.username}
+            ${fn:escapeXml(jobWrapper.job.userContext.yukonUser.username)}
         </tags:nameValue>
         
         <%-- retry setup --%>

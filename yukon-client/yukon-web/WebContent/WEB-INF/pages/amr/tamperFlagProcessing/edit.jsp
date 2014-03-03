@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="tamperFlagEditor.${mode}">
 
@@ -75,13 +76,13 @@
             
                 <%-- tamper flag group --%>
                 <tags:nameValue2 nameKey=".label.tamperFlagGroup">
-                    <div id="tamperFlagGroupNameDiv">${tamperFlagGroupBase}${name}</div>            
+                    <div id="tamperFlagGroupNameDiv">${fn:escapeXml(tamperFlagGroupBase)}${fn:escapeXml(name)}</div>            
                 </tags:nameValue2>
             
                 <%-- enable/disable monitoring --%>
                 <c:if test="${tamperFlagMonitorId > 0}">
                     <tags:nameValue2 nameKey=".label.tamperFlagMonitoring">
-                        ${tamperFlagMonitor.evaluatorStatus.description}
+                        ${fn:escapeXml(tamperFlagMonitor.evaluatorStatus.description)}
                     </tags:nameValue2>
                 </c:if>
                 

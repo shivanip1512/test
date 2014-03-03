@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -37,7 +38,7 @@
                 <tr>
                     <c:forEach var="sched" items="${purchaseBean.availableSchedules}">
                         <div align="center">
-                            <span class="TableCell"><c:out value="${sched.scheduleName}"/></span> 
+                            <span class="TableCell"><c:out value="${fn:escapeXml(sched.scheduleName)}"/></span> 
                         </div>
                     </c:forEach>
                 </tr>

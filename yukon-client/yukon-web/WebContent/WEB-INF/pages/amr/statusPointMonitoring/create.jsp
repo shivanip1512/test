@@ -5,6 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="statusPointMonitorCreator">
     
@@ -27,7 +28,7 @@
                 <tags:nameValue2 nameKey=".selectStateGroup">
                     <select name="stateGroup">
                         <c:forEach items="${stateGroups}" var="stateGroup">
-                            <option value="${stateGroup}">${stateGroup.stateGroupName}</option>
+                            <option value="${stateGroup}">${fn:escapeXml(stateGroup.stateGroupName)}</option>
                         </c:forEach>
                     </select>
                 </tags:nameValue2>

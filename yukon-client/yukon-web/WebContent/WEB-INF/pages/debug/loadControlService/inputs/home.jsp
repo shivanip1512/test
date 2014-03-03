@@ -44,7 +44,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
-                            <input type="text" name="programName" value="${programName}">
+                            <input type="text" name="programName" value="${fn:escapeXml(programName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
@@ -80,7 +80,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
-                            <input type="text" name="scenarioName" value="${scenarioName}">
+                            <input type="text" name="scenarioName" value="${fn:escapeXml(scenarioName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".startTime">
@@ -117,7 +117,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
-                            <input type="text" name="programName" value="${programName}">
+                            <input type="text" name="programName" value="${fn:escapeXml(programName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".startTime">
@@ -131,7 +131,7 @@
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".gearName">
-                            <input type="text" name="gearName" value="${gearName}" size="2">
+                            <input type="text" name="gearName" value="${fn:escapeXml(gearName)}" size="2">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".forceExecute">
@@ -158,7 +158,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
-                            <input type="text" name="scenarioName" value="${scenarioName}">
+                            <input type="text" name="scenarioName" value="${fn:escapeXml(scenarioName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
@@ -190,7 +190,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".programName" >
-                            <input type="text" name="programName" value="${programName}">
+                            <input type="text" name="programName" value="${fn:escapeXml(programName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".stopTime">
@@ -222,7 +222,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".scenarioName" >
-                            <input type="text" name="scenarioName" value="${scenarioName}">
+                            <input type="text" name="scenarioName" value="${fn:escapeXml(scenarioName)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
@@ -245,16 +245,16 @@
                             <input type="text" name="accountNumber" value="${accountNumber}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".programName" >
-                            <input type="text" name="programName" value="${programName}">
+                            <input type="text" name="programName" value="${fn:escapeXml(programName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".applianceCategoryName" >
-                            <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
+                            <input type="text" name="applianceCategoryName" value="${fn:escapeXml(applianceCategoryName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".loadGroupName" >
-                            <input type="text" name="loadGroupName" value="${loadGroupName}">
+                            <input type="text" name="loadGroupName" value="${fn:escapeXml(loadGroupName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".applianceKW" >
                             <input type="text" name="applianceKW" value="${applianceKW}">
@@ -287,16 +287,16 @@
                             <input type="text" name="accountNumber" value="${accountNumber}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".programName" >
-                            <input type="text" name="programName" value="${programName}">
+                            <input type="text" name="programName" value="${fn:escapeXml(programName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".serialNumber" >
                             <input type="text" name="serialNumber" value="${serialNumber}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".applianceCategoryName" >
-                            <input type="text" name="applianceCategoryName" value="${applianceCategoryName}">
+                            <input type="text" name="applianceCategoryName" value="${fn:escapeXml(applianceCategoryName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".loadGroupName" >
-                            <input type="text" name="loadGroupName" value="${loadGroupName}">
+                            <input type="text" name="loadGroupName" value="${fn:escapeXml(loadGroupName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".applianceKW" >
                             <input type="text" name="applianceKW" value="${applianceKW}">
@@ -334,7 +334,7 @@
                             <dt:date name="fieldInstallDate" value="${fieldInstallDate}"/>
                         </tags:nameValue2>                        
                         <tags:nameValue2 nameKey=".serviceCompanyName" >
-                            <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
+                            <input type="text" name="serviceCompanyName" value="${fn:escapeXml(serviceCompanyName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".deviceLabel" >
                             <input type="text" name="deviceLabel" value="${deviceLabel}">
@@ -369,7 +369,7 @@
                             <dt:date name="fieldInstallDate" value="${fieldInstallDate}"/>
                         </tags:nameValue2>                        
                         <tags:nameValue2 nameKey=".serviceCompanyName" >
-                            <input type="text" name="serviceCompanyName" value="${serviceCompanyName}">
+                            <input type="text" name="serviceCompanyName" value="${fn:escapeXml(serviceCompanyName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".deviceLabel" >
                             <input type="text" name="deviceLabel" value="${deviceLabel}">

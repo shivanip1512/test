@@ -1,6 +1,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:standardPage module="amr" page="phaseDetect.testSettings">
 
@@ -13,7 +14,7 @@
                 <cti:msg2 var="deltaVoltage" key=".deltaVoltage"/>
                 <cti:msg2 var="numOfIntervals" key=".numOfIntervals"/>
                 <tags:nameValue2 nameKey=".substation">
-                    ${substationName}
+                    ${fn:escapeXml(substationName)}
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".intervalLength">
                    <select id="intervalLength" name="intervalLength">

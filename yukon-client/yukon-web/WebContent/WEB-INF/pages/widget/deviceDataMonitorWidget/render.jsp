@@ -32,7 +32,8 @@
 
                         <%-- action icons --%>
                         <td>
-                            <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${monitor.name}" icon="icon-cog-go"/>
+                            <cti:button nameKey="edit" renderMode="image" href="${viewMonitorUrl}" arguments="${fn:escapeXml(monitor.name)}" 
+                                icon="icon-cog-go"/>
                         </td>
 
                         <%-- monitor name --%>

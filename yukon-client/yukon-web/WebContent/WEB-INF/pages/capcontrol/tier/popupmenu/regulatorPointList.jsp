@@ -1,13 +1,14 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 
 <cti:standardPage title="Regulator Points and TS" module="capcontrol_internal">
 <cti:includeCss link="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css"/>     
-    <input id="regulatorName" type="hidden" value="${regulatorName}"/>
+    <input id="regulatorName" type="hidden" value="${fn:escapeXml(regulatorName)}"/>
     <c:if test="${oneline}">
-        <center><span style="font-weight: bold; font-size: 16;">${regulatorName}</span></center>
+        <center><span style="font-weight: bold; font-size: 16;">${fn:escapeXml(regulatorName)}</span></center>
     </c:if>
     
     <div style="overflow: auto;">
@@ -26,10 +27,10 @@
                         <cti:msg2 key="${point.attribute}"/>
                     </td>
                     <td>
-                        ${point.paoName}
+                        ${fn:escapeXml(point.paoName)}
                     </td>
                     <td>
-                        ${point.pointName}
+                        ${fn:escapeXml(point.pointName)}
                     </td>
                     <td>
                         <c:choose>

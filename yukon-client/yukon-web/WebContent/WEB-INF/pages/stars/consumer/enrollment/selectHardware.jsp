@@ -14,7 +14,7 @@
         <div class="user-message error"><cti:msg key="${errorMessage}"/></div>
     </c:if>
 
-    <cti:msg var="programName" key="${displayableEnrollmentProgram.program.displayName}"/>
+    <cti:msg var="programName" key="${displayableEnrollmentProgram.program.displayName}" htmlEscape="true"/>
     <p><cti:msg key="yukon.dr.consumer.selectHardware.query" argument="${programName}"/></p>
 
     <cti:url var="submitUrl" value="/stars/consumer/enrollment/enrollSelectedHardware"/>

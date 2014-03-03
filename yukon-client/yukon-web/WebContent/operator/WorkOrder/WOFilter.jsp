@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="filterBean" class="com.cannontech.stars.web.bean.FilterBean" scope="page"/>
 <jsp:useBean id="workOrderBean" class="com.cannontech.web.bean.WorkOrderBean" scope="session"/>
 
@@ -99,7 +100,7 @@
                             <select id='<c:out value="${filterServiceCompany}"/>1' name='<c:out value="${filterServiceCompany}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
                                 <option value='0'> <c:out value="${filterBean.noneString}"/> </option>
                                 <c:forEach var="serviceCompany" items="${filterBean.availableServiceCompanies}">
-                                    <option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${serviceCompany.companyName}"/> </option>
+                                    <option value='<c:out value="${serviceCompany.liteID}"/>'> <c:out value="${fn:escapeXml(serviceCompany.companyName)}"/> </option>
                                 </c:forEach>
                               </select>
                         </div>

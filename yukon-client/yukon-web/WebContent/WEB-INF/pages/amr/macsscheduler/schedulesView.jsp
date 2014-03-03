@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:url var="controlUrl" value="/macsscheduler/schedules/controlView"/>
 <cti:url var="toggleUrl" value="/macsscheduler/schedules/toggleUrl"/>
@@ -164,19 +165,21 @@
                             <c:when test="${scheduleInfo.showControllable}">
                                 <form id="controlform_${scheduleInfo.schedule.id}" action="${controlUrl}" method="POST">
                                     <cti:csrfToken/>
-                                    <a href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">${scheduleInfo.schedule.scheduleName}</a>
+                                    <a href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">
+                                        ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
+                                    </a>
                                     <input type="hidden" name="id" value="${scheduleInfo.schedule.id}" />
                                     <input type="hidden" name="sortBy" value="${sortBy}" />
                                     <input type="hidden" name="descending" value="${descending}" />
                                 </form>
                             </c:when>
                             <c:otherwise>
-                                ${scheduleInfo.schedule.scheduleName}
+                                ${fn:escapeXml(scheduleInfo.schedule.scheduleName)}
                             </c:otherwise>
                         </c:choose>
                     </td>
                     <td>
-                        ${scheduleInfo.schedule.categoryName}
+                        ${fn:escapeXml(scheduleInfo.schedule.categoryName)}
                     </td>
                     <td>
                         <c:set var="state" value="${scheduleInfo.schedule.currentState}" />

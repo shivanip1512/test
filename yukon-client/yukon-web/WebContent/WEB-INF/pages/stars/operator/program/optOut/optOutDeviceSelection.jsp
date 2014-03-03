@@ -87,7 +87,7 @@ function createJSON () {
                             <c:forEach var="program" items="${programsList}">
                                 <c:set var="count" value="${count + 1}"/>
                                 <spring:escapeBody htmlEscape="true">
-                                    <cti:msg key="${program.displayName}"/>
+                                    <cti:msg key="${program.displayName}" htmlEscape="true"/>
                                 </spring:escapeBody>
                                 <c:if test="${fn:length(programsList) != count}"><br></c:if>
                             </c:forEach>

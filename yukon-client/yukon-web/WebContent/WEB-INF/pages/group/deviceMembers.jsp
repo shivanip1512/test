@@ -29,7 +29,7 @@
                 <tbody>
         			<c:forEach var="device" items="${deviceList}">
         				<tr>
-        					<td><cti:paoDetailUrl yukonPao="${device}">${device.name}</cti:paoDetailUrl></td>
+        					<td><cti:paoDetailUrl yukonPao="${device}">${fn:escapeXml(device.name)}</cti:paoDetailUrl></td>
                             <c:if test="${hasModifyRoleProperty}">
             					<td class="tar last">
             						<c:choose>
@@ -63,7 +63,7 @@
                 <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
             </div>       
         </c:if>
-	</c:when>
-	<c:otherwise><i:inline key="yukon.web.deviceGroups.editor.membersContainer.noDevices"/></c:otherwise>
+    </c:when>
+    <c:otherwise><i:inline key="yukon.web.deviceGroups.editor.membersContainer.noDevices"/></c:otherwise>
 </c:choose>
 </cti:msgScope>

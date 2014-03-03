@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -50,7 +51,7 @@
 		            	<div align="right">Period Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentTimePeriod.timePeriodName}"/>'>
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${fn:escapeXml(purchaseBean.currentTimePeriod.timePeriodName)}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -74,7 +75,7 @@
 	                  	<div align="right">Filing:</div>
 	                </td>
 	                <td width="80%"> 
-	                  	<div align="left" class="fieldinfo">This time projection is for schedule <c:out value="${purchaseBean.currentSchedule.scheduleName}"/></div>
+	                  	<div align="left" class="fieldinfo">This time projection is for schedule <c:out value="${fn:escapeXml(purchaseBean.currentSchedule.scheduleName)}"/></div>
 	                </td>
 		     	</tr>
 	        </table>

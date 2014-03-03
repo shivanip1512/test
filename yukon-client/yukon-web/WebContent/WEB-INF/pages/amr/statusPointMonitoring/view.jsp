@@ -21,10 +21,10 @@
             
             <tags:nameValue2 nameKey=".deviceGroup">
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
-                    <cti:param name="groupName">${statusPointMonitor.groupName}</cti:param>
+                    <cti:param name="groupName">${fn:escapeXml(statusPointMonitor.groupName)}</cti:param>
                 </cti:url>
                 
-                <a href="${deviceGroupUrl}">${statusPointMonitor.groupName}</a>
+                <a href="${deviceGroupUrl}">${fn:escapeXml(statusPointMonitor.groupName)}</a>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".attribute">
@@ -32,7 +32,7 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".stateGroup">
-                ${statusPointMonitor.stateGroup.stateGroupName}
+                ${fn:escapeXml(statusPointMonitor.stateGroup.stateGroupName)}
             </tags:nameValue2>
             
             <%-- enable/disable monitoring --%>

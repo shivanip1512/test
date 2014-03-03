@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="adminSetup" page="userPermissions">
 
@@ -35,7 +36,7 @@
     <br/>
     <div style="width: 600px;">
       <cti:url var="removeLoginWaitUrl" value="/adminSetup/user/removeLoginWait"/>
-      <tags:boxContainer title="Failed Login Information for: ${user.username}" hideEnabled="false">
+      <tags:boxContainer title="Failed Login Information for: ${fn:escapeXml(user.username)}" hideEnabled="false">
 	    <form action="${removeLoginWaitUrl}" method="POST">
             <cti:csrfToken/>
 	    <table>

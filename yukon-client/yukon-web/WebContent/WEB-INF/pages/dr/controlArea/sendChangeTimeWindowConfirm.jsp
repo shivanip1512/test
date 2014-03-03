@@ -1,12 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <cti:msgScope paths="modules.dr.controlArea.sendChangeTimeWindowConfirm">
     <p class="dialogQuestion stacked">
         <cti:list var="msgArgs">
             <cti:item value="${controlAreaTimeWindowDto.startTime}"/>
             <cti:item value="${controlAreaTimeWindowDto.stopTime}"/>
-            <cti:item value="${controlArea.name}"/>
+            <cti:item value="${fn:escapeXml(controlArea.name)}"/>
         </cti:list>
         <cti:msg2 key=".confirmQuestion" arguments="${msgArgs}"/>
     </p>

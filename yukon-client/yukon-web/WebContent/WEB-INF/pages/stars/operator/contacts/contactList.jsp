@@ -25,7 +25,7 @@
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="contactId" value="${contact.contactId}"/>
                             </cti:url>
-                            <a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
+                            <a href="${contactEditUrl}">${fn:escapeXml(contact.lastName)}, ${fn:escapeXml(contact.firstName)}</a>
                         </cti:displayForPageEditModes>
                     </td>
                     

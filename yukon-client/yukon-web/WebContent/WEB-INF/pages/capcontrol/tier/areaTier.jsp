@@ -49,7 +49,7 @@
                         <td>
                             <div class="f-tooltip dn">
                                 <c:forEach var="station" items="${viewableArea.subStations}">
-                                        <div class="detail fwb">${station.name}</div>
+                                        <div class="detail fwb">${fn:escapeXml(station.name)}</div>
                                         <div class="detail wsnw">
                                             &nbsp;&nbsp;<i:inline key=".feeders" arguments="${station.feederCount}"/>
                                             &nbsp;&nbsp;<i:inline key=".banks" arguments="${station.capBankCount}"/>

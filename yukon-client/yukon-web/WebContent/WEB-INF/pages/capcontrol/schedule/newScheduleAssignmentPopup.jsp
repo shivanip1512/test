@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <cti:msgScope paths="modules.capcontrol.scheduleAssignments">
     <form name="newScheduleAssignmentForm" id="newScheduleAssignmentForm" method="post" action="addPao">
@@ -14,7 +15,7 @@
                 <td>
                     <select name="addSchedule" id="addSchedule">
                         <c:forEach var="aSchedule" items="${scheduleList}">
-                                <option value="${aSchedule.scheduleID}" <c:if test="${param.schedule == aSchedule.scheduleName}">selected="selected" </c:if> > ${aSchedule.scheduleName}</option>
+                                <option value="${aSchedule.scheduleID}" <c:if test="${param.schedule == aSchedule.scheduleName}">selected="selected" </c:if> >${fn:escapeXml(aSchedule.scheduleName)}</option>
                         </c:forEach>
                     </select>
                 </td>
@@ -30,7 +31,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <c:if test="${aCommand != 'VerifyNotOperatedIn'}">
-                                        <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${aCommand.commandName}</option>
+                                        <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${fn:escapeXml(aCommand.commandName)}</option>
                                     </c:if>
                                 </c:otherwise>
                             </c:choose>

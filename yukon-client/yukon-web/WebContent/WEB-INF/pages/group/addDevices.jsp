@@ -18,7 +18,7 @@
             pickerType="devicePicker"/>
     </tags:sectionContainer>
     
-    <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${group.fullName}" /></cti:url>
+    <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${fn:escapeXml(group.fullName)}" /></cti:url>
     <div class="page-action-area"><cti:button nameKey="back" href="${homeUrl}"/></div>
     
 </cti:standardPage>

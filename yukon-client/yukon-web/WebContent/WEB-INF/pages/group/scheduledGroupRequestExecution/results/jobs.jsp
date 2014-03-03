@@ -98,7 +98,7 @@ jQuery(document).ready(function() {
                     <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
                         <cti:param name="jobId" value="${jobWrapper.job.id}"/>
                     </cti:url>
-                    <a href="${jobDetailUrl}">${jobWrapper.name}</a>
+                    <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.name)}</a>
                 </td>
                 <td>
                     <c:choose>
@@ -106,7 +106,7 @@ jQuery(document).ready(function() {
                             <cti:url var="deviceGroupUrl" value="/group/editor/home">
                                 <cti:param name="groupName" value="${jobWrapper.deviceGroupName}"/>
                             </cti:url>
-                            <a href="${deviceGroupUrl}">${jobWrapper.deviceGroupName}</a>
+                            <a href="${deviceGroupUrl}">${fn:escapeXml(jobWrapper.deviceGroupName)}</a>
                         </c:when>
                         <c:otherwise>
                             <span class="error"><i:inline key=".groupDoesNotExist"/></span>

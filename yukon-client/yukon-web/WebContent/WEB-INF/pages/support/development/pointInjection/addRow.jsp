@@ -1,10 +1,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
 <table><tr>
 <td><cti:paoDetailUrl yukonPao="${paoPointIdentifier.paoIdentifier}">${paoPointIdentifier.paoIdentifier}</cti:paoDetailUrl></td>
 <td>${paoPointIdentifier.pointIdentifier}</td>
-<td>${pointName}</td>
+<td>${fn:escapeXml(pointName)}</td>
 <td>${pointId}<input type="hidden" name="pointId" value="${pointId}"></td>
 <td><input name="date" value="<cti:formatDate type="DATE" value="${pointValue.pointDataTimeStamp}"/>" size="10"> <button class="dateTimeClear">Now</button></td>
 <td><input name="time" value="<cti:formatDate type="TIME" value="${pointValue.pointDataTimeStamp}"/>" size="10"> <button class="dateTimeClear">Now</button></td>

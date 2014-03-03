@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:url var="url" value="/stars/hardware/deviceactivation" />
 
@@ -37,7 +38,7 @@
                         </td>
                         <td valign="top" style="text-align: left">
                             <c:if test='${not empty contact}'>
-                                ${contact.contFirstName} ${contact.contLastName}
+                                ${fn:escapeXml(contact.contFirstName)} ${fn:escapeXml(contact.contLastName)}
                             </c:if>
                         </td>
                     </tr>

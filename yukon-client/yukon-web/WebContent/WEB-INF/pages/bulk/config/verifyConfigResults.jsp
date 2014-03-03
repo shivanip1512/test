@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:msg var="successLabel" key="yukon.common.device.bulk.verifyConfigResults.successLabel"/>
 <cti:msg var="failureLabel" key="yukon.common.device.bulk.verifyConfigResults.failureLabel"/>
@@ -86,7 +87,7 @@
 		            <c:choose>
 		                <c:when test="${resultsMap[device].synced}">
 		                    <tr>
-		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].meter.name)}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
 		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${successResult}</td>
@@ -94,7 +95,7 @@
 		                </c:when>
 		                <c:otherwise>
 		                    <tr class="error">
-		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${resultsMap[device].meter.name}</td>
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].meter.name)}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
 		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>

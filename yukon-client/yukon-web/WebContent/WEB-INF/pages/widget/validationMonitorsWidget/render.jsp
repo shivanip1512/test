@@ -43,7 +43,8 @@
             <tr>
                 <%-- edit button --%>
                 <td>
-                    <cti:button nameKey="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${monitorName}" icon="icon-cog-go"/>
+                    <cti:button nameKey="edit" renderMode="image" href="${viewValidationMonitorEditorUrl}" arguments="${fn:escapeXml(monitorName)}" 
+                        icon="icon-cog-go"/>
                 </td>
                 
                 <%-- monitor name --%>

@@ -47,14 +47,14 @@
                         </td>
                         <td>
                             <span class="meta">
-                                <tags:notNullDataLine ignore="(none)" inLine="true" value="${serviceCompany.primaryContact.contFirstName}"></tags:notNullDataLine>
-                                <tags:notNullDataLine ignore="(none)" value="${serviceCompany.primaryContact.contLastName}"></tags:notNullDataLine>
+                                <tags:notNullDataLine ignore="(none)" inLine="true" value="${fn:escapeXml(serviceCompany.primaryContact.contFirstName)}"></tags:notNullDataLine>
+                                <tags:notNullDataLine ignore="(none)" value="${fn:escapeXml(serviceCompany.primaryContact.contLastName)}"></tags:notNullDataLine>
                                 <tags:notNullDataLine ignore="(none)" value="${serviceCompany.emailContactNotification}"></tags:notNullDataLine>
                             </span>
                         </td>
                         <td>
                             <span class="meta">
-                                <tags:liteAddress ignore="(none)" address="${serviceCompany.address}"></tags:liteAddress>
+                                <tags:liteAddress ignore="(none)" address="${fn.escapeXml(serviceCompany.address)}"></tags:liteAddress>
                             </span>
                         </td>
                     </tr>

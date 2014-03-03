@@ -40,11 +40,11 @@
 		            </tr>
 					<c:forEach var="movedCapbank" items="${movedCaps}">
 						<tr id="tr_cap_${movedCapbank.capbank.ccId}">
-							<td id="${movedCapbank.capbank.ccName}">
-                                <a href="javascript:void(0);" class="moveLink" id="${movedCapbank.capbank.ccId}">${movedCapbank.currentFeederName}</a>
+							<td id="${fn:escapeXml(movedCapbank.capbank.ccName)}">
+                                <a href="javascript:void(0);" class="moveLink" id="${movedCapbank.capbank.ccId}">${fn:escapeXml(movedCapbank.currentFeederName)}</a>
                             </td>
-							<td>${movedCapbank.originalFeederName}</td>
-							<td>${movedCapbank.capbank.ccName}</td>
+							<td>${fn:escapeXml(movedCapbank.originalFeederName)}</td>
+							<td>${fn:escapeXml(movedCapbank.capbank.ccName)}</td>
 						</tr>
 					</c:forEach>
 				</table>

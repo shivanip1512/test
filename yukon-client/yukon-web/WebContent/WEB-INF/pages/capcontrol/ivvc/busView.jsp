@@ -183,7 +183,7 @@
                     </tr>
                     <c:forEach items="${allSubBusPoints}" var="point">
                         <tr>
-                            <td>${point.pointName}:&nbsp;</td>
+                            <td>${fn:escapeXml(point.pointName)}:&nbsp;</td>
                             <td>
                                 <cti:pointStatusColor pointId="${point.liteID}">
                                     <cti:pointValue pointId="${point.liteID}" format="VALUE"/>

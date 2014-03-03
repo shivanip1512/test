@@ -40,10 +40,10 @@
                         <c:forEach var="definition" items="${group.value}">
                             <c:choose>
                                 <c:when test="${deviceTypeParam == definition.type}">
-                                    <option value="${definition.type}" selected>${definition.displayName}</option>
+                                    <option value="${definition.type}" selected>${fn:escapeXml(definition.displayName)}</option>
                                 </c:when>
                                 <c:otherwise>
-                                    <option value="${definition.type}">${definition.displayName}</option>
+                                    <option value="${definition.type}">${fn:escapeXml(definition.displayName)}</option>
                                 </c:otherwise>
                             </c:choose>
                             
@@ -140,7 +140,7 @@
 		
 			<c:forEach var="deviceInfo" items="${info.value}">
 			
-				<tags:boxContainer title="${deviceInfo.definition.displayName}" id="${deviceInfo.definition.type}" hideEnabled="true">
+				<tags:boxContainer title="${fn:escapeXml(deviceInfo.definition.displayName)}" id="${deviceInfo.definition.type}" hideEnabled="true">
 				
 					<%-- BASICS --%>
 					<table class="compact-results-table">
@@ -182,7 +182,7 @@
     							<c:forEach var="point" items="${deviceInfo.points}" varStatus="status">
     								<tr>
     									<td>${status.index +1}</td>
-    									<td>${point.pointTemplate.name}</td>
+    									<td>${fn:escapeXml(point.pointTemplate.name)}</td>
     									<td><cti:msg key="${point.pointType}"/></td>
     									<td>
     										<c:choose>
@@ -221,7 +221,7 @@
                                         <td>${status.index +1}</td>
     									<td><cti:msg2 key="${attribute.attribute.attribute}"/></td>
 									<td><i:inline key=".lookup.default"/></td>
-									<td><i:inline key=".lookupAttributes.point"/> = ${attribute.pointTemplateWrapper.pointTemplate.name}</td>
+									<td><i:inline key=".lookupAttributes.point"/> = ${fn:escapeXml(attribute.pointTemplateWrapper.pointTemplate.name)}</td>
     								</tr>
     							</c:forEach>
                             </tbody>

@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="amr" page="phaseDetect.home">
     
@@ -99,7 +100,7 @@
                                <select id="substations" onchange="selectThisSub();">
                                    <option value="-1">(none)</option>
                                    <c:forEach var="substation" items="${substations}">
-                                       <option value="${substation.id}">${substation.name}</option>
+                                       <option value="${substation.id}">${fn:escapeXml(substation.name)}</option>
                                    </c:forEach>
                                </select>
                            </tags:nameValue2>

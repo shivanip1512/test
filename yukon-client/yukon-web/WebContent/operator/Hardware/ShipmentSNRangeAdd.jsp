@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -46,7 +47,7 @@
 		            	<div align="right">Member:</div>
 		                </td>
 		            <td width="80%"> 
-		                <div align="left" ><c:out value="${purchaseBean.serialNumberMember.name}"/></div>
+		                <div align="left" ><c:out value="${fn:escapeXml(purchaseBean.serialNumberMember.name)}"/></div>
 		            </td>
 	        	</tr>
 	        	<tr>
@@ -54,7 +55,7 @@
 		            	<div align="right">Warehouse:</div>
 		                </td>
 		            <td width="80%"> 
-		                <div align="left" ><c:out value="${purchaseBean.serialNumberWarehouse.warehouseName}"/></div>
+		                <div align="left" ><c:out value="${fn:escapeXml(purchaseBean.serialNumberWarehouse.warehouseName)}"/></div>
 		            </td>
 	        	</tr>
 	        	<tr>
@@ -62,7 +63,7 @@
 		            	<div align="right">Device Type:</div>
 		                </td>
 		            <td width="80%"> 
-		                <div align="left" ><c:out value="${purchaseBean.serialNumberDeviceType.entryText}"/></div>
+		                <div align="left" ><c:out value="${fn:escapeXml(purchaseBean.serialNumberDeviceType.entryText)}"/></div>
 		            </td>
 	        	</tr>
 	        	<tr>
@@ -70,7 +71,7 @@
 		            	<div align="right">Device State:</div>
 		                </td>
 		            <td width="80%"> 
-		                <div align="left" ><c:out value="${purchaseBean.serialNumberDeviceState.entryText}"/></div>
+		                <div align="left" ><c:out value="${fn:escapeXml(purchaseBean.serialNumberDeviceState.entryText)}"/></div>
 		            </td>
 	        	</tr>
 	          	

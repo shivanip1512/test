@@ -85,7 +85,7 @@ function createJSON() {
                                 
                                 <c:forEach var="program" items="${programsList}">
                                     <c:set var="count" value="${count + 1}"/>
-                                    <cti:msg key="${program.displayName}"/><c:if test="${fn:length(programsList) != count}">,</c:if>
+                                    <cti:msg key="${program.displayName}" htmlEscape="true"/><c:if test="${fn:length(programsList) != count}">,</c:if>
                                 </c:forEach>    
                             </td>
                         </tr>

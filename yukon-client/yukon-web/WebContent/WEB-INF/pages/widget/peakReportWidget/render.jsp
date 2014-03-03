@@ -3,6 +3,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <c:choose>
     <c:when test="${readable}">
@@ -19,7 +20,7 @@
             <tags:nameValue2 nameKey=".reportType">
                 <select name="peakType">
                     <c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
-                        <option value="${peakTypeInfo.peakType}" ${peakTypeInfo.selected}>${peakTypeInfo.peakTypeDisplayName}</option>
+                        <option value="${peakTypeInfo.peakType}" ${peakTypeInfo.selected}>${fn:escapeXml(peakTypeInfo.peakTypeDisplayName)}</option>
                     </c:forEach>
                 </select>
             </tags:nameValue2>

@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -44,7 +45,7 @@
 		            	<div align="right">Schedule Name:</div>
 		                </td>
 		            <td width="80%"> 
-		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${purchaseBean.currentSchedule.scheduleName}"/>'>
+		                <input type="text" name="name" maxlength="30" size="24" value='<c:out value="${fn:escapeXml(purchaseBean.currentSchedule.scheduleName)}"/>'>
 		            </td>
 		        </tr>
 	            <tr> 
@@ -95,7 +96,7 @@
 	                  <div align="right">Filing:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <div align="left" class="fieldinfo">This schedule filed under plan <c:out value="${purchaseBean.currentPlan.planName}"/></div>
+	                  <div align="left" class="fieldinfo">This schedule filed under plan <c:out value="${fn:escapeXml(purchaseBean.currentPlan.planName)}"/></div>
 	                </td>
 		     	</tr>
 	        </table>
@@ -118,7 +119,7 @@
 		                    <div align="center">
 		                    	<select id="times" name="times" size="5" style="width:250">
 		                        	<c:forEach var="time" items="${purchaseBean.availableTimePeriods}">
-										<option value='<c:out value="${time.timePeriodID}"/>'> <c:out value="${time.timePeriodName}"/> -- <c:out value="${time.quantity}"/> assets expected</option>
+										<option value='<c:out value="${time.timePeriodID}"/>'> <c:out value="${fn:escapeXml(time.timePeriodName)}"/> -- <c:out value="${time.quantity}"/> assets expected</option>
 									</c:forEach>
 								</select>
 							</div>
