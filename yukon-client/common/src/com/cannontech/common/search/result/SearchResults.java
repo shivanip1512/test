@@ -3,6 +3,8 @@ package com.cannontech.common.search.result;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.common.model.PagingParameters;
+
 public class SearchResults<T> {
     private int hitCount;           //total count (possibly estimate) of results available
     private int startIndex;         //inclusive, 0-based
@@ -52,6 +54,17 @@ public class SearchResults<T> {
         result.setResultList(itemList);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
 
+        return result;
+    }
+
+    /**
+     * Create an instance with a list of items that has already been reduced to the items on the given page.
+     */
+    public static <T> SearchResults<T> pageBasedForSublist(List<T> sublist, PagingParameters pagingParameters,
+                                                           int numberOfResults) {
+        SearchResults<T> result = new SearchResults<>();
+        result.setResultList(sublist);
+        result.setBounds(pagingParameters.getStartIndex(), pagingParameters.getNumberPerPage(), numberOfResults);
         return result;
     }
 

@@ -238,11 +238,8 @@ public class RfPerformanceController {
     }
     
     @RequestMapping(value="/rf/details/{type}/{test}/page", method=RequestMethod.GET)
-    public String page(ModelMap model,
-            @PathVariable String type, 
-            @PathVariable long test, 
-            @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) {
+    public String page(ModelMap model, @PathVariable String type, @PathVariable long test, 
+            PagingParameters pagingParameters) {
 
         List<PaoIdentifier> paos = new ArrayList<>();
         PerformanceVerificationMessageStatus status;
@@ -250,7 +247,7 @@ public class RfPerformanceController {
         if (type.equals("unknown")) {
             model.addAttribute("unknown", true);
             UnknownDevices devices = 
-                    rfPerformanceDao.getDevicesWithUnknownStatus(test, new PagingParameters(itemsPerPage, page));
+                    rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
             totalCount = devices.getNumTotalBeforePaging();
             Map<Integer, UnknownDevice> unknowns = new HashMap<>();
             for (UnknownDevice device : devices.getUnknownDevices()) {
@@ -261,16 +258,17 @@ public class RfPerformanceController {
             status = PerformanceVerificationMessageStatus.UNKNOWN;
         } else if (type.equalsIgnoreCase("failed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
             status = PerformanceVerificationMessageStatus.SUCCESS;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         }
 
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
-        SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
+        SearchResults<LiteLmHardware> result = 
+                SearchResults.pageBasedForSublist(hardwares, pagingParameters, totalCount);
         
         model.addAttribute("type", type);
         model.addAttribute("result", result);
@@ -280,13 +278,8 @@ public class RfPerformanceController {
     }
     
     @RequestMapping(value="/rf/details/{type}/{test}", method=RequestMethod.GET)
-    public String popup(ModelMap model,
-            HttpServletResponse resp,
-            YukonUserContext userContext,
-            @PathVariable long test, 
-            @PathVariable String type, 
-            @RequestParam(defaultValue="10") Integer itemsPerPage, 
-            @RequestParam(defaultValue="1") Integer page) throws JsonProcessingException {
+    public String popup(ModelMap model, HttpServletResponse resp, YukonUserContext userContext, @PathVariable long test, 
+            @PathVariable String type, PagingParameters pagingParameters) throws JsonProcessingException {
         
         List<PaoIdentifier> paos = new ArrayList<>();
         PerformanceVerificationMessageStatus status;
@@ -298,17 +291,17 @@ public class RfPerformanceController {
         int totalCount;
         if (type.equalsIgnoreCase("failed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else if (type.equalsIgnoreCase("success")) {
             status = PerformanceVerificationMessageStatus.SUCCESS;
-            paos = rfPerformanceDao.getDevicesWithStatus(test, status, new PagingParameters(itemsPerPage, page));
+            paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
         } else {
             model.addAttribute("unknown", true);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
             UnknownDevices devices = 
-                    rfPerformanceDao.getDevicesWithUnknownStatus(test, new PagingParameters(itemsPerPage, page));
+                    rfPerformanceDao.getDevicesWithUnknownStatus(test, pagingParameters);
             totalCount = devices.getNumTotalBeforePaging();
 
             model.addAttribute("unknownStats", devices);
@@ -345,7 +338,7 @@ public class RfPerformanceController {
         }
         
         List<LiteLmHardware> hardwares = inventoryDao.getLiteLmHardwareByPaos(paos);
-        SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, page, itemsPerPage, totalCount);
+        SearchResults<LiteLmHardware> result = SearchResults.pageBasedForSublist(hardwares, pagingParameters, totalCount);
         
         model.addAttribute("type", type);
         model.addAttribute("result", result);

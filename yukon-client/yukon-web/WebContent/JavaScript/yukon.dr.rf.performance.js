@@ -36,7 +36,7 @@ yukon.dr.rf.performance = (function () {
                     hasChart = true;
                 }
                 url += jQuery(this).closest('[data-test]').data('test');
-                
+                url += "?itemsPerPage=" + 10;
                 /* Load popup */
                 popup.load(url, function (resp, status, xhr) {
                     popup.dialog({width: 700, title: popup.find('.f-title').val()});
