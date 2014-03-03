@@ -89,7 +89,7 @@ yukon.modules.dateTimePickers = function (box) {
     box.init = function (cfgDtArgs, cfgTpArgs) {
         //default arguments
         var datetimepickerArgs = {
-                buttonImage: YG.APP_NAME + '/WebConfig/yukon/Icons/StartCalendar.png',
+                buttonImage: yukon.url('/WebConfig/yukon/Icons/StartCalendar.png'),
                 buttonImageOnly: true,
                 hideIfNoPrevNext:true,
                 showButtonPanel: true,

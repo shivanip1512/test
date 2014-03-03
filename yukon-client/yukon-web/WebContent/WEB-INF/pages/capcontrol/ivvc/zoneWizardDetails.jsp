@@ -18,7 +18,7 @@
     };
     
     addBankHandler = function (selectedPaoInfo, picker) {
-        var args = buildArgs('/capcontrol/ivvc/wizard/addCapBank');
+        var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addCapBank'));
         
         for(var i = 0; i < selectedPaoInfo.length; i++) {
             var request = buildRequest(selectedPaoInfo[i].paoId);
@@ -30,7 +30,7 @@
     };
     
     addPointHandler = function(selectedPointInfo, picker) {
-        var args = buildArgs('/capcontrol/ivvc/wizard/addVoltagePoint');
+        var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
         
         for(var i = 0; i < selectedPointInfo.length; i++) {
             var request = buildRequest(selectedPointInfo[i].pointId);

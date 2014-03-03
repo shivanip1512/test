@@ -4,7 +4,7 @@ function indexManager_buildIndex (indexName) {
         indexManager_getProgress(indexName);
     };
     jQuery.ajax({
-        url: YG.APP_NAME + '/index/buildIndex?index=' + indexName,
+        url: yukon.url('/index/buildIndex?index=' + indexName),
         type: 'get'
     }).done(function (data, textStatus, jqXHR) {
         indexManager_getProgressWrapper();
@@ -17,7 +17,7 @@ var indexManager_getProgress = function (indexName) {
         indexManager_updateProgress(transport, json, indexName);
     };
     jQuery.ajax({
-        url: YG.APP_NAME + '/index/percentDone?index=' + indexName,
+        url: yukon.url('/index/percentDone?index=' + indexName),
         type: 'get'
     }).done(function (data, textStatus, jqXHR) {
         var json = yukon.ui.util.getHeaderJSON(jqXHR);

@@ -132,6 +132,10 @@ yukon.modules.base = function (box) {
         prototype.constructor = subType;
         subType.prototype = prototype;
     };
+    // Handle app name prepending here
+    box.url = function (url) {
+        return YG.APP_NAME + url;
+    };
 };
 
 /** 
@@ -825,7 +829,7 @@ yukon.modules.ui = function (mod) {
             source: function(request, response) {
                 jQuery.ajax({
                     type: 'get',
-                    url: YG.APP_NAME + '/search/autocomplete.json',
+                    url: yukon.url('/search/autocomplete.json'),
                     dataType: "json",
                     data: {
                         q: request.term

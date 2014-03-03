@@ -84,7 +84,7 @@ jQuery(function() {
                 params[jQuery(this).attr('name')] = jQuery(this).val();
             });
             jQuery.ajax({
-                url: YG.APP_NAME + '/contextualMenu/list',
+                url: yukon.url('/contextualMenu/list'),
                 type: 'GET',
                 data: params
             }).done( function(data) {

@@ -7,7 +7,7 @@
 
 <%-- LTC in local mode for a normal reason ie: operator set it to local mode. --%>
 <span id="regulator_mode_${paoId}_local_normal" style="display: none;">
-    <img src="/WebConfig/yukon/da/green_local.png">
+    <img src="<cti:url value="/WebConfig/yukon/da/green_local.png"/>">
 </span>
 
 <%-- Regulator in local mode due to some failure ie: comms lost. --%>

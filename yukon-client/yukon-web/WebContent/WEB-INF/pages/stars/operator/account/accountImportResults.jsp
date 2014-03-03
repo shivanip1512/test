@@ -17,7 +17,7 @@
             var params = {'resultId': '${resultId}'};
             jQuery.ajax({
                 dataType: "json",
-                url: YG.APP_NAME + '/stars/operator/account/importResult',
+                url: yukon.url('/stars/operator/account/importResult'),
                 data: params
             }).done(function(passed) {
                 if(passed === false) {
@@ -34,7 +34,7 @@
         function showErrorsTable() {
             var params = {'resultId': '${resultId}'};
             jQuery.ajax({
-                url: YG.APP_NAME + '/stars/operator/account/importErrors',
+                url: yukon.url('/stars/operator/account/importErrors'),
                 data: params
             }).done(function(data, status, xhrobj) {
                 jQuery('#importErrorsDiv').html(data).show();

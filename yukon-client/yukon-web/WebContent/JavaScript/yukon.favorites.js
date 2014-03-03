@@ -41,7 +41,7 @@ yukon.favorites = (function () {
 
         data = _dataFavoriteButton(button);
 
-        jQuery.getJSON(YG.APP_NAME + '/isFavorite', data).done(function (json) {
+        jQuery.getJSON(yukon.url('/isFavorite'), data).done(function (json) {
             _setIcon(button, json.isFavorite );
         });
     },
@@ -50,7 +50,7 @@ yukon.favorites = (function () {
 
         var data = _dataSubscribeButton(button);
 
-        jQuery.getJSON(YG.APP_NAME + '/isSubscribed', data).done(function (json) {
+        jQuery.getJSON(yukon.url('/isSubscribed'), data).done(function (json) {
             _setIcon(button, json.isSubscribed, 'icon-feed', 'icon-feed disabled cp');
         });
     },
@@ -78,7 +78,7 @@ yukon.favorites = (function () {
 
         if (button.length === 1) {
             data = _dataFavoriteButton(button);
-            jQuery.getJSON(YG.APP_NAME + '/addToHistory', data);
+            jQuery.getJSON(yukon.url('/addToHistory'), data);
         }
     },
     
@@ -86,7 +86,7 @@ yukon.favorites = (function () {
 
         var data = _dataFavoriteButton(button);
 
-        jQuery.getJSON(YG.APP_NAME + '/toggleFavorite', data).done(function (json) {
+        jQuery.getJSON(yukon.url('/toggleFavorite'), data).done(function (json) {
             _setIcon(button, json.isFavorite, iconOn, iconOff);
         });
     },
@@ -100,7 +100,7 @@ yukon.favorites = (function () {
             iconOff = 'icon-feed disabled cp';
         }
 
-        jQuery.getJSON(YG.APP_NAME + '/toggleSubscribed', data).done(function (json) {
+        jQuery.getJSON(yukon.url('/toggleSubscribed'), data).done(function (json) {
             _setIcon(button, json.isSubscribed, iconOn, iconOff);
         });
     },
