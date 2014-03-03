@@ -9,6 +9,8 @@ import com.cannontech.dr.assetavailability.ping.AssetAvailabilityReadResult;
  * program, control area or scenario. It also provides access to the results of these "ping" operations.
  */
 public interface AssetAvailabilityPingService {
+    /** Maximum number of devices that can be pinged at once.*/
+    public static final int PING_MAXIMUM_DEVICES = 1000; 
     
     /**
      * Attempt to read asset availability data from all two-way devices in the DR grouping specified by the 

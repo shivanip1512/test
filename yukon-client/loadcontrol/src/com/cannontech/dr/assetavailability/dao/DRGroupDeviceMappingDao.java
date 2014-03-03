@@ -35,4 +35,10 @@ public interface DRGroupDeviceMappingDao {
      * @throws IllegalArgumentException If the paoIdentifier is not a DR grouping.
      */
     public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier);
+    
+    /**
+     * @return A map of inventoryId to YukonPao for all two-way inventory in the specified load group, program,
+     * scenario or control area.
+     */
+    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier);
 }

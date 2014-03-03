@@ -55,4 +55,8 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier) {
+        throw new MethodNotImplementedException();
+    }
 }

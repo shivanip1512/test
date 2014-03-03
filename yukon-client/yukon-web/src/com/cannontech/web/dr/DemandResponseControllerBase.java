@@ -27,6 +27,7 @@ import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -82,6 +83,7 @@ public abstract class DemandResponseControllerBase {
         model.addAttribute("assetTotal", aaSummary.getAll().size());
         model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
         model.addAttribute("colorMap", colorMap);
+        model.addAttribute("maxPingableDevices", AssetAvailabilityPingService.PING_MAXIMUM_DEVICES);
         return model;
     }
 

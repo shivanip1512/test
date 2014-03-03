@@ -2,6 +2,7 @@ package com.cannontech.dr.assetavailability.dao.impl;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,38 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         });
         return Sets.newHashSet(resultsList);
+    }
+    
+    @Override
+    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier) {
+        Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PaObjectId, ypo.Type, ib.InventoryId");
+                sql.append("FROM YukonPAObject ypo");
+                sql.append("JOIN InventoryBase ib ON ib.DeviceId = ypo.PaObjectId");
+                sql.append("JOIN LMHardwareConfiguration lmhc ON lmhc.InventoryId = ib.InventoryId");
+                sql.append("WHERE lmhc.AddressingGroupId").in(subList);
+                sql.append("AND PaObjectId").gt(0);
+                return sql;
+            }
+        };
+        
+        final Map<Integer, YukonPao> results = new HashMap<>();
+        chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int inventoryId = rs.getInt("InventoryId");
+                int paoId = rs.getInt("PaObjectId");
+                PaoType paoType = rs.getEnum("Type", PaoType.class);
+                YukonPao pao = new SimpleDevice(paoId, paoType);
+                results.put(inventoryId, pao);
+            }
+        });
+        return results;
     }
     
     @Override

@@ -62,8 +62,15 @@
         </c:if>
         
         <div class="action-area">
-            <cti:button id="pingButton" nameKey="pingDevices" busy="true"/>
-            <span id="pingResults" style="display:none" >
+            <c:choose>
+                <c:when test="${unavailableSize > maxPingableDevices}">
+                    <cti:button id="noPingButton" nameKey="noPingDevices" disabled="true"/>
+                </c:when>
+                <c:when test="${unavailableSize > 0}">
+                    <cti:button id="pingButton" nameKey="pingDevices" busy="true"/>
+                </c:when>
+            </c:choose>
+            <span id="pingResults" style="display:none">
                 <span class="dib fl" style="padding-right:10px">
                     <i:inline key="yukon.web.modules.operator.hardware.assetAvailability.pingResults"/>
                 </span>

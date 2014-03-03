@@ -1,8 +1,10 @@
 package com.cannontech.dr.assetavailability.service;
 
 import java.util.Map;
+import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
@@ -62,4 +64,10 @@ public interface AssetAvailabilityService {
      * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier);
+    
+    /**
+     * Returns the YukonPao for every device in the specified load group, program, scenario or control area whose asset
+     * availability status is "unavailable".
+     */
+    public Set<YukonPao> getUnavailableDevicesInDrGrouping(PaoIdentifier drPaoIdentifier);
 }

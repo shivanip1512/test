@@ -24,9 +24,9 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityRelays;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.ping.AssetAvailabilityReadResult;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
+import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
-import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
@@ -38,32 +38,42 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityPingServiceImpl.class);
     
     private Map<Integer, String> paoIdToResultIdMap = Maps.newConcurrentMap();
     
+    @Override
     public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier, LiteYukonUser user) {
-        //Get devices
-        Set<YukonPao> devices = drGroupDeviceMappingDao.getDevicesForGrouping(paoIdentifier);
+        Set<YukonPao> unavailableDevices = assetAvailabilityService.getUnavailableDevicesInDrGrouping(paoIdentifier);
+        
+        //Ensure we are not attempting to ping an unreasonable number of devices.
+        if (unavailableDevices.size() > PING_MAXIMUM_DEVICES) {
+            throw new IllegalArgumentException("No more than " + PING_MAXIMUM_DEVICES + " devices may be pinged. "
+                                               + paoIdentifier.toString() + " contains " + unavailableDevices.size() + 
+                                               " unavailable devices.");
+        }
         
         //Get enrolled relays, so we know what attribute to read runtime on
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
         Map<Integer, Integer> deviceIdToRelayMap = lmHardwareConfigurationDao.getDeviceIdToRelayMapByLoadGroups(loadGroupIds);
         
         Multimap<Integer, YukonPao> relayPaos = ArrayListMultimap.create();
-        for(YukonPao device : devices) {
+        for(YukonPao device : unavailableDevices) {
             Integer paoId = device.getPaoIdentifier().getPaoId();
             Integer relay = deviceIdToRelayMap.get(paoId);
             relayPaos.put(relay, device);
         }
         
         //Set up results callback
-        AssetAvailabilityReadResult result = new AssetAvailabilityReadResult(Iterables.transform(devices, PaoUtils.getYukonPaoToPaoIdFunction()));
+        Iterable<Integer> paoIds = Iterables.transform(unavailableDevices, PaoUtils.getYukonPaoToPaoIdFunction());
+        AssetAvailabilityReadResult result = new AssetAvailabilityReadResult(paoIds);
         String resultId = recentResultsCache.addResult(result);
         paoIdToResultIdMap.put(paoIdentifier.getPaoId(), resultId);
         
         //Read devices by relay
-        log.info("Initiating asset availability read. PaoId = " + paoIdentifier.getPaoId() + ", Total Devices = " + devices.size());
+        log.info("Initiating asset availability read. PaoId = " + paoIdentifier.getPaoId() + ", Total Devices = " 
+                + unavailableDevices.size());
         for(Map.Entry<Integer, Collection<YukonPao>> entry : relayPaos.asMap().entrySet()) {
             int relay = entry.getKey();
             Collection<YukonPao> paos = entry.getValue();
@@ -82,6 +92,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         }
     }
     
+    @Override
     public AssetAvailabilityReadResult getReadResult(int paoId) {
         String resultId = paoIdToResultIdMap.get(paoId);
         if(resultId == null) {
@@ -90,6 +101,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         return recentResultsCache.getResult(resultId);
     }
     
+    @Override
     public boolean hasReadResult(int paoId) {
         String resultId = paoIdToResultIdMap.get(paoId);
         if(resultId == null) {
