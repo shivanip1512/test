@@ -7,6 +7,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
+<cti:msgScope paths="modules.support.uiDemos">
+
 <script type="text/javascript">
 jQuery(document).ready(function() {
     jQuery('#confirmDeleteDlg').bind('yukonConfirmDialogOK', function() {
@@ -98,3 +100,5 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
   <cti:button id="sampleInlineBtn5" nameKey="inline5"/>
   </div>
 </tags:sectionContainer>
+
+</cti:msgScope>

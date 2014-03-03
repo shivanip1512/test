@@ -5,59 +5,34 @@
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
 <cti:standardPage module="support" page="uiDemos">
+    <cti:includeScript link="/JavaScript/yukon.development.uiDemos.js"/>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <cti:includeScript link="JQUERY_COOKIE" />
 
-<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-<cti:includeScript link="JQUERY_COOKIE"/>
-
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('#tabs').tabs({'class': 'section'});
-});
-</script>
-
-<div id="tabs" class="section">
-    <ul>
-        <li><a href="#containerTab">Containers</a></li>
-        <li><a href="#buttonsTab">Buttons</a></li>
-        <li><a href="#pickersTab">Pickers</a></li>
-        <li><a href="#i18nTab">I18N</a></li>
-        <li><a href="#i18nScopesTab">I18N Scopes</a></li>
-        <li><a href="#dialogsTab">Dialogs</a></li>
-        <li><a href="#jsTestingTab">JS Testing</a></li>
-        <li><a href="#moreTab">More</a></li>
-    </ul>
-
-    <div id="containerTab" class="clearfix">
-        <%@ include file="containers.jspf" %>
+    <div class="column-6-18">
+        <div class="column one">
+            <tags:sectionContainer2 nameKey="response">
+                <ul id="sections" class="side-tabs">
+                    <li><a id="containers" href="#">Containers</a></li>
+                    <li><a id="buttons" href="#">Buttons</a></li>
+                    <li><a id="pickers" href="#">Pickers</a></li>
+                    <li><a id="i18n" href="#">I18N</a></li>
+                    <li><a id="i18nScopes" href="#">I18N Scopes</a></li>
+                    <li><a id="dialogs" href="#">Dialogs</a></li>
+                    <li><a id="jsTesting" href="#">JS Testing</a></li>
+                    <li><a id="sprites" href="#">CSS Icons</a></li>
+                    <li><a id="more" href="#">More</a></li>
+                </ul>
+            </tags:sectionContainer2>
+        </div>
+        <div class="column two nogutter">
+            <div id="rightColumn" class="clearfix">
+                <%@ include file="containers.jsp"%>
+            </div>
+        </div>
     </div>
 
-    <div id="buttonsTab" class="clearfix">
-        <%@ include file="buttons.jspf" %>
-    </div>
 
-    <div id="pickersTab" class="clearfix">
-        <%@ include file="pickers.jspf" %>
-    </div>
 
-    <div id="i18nTab" class="clearfix">
-        <%@ include file="i18n.jspf" %>
-    </div>
-
-    <div id="i18nScopesTab" class="clearfix">
-        <%@ include file="i18n_scopes.jspf" %>
-    </div>
-
-    <div id="dialogsTab" class="clearfix">
-        <%@ include file="dialogs.jspf" %>
-    </div>
-
-    <div id="jsTestingTab" class="clearfix">
-        <%@ include file="jsTesting.jspf" %>
-    </div>
-
-    <div id="moreTab" class="clearfix">
-        <%@ include file="more.jspf" %>
-    </div>
-</div>
 
 </cti:standardPage>

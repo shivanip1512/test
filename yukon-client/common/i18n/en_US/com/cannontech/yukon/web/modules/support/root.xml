@@ -213,6 +213,8 @@
 
     <entry key="yukon.web.modules.support.uiDemos.pageName">UI Demos</entry>
     
+    <entry key="yukon.web.modules.support.uiDemos.response.title">Topics</entry>
+    
     <entry key="yukon.web.modules.support.development.pageName">Development Pages</entry>
     <entry key="yukon.web.modules.support.development.contextualPageName">Development</entry>
 

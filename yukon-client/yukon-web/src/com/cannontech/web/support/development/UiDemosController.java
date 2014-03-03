@@ -1,5 +1,9 @@
 package com.cannontech.web.support.development;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,8 +59,7 @@ public class UiDemosController {
         }
     }
 
-    @RequestMapping("main")
-    public void main(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         model.addAttribute("scopePeeker", new ScopePeeker(request));
 
         model.addAttribute("numberNegativeFive", -5);
@@ -88,5 +91,97 @@ public class UiDemosController {
                                                           userContext);
         model.addAttribute("colors", colors);
         model.addAttribute("thisNotThat", "This<br>Not That");
+    }
+    
+    @RequestMapping("main")
+    public void main(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+    }
+    
+    @RequestMapping("containers")
+    public String containers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/containers.jsp";
+    }
+    
+    @RequestMapping("buttons")
+    public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/buttons.jsp";
+    }
+    
+    @RequestMapping("pickers")
+    public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/pickers.jsp";
+    }
+    
+    @RequestMapping("i18nScopes")
+    public String i18nScopes(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/i18n_scopes.jsp";
+    }
+    
+    @RequestMapping("i18n")
+    public String i18n(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/i18n.jsp";
+    }
+    
+    @RequestMapping("dialogs")
+    public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/dialogs.jsp";
+    }
+    
+    @RequestMapping("jsTesting")
+    public String jsTesting(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/jsTesting.jsp";
+    }
+    
+    @RequestMapping("sprites")
+    public String sprites(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        try {
+            setupSprites(model, request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "development/uiDemos/sprites.jsp";
+    }
+    
+    @RequestMapping("more")
+    public String more(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        setupModel(model, request, userContext);
+        return "development/uiDemos/more.jsp";
+    }
+    
+    private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {
+        ArrayList<String> sprites16Array = new ArrayList<String>();
+        ArrayList<String> sprites32Array = new ArrayList<String>();
+        
+        BufferedReader br = new BufferedReader(new FileReader(request.getServletContext().getRealPath("/WebConfig/yukon/styles/icons.css")));
+        try {
+            String line = br.readLine();
+            while (line != null) {
+                if (line.contains("icon-32-")) {
+                    int endIndex = line.indexOf("{");
+                    if (endIndex != -1) {
+                        sprites32Array.add(line.substring(1, endIndex));
+                    }
+                } else if (line.contains("icon-") && !line.contains("icon-32")) {
+                    int endIndex = line.indexOf("{");
+                    if (endIndex != -1) {
+                        sprites16Array.add(line.substring(1, endIndex));
+                    }
+                }
+                line = br.readLine();
+            }
+        } finally {
+            br.close();
+        }
+        model.addAttribute("sprites16Array", sprites16Array);
+        model.addAttribute("sprites32Array", sprites32Array);
     }
 }
