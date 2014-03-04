@@ -314,6 +314,10 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval,        "rfn ovuv alarm reporting interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval,           "rfn ovuv alarm repeating interval" },
         { CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount,                   "rfn ovuv alarm repeat count" },
+        { CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime,                      "" },
+        { CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled,      "" },
+        { CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits,                  "" },
+
     };
 
     std::vector<std::string> expected, results;
