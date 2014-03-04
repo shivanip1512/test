@@ -104,12 +104,14 @@
     <entry key="yukon.common.attribute.builtInAttribute.RELAY_4_SHED_TIME_DATA_LOG">Relay 4 Shed Time Data Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REPORTING_INTERVAL">Reporting Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_POWER_FLAG">Reverse Power Flag</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED">RFN High Temperature Threshold Exceeded</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_FLAG">Tamper Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_BOX_COVER_REMOVAL_FLAG">Meter Box Cover Removal</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUT_OF_VOLTAGE_FLAG">Out of Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_OUT_OF_LIMITS_FLAG">Voltage Out of Limits</entry>
     <entry key="yukon.common.attribute.builtInAttribute.INTERNAL_ERROR_FLAG">Internal Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE">Temperature</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_DEVICE">Temperature of Device</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPORARY_OUT_OF_SERVICE">Temp Out of Service Duration</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE">Under Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_MEASURED">Under Voltage Measured</entry>

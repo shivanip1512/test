@@ -36,7 +36,6 @@ public enum BuiltInAttribute implements Attribute {
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)"),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
     DEMAND("Demand"), 
-    DEVICE_TEMPERATURE("Temperature of Device"),
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
     FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh"),
@@ -120,6 +119,7 @@ public enum BuiltInAttribute implements Attribute {
     TAMPER_FLAG("Tamper Flag"),
     TEMPORARY_OUT_OF_SERVICE("Temp Out of Service Duration"),
     TEMPERATURE("Temperature"),
+    TEMPERATURE_DEVICE("Temperature of Device"),
     TOTAL_LUF_COUNT("Total LUF Event Count"),
     TOTAL_LUV_COUNT("Total LUV Event Count"),
     UNDER_VOLTAGE("Under Voltage"),
@@ -513,8 +513,7 @@ public enum BuiltInAttribute implements Attribute {
                 VOLTAGE_OUT_OF_LIMITS_FLAG,
                 ZERO_USAGE_FLAG,
                 ZIGBEE_LINK_STATUS,
-                TERMINAL_BLOCK_COVER_REMOVAL_FLAG,
-                RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED);
+                TERMINAL_BLOCK_COVER_REMOVAL_FLAG);
         
         relayAttributes = ImmutableSet.of(
                 RELAY_1_LOAD_SIZE,
@@ -608,6 +607,7 @@ public enum BuiltInAttribute implements Attribute {
                 REVERSED_PHASE_A,
                 REVERSED_PHASE_C,
                 REVERSE_POWER_FLAG,          //[PLC & RFN] Shared
+                RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED,
                 ROM_ERROR,
                 SEASON_CHANGE,
                 SECURITY_CONFIGURATION_ERROR,
@@ -636,13 +636,13 @@ public enum BuiltInAttribute implements Attribute {
                 WATT_HOUR_PULSE_FAILURE);
         
         rfnEventAnalogTypes = ImmutableSet.of(
-                DEVICE_TEMPERATURE,
                 OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
                 RFN_BLINK_COUNT,
                 RFN_BLINK_RESTORE_COUNT,
                 RFN_OUTAGE_COUNT,
                 RFN_OUTAGE_RESTORE_COUNT,
+                TEMPERATURE_DEVICE,
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD);
         
@@ -653,7 +653,6 @@ public enum BuiltInAttribute implements Attribute {
         
         rfnHardwareAttributes = ImmutableSet.of(
                 CRYSTAL_OSCILLATOR_ERROR,
-                DEVICE_TEMPERATURE,
                 EEPROM_ACCESS_ERROR,
                 IMPROPER_METER_ENGINE_OPERATION_WARNING,
                 INTERNAL_COMMUNICATION_ERROR,
@@ -671,6 +670,7 @@ public enum BuiltInAttribute implements Attribute {
                 SERVICE_DISCONNECT_SWITCH_OPEN,
                 SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR,
                 STUCK_SWITCH,
+                TEMPERATURE_DEVICE,
                 UNDER_VOLTAGE,
                 UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD,
