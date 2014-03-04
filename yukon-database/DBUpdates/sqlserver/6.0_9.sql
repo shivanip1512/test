@@ -3,6 +3,7 @@
 /******************************************/
 
 /* Start YUK-13066 */
+/* @error ignore-begin */S
 DELETE FROM DeviceCollectionById 
 WHERE DeviceId NOT IN (SELECT DISTINCT DeviceId FROM Device);
 
@@ -10,6 +11,7 @@ ALTER TABLE DeviceCollectionById
    ADD CONSTRAINT FK_DeviceCollectionById_Device FOREIGN KEY (DeviceId)
       REFERENCES Device (DeviceId)
          ON DELETE CASCADE;
+/* @error ignore-end */
 /* End YUK-13066 */
 
 /**************************************************************/
