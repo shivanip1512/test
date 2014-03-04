@@ -3,7 +3,7 @@
 /******************************************/
 
 /* Start YUK-13066 */
-/* @error ignore-begin */S
+/* @error ignore-begin */
 DELETE FROM DeviceCollectionById 
 WHERE DeviceId NOT IN (SELECT DISTINCT DeviceId FROM Device);
 
