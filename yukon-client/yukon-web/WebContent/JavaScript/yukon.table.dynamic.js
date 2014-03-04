@@ -1,51 +1,162 @@
-DynamicTable = Class.create();
+/**
+ * Find the correct instance of DynamicTable for a given element and call the given method on it.
+ */
+function callOnDynamicTable (event, method) {
+    var wrapperDiv = jQuery(event.target).closest('div.dynamicTableWrapper')[0],
+        divId = wrapperDiv.id,
+        dynamicTableInstance = window[divId.substring(0, divId.length - 8)];
+    dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
+}
 
-DynamicTable.prototype = {
-    initialize: function(tableId, nextRowId, addItemParameters) {
+jQuery(function () {
+    jQuery(document).on('click', 'div.dynamicTableWrapper .moveUpBtn',
+            function(event) {
+                callOnDynamicTable(event, 'moveItemUp');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .moveDownBtn',
+            function(event) {
+                callOnDynamicTable(event, 'moveItemDown');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .removeBtn',
+            function(event) {
+                callOnDynamicTable(event, 'removeItem');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .undoRemoveBtn',
+            function(event) {
+                callOnDynamicTable(event, 'undoRemoveItem');
+            });
+    jQuery(document).on('click', 'div.dynamicTableWrapper .addItem',
+            function(event) {
+                callOnDynamicTable(event, 'addItem');
+            });
+});
+
+yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
+    var _initialize = function(tableId, nextRowId, addItemParameters) {
         this.tableId = tableId;
         this.nextRowId = nextRowId;
         this.addItemParameters = addItemParameters;
     },
-
     /**
-     * Initialization that needs to be called after the page has loaded.
+     * Private method to get all visible rows.  Does not include undo rows.
      */
-    init : function() {
-        var visibleRows,
-            numVisible,
-            that;
-        this.wrapper = jQuery('#' + this.tableId + '_wrapper')[0];
-        this.table = jQuery(this.wrapper).find('table')[0];
-        this.tempRequestDiv = jQuery(this.wrapper).find('div.tempRequest')[0];
-        this.everyRow(this.initRow.bind(this));
-        visibleRows = this.getVisibleRows();
-        numVisible = visibleRows.length;
-        that = this;
-        jQuery(visibleRows).each(function (index, row) {
-            if (index === 0) {
-                that.disableMoveUp(row);
-            } else {
-                that.enableMoveUp(row);
-            }
-            if (index === numVisible - 1) {
-                that.disableMoveDown(row);
-            } else {
-                that.enableMoveDown(row);
+    getVisibleRows = function () {
+        var retVal = [];
+        everyRow.call(this, function (row, undoRow) {
+            if ('none' !== jQuery(row).css('display')) {
+                retVal.push(row);
             }
         });
+        return retVal;
     },
 
-    initRow: function(row, undoRow) {
-        this.matchRowAndUndoRowHeights(row, undoRow);
-        if (jQuery(row).find('.isDeletionField').val() == 'true') {
-            this.hideRemovedItem(row);
+    /**
+     * Private method to force height of undo row and matching regular row to be the same height.
+     */
+    matchRowAndUndoRowHeights = function (row, undoRow) {
+        var rowHeight = jQuery(row).height(),
+            undoRowHeight = jQuery(undoRow).height();
+        if (undoRowHeight < rowHeight) {
+            undoRow.style.height = rowHeight + "px";
+        } else if (rowHeight > undoRowHeight) {
+            row.style.height = undoRowHeight + "px";
         }
     },
 
     /**
+     * Call action for every row/undo row combination.  The "action" function will be passed
+     * both the row and the undo rows as parameters.
+     */
+    everyRow = function(action) {
+        var rows = this.table.rows,
+            index,
+            undoRow,
+            row;
+        if (rows.length < 2) {
+            return;
+        }
+
+        index = 0;
+        while (!jQuery(rows[index]).hasClass('undo-row')) {
+            index += 1;
+        }
+        for (; index < rows.length; index += 2) {
+            undoRow = rows[index];
+            row = jQuery(undoRow).prev()[0];
+            action(row, undoRow);
+        }
+    },
+
+    // Private methods to enable/disable move up and move down buttons.
+    disableMoveUp = function (tableRow) {
+        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
+        if (disabledMoveUpBtn[0]) {
+            disabledMoveUpBtn.show();
+            jQuery(tableRow).find('.moveUpBtn').hide();
+        }
+    },
+
+    enableMoveUp = function (tableRow) {
+        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
+        if (disabledMoveUpBtn[0]) {
+            disabledMoveUpBtn.hide();
+            jQuery(tableRow).find('.moveUpBtn').show();
+        }
+    },
+
+    disableMoveDown = function (tableRow) {
+        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
+        if (disabledMoveDownBtn[0]) {
+            disabledMoveDownBtn.show();
+            jQuery(tableRow).find('.moveDownBtn').hide();
+        }
+    },
+
+    enableMoveDown = function (tableRow) {
+        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
+        if ('undefined' !== typeof disabledMoveDownBtn && disabledMoveDownBtn[0]) {
+            disabledMoveDownBtn.hide();
+            jQuery(tableRow).find('.moveDownBtn').show();
+        }
+    },
+    initRow = function(row, undoRow) {
+        matchRowAndUndoRowHeights(row, undoRow);
+        if (jQuery(row).find('.isDeletionField').val() == 'true') {
+            this.hideRemovedItem(row);
+        }
+    },
+    dynamicProto = yukon.protoDynamicTable.prototype;
+
+    /**
+     * Initialization that needs to be called after the page has loaded.
+     */
+    dynamicProto.init = function() {
+        var visibleRows,
+            numVisible;
+        this.wrapper = jQuery('#' + this.tableId + '_wrapper')[0];
+        this.table = jQuery(this.wrapper).find('table')[0];
+        this.tempRequestDiv = jQuery(this.wrapper).find('div.tempRequest')[0];
+        everyRow.call(this, initRow.bind(this));
+        visibleRows = getVisibleRows.call(this);
+        numVisible = visibleRows.length;
+        jQuery(visibleRows).each(function (index, row) {
+            if (index === 0) {
+                disableMoveUp(row);
+            } else {
+                enableMoveUp(row);
+            }
+            if (index === numVisible - 1) {
+                disableMoveDown(row);
+            } else {
+                enableMoveDown(row);
+            }
+        });
+    };
+
+    /**
      * The tag calls this method to add a new blank row to the table.
      */
-    addItem: function (event, extraArgs) {
+    dynamicProto.addItem = function(event, extraArgs) {
         var parameters,
             url,
             thisContext,
@@ -78,7 +189,7 @@ DynamicTable.prototype = {
             }
             onComplete(xhrobj);
         });
-    },
+    };
     
     /**
      * This method is intended to be called directly, to add multiple rows to the table.
@@ -88,7 +199,7 @@ DynamicTable.prototype = {
      *   -extraParameters
      *   -url (optional)
      */
-    addItems: function (args) {
+    dynamicProto.addItems = function (args) {
         yukon.ui.blockPage();
 
         var that = this,
@@ -135,9 +246,9 @@ DynamicTable.prototype = {
         };
 
         doRequest(0);
-    },
+    };
 
-    addItemSuccess : function (doUnblock) {
+    dynamicProto.addItemSuccess = function (doUnblock) {
         var wrapperDiv = document.getElementById(this.tableId + '_wrapper'),
             tempRequestDiv = wrapperDiv.getElementsByClassName('tempRequest'),
             newRow = jQuery(tempRequestDiv).find('tr')[0],
@@ -147,8 +258,8 @@ DynamicTable.prototype = {
             noItemsMessageDiv;
         parentNode.replaceChild(newRow, tempRow);
         parentNode.appendChild(newUndoRow);
-        this.updateMoveButtonVisibility(newRow);
-        this.matchRowAndUndoRowHeights(newRow, newUndoRow);
+        this.updateMoveButtonVisibility(this, newRow);
+        matchRowAndUndoRowHeights.call(this, newRow, newUndoRow);
         if (jQuery(newRow).find("input:first[type='text']")) {
             jQuery(newRow).find("input:first[type='text']").focus();
         }
@@ -159,9 +270,9 @@ DynamicTable.prototype = {
         if (doUnblock) {
             yukon.ui.unblockPage();
         }
-    },
+    };
 
-    moveItemUp: function (event) {
+    dynamicProto.moveItemUp = function (event) {
         var thisRow = jQuery(event.target).closest('tr'),
             previousRow = thisRow.prev().prev();
         // keep going back until we find a visible one
@@ -169,46 +280,46 @@ DynamicTable.prototype = {
             previousRow = previousRow.prev().prev();
         }
         this.swapRows(previousRow[0], thisRow[0]);
-    },
+    };
 
-    moveItemDown: function(event) {
+    dynamicProto.moveItemDown = function(event) {
         var thisRow = jQuery(event.target).closest('tr'),
             nextRow = thisRow.next().next();
         while (nextRow.next() && !nextRow[0].visible()) {
             nextRow = nextRow.next().next();
         }
         this.swapRows(thisRow[0], nextRow[0]);
-    },
+    };
 
-    removeItem: function(event) {
+    dynamicProto.removeItem = function(event) {
         var row = jQuery(event.target).closest('tr'),
             isDeletionInput;
         this.hideRemovedItem(row);
         isDeletionInput = row.find('.isDeletionField');
         isDeletionInput.val(true);
-    },
+    };
 
     /**
      * Private method used to hide a row removed either by clicking "delete" or when coming back
      * to the page as a result of validation errors.
      */
-    hideRemovedItem: function (row) {
+    dynamicProto.hideRemovedItem = function (row) {
         var undoRow = jQuery(row).next(),
-            visibleRows = this.getVisibleRows();
+            visibleRows = getVisibleRows.call(this);
         undoRow.show();
         jQuery(row).hide();
         if (visibleRows.length < 2) {
             return;
         }
         if (row == visibleRows[0]) {
-            this.disableMoveUp(visibleRows[1]);
+            disableMoveUp(visibleRows[1]);
         }
         if (row == visibleRows.last()) {
-            this.disableMoveDown(visibleRows[visibleRows.length - 2]);
+            disableMoveDown(visibleRows[visibleRows.length - 2]);
         }
-    },
+    };
 
-    undoRemoveItem: function (event) {
+    dynamicProto.undoRemoveItem = function (event) {
         var undoRow = jQuery(event.target).closest('tr'),
             row = undoRow.prev(),
             isDeletionInput;
@@ -217,40 +328,40 @@ DynamicTable.prototype = {
         this.updateMoveButtonVisibility(row[0]);
         isDeletionInput = row.find('.isDeletionField');
         isDeletionInput.val(false);
-    },
+    };
 
     /**
      * Private method used by other methods to help keep correct move buttons visible.  (For
      * example, ensure that on the first row the move up button is disabled.)  If the row being
      * updated turns out to be the first or last row, the adjacent row will also be updated.
      */
-    updateMoveButtonVisibility: function (aroundRow) {
-        var visibleRows = this.getVisibleRows();
+    dynamicProto.updateMoveButtonVisibility = function (aroundRow) {
+        var visibleRows = getVisibleRows.call(this);
         if (visibleRows.length === 1) {
-            this.disableMoveUp(aroundRow);
-            this.disableMoveDown(aroundRow);
+            disableMoveUp(aroundRow);
+            disableMoveDown(aroundRow);
             return;
         }
         if (aroundRow == visibleRows[0]) {
-            this.disableMoveUp(aroundRow);
-            this.enableMoveUp(visibleRows[1]);
+            disableMoveUp(aroundRow);
+            enableMoveUp(visibleRows[1]);
         } else {
-            this.enableMoveUp(aroundRow);
+            enableMoveUp(aroundRow);
         }
 
         if (aroundRow == visibleRows.last()) {
-            this.disableMoveDown(aroundRow);
-            this.enableMoveDown(visibleRows[visibleRows.length - 2]);
+            disableMoveDown(aroundRow);
+            enableMoveDown(visibleRows[visibleRows.length - 2]);
         } else {
-            this.enableMoveDown(aroundRow);
+            enableMoveDown(aroundRow);
         }
-    },
+    };
 
     /**
      * Private method to swap the given rows in the table, moving undo rows along with the rows
      * themselves.
      */
-    swapRows: function (firstRow, secondRow) {
+    dynamicProto.swapRows = function (firstRow, secondRow) {
         var temp,
             firstUndoRow,
             firstRowOrderInput,
@@ -269,16 +380,16 @@ DynamicTable.prototype = {
         secondUndoRow = jQuery(secondRow).next()[0];
         secondRowOrderInput = jQuery(secondRow).find('.orderField')[0];
 
-        visibleRows = this.getVisibleRows();
+        visibleRows = getVisibleRows.call(this);
         if (firstRow == jQuery(visibleRows).first()[0]) {
             // this is the first row; update "move up" icons
-            this.disableMoveUp(secondRow);
-            this.enableMoveUp(firstRow);
+            disableMoveUp(secondRow);
+            enableMoveUp(firstRow);
         }
         if (secondRow == jQuery(visibleRows).last()[0]) {
             // swapping with last row; update "move down" icons
-            this.disableMoveDown(firstRow);
-            this.enableMoveDown(secondRow);
+            disableMoveDown(firstRow);
+            enableMoveDown(secondRow);
         }
 
         temp = jQuery(firstRowOrderInput).val();
@@ -301,121 +412,12 @@ DynamicTable.prototype = {
                 parentNode.appendChild(firstUndoRow);
             }
         }
-    },
-
-    /**
-     * Private method to get all visible rows.  Does not include undo rows.
-     */
-    getVisibleRows : function () {
-        var retVal = [];
-        this.everyRow(function (row, undoRow) {
-            if ('none' !== jQuery(row).css('display')) {
-                retVal.push(row);
-            }
-        });
-        return retVal;
-    },
-
-    /**
-     * Private method to force height of undo row and matching regular row to be the same height.
-     */
-    matchRowAndUndoRowHeights: function (row, undoRow) {
-        var rowHeight = jQuery(row).height(),
-            undoRowHeight = jQuery(undoRow).height();
-        if (undoRowHeight < rowHeight) {
-            undoRow.style.height = rowHeight + "px";
-        } else if (rowHeight > undoRowHeight) {
-            row.style.height = undoRowHeight + "px";
-        }
-    },
-
-    /**
-     * Call action for every row/undo row combination.  The "action" function will be passed
-     * both the row and the undo rows as parameters.
-     */
-    everyRow : function(action) {
-        var rows = this.table.rows,
-            index,
-            undoRow,
-            row;
-        if (rows.length < 2) {
-            return;
-        }
-
-        index = 0;
-        while (!jQuery(rows[index]).hasClass('undo-row')) {
-            index += 1;
-        }
-        for (; index < rows.length; index += 2) {
-            undoRow = rows[index];
-            row = jQuery(undoRow).prev()[0];
-            action(row, undoRow);
-        }
-    },
-
-    // Private methods to enable/disable move up and move down buttons.
-    disableMoveUp: function (tableRow) {
-        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
-        if (disabledMoveUpBtn[0]) {
-            disabledMoveUpBtn.show();
-            jQuery(tableRow).find('.moveUpBtn').hide();
-        }
-    },
-
-    enableMoveUp: function (tableRow) {
-        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
-        if (disabledMoveUpBtn[0]) {
-            disabledMoveUpBtn.hide();
-            jQuery(tableRow).find('.moveUpBtn').show();
-        }
-    },
-
-    disableMoveDown: function (tableRow) {
-        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
-        if (disabledMoveDownBtn[0]) {
-            disabledMoveDownBtn.show();
-            jQuery(tableRow).find('.moveDownBtn').hide();
-        }
-    },
-
-    enableMoveDown: function (tableRow) {
-        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
-        if ('undefined' !== typeof disabledMoveDownBtn && disabledMoveDownBtn[0]) {
-            disabledMoveDownBtn.hide();
-            jQuery(tableRow).find('.moveDownBtn').show();
-        }
-    }
+    };
+    _initialize.call(this, tableId, nextRowId, addItemParameters);
 };
 
-/**
- * Find the correct instance of DynamicTable for a given element and call the given method on it.
- */
-function callOnDynamicTable (event, method) {
-    var wrapperDiv = jQuery(event.target).closest('div.dynamicTableWrapper')[0],
-        divId = wrapperDiv.id,
-        dynamicTableInstance = window[divId.substring(0, divId.length - 8)];
-    dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
+function DynamicTable (tableId, nextRowId, addItemParameters) {
+    yukon.protoDynamicTable.call(this, tableId, nextRowId, addItemParameters);
 }
 
-jQuery(function () {
-    jQuery(document).on('click', 'div.dynamicTableWrapper .moveUpBtn',
-            function(event) {
-                callOnDynamicTable(event, 'moveItemUp');
-            });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .moveDownBtn',
-            function(event) {
-                callOnDynamicTable(event, 'moveItemDown');
-            });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .removeBtn',
-            function(event) {
-                callOnDynamicTable(event, 'removeItem');
-            });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .undoRemoveBtn',
-            function(event) {
-                callOnDynamicTable(event, 'undoRemoveItem');
-            });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .addItem',
-            function(event) {
-                callOnDynamicTable(event, 'addItem');
-            });
-});
+yukon.inheritPrototype(DynamicTable, yukon.protoDynamicTable);

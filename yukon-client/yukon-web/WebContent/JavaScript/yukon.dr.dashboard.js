@@ -12,6 +12,7 @@ yukon.dr.dashboard = (function () {
     
     var _commandTimeSelector = '.f-time-label',
         _emailTimeSelector = '.f-email-time-label',
+        timeFormatter = yukon.timeFormatter,
         mod;
 
     mod = {

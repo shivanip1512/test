@@ -29,10 +29,10 @@ yukon.ThermostatScheduleEditor = {
             min: 0,
             value: 0,
             slide: function(event, ui){
-                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(ui.value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
+                CURRENT_TIME_INPUT.value = yukon.timeFormatter.formatTime(ui.value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
             },
             change: function(event, ui){
-                yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(ui.value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)), CURRENT_TIME_INPUT);
+                yukon.ThermostatScheduleEditor.commitTimeValue(yukon.timeFormatter.formatTime(ui.value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)), CURRENT_TIME_INPUT);
                 CURRENT_TIME_INPUT.select();    //Good ol' IE needs this.
             }
         });
@@ -419,7 +419,7 @@ yukon.ThermostatScheduleEditor = {
         var parent = jQuery(this).closest('.period');
         var start = 0;
         var end = ((24*60)-parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsBetweenPeriods/60));  //11:45pm is the default
-        var value = timeFormatter.parseTime(this.value);
+        var value = yukon.timeFormatter.parseTime(this.value);
                 
         if(parent.prev('.period').length > 0) {
             start = parseInt(jQuery('.time input[name=secondsFromMidnight]', parent.prev('.period')).val());
@@ -449,7 +449,7 @@ yukon.ThermostatScheduleEditor = {
         }
         
         if(value >= start && value <= end){
-            CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
+            CURRENT_TIME_INPUT.value = yukon.timeFormatter.formatTime(value, parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
             
             //round to nearest 15
             TIME_SLIDER.slider('value', value);
@@ -498,8 +498,8 @@ yukon.ThermostatScheduleEditor = {
         TIME_SLIDER.slider('value', startingValueSeconds/60);
         
         var timeSlider = jQuery("#timeSlider");
-        jQuery(".startLabel", timeSlider).html(timeFormatter.formatTime(TIME_SLIDER.slider('option', 'min'), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
-        jQuery(".endLabel", timeSlider).html(timeFormatter.formatTime(TIME_SLIDER.slider('option', 'max'), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
+        jQuery(".startLabel", timeSlider).html(yukon.timeFormatter.formatTime(TIME_SLIDER.slider('option', 'min'), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
+        jQuery(".endLabel", timeSlider).html(yukon.timeFormatter.formatTime(TIME_SLIDER.slider('option', 'max'), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
         timeSlider.show();
         
         // 1/2 width of the targetted item + 1/2 width of slider
@@ -519,7 +519,7 @@ yukon.ThermostatScheduleEditor = {
     },
     
     commitTimeValue: function(value, input){
-        var curr = timeFormatter.parseTime(value)*60;
+        var curr = yukon.timeFormatter.parseTime(value)*60;
         input = jQuery(input);
         if(curr != -1){
             //check bounds
@@ -546,10 +546,10 @@ yukon.ThermostatScheduleEditor = {
             //allow the user to set the start time to 12:00am
             if((start < curr) && (curr < end)){
                 //set seconds from midnight value
-                input.siblings('input[name=secondsFromMidnight]:first').val(timeFormatter.parseTime(input.val())*60);
+                input.siblings('input[name=secondsFromMidnight]:first').val(yukon.timeFormatter.parseTime(input.val())*60);
                 
                 //get a nicely formatted time in case the user inputs some shorthand value such as '4pm'
-                input.val(timeFormatter.formatTime(timeFormatter.parseTime(input.val()), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
+                input.val(yukon.timeFormatter.formatTime(yukon.timeFormatter.parseTime(input.val()), parseInt(yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)));
                 input.attr('previousValue', input.val());
                 return true;
             }
@@ -610,11 +610,11 @@ yukon.ThermostatScheduleEditor = {
         jQuery("input[name=secondsFromMidnight]").each(function(index, elem){
             elem = jQuery(elem);
             elem.siblings("span.time").each(function(index, span){
-                span.innerHTML = timeFormatter.formatTime(elem[0].value/60);
+                span.innerHTML = yukon.timeFormatter.formatTime(elem[0].value/60);
             });
             
             elem.siblings("input:text").each(function(index, input){
-                input.value = timeFormatter.formatTime(elem[0].value/60);
+                input.value = yukon.timeFormatter.formatTime(elem[0].value/60);
             });
         });
     },

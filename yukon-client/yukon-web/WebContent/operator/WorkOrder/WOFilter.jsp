@@ -228,25 +228,18 @@
         </form>
     <div id="browserWarning" style="display:none; font-weight: bold; color: red; font-size: 14px; text-align: center; margin: 12px 0"><BR><BR>This page only works with Internet Explorer.</div>
     </div>
-    <script type="text/javascript">
-    if (!Prototype.Browser.IE) {
-        $('browserWarning').show();
-    }
-    </script>
     <script language="JavaScript">
-        var filterTexts = new Array();
-        var selectionIDs = new Array();
-        var yukonDefIDs = new Array();
-        var curIdx = 0;
-        var selectedFilterType = "0";
-        var selectedFilter = ""
-        var selectedFilterID = "0";
-        
-        function init()
-        {
+        var filterTexts = [],
+            selectionIDs = [],
+            yukonDefIDs = [],
+            curIdx = 0,
+            selectedFilterType = "0",
+            selectedFilter = "",
+            selectedFilterID = "0";
+
+        function init () {
             var filters = document.MForm.AssignedFilters;
-            if(filterTexts.length < filters.options.length)
-            {
+            if (filterTexts.length < filters.options.length) {
                 curIdx = 0;
                 <c:forEach var="existingFilter" items="${filterBean.assignedFilters}">
                     filterTexts[curIdx] = '<c:out value="${existingFilter.filterText}"/>';
@@ -255,66 +248,63 @@
                     curIdx++;
                 </c:forEach> 
             }
-            
+
             selectedFilterType = '<c:out value="${filterServiceStatus}"/>';            
             selectedFilter = "Service Status: ";
             selectedFilter += '<c:out value="${filterBean.defaultFilterSelection.entryText}"/>';
             selectedFilterID = '<c:out value="${filterBean.defaultFilterSelection.entryID}"/>';
         }
-        
-        function changeFilterType(filterBy) 
-        {
+
+        function changeFilterType (filterBy) {
+            var type = document.MForm.FilterType,
+                filterByElement,
+                tagName;
             selectedFilterType = filterBy;
-            var type = document.MForm.FilterType;
             document.getElementById('<c:out value="${filterServiceCompany}"/>').style.display = "none";
             document.getElementById('<c:out value="${filterDesignationCodes}"/>').style.display = "none";
             document.getElementById('<c:out value="${filterServiceType}"/>').style.display = "none";
             document.getElementById('<c:out value="${filterServiceStatus}"/>').style.display = "none";
             document.getElementById('<c:out value="${filterCICustomerType}"/>').style.display = "none";
-             document.getElementById(filterBy).style.display = "";
+            document.getElementById(filterBy).style.display = "";
             filterBy += 1;
             selectedFilter = type.options[type.selectedIndex].text;  
             selectedFilter += ": ";
-            
-            var filterByElement = document.getElementById(filterBy);
-            var tagName = filterByElement.tagName.toLowerCase();
 
-            if (tagName == 'select') {
+            filterByElement = document.getElementById(filterBy);
+            tagName = filterByElement.tagName.toLowerCase();
+
+            if (tagName === 'select') {
                 selectedFilter += filterByElement.options[0].text;
-                   selectedFilterID = filterByElement.options[0].value;
+                selectedFilterID = filterByElement.options[0].value;
             }
-            
-            if (tagName == 'input') {
+
+            if (tagName === 'input') {
                 selectedFilterID = filterByElement.name;
-            }    
+            }
         }
-        
-        
-        function selectFilter(filterID)
-        {
+
+        function selectFilter (filterID) {
+            var type = document.MForm.FilterType,
+                filterBy = selectedFilterType,
+                filter,
+                tagName;
             selectedFilterID = filterID;
-            var type = document.MForm.FilterType;
-            var filterBy = selectedFilterType;
             filterBy += 1;
-            var filter = document.getElementById(filterBy);
-            var tagName = filter.tagName.toLowerCase();
-            
-            selectedFilter = type.options[type.selectedIndex].text;  
+            filter = document.getElementById(filterBy);
+            tagName = filter.tagName.toLowerCase();
+            selectedFilter = type.options[type.selectedIndex].text;
             selectedFilter += ": ";
-            
-            if (tagName == 'select') {
+            if (tagName === 'select') {
                 selectedFilter += filter.options[filter.selectedIndex].text;
             }
-            
-            if (tagName == 'input') {
+            if (tagName === 'input') {
                 selectedFilter += filter.value;
-            }    
+            }
         }
         
-        function saveEntry(form) 
-        {
-            var filters = form.AssignedFilters;
-            var oOption = document.createElement("OPTION");
+        function saveEntry (form) {
+            var filters = form.AssignedFilters,
+                oOption = document.createElement("OPTION");
             oOption.text = selectedFilter;
             oOption.value = selectedFilter;
             curIdx = filterTexts.length;
@@ -324,17 +314,15 @@
             selectionIDs[curIdx] = selectedFilterID;
             yukonDefIDs[curIdx] = selectedFilterType;
             curIdx = filterTexts.length;
-
-            
         }
         
-        function moveUp(form) 
-        {
-            var filters = form.AssignedFilters;
-            var idx = filters.selectedIndex;
-            if (idx > 0 && idx < filters.options.length) 
-            {
-                var oOption = filters.options[idx];
+        function moveUp (form) {
+            var filters = form.AssignedFilters,
+                idx = filters.selectedIndex,
+                oOption,
+                value;
+            if (idx > 0 && idx < filters.options.length) {
+                oOption = filters.options[idx];
                 filters.options.remove(idx);
                 filters.options.add(oOption, idx-1);
                 value = filterTexts[idx];
@@ -346,20 +334,20 @@
                 value = selectionIDs[idx];
                 selectionIDs[idx] = selectionIDs[idx-1];
                 selectionIDs[idx-1] = value;
-                curIdx--;
-                
+                curIdx -= 1;
             }
         }
-        
-        function moveDown(form) 
-        {
-            var filters = form.AssignedFilters;
-            var idx = filters.selectedIndex;
+
+        function moveDown (form) {
+            var filters = form.AssignedFilters,
+                idx = filters.selectedIndex,
+                oOption,
+                value;
             if (idx >= 0 && idx < filters.options.length) {
-                var oOption = filters.options[idx];
+                oOption = filters.options[idx];
                 filters.options.remove(idx);
                 filters.options.add(oOption, idx+1);
-                var value = filterTexts[idx];
+                value = filterTexts[idx];
                 filterTexts[idx] = filterTexts[idx+1];
                 filterTexts[idx+1] = value;
                 value = yukonDefIDs[idx];
@@ -368,80 +356,66 @@
                 value = selectionIDs[idx];
                 selectionIDs[idx] = selectionIDs[idx+1];
                 selectionIDs[idx+1] = value;
-                curIdx++;
-                
+                curIdx += 1;
             }
         }
-        
-        function deleteEntry(form) 
-        {
-            var filters = form.AssignedFilters;
-            var idx = filters.selectedIndex;
-            if (idx >= 0 && idx < filters.options.length) 
-            {
+
+        function deleteEntry (form) {
+            var filters = form.AssignedFilters,
+                idx = filters.selectedIndex;
+            if (idx >= 0 && idx < filters.options.length) {
                 filters.options.remove(idx);
                 filterTexts.splice(idx, 1);
                 selectionIDs.splice(idx, 1);
                 yukonDefIDs.splice(idx, 1);
                 filters.selectedIndex = filters.options.length;
-                
             }
-            
             curIdx = filterTexts.length;
         }
-        
-        function deleteAllEntries(form) 
-        {
-            var filters = form.AssignedFilters;
-            if (filters.options.length > 0) 
-            {
+
+        function deleteAllEntries (form) {
+            var filters = form.AssignedFilters,
+                idx;
+            if (filters.options.length > 0) {
                 if (!confirm("Are you sure you want to remove all filters?")) return;
-                for (idx = filters.options.length; idx >= 0; idx--)
+                for (idx = filters.options.length; idx >= 0; idx -= 1)
                     filters.options.remove(idx);
                 filterTexts.splice(0, filterTexts.length);
                 selectionIDs.splice(0, selectionIDs.length);
                 yukonDefIDs.splice(0, yukonDefIDs.length);
                 filters.selectedIndex = 0;
-                
             }
-            
             curIdx = filterTexts.length;
         }
-        
-        function prepareSubmit(form) 
-        {
-            if(filterTexts.length < 1)
-            {
-                if(!confirm("You have not defined any filters!")) return;
-            }
-            else
-            {
-                
-                for (idx = 0; idx < filterTexts.length; idx++) 
-                {
-                    var html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
+
+        function prepareSubmit (form) {
+            var idx,
+                html;
+            if (filterTexts.length < 1) {
+                if (!confirm("You have not defined any filters!")) return;
+            } else {
+                for (idx = 0; idx < filterTexts.length; idx += 1) {
+                    html = '<input type="hidden" name="SelectionIDs" value="' + selectionIDs[idx] + '">';
                     form.insertAdjacentHTML("beforeEnd", html);
                     html = '<input type="hidden" name="FilterTexts" value="' + filterTexts[idx] + '">';
                     form.insertAdjacentHTML("beforeEnd", html);
                     html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
                     form.insertAdjacentHTML("beforeEnd", html);
                 }
-                
-                $("submitbutton").toggle();
+                jQuery("#submitbutton").toggle();
                 document.body.style.cursor = "wait";
-                
                 form.submit();
             }
         }
 
-        function enableStartDate(startDateValue) {
+        function enableStartDate (startDateValue) {
             var isChecked = jQuery('#enableStart').prop('checked');
 
             jQuery('#startDateDiv input').prop('disabled', !isChecked);
             jQuery('#startCal').val(startDateValue);
         }
 
-        function enableStopDate(stopDateValue) {
+        function enableStopDate (stopDateValue) {
             var isChecked = jQuery('#enableStop').prop('checked');
 
             jQuery('#stopDateDiv input').prop('disabled', !isChecked);
@@ -450,7 +424,7 @@
         jQuery( function () {
             jQuery('#startDateDiv input').prop('disabled', !jQuery('#enableStart').prop('checked'));
             jQuery('#stopDateDiv input').prop('disabled', !jQuery('#enableStop').prop('checked'));
-        })
+        });
         
     </script>
 </cti:standardPage>          
