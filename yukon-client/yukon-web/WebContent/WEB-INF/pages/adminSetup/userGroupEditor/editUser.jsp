@@ -81,7 +81,7 @@
         </table>
         <input type="hidden" name="userId" value="${user.userID}"></input>
         </form>
-	  </tags:boxContainer>
+	  </tags:boxContainer2>
 	</div>
   </c:if>
   
