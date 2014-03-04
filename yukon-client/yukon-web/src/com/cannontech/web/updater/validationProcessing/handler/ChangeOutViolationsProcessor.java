@@ -15,15 +15,11 @@ public class ChangeOutViolationsProcessor implements ValidationProcessingUpdater
 
     @Override
     public String handle(int validationMonitorId, YukonUserContext userContext) {
-
         String countStr = "(0)";
-        
-        
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         if (tagCounts.get(RphTag.UDC) != null) {
             countStr = tagCounts.get(RphTag.UDC).toString();
         }
-        
         return countStr;
     }
 
@@ -31,5 +27,4 @@ public class ChangeOutViolationsProcessor implements ValidationProcessingUpdater
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
         return ValidationMonitorUpdaterTypeEnum.UDC_VIOLATIONS;
     }
-    
 }

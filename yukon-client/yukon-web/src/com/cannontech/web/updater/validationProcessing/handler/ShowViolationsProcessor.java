@@ -15,14 +15,11 @@ public class ShowViolationsProcessor implements ValidationProcessingUpdaterHandl
 
     @Override
     public String handle(int validationMonitorId, YukonUserContext userContext) {
-
-        
         int totalTagCount = 0;
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         for (int count : tagCounts.values()) {
             totalTagCount += count;
         }
-        
         return totalTagCount == 0 ? "dn" : "";
     }
 
@@ -30,5 +27,4 @@ public class ShowViolationsProcessor implements ValidationProcessingUpdaterHandl
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
         return ValidationMonitorUpdaterTypeEnum.SHOW_VIOLATIONS;
     }
-    
 }

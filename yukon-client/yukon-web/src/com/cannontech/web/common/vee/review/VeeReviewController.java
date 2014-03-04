@@ -15,6 +15,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validation.dao.RphTagUiDao;
 import com.cannontech.common.validation.model.ReviewPoint;
@@ -56,10 +57,10 @@ public class VeeReviewController {
         }
     });
     
-    private void setUpModel(HttpServletRequest request, ModelMap model, int pageNumber, int itemsPerPage) {
+    private void setUpModel(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
         
         List<RphTag> selectedTags = getSelectedTags(request);
-        SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(pageNumber, itemsPerPage, selectedTags);
+        SearchResults<ReviewPoint> searchResults = rphTagUiDao.getReviewPoints(pagingParameters, selectedTags);
         List<ReviewPoint> allReviewPoints = searchResults.getResultList();
         
         // group by device for the purpose of the narrowing step, this way the changeIds used as (linked) map keys stay in device order
@@ -88,7 +89,8 @@ public class VeeReviewController {
             ReviewPoint keeper = reviewPointingOrdering.min(rpList);
             
             int keeperPaoId = keeper.getDisplayablePao().getPaoIdentifier().getPaoId();
-            if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= itemsPerPage) {
+            if (lastPaoId > 0 && keeperPaoId != lastPaoId && keepReviewPoints.size() >= 
+                    pagingParameters.getItemsPerPage()) {
                 break;
             }
             
@@ -135,26 +137,28 @@ public class VeeReviewController {
         model.addAttribute("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
         
         //for pagination
-        SearchResults<ExtendedReviewPoint> pagedRows = SearchResults.pageBasedForSublist(extendedReviewPoints, pageNumber, itemsPerPage,
+        SearchResults<ExtendedReviewPoint> pagedRows = SearchResults.pageBasedForSublist(extendedReviewPoints, 
+                pagingParameters.getPage(), pagingParameters.getItemsPerPage(),
                 sumOfSelectedTagCounts);
         model.addAttribute("result", pagedRows);
         
     }
     
     @RequestMapping("home")
-    public String home(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
-        setUpModel(request, model, page, itemsPerPage);
+    public String home(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
+        setUpModel(request, model, pagingParameters);
         // get review points
         return "vee/review/review.jsp";
     }
     
     @RequestMapping("reviewTable")
-    public String reviewTable(HttpServletRequest request, ModelMap model, @RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) {
-        setUpModel(request,  model, page, itemsPerPage);
+    public String reviewTable(HttpServletRequest request, ModelMap model, PagingParameters pagingParameters) {
+        setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
     }
     @RequestMapping("save")
-    public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user,@RequestParam(defaultValue="1") int page, @RequestParam(defaultValue="25") int itemsPerPage) throws Exception {
+    public String save(HttpServletRequest request, ModelMap model, LiteYukonUser user, PagingParameters pagingParameters) 
+            throws NumberFormatException {
         // gather changeIds
         List<Long> deleteChangeIds = Lists.newArrayList();
         List<Long> acceptChangeIds = Lists.newArrayList();
@@ -187,7 +191,7 @@ public class VeeReviewController {
         for (RphTag tag : getSelectedTags(request)) {
             model.addAttribute(tag.name(), true);
         }
-        setUpModel(request,  model, page, itemsPerPage);
+        setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
     }
     

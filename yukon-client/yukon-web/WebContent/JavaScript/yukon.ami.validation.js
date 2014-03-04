@@ -4,9 +4,9 @@ yukon.namespace('yukon.ami.validation');
 
 yukon.ami.validation = (function () {
         var _resetElementSelected = function (action, deleteEl, acceptEl) {
-            if(action === 'DELETE'){
+            if (action === 'DELETE') {
                 jQuery(deleteEl).removeClass('on');
-            } else if(action === 'ACCEPT'){
+            } else if (action === 'ACCEPT') {
                 jQuery(acceptEl).removeClass('on');
             } else {
                 jQuery(ignoreEl).removeClass('on');
@@ -36,24 +36,15 @@ yukon.ami.validation = (function () {
         };
     
     jQuery(function () {
-        jQuery('#review-form [id="displayTypeCheckbox"]').click(function(e) {
-            var urlParams ='?';
-            jQuery('#saveButton').prop('disabled', true);
-            jQuery("#review-form input[type='checkbox']").each(function (index, el) {
-                urlParams += el.getAttribute('name');
-                urlParams += '=';
-                urlParams += el.checked;
-                urlParams += '&';
-            });
-            jQuery.post('/common/veeReview/reviewTable' + urlParams, jQuery('#review-form').serialize()).done(function(result) {
+        jQuery('#review-form [id="display-type-checkbox"]').click(function(e) {
+            jQuery.post('/common/veeReview/reviewTable', jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
-                jQuery('#saveButton').prop('disabled', false);
+                yukon.ui.unbusy(jQuery('#saveButton'));
             });
         });
         //save/remove actioned items
-        jQuery('#review-form').on('click','[id="saveButton"]', function(e) {
+        jQuery().on('click','[id="saveButton"]', function(e) {
             var urlParams ='?itemsPerPage=';
-            jQuery('#saveButton').prop('disabled', true);
             if (jQuery('.paging-area .selectedItem').text().length > 0) {
                 urlParams += jQuery('.paging-area .selectedItem').text();
             } else {
@@ -62,13 +53,14 @@ yukon.ami.validation = (function () {
             
             jQuery.post('/common/veeReview/save' + urlParams, jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
-                jQuery('#saveButton').prop('disabled', false);
+                yukon.ui.unbusy(jQuery('#saveButton'));
                 jQuery('#accept-all').removeClass('on');
                 jQuery('#delete-all').removeClass('on');
             });
+            return false;
         });
         //check/uncheck all
-        jQuery('#review-form').on('click','[id*="-all"]', function(e) {
+        jQuery().on('click', '#accept-all, #delete-all', function(e) { 
             var checkAll = false;
             var buttonClicked = e.currentTarget;
             var attributeSelector = '[id*="DELETE"]';
@@ -82,7 +74,7 @@ yukon.ami.validation = (function () {
                     jQuery('#delete-all').removeClass('on');
                 }
             } else {
-                if(jQuery('#delete-all').hasClass('on')) {
+                if (jQuery('#delete-all').hasClass('on')) {
                     jQuery('#delete-all').removeClass('on');
                 } else {
                     checkAll = true;
@@ -92,8 +84,8 @@ yukon.ami.validation = (function () {
             }
 
             jQuery(attributeSelector).each(function (index, buttonElement) {
-                if(checkAll === true) {
-                    if(jQuery(buttonElement).hasClass('on') === false) {
+                if (checkAll === true) {
+                    if (jQuery(buttonElement).hasClass('on') === false) {
                         buttonElement.click();
                     }
                 } else {
@@ -106,12 +98,12 @@ yukon.ami.validation = (function () {
         });
         
         jQuery('#review-form').on('click','[id*="ACTION"]', function(e) {
-            var elementClicked = e.currentTarget;
-            h = _getActionValues(elementClicked);
-            action = h.action,
-            valueElement = h.valueEl,
-            deleteButtonElement = h.deleteEl,
-            acceptButtonElement = h.acceptEl;
+            var elementClicked = e.currentTarget,
+                h = _getActionValues(elementClicked),
+                action = h.action,
+                valueElement = h.valueEl,
+                deleteButtonElement = h.deleteEl,
+                acceptButtonElement = h.acceptEl;
             
             if (valueElement.value === action) {
                 _resetElementSelected(action, deleteButtonElement, acceptButtonElement);

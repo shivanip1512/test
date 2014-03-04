@@ -39,4 +39,19 @@ public enum RphTag implements DisplayableEnum, LogoableEnum {
     public String getLogoKey() {
     	return getFormatKey() + ".img";
     }
+    
+    public String getIconClass() {
+        if(name().equalsIgnoreCase("PU")) {
+            return "icon-arrow-up-red";
+        } else if(name().equalsIgnoreCase("PD")) {
+            return "icon-arrow-down-red";
+        } else if(name().equalsIgnoreCase("UDC")) {
+            return "icon-arrow-swap";
+        } else if(name().equalsIgnoreCase("UU")) {
+            return "icon-trend-up";
+        } else if(name().equalsIgnoreCase("UD")) {
+            return "icon-trend-down";
+        }
+        return "";
+    }
 }

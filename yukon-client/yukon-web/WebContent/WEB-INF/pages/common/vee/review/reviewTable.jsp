@@ -1,9 +1,9 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.amr.validation.review">
 
@@ -16,7 +16,7 @@
             <table class="compact-results-table row-highlighting stacked has-alerts">
                 <thead>
                     <th></th>
-                    <th><i:inline key=".device"/></th>
+                    <th><i:inline key="yukon.web.modules.consumer.alternateEnrollment.device"/></th>
                     <th><i:inline key=".previous"/></th>
                     <th><i:inline key=".flagged"/></th>
                     <th><i:inline key=".next"/></th>
@@ -28,10 +28,14 @@
                         <c:forEach var="p" items="${pList}" varStatus="status">
                             <c:set var="changeId" value="${p.reviewPoint.changeId}"/>
                             <tr>
-                                <td><c:forEach var="otherTag" items="${p.otherTags}">
-                                        <cti:logo key="${otherTag.logoKey}"/>
-                                    </c:forEach> <cti:logo key="${p.reviewPoint.rphTag.logoKey}"/></td>
-                                <td><cti:paoDetailUrl yukonPao="${p.reviewPoint.displayablePao}">
+                                <td>
+                                    <c:forEach var="otherTag" items="${p.otherTags}">
+                                        <cti:icon icon="${otherTag.iconClass}" classes="fn"/>
+                                    </c:forEach> 
+                                    <cti:icon icon="${p.reviewPoint.rphTag.iconClass}" classes="fn"/>
+                                </td>
+                                <td>
+                                    <cti:paoDetailUrl yukonPao="${p.reviewPoint.displayablePao}">
                                         ${fn:escapeXml(entry.key)}
                                     </cti:paoDetailUrl></td>
                                 <td>
@@ -76,7 +80,7 @@
             </cti:url>
             <tags:pagingResultsControls baseUrl="${baseUrl}" result="${result}" adjustPageCount="true"/>
             <div class="action-area">
-                <cti:button id="saveButton" type="submit" nameKey="saveAndContinue" classes="f-disable-after-click primary action" busy="true"/>
+                <cti:button id="saveButton" type="submit" nameKey="saveAndContinue" classes="primary action" busy="true"/>
             </div>
         </c:when>
         <c:otherwise>

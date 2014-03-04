@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -33,13 +34,13 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     @Autowired private PaoLoadingService paoLoadingService;
 
     @Override
-    public SearchResults<ReviewPoint> getReviewPoints(int page, int itemsPerPage, List<RphTag> tags) {
-        int startRow = page-1;
-        int endRow = itemsPerPage;
-        if (page > 1) {
-            startRow = (page-1) * itemsPerPage;
-            endRow = page * itemsPerPage-1;
-        }
+    public SearchResults<ReviewPoint> getReviewPoints(PagingParameters pagingParameters, List<RphTag> tags) {
+//        int startRow = page-1;
+//        int endRow = itemsPerPage;
+//        if (page > 1) {
+//            startRow = (page-1) * itemsPerPage;
+//            endRow = page * itemsPerPage-1;
+//        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM (");
         sql.append("SELECT rt.TagName, rph.*, ypo.PaobjectId, ypo.PaoName, ypo.Type, p.PointType,");
@@ -49,10 +50,10 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append(    "JOIN Point p ON (rph.PointId = p.PointId)");
         sql.append(    "JOIN YukonPaobject ypo ON (p.PaobjectID = ypo.PaobjectId)");
 
-        //following four lines are here because the tables are not sane
-        //when accepted another row is added to RphTag under changeId for 'OK' 
-        //this means the same changeId has 'OK' and some other not ok value
-        //we don't want any Ids that have any rows with OK attached to them
+        //The following four lines are here because the tables are not sane.
+        //When a point is accepted another row is added to RphTag with a changeId of 'OK'. 
+        //This means the same changeId has 'OK' and some other value that is not 'OK'.
+        //This SQL removes any Ids that have any rows with OK attached to them.
         sql.append("AND rt.ChangeId NOT IN (");
         sql.append("    SELECT rt2.ChangeId FROM RphTag rt2 ");
         sql.append("    WHERE rt2.TagName ").eq(RphTag.OK);
@@ -62,7 +63,8 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append(    "AND rt.TagName").in_k(tags);
 
         sql.append(") results");
-        sql.append("WHERE rn BETWEEN " + startRow + " AND " + endRow);
+        sql.append("WHERE rn BETWEEN " + pagingParameters.getOneBasedStartIndex() + " AND " + 
+                pagingParameters.getOneBasedEndIndex());
 
         // get
         ReviewPointRowMapper rowMapper = new ReviewPointRowMapper();
@@ -79,7 +81,8 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
             }
         }
 
-        SearchResults<ReviewPoint> results = SearchResults.pageBasedForSublist(reviewPoints, page, itemsPerPage, reviewPoints.size());
+        SearchResults<ReviewPoint> results = SearchResults.pageBasedForSublist(reviewPoints, 
+                pagingParameters.getPage(), pagingParameters.getItemsPerPage(), reviewPoints.size());
         return results;
     }
 

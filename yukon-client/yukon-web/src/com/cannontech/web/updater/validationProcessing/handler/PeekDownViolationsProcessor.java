@@ -15,15 +15,11 @@ public class PeekDownViolationsProcessor implements ValidationProcessingUpdaterH
 
     @Override
     public String handle(int validationMonitorId, YukonUserContext userContext) {
-
         String countStr = "(0)";
-        
-        
         Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         if (tagCounts.get(RphTag.PD) != null) {
             countStr = tagCounts.get(RphTag.PD).toString();
         }
-        
         return countStr;
     }
 
@@ -31,5 +27,4 @@ public class PeekDownViolationsProcessor implements ValidationProcessingUpdaterH
     public ValidationMonitorUpdaterTypeEnum getUpdaterType() {
         return ValidationMonitorUpdaterTypeEnum.PD_VIOLATIONS;
     }
-    
 }

@@ -28,8 +28,8 @@
                                             <c:forEach items="${displayTypes}" var="displayType" begin="0" step="2" varStatus="index">
                                                 <li>
                                                     <label class="notes">
-                                                        <input type="checkbox" id="displayTypeCheckbox" name="${displayType.rphTag}" <c:if test="${displayType.checked}">checked</c:if>>
-                                                        <cti:logo key="${displayType.rphTag.logoKey}"/>
+                                                        <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}" <c:if test="${displayType.checked}">checked</c:if>>
+                                                        <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
                                                         <cti:msg key="${displayType.rphTag.formatKey}"/>
                                                         <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
                                                     </label>
@@ -42,8 +42,8 @@
                                             <c:forEach items="${displayTypes}" var="displayType" begin="1" step="2" varStatus="index">
                                                 <li>
                                                     <label class="notes">
-                                                        <input type="checkbox" id="displayTypeCheckbox" name="${displayType.rphTag}" <c:if test="${displayType.checked}">checked</c:if>>
-                                                        <cti:logo key="${displayType.rphTag.logoKey}"/>
+                                                        <input type="checkbox" id="display-type-checkbox" name="${displayType.rphTag}" <c:if test="${displayType.checked}">checked</c:if>>
+                                                        <cti:icon icon="${displayType.rphTag.iconClass}" classes="fn"/>
                                                         <cti:msg key="${displayType.rphTag.formatKey}"/>
                                                         <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="${displayType.rphTag}_VIOLATIONS" styleClass="badge"/>
                                                     </label>

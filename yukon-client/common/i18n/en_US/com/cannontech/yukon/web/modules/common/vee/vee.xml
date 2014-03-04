@@ -11,12 +11,6 @@
     <entry key="yukon.web.modules.common.vee.rphTag.UD">Unreasonable Down</entry>
     <entry key="yukon.web.modules.common.vee.rphTag.UDC">Changeout</entry>
     
-    <entry key="yukon.web.modules.common.vee.rphTag.PU.img">/WebConfig/yukon/Icons/arrow_up_red.gif</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.PD.img">/WebConfig/yukon/Icons/arrow_down_red.gif</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UU.img">/WebConfig/yukon/Icons/arrow_trend_up_right.gif</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UD.img">/WebConfig/yukon/Icons/arrow_trend_down_right.gif</entry>
-    <entry key="yukon.web.modules.common.vee.rphTag.UDC.img">/WebConfig/yukon/Icons/changeout.gif</entry>
-    
 	<!-- VeeReviewController review.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
@@ -24,17 +18,12 @@
     <entry key="yukon.web.modules.amr.validation.review.displayTypes.title">Display Types</entry>
     <entry key="yukon.web.modules.amr.validation.review.acceptAll.label">Accept All</entry>
     <entry key="yukon.web.modules.amr.validation.review.deleteAll.label">Delete All</entry>
-    <entry key="yukon.web.modules.amr.validation.review.device">Device</entry>
     <entry key="yukon.web.modules.amr.validation.review.previous">Previous</entry>
     <entry key="yukon.web.modules.amr.validation.review.flagged">Flagged</entry>
     <entry key="yukon.web.modules.amr.validation.review.next">Next</entry>
-    <entry key="yukon.web.modules.amr.validation.review.delete">Delete</entry>
-    <entry key="yukon.web.modules.amr.validation.review.accept">Accept</entry>
     <entry key="yukon.web.modules.amr.validation.review.saveAndContinue.label"><![CDATA[Save & Continue]]></entry>
     <entry key="yukon.web.modules.amr.validation.review.reload.label">Reload</entry>
     <entry key="yukon.web.modules.amr.validation.review.emptyList">No Points to Review</entry>
-    <entry key="yukon.web.modules.amr.validation.review.reload.label">Reload</entry>
-    <entry key="yukon.web.modules.amr.validation.review.reload.labelBusy">Reloading...</entry>
     <entry key="yukon.web.modules.amr.validation.review.reloading">Reloading...</entry>
     
     <entry key="yukon.web.modules.amr.validation.review.deleteInfo"><![CDATA[
