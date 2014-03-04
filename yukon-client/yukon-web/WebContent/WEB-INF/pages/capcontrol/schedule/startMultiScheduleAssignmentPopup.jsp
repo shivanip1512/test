@@ -1,21 +1,26 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-
 <cti:msgScope paths="yukon.web.modules.capcontrol.scheduleAssignments">
-<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="/capcontrol/schedule/startMultiple">
+
+<cti:url var="startUrl" value="/capcontrol/schedule/startMultiple"/>
+<form name="startMultipleSchedulesForm" id="startMultipleSchedulesForm" action="${startUrl}">
     
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">
             <select name="startSchedule" id="startSchedule">
                 <option value="All"<c:if test="${param.schedule == 'All'}"> selected="selected"</c:if>><cti:msg2 key=".allSchedules"/></option>
                 <c:forEach var="aSchedule" items="${scheduleList}">
-                    <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>>
-                        ${fn:escapeXml(aSchedule.scheduleName)}
-                    </option>
+                    <c:choose>
+                        <c:when test="${param.schedule == aSchedule.scheduleName}">
+                            <c:set var="selected">selected="selected"</c:set>
+                        </c:when>
+                        <c:otherwise><c:set var="selected" value=""/></c:otherwise>
+                    </c:choose>
+                    <option value="${aSchedule.scheduleName}" ${selected}>${fn:escapeXml(aSchedule.scheduleName)}</option>
                 </c:forEach>
             </select>
         </tags:nameValue2>
@@ -26,12 +31,10 @@
                 <c:forEach var="aCommand" items="${commandList}">
                     <c:choose>
                         <c:when test="${param.command == 'All'}">
-                            <option value="${aCommand}">${fn:escapeXml(aCommand.commandName)}</option>
+                            <option value="${aCommand}">${aCommand.commandName}</option>
                         </c:when>
                         <c:otherwise>
-                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>>
-                                ${fn:escapeXml(aCommand.commandName)}
-                            </option>
+                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>>${aCommand.commandName}</option>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -44,4 +47,5 @@
         <cti:button nameKey="cancel" onclick="yukon.da.hideContentPopup();"/>
     </div>
 </form>
+
 </cti:msgScope>

@@ -1,9 +1,9 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="capcontrol" page="scheduleAssignments">
 
@@ -11,8 +11,7 @@
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title">
         <c:url value="/capcontrol/schedule/schedules" />
     </cti:linkTab>
-    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title"
-                 initiallySelected='${true}'>
+    <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title" initiallySelected="${true}">
         <c:url value="/capcontrol/schedule/scheduleAssignments" />
     </cti:linkTab>
 </cti:linkTabbedContainer>
@@ -32,7 +31,6 @@
 <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
 
 <cti:url var="baseUrl" value="/capcontrol/schedule/scheduleAssignments" />
-<cti:url var="startMultiUrl" value="/capcontrol/schedule/startMultiple" />
 
 <script type="text/javascript">
 jQuery(function() {
@@ -42,7 +40,7 @@ jQuery(function() {
         var deviceName = row.children('td[name=deviceName]').html();
         var eventId = row[0].id.split('_')[1];
         
-        jQuery.getJSON("/capcontrol/schedule/startSchedule", {
+        jQuery.getJSON(yukon.url('/capcontrol/schedule/startSchedule'), {
             'eventId': eventId, 
             'deviceName': deviceName
         }).done(function(json) {
@@ -63,7 +61,7 @@ jQuery(function() {
         var deviceName = row.children('td[name=deviceName]').html();
         var deviceId = jQuery(event.currentTarget).attr('name');
         
-        jQuery.getJSON("/capcontrol/schedule/stopSchedule", {
+        jQuery.getJSON(yukon.url('/capcontrol/schedule/stopSchedule'), {
             'deviceId': deviceId, 
             'deviceName': deviceName
         }).done(function(json) {
@@ -78,7 +76,7 @@ jQuery(function() {
 });
 
 function setOvUv(eventId, ovuv) {
-    jQuery.getJSON("/capcontrol/schedule/setOvUv", {
+    jQuery.getJSON(yukon.url('/capcontrol/schedule/setOvUv'), {
         'eventId': eventId, 
         'ovuv': ovuv
     }).done(function(json) {
@@ -93,21 +91,21 @@ function clearFilter() {
 }
 
 function startMultiScheduleAssignmentPopup(schedule, command) {
-    var url = '/capcontrol/schedule/startMultiScheduleAssignmentPopup';
+    var url = yukon.url('/capcontrol/schedule/startMultiScheduleAssignmentPopup');
     var title = '<cti:msg2 key=".play.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500});
 }
 
 function stopMultiScheduleAssignmentPopup(schedule, command) {
-    var url = '/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
+    var url = yukon.url('/capcontrol/schedule/stopMultiScheduleAssignmentPopup');
     var title = '<cti:msg2 key=".stop.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500}); 
 }
 
 function newScheduleAssignmentPopup(schedule, command) {
-    var url = '/capcontrol/schedule/newScheduleAssignmentPopup';
+    var url = yukon.url('/capcontrol/schedule/newScheduleAssignmentPopup');
     var title = '<cti:msg2 key=".add.label" javaScriptEscape="true"/>';
     var parameters = {'schedule': schedule, 'command': command};
     openSimpleDialog('contentPopup', url, title, parameters, 'get', {width: 500}); 
@@ -119,12 +117,12 @@ function newScheduleAssignmentPopup(schedule, command) {
     <c:choose>
         <c:when test="${param.success}">
             <script type="text/javascript">
-                yukon.da.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
+                yukon.da.showAlertMessage('${cti:escapeJavaScript(param.resultText)}', 'green');
             </script>
         </c:when>
         <c:otherwise>
             <script type="text/javascript">
-            yukon.da.showAlertMessage('<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
+            yukon.da.showAlertMessage('${cti:escapeJavaScript(param.resultText)}', 'red');
             </script>
         </c:otherwise>
     </c:choose>
@@ -198,10 +196,10 @@ function newScheduleAssignmentPopup(schedule, command) {
                         <c:forEach var="item" items="${itemList}">
                         
                             <tr id="s_${item.eventId}_${item.paoId}">
-                                <td name="schedName"><spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody></td>
+                                <td name="schedName">${fn:escapeXml(item.scheduleName)}</td>
                                 
                                 <!-- Device -->
-                                <td name="deviceName"><spring:escapeBody htmlEscape="true">${item.deviceName}</spring:escapeBody></td>
+                                <td name="deviceName">${fn:escapeXml(item.deviceName)}</td>
                                 
                                 <td>
                                     <!-- Actions -->
@@ -240,7 +238,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                                 <td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 
                                 <!-- Command -->
-                                <td><spring:escapeBody htmlEscape="true">${item.commandName}</spring:escapeBody></td>
+                                <td>${fn:escapeXml(item.commandName)}</td>
                                 
                                 <td>
                                     <!-- Disable OvUv -->

@@ -4,19 +4,23 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-
-
 <cti:msgScope paths="yukon.web.modules.capcontrol.scheduleAssignments">
-<form name="stopMultipleSchedulesForm" id="stopMultipleSchedulesForm" action="/capcontrol/schedule/stopMultiple">
+
+<cti:url var="stopUrl" value="/capcontrol/schedule/stopMultiple"/>
+<form name="stopMultipleSchedulesForm" id="stopMultipleSchedulesForm" action="${stopUrl}">
     
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".schedules">
             <select name="stopSchedule" id="stopSchedule">
                 <option value="All" <c:if test="${param.schedule == 'All'}">selected="selected" </c:if>><cti:msg2 key=".allSchedules"/></option>
                 <c:forEach var="aSchedule" items="${scheduleList}">
-                    <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected"</c:if>>
-                        ${fn:escapeXml(aSchedule.scheduleName)}
-                    </option>
+                    <c:if test="${param.schedule == aSchedule.scheduleName}">
+                        <c:set var="selected">selected="selected"</c:set>
+                    </c:if>
+                    <c:if test="${param.schedule != aSchedule.scheduleName}">
+                        <c:set var="selected" value=""/>
+                    </c:if>
+                    <option value="${aSchedule.scheduleName}" ${selected}>${fn:escapeXml(aSchedule.scheduleName)}</option>
                 </c:forEach>
             </select>
         </tags:nameValue2>
@@ -27,12 +31,12 @@
                 <c:forEach var="aCommand" items="${verifyCommandsList}">
                     <c:choose>
                         <c:when test="${param.command == 'All'}">
-                            <option value="${aCommand}">${fn:escapeXml(aCommand.commandName)}</option>
+                            <option value="${aCommand}">${aCommand.commandName}</option>
                         </c:when>
                         <c:otherwise>
-                            <option value="${aCommand}"<c:if test="${param.command == aCommand}"> selected="selected"</c:if>>
-                                ${fn:escapeXml(aCommand.commandName)}
-                            </option>
+                            <c:if test="${param.command == aCommand}"><c:set var="selected">selected="selected"</c:set></c:if>
+                            <c:if test="${param.command != aCommand}"><c:set var="selected" value=""/></c:if>
+                            <option value="${aCommand}" ${selected}>${fn:escapeXml(aCommand.commandName)}</option>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
