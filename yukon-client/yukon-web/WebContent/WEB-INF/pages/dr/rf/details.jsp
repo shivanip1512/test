@@ -17,7 +17,7 @@
     
     <div class="clearfix column-16-8 stacked">
         <div class="column one">
-            <form action="/dr/rf/details">
+            <form action="<cti:url value="/dr/rf/details"/>">
                 <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                     <tags:nameValue2 nameKey=".dateRange">
                         <dt:dateRange startValue="${from}" endValue="${to}" startName="from" endName="to" wrapperClasses="dib fl">

@@ -81,21 +81,21 @@
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
                             <tr>
-                                <td class="name"><a href="/dr/rf/details/day"><i:inline key=".rfPerformance.last24Hr"/>:</a></td>
+                                <td class="name"><a href="<cti:url value="/dr/rf/details/day"/>"><i:inline key=".rfPerformance.last24Hr"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last24Hr}"/></td>
                             </tr>
                             <tr>
-                                <td class="name"><a href="/dr/rf/details/week"><i:inline key=".rfPerformance.last7Days"/>:</a></td>
+                                <td class="name"><a href="<cti:url value="/dr/rf/details/week"/>"><i:inline key=".rfPerformance.last7Days"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last7Days}"/></td>
                             </tr>
                             <tr>
-                                <td class="name"><a href="/dr/rf/details/month"><i:inline key=".rfPerformance.last30Days"/>:</a></td>
+                                <td class="name"><a href="<cti:url value="/dr/rf/details/month"/>"><i:inline key=".rfPerformance.last30Days"/>:</a></td>
                                 <td class="value full-width"><dr:rfPerformanceStats test="${last30Days}"/></td>
                             </tr>
                         </tags:nameValueContainer2>
                     </div>
                     <div class="action-area">
-                        <a href="/dr/rf/details"><i:inline key=".rfPerformance.details"/></a>
+                        <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".rfPerformance.details"/></a>
                         <cti:button nameKey="rfPerformance.configure" id="b-broadcast-config" icon="icon-cog-edit"/>
                     </div>
                     <d:inline okEvent="submit" 

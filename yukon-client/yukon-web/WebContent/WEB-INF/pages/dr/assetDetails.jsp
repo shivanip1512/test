@@ -39,7 +39,7 @@
             <div style="max-height: 100px;">
                 <dr:assetAvailabilityStatus assetId="${assetId}"
                         assetAvailabilitySummary="${assetAvailabilitySummary}" 
-                        pieJSONData="${pieJSONData}" showDetails="false"/>
+                        pieJSONData="${pieJSONData}" showDetails="false" showDownload="false"/>
             </div>
         </div>
     </div>

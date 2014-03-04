@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,7 +62,6 @@ import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
-@RequestMapping("/program/*")
 public class ProgramController extends ProgramControllerBase {
 
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
@@ -72,7 +72,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
 
-    @RequestMapping("list")
+    @RequestMapping("/program/list")
     public String list(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramListBackingBean backingBean,
             BindingResult bindingResult, FlashScope flashScope) {
@@ -84,7 +84,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/list.jsp";
     }
 
-    @RequestMapping("detail")
+    @RequestMapping("/program/detail")
     public String detail(int programId, ModelMap model, LiteYukonUser user,
             @ModelAttribute("backingBean") LoadGroupListBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
@@ -188,30 +188,51 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/assetTable.jsp";
     }
 
-
+    @RequestMapping("/program/{id}/aa/download/{type}")
+    public void downloadAssetAvailability(HttpServletResponse response, 
+            YukonUserContext userContext, 
+            @PathVariable int id, 
+            @PathVariable String type) 
+    throws IOException {
+        
+        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
+        if (type.equalsIgnoreCase("all")) filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
+        else if (type.equalsIgnoreCase("active")) filters.add(AssetAvailabilityCombinedStatus.ACTIVE);
+        else if (type.equalsIgnoreCase("inactive")) filters.add(AssetAvailabilityCombinedStatus.INACTIVE);
+        else if (type.equalsIgnoreCase("optedout")) filters.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+        else if (type.equalsIgnoreCase("unavailable")) filters.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        
+        downloadAssetAvailability(id, userContext, filters.toArray(new AssetAvailabilityCombinedStatus[]{}), response);
+    }
+    
     @RequestMapping("/program/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
-                              HttpServletResponse response,
-                              YukonUserContext userContext) throws IOException {
+            @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
+            HttpServletResponse response,
+            YukonUserContext userContext) throws IOException {
+        
+        downloadAssetAvailability(assetId, userContext, filters, response);
+    }
+    
+    private void downloadAssetAvailability(int assetId, 
+            YukonUserContext userContext, 
+            AssetAvailabilityCombinedStatus[] filters, 
+            HttpServletResponse response) throws IOException {
         
         DisplayablePao program = programService.getProgram(assetId);
-
+        
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
-
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(program, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, userContext);
+                DateFormatEnum.BOTH, userContext);
         String fileName = "program_" + program.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
-            
     }
-    
 
-    @RequestMapping("getChangeGearValue")
+    @RequestMapping("/program/getChangeGearValue")
     public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         
         DisplayablePao program = programService.getProgram(programId);
@@ -226,7 +247,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/getChangeGearValue.jsp";
     }
     
-    @RequestMapping("changeGear")
+    @RequestMapping("/program/changeGear")
     public @ResponseBody Map<String, String> changeGear(int programId, int gearNumber, YukonUserContext userContext,
                                                         FlashScope flashScope) {
         
@@ -245,7 +266,7 @@ public class ProgramController extends ProgramControllerBase {
         return Collections.singletonMap("action", "reload");
     }
     
-    @RequestMapping("changeGearMultiplePopup")
+    @RequestMapping("/program/changeGearMultiplePopup")
     public String changeGearMultiplePopup(ModelMap model, @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean,
                                           BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
         UiFilter<DisplayablePao> filter = null;
@@ -320,7 +341,7 @@ public class ProgramController extends ProgramControllerBase {
       return "dr/program/changeMultipleProgramsGearsDetails.jsp";
   }
     
-    @RequestMapping("changeMultipleGears")
+    @RequestMapping("/program/changeMultipleGears")
     public @ResponseBody Map<String, String> changeMultipleGears(ModelMap model,
                 @ModelAttribute("backingBean") ChangeMultipleGearsBackingBean backingBean, BindingResult bindingResult,
                 YukonUserContext userContext, FlashScope flashScope) {
@@ -360,7 +381,7 @@ public class ProgramController extends ProgramControllerBase {
         return Collections.singletonMap("action", "reload");
     }
     
-    @RequestMapping("sendEnableConfirm")
+    @RequestMapping("/program/sendEnableConfirm")
     public String sendEnableConfirm(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext) {
         
@@ -375,7 +396,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/sendEnableConfirm.jsp";
     }
     
-    @RequestMapping("setEnabled")
+    @RequestMapping("/program/setEnabled")
     public @ResponseBody Map<String, String> setEnabled(int programId, boolean isEnabled, YukonUserContext userContext,
                                                         FlashScope flashScope) {
         
@@ -399,7 +420,7 @@ public class ProgramController extends ProgramControllerBase {
         return Collections.singletonMap("action", "reload");
     }
     
-    @RequestMapping("sendEnableDisableProgramsConfirm")
+    @RequestMapping("/program/sendEnableDisableProgramsConfirm")
     public String sendEnableDisableProgramsConfirm(ModelMap modelMap, YukonUserContext userContext,
                                              Integer controlAreaId, Integer scenarioId, boolean enable) {
         
@@ -472,7 +493,7 @@ public class ProgramController extends ProgramControllerBase {
         return "dr/program/sendEnableDisableProgramsConfirm.jsp";
     }
     
-    @RequestMapping("enableDisablePrograms")
+    @RequestMapping("/program/enableDisablePrograms")
     public @ResponseBody Map<String, String> enableDisablePrograms(HttpServletRequest request, FlashScope flashScope,
                 Boolean supressRestoration, boolean enable) {
         

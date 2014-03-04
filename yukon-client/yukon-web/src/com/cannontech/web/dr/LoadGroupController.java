@@ -2,6 +2,7 @@ package com.cannontech.web.dr;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +47,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
@@ -190,28 +193,49 @@ public class LoadGroupController extends DemandResponseControllerBase {
         return "dr/assetTable.jsp";
     }
 
-
+    @RequestMapping("/loadGroup/{id}/aa/download/{type}")
+    public void downloadAssetAvailability(HttpServletResponse response, 
+            YukonUserContext userContext, 
+            @PathVariable int id, 
+            @PathVariable String type) 
+    throws IOException {
+        
+        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
+        if (type.equalsIgnoreCase("all")) filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
+        else if (type.equalsIgnoreCase("active")) filters.add(AssetAvailabilityCombinedStatus.ACTIVE);
+        else if (type.equalsIgnoreCase("inactive")) filters.add(AssetAvailabilityCombinedStatus.INACTIVE);
+        else if (type.equalsIgnoreCase("optedout")) filters.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+        else if (type.equalsIgnoreCase("unavailable")) filters.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        
+        downloadAssetAvailability(id, userContext, filters.toArray(new AssetAvailabilityCombinedStatus[]{}), response);
+    }
+    
     @RequestMapping("/loadGroup/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
-                              HttpServletResponse response,
-                              YukonUserContext userContext) throws IOException {
+            @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
+            HttpServletResponse response,
+            YukonUserContext userContext) throws IOException {
+        
+        downloadAssetAvailability(assetId, userContext, filters, response);
+    }
+    
+    private void downloadAssetAvailability(int assetId, 
+            YukonUserContext userContext, 
+            AssetAvailabilityCombinedStatus[] filters, 
+            HttpServletResponse response) throws IOException {
         
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
-
+        
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
-
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(loadGroup, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, userContext);
+                DateFormatEnum.BOTH, userContext);
         String fileName = "loadGroup_" + loadGroup.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
-            
     }
-    
 
     @RequestMapping("/loadGroup/sendShedConfirm")
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,

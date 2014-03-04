@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,6 +51,7 @@ import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.cannontech.web.util.WebFileUtils;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
@@ -201,27 +203,49 @@ public class ScenarioController extends DemandResponseControllerBase {
         return "dr/assetTable.jsp";
     }
 
+    @RequestMapping("/scenario/{id}/aa/download/{type}")
+    public void downloadAssetAvailability(HttpServletResponse response, 
+            YukonUserContext userContext, 
+            @PathVariable int id, 
+            @PathVariable String type) 
+    throws IOException {
+        
+        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
+        if (type.equalsIgnoreCase("all")) filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
+        else if (type.equalsIgnoreCase("active")) filters.add(AssetAvailabilityCombinedStatus.ACTIVE);
+        else if (type.equalsIgnoreCase("inactive")) filters.add(AssetAvailabilityCombinedStatus.INACTIVE);
+        else if (type.equalsIgnoreCase("optedout")) filters.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
+        else if (type.equalsIgnoreCase("unavailable")) filters.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        
+        downloadAssetAvailability(id, userContext, filters.toArray(new AssetAvailabilityCombinedStatus[]{}), response);
+    }
+    
     @RequestMapping("/scenario/downloadToCsv")
     public void downloadToCsv(int assetId,
-                              @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
-                              HttpServletResponse response,
-                              YukonUserContext userContext) throws IOException {
+            @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters,
+            HttpServletResponse response,
+            YukonUserContext userContext) throws IOException {
+        
+        downloadAssetAvailability(assetId, userContext, filters, response);
+    }
+    
+    private void downloadAssetAvailability(int assetId, 
+            YukonUserContext userContext, 
+            AssetAvailabilityCombinedStatus[] filters, 
+            HttpServletResponse response) throws IOException {
         
         DisplayablePao scenario = scenarioService.getScenario(assetId);
-
+        
         // get the header row
         String[] headerRow = getDownloadHeaderRow(userContext);
-
         // get the data rows
         List<String[]> dataRows = getDownloadDataRows(scenario, filters, userContext);
         
         String dateStr = dateFormattingService.format(new LocalDateTime(userContext.getJodaTimeZone()), 
-                                                      DateFormatEnum.BOTH, userContext);
+                DateFormatEnum.BOTH, userContext);
         String fileName = "scenario_" + scenario.getName() + "_" + dateStr + ".csv";
         WebFileUtils.writeToCSV(response, headerRow, dataRows, fileName);
-            
     }
-    
 
     private void addFilterErrorsToFlashScopeIfNecessary(ModelMap model,
             BindingResult bindingResult, FlashScope flashScope) {
