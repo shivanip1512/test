@@ -59,10 +59,10 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user) {
+    public ChartPeriod getDefaultChartPeriod(LiteYukonUser user) {
         String chartPeriodString = this.getPreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION);
         PreferenceGraphTimeDurationOption prefType = PreferenceGraphTimeDurationOption.valueOf(chartPeriodString);
-        return prefType;
+        return prefType.getChartPeriod();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod newValue, LiteYukonUser user) {
+    public ChartPeriod updatePreferenceChartPeriod(ChartPeriod newValue, LiteYukonUser user) {
         if (newValue == null) {
             throw new IllegalArgumentException("Cannot set preference to NULL");
         }
@@ -110,6 +110,6 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
             throw new IllegalArgumentException("Unknown ChartPeriod ["+ newValue +"]");
         }
         this.savePreference(user, UserPreferenceName.GRAPH_DISPLAY_TIME_DURATION, prefType.name());
-        return prefType;
+        return prefType.getChartPeriod();
     }
 }

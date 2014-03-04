@@ -22,7 +22,7 @@ jQuery(function () {
 
         <%-- THE CHART --%>
         <flot:trend title="${title}" pointIds="${pointId}"
-            startDate="${startDateMillis}" endDate="${stopDateMillis}"
+            startDate="${graphStartMillis}" endDate="${graphStopMillis}"
             interval="${interval}"
             converterType="${attributeGraphType.converterType}"
             graphType="${graphType}"

@@ -26,6 +26,7 @@ import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -68,7 +69,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     		startDate = DateUtils.truncate(startDate, Calendar.DATE);
     	}
     	
-    	ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, endDate);
+    	ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
     	
     	
     	Long startDateMillis = startDate.getTime();

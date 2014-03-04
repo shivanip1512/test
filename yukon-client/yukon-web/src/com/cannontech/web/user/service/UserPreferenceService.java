@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
@@ -36,7 +35,7 @@ public interface UserPreferenceService {
 
     public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user);
 
-    public PreferenceGraphTimeDurationOption getDefaultChartPeriod(LiteYukonUser user);
+    public ChartPeriod getDefaultChartPeriod(LiteYukonUser user);
     
     public boolean getDefaultNotificationAlertFlash(LiteYukonUser user);
     
@@ -45,6 +44,6 @@ public interface UserPreferenceService {
     public PreferenceGraphVisualTypeOption updatePreferenceGraphType(GraphType type, LiteYukonUser user)
             throws IllegalArgumentException;
 
-    public PreferenceGraphTimeDurationOption updatePreferenceChartPeriod(ChartPeriod period, LiteYukonUser user)
+    public ChartPeriod updatePreferenceChartPeriod(ChartPeriod period, LiteYukonUser user)
             throws IllegalArgumentException;
 }

@@ -41,6 +41,7 @@ import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayType;
 import com.cannontech.common.tdc.service.TdcService;
 import com.cannontech.common.util.EnabledStatus;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -243,7 +244,7 @@ public class TdcDisplayController {
         startDate = DateUtils.add(startDate, Calendar.DATE, -30);
         startDate = DateUtils.truncate(startDate, Calendar.DATE);
         ChartPeriod chartPeriod = ChartPeriod.MONTH;
-        ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, endDate);
+        ChartInterval chartInterval = chartPeriod.getChartUnit(Range.inclusive(startDate, endDate));
         model.addAttribute("interval", chartInterval);
         model.addAttribute("converterType", ConverterType.NORMALIZED_DELTA);
         model.addAttribute("graphType", GraphType.LINE);

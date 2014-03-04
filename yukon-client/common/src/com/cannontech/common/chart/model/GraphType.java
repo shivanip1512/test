@@ -1,5 +1,7 @@
 package com.cannontech.common.chart.model;
 
+import org.apache.commons.lang.StringUtils;
+
 public enum GraphType {
     LINE ("line"), 
     COLUMN ("bar"),
@@ -14,5 +16,19 @@ public enum GraphType {
 
     public String getFlotType() {
         return flotType;
+    }
+
+    /**
+     * Returns the matching enum or null if no enum maches the string
+     */
+    public static GraphType fromString(String graphTypeStr) {
+        if (StringUtils.isBlank(graphTypeStr)) {
+            return null;
+        }
+        try {
+            return GraphType.valueOf(graphTypeStr);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

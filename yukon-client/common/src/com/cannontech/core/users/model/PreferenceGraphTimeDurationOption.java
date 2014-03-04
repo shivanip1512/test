@@ -1,26 +1,19 @@
 package com.cannontech.core.users.model;
 
-import java.util.Date;
-
-import org.joda.time.Duration;
-import org.joda.time.Instant;
-
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
-    DAY_1(ChartPeriod.DAY, Duration.standardDays(1)),
-    WEEK_1(ChartPeriod.WEEK, Duration.standardDays(7)),
-    MONTH_1(ChartPeriod.MONTH, Duration.standardDays(30)),
-    MONTH_3(ChartPeriod.THREEMONTH, Duration.standardDays(90)),
-    YEAR_1(ChartPeriod.YEAR, Duration.standardDays(365));
+    DAY_1(ChartPeriod.DAY),
+    WEEK_1(ChartPeriod.WEEK),
+    MONTH_1(ChartPeriod.MONTH),
+    MONTH_3(ChartPeriod.THREEMONTH),
+    YEAR_1(ChartPeriod.YEAR);
 
     final private ChartPeriod chartPeriod;
-    final private Duration duration;
 
-    private PreferenceGraphTimeDurationOption(ChartPeriod period, Duration duration) {
+    private PreferenceGraphTimeDurationOption(ChartPeriod period) {
         this.chartPeriod = period;
-        this.duration = duration;
     }
 
     @Override
@@ -38,17 +31,11 @@ public enum PreferenceGraphTimeDurationOption implements DisplayableEnum {
     }
 
     public ChartPeriod getChartPeriod() {
-        return this.chartPeriod;
-    }
-
-    public Date backdate(Date date) {
-        return new Instant(date).minus(duration).toDate();
+        return chartPeriod;
     }
 
     /**
-     * 
-     * @param period    ChartPeriod
-     * @return null if period is null or NOPERIOD.
+     * Returns null if period is null or NOPERIOD.
      */
     public static PreferenceGraphTimeDurationOption fromChartPeriod(ChartPeriod period) {
         switch (period) {

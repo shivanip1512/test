@@ -1,5 +1,7 @@
 package com.cannontech.web.widget;
 
+import static com.cannontech.core.service.DateFormattingService.DateOnlyMode.*;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,11 +9,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
@@ -26,9 +28,10 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.MutableRange;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -36,7 +39,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -48,7 +50,7 @@ import com.google.common.collect.Sets;
  */
 public class TrendWidget extends WidgetControllerBase {
 
-    @Autowired private UserPreferenceService prefService;
+    @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceDao deviceDao;
     @Autowired private AttributeService attributeService;
@@ -60,20 +62,17 @@ public class TrendWidget extends WidgetControllerBase {
 
     @Override
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
         ModelAndView mav = new ModelAndView("trendWidget/render.jsp");
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        // DEVICE
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
 
-        // ATTRIBUTE, ATTRIBUTE GRAPH TYPE
-        // - if selected attribute does not exist, choose first valid
-        String defaultAttribute = WidgetParameterHelper.getStringParameter(request, "defaultAttribute", this.defaultAttribute.name());
-        String attributeStr = cachingWidgetParameterGrabber.getCachedStringParameter(request, "attribute", defaultAttribute);
+        String defaultAttributeStr = 
+                WidgetParameterHelper.getStringParameter(request, "defaultAttribute", defaultAttribute.name());
+        String attributeStr = 
+                cachingWidgetParameterGrabber.getCachedStringParameter(request, "attribute", defaultAttributeStr);
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
         
         List<AttributeGraphType> availableAttributeGraphs = new ArrayList<>();
@@ -100,112 +99,107 @@ public class TrendWidget extends WidgetControllerBase {
             attribute = attributeGraphType.getAttribute();
         }
 
-        // SET START/END DATE
-        Date startDate = new Date();
-        Date stopDate = new Date();
+        ChartPeriod chartPeriod = getChartPeriod(request, userContext.getYukonUser());
+        MutableRange<Date> dateRange = getDateRange(chartPeriod, userContext, request);
+        ChartInterval chartInterval = chartPeriod.getChartUnit(dateRange.getImmutableRange());
+        LitePoint point = attributeService.getPointForAttribute(device, attribute);
+        String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
+        String title = getTitle(chartPeriod, dateRange.getImmutableRange(), userContext, attribute, attributeGraphType);
 
-        // GET PERIOD from parameter and save it, or get the default period.
-        String strRequestedChartPeriod = request.getParameter("period");
-        ChartPeriod requestedChartPeriod = StringUtils.isBlank(strRequestedChartPeriod) ? null : ChartPeriod.valueOf(strRequestedChartPeriod);
-        PreferenceGraphTimeDurationOption prefPeriod = null;
-        if (requestedChartPeriod == null) {
-            prefPeriod = prefService.getDefaultChartPeriod(user);
-        } else if (requestedChartPeriod != ChartPeriod.NOPERIOD) {
-            prefPeriod = prefService.updatePreferenceChartPeriod(requestedChartPeriod, user);
-        }
-        ChartPeriod chartPeriod = prefPeriod == null ? ChartPeriod.NOPERIOD : prefPeriod.getChartPeriod();
-        String period = chartPeriod.name();
-        
+        long graphStopMillis = dateRange.getMax().getTime();
         if (chartPeriod == ChartPeriod.NOPERIOD) {
+            // Custom time stop date will include full day until midnight in graph
+            graphStopMillis += TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - 1;
+        }
 
-            String startDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "startDateParam", null);
-            String stopDateParam = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
+        mav.addObject("attributeGraphType", attributeGraphType);
+        mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
+        mav.addObject("period", chartPeriod);
+        mav.addObject("interval", chartInterval);
+        mav.addObject("startDate", dateRange.getMin());
+        mav.addObject("stopDate", dateRange.getMax());
+        mav.addObject("graphType", getGraphType(request, userContext.getYukonUser()));
+        mav.addObject("title", title);
+        mav.addObject("pointId", point.getPointID());
+        mav.addObject("graphStartMillis", dateRange.getMin().getTime());
+        mav.addObject("graphStopMillis", graphStopMillis);
+        mav.addObject("tabularDataViewer", tabularDataViewer);
+        return mav;
+    }
 
-            if (startDateParam != null) {
+    private MutableRange<Date> getDateRange(ChartPeriod chartPeriod, YukonUserContext userContext, 
+                                            HttpServletRequest request) {
+        Date now = new Date();
+        MutableRange<Date> dateRange = new MutableRange<>(now, now);
+        if (chartPeriod == ChartPeriod.NOPERIOD) {
+            String startDate = cachingWidgetParameterGrabber.getCachedStringParameter(request, "startDateParam", null);
+            String stopDate = cachingWidgetParameterGrabber.getCachedStringParameter(request, "stopDateParam", null);
+            if (startDate != null) {
                 try {
-                    startDate = dateFormattingService.flexibleDateParser(startDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                    dateRange.setMin(dateFormattingService.flexibleDateParser(startDate, START_OF_DAY, userContext));
                 } catch(ParseException e) {}
             }
-            if (stopDateParam != null) {
+            if (stopDate != null) {
                 try {
-                    stopDate = dateFormattingService.flexibleDateParser(stopDateParam, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                    dateRange.setMax(dateFormattingService.flexibleDateParser(stopDate, START_OF_DAY, userContext));
                 } catch(ParseException e) {}
             }
-
         } else {
-            startDate = prefPeriod.backdate(startDate);
+            dateRange.setMin(chartPeriod.backdate(now));
             cachingWidgetParameterGrabber.removeFromCache("startDateParam");
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
-
-        ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, stopDate);
-
-        // GET DATES STRINGS
-        String startDateStr = dateFormattingService.format(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-        String stopDateStr = dateFormattingService.format(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-
-        // CHART STYLE (LINE/COLUMN)
-        String strRequestedGraphType = request.getParameter("graphType");
-        GraphType requestedGraphType = StringUtils.isBlank(strRequestedGraphType) ? null : GraphType.valueOf(strRequestedGraphType);
-        PreferenceGraphVisualTypeOption prefGraph = null;
-        if (requestedGraphType == null) {
-            prefGraph = prefService.getDefaultGraphType(user);
-        } else {
-            prefGraph = prefService.updatePreferenceGraphType(requestedGraphType, user);
-        }
-        GraphType graphType = prefGraph.getGraphType();
-
-        // TABULAR DATA LINK REQUIREMENTS 
-        // - point id
-        // - start/stop date as seconds
-        // - view controller method name
-        LitePoint point = attributeService.getPointForAttribute(device, attribute);
-        int pointId = point.getPointID();
-        
-        Long startDateMillis = startDate.getTime();
-        Long stopDateMillis = stopDate.getTime();
-        
-        String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
-
-        // SET MAV
-        mav.addObject("attributeGraphType", attributeGraphType);
-        mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
-        mav.addObject("period", period);
-        mav.addObject("interval", chartInterval);
-        mav.addObject("startDate", startDate);
-        mav.addObject("stopDate", stopDate);
-        mav.addObject("graphType", graphType);
-        
+        return dateRange;
+    }
+    
+    private String getTitle(ChartPeriod chartPeriod, Range<Date> dateRange, YukonUserContext userContext,
+                            BuiltInAttribute attribute, AttributeGraphType attributeGraphType) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         if (chartPeriod != ChartPeriod.NOPERIOD) {
             MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
-            MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+            MessageSourceResolvable converterTypeResolvable = 
+                    new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
             MessageSourceResolvable attributeResolvable = attribute.getMessage();
             
             String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.hasPeriod", 
-                    accessor.getMessage(chartPeriodResolvable),
+                    accessor.getMessage(new YukonMessageSourceResolvable(chartPeriod.getFormatKey())),
                     accessor.getMessage(converterTypeResolvable),
                     accessor.getMessage(attributeResolvable));
-            
-            mav.addObject("title", title);
-        } else {
-            MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
-            MessageSourceResolvable attributeResolvable = attribute.getMessage();
-            
-            String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
-                    accessor.getMessage(converterTypeResolvable),
-                    accessor.getMessage(attributeResolvable),
-                    startDateStr,
-                    stopDateStr);
-            
-            mav.addObject("title", title);
+            return title;
         }
-        
-        mav.addObject("pointId", pointId);
-        mav.addObject("startDateMillis", startDateMillis);
-        mav.addObject("stopDateMillis", stopDateMillis);
-        mav.addObject("tabularDataViewer", tabularDataViewer);
-        return mav;
+
+        MessageSourceResolvable converterTypeResolvable = 
+                new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+        MessageSourceResolvable attributeResolvable = attribute.getMessage();
+
+        String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
+            accessor.getMessage(converterTypeResolvable),
+            accessor.getMessage(attributeResolvable),
+            dateFormattingService.format(dateRange.getMin(), DateFormattingService.DateFormatEnum.DATE, userContext),
+            dateFormattingService.format(dateRange.getMax(), DateFormattingService.DateFormatEnum.DATE, userContext));
+        return title;
+    }
+
+    private ChartPeriod getChartPeriod(HttpServletRequest request, LiteYukonUser user) {
+        ChartPeriod chartPeriod = ChartPeriod.fromString(request.getParameter("period"));
+        if (chartPeriod == null) {
+            return userPreferenceService.getDefaultChartPeriod(user);
+        }
+        if (chartPeriod != ChartPeriod.NOPERIOD) {
+            return userPreferenceService.updatePreferenceChartPeriod(chartPeriod, user);
+        }
+        return ChartPeriod.NOPERIOD;
+    }
+
+    private GraphType getGraphType(HttpServletRequest request, LiteYukonUser user) {
+        GraphType requestedGraphType = GraphType.fromString(request.getParameter("graphType"));
+        PreferenceGraphVisualTypeOption prefGraph = null;
+        if (requestedGraphType == null) {
+            prefGraph = userPreferenceService.getDefaultGraphType(user);
+        } else {
+            prefGraph = userPreferenceService.updatePreferenceGraphType(requestedGraphType, user);
+        }
+        return prefGraph.getGraphType();
     }
 
     private Set<Attribute> getAttributesFromGraphMap() {
@@ -213,7 +207,7 @@ public class TrendWidget extends WidgetControllerBase {
         for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
             graphMapAttributes.add(agt.getAttribute());
         }
-        return graphMapAttributes;    
+        return graphMapAttributes;
     }
     
     @Required
