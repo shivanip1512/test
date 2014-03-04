@@ -36,13 +36,13 @@
     <br/>
     <div style="width: 600px;">
       <cti:url var="removeLoginWaitUrl" value="/adminSetup/user/removeLoginWait"/>
-      <tags:boxContainer title="Failed Login Information for: ${fn:escapeXml(user.username)}" hideEnabled="false">
+      <tags:boxContainer2 nameKey="failedLogin" arguments="${user.username}" hideEnabled="false">
 	    <form action="${removeLoginWaitUrl}" method="POST">
             <cti:csrfToken/>
 	    <table>
 	        <tr>
 	            <td align="right">
-	                Last failed login time: 
+	                <i:inline key=".lastFailed"/> 
 	            </td>
 	            <td align="left">
 	                <cti:formatDate type="DATEHM" value="${authThrottleDto.lastFailedLoginTime}"/>
@@ -50,7 +50,7 @@
 	        </tr>
             <tr>
                 <td align="right">
-                    Number of failed login attempts: 
+                    <i:inline key=".numFailed"/> 
                 </td>
                 <td align="left">
                     ${authThrottleDto.retryCount}
@@ -58,7 +58,7 @@
             </tr>
             <tr>
                 <td align="right">
-                    Retry Wait End time: 
+                    <i:inline key=".retryEndTime"/> 
                 </td>
                 <td align="left">
                     <cti:formatDate type="DATEHM" value="${authThrottleDto.throttleEndtime}"/>
@@ -66,7 +66,7 @@
             </tr>
             <tr>
                 <td align="right">
-                    Wait duration before next Login retry: 
+                    <i:inline key=".waitDuration"/> 
                 </td>
                 <td align="left">
                     <cti:formatDuration type="DHMS" value="${(authThrottleDto.throttleDurationSeconds)*1000}"/>

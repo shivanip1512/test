@@ -65,6 +65,11 @@
     <entry key="yukon.web.modules.adminSetup.groupPermissions.instructions">Instructions: </entry>
     <entry key="yukon.web.modules.adminSetup.groupPermissions.lm.notes">Use this permission for Load Management. Select items to ALLOW group access.</entry>
     <entry key="yukon.web.modules.adminSetup.groupPermissions.cc.notes">Use this permission for Cap Control. Select items to DENY group access.</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.failedLogin.title">Failed Login Information for: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.lastFailed">Last failed login time:</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.numFailed">Number of failed login attempts:</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.retryEndTime">Retry Wait End time:</entry>
+    <entry key="yukon.web.modules.adminSetup.groupPermissions.waitDuration">Wait duration before next Login retry:</entry>
     
     <!-- User Permission Editor -->
     <entry key="yukon.web.modules.adminSetup.userPermissions.pageName">Permissions</entry>
