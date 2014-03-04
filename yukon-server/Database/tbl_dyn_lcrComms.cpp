@@ -29,9 +29,9 @@ void CtiTableDynamicLcrCommunications::DecodeDatabaseReader( Cti::RowReader & rd
     if ( ! rdr["LcrCommsExist"].isNull() )
     {
         _needPreInsert = false;
-
-        rdr["deviceid"] >> _deviceID;
     }
+
+    rdr["deviceid"] >> _deviceID;
 }
 
 

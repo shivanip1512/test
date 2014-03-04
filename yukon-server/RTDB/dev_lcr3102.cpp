@@ -464,7 +464,11 @@ INT Lcr3102Device::decodeGetValueHistoricalTime( const INMESS *InMessage, CtiTim
 
         // a non-zero runtime -- with an uninitialized latest runtime timestamp
         //      since timestamps are computed in reverse order the latest one comes first
-        if ( point_base == PointOffset_RuntimeBase && pi.value != 0 && ! latestRuntimeTimestamp )
+        //      quality should be NormalQuality, invalid data is non-zero but marked with InvalidQuality
+        if ( point_base == PointOffset_RuntimeBase &&
+             pi.value != 0 && 
+             pi.quality == NormalQuality && 
+             ! latestRuntimeTimestamp )
         {
             latestRuntimeTimestamp = pointTime;
         }
