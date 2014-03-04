@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -918,7 +919,10 @@ public class OptOutServiceImpl implements OptOutService {
 		}
 
 		List<OverrideHistory> inventoryHistoryList = 
-			optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), startTime, stopTime);
+			optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), startTime, stopTime,
+			                                          EnumSet.of(OptOutEventState.START_OPT_OUT_SENT,
+			                                                     OptOutEventState.CANCEL_SENT,
+			                                                     OptOutEventState.SCHEDULED));
 		
 		// See if the optional programName parameter was set - if so, only create
 		// history objects for that program
@@ -966,14 +970,14 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public List<OverrideHistory> getOptOutHistoryByProgram(String programName, Date startTime, Date stopTime, LiteYukonUser user) throws ProgramNotFoundException {
-
+	public List<OverrideHistory> getOptOutHistoryByProgram(String programName, Date startTime, Date stopTime,
+	                                                       LiteYukonUser user) throws ProgramNotFoundException {
 		Validate.isTrue(startTime.before(stopTime), "Start time must be before stop time.");
-		
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         Program program = programService.getByProgramName(programName, energyCompany);
 		
-		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
+		List<OverrideHistory> historyList = new ArrayList<>();
 		
 		// Get the opted out inventory by program and time period
 		List<Integer> optedOutInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
@@ -983,7 +987,11 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			List<Program> programList = enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
 			
-			List<OverrideHistory> inventoryHistoryList = optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime);
+			List<OverrideHistory> inventoryHistoryList
+			    = optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime, 
+			                                                 EnumSet.of(OptOutEventState.START_OPT_OUT_SENT, 
+			                                                            OptOutEventState.CANCEL_SENT, 
+			                                                            OptOutEventState.SCHEDULED));
 
 			for(OverrideHistory history : inventoryHistoryList) {
 				history.setPrograms(programList);

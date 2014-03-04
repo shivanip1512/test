@@ -1,6 +1,7 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
+import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
@@ -61,10 +63,12 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         public Boolean countedTowardOptOutLimit;
     }
 
+    @Override
     public String getTitle() {
         return "Opt Out Info Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
@@ -100,6 +104,7 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         this.programIds = programIds;
     }
     
+    @Override
     public void doLoadData() {
 
         // get all of the customers
@@ -116,7 +121,9 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
         // Check to see if accounts where selected and uses them to find the report data.
         if (accountIds != null) {
             for (Integer accountId : accountIds) {
-                overrideHistoryList.addAll(optOutEventDao.getOptOutHistoryForAccount(accountId, getStartDate(), getStopDate()));
+                overrideHistoryList.addAll(optOutEventDao.getOptOutHistoryForAccount(accountId, getStartDate(),
+                                               getStopDate(), EnumSet.of(OptOutEventState.START_OPT_OUT_SENT, 
+                                                                         OptOutEventState.CANCEL_SENT)));
             }
         }
         
@@ -130,7 +137,9 @@ public class OptOutInfoModel extends BareDatedReportModelBase<OptOutInfoModel.Mo
 
             for (CustomerAccountWithNames account : accounts) {
                 List<OverrideHistory> overrideHistories = 
-                    optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), getStartDate(), getStopDate());
+                    optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), getStartDate(), getStopDate(),
+                                                              EnumSet.of(OptOutEventState.START_OPT_OUT_SENT,
+                                                                         OptOutEventState.CANCEL_SENT));
                 
                 for (OverrideHistory overrideHistory : overrideHistories) {
 

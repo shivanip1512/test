@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Node;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -86,8 +87,8 @@ public class OverrideHistoryRequestEndpointTest {
         mockOptOutService = new MockOptOutService();
         
         impl = new OverrideHistoryRequestEndpoint();
-        impl.setOptOutService(mockOptOutService);
-        impl.setRolePropertyDao(new MockRolePropertyDao());
+        ReflectionTestUtils.setField(impl, "optOutService", mockOptOutService);
+        ReflectionTestUtils.setField(impl, "rolePropertyDao", new MockRolePropertyDao());
         
         // Setup test histories
         history1 = new OverrideHistory();

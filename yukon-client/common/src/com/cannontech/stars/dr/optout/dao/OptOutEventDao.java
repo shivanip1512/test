@@ -14,6 +14,7 @@ import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -61,13 +62,10 @@ public interface OptOutEventDao {
 	public Multimap<OptOutEventDto, OptOutLog> getOptOutEventDetails(Iterable<OptOutEventDto> optOutEvents);
 
 	/**
-	 * Method to get a list of opt out events by account and time period
-	 * @param accountId - Account to get history for
-	 * @param startDate - Start of time period
-	 * @param stopDate - End of time period
-	 * @return List of opt out history
+	 * Returns a list of opt out events by accountId and time period
 	 */
-	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate);
+	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate,
+	                                                       Iterable<OptOutEventState> eventStates);
 
     /**
      * Method to get a list of opt out events by account, time period, and login group
@@ -84,13 +82,10 @@ public interface OptOutEventDao {
     public List<OverrideHistory> getOptOutHistoryByLogUserId(int userId, ReadableInstant reportStartDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup);
 
     /**
-	 * Method to get a list of opt out events by inventory and time period
-	 * @param inventoryId - Inventory to get history for
-	 * @param startDate - Start of time period
-	 * @param stopDate - End of time period
-	 * @return List of opt out history
-	 */
-	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate);
+     * Returns a list of opt out events by inventory and time period
+     */
+    public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate,
+                                                             Iterable<OptOutEventState> eventStates);
 
     /**
      * Method to get a list of opt out events by inventory, time period, and login group

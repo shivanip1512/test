@@ -15,6 +15,7 @@ import com.cannontech.stars.dr.optout.model.OptOutAction;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
+import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -77,8 +78,8 @@ public class MockOptOutEventDao implements OptOutEventDao {
     }
 
     @Override
-    public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate,
-                                                            Date stopDate) {
+    public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate,
+                                                           Iterable<OptOutEventState> eventStates) {
         throw new MethodNotImplementedException();
     }
 
@@ -99,8 +100,8 @@ public class MockOptOutEventDao implements OptOutEventDao {
     }
 
     @Override
-    public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate,
-                                                              Date stopDate) {
+    public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate,
+                                                             Iterable<OptOutEventState> eventStates) {
         throw new MethodNotImplementedException();
     }
 

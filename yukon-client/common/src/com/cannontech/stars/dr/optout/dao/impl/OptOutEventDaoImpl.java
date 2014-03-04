@@ -69,8 +69,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	private ChunkingSqlTemplate chunkingSqlTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
 	
-	@Autowired private EnrollmentDao enrollmentDao;
 	@Autowired private InventoryDao inventoryDao;
+	@Autowired private EnrollmentDao enrollmentDao;
 	@Autowired private CustomerAccountDao customerAccountDao;
 	@Autowired private YukonUserDao yukonUserDao;
 	
@@ -277,30 +277,22 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
-	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate) {
+    public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, Date startDate, Date stopDate,
+                                                           Iterable<OptOutEventState> eventStates) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OptOutEventId, CustomerAccountId, EventState, EventCounts, ScheduledDate, StartDate,");
+        sql.append("       StopDate, InventoryId");
+        sql.append("FROM OptOutEvent");
+        sql.append("WHERE CustomerAccountId").eq(accountId);
+        sql.append("    AND StartDate").lte(stopDate);
+        sql.append("    AND StopDate").gte(startDate);
+        sql.append("    AND EventState").in_k(eventStates);
+        sql.append("ORDER BY StartDate DESC");
 
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT * ");
-		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE CustomerAccountId = ? ");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate >= ?");
-		sql.append("	AND (EventState = ? ");
-		sql.append("		OR EventState = ?) ");
-		sql.append("ORDER BY StartDate DESC");
-		
-		List<OverrideHistory> historyList = yukonJdbcTemplate.query(
-													sql.toString(), 
-													new OverrideHistoryRowMapper(),
-													accountId,
-													stopDate,
-													startDate,
-													OptOutEventState.START_OPT_OUT_SENT.toString(),
-													OptOutEventState.CANCEL_SENT.toString());
-		
-		return historyList;
-	}
-	
+        List<OverrideHistory> historyList = yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
+        return historyList;
+    }
+
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
     public List<OverrideHistory> getOptOutHistoryForAccount(int accountId, ReadableInstant startDate, ReadableInstant stopDate, LiteYukonGroup residentialGroup) {
@@ -327,29 +319,22 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
-	public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate) {
+    public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate,
+                                                             Iterable<OptOutEventState> eventStates) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OptOutEventId, CustomerAccountId, EventState, EventCounts, ScheduledDate, StartDate,");
+        sql.append("       StopDate, InventoryId");
+        sql.append("FROM OptOutEvent");
+        sql.append("WHERE InventoryId").eq(inventoryId);
+        sql.append("    AND StartDate").lte(stopDate);
+        sql.append("    AND StopDate").gte(startDate);
+        sql.append("    AND EventState").in_k(eventStates);
+        sql.append("ORDER BY StartDate DESC");
 
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT * ");
-		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE InventoryId = ? ");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate >= ?");
-		sql.append("	AND (EventState = ? ");
-		sql.append("		OR EventState = ?) ");
-		sql.append("ORDER BY StartDate DESC");
-		
-		List<OverrideHistory> historyList = yukonJdbcTemplate.query(
-													sql.toString(), 
-													new OverrideHistoryRowMapper(),
-													inventoryId,
-													stopDate,
-													startDate,
-													OptOutEventState.START_OPT_OUT_SENT.toString(),
-													OptOutEventState.CANCEL_SENT.toString());
-		
-		return historyList;
-	}
+        List<OverrideHistory> historyList = yukonJdbcTemplate.query(sql, new OverrideHistoryRowMapper());
+
+        return historyList;
+    }
 
     @Override
     @Transactional(propagation=Propagation.SUPPORTS)
