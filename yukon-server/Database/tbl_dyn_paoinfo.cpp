@@ -525,6 +525,10 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_RFN_OvUvAlarmReportingInterval,    "rfn ovuv alarm reporting interval" )
         (Key_RFN_OvUvAlarmRepeatInterval,       "rfn ovuv alarm repeating interval" )
         (Key_RFN_OvUvRepeatCount,               "rfn ovuv alarm repeat count" )
+
+        (Key_RFN_LcdCycleTime,                  "rfn lcd cycle time" )
+        (Key_RFN_LcdDisconnectDisplayDisabled,  "rfn lcd disconnect display disabled" )
+        (Key_RFN_LcdDisplayDigits,              "rfn lcd display digits" )
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

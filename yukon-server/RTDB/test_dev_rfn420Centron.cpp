@@ -55,6 +55,7 @@ namespace std {
 }
 
 const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
+const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfn420centron, test_state_rfn420centron )
 
@@ -111,11 +112,12 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
             BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
             BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
         }
+    }
 
-        Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
         {
-            Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
-
             Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
             std::vector<unsigned char> exp = boost::assign::list_of
@@ -133,6 +135,80 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
 
             BOOST_CHECK_EQUAL( rcv, exp );
         }
+
+        {
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x71)(0x00)(0x00);
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+
+            const std::string exp =
+                    "Display metrics successfully set"
+                    "\nDisplay metric 1: Date of Peak Voltage"
+                    "\nDisplay metric 2: Time of Peak Voltage"
+                    "\nDisplay metric 3: Min Voltage (V)"
+                    "\nDisplay metric 4: Metric Slot Disabled"
+                    "\nDisplay metric 5: Metric Slot Disabled"
+                    "\nDisplay metric 6: Metric Slot Disabled"
+                    "\nDisplay metric 7: Metric Slot Disabled"
+                    "\nDisplay metric 8: Metric Slot Disabled"
+                    "\nDisplay metric 9: Metric Slot Disabled"
+                    "\nDisplay metric 10: Metric Slot Disabled"
+                    "\nDisplay metric 11: Metric Slot Disabled"
+                    "\nDisplay metric 12: Metric Slot Disabled"
+                    "\nDisplay metric 13: Metric Slot Disabled"
+                    "\nDisplay metric 14: Metric Slot Disabled"
+                    "\nDisplay metric 15: Metric Slot Disabled"
+                    "\nDisplay metric 16: Metric Slot Disabled"
+                    "\nDisplay metric 17: Metric Slot Disabled"
+                    "\nDisplay metric 18: Metric Slot Disabled"
+                    "\nDisplay metric 19: Metric Slot Disabled"
+                    "\nDisplay metric 20: Metric Slot Disabled"
+                    "\nDisplay metric 21: Metric Slot Disabled"
+                    "\nDisplay metric 22: Metric Slot Disabled"
+                    "\nDisplay metric 23: Metric Slot Disabled"
+                    "\nDisplay metric 24: Metric Slot Disabled"
+                    "\nDisplay metric 25: Metric Slot Disabled"
+                    "\nDisplay metric 26: Metric Slot Disabled"
+                    "\nDisconnect display: disabled"
+                    "\nLCD cycle time: (default)"
+                    "\nDisplay digits: 5x1";
+
+            BOOST_CHECK_EQUAL(rcv.description, exp);
+        }
+
+        dut.extractCommandResult( *command );
+
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem01), 0x10);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem02), 0x11);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem03), 0x12);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem04), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem05), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem06), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem07), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem08), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem09), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem10), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem11), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem12), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem13), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem14), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem15), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem16), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem17), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem18), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem19), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem20), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem21), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem22), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem23), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem24), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem25), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_DisplayItem26), 0x00);
+
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime), 0x00);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled), 0x01);
+        BOOST_CHECK_EQUAL(dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits), 0x00);
     }
 }
 
