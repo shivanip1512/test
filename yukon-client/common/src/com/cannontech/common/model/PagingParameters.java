@@ -9,17 +9,17 @@ public final class PagingParameters {
     private final int endIndex;
 
     /**
-     * @param numberPerPage must be greater than 0
-     * @param pageNumber is 1-based (i.e. starts at 1, not 0)
+     * @param itemsPerPage must be greater than 0
+     * @param page is 1-based (i.e. starts at 1, not 0)
      */
-    public PagingParameters(int numberPerPage, int pageNumber) {
-        checkArgument(numberPerPage > 0);
-        checkArgument(pageNumber > 0);
+    public PagingParameters(int itemsPerPage, int page) {
+        checkArgument(itemsPerPage > 0);
+        checkArgument(page > 0);
 
-        this.itemsPerPage = numberPerPage;
-        this.page = pageNumber;
-        startIndex = (pageNumber - 1) * numberPerPage;
-        endIndex = startIndex + numberPerPage - 1;
+        this.itemsPerPage = itemsPerPage;
+        this.page = page;
+        startIndex = (page - 1) * itemsPerPage;
+        endIndex = startIndex + itemsPerPage - 1;
     }
 
     public int getPage() {
