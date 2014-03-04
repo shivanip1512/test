@@ -518,7 +518,7 @@ static const std::set<string> unsupported_devices = boost::assign::list_of
  */
 bool isKnownUnsupportedDevice(const string& _rwsTemp)
 {
-    return unsupported_devices.count(_rwsTemp);
+    return unsupported_devices.count( boost::to_lower_copy(_rwsTemp) );
 }
 
 

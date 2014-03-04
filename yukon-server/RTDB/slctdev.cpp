@@ -135,7 +135,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
         else if( getDebugLevel() & DEBUGLEVEL_FACTORY )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Device Factory cannot produce for type " << rwsType << " : the device is unsupported!" << endl;
+            dout << "Device Factory cannot produce for type " << rwsType << "! : the device is known but unsupported" << endl;
         }
     }
 
