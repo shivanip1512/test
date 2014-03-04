@@ -13,6 +13,7 @@
 #include <boost/assign/list_of.hpp>
 
 using namespace Cti::Protocols;
+using namespace Cti::Config;
 
 using std::string;
 using std::vector;
@@ -447,6 +448,8 @@ struct beginExecuteRequest_helper
         delete_container(retList);
         delete_container(outList);
     }
+
+
 };
 
 BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
@@ -3144,6 +3147,23 @@ struct executePutConfig_helper
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
 
+    std::auto_ptr<CtiRequestMsg> pRequest;
+
+    executePutConfig_helper() : pRequest( new CtiRequestMsg )
+    {}
+
+    void resetTestState()
+    {
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        pRequest.reset( new CtiRequestMsg );
+    }
+
     ~executePutConfig_helper()
     {
         delete_container(vgList);
@@ -4228,6 +4248,279 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
         BOOST_CHECK_EQUAL(outmsg->Sequence, Cti::Protocols::EmetconProtocol::PutStatus_ClearTOUHolidayRate);
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Function, 0x0A5  );
         BOOST_CHECK_EQUAL(outmsg->Buffer.BSt.Length  , 0      );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
+    {
+        test_DeviceConfig test_cfg;
+        test_Mct440_213xB test_dev;
+
+        {
+            ////// empty configuration (no valid configuration) //////
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 0 );
+            BOOST_CHECK_EQUAL( retList.size(), 6 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true)(true)(true)(true)(false); // 6 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+
+        // add TOU config
+        test_cfg.insertValue("sunday",   "schedule 1");
+        test_cfg.insertValue("weekday",  "schedule 2");
+        test_cfg.insertValue("saturday", "schedule 3");
+        test_cfg.insertValue("holiday",  "schedule 4");
+
+        char cfg_key[20];
+        char cfg_val[10];
+
+        for (int i=1; i<=4; i++)
+        {
+            for (int j=1; j<=9; j++)
+            {
+                sprintf(cfg_key, "schedule%itime%i",i,j);
+                sprintf(cfg_val, "%i:%02i",j,i*5);
+
+                test_cfg.insertValue(cfg_key, cfg_val);
+            }
+        }
+
+        for (int i=1; i<=4; i++)
+        {
+            for (int j=0; j<=9; j++)
+            {
+                sprintf(cfg_key, "schedule%irate%i",i,j);
+
+                int offset = (i-1) % 2;
+
+                switch((j+offset)%4)
+                {
+                case 0:  test_cfg.insertValue(cfg_key, "A"); break;
+                case 1:  test_cfg.insertValue(cfg_key, "B"); break;
+                case 2:  test_cfg.insertValue(cfg_key, "C"); break;
+                default: test_cfg.insertValue(cfg_key, "D"); break;
+                }
+            }
+        }
+
+        test_cfg.insertValue("defaultRate", "A");
+
+        {
+            ////// 1 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 4 );
+            BOOST_CHECK_EQUAL( retList.size(), 5 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true)(true)(true)(true); // 5 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+
+        // add DST config
+        test_cfg.insertValue( MCTStrings::EnableDst, "true" );
+
+        {
+            ////// 2 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 5 );
+            BOOST_CHECK_EQUAL( retList.size(), 4 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true)(true)(true); // 4 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+
+        // add Timezone config
+        test_cfg.insertValue( MCTStrings::TimeZoneOffset, "1" );
+
+        {
+            ////// 3 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 6 );
+            BOOST_CHECK_EQUAL( retList.size(), 3 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true)(true); // 3 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+
+        // add time adjust tolerance config
+        test_cfg.insertValue( MCTStrings::TimeAdjustTolerance, "128" );
+
+        {
+            ////// 4 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 7 );
+            BOOST_CHECK_EQUAL( retList.size(), 2 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true); // 2 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+
+        // add addressing config
+        test_cfg.insertValue( MCTStrings::Bronze,            "1" );
+        test_cfg.insertValue( MCTStrings::Lead,              "2" );
+        test_cfg.insertValue( MCTStrings::Collection,        "3" );
+        test_cfg.insertValue( MCTStrings::ServiceProviderID, "4" );
+
+        {
+            ////// 5 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 8 );
+            BOOST_CHECK_EQUAL( retList.size(), 1 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true); // 1 error messages
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
+        }
+        
+        // add phaseloss config
+        test_cfg.insertValue( MCTStrings::PhaseLossThreshold, "50" );
+        test_cfg.insertValue( MCTStrings::PhaseLossDuration,  "123" );
+        
+        {
+            ////// 6 valid configuration //////
+
+            resetTestState();
+
+            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+            test_dev.setConfigManager(&cfgMgr);
+
+            CtiCommandParser parse("putconfig install all");
+
+            BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
+
+            BOOST_CHECK_EQUAL( vgList.size(),  0 );
+            BOOST_CHECK_EQUAL( outList.size(), 9 );
+            BOOST_CHECK_EQUAL( retList.size(), 0 );
+        }
     }
 }
 

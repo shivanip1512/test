@@ -141,6 +141,17 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
         incrementGroupMessageCount(pReq->GroupMessageId(), reinterpret_cast<long>(pReq->getConnectionHandle()), rfnRequests.size());
     }
 
+    for( ReturnMsgList::iterator itr = returnMsgs.begin(); itr != returnMsgs.end(); )
+    {
+        CtiReturnMsg &retMsg = *itr;
+        
+        // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
+        if( ++itr != returnMsgs.end() || ! rfnRequests.empty() )
+        {
+            retMsg.setExpectMore(true);
+        }
+    }
+
     return ExecutionComplete;
 }
 

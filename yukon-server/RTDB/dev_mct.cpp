@@ -2077,7 +2077,6 @@ INT MctDevice::executePutConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.UserID,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
-    errRet->setExpectMore(true);
 
     if( parse.isKeyValid("install") )
     {

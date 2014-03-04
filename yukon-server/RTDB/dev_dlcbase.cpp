@@ -228,11 +228,16 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 
         executeOnDLCRoute(pReq, parse, tmpOutList, vgList, retList, outList, broadcast);
 
-        if (getGroupMessageCount(msgId, connHandle))
+        const bool outMessagesGenerated = getGroupMessageCount(msgId, connHandle);
+
+        for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
         {
-            for (list< CtiMessage* >::iterator itr = retList.begin(); itr != retList.end(); itr++)
+            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
+            
+            // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
+            if( ++itr != retList.end() || outMessagesGenerated )
             {
-                ((CtiReturnMsg*)*itr)->setExpectMore(true);
+                retMsg->setExpectMore(true);
             }
         }
     }

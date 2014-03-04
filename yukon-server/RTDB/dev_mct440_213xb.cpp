@@ -4192,12 +4192,14 @@ int Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pReq,
 
     if( !readsOnly )
     {
-        char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+        long timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
 
-        if( timezoneOffset == std::numeric_limits<long>::min() )
+        if( timezoneOffset < -24 || timezoneOffset > 24 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
             return NoConfigData;
         }
 
@@ -4285,10 +4287,12 @@ int Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg     *p
     {
         long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
 
-        if( timeAdjustTolerance == std::numeric_limits<long>::min() )
+        if( timeAdjustTolerance < 0 || timeAdjustTolerance > 0xFF )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
             return NoConfigData;
         }
 

@@ -1050,8 +1050,6 @@ INT Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    errRet->setExpectMore(true);
-
     if(parse.isKeyValid("install"))
     {
         nRet = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
@@ -1257,8 +1255,6 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                OutMessage->Request.SOE,
                CtiMultiMsg_vec()));
 
-    errRet->setExpectMore(true);
-
     if( parse.isKeyValid("install") )
     {
         found = true;
@@ -1275,21 +1271,8 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
             sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
-        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
-        if (verify)
-        {
-            //In the case of verify we need to set the Last expect bit to zero.
-            //Since there will be no more messages and/or maintaining of this list.
-            ((CtiReturnMsg*)retList.back())->setExpectMore(false);
-        }
-        else if( !outList.empty() && !retList.empty() )
-        {
-            //hackish way to fix problem of retlist automatically telling commander to not expect more anymore.
-            //pil will not set expectmore on the last entry, so I do it by hand...
-            //This may be useless at the moment, but is on my way to controlling expect more properly.
-            ((CtiReturnMsg*)retList.back())->setExpectMore(true);
-        }
+        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle(), outList.size());
 
         if(OutMessage!=NULL)
         {
@@ -1971,31 +1954,6 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                 }
             }
         }
-
-        bool seen_expect_more = false;
-
-        //  Set ExpectMore on all messages but the last.
-        for( CtiMessageList::iterator itr = retList.begin(); itr != retList.end(); )
-        {
-            //  Save the element so we can modify the iterator freely
-            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(*itr);
-
-            //  Increment the iterator, which allows us to make sure the current element is NOT the last element.
-            if( ++itr != retList.end() )
-            {
-                seen_expect_more |= retMsg->ExpectMore();
-
-                retMsg->setExpectMore(true);
-            }
-        }
-
-        //  Only set ExpectMore on the last message if we've seen it on any of the others.
-        if( seen_expect_more )
-        {
-            CtiReturnMsg *retMsg = static_cast<CtiReturnMsg *>(retList.back());
-
-            retMsg->setExpectMore(true);
-        }
     }
     else
     {
@@ -2152,11 +2110,6 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                 OutMessage->Request.UserID,
                                 OutMessage->Request.SOE,
                                 CtiMultiMsg_vec( ));
-
-        if( nRet )
-        {
-            retMsg->setExpectMore(true);
-        }
 
         retList.push_back( retMsg );
     }

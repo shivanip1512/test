@@ -1350,6 +1350,253 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
+{
+    test_RfnResidentialDevice dut;
+    dut._type = TYPE_RFN410FX;
+
+    test_DeviceConfig cfg;
+
+    {
+        ////// empty configuration (no valid configuration) //////
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true)(false); // 4 error messages, NOTE: last expectMore expected to be false
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add demand freeze day config
+    cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
+
+    {
+        ////// 1 valid configuration //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 1 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add OVUV config
+    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
+    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
+    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
+    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
+    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
+    cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
+
+    {
+        ////// 2 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 7 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true); // 2 error messages + 1 message to notify that 2 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add TOU config
+
+    // Schedule 1
+    cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
+    cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
+    cfg.insertValue( RfnStrings::Schedule1Time4, "23:33" );
+    cfg.insertValue( RfnStrings::Schedule1Time5, "23:44" );
+
+    cfg.insertValue( RfnStrings::Schedule1Rate0, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate1, "B" );
+    cfg.insertValue( RfnStrings::Schedule1Rate2, "C" );
+    cfg.insertValue( RfnStrings::Schedule1Rate3, "D" );
+    cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
+
+    // Schedule 2
+    cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
+    cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
+    cfg.insertValue( RfnStrings::Schedule2Time4, "05:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time5, "16:28" );
+
+    cfg.insertValue( RfnStrings::Schedule2Rate0, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate1, "A" );
+    cfg.insertValue( RfnStrings::Schedule2Rate2, "B" );
+    cfg.insertValue( RfnStrings::Schedule2Rate3, "C" );
+    cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
+
+    // Schedule 3
+    cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
+    cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
+    cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
+    cfg.insertValue( RfnStrings::Schedule3Time4, "05:06" );
+    cfg.insertValue( RfnStrings::Schedule3Time5, "06:07" );
+
+    cfg.insertValue( RfnStrings::Schedule3Rate0, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate1, "D" );
+    cfg.insertValue( RfnStrings::Schedule3Rate2, "A" );
+    cfg.insertValue( RfnStrings::Schedule3Rate3, "B" );
+    cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
+
+    // Schedule 4
+    cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
+    cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
+    cfg.insertValue( RfnStrings::Schedule4Time4, "23:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time5, "23:55" );
+
+    cfg.insertValue( RfnStrings::Schedule4Rate0, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate1, "C" );
+    cfg.insertValue( RfnStrings::Schedule4Rate2, "D" );
+    cfg.insertValue( RfnStrings::Schedule4Rate3, "A" );
+    cfg.insertValue( RfnStrings::Schedule4Rate4, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
+
+    // day table
+    cfg.insertValue( RfnStrings::SundaySchedule,    "Schedule 1" );
+    cfg.insertValue( RfnStrings::MondaySchedule,    "Schedule 1" );
+    cfg.insertValue( RfnStrings::TuesdaySchedule,   "Schedule 3" );
+    cfg.insertValue( RfnStrings::WednesdaySchedule, "Schedule 2" );
+    cfg.insertValue( RfnStrings::ThursdaySchedule,  "Schedule 4" );
+    cfg.insertValue( RfnStrings::FridaySchedule,    "Schedule 2" );
+    cfg.insertValue( RfnStrings::SaturdaySchedule,  "Schedule 3" );
+    cfg.insertValue( RfnStrings::HolidaySchedule,   "Schedule 3" );
+
+    // default rate
+    cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
+
+    {
+        ////// 3 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 8 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true); // 1 error messages + 1 message to notify that 3 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add voltage averaging config
+    cfg.insertValue( RfnStrings::demandInterval, "1" );
+    cfg.insertValue( RfnStrings::profileInterval,"2" );
+
+    {
+        ////// 4 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true); // 1 message to notify that all config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -2293,8 +2293,6 @@ INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
                                                    OutMessage->Request.SOE,
                                                    CtiMultiMsg_vec( ));
 
-    errRet->setExpectMore(true);
-
     if( parse.isKeyValid("precanned_table") )
     {
         function = EmetconProtocol::PutConfig_PrecannedTable;

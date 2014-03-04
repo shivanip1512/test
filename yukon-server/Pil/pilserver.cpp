@@ -1229,7 +1229,7 @@ struct RequestExecuter : Devices::DeviceHandler
     {
         Devices::RfnDevice::RfnCommandList commands;
 
-        boost::ptr_deque<CtiReturnMsg> returnMsgList;
+        Devices::RfnDevice::ReturnMsgList returnMsgList;
 
         const int retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
 
@@ -1245,15 +1245,8 @@ struct RequestExecuter : Devices::DeviceHandler
 
         while( ! returnMsgList.empty() )
         {
-            boost::ptr_deque<CtiReturnMsg>::auto_type returnMsg = returnMsgList.pop_front();
-
-            // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
-            if( ! returnMsgList.empty() || ! rfnRequests.empty() )
-            {
-                returnMsg->setExpectMore(true);
-            }
-
-            retList.push_back(returnMsg.release());
+            Devices::RfnDevice::ReturnMsgList::auto_type returnMsg = returnMsgList.pop_front();
+            retList.push_back( returnMsg.release() );
         }
 
         for each( const Devices::Commands::RfnCommandSPtr &command in commands )
