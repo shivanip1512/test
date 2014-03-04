@@ -1245,8 +1245,7 @@ struct RequestExecuter : Devices::DeviceHandler
 
         while( ! returnMsgList.empty() )
         {
-            Devices::RfnDevice::ReturnMsgList::auto_type returnMsg = returnMsgList.pop_front();
-            retList.push_back( returnMsg.release() );
+            retList.push_back( returnMsgList.pop_front().release() );
         }
 
         for each( const Devices::Commands::RfnCommandSPtr &command in commands )
