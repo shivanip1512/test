@@ -1,6 +1,7 @@
 package com.cannontech.common.chart.model;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Duration;
@@ -49,8 +50,8 @@ public enum ChartPeriod implements DisplayableEnum {
         public ChartInterval getChartUnit(Range<Date> dateRange) {
             // choose interval based on how many days apart the two dates are
             // note: this method doesn't account for day light savings, but its quick and will be good enough to pick an interval
-            long diff = Math.abs(dateRange.getMin().getTime() - dateRange.getMax().getTime());
-            int dayDiff = (int)Math.floor(diff/1000/60/60/24);  
+            long millisRange = Math.abs(dateRange.getMin().getTime() - dateRange.getMax().getTime());
+            int dayDiff = (int) TimeUnit.MILLISECONDS.toDays(millisRange);
 
             if (dayDiff >= 450) {
                 return ChartInterval.MONTH;
