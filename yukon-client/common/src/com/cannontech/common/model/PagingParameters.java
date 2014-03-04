@@ -3,8 +3,8 @@ import static com.google.common.base.Preconditions.*;
 
 public final class PagingParameters {
 
-    private final int pageNumber;
-    private final int numberPerPage;
+    private final int page;
+    private final int itemsPerPage;
     private final int startIndex;
     private final int endIndex;
 
@@ -16,18 +16,18 @@ public final class PagingParameters {
         checkArgument(numberPerPage > 0);
         checkArgument(pageNumber > 0);
 
-        this.numberPerPage = numberPerPage;
-        this.pageNumber = pageNumber;
+        this.itemsPerPage = numberPerPage;
+        this.page = pageNumber;
         startIndex = (pageNumber - 1) * numberPerPage;
         endIndex = startIndex + numberPerPage - 1;
     }
 
-    public int getPageNumber() {
-        return pageNumber;
+    public int getPage() {
+        return page;
     }
 
-    public int getNumberPerPage() {
-        return numberPerPage;
+    public int getItemsPerPage() {
+        return itemsPerPage;
     }
 
     public int getStartIndex() {
