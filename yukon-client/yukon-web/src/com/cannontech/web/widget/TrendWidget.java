@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSourceResolvable;
@@ -106,10 +107,11 @@ public class TrendWidget extends WidgetControllerBase {
         String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
         String title = getTitle(chartPeriod, dateRange.getImmutableRange(), userContext, attribute, attributeGraphType);
 
-        long graphStopMillis = dateRange.getMax().getTime();
+        Date stopDateAdjusted = dateRange.getMax();
         if (chartPeriod == ChartPeriod.NOPERIOD) {
             // Custom time stop date will include full day until midnight in graph
-            graphStopMillis += TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - 1;
+            stopDateAdjusted = DateUtils.addMilliseconds(dateRange.getMax(), 
+                                                        (int) TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS) - 1);
         }
 
         mav.addObject("attributeGraphType", attributeGraphType);
@@ -118,11 +120,10 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("interval", chartInterval);
         mav.addObject("startDate", dateRange.getMin());
         mav.addObject("stopDate", dateRange.getMax());
+        mav.addObject("stopDateAdjusted", stopDateAdjusted);
         mav.addObject("graphType", getGraphType(request, userContext.getYukonUser()));
         mav.addObject("title", title);
         mav.addObject("pointId", point.getPointID());
-        mav.addObject("graphStartMillis", dateRange.getMin().getTime());
-        mav.addObject("graphStopMillis", graphStopMillis);
         mav.addObject("tabularDataViewer", tabularDataViewer);
         return mav;
     }

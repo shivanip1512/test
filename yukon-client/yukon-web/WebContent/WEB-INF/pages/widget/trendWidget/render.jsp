@@ -22,7 +22,7 @@ jQuery(function () {
 
         <%-- THE CHART --%>
         <flot:trend title="${title}" pointIds="${pointId}"
-            startDate="${graphStartMillis}" endDate="${graphStopMillis}"
+            startDate="${startDate.time}" endDate="${stopDateAdjusted.time}"
             interval="${interval}"
             converterType="${attributeGraphType.converterType}"
             graphType="${graphType}"
@@ -125,11 +125,11 @@ jQuery(function () {
                     </c:choose>
                 </td>
                 <td>
-                    <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                    <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=rawPointHistoryDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                     |
-                    <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                    <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                     |
-                    <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                    <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                 </td>
             </tr>
             
@@ -138,11 +138,11 @@ jQuery(function () {
                     <td><b><i:inline key=".normalizedUsageData"/></b></td>
                     
                     <td>
-                        <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDateMillis}&stopDate=${stopDateMillis}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
+                        <a href="<cti:url value="/amr/reports/${tabularDataViewer}?def=normalizedUsageDefinition&pointId=${pointId}&startDate=${startDate.time}&stopDate=${stopDateAdjusted.time}&attribute=${attributeGraphType.attribute}" />"><i:inline key="yukon.web.modules.amr.fileFormatHtml"/></a>
                         |
-                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
+                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                         |
-                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDateMillis}" stopDate="${stopDateMillis}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
+                        <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" pointId="${pointId}" startDate="${startDate.time}" stopDate="${stopDateAdjusted.time}" attribute="${attributeGraphType.attribute}"><i:inline key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                     </td>
                 </tr>
             </c:if>
