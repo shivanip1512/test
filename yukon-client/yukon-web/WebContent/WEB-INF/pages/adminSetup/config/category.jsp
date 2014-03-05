@@ -18,7 +18,8 @@ jQuery(function() {
 </script>
 
 <div class="dashboard">
-    <form:form action="/adminSetup/config/update" id="settingsForm" method="post">
+    <cti:url var="updateUrl" value="/adminSetup/config/update"/>
+    <form:form action="${updateUrl}" id="settingsForm" method="post">
         <form:hidden path="category"/>
         
         <div class="clearfix box">

@@ -108,7 +108,7 @@
 </c:choose>
 
 <div class="action-area">
-    <a href="/group/scheduledGroupRequestExecutionResults/jobs" class="fl">
+    <a href="<cti:url value="/group/scheduledGroupRequestExecutionResults/jobs"/>" class="fl">
         <c:choose>
             <c:when test="${numAdditionalJobs != null}">
                 <i:inline key=".viewDetailsWithAdditional" arguments="${numAdditionalJobs}"/>

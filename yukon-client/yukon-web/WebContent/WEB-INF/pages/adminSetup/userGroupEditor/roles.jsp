@@ -12,8 +12,9 @@
 <cti:standardPage module="adminSetup" page="roles">
     
     <c:set var="legend"><cti:icon icon="icon-asterisk-orange"/>&nbsp;<i:inline key=".legend"/></c:set>
-    
-    <form:form action="/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
+
+    <cti:url var="updateUrl" value="/adminSetup/roleEditor/update"/>
+    <form:form action="${updateUrl}" id="loginGroupRoleForm" method="post">
         <input type="hidden" name="roleId" value="${roleId}">
         <input type="hidden" name="roleGroupId" value="${roleGroupId}">
         
