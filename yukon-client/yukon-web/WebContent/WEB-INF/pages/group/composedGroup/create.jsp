@@ -1,129 +1,67 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.web.deviceGroups.composedGroup.pageTitle"/>
-<cti:msg var="nameLabelText" key="yukon.web.deviceGroups.composedGroup.nameLabel"/>
-<cti:msg var="headerRulesText" key="yukon.web.deviceGroups.composedGroup.header.rules"/>
-<cti:msg var="headerRemoveText" key="yukon.web.deviceGroups.composedGroup.header.remove"/>
-<cti:msg var="saveButtonText" key="yukon.web.deviceGroups.composedGroup.saveButton"/>
-<cti:msg var="instructions" key="yukon.web.deviceGroups.composedGroup.instructions"/>
-<cti:msg var="instructionsHeader" key="yukon.web.deviceGroups.composedGroup.instructions.header"/>
-<cti:msg var="matchSentencePrefix" key="yukon.web.deviceGroups.composedGroup.matchSentence.prefix"/>
-<cti:msg var="matchSentenceSuffix" key="yukon.web.deviceGroups.composedGroup.matchSentence.suffix"/>
-<cti:msg var="ruleSentenceDeviceGroupPrefix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.prefix"/>
-<cti:msg var="ruleSentenceDeviceGroupSuffix" key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.suffix"/>
+<cti:standardPage module="tools" page="deviceGroups.create.composed">
 
-<cti:standardPage title="${pageTitle}" module="amr">
-    <cti:msgScope paths="yukon.web.deviceGroups.composedGroup">
-    <cti:standardMenu menuSelection="" />
-    
-    <cti:breadCrumbs>
-    
-        <cti:crumbLink url="/dashboard" title="Home" />
-        <cti:crumbLink url="/meter/start" title="Metering" />
-        <cti:url var="groupHomeUrl" value="/group/editor/home">
-            <cti:param name="groupName" value="${fn:escapeXml(groupName)}"/>
-        </cti:url>
-        <cti:crumbLink url="${groupHomeUrl}" title="Device Groups" />
-        <cti:crumbLink>${pageTitle}</cti:crumbLink>
-        
-    </cti:breadCrumbs>
-    
-    <script type="text/javascript">
-
-        function setSelectedGroupName(spanElName, valueElName) {
-
-            $(spanElName).innerHTML = $(valueElName).value;
-        }
-    
-    </script>
-
-    <h2>${pageTitle}</h2>
-    <br>
-    
     <c:if test="${not empty errorMsg}">
-        <div class="error">${errorMsg}</div>
-        <br>
+        <div class="stacked error">${errorMsg}</div>
     </c:if>
     
-    <form id="buildForm" action="/group/composedGroup/build" method="post">
+    <form id="buildForm" action="<cti:url value="/group/composedGroup/build"/>" method="post">
         <cti:csrfToken/>
-    <input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}">
-    <input type="hidden" name="firstLoad" value="false">
-    
-    <%-- NAME --%>
-    <tags:nameValueContainer>
-        <tags:nameValue name="${nameLabelText}" nameColumnWidth="60px">
-            ${fn:escapeXml(groupName)}
-        </tags:nameValue>
-    </tags:nameValueContainer>
-    <br>
-            
-    <%-- INSTRUCTIONS --%>
-    <tags:boxContainer title="${instructionsHeader}" hideEnabled="false">
-        ${instructions}
-    </tags:boxContainer>
-    
-    <%-- MATCH --%>
-    <h3>
-    ${matchSentencePrefix} 
-    <select name="compositionType">
-        <c:forEach var="compositionType" items="${availableCompositionTypes}">
-            <c:set var="selected" value=""/>
-            <c:if test="${compositionType == selectedCompositionType}">
-                <c:set var="selected" value="selected"/>
-            </c:if>
-            <option value="${compositionType}" ${selected}><cti:msg key="${compositionType.formatKey}"/></option>
-        </c:forEach>
-     </select>
-     ${matchSentenceSuffix}
-     </h3>
-    <br>
-    <%-- RULES TABLE --%>
-    <table id="groupsTable" class="results-table">
-        <thead>
-            <tr>
-                <th>${headerRulesText}</th>
-                <th style="text-align:right;width:100px;">${headerRemoveText}</th>
-            </tr>
-        </thead>
-        <%-- ADD RULE --%>
-        <tfoot>
-            <tr>
-                <td colspan="2">
-                    <cti:button nameKey="addAnotherDeviceGroup" type="submit" name="addRow" icon="icon-add"/>
-                </td>
-            </tr>
-       </tfoot>
-        <tbody>
+        <input type="hidden" name="groupName" value="${fn:escapeXml(groupName)}">
+        <input type="hidden" name="firstLoad" value="false">
+        
+        <%-- NAME --%>
+        <tags:nameValueContainer2 tableClass="stacked">
+            <tags:nameValue2 nameKey=".nameLabel">${fn:escapeXml(groupName)}</tags:nameValue2>
+        </tags:nameValueContainer2>
+                
+        <%-- INSTRUCTIONS --%>
+        <tags:sectionContainer2 nameKey="instructions">
+            <i:inline key=".instructions"/>
+        </tags:sectionContainer2>
+        
+        <%-- MATCH --%>
+        <h3>
+        <i:inline key=".matchSentence.prefix"/> 
+        <select name="compositionType">
+            <c:forEach var="compositionType" items="${availableCompositionTypes}">
+                <c:set var="selected" value=""/>
+                <c:if test="${compositionType == selectedCompositionType}">
+                    <c:set var="selected" value="selected"/>
+                </c:if>
+                <option value="${compositionType}" ${selected}><cti:msg key="${compositionType.formatKey}"/></option>
+            </c:forEach>
+         </select>
+         <i:inline key=".matchSentence.suffix"/>
+         </h3>
+         <hr>
+        <%-- RULES TABLE --%>
+        <div class="separated-sections">
             <c:forEach var="group" items="${groups}">
-                <tr>
-                    <td>
-                        <span class="fl" style="margin-right: 10px;">
-	                        <span>${ruleSentenceDeviceGroupPrefix}</span>
-	                        <select name="notSelect_${group.order}">
-	                            <option value="false">contained in</option>
-	                            <option value="true" <c:if test="${group.negate}">selected</c:if>>not contained in</option>
-	                        </select>
-	                        <span>${ruleSentenceDeviceGroupSuffix}</span>
-                        </span>
-                        <tags:deviceGroupNameSelector fieldName="deviceGroupNameField_${group.order}" 
-                                                      fieldValue="${group.groupFullName}" 
-                                                      dataJson="${chooseGroupTreeJson}"/>
-                    </td>
-                    
-                    <td>
-                        <cti:button classes="fr" nameKey="remove" type="submit" name="removeRow${group.order}" renderMode="image" icon="icon-cross"/>
-                    </td>
-                </tr>
-            </tbody>
-        </c:forEach>
-    </table>
+                <div class="clearfix section">
+                    <span><i:inline key=".ruleSentence.deviceGroup.prefix"/></span>
+                    <select name="notSelect_${group.order}">
+                        <option value="false">contained in</option>
+                        <option value="true" <c:if test="${group.negate}">selected</c:if>>not contained in</option>
+                    </select>
+                    <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
+                    <tags:deviceGroupNameSelector fieldName="deviceGroupNameField_${group.order}" 
+                                                  fieldValue="${group.groupFullName}" 
+                                                  dataJson="${chooseGroupTreeJson}"/>
+                    <cti:button classes="fr" nameKey="remove" type="submit" name="removeRow${group.order}" renderMode="buttonImage" icon="icon-cross"/>
+                </div>
+            </c:forEach>
+        </div>
+        <div class="action-area"><cti:button nameKey="addAnotherDeviceGroup" type="submit" name="addRow" icon="icon-add"/></div>
     
-    <%-- SAVE --%>
-    <cti:button nameKey="save" type="submit"/>
+        <%-- SAVE --%>
+        <div class="page-action-area">
+            <cti:button nameKey="save" type="submit" classes="primary action"/>
+        </div>
     </form>
-    </cti:msgScope>
 </cti:standardPage>

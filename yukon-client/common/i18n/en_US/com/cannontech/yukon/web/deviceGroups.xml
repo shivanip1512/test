@@ -120,14 +120,14 @@ Group names may not be blank or contain slashes.
 <!-- COMPOSED create.jsp -->
 <!-- ================================================================================================================================================= -->
 <!-- ================================================================================================================================================= -->
-<entry key="yukon.web.deviceGroups.composedGroup.pageTitle">Composed Device Group Setup</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.addAnotherDeviceGroup.label">Add Another Device Group</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.nameLabel">Name</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.header.rules">Rules</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.header.remove">Remove</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.saveButton">Save</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.instructions.header">Instructions</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.instructions"><![CDATA[
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.pageName">Composed Device Group Setup</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.crumbTitle">Create</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.addAnotherDeviceGroup.label">Add Another Device Group</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.nameLabel">Name</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.rules.title">Rules</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.saveButton">Save</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions.title">Instructions</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions"><![CDATA[
 	<ul style="font-size:11px;">
 		<li>A <i><b>Composed Device Group</b></i> contains devices that are choosen from other Device Groups.</li>
 		<li>To make a Composed Device Group, you must select the Device Groups that it will be based upon.</li>
@@ -144,10 +144,10 @@ Group names may not be blank or contain slashes.
 		<li>For more control over which devices are included, a Composed Device Group may include other Composed Device Groups.</li>
 	</ul>
 ]]></entry>
-<entry key="yukon.web.deviceGroups.composedGroup.matchSentence.prefix">Match</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.matchSentence.suffix">of the following rules:</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.prefix">Devices</entry>
-<entry key="yukon.web.deviceGroups.composedGroup.ruleSentence.deviceGroup.suffix">group:</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.matchSentence.prefix">Match</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.matchSentence.suffix">of the following rules:</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.ruleSentence.deviceGroup.prefix">Devices</entry>
+<entry key="yukon.web.modules.tools.deviceGroups.create.composed.ruleSentence.deviceGroup.suffix">group:</entry>
 
 <entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.UNION">At Least One</entry>
 <entry key="yukon.web.deviceGroups.deviceGroupComposedCompositionType.INTERSECTION">Every One</entry>
