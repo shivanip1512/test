@@ -150,7 +150,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <cti:msg2 var="changeNameButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText" />
                                     <a title="Click to edit group name" href="javascript:void(0);" class="f-edit-grp-name">${editGroupNameText}</a>
                                     <div id="editGroupNamePopup" title="${editGroupNameText}" class="groupEditorPopup dn">
-                                        <form id="editGroupNameForm" method="post" action="/group/editor/updateGroupName" >
+                                        <form id="editGroupNameForm" method="post" action="<cti:url value="/group/editor/updateGroupName"/>" >
                                             <cti:csrfToken/>    
                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                             <tags:nameValueContainer>
@@ -169,7 +169,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     
                                     &nbsp;|&nbsp;
                                     <%-- REMOVE --%>
-                                    <form id="removeGroupForm" action="/group/editor/removeGroup" method="post" class="di">
+                                    <form id="removeGroupForm" action="<cti:url value="/group/editor/removeGroup"/>" method="post" class="di">
                                         <cti:csrfToken/>
                                         <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
                                         <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="javascript:removeGroup('removeGroupForm')"/>
@@ -179,7 +179,7 @@ function confirmRemoveAllDevices(confirmText) {
                                     <%-- MOVE --%>
                                     <cti:link id="moveGroupLink" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                                         
-                                    <form id="moveGroupForm" action="/group/editor/moveGroup" method="post">
+                                    <form id="moveGroupForm" action="<cti:url value="/group/editor/moveGroup"/>" method="post">
                                         <cti:csrfToken/>    
                                         <cti:msg2 var="moveGroupPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title"/>
                                         <cti:msg2 var="moveGroupPopupSubmitButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText"/>
@@ -242,7 +242,7 @@ function confirmRemoveAllDevices(confirmText) {
                                             
                                             <a title="${addSubgroupLinkTitle}" class="f-add-sub-grp" href="javascript:void(0);">${addSubgroupText}</a>
                                             <div id="addSubGroupPopup" title="${addSubgroupText}" class="groupEditorPopup dn">
-                                                <form id="addSubGroupForm" method="post" action="/group/editor/addChild">
+                                                <form id="addSubGroupForm" method="post" action="<cti:url value="/group/editor/addChild"/>">
                                                     <cti:csrfToken/>
                                                     <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                                     <tags:nameValueContainer>
@@ -294,7 +294,7 @@ function confirmRemoveAllDevices(confirmText) {
                                 <cti:msg2 var="copyContentsLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle"/>
                                 <a title="${copyContentsLinkTitle}" href="javascript:void(0);" id="copyContentsToGroupLink">${copyContentsLinkText}</a>
                                 
-                                <form id="copyContentsToGroupForm" action="/group/editor/copyContentsToGroup">
+                                <form id="copyContentsToGroupForm" action="<cti:url value="/group/editor/copyContentsToGroup"/>">
                                     
                                     <cti:msg2 var="copyContentsPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title"/>
                                     <cti:msg2 var="copyContentsPopupSubmitText" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText"/>
@@ -411,7 +411,7 @@ function confirmRemoveAllDevices(confirmText) {
                                                                     <c:when test="${groupModifiable}">
                                                             
                                                                         <cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
-                                                                        <form style="display: inline;" id="${subId}removeSubGroupForm" action="/group/editor/removeGroup" method="post">
+                                                                        <form style="display: inline;" id="${subId}removeSubGroupForm" action="<cti:url value="/group/editor/removeGroup"/>" method="post">
                                                                             <cti:csrfToken/>    
                                                                             <input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.key.fullName)}">
                                                                             <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
