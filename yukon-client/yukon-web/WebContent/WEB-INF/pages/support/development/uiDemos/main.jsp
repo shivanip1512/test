@@ -1,38 +1,39 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="uiDemos">
-    <cti:includeScript link="/JavaScript/yukon.development.uiDemos.js"/>
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <cti:includeScript link="JQUERY_COOKIE" />
 
-    <div class="column-6-18">
+    <div class="column-4-20">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="response">
-                <ul id="sections" class="side-tabs">
-                    <li><a id="containers" href="#">Containers</a></li>
-                    <li><a id="buttons" href="#">Buttons</a></li>
-                    <li><a id="pickers" href="#">Pickers</a></li>
-                    <li><a id="i18n" href="#">I18N</a></li>
-                    <li><a id="i18nScopes" href="#">I18N Scopes</a></li>
-                    <li><a id="dialogs" href="#">Dialogs</a></li>
-                    <li><a id="jsTesting" href="#">JS Testing</a></li>
-                    <li><a id="sprites" href="#">CSS Icons</a></li>
-                    <li><a id="more" href="#">More</a></li>
-                </ul>
-            </tags:sectionContainer2>
+            <ul id="dev-sections" class="side-tabs">
+                <li class="selected"><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/containers"/>">Containers</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/buttons"/>">Buttons</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/pickers"/>">Pickers</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/i18n"/>">I18N</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/i18nScopes"/>">I18N Scopes</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/dialogs"/>">Dialogs</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/jsTesting"/>">JS Testing</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/sprites"/>">Icons</a></li>
+                <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/more"/>">More</a></li>
+            </ul>
         </div>
         <div class="column two nogutter">
-            <div id="rightColumn" class="clearfix">
+            <div id="dev-content" class="clearfix">
                 <%@ include file="containers.jsp"%>
             </div>
         </div>
     </div>
 
-
-
-
+<script>
+jQuery(function () {
+    jQuery('#dev-sections a').click(function(e) {
+        var url = jQuery(this).data('url');
+        jQuery('#dev-content').load(url);
+        jQuery('#dev-sections li').removeClass('selected');
+        jQuery(this).closest('li').addClass('selected');
+    });
+});
+</script>
 </cti:standardPage>
