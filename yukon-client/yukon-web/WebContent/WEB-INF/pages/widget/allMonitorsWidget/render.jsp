@@ -522,7 +522,7 @@
         </c:if>
     </cti:checkRolesAndProperties>
     <c:if test="${not isSubscribedWidget}">
-        <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" containerCssClass="fr" menuCssClass="no-icons">
+        <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" triggerClasses="fr" menuClasses="no-icons">
             <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
                 <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
             </cti:checkRolesAndProperties>

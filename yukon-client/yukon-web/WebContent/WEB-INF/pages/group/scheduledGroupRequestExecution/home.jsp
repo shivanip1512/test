@@ -19,15 +19,15 @@
 <cti:msg var="scheduleStateLabel" key="yukon.common.device.schedules.home.scheduleState"/>
 <cti:msg var="scheduleButtonText" key="yukon.common.device.schedules.home.scheduleButton"/>
 <cti:msg var="updateButtonText" key="yukon.common.device.schedules.home.updateButton"/>
-<cti:msg var="enableJobButtonText" key="yukon.common.device.schedules.home.enableJobButton" />
-<cti:msg var="disableJobButtonText" key="yukon.common.device.schedules.home.disableJobButton" />
-<cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.schedules.home.disableAndDeleteJobButton" />
+<cti:msg var="enableJobButtonText" key="yukon.common.device.schedules.home.enableJobButton"/>
+<cti:msg var="disableJobButtonText" key="yukon.common.device.schedules.home.disableJobButton"/>
+<cti:msg var="disableAndDeleteJobButtonText" key="yukon.common.device.schedules.home.disableAndDeleteJobButton"/>
 
 <style type="text/css">
     .scheduleButtonDiv {border-top:solid 1px #cccccc;padding-top:6px;}
 </style>
-<cti:msg var="take10" argument="10px" />
-<cti:msg var="take12" argument="12px" />
+<cti:msg var="take10" argument="10px"/>
+<cti:msg var="take12" argument="12px"/>
 
 <cti:standardPage page="scheduledGroupRequestHome.${mode}" module="tools">
         
@@ -37,7 +37,7 @@
         </c:if>
         
         <%-- DEVICE GROUP JSON DATA --%>
-        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath" />
+        <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath"/>
         
         <%-- TOGGLE/DELETE FORMS --%>
         <form id="toggleJobEnabledForm" action="/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
@@ -56,16 +56,16 @@
             <%-- ATTRIBUTE TAB --%>
             <cti:tabbedContentSelectorContent selectorName="${attibuteRequestTypeLabel}" initiallySelected="${empty requestType || requestType == 'SCHEDULED_GROUP_ATTRIBUTE_READ'}">
                 
-                <form id="scheduledGroupRequestExecutionForm_attr" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
+                <form id="scheduledGroupRequestExecutionForm_attr" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                   <cti:csrfToken/>
                      <input type="hidden" name="editJobId" value="${editJobId}">
                      <input type="hidden" name="requestType" value="SCHEDULED_GROUP_ATTRIBUTE_READ">
-                     <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
+                     <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_"/>
                      <input type="hidden" name="formUniqueId" value="${formUniqueId}">
                      
-                     <cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_" />
+                     <cti:uniqueIdentifier var="cronTagId_attr" prefix="cronTagIdAttr_"/>
                      <input type="hidden" name="cronTagId" value="${cronTagId_attr}">
-                    <tags:setFormEditMode mode="${mode}" />
+                    <tags:setFormEditMode mode="${mode}"/>
                  
                      <tags:nameValueContainer>
                      
@@ -95,7 +95,7 @@
                          </tags:nameValue>
                          
                          <tags:nameValue name="${retryLabel}">
-                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
+                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
                          </tags:nameValue>
                          
                          <cti:displayForPageEditModes modes="EDIT">
@@ -144,11 +144,11 @@
             <%-- COMMAND TAB --%>
             <cti:tabbedContentSelectorContent selectorName="${commandRequestTypeLabel}" initiallySelected="${requestType == 'SCHEDULED_GROUP_COMMAND'}">
             
-                <form id="scheduledGroupRequestExecutionForm_cmd" action="/group/scheduledGroupRequestExecution/schedule" method="post" >
+                <form id="scheduledGroupRequestExecutionForm_cmd" action="<cti:url value="/group/scheduledGroupRequestExecution/schedule"/>" method="post" >
                     <cti:csrfToken/>
                      <input type="hidden" name="editJobId" value="${editJobId}">
                      <input type="hidden" name="requestType" value="SCHEDULED_GROUP_COMMAND">
-                     <cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_" />
+                     <cti:uniqueIdentifier var="formUniqueId" prefix="cmdFormUniqueId_"/>
                      <input type="hidden" name="formUniqueId" value="${formUniqueId}">
                      
                      <tags:nameValueContainer>
@@ -178,7 +178,7 @@
                          </tags:nameValue>
                          
                          <tags:nameValue name="${retryLabel}">
-                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
+                             <tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}"/>
                          </tags:nameValue>
                          
                          <cti:displayForPageEditModes modes="EDIT">

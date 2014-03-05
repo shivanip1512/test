@@ -22,7 +22,8 @@ jQuery(document).ready(function() {
 <%-- FILTER POPUP --%>
 <i:simplePopup titleKey=".filter.section" id="filterPopup">
     <cti:flashScopeMessages/>
-    <form:form id="filterForm" action="/group/scheduledGroupRequestExecutionResults/jobs"
+    <cti:url var="filterUrl" value="/group/scheduledGroupRequestExecutionResults/jobs"/>
+    <form:form id="filterForm" action="${filterUrl}"
         method="get" commandName="backingBean">
         <tags:sortFields backingBean="${backingBean}" />
 
@@ -184,7 +185,8 @@ jQuery(document).ready(function() {
 </table>
 <c:if test="${canManage}">
     <div class="action-area">
-        <cti:button nameKey="create" icon="icon-plus-green" href="/group/scheduledGroupRequestExecution/home"/>
+        <cti:url var="createUrl" value="/group/scheduledGroupRequestExecution/home"/>
+        <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}"/>
     </div>
 </c:if>
 </tags:pagedBox2>

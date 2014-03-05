@@ -6,12 +6,12 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<%@ attribute name="containerCssClass" %>
+<%@ attribute name="triggerClasses" description="CSS class names applied to the menu trigger." %>
 <%@ attribute name="icon" description="The css class name of the icon to use. Default: 'icon-cog'" %>
 <%@ attribute name="id" %>
 <%@ attribute name="key" %>
 <%@ attribute name="label" description="Button text. Overrides key." %>
-<%@ attribute name="menuCssClass" %>
+<%@ attribute name="menuClasses" description="CSS class names applied to the menu." %>
 <%@ attribute name="type" description="The type of this element. Either 'button', 'link', or 'icon'. Default: 'icon'. 'link' and 'button' require a 'key'" %>
 <%@ attribute name="showArrow" description="Show the down arrow? Default: 'true'" %>
 <%@ attribute name="showIcon" description="Ignored when type = 'icon'. Default: 'true'" %>
@@ -21,7 +21,7 @@
 <cti:default var="showIcon" value="true"/>
 <cti:default var="type" value="icon"/>
 
-<div class="dropdown-container usn clearfix ${pageScope.containerCssClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
+<div class="dropdown-trigger usn clearfix ${pageScope.triggerClasses}" <c:if test="${not empty id}">id="${id}"</c:if>>
     <c:choose>
         <c:when test="${type == 'link' && not empty pageScope.key}">
             <a class="button naked">
@@ -48,5 +48,5 @@
             <a><i class="icon ${icon} M0"></i><c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down M0"></i></c:if></a>
         </c:otherwise>
     </c:choose>
-    <ul class="dropdown-menu dn ${pageScope.menuCssClass}" role="menu"><jsp:doBody/></ul>
+    <ul class="dropdown-menu dn ${pageScope.menuClasses}" role="menu"><jsp:doBody/></ul>
 </div>

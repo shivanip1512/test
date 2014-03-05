@@ -96,7 +96,7 @@
                     <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>" role="search" name="q" class="search-field">
                 </form>
                 <cti:button id="yukon-alert-button" data-alert-sound="${alertSounds}" data-alert-flash="${alertFlash}" classes="action dn" label="0"/>
-                <cm:dropdown containerCssClass="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
+                <cm:dropdown triggerClasses="b-user-menu fl" icon="icon-user" label="${fn:escapeXml(displayName)}" type="button">
                     <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                         <cti:url value="/adminSetup/user/view?userId=${sessionScope.YUKON_USER.userID}" var="userEditUrl"/>
                         <cm:dropdownOption icon="icon-user-edit" href="${userEditUrl}">User Editor</cm:dropdownOption>
@@ -147,7 +147,7 @@
 			    </h1>
 			</c:if>
             <div class="page-actions">
-                <cm:dropdown id="b-page-actions" type="button" containerCssClass="fr dn"/>
+                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn"/>
                 <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
             </div>
 		</div>

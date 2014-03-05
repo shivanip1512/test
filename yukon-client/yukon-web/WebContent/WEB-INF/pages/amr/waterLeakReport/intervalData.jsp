@@ -22,7 +22,7 @@
 
 	<c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
 		<c:set var="actionsMenu">
-			<cm:dropdown containerCssClass="fr">
+			<cm:dropdown triggerClasses="fr">
 				<li>
                     <cti:link href="/bulk/collectionActions"
                         key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">
@@ -86,7 +86,7 @@
 					<td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
 					<td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
 					<td class="contextual-menu">
-                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
+                        <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
 					</td>
 				</tr>
 			</c:forEach>

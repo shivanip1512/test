@@ -16,7 +16,7 @@
 <cti:msg2 var="stopAction" key=".scenarioDetail.actions.stop"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <tags:dynamicChoose updaterString="DR_SCENARIO/${paoId}/SHOW_ACTION" suffix="${paoId}">
 
             <tags:dynamicChooseOption optionId="hasNoPrograms">
@@ -52,7 +52,7 @@
 </cti:checkPaoAuthorization>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noScenarioControl}">
             ${startAction}
         </cm:dropdownOption>

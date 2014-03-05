@@ -67,7 +67,7 @@
         
         <div class="action-area">
             <c:if test="${showDownload}">
-                <cm:dropdown icon="icon-page-white-excel" type="button" key="yukon.web.components.button.download.label" containerCssClass="fr" menuCssClass="no-icons">
+                <cm:dropdown icon="icon-page-white-excel" type="button" key="yukon.web.components.button.download.label" triggerClasses="fr" menuClasses="no-icons">
                     <c:if test="${activeSize > 0}">
                         <cm:dropdownOption label="Active" href="${assetId}/aa/download/active"/>
                     </c:if>

@@ -8,9 +8,9 @@
 jQuery(function() {
     
     /** Handle clicks on menu triggers */
-    jQuery(document).on('click', '.dropdown-container', function(e) {
+    jQuery(document).on('click', '.dropdown-trigger', function(e) {
         
-        jQuery('.dropdown-container').removeClass('menu-open');
+        jQuery('.dropdown-trigger').removeClass('menu-open');
         
         var target = jQuery(this),
             menu = target.find('.dropdown-menu');
@@ -38,7 +38,7 @@ jQuery(function() {
         }
 
         jQuery('ul.dropdown-menu').hide();
-        if (target.closest('.dropdown-container').hasClass('ajax-menu')) {
+        if (target.closest('.dropdown-trigger').hasClass('ajax-menu')) {
             ajaxMenuOpen(target, e);
             return false;
         }
@@ -80,7 +80,7 @@ jQuery(function() {
         } else {
             target.find('.icon-cog').removeClass('icon-cog').addClass('icon-spinner');
             params = {};
-            target.closest('.dropdown-container').prev('.params').find('input').each(function() {
+            target.closest('.dropdown-trigger').prev('.params').find('input').each(function() {
                 params[jQuery(this).attr('name')] = jQuery(this).val();
             });
             jQuery.ajax({
@@ -108,12 +108,12 @@ jQuery(function() {
         return false;
     }
     
-    /** Close all menus if clicking somewhere off the menu */
+    /** Close all menus on click except when clicking a criteria menu option */
     jQuery(document).click(function(e) {
-        /* click was not inside the dropdown menu, hide it. */
-        if (jQuery(e.target).closest('.dropdown-menu').length === 0) {
+        if (jQuery(e.target).closest('.criteria-menu').length === 0) {
+            /* click was not inside a criteria menu, hide all menus. */
             jQuery('ul.dropdown-menu').hide();
-            jQuery('.dropdown-container').removeClass('menu-open');
+            jQuery('.dropdown-trigger').removeClass('menu-open');
         }
     });
     
@@ -121,14 +121,14 @@ jQuery(function() {
     jQuery(document).keyup(function(e) {
         if (e.which == 27) { // esc
             jQuery('ul.dropdown-menu').hide();
-            jQuery('.dropdown-container').removeClass('menu-open');
+            jQuery('.dropdown-trigger').removeClass('menu-open');
         }
     });
     
     /** Show menu in tables on right click */
     jQuery(document).on('contextmenu', '.has-actions tr', function(event) {
         event.preventDefault();
-        jQuery(this).find('.dropdown-container').trigger('click');
+        jQuery(this).find('.dropdown-trigger').trigger('click');
     });
     
     /** Handle option selections for criteria buttons */
@@ -139,7 +139,7 @@ jQuery(function() {
         
         updateCriteriaButton(menu);
         
-        positionDropdownMenu(menu, menu.data('button').closest('.dropdown-container'));
+        positionDropdownMenu(menu, menu.data('button').closest('.dropdown-trigger'));
         return false;
     });
     
@@ -166,7 +166,7 @@ jQuery(function() {
     }
     
     /** Update criteria buttons on page load */
-    jQuery('.dropdown-container').each(function(idx, container) {
+    jQuery('.dropdown-trigger').each(function(idx, container) {
         var container = jQuery(container),
             menu = container.find('.dropdown-menu');
         

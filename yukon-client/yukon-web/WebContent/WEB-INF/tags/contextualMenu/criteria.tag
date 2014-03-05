@@ -4,17 +4,17 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<%@ attribute name="containerCssClass" description="Class names applied to the outer container element." %>
+<%@ attribute name="triggerClasses" description="Class names applied to the outer container element." %>
 <%@ attribute name="id" %>
 <%@ attribute name="key" description="Required when 'label' attribute is not used." %>
 <%@ attribute name="label" description="Text representing the type of criteria, ie: 'Device Type:'" %>
 <%@ attribute name="value" description="Text representing the criteria currently chosen, ie: 'RFN-420fL, RFN-420fD'" %>
-<%@ attribute name="menuCssClass" description="Class names applied to the menu container element." %>
+<%@ attribute name="menuClasses" description="Class names applied to the menu container element." %>
 
 <cti:msg2 key="yukon.web.defaults.all" var="allText"/>
 <cti:msg2 key="yukon.web.defaults.none" var="noneText"/>
 
-<div class="dropdown-container usn ${pageScope.containerCssClass}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
+<div class="dropdown-trigger usn ${pageScope.triggerClasses}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <button type="button" class="criteria-button" data-all-text="${allText}" data-none-text="${noneText}">
         <div class="criteria-wrap">
             <c:choose>
@@ -27,5 +27,5 @@
         </div>
         <i class="icon icon-bullet-arrow-down">&nbsp;</i>
     </button>
-    <ul class="dropdown-menu criteria-menu dn ${pageScope.menuCssClass}"><jsp:doBody/></ul>
+    <ul class="dropdown-menu criteria-menu dn ${pageScope.menuClasses}"><jsp:doBody/></ul>
 </div>

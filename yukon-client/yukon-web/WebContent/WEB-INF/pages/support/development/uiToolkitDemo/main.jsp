@@ -256,7 +256,7 @@ button
                 </tr>
                 <tr>
                     <td style="width: 175px;">
-				        <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fr">
+				        <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fr">
 				            <li><a>Some Item 1</a></li>
 				            <li><a>Some Item 2</a></li>
 				            <li><a>Some Item 3</a></li>
@@ -267,7 +267,7 @@ button
                     <td>
                     Floating this one right so it can open in the "default" manner, which is to the left.
 <pre class="code">
-&lt;cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fr"&gt;
+&lt;cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fr"&gt;
     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;
@@ -295,7 +295,7 @@ button
 	                                    <td>Some Data ${status.index+1}</td>
 	                                    <td>Some Data ${status.index+2}</td>
 	                                    <td class="contextual-menu">
-	                                        <cm:dropdown containerCssClass="fr">
+	                                        <cm:dropdown triggerClasses="fr">
 	                                            <li><a>Some Item 1</a></li>
 	                                            <li><a>Some Item 2</a></li>
 	                                            <li><a>Some Item 3</a></li>
@@ -328,7 +328,7 @@ button
             &lt;td&gt;Some Data ${status.index+1}&lt;/td&gt;
             &lt;td&gt;Some Data ${status.index+2}&lt;/td&gt;
             &lt;td class="contextual-menu"&gt;
-                &lt;cm:dropdown containerCssClass="fr"&gt;
+                &lt;cm:dropdown triggerClasses="fr"&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 1&lt;/a&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 2&lt;/a&gt;&lt;/li&gt;
                     &lt;li&gt;&lt;a&gt;Some Item 3&lt;/a&gt;&lt;/li&gt;

@@ -478,7 +478,7 @@
                                     <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
                                 </td>
                                 <td class="contextual-menu">
-                                    <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
+                                    <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
                                 </td>
                             </tr>
                         </c:forEach>

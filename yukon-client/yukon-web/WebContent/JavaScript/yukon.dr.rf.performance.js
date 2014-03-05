@@ -23,7 +23,7 @@ yukon.dr.rf.performance = (function () {
             jQuery(document).on('click', '.f-success, .f-failed, .f-unknown', function(event) {
                 
                 var popup = jQuery('#devices-popup'),
-                    url = '/dr/rf/details',
+                    url = yukon.url('/dr/rf/details'),
                     hasChart = false;
                 
                 /* Build url */

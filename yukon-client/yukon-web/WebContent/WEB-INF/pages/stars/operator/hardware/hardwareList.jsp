@@ -354,7 +354,7 @@
                                 <td>${fn:escapeXml(hwSwitch.displayType)}</td>
                                 <td>
                                     ${fn:escapeXml(hwSwitch.displayLabel)}
-                                    <cm:dropdown containerCssClass="fr">
+                                    <cm:dropdown triggerClasses="fr">
                                         <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${hwSwitch.inventoryId}" />
                                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                             <c:if test="${inventoryChecking}">
@@ -440,7 +440,7 @@
                                 <td>${fn:escapeXml(thermostat.displayType)}</td>
                                 <td>
                                     ${fn:escapeXml(thermostat.displayLabel)}
-                                    <cm:dropdown containerCssClass="fr">
+                                    <cm:dropdown triggerClasses="fr">
                                         <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${thermostat.inventoryId}" />
                                         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                             <c:if test="${thermostat.hardwareType.supportsSchedules}">
@@ -560,7 +560,7 @@
                                     <td>${fn:escapeXml(meter.displayType)}</td>
                                     <td>
                                         ${fn:escapeXml(meter.displayLabel)}
-                                        <cm:dropdown containerCssClass="fr">
+                                        <cm:dropdown triggerClasses="fr">
                                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                                 <c:if test="${inventoryChecking}">
                                                     <li>
@@ -657,7 +657,7 @@
                                     </cti:pointStatusColor>
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <c:if test="${inventoryChecking}">
-                                            <cm:dropdown containerCssClass="fr">
+                                            <cm:dropdown triggerClasses="fr">
                                                 <li>
                                                     <tags:pickerDialog extraArgs="${energyCompanyId}" 
                                                             id="availableGatewayPicker${gateway.inventoryId}" 

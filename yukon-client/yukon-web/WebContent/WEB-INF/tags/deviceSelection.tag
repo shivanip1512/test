@@ -1,9 +1,9 @@
 <%@ tag dynamic-attributes="extraInputs" trimDirectiveWhitespaces="true" %>
 
-<%@ attribute name="action" required="true"%>
-<%@ attribute name="blockOnSubmit" type="java.lang.Boolean"%>
-<%@ attribute name="groupDataJson" required="true"%>
-<%@ attribute name="pickerType" required="true"%>
+<%@ attribute name="action" required="true" %>
+<%@ attribute name="blockOnSubmit" type="java.lang.Boolean" %>
+<%@ attribute name="groupDataJson" required="true" %>
+<%@ attribute name="pickerType" required="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>

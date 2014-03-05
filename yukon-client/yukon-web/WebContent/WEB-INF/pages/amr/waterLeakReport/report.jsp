@@ -176,7 +176,7 @@
     </c:choose>
 
     <c:set var="actionsMenu">
-        <cm:dropdown containerCssClass="fr">
+        <cm:dropdown triggerClasses="fr">
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
                     <cti:link href="/bulk/collectionActions"
@@ -293,7 +293,7 @@
                                     </td>
                                 </c:if>
                                 <td class="contextual-menu">
-                                    <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" containerCssClass="fr"/>
+                                    <cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
                                 </td>
                             </tr>
                         </c:forEach>

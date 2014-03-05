@@ -18,7 +18,7 @@
 <cti:msg2 var="stopAction" key=".programDetail.actions.stop"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <tags:dynamicChoose updaterString="DR_PROGRAM/${paoId}/SHOW_ACTION" suffix="${paoId}">
 
             <tags:dynamicChooseOption optionId="unknown">
@@ -134,7 +134,7 @@
 </cti:checkPaoAuthorization>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown containerCssClass="fr">
+    <cm:dropdown triggerClasses="fr">
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noProgramControl}">${startAction}</cm:dropdownOption>
         <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${noProgramControl}">${stopAction}</cm:dropdownOption>
     </cm:dropdown>

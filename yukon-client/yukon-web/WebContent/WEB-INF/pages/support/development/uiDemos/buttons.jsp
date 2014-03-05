@@ -42,7 +42,7 @@
     </div>
     <div class="button-example section">
         <div class="clearfix">
-            <cm:dropdown type="button" key="yukon.web.defaults.actions" containerCssClass="fl">
+            <cm:dropdown type="button" key="yukon.web.defaults.actions" triggerClasses="fl">
                 <cm:dropdownOption icon="icon-pencil">Edit</cm:dropdownOption>
                 <cm:dropdownOption icon="icon-page-copy">Copy</cm:dropdownOption>
                 <cm:dropdownOption icon="icon-cross">Delete</cm:dropdownOption>
@@ -51,7 +51,7 @@
             </cm:dropdown>
             <span class="description">dropdown menu button</span>
         </div>
-        <pre class="code prettyprint">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; containerCssClass=&quot;fl&quot;&gt;
+        <pre class="code prettyprint">&lt;cm:dropdown type=&quot;button&quot; key=&quot;yukon.web.defaults.actions&quot; triggerClasses=&quot;fl&quot;&gt;
     &lt;cm:dropdownOption icon=&quot;icon-pencil&quot;&gt;Edit&lt;/cm:dropdownOption&gt;
     &lt;cm:dropdownOption icon=&quot;icon-page-copy&quot;&gt;Copy&lt;/cm:dropdownOption&gt;
     &lt;cm:dropdownOption icon=&quot;icon-cross&quot;&gt;Delete&lt;/cm:dropdownOption&gt;

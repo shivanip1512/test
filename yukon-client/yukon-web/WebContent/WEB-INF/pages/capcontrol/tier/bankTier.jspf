@@ -159,7 +159,7 @@ margin: 0px;
                         <cti:param name="collectionType" value="group"/>
                         <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
                     </cti:url>
-                    <cm:dropdown icon="icon-cog" containerCssClass="fr">
+                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
                         <c:if test="${hasCapbankControl}">
                             <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="f-bank-command" />
                             <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="f-bank-state" />
