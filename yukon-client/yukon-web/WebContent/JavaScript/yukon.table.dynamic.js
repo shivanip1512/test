@@ -2,30 +2,30 @@
  * Find the correct instance of DynamicTable for a given element and call the given method on it.
  */
 function callOnDynamicTable (event, method) {
-    var wrapperDiv = jQuery(event.target).closest('div.dynamicTableWrapper')[0],
+    var wrapperDiv = jQuery(event.target).closest('.dynamicTableWrapper')[0],
         divId = wrapperDiv.id,
         dynamicTableInstance = window[divId.substring(0, divId.length - 8)];
     dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
 }
 
 jQuery(function () {
-    jQuery(document).on('click', 'div.dynamicTableWrapper .moveUpBtn',
+    jQuery(document).on('click', '.dynamicTableWrapper .moveUpBtn',
             function(event) {
                 callOnDynamicTable(event, 'moveItemUp');
             });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .moveDownBtn',
+    jQuery(document).on('click', '.dynamicTableWrapper .moveDownBtn',
             function(event) {
                 callOnDynamicTable(event, 'moveItemDown');
             });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .removeBtn',
+    jQuery(document).on('click', '.dynamicTableWrapper .removeBtn',
             function(event) {
                 callOnDynamicTable(event, 'removeItem');
             });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .undoRemoveBtn',
+    jQuery(document).on('click', '.dynamicTableWrapper .undoRemoveBtn',
             function(event) {
                 callOnDynamicTable(event, 'undoRemoveItem');
             });
-    jQuery(document).on('click', 'div.dynamicTableWrapper .addItem',
+    jQuery(document).on('click', '.dynamicTableWrapper .addItem',
             function(event) {
                 callOnDynamicTable(event, 'addItem');
             });
@@ -258,7 +258,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             noItemsMessageDiv;
         parentNode.replaceChild(newRow, tempRow);
         parentNode.appendChild(newUndoRow);
-        this.updateMoveButtonVisibility(this, newRow);
+        this.updateMoveButtonVisibility.call(this, newRow);
         matchRowAndUndoRowHeights.call(this, newRow, newUndoRow);
         if (jQuery(newRow).find("input:first[type='text']")) {
             jQuery(newRow).find("input:first[type='text']").focus();
@@ -276,7 +276,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         var thisRow = jQuery(event.target).closest('tr'),
             previousRow = thisRow.prev().prev();
         // keep going back until we find a visible one
-        while (previousRow[0].rowIndex >= 2 && !previousRow[0].visible()) {
+        while (previousRow[0].rowIndex >= 2 && !previousRow.is(':visible')) {
             previousRow = previousRow.prev().prev();
         }
         this.swapRows(previousRow[0], thisRow[0]);
@@ -285,7 +285,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.moveItemDown = function(event) {
         var thisRow = jQuery(event.target).closest('tr'),
             nextRow = thisRow.next().next();
-        while (nextRow.next() && !nextRow[0].visible()) {
+        while (nextRow.next() && !nextRow.is(':visible')) {
             nextRow = nextRow.next().next();
         }
         this.swapRows(thisRow[0], nextRow[0]);
@@ -294,7 +294,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.removeItem = function(event) {
         var row = jQuery(event.target).closest('tr'),
             isDeletionInput;
-        this.hideRemovedItem(row);
+        this.hideRemovedItem(row[0]);
         isDeletionInput = row.find('.isDeletionField');
         isDeletionInput.val(true);
     };
@@ -342,14 +342,14 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             disableMoveDown(aroundRow);
             return;
         }
-        if (aroundRow == visibleRows[0]) {
+        if (aroundRow === visibleRows[0]) {
             disableMoveUp(aroundRow);
             enableMoveUp(visibleRows[1]);
         } else {
             enableMoveUp(aroundRow);
         }
 
-        if (aroundRow == visibleRows.last()) {
+        if (aroundRow === visibleRows.last()) {
             disableMoveDown(aroundRow);
             enableMoveDown(visibleRows[visibleRows.length - 2]);
         } else {
@@ -381,12 +381,12 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         secondRowOrderInput = jQuery(secondRow).find('.orderField')[0];
 
         visibleRows = getVisibleRows.call(this);
-        if (firstRow == jQuery(visibleRows).first()[0]) {
+        if (firstRow === jQuery(visibleRows).first()[0]) {
             // this is the first row; update "move up" icons
             disableMoveUp(secondRow);
             enableMoveUp(firstRow);
         }
-        if (secondRow == jQuery(visibleRows).last()[0]) {
+        if (secondRow === jQuery(visibleRows).last()[0]) {
             // swapping with last row; update "move down" icons
             disableMoveDown(firstRow);
             enableMoveDown(secondRow);
@@ -400,7 +400,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         firstGoesBefore = jQuery(secondUndoRow).next()[0];
         parentNode.insertBefore(secondRow, firstRow);
         parentNode.insertBefore(secondUndoRow, firstRow);
-        if (jQuery(firstUndoRow).next()[0] != secondRow) {
+        if (jQuery(firstUndoRow).next()[0] !== secondRow) {
             // they weren't adjacent, need to move first row too
             if (firstGoesBefore) {
                 // second one is NOT the last one
