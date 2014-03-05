@@ -1,12 +1,6 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <style>
 .labelGutter label {
@@ -27,12 +21,6 @@
     font-size: 70%;
 }
 
-hr {
-    float: none;
-    clear: both;
-    border: solid 1px #ccc;
-    border-style: dotted none none;    
-}
 </style>
 
 <p class="pageDescription">
@@ -54,7 +42,7 @@ hr {
     <div class="dateContainer"><label>Limited Range<br><small>1 week ago -<br>1 week from now</small></label><dt:date value="${now}" minDate="${start}" maxDate="${end}" /></div>
     <div class="dateContainer"><label>Date Range</label><dt:dateRange startValue="${now}" endValue="${end}" /></div>
 
-    <hr>
+    <hr class="dashed">
 
     <h3>Time Picker</h3>
     <div class="dateContainer"><label>Basic</label><dt:time value="${now}" /></div>
@@ -62,7 +50,7 @@ hr {
     <div class="dateContainer"><label>Step Minute<br><small>Minutes:7</small></label><dt:time value="${now}" stepMinute="7"/></div>
     <div class="dateContainer"><label>Step Minute & Hour<br><small>Minutes:8 / Hour:4</small></label><dt:time value="${now}" stepMinute="8" stepHour="4"/></div>
 
-    <hr>
+    <hr class="dashed">
 
     <h3>Date & Time Picker</h3>
     <div class="dateContainer"><label>Basic</label><dt:dateTime value="${now}"/></div>
