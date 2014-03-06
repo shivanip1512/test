@@ -6633,7 +6633,7 @@
             <attribute name="RFN_OUTAGE_RESTORE_COUNT">
                 <basicLookup point="Outage Restore Count" />
             </attribute>
-            <attribute name="DEVICE_TEMPERATURE">
+            <attribute name="TEMPERATURE_DEVICE">
                 <basicLookup point="Device Temperature" />
             </attribute>
 
