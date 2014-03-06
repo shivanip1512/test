@@ -397,9 +397,11 @@ begin
 	LoadJvmParams();
 	
 	//Remove Lucene indexes so they're rebuilt on startup
-	nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
-	if(nResult < 0) then
-	   MessageBox("Unable to clear Lucene indexes. Please manually rebuild indexes.", WARNING);
+	if(ExistsDir(TARGETDIR ^ "cache") = EXISTS) then
+		nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
+		if(nResult < 0) then
+		   MessageBox("Unable to clear Lucene indexes. Please manually rebuild indexes.", WARNING);
+		endif;
 	endif;
 	
 	Dialog_DBToolsFrame:
