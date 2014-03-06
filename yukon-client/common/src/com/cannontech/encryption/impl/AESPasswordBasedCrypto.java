@@ -21,11 +21,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.MasterConfigCryptoUtils;
 import com.cannontech.encryption.PasswordBasedCrypto;
 
 public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
-    private static Logger log = YukonLogManager.getLogger(MasterConfigCryptoUtils.class);
+    private static Logger log = YukonLogManager.getLogger(AESPasswordBasedCrypto.class);
 
     private Cipher encryptingCipher;
     private Cipher decryptingCipher;

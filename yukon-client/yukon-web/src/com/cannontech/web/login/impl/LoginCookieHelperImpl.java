@@ -24,9 +24,6 @@ import com.cannontech.web.login.UserPasswordHolder;
 public class LoginCookieHelperImpl implements LoginCookieHelper {
     private static Logger log = YukonLogManager.getLogger(LoginCookieHelperImpl.class);
 
-    private static final Path rememberMeLoginCookieKey = 
-            BootstrapUtils.getKeysFolder().resolve("loginCookieKeyfile.dat");
-
     // any printable ascii char not 0-9, a-f, or A-F
     private static final String cookieValueSeparater = "_";
 
@@ -76,6 +73,8 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
      * Returns the remembermeLoginCookie crypto key
      */
     private static char[] getPassKey() throws IOException, CryptoException, JDOMException {
+        Path rememberMeLoginCookieKey = BootstrapUtils.getKeysFolder().resolve("loginCookieKeyfile.dat");
+
         if (!Files.exists(rememberMeLoginCookieKey)) {
             log.info(rememberMeLoginCookieKey.getFileName() + " doesn't exist."
                      + " Creating a new CryptoFile for remember me cookie");

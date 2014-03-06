@@ -32,9 +32,6 @@ public class CryptoUtils {
     private static final int rsaKeySize = 512; //4096 bits
     private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+={}[];:,.?!@#$%^*()";
 
-    private static final File keysFolder = BootstrapUtils.getKeysFolder().toFile();
-    private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
-
     /**
      * System-wide passkey to do encryption when no other passkey is available. Currently only using this to encrypt a file
      * which contains the actual passkey. In other words, this passkey unlocks the real passkey which is used for encryption.
@@ -124,6 +121,7 @@ public class CryptoUtils {
     public static char[] getSharedPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
 
+        File sharedCryptoFile = new File(BootstrapUtils.getKeysFolder().toFile(), "sharedKeyfile.dat");
         if (sharedCryptoFile.exists()) {
             passkey = CryptoUtils.getPasskeyFromCryptoFile(sharedCryptoFile);
         } else {

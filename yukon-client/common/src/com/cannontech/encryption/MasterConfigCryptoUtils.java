@@ -17,9 +17,6 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 public class MasterConfigCryptoUtils {
     private static Logger log = YukonLogManager.getLogger(MasterConfigCryptoUtils.class);
 
-    private static final File keysFolder = BootstrapUtils.getKeysFolder().toFile();
-    private static final File masterCfgCryptoFile = new File(keysFolder, "masterConfigKeyfile.dat");
-    private static final File masterCfgCryptoLockFile = new File(keysFolder, "masterConfigKeyfile.lck");
     private static final String encryptionDesignation = "(AUTO_ENCRYPTED)";
     private static AESPasswordBasedCrypto encrypter;
 
@@ -42,6 +39,9 @@ public class MasterConfigCryptoUtils {
      */
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
         char[] passkey = null;
+
+        File masterCfgCryptoFile = new File(BootstrapUtils.getKeysFolder().toFile(), "masterConfigKeyfile.dat");
+        File masterCfgCryptoLockFile = new File(BootstrapUtils.getKeysFolder().toFile(), "masterConfigKeyfile.lck");
 
         try (FileOutputStream fos = new FileOutputStream(masterCfgCryptoLockFile);
     		 FileLock lock = fos.getChannel().lock()) {

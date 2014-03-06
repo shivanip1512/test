@@ -132,6 +132,10 @@ public class BootstrapUtils {
     }
 
     /**
+     * Do not call this method until the keys folder is actually used. In other words, do not call this method
+     * and store as a class member. The reason is this cannot be called on webstarted clients since this
+     * directory is never expected to exist.
+     * 
      * @return directory used to store encryption keys. Directory will be created if it doesn't exist.
      */
     public final static Path getKeysFolder() {
