@@ -8,6 +8,14 @@ sp_rename 'RfnBroadcastEvent.EventSendTime', 'EventSentTime', 'COLUMN';
 /* @error ignore-end */
 /* End YUK-12914 */
 
+/* Start YUK-12914 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId = -10911;
+
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId = -10911;
+/* End YUK-12914 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
