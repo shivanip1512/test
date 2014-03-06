@@ -28,13 +28,16 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/comments/*")
 @Controller
 public class CapControlCommentController {
+    
     private static final String defaultCommentText = "(none)";
-    private CapControlCommentDao commentDao;
-    private RolePropertyDao rolePropertyDao;
-    private FilterCacheFactory filterCacheFactory;
+    
+    @Autowired private CapControlCommentDao commentDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private FilterCacheFactory filterCacheFactory;
     
     @RequestMapping(value="add", method=RequestMethod.POST)
-    public String add(int paoId, String comment, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
+    public String add(int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADD_COMMENTS, user);
         
         final CapControlComment capControlcomment = new CapControlComment();
@@ -47,13 +50,12 @@ public class CapControlCommentController {
         capControlcomment.setDate(date);
         capControlcomment.setAction(CommentAction.USER_COMMENT.toString());
         commentDao.add(capControlcomment);
-        setupCommonAttributes(model, paoId, submitNormal, redirectToOneline);
-        String redirectValue = getRedirectValue(redirectToOneline);
-        return redirectValue;
+        setupCommonAttributes(model, paoId, submitNormal);
+        return "redirect:paoComments";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST)
-    public String update(int commentId, int paoId, String comment, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
+    public String update(int commentId, int paoId, String comment, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         
         CapControlComment capControlComment = commentDao.getById(commentId);
@@ -61,39 +63,33 @@ public class CapControlCommentController {
         capControlComment.setAltered(true);
         commentDao.update(capControlComment);
         
-        setupCommonAttributes(model, paoId, submitNormal, redirectToOneline);
-        String redirectValue = getRedirectValue(redirectToOneline);
-        return redirectValue;
+        setupCommonAttributes(model, paoId, submitNormal);
+        
+        return "redirect:paoComments";
     }
     
     @RequestMapping(value="remove", method=RequestMethod.POST)
-    public String remove(int commentId, int paoId, boolean submitNormal, boolean redirectToOneline, LiteYukonUser user, ModelMap model) throws Exception {
+    public String remove(int commentId, int paoId, boolean submitNormal, LiteYukonUser user, ModelMap model) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.MODIFY_COMMENTS, user);
         CapControlComment comment = new CapControlComment();
         comment.setId(commentId);
         commentDao.remove(comment);
-        setupCommonAttributes(model, paoId, submitNormal, redirectToOneline);
-        String redirectValue = getRedirectValue(redirectToOneline);
-        return redirectValue;
+        setupCommonAttributes(model, paoId, submitNormal);
+        
+        return "redirect:paoComments";
     }
     
     @RequestMapping("paoComments")
-    public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
+    public String paoComments(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model) {
+        
         setupPaoComments(paoId, user, model);
         model.addAttribute("submitNormal", false);
-        model.addAttribute("redirectToOneline", false);
+        
         return "comments/commentsPage.jsp";
     }
     
-    @RequestMapping("paoCommentsForOneline")
-    public String paoCommentsForOneline(HttpServletRequest request, HttpServletResponse response, int paoId, LiteYukonUser user, ModelMap model){
-        setupPaoComments(paoId, user, model);
-        model.addAttribute("submitNormal", true);
-        model.addAttribute("redirectToOneline", true);
-        return "comments/commentsPageOneline.jsp";
-    }
-    
     private void setupPaoComments(int paoId, LiteYukonUser user, ModelMap model) {
+        
         CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
 
         StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);
@@ -114,31 +110,9 @@ public class CapControlCommentController {
         model.addAttribute("addPermission", addPermission);
     }
 
-    private void setupCommonAttributes(ModelMap model, int paoId, boolean submitNormal, boolean redirectToOneline) {
+    private void setupCommonAttributes(ModelMap model, int paoId, boolean submitNormal) {
         model.addAttribute("paoId", paoId);
         model.addAttribute("submitNormal", submitNormal);
-        model.addAttribute("redirectToOneline", redirectToOneline);
     }
     
-    private String getRedirectValue(boolean redirectToOneline) {
-        if (redirectToOneline) {
-            return "redirect:paoCommentsForOneline";
-        }
-        return "redirect:paoComments";
-    }
-
-    @Autowired
-    public void setCommentDao(CapControlCommentDao commentDao) {
-        this.commentDao = commentDao;
-    }
-    
-    @Autowired
-    public void setFilterCacheFactory(FilterCacheFactory filterCacheFactory) {
-        this.filterCacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao){
-        this.rolePropertyDao = rolePropertyDao;
-    }
 }

@@ -31,10 +31,8 @@ public class ReferrerPageFilter implements Filter {
         ImmutableList.of("/capcontrol/ivvc/zone/chart",
                          "/capcontrol/ivvc/bus/chart",
                          "/capcontrol/cbcPointTimestamps.jsp",
-                         "/capcontrol/standardPageWrapper.jsp",
                          "/capcontrol/move/bankMove",
-                         "/capcontrol/capAddInfo",
-                         "/capcontrol/oneline/popupmenu/*");
+                         "/capcontrol/capAddInfo");
     
     @Override
     public void init(FilterConfig fc) throws ServletException {

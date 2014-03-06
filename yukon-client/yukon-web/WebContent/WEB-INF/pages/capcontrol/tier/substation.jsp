@@ -22,8 +22,6 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<cti:url var="onelineCBCServlet" value="/oneline/OnelineCBCServlet"/>
-
 <c:set var="substationId" value="${substation.id}"/>
 
 <c:if test="${hasSubstationControl}">

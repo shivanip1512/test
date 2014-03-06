@@ -42,20 +42,10 @@ public class SVGFilter implements Filter {
             return;
         }
         String jsPath = uri.replaceFirst(conPath, "");
-        if (jsPath.startsWith("/oneline/")) {
-
-            chain.doFilter(req, resp);
-            return;
-        }
-
-        else if (jsPath.startsWith("/esub/")){
+        if (jsPath.startsWith("/esub/")) {
             jsPath = StringUtils.replace(jsPath, "/esub/", "/esub/svgGenerator/");
-            config.getServletContext()
-                  .getRequestDispatcher(jsPath).
-                  forward(req, resp);
-
+            config.getServletContext().getRequestDispatcher(jsPath).forward(req, resp);
         }
-
     }
 
     /**

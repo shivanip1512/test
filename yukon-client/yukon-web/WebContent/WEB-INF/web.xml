@@ -242,21 +242,6 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>jsFilter</filter-name>
-        <url-pattern>/oneline/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>cssFilter</filter-name>
-        <url-pattern>/oneline/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>svgFilter</filter-name>
-        <url-pattern>/oneline/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
         <filter-name>extensionsFilter</filter-name>
         <url-pattern>*.jsf</url-pattern>
     </filter-mapping>
@@ -690,15 +675,6 @@
         </servlet-class>
     </servlet>
 
-    <!-- CapControl specific configs -->
-    <servlet>
-        <servlet-name>OnelineCBCServlet</servlet-name>
-        <servlet-class>
-            com.cannontech.servlet.OnelineCBCServlet
-        </servlet-class>
-    </servlet>
-    
-    <!-- End CapControl specific configs -->
     <!-- esub specific servlets -->
     <servlet>
         <servlet-name>EmbedSVGJSServlet</servlet-name>
@@ -1108,10 +1084,6 @@
         <url-pattern>/servlet/PWordRequest</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>OnelineCBCServlet</servlet-name>
-        <url-pattern>/oneline/OnelineCBCServlet</url-pattern>
-    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DynamicTextServlet</servlet-name>
         <url-pattern>/servlet/DynamicTextServlet</url-pattern>

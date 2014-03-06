@@ -14,7 +14,6 @@
             <input type="hidden" name="commentId" id="commentId" value="">
             <input type="hidden" name="comment" id="comment">
             <input type="hidden" name="submitNormal" value="${submitNormal}">
-            <input type="hidden" name="redirectToOneline" value="${redirectToOneline}">
             
             <c:if test="${empty comments}">
                 <span class="empty-list"><i:inline key=".noComments"/></span>

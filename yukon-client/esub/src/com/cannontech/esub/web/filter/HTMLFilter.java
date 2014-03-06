@@ -31,81 +31,81 @@ import com.cannontech.user.YukonUserContext;
  */
 public class HTMLFilter implements Filter {
 
-	private FilterConfig config;
-	private HTMLGenerator htmlGenerator = new HTMLGenerator();
-	
-	/**
-	 * @see javax.servlet.Filter#init(FilterConfig)
-	 */
-	@Override
+    private FilterConfig config;
+    private HTMLGenerator htmlGenerator = new HTMLGenerator();
+    
+    /**
+     * @see javax.servlet.Filter#init(FilterConfig)
+     */
+    @Override
     public void init(FilterConfig fc) throws ServletException {
-		config = fc;
-		htmlGenerator.getGenOptions().setStaticHTML(false);
-	}
+        config = fc;
+        htmlGenerator.getGenOptions().setStaticHTML(false);
+    }
 
-	/**
-	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	@Override
+    /**
+     * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    @Override
     public void doFilter(
-		ServletRequest req,
-		ServletResponse resp,
-		FilterChain chain)
-		throws IOException, ServletException {
-			
-		ServletContext sc = config.getServletContext();
-		
-		HttpServletRequest hreq = (HttpServletRequest)req;
-		HttpServletResponse hres = (HttpServletResponse)resp;
+        ServletRequest req,
+        ServletResponse resp,
+        FilterChain chain)
+        throws IOException, ServletException {
+            
+        ServletContext sc = config.getServletContext();
+        
+        HttpServletRequest hreq = (HttpServletRequest)req;
+        HttpServletResponse hres = (HttpServletResponse)resp;
 
-		resp.setContentType("text/html");
-				
-		String uri = hreq.getRequestURI();
-		
-		// Do nothing if this isn't an html request
-		if(!(uri.endsWith(".html"))) {
-			chain.doFilter(req,resp);
-			return;
-		}
-		
-		String conPath = hreq.getContextPath();
+        resp.setContentType("text/html");
+                
+        String uri = hreq.getRequestURI();
+        
+        // Do nothing if this isn't an html request
+        if(!(uri.endsWith(".html"))) {
+            chain.doFilter(req,resp);
+            return;
+        }
+        
+        String conPath = hreq.getContextPath();
 
-		String jlxPath= uri.replaceFirst(conPath, "");
-		jlxPath = sc.getRealPath(jlxPath);
-		
-		//Assume this ends with .html
-		jlxPath = jlxPath.substring(0, jlxPath.length()-5) + ".jlx";
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(hreq);
-		
-		try {
+        String jlxPath= uri.replaceFirst(conPath, "");
+        jlxPath = sc.getRealPath(jlxPath);
+        
+        //Assume this ends with .html
+        jlxPath = jlxPath.substring(0, jlxPath.length()-5) + ".jlx";
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(hreq);
+        
+        try {
 
-			Drawing d = new Drawing();
-			d.setUserContext(userContext);
-			
+            Drawing d = new Drawing();
+            d.setUserContext(userContext);
+            
             LiteYukonUser user = (LiteYukonUser) hreq.getSession(false).getAttribute(LoginController.YUKON_USER);
             YukonRole yukonRole = d.getMetaElement().getRole();
 
-			d.load(jlxPath);
-		 
-			//Check if this user has access to this drawing!
-			
-			RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-			
-            if(rolePropertyDao.checkRole(yukonRole, user)) {
-				htmlGenerator.generate(hres.getWriter(), d);
-			}
-		}
-		catch(Exception e ) {
-			CTILogger.error(e);
-		}
-	}
+            d.load(jlxPath);
+         
+            //Check if this user has access to this drawing!
+            
+            RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
+            
+            if (rolePropertyDao.checkRole(yukonRole, user)) {
+                htmlGenerator.generate(hres.getWriter(), d);
+            }
+        }
+        catch(Exception e ) {
+            CTILogger.error(e);
+        }
+    }
 
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
-	@Override
+    /**
+     * @see javax.servlet.Filter#destroy()
+     */
+    @Override
     public void destroy() {
-		config = null;
-	}
+        config = null;
+    }
 
 }

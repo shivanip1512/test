@@ -50,11 +50,6 @@
     <entry key="yukon.web.modules.capcontrol.dailyMaxTotalOps">{0} / {1} / {2}</entry>
     <entry key="yukon.web.modules.capcontrol.pfEstPf">{0} / {1}</entry>
     
-    <entry key="yukon.web.modules.capcontrol.oneline.threePhase">{0}/{1}/{2}</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.wattsVolts">{0}/{1}</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.tagMenuCommandSuccess">Command Successfully Queued</entry>
-    <entry key="yukon.web.modules.capcontrol.oneline.tagMenuCommandFailed">Command Failed</entry>
-    
     <entry key="yukon.web.modules.capcontrol.pfPercent">{0}%</entry>
     
     <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>
@@ -356,8 +351,6 @@
     <entry key="yukon.web.modules.capcontrol.substation.bankMove">Move Bank</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.questionableQuality.hoverText">Questionable Quality</entry>
-    
-    <entry key="yukon.web.modules.capcontrol.substation.oneline.hoverText">Click to view One-Line</entry>
     
     <entry key="yukon.web.modules.capcontrol.substation.location.hoverText">Driving Directions</entry>
     

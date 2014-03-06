@@ -12,7 +12,7 @@
 updateFeederBankInfo = function () {
     var params = {'feederId': jQuery("#selectedFeeder").val()};
     jQuery.ajax({
-        url: '/capcontrol/move/feederBankInfo',
+        url: yukon.url('/capcontrol/move/feederBankInfo'),
         method: 'post',
         data: params,
         success: function(data) {
@@ -69,8 +69,8 @@ function getTreeStructure() {
 </script>
 
 <div>
-    <form:form commandName="bankMoveBean" action="/capcontrol/command/bankMove">
-        <input type="hidden" name="oneline" value="${oneline}">
+    <cti:url var="moveUrl" value="/capcontrol/command/bankMove"/>
+    <form:form commandName="bankMoveBean" action="${moveUrl}">
         <input type="hidden" name="substationId" value="${substationId}">
         <input type="hidden" name="selectedFeeder" value="${oldFeederId}" id="selectedFeeder">
         <form:hidden path="bankId"/>

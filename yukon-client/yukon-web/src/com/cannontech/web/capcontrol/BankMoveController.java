@@ -45,11 +45,9 @@ public class BankMoveController {
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     
     @RequestMapping("bankMove")
-    public String bankMove(ModelMap model, YukonUserContext context, int bankid, Boolean oneline) {
+    public String bankMove(ModelMap model, YukonUserContext context, int bankid) {
+        
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        if (oneline == null) {
-            oneline = false;
-        }
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         int subBusId = 0;
         List<NavigableArea> navigableAreas = capControlWebUtilsService.buildSimpleHierarchy();
@@ -57,13 +55,9 @@ public class BankMoveController {
         CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
         
         int oldFeederId = 0;
-        if (oneline) {
-            subBusId = filterCapControlCache.getParentSubBusID(bankid);
-        }
         if (capBank != null) {
             oldFeederId = capBank.getParentID();
         }
-        model.addAttribute("oneline", oneline);
         model.addAttribute("bankId", bankid);
         model.addAttribute("oldFeederId", oldFeederId);
         model.addAttribute("subBusId", subBusId);
@@ -91,15 +85,12 @@ public class BankMoveController {
         bankMoveBean.setOldFeederId(capBank.getParentID());
         model.addAttribute("bankMoveBean", bankMoveBean);
         
-        if (oneline) {
-            return "move/onelineBankMove.jsp";
-        } else {
-            return "move/bankMove.jsp";
-        }
+        return "move/bankMove.jsp";
     }
     
     @RequestMapping("feederBankInfo")
     public String feederBankInfo(ModelMap model, LiteYukonUser user, int feederId) {
+        
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
         Feeder feederobj = filterCapControlCache.getFeeder(feederId);
         String feederName = feederobj.getCcName();
@@ -134,8 +125,6 @@ public class BankMoveController {
             }
         }
         
-        
-        
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = movedCaps.size();
@@ -148,12 +137,10 @@ public class BankMoveController {
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
         model.addAttribute("searchResult", result);
         model.addAttribute("itemList", result.getResultList());
-        
         model.addAttribute("isFiltered", false);
-        
-        
         model.addAttribute("movedCaps", movedCaps);
         
         return "move/movedCapBanks.jsp";
     }
+    
 }

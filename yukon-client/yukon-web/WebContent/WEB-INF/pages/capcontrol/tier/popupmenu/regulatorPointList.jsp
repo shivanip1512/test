@@ -7,10 +7,6 @@
 
 <cti:standardPage title="Regulator Points and TS" module="capcontrol_internal">
 <cti:includeCss link="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css"/>     
-    <input id="regulatorName" type="hidden" value="${fn:escapeXml(regulatorName)}"/>
-    <c:if test="${oneline}">
-        <center><span style="font-weight: bold; font-size: 16;">${fn:escapeXml(regulatorName)}</span></center>
-    </c:if>
     
     <div style="overflow: auto;">
         <table class="compact-results-table">

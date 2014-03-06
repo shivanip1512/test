@@ -14,7 +14,8 @@
     <div class="column-14-10">
 
         <div class="column one">
-            <form:form commandName="group" action="/adminSetup/roleGroup/edit" method="post">
+            <cti:url var="groupUrl" value="/adminSetup/roleGroup/edit"/>
+            <form:form commandName="group" action="${groupUrl}" method="post">
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 
@@ -86,7 +87,7 @@
                         </c:otherwise>
                     </c:choose>
                     <div class="action-area">
-                        <form action="/adminSetup/roleGroup/addRole" method="post">
+                        <form action="<cti:url value="/adminSetup/roleGroup/addRole"/>" method="post">
                             <cti:csrfToken/>
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <cti:button nameKey="add" type="submit" id="addButton" icon="icon-add"/>

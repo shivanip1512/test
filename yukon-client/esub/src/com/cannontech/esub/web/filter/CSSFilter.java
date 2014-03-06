@@ -18,60 +18,52 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CSSFilter implements Filter {
 
-	private FilterConfig config;
-	
-	/**
-	 * @see javax.servlet.Filter#init(FilterConfig)
-	 */
-	@Override
+    private FilterConfig config;
+    
+    /**
+     * @see javax.servlet.Filter#init(FilterConfig)
+     */
+    @Override
     public void init(FilterConfig fc) throws ServletException {
-		config = fc;
-	}
+        config = fc;
+    }
 
-	/**
-	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	@Override
+    /**
+     * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+     */
+    @Override
     public void doFilter(
-		ServletRequest req,
-		ServletResponse resp,
-		FilterChain chain)
-		throws IOException, ServletException {
-				
-		
-		HttpServletRequest hreq = (HttpServletRequest)req;
-		 
-		String uri = hreq.getRequestURI();
-		String conPath = hreq.getContextPath();
+        ServletRequest req,
+        ServletResponse resp,
+        FilterChain chain)
+        throws IOException, ServletException {
+                
+        HttpServletRequest hreq = (HttpServletRequest)req;
+         
+        String uri = hreq.getRequestURI();
+        String conPath = hreq.getContextPath();
 
-		if(!(uri.endsWith(".css"))) {
-			chain.doFilter(req,resp);
-			return;
-		}
-		
-		String cssPath= uri.replaceFirst(conPath, "");
-		if( cssPath.startsWith("/esub/css/") ) {					
-			chain.doFilter(req,resp);		
-		}
-        else if (cssPath.startsWith("/oneline/css/"))
-        {
-              
-            config.getServletContext().getRequestDispatcher(cssPath).forward(req, resp);
+        if (!(uri.endsWith(".css"))) {
+            chain.doFilter(req,resp);
+            return;
+        }
+        
+        String cssPath= uri.replaceFirst(conPath, "");
+        if (cssPath.startsWith("/esub/css/")) {
+            chain.doFilter(req,resp);
+        } else {
+            cssPath = cssPath.substring(cssPath.lastIndexOf("/"));
+            config.getServletContext().getRequestDispatcher("/esub/css" + cssPath).forward(req, resp);
+        }
             
-        }      
-		else {
-			cssPath = cssPath.substring(cssPath.lastIndexOf("/"));
-			config.getServletContext().getRequestDispatcher("/esub/css" + cssPath).forward(req, resp);
-		}
-			
-	}
+    }
 
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
-	@Override
+    /**
+     * @see javax.servlet.Filter#destroy()
+     */
+    @Override
     public void destroy() {
-		config = null;
-	}
+        config = null;
+    }
 
 }

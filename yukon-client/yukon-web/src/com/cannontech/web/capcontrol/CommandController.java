@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,8 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -118,13 +115,13 @@ public class CommandController {
     }
     
     @RequestMapping("itemCommand")
-	public String itemCommand(HttpServletResponse response, 
-	                          ModelMap model, 
-	                          YukonUserContext context, 
-	                          int itemId, 
-	                          int commandId, 
-	                          String reason,
-	                          String onReasonMenu) {
+    public String itemCommand(HttpServletResponse response, 
+                              ModelMap model, 
+                              YukonUserContext context, 
+                              int itemId, 
+                              int commandId, 
+                              String reason,
+                              String onReasonMenu) {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
@@ -163,29 +160,29 @@ public class CommandController {
             } else {
                 command = CommandHelper.buildItemCommand(commandId, itemId, user);
             }
-    	    try {
-    	        executor.execute(command);
-    	    } catch (CommandExecutionException e) {
-    	        log.error("Could not send command to server: " + commandType, e);
-    	        success = false;
-    	    }
-    	    
-    	    if (success) {
-        	    boolean forceComment = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.FORCE_COMMENTS, user);
-        	    if (forceComment && StringUtils.isBlank(reason)) {
-        	        String commandLabel = accessor.getMessage(commandType);
-        	        String deviceName = paoDao.getYukonPAOName(itemId);
-        	        reason = accessor.getMessage("yukon.web.modules.capcontrol.forcedComment", commandLabel, deviceName);
-        	    }
-        	    
-        	    if (StringUtils.isNotBlank(reason)) {
-        	        insertComment(itemId, commandType, user, reason);
-        	    }
-    	    }
-    	    
-    	    return sendStatusResponse(response, accessor, commandType, streamable.getCcName(), model, success);
+            try {
+                executor.execute(command);
+            } catch (CommandExecutionException e) {
+                log.error("Could not send command to server: " + commandType, e);
+                success = false;
+            }
+            
+            if (success) {
+                boolean forceComment = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.FORCE_COMMENTS, user);
+                if (forceComment && StringUtils.isBlank(reason)) {
+                    String commandLabel = accessor.getMessage(commandType);
+                    String deviceName = paoDao.getYukonPAOName(itemId);
+                    reason = accessor.getMessage("yukon.web.modules.capcontrol.forcedComment", commandLabel, deviceName);
+                }
+                
+                if (StringUtils.isNotBlank(reason)) {
+                    insertComment(itemId, commandType, user, reason);
+                }
+            }
+            
+            return sendStatusResponse(response, accessor, commandType, streamable.getCcName(), model, success);
         }
-	}
+    }
 
     /* SPECIAL COMMANDS */
     @RequestMapping("changeOpState")
@@ -234,7 +231,6 @@ public class CommandController {
                            LiteYukonUser user,
                            FlashScope flash,
                            int substationId,
-                           boolean oneline,
                            String tempMove,
                            @ModelAttribute("bankMoveBean") BankMoveBean bankMoveBean) {
         
@@ -246,13 +242,7 @@ public class CommandController {
         
         if (bankMoveBean.getNewFeederId() == 0) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.noFeederSelected", bank.getCcName()));
-            if (oneline) {
-                model.addAttribute("bankid", bank.getCcId());
-                model.addAttribute("oneline", oneline);
-                return "redirect:/capcontrol/move/bankMove";
-            } else {
-                return "redirect:/capcontrol/tier/feeders";
-            }
+            return "redirect:/capcontrol/tier/feeders";
         }
         
         Feeder newFeeder = cache.getFeeder(bankMoveBean.getNewFeederId());
@@ -291,13 +281,7 @@ public class CommandController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), newFeeder.getCcName()));
         }
         
-        if (oneline) {
-            model.addAttribute("bankid", bank.getCcId());
-            model.addAttribute("oneline", oneline);
-            return "redirect:/capcontrol/move/bankMove";
-        } else {
-            return "redirect:/capcontrol/tier/feeders";
-        }
+        return "redirect:/capcontrol/tier/feeders";
     }
     
     @RequestMapping("returnBank")
@@ -361,11 +345,11 @@ public class CommandController {
     }
     
     @RequestMapping("manualStateChange")
-	public String manualStateChange(HttpServletResponse response, 
-	                                       ModelMap model, 
-	                                       YukonUserContext context, 
-	                                       int paoId, 
-	                                       int rawStateId) {
+    public String manualStateChange(HttpServletResponse response, 
+                                           ModelMap model, 
+                                           YukonUserContext context, 
+                                           int paoId, 
+                                           int rawStateId) {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
@@ -375,124 +359,18 @@ public class CommandController {
             return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.CHANGE_OP_STATE);
         }
         
-	    int pointId = cache.getCapBankDevice(paoId).getStatusPointID();
-	    PointData command = CommandHelper.buildManualStateChange(user, pointId, paoId, rawStateId);
-	    boolean success = true;
-	    try {
-	        executor.execute(command);
-	    } catch (CommandExecutionException e) {
-	        success = false;
-	    }
-        
-	    return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
-	}
-    
-    @RequestMapping("commandOneLine")
-    public void commandOneLine(HttpServletResponse response, YukonUserContext context, int paoId, int cmdId) {
-        LiteYukonUser user = context.getYukonUser();
-        ItemCommand command = CommandHelper.buildItemCommand(cmdId, paoId, user);
-        
+        int pointId = cache.getCapBankDevice(paoId).getStatusPointID();
+        PointData command = CommandHelper.buildManualStateChange(user, pointId, paoId, rawStateId);
+        boolean success = true;
         try {
             executor.execute(command);
-            response.setStatus(HttpServletResponse.SC_OK);
         } catch (CommandExecutionException e) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT); // 409
+            success = false;
         }
+        
+        return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
     }
     
-    @RequestMapping("commandOneLineTag")
-    public String commandOneLineTag(HttpServletRequest request,
-                                           HttpServletResponse response,
-                                           ModelMap model,
-                                           YukonUserContext context, 
-                                           int paoId) throws ServletRequestBindingException {
-        
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        LiteYukonUser user = context.getYukonUser();
-        
-        boolean disableChange = ServletRequestUtils.getBooleanParameter(request, "disableChange", false);
-        boolean disableOVUVChange = ServletRequestUtils.getBooleanParameter(request, "disableOvUvChange", false);
-        boolean operationalStateChange = ServletRequestUtils.getBooleanParameter(request, "operationalStateChange", false);
-        
-        boolean disableValue = ServletRequestUtils.getBooleanParameter(request, "disableValue", false);
-        boolean disableOVUVValue = ServletRequestUtils.getBooleanParameter(request, "disableOvUvValue", false);
-        boolean success = true;
-        
-        if (disableChange) {
-            int commandId;
-            if (disableValue) {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "disableCommandId");
-            } else {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enableCommandId");
-            }
-            CommandType commandType = CommandType.getForId(commandId);
-
-            ItemCommand command = CommandHelper.buildItemCommand(commandId, paoId, user);
-            boolean disableSuccess = true;
-            try {
-                executor.execute(command);
-            } catch (CommandExecutionException e) {
-                disableSuccess = false;
-                success = false;
-            }
-            
-            if (disableSuccess && disableValue) {
-                String reason = ServletRequestUtils.getStringParameter(request, "disableReason", "");
-                if (StringUtils.isBlank(reason)) reason = generateUpdateComment(commandType, paoId, user, accessor);
-                insertComment(paoId, commandType, user, reason);
-            }
-        }
-        
-        if (disableOVUVChange) {
-            int commandId;
-            if (disableOVUVValue) {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "disableOvUvCommandId");
-            } else {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enableOvUvCommandId");
-            }
-            CommandType commandType = CommandType.getForId(commandId);
-
-            ItemCommand command = CommandHelper.buildItemCommand(commandId, paoId, user);
-            boolean disableOvUvSuccess = true;
-            try {
-                executor.execute(command);
-            } catch (CommandExecutionException e) {
-                disableOvUvSuccess = false;
-                success = false;
-            }
-            
-            if (disableOvUvSuccess && disableOVUVValue) {
-                String reason = ServletRequestUtils.getStringParameter(request, "disableOvUvReason", "");
-                if (StringUtils.isBlank(reason)) reason = generateUpdateComment(commandType, paoId, user, accessor);
-                insertComment(paoId, commandType, user, reason);
-            }
-        }
-        
-        if (operationalStateChange) {
-            CommandType commandType = CommandType.CHANGE_OP_STATE;
-            String reason = ServletRequestUtils.getStringParameter(request, "operationalStateReason", "");
-            if (StringUtils.isBlank(reason)) reason = generateUpdateComment(commandType, paoId, user, accessor);
-            
-            String rawState = ServletRequestUtils.getRequiredStringParameter(request, "operationalStateValue");
-            ChangeOpState command = CommandHelper.buildChangeOpStateCommand(user, paoId, BankOpState.valueOf(rawState));
-            try {
-                executor.execute(command);
-                insertComment(paoId, commandType, user, reason);
-            } catch (CommandExecutionException e) {
-                success = false;
-            }
-        }
-        if (success) {
-            model.addAttribute("success", true);
-            model.addAttribute("message", accessor.getMessage("yukon.web.modules.capcontrol.oneline.tagMenuCommandSuccess"));
-        } else {
-            model.addAttribute("success", false);
-            model.addAttribute("message", accessor.getMessage("yukon.web.modules.capcontrol.oneline.tagMenuCommandFailed"));
-        }
-        model.addAttribute("finished", true);
-        return "tier/popupmenu/statusMessage.jsp";
-    }
-
     @RequestMapping("resetBankOpCount")
     public String resetBankOpCount(HttpServletResponse response, ModelMap model, YukonUserContext context, int bankId, int newOpCount) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
@@ -602,16 +480,6 @@ public class CommandController {
         return "tier/popupmenu/statusMessage.jsp";
     }
     
-    private String generateUpdateComment(CommandType type, 
-                                         int paoId, 
-                                         LiteYukonUser user, 
-                                         MessageSourceAccessor accessor) {
-        
-        String paoName = cache.getCapControlPAO(paoId).getCcName();
-        String commandName = accessor.getMessage(type);
-        return accessor.getMessage("yukon.web.modules.capcontrol.command.comment", commandName, paoName, user.getUsername());
-    }
-	
     private void insertComment(int paoId, CommandType type, LiteYukonUser user, String reason) {
         CapControlComment comment = new CapControlComment();
         comment.setPaoId(paoId);

@@ -63,11 +63,7 @@ public enum JsLibrary {
     YUKON_SURVEYS_OPT_OUT("/JavaScript/yukon.surveys.optOut.js"),
     YUKON_TIME_FORMATTER("/JavaScript/yukon.format.time.js"),
     
-    MODERNIZR("/JavaScript/lib/modernizr/custom.js"),
-    
-    // --DEPRECATED VERSIONS --//
-    PROTOTYPE_150("/JavaScript/prototype150.js");
-    //-- END DEPRECATED VERSIONS --//
+    MODERNIZR("/JavaScript/lib/modernizr/custom.js");
     
     private String path = "";  //path to library
     
