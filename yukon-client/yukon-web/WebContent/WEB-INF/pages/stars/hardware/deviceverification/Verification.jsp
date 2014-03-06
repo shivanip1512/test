@@ -1,5 +1,4 @@
 <html>
-    <body>
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -8,16 +7,17 @@
 <cti:url var="activationUrl"
     value="/stars/hardware/deviceactivation" />
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
+<cti:includeScript link="${jqueryPath}" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    jQuery(function() {
-        $("serialnumberinput").focus();
+    jQuery(function () {
+        jQuery("#serialnumberinput").focus();
     });
 </script>
 
         <title>Device Verification</title>
     </head>
 
+    <body>
     <center>
         <div id="main">
             <h2>

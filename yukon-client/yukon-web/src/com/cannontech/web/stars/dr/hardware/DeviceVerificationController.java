@@ -10,16 +10,20 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.service.DeviceVerificationService;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.JsLibrary;
+
 
 public class DeviceVerificationController extends MultiActionController {
     private DeviceVerificationService verificationService;
-    
+    private String jqueryPath = JsLibrary.JQUERY.getPath();
+
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
+        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceverification/Verification.jsp");
         return mav;
     }
-    
+
     public ModelAndView verify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final String serialNumber = ServletRequestUtils.getRequiredStringParameter(request, "serialnumber");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -45,6 +49,7 @@ public class DeviceVerificationController extends MultiActionController {
     private ModelAndView createStatusView(final String message) {
         final ModelAndView mav = new ModelAndView();
         mav.addObject("message", message);
+        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceverification/Status.jsp");
         return mav;
     }
@@ -52,5 +57,4 @@ public class DeviceVerificationController extends MultiActionController {
     public void setDeviceVerificationService(DeviceVerificationService verificationService) {
         this.verificationService = verificationService;
     }
-    
 }

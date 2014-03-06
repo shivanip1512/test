@@ -7,37 +7,24 @@
 <cti:url var="verificationUrl"
     value="/stars/hardware/deviceverification" />
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
+<cti:includeScript link="${jqueryPath}" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    jQuery(function() {
-        $("accountnumberinput").focus();
-        
-        Event.observe('accountnumberinput', 'keydown', function(event) {
-            var keyCode = getEventKeyCode(event);
-            if (keyCode == 13) {
-                $("serialnumberinput").focus();                
+    jQuery(function () {
+        jQuery('#accountnumberinput').focus();
+        jQuery('#accountnumberinput').keydown(function (ev) {
+            var keyCode = ev.which;
+            if (keyCode === 13) {
                 event.preventDefault();
             }
-            false;    
         });
     });
-    
-    function getEventKeyCode(event) {
-        var code;
-        if (!event) var event = window.event;
-        if (event.keyCode) {
-            code = event.keyCode;
-        } else if (event.which) {
-            code = event.which;
-        }
-        return code;
-    }
+
 </script>
 
         <title>Device Activation</title>
     </head>
-    <body>
 
+    <body>
     <center>
         <div id="main">
             <h2>

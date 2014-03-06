@@ -25,6 +25,7 @@ import com.cannontech.stars.dr.hardware.service.DeviceActivationService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.JsLibrary;
 
 public class DeviceActivationController extends MultiActionController {
     private DeviceActivationService deviceActivationService;
@@ -34,9 +35,11 @@ public class DeviceActivationController extends MultiActionController {
     private AddressDao addressDao;
     private CustomerDao customerDao;
     private AccountSiteDao accountSiteDao;
-    
+    private String jqueryPath = JsLibrary.JQUERY.getPath();
+
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
+        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceactivation/Activation.jsp");
         return mav;
     }
@@ -104,6 +107,7 @@ public class DeviceActivationController extends MultiActionController {
     private ModelAndView createStatusView(final String message) {
         final ModelAndView mav = new ModelAndView();
         mav.addObject("message", message);
+        mav.addObject("jqueryPath", jqueryPath);
         mav.setViewName("hardware/deviceactivation/Status.jsp");
         return mav;
     }

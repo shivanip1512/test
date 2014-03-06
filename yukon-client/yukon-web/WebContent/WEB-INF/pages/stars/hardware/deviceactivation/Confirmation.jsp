@@ -1,5 +1,4 @@
 <html>
-    <body>
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -7,10 +6,12 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
+<cti:includeScript link="${jqueryPath}" force="true"/>
 <cti:url var="url" value="/stars/hardware/deviceactivation" />
 
         <title>Device Activation Confirmation</title>
     </head>
+    <body>
     <center>
         <div id="main">
             <h2>

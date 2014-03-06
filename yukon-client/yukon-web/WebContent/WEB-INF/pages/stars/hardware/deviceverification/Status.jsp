@@ -1,24 +1,24 @@
 <html>
-    <body>
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <cti:url var="url" value="/stars/hardware/deviceverification" />
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
-<script language="JavaScript">
-    var counter = 4;
+<cti:includeScript link="${jqueryPath}" force="true"/>
 
-    jQuery(function() {
-        setInterval(updateDisplay, 1000);    
+<script language="JavaScript">
+
+    jQuery(function () {
+        var counter = 4,
+            updateDisplay = function () {
+                if (counter > 0) {
+                    jQuery("#reloaddiv").html('Reload in ' + counter--);
+                }
+            };
+        setInterval(updateDisplay, 1000);
     });
-    
-    function updateDisplay() {
-        if (counter > 0) {
-            $("reloaddiv").innerHTML = 'Reload in ' + counter--;
-        }
-    }
+
 </script>
 
 <meta http-equiv="Refresh" content="5; URL=${url}" />
@@ -26,6 +26,7 @@
         <title>Device Verification Status</title>
     </head>
 
+    <body>
     <center>
         <div id="main">
             <table cellspacing="10">
