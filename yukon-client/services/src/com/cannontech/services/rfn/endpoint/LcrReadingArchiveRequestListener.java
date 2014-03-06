@@ -90,8 +90,22 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                     }
                     decodedPayload = exiParsingService.parseRfLcrReading(payload);
                 } catch (ParseExiException e) {
+                    //Acknowledge the request to prevent NM from sending back that data which can't be parsed.
+                    sendAcknowledgement(archiveRequest);
                     log.error("Can't parse incoming RF LCR payload data.  Payload may be corrupt or not schema compliant.", e);
                     throw new RuntimeException("Error parsing RF LCR payload.", e);
+                }
+                
+                /** Handle Broadcast Verification Messages */
+                Schema schema = exiParsingService.getSchema(payload);
+                if (schema.supportsBroadcastVerificationMessages()) {
+                    //Verification Messages should be processed even if there is no connection to dispatch
+                    Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
+                        .mapBroadcastVerificationMessages(decodedPayload);
+                    Range<Instant> range = rfnLcrDataMappingService
+                        .mapBroadcastVerificationUnsuccessRange(decodedPayload, rfnDevice);
+                    rfnPerformanceVerificationService
+                        .processVerificationMessages(rfnDevice, verificationMsgs, range);
                 }
                 
                 // Discard all the data before 1/1/2001
@@ -106,16 +120,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 	                
 	                /** Handle addressing data */
 	                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
-                }
-                /** Handle Broadcast Verification Messages */
-                Schema schema = exiParsingService.getSchema(payload);
-                if (schema.supportsBroadcastVerificationMessages()) {
-                    Map<Long, Instant> verificationMsgs = rfnLcrDataMappingService
-                        .mapBroadcastVerificationMessages(decodedPayload);
-                    Range<Instant> range = rfnLcrDataMappingService
-                        .mapBroadcastVerificationUnsuccessRange(decodedPayload, rfnDevice);
-                    rfnPerformanceVerificationService
-                        .processVerificationMessages(rfnDevice, verificationMsgs, range);
                 }
                 incrementProcessedArchiveRequest();
                 
