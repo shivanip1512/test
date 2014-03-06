@@ -7,8 +7,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
-
-
 <cti:standardPage module="amr" page="tamperFlagEditor.${mode}">
 
 <script type="text/javascript">
@@ -21,7 +19,7 @@
     }
 
     function rewriteTamperFlagGroupName(textEl) {
-        jQuery('#tamperFlagGroupNameDiv').html('${tamperFlagGroupBase}' + textEl.value);
+        jQuery('#tamperFlagGroupNameDiv').text('${tamperFlagGroupBase}' + textEl.value);
     }
     
 </script>
