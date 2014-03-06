@@ -75,18 +75,17 @@ yukon.modules.dialogConfirm = function (mod) {
             } else if (element.data("href")) {
                 actionButton.click = function () {
                     _close_dialog();
-                    window.location = element.data("href");};
+                    window.location = element.data("href");
+                };
             }
             //is the intent to submit a form on ok?
             else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
                 actionButton.click = function () {
-                    var form = element.closest("form")[0];
-                    if (!(typeof (element.attr("value")) == "undefined")
-                            && !(typeof (element.attr("name")) == "undefined")) {
-                        jQuery(form).prepend(
-                                '<input type="hidden" name="'
-                                        + element.attr("name") + '" value="'
-                                        + element.attr("value") + '">');
+                    var form = element.closest("form")[0],
+                        value = element.val(),
+                        name = element.attr('name');
+                    if (!(typeof (value) == "undefined") && !(typeof (name) == "undefined")) {
+                        jQuery(form).prepend('<input type="hidden" name="' + name + '" value="' + value + '">');
                     }
                     form.submit();
                 };
