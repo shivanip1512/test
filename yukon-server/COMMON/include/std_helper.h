@@ -19,6 +19,7 @@ boost::optional<typename Map::mapped_type> mapFind( Map &m, const typename Map::
     return itr->second;
 }
 
+// This needs a comment saying that it can be removed when we upgrade to Boost 1.50+.
 template<typename MappedType, class MapViewType, typename KeyType>
 boost::optional<MappedType> bimapFind( MapViewType mapView, KeyType key )
 {

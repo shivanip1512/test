@@ -162,7 +162,7 @@ void RfnOnDemandDisconnectSetConfigurationCommand::invokeResultHandler( RfnComma
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnOnDemandDisconnectSetConfigurationCommand::getDisconnectMode()
+RfnRemoteDisconnectCommand::DisconnectMode RfnOnDemandDisconnectSetConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_OnDemand; 
 }
@@ -214,7 +214,7 @@ void RfnThresholdDisconnectSetConfigurationCommand::invokeResultHandler( RfnComm
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnThresholdDisconnectSetConfigurationCommand::getDisconnectMode()
+RfnRemoteDisconnectCommand::DisconnectMode RfnThresholdDisconnectSetConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_DemandThreshold; 
 }
@@ -223,6 +223,10 @@ RfnCommand::Bytes RfnThresholdDisconnectSetConfigurationCommand::getData()
 {
     RfnCommand::Bytes data;
 
+    // This calculation should always yield a whole number because of the 
+    // restriction of one digit after the decimal place. If that isn't the
+    // case, this calculation ends up rounding the number down to the 
+    // nearest whole (i.e. 10 * 7.29 cast to unsigned char would yield 72).
     const unsigned char hw_threshold = demandThreshold * 10;
 
     data.push_back( reconnectParam );
@@ -256,7 +260,7 @@ void RfnCyclingDisconnectSetConfigurationCommand::invokeResultHandler( RfnComman
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnCyclingDisconnectSetConfigurationCommand::getDisconnectMode()
+RfnRemoteDisconnectCommand::DisconnectMode RfnCyclingDisconnectSetConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_Cycling; 
 }

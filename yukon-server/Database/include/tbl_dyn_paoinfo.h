@@ -322,7 +322,7 @@ public:
         Key_RFN_LcdDisconnectDisplayDisabled,
         Key_RFN_LcdDisplayDigits,
 
-        Key_RFN_CurrentDisconnectMode,
+        Key_RFN_DisconnectMode,
         Key_RFN_ReconnectParam,
         Key_RFN_DisconnectDemandInterval,
         Key_RFN_DemandThreshold,

@@ -63,6 +63,8 @@ protected:
 
     TlvList getTlvsFromPayload( const RfnResponsePayload & response );
 
+    virtual DisconnectMode getDisconnectMode() const = 0;
+
     RfnRemoteDisconnectCommand( const Operation operation );
 };
 
@@ -77,7 +79,7 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response );
 
-    virtual DisconnectMode getDisconnectMode() = 0;
+    virtual DisconnectMode getDisconnectMode() const = 0;
 
 protected:
 
@@ -99,7 +101,7 @@ public:
 
     RfnOnDemandDisconnectSetConfigurationCommand( const Reconnect reconnect_param );
 
-    virtual DisconnectMode getDisconnectMode();
+    virtual DisconnectMode getDisconnectMode() const;
 
     Reconnect reconnectParam;
 
@@ -123,7 +125,7 @@ public:
                                                    const unsigned       connect_delay,
                                                    const unsigned       max_disconnects );
 
-    virtual DisconnectMode getDisconnectMode();
+    virtual DisconnectMode getDisconnectMode() const;
 
     Reconnect reconnectParam;
     DemandInterval demandInterval;
@@ -148,7 +150,7 @@ public:
     RfnCyclingDisconnectSetConfigurationCommand( const unsigned disconnect_minutes,
                                                  const unsigned connect_minutes );
 
-    virtual DisconnectMode getDisconnectMode();
+    virtual DisconnectMode getDisconnectMode() const;
 
     unsigned disconnectMinutes;
     unsigned connectMinutes;
@@ -171,8 +173,9 @@ public:
 
     virtual RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response );
 
+    virtual DisconnectMode getDisconnectMode() const;
+
     Reconnect      getReconnectParam() const;
-    DisconnectMode getDisconnectMode() const;
 
     boost::optional<DemandInterval> getDemandInterval() const;
     boost::optional<double>         getDemandThreshold() const;

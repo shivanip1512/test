@@ -74,6 +74,9 @@ private:
 
     bool disconnectConfigSupported() const;
 
+    std::string getDisconnectModeString( Commands::RfnRemoteDisconnectCommand::DisconnectMode disconnectMode );
+    std::string getReconnectParamString( Commands::RfnRemoteDisconnectCommand::Reconnect reconnectParam );
+
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 };
 
