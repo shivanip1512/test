@@ -193,12 +193,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
 //        meter.setExtensions(ext);
         meter.setMeterNo(meterNumber);
         
-        // For RF meters, use RFNAddress.model; for all other meters, use PaoType
-        if (StringUtils.isNotBlank(rfnModel)) {
-            meter.setMeterType(rfnModel);  //Meter type/model.
-        } else {
-            meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model.
-        }
+        meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model. Always use paoType
         
         if (StringUtils.isNotBlank(rfnManufacturer)) {
             meter.setManufacturer(rfnManufacturer);    //Meter manufacturer.
