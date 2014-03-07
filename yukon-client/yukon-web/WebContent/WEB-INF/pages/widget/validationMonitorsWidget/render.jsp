@@ -100,7 +100,7 @@
 </c:choose>
 
 <div class="action-area">
-    <cti:url var="reviewUrl" value="/common/veeReview/home"/>
+    <cti:url var="reviewUrl" value="/amr/veeReview/home"/>
     <a href="${reviewUrl}"><i:inline key=".review"/></a>
     <cti:button nameKey="create" icon="icon-plus-green" type="submit" classes="f-blocker fr"/>
 </div>

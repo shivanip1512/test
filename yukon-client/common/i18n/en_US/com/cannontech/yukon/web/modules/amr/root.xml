@@ -228,5 +228,7 @@
     <entry key="yukon.web.modules.amr.validationEditor.EDIT.pageName">Validation Monitoring</entry>
     <entry key="yukon.web.modules.amr.validationEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.validationEditor.CREATE.pageName">Create Validation Monitor</entry>
+    <entry key="yukon.web.modules.amr.helperMenu.crumbTitle">Advanced</entry>
+    <entry key="yukon.web.modules.amr.helperMenu.pageName">Advanced Processing</entry>
     
 </properties>

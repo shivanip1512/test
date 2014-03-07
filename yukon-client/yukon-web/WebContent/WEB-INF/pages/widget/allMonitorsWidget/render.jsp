@@ -515,7 +515,7 @@
     <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
         <c:if test="${not empty validationMonitors}">
             <cti:classUpdater type="VALIDATION_PROCESSING" identifier="SHOW_VIOLATIONS">
-                <cti:url var="reviewUrl" value="/common/veeReview/home"/>
+                <cti:url var="reviewUrl" value="/amr/veeReview/home"/>
                 <a href="${reviewUrl}"><i:inline key="yukon.web.widgets.validationMonitorsWidget.review"/></a>
                 <cti:dataUpdaterValue type="VALIDATION_PROCESSING" identifier="TOTAL_VIOLATIONS" styleClass="label label-danger"/>
             </cti:classUpdater>

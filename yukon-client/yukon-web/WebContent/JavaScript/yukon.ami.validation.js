@@ -37,13 +37,13 @@ yukon.ami.validation = (function () {
     
     jQuery(function () {
         jQuery('#review-form [id="display-type-checkbox"]').click(function(e) {
-            jQuery.post('/common/veeReview/reviewTable', jQuery('#review-form').serialize()).done(function(result) {
+            jQuery.post('/amr/veeReview/reviewTable', jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
                 yukon.ui.unbusy(jQuery('#saveButton'));
             });
         });
         //save/remove actioned items
-        jQuery().on('click','[id="saveButton"]', function(e) {
+        jQuery('#review-form').on('click','[id="saveButton"]', function(e) {
             var urlParams ='?itemsPerPage=';
             if (jQuery('.paging-area .selectedItem').text().length > 0) {
                 urlParams += jQuery('.paging-area .selectedItem').text();
@@ -51,7 +51,7 @@ yukon.ami.validation = (function () {
                 urlParams = '';
             }
             
-            jQuery.post('/common/veeReview/save' + urlParams, jQuery('#review-form').serialize()).done(function(result) {
+            jQuery.post('/amr/veeReview/save' + urlParams, jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
                 yukon.ui.unbusy(jQuery('#saveButton'));
                 jQuery('#accept-all').removeClass('on');
@@ -60,7 +60,7 @@ yukon.ami.validation = (function () {
             return false;
         });
         //check/uncheck all
-        jQuery().on('click', '#accept-all, #delete-all', function(e) { 
+        jQuery('#review-form').on('click', '#accept-all, #delete-all', function(e) { 
             var checkAll = false;
             var buttonClicked = e.currentTarget;
             var attributeSelector = '[id*="DELETE"]';
