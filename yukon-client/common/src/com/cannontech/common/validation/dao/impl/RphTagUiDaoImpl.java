@@ -80,7 +80,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         return results;
     }
 
-    private final class ReviewPointRowMapper implements YukonRowMapper<ReviewPoint> {
+    private final static class ReviewPointRowMapper implements YukonRowMapper<ReviewPoint> {
         // The displayablePao property does not get set on ReviewPoint.  Keep a map of PaoIdentifier by changeId
         // we can call paoLoadingService later to get displayablePaos.
         Multimap<YukonPao, ReviewPoint> reviewPointsByPao = ArrayListMultimap.create();
