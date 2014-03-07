@@ -35,12 +35,6 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 
     @Override
     public SearchResults<ReviewPoint> getReviewPoints(PagingParameters pagingParameters, List<RphTag> tags) {
-//        int startRow = page-1;
-//        int endRow = itemsPerPage;
-//        if (page > 1) {
-//            startRow = (page-1) * itemsPerPage;
-//            endRow = page * itemsPerPage-1;
-//        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM (");
         sql.append("SELECT rt.TagName, rph.*, ypo.PaobjectId, ypo.PaoName, ypo.Type, p.PointType,");
