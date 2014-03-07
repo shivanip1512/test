@@ -19,6 +19,19 @@ boost::optional<typename Map::mapped_type> mapFind( Map &m, const typename Map::
     return itr->second;
 }
 
+template<typename MappedType, class MapViewType, typename KeyType>
+boost::optional<MappedType> bimapFind( MapViewType mapView, KeyType key )
+{
+    MapViewType::const_iterator itr = mapView.find(key);
+
+    if( itr == mapView.end() )
+    {
+        return boost::none;
+    }
+
+    return itr->second;
+}
+
 namespace Logging {
 namespace Vector {
 namespace Hex {

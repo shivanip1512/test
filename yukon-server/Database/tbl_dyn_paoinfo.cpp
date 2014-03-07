@@ -529,6 +529,15 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_RFN_LcdCycleTime,                  "rfn lcd cycle time" )
         (Key_RFN_LcdDisconnectDisplayDisabled,  "rfn lcd disconnect display disabled" )
         (Key_RFN_LcdDisplayDigits,              "rfn lcd display digits" )
+
+        (Key_RFN_CurrentDisconnectMode,     "rfn current disconnect mode")
+        (Key_RFN_ReconnectParam,            "rfn reconnect param")
+        (Key_RFN_DisconnectDemandInterval,  "rfn disconnect demand interval")
+        (Key_RFN_DemandThreshold,           "rfn demand threshold")
+        (Key_RFN_ConnectDelay,              "rfn connect delay")
+        (Key_RFN_MaxDisconnects,            "rfn max disconnects")
+        (Key_RFN_DisconnectMinutes,         "rfn disconnect minutes")
+        (Key_RFN_ConnectMinutes,            "rfn connect minutes")   
         ;
 
 CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo() :

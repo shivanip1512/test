@@ -434,6 +434,16 @@ int RfnDevice::executePutValueTouResetZero(CtiRequestMsg *pReq, CtiCommandParser
     return NoMethod;
 }
 
+int RfnDevice::executeGetConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+{
+    return NoError;
+}
+
+int RfnDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+{
+    return NoError;
+}
+
 
 void RfnDevice::logInfo( const std::string &note,
                          const char* function,

@@ -131,19 +131,6 @@ AlphaDisplayBimap initAlphaDisplayBimap()
 
 const AlphaDisplayBimap alphaDisplayBimap = initAlphaDisplayBimap();
 
-template<typename MappedType, class MapViewType, typename KeyType>
-boost::optional<MappedType> bimapFind( MapViewType mapView, KeyType key )
-{
-    MapViewType::const_iterator itr = mapView.find(key);
-
-    if( itr == mapView.end() )
-    {
-        return boost::none;
-    }
-
-    return itr->second;
-}
-
 boost::optional<char> convertCodeToAscii( unsigned char code )
 {
     return bimapFind<char>( alphaDisplayBimap.left, code );

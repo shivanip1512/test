@@ -321,6 +321,15 @@ public:
         Key_RFN_LcdCycleTime,
         Key_RFN_LcdDisconnectDisplayDisabled,
         Key_RFN_LcdDisplayDigits,
+
+        Key_RFN_CurrentDisconnectMode,
+        Key_RFN_ReconnectParam,
+        Key_RFN_DisconnectDemandInterval,
+        Key_RFN_DemandThreshold,
+        Key_RFN_ConnectDelay,
+        Key_RFN_MaxDisconnects,
+        Key_RFN_DisconnectMinutes,
+        Key_RFN_ConnectMinutes
     };
 
 protected:

@@ -5,6 +5,7 @@
 #include "cmd_rfn_DemandFreeze.h"
 #include "cmd_rfn_TouConfiguration.h"
 #include "cmd_rfn_OvUvConfiguration.h"
+#include "cmd_rfn_RemoteDisconnect.h"
 
 
 namespace Cti       {
@@ -46,23 +47,32 @@ protected:
     int executePutConfigVoltageProfile           (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     int executeGetValueVoltageProfile            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
-    void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand  & cmd );
-    void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand  & cmd );
-    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand         & cmd );
-    void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand             & cmd );
-    void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand       & cmd );
-    void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand     & cmd );
-    void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand     & cmd );
-    void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand         & cmd );
-    void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand       & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand     & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand         & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand      & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand   & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand  & cmd );
-    void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand & cmd );
+    int executePutConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    int executeGetConfigDisconnect               (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    void handleCommandResult( const Commands::RfnVoltageProfileGetConfigurationCommand      & cmd );
+    void handleCommandResult( const Commands::RfnVoltageProfileSetConfigurationCommand      & cmd );
+    void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand             & cmd );
+    void handleCommandResult( const Commands::RfnGetDemandFreezeInfoCommand                 & cmd );
+    void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand           & cmd );
+    void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand         & cmd );
+    void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand         & cmd );
+    void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand             & cmd );
+    void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand           & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand         & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatCountCommand             & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvAlarmRepeatIntervalCommand          & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvNewAlarmReportIntervalCommand       & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvSetOverVoltageThresholdCommand      & cmd );
+    void handleCommandResult( const Commands::RfnSetOvUvSetUnderVoltageThresholdCommand     & cmd );
+    void handleCommandResult( const Commands::RfnOnDemandDisconnectSetConfigurationCommand  & cmd );
+    void handleCommandResult( const Commands::RfnThresholdDisconnectSetConfigurationCommand & cmd );
+    void handleCommandResult( const Commands::RfnCyclingDisconnectSetConfigurationCommand   & cmd );
+    void handleCommandResult( const Commands::RfnRemoteDisconnectGetConfigurationCommand    & cmd );
 
 private:
+
+    bool disconnectConfigSupported() const;
 
     bool isTouConfigCurrent( const Config::DeviceConfigSPtr &deviceConfig, std::map<std::string, std::string> &configMap );
 };
