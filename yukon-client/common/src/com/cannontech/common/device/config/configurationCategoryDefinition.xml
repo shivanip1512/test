@@ -261,7 +261,18 @@
         <integer field="tableType" minValue="1" maxValue="11" default="1"/>
     </category>
 
-    <category type="disconnectConfiguration">
+    <category type="rfnDisconnectConfiguration">
+        <enum field="disconnectConfigurationType" type="DisconnectConfigurationType" default="ON_DEMAND"/>
+        <enum field="reconnectParam" type="ReconnectParameter" default="ARM"/>
+        <enum field="demandInterval" type="DisconnectDemandInterval" default="5"/>
+        <float field="disconnectDemandThreshold" minValue="0.0" maxValue="12.0" default="0.0" decimalDigits="1"/>
+        <integer field="connectDelay" minValue="0" maxValue="30" default="5"/>
+        <integer field="maxDisconnects" minValue="0" maxValue="20" default="0"/>
+        <integer field="disconnectMinutes" minValue="0" maxValue="1440" default="5"/>
+        <integer field="connectMinutes" minValue="0" maxValue="1440" default="5"/>
+    </category>
+
+    <category type="mctDisconnectConfiguration">
         <float field="disconnectDemandThreshold" minValue="0.0" maxValue="400.0" default="0.0"/>
         <enum field="disconnectLoadLimitConnectDelay" type="DisconnectLoadLimitConnectDelay" default="5"/>
         <integer field="disconnectMinutes" minValue="5" maxValue="60" default="5"/>

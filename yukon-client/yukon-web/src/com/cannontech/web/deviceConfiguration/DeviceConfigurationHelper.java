@@ -223,7 +223,9 @@ public class DeviceConfigurationHelper {
             floatType.setMaxValue(input.getMaxValue());
         }
         
-        return new FloatField(displayName, input.getField(), description, floatType);
+        return input.getDecimalDigits() == null ?
+            new FloatField(displayName, input.getField(), description, floatType) :
+            new FloatField(displayName, input.getField(), description, input.getDecimalDigits(), floatType);
     }
     
     private InputType<?> convertEnumField(InputEnum input, YukonUserContext context) {

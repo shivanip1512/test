@@ -85,6 +85,13 @@
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDPeakKw">TOU Rate D Peak kW</entry>
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDDateOfPeakKw">TOU Rate D Date of Peak kW</entry>
     <entry key="yukon.web.modules.tools.configs.enum.displayItem.touRateDTimeOfPeakKw">TOU Rate D Time of Peak kW</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.disconnectConfigurationType.onDemand">On-Demand</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.disconnectConfigurationType.demandThreshold">Demand Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.disconnectConfigurationType.cycling">Cycling</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.reconnectType.arm">Arm</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.reconnectType.immediate">Immediate</entry>
 
     <!-- Configuration Category Messages -->
     <entry key="yukon.web.modules.tools.configs.category.timeZone.title">MCT Time Zone</entry>
@@ -364,18 +371,37 @@
     <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableType">Table Type</entry>
     <entry key="yukon.web.modules.tools.configs.category.mct430PrecannedTable.tableType.description">Table to use. Use caution when changing.</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.title">Load-Limiting Disconnect Configuration</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.definition">Configuration parameters for the load-limiting disconnect feature of MCT and RFN devices.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectLoadLimitConnectDelay">Disconnect Load Limit Connect Delay</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectLoadLimitConnectDelay.description">The number of minutes to delay before arming the disconnect for a reconnect.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectMinutes">Disconnect Minutes</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.disconnectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the disconnected part of the cycle.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.connectMinutes">Connect Minutes</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.connectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the connected part of the cycle.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton">Reconnect Button</entry>
-    <entry key="yukon.web.modules.tools.configs.category.disconnectConfiguration.reconnectButton.description">When true, the button must be pressed to complete a reconnect to the meter. Else, the reconnect is automatically completed.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.title">MCT Load-Limiting Disconnect Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.definition">Configuration parameters for the load-limiting disconnect feature of MCT devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectLoadLimitConnectDelay">Disconnect Load Limit Connect Delay</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectLoadLimitConnectDelay.description">The number of minutes to delay before arming the disconnect for a reconnect.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectMinutes">Disconnect Minutes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.disconnectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the disconnected part of the cycle.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.connectMinutes">Connect Minutes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.connectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the connected part of the cycle.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.reconnectButton">Reconnect Button</entry>
+    <entry key="yukon.web.modules.tools.configs.category.mctDisconnectConfiguration.reconnectButton.description">When true, the button must be pressed to complete a reconnect to the meter. Else, the reconnect is automatically completed.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.title">RFN Remote Disconnect Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.definition">Configuration parameters for the load-limiting disconnect feature of RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectConfigurationType">Disconnect Configuration Type</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectConfigurationType.description">The type of disconnect configuration the RFN device is configured to use.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.reconnectParam">Reconnect Parameter</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.reconnectParam.description">Whether the meter's reconnect functionality will be armed or immediate.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.demandInterval">Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.demandInterval.description">PUT SOMETHING HERE</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold">Disconnect Demand Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectDemandThreshold.description">Demand threshold at which a disconnect will be triggered.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectDelay">Connect Delay</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectDelay.description">The connect delay in minutes.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects">Max Disconnects</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.maxDisconnects.description">The maximum number of disconnects.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMinutes">Disconnect Minutes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.disconnectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the disconnected part of the cycle.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes">Connect Minutes</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDisconnectConfiguration.connectMinutes.description">When a cycling disconnect command is issued to the attached disconnect device, this is the number of minutes that will be from the connected part of the cycle.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.title">RFN OV/UV Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.definition">Configuration parameters for the OV/UV metrology features for RFN devices.</entry>
@@ -445,6 +471,7 @@
     <entry key="yukon.web.modules.tools.configs.category.deleteSuccess">Device configuration category was successfully removed from the database.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyName">Category name must not be empty.</entry>
     <entry key="yukon.web.modules.tools.configs.category.nonNumber">A non-number value was submitted for this field.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.decimalDigits">Too many digits following the decimal place were specified. Please limit the value to {0} digit(s) after the decimal.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyValue">No value was supplied for this field.</entry>
     <entry key="yukon.web.modules.tools.configs.category.assignments.title">Assignments</entry>
     <entry key="yukon.web.modules.tools.configs.category.noAssignments">This category is not currently assigned to any device configurations.</entry>

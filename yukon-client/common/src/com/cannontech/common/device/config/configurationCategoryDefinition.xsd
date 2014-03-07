@@ -24,6 +24,7 @@
             <xs:extension base="InputBase">
                 <xs:attribute name="minValue" type="xs:float"/>
                 <xs:attribute name="maxValue" type="xs:float"/>
+                <xs:attribute name="decimalDigits" type="xs:int"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -84,6 +85,9 @@
             <xs:enumeration value="RelayTiming"/>
             <xs:enumeration value="TableReadInterval"/>
             <xs:enumeration value="DisconnectLoadLimitConnectDelay"/>
+            <xs:enumeration value="DisconnectConfigurationType"/>
+            <xs:enumeration value="DisconnectDemandInterval"/>
+            <xs:enumeration value="ReconnectParameter"/>
         </xs:restriction>
     </xs:simpleType>
 

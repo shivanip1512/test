@@ -4,9 +4,21 @@ import com.cannontech.web.input.type.FloatType;
 import com.cannontech.web.input.validate.FloatRangeValidator;
 
 public class FloatField extends Field<Float> {
-    public FloatField(String displayName, String fieldName, String description, FloatType inputType) {
-        super(displayName, fieldName, description, inputType, 
+    private final int decimalDigits;
+    private final boolean digitsLimited;
+    
+    public FloatField(String displayName, String fieldName, String description, int decimalDigits, FloatType inputType) {
+        super(displayName, fieldName, description, inputType,
               createValidator(inputType.getMinValue(), inputType.getMaxValue()));
+        this.decimalDigits = decimalDigits;
+        this.digitsLimited = true;
+    }
+    
+    public FloatField(String displayName, String fieldName, String description, FloatType inputType) {
+        super(displayName, fieldName, description, inputType,
+              createValidator(inputType.getMinValue(), inputType.getMaxValue()));
+        this.decimalDigits = Integer.MAX_VALUE;
+        this.digitsLimited = false;
     }
     
     private static FloatRangeValidator createValidator(float minValue, float maxValue) {
@@ -15,5 +27,13 @@ public class FloatField extends Field<Float> {
         validator.setMaxValue(maxValue);
         
         return validator;
+    }
+    
+    public int getDecimalDigits() {
+        return decimalDigits;
+    }
+
+    public boolean isDigitsLimited() {
+        return digitsLimited;
     }
 }

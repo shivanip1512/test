@@ -1,5 +1,6 @@
 package com.cannontech.web.deviceConfiguration.validation;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -71,6 +72,17 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                                 FloatField floatField = (FloatField) field;
                                 InputValidator<Float> validator = floatField.getValidator();
                                 validator.validate(path, field.getDisplayName(), Float.valueOf(value), errors);
+                                
+                                if (floatField.isDigitsLimited()) {
+                                    BigDecimal decimal = new BigDecimal(value);
+                                    int numDigits = floatField.getDecimalDigits();
+                                    if (decimal.scale() > numDigits) {
+                                        String defaultMsg = "Please limit the value to " + Integer.toString(numDigits)  
+                                                + " digit(s) after the decimal";
+                                        Object[] args = {Integer.toString(numDigits)};
+                                        errors.rejectValue(path, baseKey + ".decimalDigits", args, defaultMsg);
+                                    }
+                                }
                             } else {
                                 log.error("Received a validator for an unsupported type: " + field.getClass().getSimpleName());
                             }
