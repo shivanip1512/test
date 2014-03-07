@@ -317,7 +317,14 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_LcdCycleTime,                      "rfn lcd cycle time" },
         { CtiTableDynamicPaoInfo::Key_RFN_LcdDisconnectDisplayDisabled,      "rfn lcd disconnect display disabled" },
         { CtiTableDynamicPaoInfo::Key_RFN_LcdDisplayDigits,                  "rfn lcd display digits" },
-
+        { CtiTableDynamicPaoInfo::Key_RFN_CurrentDisconnectMode,             "rfn current disconnect mode" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam,                    "rfn reconnect param" },
+        { CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval,          "rfn disconnect demand interval" },
+        { CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold,                   "rfn demand threshold" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay,                      "rfn connect delay" },
+        { CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects,                    "rfn max disconnects" },
+        { CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes,                 "rfn disconnect minutes" },
+        { CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes,                    "rfn connect minutes" },
     };
 
     std::vector<std::string> expected, results;
