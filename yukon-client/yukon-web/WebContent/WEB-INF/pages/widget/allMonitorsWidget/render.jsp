@@ -452,7 +452,7 @@
                 <%-- monitor name --%>
                 <td>
 
-                    <cti:url var="viewValidationMonitorEditorUrl" value="/common/vee/monitor/edit">
+                    <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/edit">
                         <cti:param name="validationMonitorId" value="${monitorId}"/>
                     </cti:url>
                     <a href="${viewValidationMonitorEditorUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${fn:escapeXml(monitorName)}"/>" >
@@ -539,7 +539,7 @@
                 <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="/amr/porterResponseMonitor/createPage" />
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
-                <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/common/vee/monitor/edit" />
+                <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/amr/vee/monitor/edit" />
             </cti:checkRolesAndProperties>
         </cm:dropdown>
     </c:if>

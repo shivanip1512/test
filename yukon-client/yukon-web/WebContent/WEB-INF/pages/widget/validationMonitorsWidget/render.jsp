@@ -11,7 +11,7 @@
 </c:if>
         
 <%-- TABLE --%>
-<cti:url var="submitUrl" value="/common/vee/monitor/edit"/>
+<cti:url var="submitUrl" value="/amr/vee/monitor/edit"/>
 <form action="${submitUrl}" method="get">
 <c:choose>
 <c:when test="${fn:length(monitors) > 0}">
@@ -36,7 +36,7 @@
             <c:if test="${monitor.evaluatorStatus == 'DISABLED'}">
                 <c:set var="tdClass" value="subtle"/>
             </c:if>
-            <cti:url var="viewValidationMonitorEditorUrl" value="/common/vee/monitor/edit">
+            <cti:url var="viewValidationMonitorEditorUrl" value="/amr/vee/monitor/edit">
                 <cti:param name="validationMonitorId" value="${monitorId}"/>
             </cti:url>
             
