@@ -1,14 +1,13 @@
 function setLastTransmission() {
 
-	return function(data) {
-        
-		new Ajax.Updater('lastTransmission', 
-			'/multispeak/visualDisplays/loadManagement/currentDateTime', {
-			'onSuccess': function(transport, json) {
-			
-				$('lastTransmitted').innerHTML = json['nowStr'];
-				flashYellow($('lastTransmitted'), 3.5);
-			}
-		});
+    return function(data) {
+        jQuery.ajax({
+            url: '/multispeak/visualDisplays/loadManagement/currentDateTime'
+        }).done(function (data, textStatus, jqXHR) {
+            var jsonData = yukon.ui.util.getHeaderJSON(jqXHR),
+                lastTransmitData = jsonData['nowStr'];
+            jQuery('#lastTransmitted').html(lastTransmitData);
+            flashYellow(jQuery('#lastTransmitted')[0], 3.5);
+        });
     };
-}
+};
