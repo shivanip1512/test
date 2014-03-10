@@ -41,7 +41,7 @@
                         </label><br>
                     </c:forEach>
                             
-                    <cti:button type="submit" label="Accept"/>
+                    <cti:button type="submit" value="Accept" nameKey="accept"/>
                 </form>
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="deleteAll">
