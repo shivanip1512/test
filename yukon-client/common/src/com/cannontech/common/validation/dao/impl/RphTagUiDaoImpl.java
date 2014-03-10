@@ -50,10 +50,10 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         //This SQL removes any Ids that have any rows with OK attached to them.
         sql.append("AND rt.ChangeId NOT IN (");
         sql.append("    SELECT rt2.ChangeId FROM RphTag rt2 ");
-        sql.append("    WHERE rt2.TagName ").eq(RphTag.OK);
+        sql.append("    WHERE rt2.TagName ").eq_k(RphTag.OK);
         sql.append(")");
         
-        sql.append("WHERE rt.TagName").neq(RphTag.OK);
+        sql.append("WHERE rt.TagName").neq_k(RphTag.OK);
         sql.append(    "AND rt.TagName").in_k(tags);
 
         sql.append(") results");
