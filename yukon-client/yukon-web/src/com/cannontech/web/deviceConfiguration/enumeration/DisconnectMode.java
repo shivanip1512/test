@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.ImmutableList.Builder;
 
 @Component
-public final class DisconnectConfigurationType implements DeviceConfigurationInputEnumeration {
+public final class DisconnectMode implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.disconnectConfigurationType";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.disconnectMode";
     
     private static final List<DisplayableValue> configTypes;
     
@@ -38,7 +38,7 @@ public final class DisconnectConfigurationType implements DeviceConfigurationInp
     
     @Override
     public String getEnumOptionName() {
-        return "DisconnectConfigurationType";
+        return "DisconnectMode";
     }
 
     @Override
