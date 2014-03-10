@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.InstantRowMapper;
 import com.cannontech.database.IntegerRowMapper;
@@ -72,6 +70,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     /**
      * Gets all the programs the account is enrolled in
      */
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId) {
         
@@ -211,24 +210,35 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 	}
 	
 	@Override
-	public List<Integer> getOptedOutInventory(Program program, Date startDate,
-			Date stopDate) {
+	public List<Integer> getOptedOutInventory(Program program, Date startDate, Date stopDate) {
 
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT DISTINCT lmhcg.InventoryId ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("WHERE lmhcg.ProgramId = ?");
-		sql.append("	AND lmhcg.Type = ?");
-		sql.append("	AND lmhcg.OptOutStart <= ?");
-		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
-		
-		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql.toString(), new IntegerRowMapper(), 
-													program.getProgramId(),
-													LMHardwareControlGroup.OPT_OUT_ENTRY,
-													stopDate,
-													startDate);
+		sql.append("WHERE lmhcg.ProgramId").eq(program.getProgramId());
+		sql.append("	AND lmhcg.Type").eq_k(LMHardwareControlGroup.OPT_OUT_ENTRY);
+		sql.append("	AND lmhcg.OptOutStart").lte(stopDate);
+		sql.append("	AND (lmhcg.OptOutStop IS NULL");
+		sql.append("         OR lmhcg.OptOutStop").gte(startDate).append(")");
+
+		List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
 		return inventoryIds;
 	}
+
+    @Override
+    public List<Integer> getEnrolledInventory(Program program, Date startDate, Date stopDate) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT lmhcg.InventoryId ");
+        sql.append("FROM LMHardwareControlGroup lmhcg");
+        sql.append("WHERE lmhcg.ProgramId").eq(program.getProgramId());
+        sql.append("    AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append("    AND lmhcg.GroupEnrollStart").lte(stopDate);
+        sql.append("    AND (lmhcg.GroupEnrollStop IS NULL");
+        sql.append("         OR lmhcg.GroupEnrollStop").gte(startDate).append(")");
+
+        List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return inventoryIds;
+    };
 	
 	@Override
 	public List<Integer> getCurrentlyOptedOutInventory() {
@@ -299,7 +309,8 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-	public Instant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	@Override
+    public Instant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
 	    
 	    Instant now = new Instant();
         
@@ -373,7 +384,8 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     private class LMHardwareControlGroupRowMapper 
                         implements YukonRowMapper<LMHardwareControlGroup> {
         
-    	public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
+    	@Override
+        public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
             LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
             hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryId"));
             hardwareControlGroup.setInventoryId(rs.getInt("InventoryId"));
@@ -392,6 +404,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             return hardwareControlGroup;
         }
     	
-    };
-    
+    }
+
 }

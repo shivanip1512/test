@@ -44,7 +44,12 @@ public interface EnrollmentDao {
      * @return List of inventory ids
      */
     public List<Integer> getOptedOutInventory(Program program, Date startDate, Date stopDate);
-    
+
+    /**
+     * Returns list of inventory ids for inventory that was enrolled for the given time period for the given program.
+     */
+    public List<Integer> getEnrolledInventory(Program program, Date startDate, Date stopDate);
+
     /**
      * Method to get a list of all currently opted out inventory
      * @return List of opted out inventory ids

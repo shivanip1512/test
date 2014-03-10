@@ -979,11 +979,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		List<OverrideHistory> historyList = new ArrayList<>();
 		
-		// Get the opted out inventory by program and time period
-		List<Integer> optedOutInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+		// Get the enrolled inventory by program and time period
+		List<Integer> enrolledInventory = enrollmentDao.getEnrolledInventory(program, startTime, stopTime);
 		
 		// For each inventory, get the opt out event and create the override history object
-		for(Integer inventoryId : optedOutInventory) {
+		for(Integer inventoryId : enrolledInventory) {
 			
 			List<Program> programList = enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime);
 			
