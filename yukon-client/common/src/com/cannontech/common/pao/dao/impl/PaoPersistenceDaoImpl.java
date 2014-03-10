@@ -260,12 +260,26 @@ public class PaoPersistenceDaoImpl implements PaoPersistenceDao {
                 if(!YukonPao.AUTO_DETECT.equals(paoAnnotation.tableName())) {
                     tableName = paoAnnotation.tableName();
                 }
+                
+                if (YukonPao.UNSPECIFIED.equals(paoAnnotation.idColumnName())) {
+                    // Annotation error, this class cannot be table backed without specifying an id column name!
+                    throw new RuntimeException(completeClass.getName() + " is specified as being table-backed but " +
+                                               "no idColumnName has been specified!");
+                }
+                
                 paoMetaData.setDbIdColumnName(paoAnnotation.idColumnName());
             }
         } else {
             if (!YukonPao.AUTO_DETECT.equals(partAnnotation.tableName())) {
                 tableName = partAnnotation.tableName();
             }
+            
+            if (YukonPao.UNSPECIFIED.equals(partAnnotation.idColumnName())) {
+                // Annotation error, parts cannot have a missing id column name!
+                throw new RuntimeException(completeClass.getName() + " is specified as being table-backed but " +
+                                           "no idColumnName has been specified!");
+            }
+            
             paoMetaData.setDbIdColumnName(partAnnotation.idColumnName());
         }
         
