@@ -4386,13 +4386,6 @@
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="14">
-                <init>true</init>
-                <name>Temp Out of Service Duration</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Minutes"/>
-                <decimalplaces value="0"/>
-            </point>
             <point type="Analog" offset="15">
                 <init>true</init>
                 <name>Reporting Interval</name>
@@ -4467,9 +4460,6 @@
             </attribute>
             <attribute name="TAMPER_FLAG">
                 <basicLookup point="Runtime Tamper"/>
-            </attribute>
-            <attribute name="TEMPORARY_OUT_OF_SERVICE">
-                <basicLookup point="Temp Out of Service Duration"/>
             </attribute>
             <attribute name="TOTAL_LUF_COUNT">
                 <basicLookup point="Total LUF Event Count" />

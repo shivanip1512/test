@@ -112,7 +112,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.INTERNAL_ERROR_FLAG">Internal Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE">Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_DEVICE">Temperature of Device</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.TEMPORARY_OUT_OF_SERVICE">Temp Out of Service Duration</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE">Under Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_MEASURED">Under Voltage Measured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_THRESHOLD">Under Voltage Threshold</entry>
