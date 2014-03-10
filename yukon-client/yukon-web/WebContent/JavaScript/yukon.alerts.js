@@ -1,5 +1,5 @@
 /**
- * Singleton that manages the Yukon alerts
+ * Singleton that manages alerts button and popup
  * 
  * @requires jQuery 1.8.3+
  * @requires jQuery UI 1.9.2+
@@ -8,30 +8,31 @@
 yukon.namespace('yukon.alerts');
 
 yukon.alerts = (function () {
+    
         var _initialized = false,
         _countInitialized = false,
         _oldCount = 0,
-        _alert_button = "#yukon-alert-button",
-        _clear_button = "#yukon_clear_alerts_button",
-        _viewAlertUrl = "/common/alert/view",
-        _clearAlertUrl = "/common/alert/clear",
+        _alert_button = '#yukon-alert-button',
+        _clear_button = '#yukon_clear_alerts_button',
+        _viewAlertUrl = yukon.url('/common/alert/view'),
+        _clearAlertUrl = yukon.url('/common/alert/clear'),
         
         /* --------------- */
         /* private methods */
         /* --------------- */
         _handleBtnClick = function() {
-            if (jQuery("#yukon_alert_popup").is(":visible")) {
-                jQuery("#yukon_alert_popup").dialog("close");
+            if (jQuery('#yukon_alert_popup').is(':visible')) {
+                jQuery('#yukon_alert_popup').dialog('close');
             } else {
-                jQuery("#alert_body").load(_viewAlertUrl, function() {
-                    jQuery("#yukon_alert_popup").dialog("open");
+                jQuery('#alert_body').load(_viewAlertUrl, function() {
+                    jQuery('#yukon_alert_popup').dialog('open');
                 });
             }
         },
 
         _updateCount = function (count) {
-            var button = jQuery("#yukon-alert-button");
-            button.children(".b-label").html(count);
+            var button = jQuery('#yukon-alert-button');
+            button.children('.b-label').html(count);
             if (count > 0) {
                 button.addClass('red');
                 button.show();
@@ -56,13 +57,12 @@ yukon.alerts = (function () {
         },
 
         _closeAlertWindow = function() {
-            jQuery("#yukon_alert_popup").dialog("close");
-            jQuery("#alert_body").empty();
+            jQuery('#yukon_alert_popup').dialog('close');
+            jQuery('#alert_body').empty();
         },
-        module;
+        mod;
 
-    module = {
-
+    mod = {
         
         /* -------------- */
         /* public methods */
@@ -72,10 +72,10 @@ yukon.alerts = (function () {
                 return;
             }
             
-            jQuery(_alert_button).on("click", _handleBtnClick);
-            jQuery(_clear_button).on("click", function() {module.clearAlert();});
+            jQuery(_alert_button).on('click', _handleBtnClick);
+            jQuery(_clear_button).on('click', function() {mod.clearAlert();});
             
-            jQuery("#yukon_alert_popup").dialog({autoOpen: false, width:"600", height: "auto", position: {my: "top", at: "bottom+3", of: ".outer"} });
+            jQuery('#yukon_alert_popup').dialog({autoOpen: false, width:'600', height: 'auto', position: {my: 'top', at: 'bottom+3', of: '.outer'}});
             
             _initialized = true;
         },
@@ -91,25 +91,27 @@ yukon.alerts = (function () {
 
             if (alertId) {
                 alertIds.push(alertId);
-                jQuery("#alertTableRow_" + alertId).remove();
-                remainingAlerts = jQuery("#alertTable tbody tr").length;
+                jQuery('#alertTableRow_' + alertId).remove();
+                remainingAlerts = jQuery('#alertTable tbody tr').length;
                 _updateCount(remainingAlerts);
             } else {
-                jQuery("#alertTable tbody tr input").each(function(i, item) {
+                jQuery('#alertTable tbody tr input').each(function(i, item) {
                     alertIds.push(item.value);
                 });
                 _updateCount(0);
                 _closeAlertWindow();
             }
 
-            jQuery.ajax({contentType: 'application/json', url: _clearAlertUrl, type: "POST",
-                data: JSON.stringify(alertIds)});
+            jQuery.ajax({
+                url: _clearAlertUrl,
+                contentType: 'application/json', 
+                type: 'POST',
+                data: JSON.stringify(alertIds)
+            });
         }
     };
-    return module;
+    
+    return mod;
 }());
 
-
-jQuery(function() {
-    yukon.alerts.init();
-});
+jQuery(function() {yukon.alerts.init();});
