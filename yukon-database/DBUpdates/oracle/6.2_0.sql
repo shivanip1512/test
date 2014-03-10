@@ -9,13 +9,13 @@ RENAME COLUMN EventSendTime TO EventSentTime;
 /* @error ignore-end */
 /* End YUK-12914 */
 
-/* Start YUK-12914 */
+/* Start YUK-12988 */
 DELETE FROM YukonGroupRole
 WHERE RolePropertyId = -10911;
 
 DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10911;
-/* End YUK-12914 */
+/* End YUK-12988 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
