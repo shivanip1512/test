@@ -302,7 +302,7 @@ const string RfnStrings::OvUvAlarmRepeatInterval    = "alarmRepeatInterval";
 const string RfnStrings::OvUvRepeatCount            = "ovuvRepeats";
 
 // Disconnect configuration
-const string RfnStrings::DisconnectConfigurationType = "disconnectConfigurationType";
+const string RfnStrings::DisconnectMode              = "disconnectMode";
 const string RfnStrings::ReconnectParam              = "reconnectParam";
 const string RfnStrings::DisconnectDemandInterval    = "disconnectDemandInterval";
 const string RfnStrings::DemandThreshold             = "demandThreshold";

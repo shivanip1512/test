@@ -41,6 +41,7 @@ protected:
         static const std::string voltageaveraging;
         static const std::string ovuv;
         static const std::string display;
+        static const std::string disconnect;
     };
 
     typedef boost::function<int (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;

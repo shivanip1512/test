@@ -135,7 +135,7 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string OvUvRepeatCount;
 
     // Disconnect configuration
-    static const std::string DisconnectConfigurationType;
+    static const std::string DisconnectMode;
     static const std::string ReconnectParam;
     static const std::string DisconnectDemandInterval;
     static const std::string DemandThreshold;

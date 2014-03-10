@@ -33,6 +33,7 @@ const std::string RfnDevice::ConfigPart::tou              = "tou";
 const std::string RfnDevice::ConfigPart::voltageaveraging = "voltageaveraging";
 const std::string RfnDevice::ConfigPart::ovuv             = "ovuv";
 const std::string RfnDevice::ConfigPart::display          = "display";
+const std::string RfnDevice::ConfigPart::disconnect       = "disconnect";
 
 
 int RfnDevice::invokeDeviceHandler(DeviceHandler &handler)

@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/optional.hpp>
 
 #include "dev_rfnResidential.h"
 #include "cmd_rfn.h"
@@ -766,6 +767,227 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_holiday )
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::DisconnectMode, "ON_DEMAND" );
+    cfg.insertValue( RfnStrings::ReconnectParam, "ARM" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    {
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x82) // remote disconnect
+                    (0x00) // set configuration
+                    (0x01) // 1 tlv
+                    (0x01) // on-demand
+                    (0x01) // length 1
+                    (0x00);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+
+        {
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x83)(0x00)(0x00)(0x01)(0x00);
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+
+            const std::string exp = "Status: Success (0)";
+
+            BOOST_CHECK_EQUAL(rcv.description, exp);
+        }
+
+        dut.extractCommandResult( *command );
+
+        std::string disconnectMode, reconnectParam;
+
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, disconnectMode );
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, reconnectParam );
+
+        BOOST_CHECK_EQUAL( disconnectMode, "ON_DEMAND" );
+        BOOST_CHECK_EQUAL( reconnectParam, "ARM" );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_threshold )
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::DisconnectMode, "DEMAND_THRESHOLD" );
+    cfg.insertValue( RfnStrings::ReconnectParam, "IMMEDIATE" );
+    cfg.insertValue( RfnStrings::DisconnectDemandInterval, "5" );
+    cfg.insertValue( RfnStrings::DemandThreshold, "10.2" );
+    cfg.insertValue( RfnStrings::ConnectDelay, "15" );
+    cfg.insertValue( RfnStrings::MaxDisconnects, "10" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    {
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x82) // remote disconnect
+                    (0x00) // set configuration
+                    (0x01) // 1 tlv
+                    (0x02) // demand-threshold
+                    (0x05) // length 5
+                    (0x01)(0x05)(0x66)(0x0f)(0x0a);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+
+        {
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x83)(0x00)(0x00)(0x02)(0x00);
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+
+            const std::string exp = "Status: Success (0)";
+
+            BOOST_CHECK_EQUAL(rcv.description, exp);
+        }
+
+        dut.extractCommandResult( *command );
+
+        std::string disconnectMode, reconnectParam;
+        double threshold;
+
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, disconnectMode );
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, reconnectParam );
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, threshold );
+
+        BOOST_CHECK_EQUAL( disconnectMode, "DEMAND_THRESHOLD" );
+        BOOST_CHECK_EQUAL( reconnectParam, "IMMEDIATE" );
+        BOOST_CHECK_CLOSE( threshold, 10.2, 1e-5);
+        BOOST_CHECK_EQUAL( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval ), 5 );
+        BOOST_CHECK_EQUAL( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay ), 15 );
+        BOOST_CHECK_EQUAL( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects ), 10 );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+
+    test_DeviceConfig cfg;
+
+    cfg.insertValue( RfnStrings::DisconnectMode, "CYCLING" );
+    cfg.insertValue( RfnStrings::DisconnectMinutes, "10" );
+    cfg.insertValue( RfnStrings::ConnectMinutes, "20" );
+
+    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+    {
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x82) // remote disconnect
+                    (0x00) // set configuration
+                    (0x01) // 1 tlv
+                    (0x03) // on-demand
+                    (0x05) // length 5
+                    (0x01)(0x00)(0x0a)(0x00)(0x14);
+
+            BOOST_CHECK_EQUAL( rcv, exp );
+        }
+
+        {
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x83)(0x00)(0x00)(0x03)(0x00);
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+
+            const std::string exp = "Status: Success (0)";
+
+            BOOST_CHECK_EQUAL(rcv.description, exp);
+        }
+
+        dut.extractCommandResult( *command );
+
+        std::string disconnectMode;
+
+        dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, disconnectMode );
+
+        BOOST_CHECK_EQUAL( disconnectMode, "CYCLING" );
+        BOOST_CHECK_EQUAL( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes ), 10 );
+        BOOST_CHECK_EQUAL( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes ), 20 );
     }
 }
 
@@ -1580,6 +1802,289 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
         BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true); // 1 message to notify that all config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
+{
+    test_RfnResidentialDevice dut;
+    dut._type = TYPE_RFN420CD;
+
+    test_DeviceConfig cfg;
+
+    {
+        ////// empty configuration (no valid configuration) //////
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 0 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true)(true)(false); // 4 error messages, NOTE: last expectMore expected to be false
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add remote disconnect config
+    cfg.insertValue( RfnStrings::DisconnectMode, "CYCLING" );
+    cfg.insertValue( RfnStrings::ConnectMinutes, "100" );
+    cfg.insertValue( RfnStrings::DisconnectMinutes, "60" );
+        
+    {
+        ////// 1 valid configuration //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  5 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 1 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true)(true)(true);
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add demand freeze day config
+    cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
+
+    {
+        ////// 2 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  4 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 2 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true)(true); // 3 error messages + 1 message to notify that 1 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add OVUV config
+    cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
+    cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
+    cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "60" );
+    cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
+    cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
+    cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
+
+    {
+        ////// 3 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  3 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 8 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true)(true); // 2 error messages + 1 message to notify that 2 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add TOU config
+
+    // Schedule 1
+    cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
+    cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
+    cfg.insertValue( RfnStrings::Schedule1Time4, "23:33" );
+    cfg.insertValue( RfnStrings::Schedule1Time5, "23:44" );
+
+    cfg.insertValue( RfnStrings::Schedule1Rate0, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate1, "B" );
+    cfg.insertValue( RfnStrings::Schedule1Rate2, "C" );
+    cfg.insertValue( RfnStrings::Schedule1Rate3, "D" );
+    cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
+    cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
+
+    // Schedule 2
+    cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
+    cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
+    cfg.insertValue( RfnStrings::Schedule2Time4, "05:23" );
+    cfg.insertValue( RfnStrings::Schedule2Time5, "16:28" );
+
+    cfg.insertValue( RfnStrings::Schedule2Rate0, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate1, "A" );
+    cfg.insertValue( RfnStrings::Schedule2Rate2, "B" );
+    cfg.insertValue( RfnStrings::Schedule2Rate3, "C" );
+    cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
+    cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
+
+    // Schedule 3
+    cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
+    cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
+    cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
+    cfg.insertValue( RfnStrings::Schedule3Time4, "05:06" );
+    cfg.insertValue( RfnStrings::Schedule3Time5, "06:07" );
+
+    cfg.insertValue( RfnStrings::Schedule3Rate0, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate1, "D" );
+    cfg.insertValue( RfnStrings::Schedule3Rate2, "A" );
+    cfg.insertValue( RfnStrings::Schedule3Rate3, "B" );
+    cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
+    cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
+
+    // Schedule 4
+    cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
+    cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
+    cfg.insertValue( RfnStrings::Schedule4Time4, "23:01" );
+    cfg.insertValue( RfnStrings::Schedule4Time5, "23:55" );
+
+    cfg.insertValue( RfnStrings::Schedule4Rate0, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate1, "C" );
+    cfg.insertValue( RfnStrings::Schedule4Rate2, "D" );
+    cfg.insertValue( RfnStrings::Schedule4Rate3, "A" );
+    cfg.insertValue( RfnStrings::Schedule4Rate4, "B" );
+    cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
+
+    // day table
+    cfg.insertValue( RfnStrings::SundaySchedule,    "Schedule 1" );
+    cfg.insertValue( RfnStrings::MondaySchedule,    "Schedule 1" );
+    cfg.insertValue( RfnStrings::TuesdaySchedule,   "Schedule 3" );
+    cfg.insertValue( RfnStrings::WednesdaySchedule, "Schedule 2" );
+    cfg.insertValue( RfnStrings::ThursdaySchedule,  "Schedule 4" );
+    cfg.insertValue( RfnStrings::FridaySchedule,    "Schedule 2" );
+    cfg.insertValue( RfnStrings::SaturdaySchedule,  "Schedule 3" );
+    cfg.insertValue( RfnStrings::HolidaySchedule,   "Schedule 3" );
+
+    // default rate
+    cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
+
+    {
+        ////// 4 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+
+        std::vector<bool> expectMoreRcv;
+        while( ! returnMsgs.empty() )
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+            expectMoreRcv.push_back( returnMsg.ExpectMore() );
+            returnMsgs.pop_front();
+        }
+
+        const std::vector<bool> expectMoreExp = boost::assign::list_of
+                (true)(true); // 1 error messages + 1 message to notify that 3 config has been sent to the device
+
+        BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                       expectMoreExp.begin() , expectMoreExp.end() );
+    }
+
+    // add voltage averaging config
+    cfg.insertValue( RfnStrings::demandInterval, "1" );
+    cfg.insertValue( RfnStrings::profileInterval,"2" );
+
+    {
+        ////// 5 valid configurations //////
+
+        resetTestState();
+
+        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install all");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+
+        BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )

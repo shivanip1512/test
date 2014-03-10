@@ -149,6 +149,11 @@ RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
                 ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ))
                 ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ));
 
+        if( disconnectConfigSupported() )
+        {
+            m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) ) );
+        }
+
         return m;
     }
     else
@@ -158,6 +163,11 @@ RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
                 ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ))
                 ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ))
                 ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ));
+
+        if( disconnectConfigSupported() )
+        {
+            m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) ) );
+        }
 
         return m;
     }
@@ -1448,12 +1458,12 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
         return NoConfigData;
     }
 
-    const boost::optional<std::string> disconnectMode = deviceConfig->findValue<std::string>( Config::RfnStrings::DisconnectConfigurationType );
+    const boost::optional<std::string> disconnectMode = deviceConfig->findValue<std::string>( Config::RfnStrings::DisconnectMode );
 
     if( ! disconnectMode )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DisconnectConfigurationType 
+        dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DisconnectMode 
              << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return NoConfigData;
@@ -1465,7 +1475,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
     if( ! config_disconnect_type )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectConfigurationType 
+        dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectMode 
              << "\": " << *disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return ErrorInvalidConfigData;
@@ -1502,7 +1512,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 if( ! config_reconnect_param )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectConfigurationType 
+                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectMode 
                          << "\": " << *disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
                     return ErrorInvalidConfigData;
@@ -1557,7 +1567,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                     return NoConfigData;
                 }
 
-                config_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::DisconnectMode>( disconnectModeResolver.right, *configValue );
+                config_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, *configValue );
                 if( ! config_reconnect_param )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1814,8 +1824,8 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             {
                 if( parse.isKeyValid( "force" ) )
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_connect_minutes,
-                                                                                                                      *config_disconnect_minutes) );
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_disconnect_minutes,
+                                                                                                                      *config_connect_minutes) );
                 }
             }
             else
@@ -1826,8 +1836,8 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_connect_minutes,
-                                                                                                                      *config_disconnect_minutes) );
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_disconnect_minutes,
+                                                                                                                      *config_connect_minutes) );
                 }
             }
 
