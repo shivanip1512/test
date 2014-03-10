@@ -43,8 +43,6 @@ public class VeeReviewController {
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private ValidationHelperService validationHelperService;
     
-    private int sumOfSelectedTagCounts = 0;
-
     private static enum ActionType {
         DELETE,
         ACCEPT;
@@ -133,7 +131,7 @@ public class VeeReviewController {
         model.addAttribute("tagCounts", tagCounts);
         
         // mav
-        addDisplayTypesToModel(selectedTags, tagCounts, model);
+        int sumOfSelectedTagCounts = addDisplayTypesToModel(selectedTags, tagCounts, model);
         model.addAttribute("groupedExtendedReviewPoints", groupedExtendedReviewPoints);
         
         //for pagination
@@ -169,7 +167,7 @@ public class VeeReviewController {
             String actionTypeStr = actionParameters.get(changeIdStr);
             if (!StringUtils.isBlank(actionTypeStr)) {
                 ActionType actionType = ActionType.valueOf(actionTypeStr);
-                if (ActionType.DELETE.equals(actionType)) {
+                if (actionType == ActionType.DELETE) {
                     deleteChangeIds.add(Long.valueOf(changeIdStr));
                 } else if (ActionType.ACCEPT.equals(actionType)) {
                     acceptChangeIds.add(Long.valueOf(changeIdStr));
@@ -186,11 +184,7 @@ public class VeeReviewController {
         for (long acceptChangeId : acceptChangeIds) {
             validationHelperService.acceptRawPointHistoryRow(acceptChangeId, user);
         }
-        
-        // mav
-        for (RphTag tag : getSelectedTags(request)) {
-            model.addAttribute(tag.name(), true);
-        }
+
         setUpModel(request,  model, pagingParameters);
         return "vee/review/reviewTable.jsp";
     }
@@ -200,8 +194,8 @@ public class VeeReviewController {
         return "vee/review/menu.jsp";
     }
     
-    private void addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
-        sumOfSelectedTagCounts = 0;
+    private int addDisplayTypesToModel(List<RphTag> selectedTags, Map<RphTag, Integer> tagCounts, ModelMap model) {
+        int sumOfSelectedTagCounts = 0;
         List<DisplayType> displayTypes = new ArrayList<DisplayType>();
         for (RphTag tag : RphTag.getAllValidation()) {
             boolean checked = false;
@@ -214,6 +208,8 @@ public class VeeReviewController {
         
         model.addAttribute("totalTagCount", sumOfSelectedTagCounts);
         model.addAttribute("displayTypes", displayTypes);
+        
+        return sumOfSelectedTagCounts;
     }
     
     public class DisplayType {
