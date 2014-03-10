@@ -109,24 +109,26 @@
     <!-- Advanced Processing menu.jsp -->
     <!-- ================================================================== -->
     <!-- ================================================================== -->
-    <entry key="yukon.web.modules.amr.helperMenu.acceptAll.title">Accept All</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.deleteAll.title">Delete All</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.recalculateTags.title">Recalculate Tags</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.tagsAccepted">Matching RawPointHistory rows have been marked as Accepted.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.tagsDeleted">Matching RawPointHistory rows have been deleted.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.engineReset">The Validation Engine has been reset.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.engineRestart">Please restart the Yukon Service Manager to resume processing.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.acceptAllText">This will insert the OK tag for the any RawPointHistory value that has the identical
+    <entry key="yukon.web.modules.amr.validation.advanced.crumbTitle">Advanced</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.pageName">Advanced Processing</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.acceptAll.title">Accept All</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.deleteAll.title">Delete All</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags.title">Recalculate Tags</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.tagsAccepted">Matching RawPointHistory rows have been marked as Accepted.</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.tagsDeleted">Matching RawPointHistory rows have been deleted.</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.engineReset">The Validation Engine has been reset.</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.engineRestart">Please restart the Yukon Service Manager to resume processing.</entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.acceptAllText">This will insert the OK tag for the any RawPointHistory value that has the identical
                 set of tags as are checked. This has the same effect as the Accept selection
                 on the Review page.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.deleteAllText"><![CDATA[This will delete any RawPointHistory value that has the identical set of tags
+    <entry key="yukon.web.modules.amr.validation.advanced.deleteAllText"><![CDATA[This will delete any RawPointHistory value that has the identical set of tags
                 as are selected tags (but has not already been marked as Accepted). This has the same effect as the Delete selection
                 on the Review page. <strong class="warning">Archived usage readings will be removed
                 completely from the database. This cannot be undone!</strong>]]></entry>
-    <entry key="yukon.web.modules.amr.helperMenu.recalculateTags1">The following options will reset the validation engine so that it reprocesses
+    <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags1">The following options will reset the validation engine so that it reprocesses
                 all of the RawPointHistory rows from the beginning or from 12 months ago.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.recalculateTags2">Before selecting one of these options, shut down the Yukon Service Manager service.
+    <entry key="yukon.web.modules.amr.validation.advanced.recalculateTags2">Before selecting one of these options, shut down the Yukon Service Manager service.
                 After pressing the Delete button, the service may be restarted.</entry>
-    <entry key="yukon.web.modules.amr.helperMenu.deleteTagsOneYear">Delete previous 12 months of tags: </entry>
-    <entry key="yukon.web.modules.amr.helperMenu.deleteAllTags">Delete all tags: </entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.deleteTagsOneYear">Delete previous 12 months of tags: </entry>
+    <entry key="yukon.web.modules.amr.validation.advanced.deleteAllTags">Delete all tags: </entry>
 </properties>

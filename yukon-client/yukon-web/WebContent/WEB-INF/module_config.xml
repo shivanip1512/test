@@ -101,8 +101,12 @@
               </page>
               <page name="validationEditor.CREATE" type="BASIC" hideFavorite="true">
               </page>
-              <page name="validation.review" type="BASIC"></page>
-              <page name="helperMenu" type="BASIC"></page>
+              <page name="validation.review" type="BASIC">
+                <link>/amr/veeReview/home</link>
+                <pages>
+                    <page name="validation.advanced" type="BASIC"></page>
+                </pages>
+              </page>
             </pages>
           </page>
           <page name="meterSearchResults" type="BASIC">

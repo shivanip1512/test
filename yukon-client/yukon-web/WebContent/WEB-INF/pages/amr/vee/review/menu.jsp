@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage page="helperMenu" module="amr">
+<cti:standardPage page="validation.advanced" module="amr">
 
 <c:if test="${param.tagsAccepted}">
     <div class="flashMessage">
@@ -65,7 +65,7 @@
     <div class="column two nogutter">
             <tags:sectionContainer2 nameKey="recalculateTags">
                 <p>
-                    <i:inline key="yukon.web.modules.amr.helperMenu.recalculateTags1"/>
+                    <i:inline key=".recalculateTags1"/>
                 </p>
                 <p>
                     <i:inline key=".recalculateTags2"/>
