@@ -167,8 +167,8 @@
         </form>
         
         <div class="page-action-area">
-            <cti:button onclick="jQuery('#confirmForm).submit();" label="${commitFile}"/>
-            <cti:button onclick="jQuery('#cancelForm).submit();" label="${cancel}"/>
+            <cti:button onclick="jQuery('#confirmForm').submit();" label="${commitFile}"/>
+            <cti:button onclick="jQuery('#cancelForm').submit();" label="${cancel}"/>
         </div>
 
    </tags:boxContainer>
