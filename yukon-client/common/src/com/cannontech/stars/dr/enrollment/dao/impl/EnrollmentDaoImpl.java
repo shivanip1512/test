@@ -225,21 +225,6 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return inventoryIds;
 	}
 
-    @Override
-    public List<Integer> getEnrolledInventory(Program program, Date startDate, Date stopDate) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT lmhcg.InventoryId ");
-        sql.append("FROM LMHardwareControlGroup lmhcg");
-        sql.append("WHERE lmhcg.ProgramId").eq(program.getProgramId());
-        sql.append("    AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-        sql.append("    AND lmhcg.GroupEnrollStart").lte(stopDate);
-        sql.append("    AND (lmhcg.GroupEnrollStop IS NULL");
-        sql.append("         OR lmhcg.GroupEnrollStop").gte(startDate).append(")");
-
-        List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-        return inventoryIds;
-    };
-	
 	@Override
 	public List<Integer> getCurrentlyOptedOutInventory() {
 		

@@ -318,6 +318,23 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
     }
 
     @Override
+    public List<Integer> getScheduledOptOutInventory(Program program, Date startDate, Date stopDate) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Distinct OOE.InventoryId FROM OptOutEvent OOE");
+        sql.append("JOIN LMHardwareControlGroup LMHCG ON LMHCG.InventoryId = OOE.InventoryId");
+        sql.append("WHERE GroupEnrollStart").lte(stopDate);
+        sql.append("    AND GroupEnrollStop IS NULL");
+        sql.append("    AND StartDate").lte(stopDate);
+        sql.append("    AND (StopDate IS NULL OR StopDate").gte(startDate).append(")");
+        sql.append("    AND EventState").eq_k(OptOutEventState.SCHEDULED);
+        sql.append("    AND ProgramId").eq(program.getProgramId());
+
+        List<Integer> inventoryIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return inventoryIds;
+    }
+
+    @Override
     @Transactional(propagation=Propagation.SUPPORTS)
     public List<OverrideHistory> getOptOutHistoryForInventory(int inventoryId, Date startDate, Date stopDate,
                                                              Iterable<OptOutEventState> eventStates) {

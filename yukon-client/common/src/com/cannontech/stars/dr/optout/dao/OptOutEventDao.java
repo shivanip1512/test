@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Multimap;
 
@@ -233,4 +234,10 @@ public interface OptOutEventDao {
 	 * @return A set of ids for all currently opted out inventory in the specified list.
 	 */
 	public Set<Integer> getOptedOutInventory(Iterable<Integer> inventoryIds);
+
+    /**
+     * Returns list of inventory ids for inventory that has an opt out scheduled
+     * for the given time period for the given program.
+     */
+    List<Integer> getScheduledOptOutInventory(Program program, Date startDate, Date stopDate);
 }

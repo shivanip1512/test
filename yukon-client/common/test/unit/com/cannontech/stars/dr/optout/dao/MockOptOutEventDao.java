@@ -18,6 +18,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -202,6 +203,11 @@ public class MockOptOutEventDao implements OptOutEventDao {
 
     @Override
     public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId, int customerAccountId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<Integer> getScheduledOptOutInventory(Program program, Date startDate, Date stopDate) {
         throw new MethodNotImplementedException();
     }
 }
