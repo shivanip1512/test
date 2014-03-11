@@ -14,6 +14,7 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -45,7 +46,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     
     @Override
     public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier, LiteYukonUser user) {
-        Set<YukonPao> unavailableDevices = assetAvailabilityService.getUnavailableDevicesInDrGrouping(paoIdentifier);
+        Set<SimpleDevice> unavailableDevices = assetAvailabilityService.getUnavailableDevicesInDrGrouping(paoIdentifier);
         
         //Ensure we are not attempting to ping an unreasonable number of devices.
         if (unavailableDevices.size() > PING_MAXIMUM_DEVICES) {

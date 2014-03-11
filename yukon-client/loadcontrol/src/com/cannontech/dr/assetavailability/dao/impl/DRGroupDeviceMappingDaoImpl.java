@@ -79,8 +79,8 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
     }
     
     @Override
-    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier) {
-        Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(paoIdentifier);
+    public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao) {
+        Collection<Integer> loadGroupIds = getLoadGroupIdsForDrGroup(yukonPao.getPaoIdentifier());
         
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -96,15 +96,13 @@ public class DRGroupDeviceMappingDaoImpl implements DRGroupDeviceMappingDao {
             }
         };
         
-        final Map<Integer, YukonPao> results = new HashMap<>();
+        final Map<Integer, SimpleDevice> results = new HashMap<>();
         chunkingSqlTemplate.query(sqlFragmentGenerator, loadGroupIds, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int inventoryId = rs.getInt("InventoryId");
-                int paoId = rs.getInt("PaObjectId");
-                PaoType paoType = rs.getEnum("Type", PaoType.class);
-                YukonPao pao = new SimpleDevice(paoId, paoType);
-                results.put(inventoryId, pao);
+                SimpleDevice device = new SimpleDevice(rs.getPaoIdentifier("PaObjectId", "Type"));
+                results.put(inventoryId, device);
             }
         });
         return results;

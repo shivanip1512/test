@@ -3,6 +3,7 @@ package com.cannontech.dr.assetavailability.service;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
@@ -66,8 +67,8 @@ public interface AssetAvailabilityService {
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier);
     
     /**
-     * Returns the YukonPao for every device in the specified load group, program, scenario or control area whose asset
+     * Returns every device in the specified load group, program, scenario or control area whose asset
      * availability status is "unavailable".
      */
-    public Set<YukonPao> getUnavailableDevicesInDrGrouping(PaoIdentifier drPaoIdentifier);
+    public Set<SimpleDevice> getUnavailableDevicesInDrGrouping(YukonPao yukonPao);
 }

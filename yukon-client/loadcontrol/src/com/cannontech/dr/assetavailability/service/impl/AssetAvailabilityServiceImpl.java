@@ -11,6 +11,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
@@ -250,17 +251,18 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public Set<YukonPao> getUnavailableDevicesInDrGrouping(PaoIdentifier drPaoIdentifier) {
-        Map<Integer, YukonPao> inventoryPaoMap = drGroupDeviceMappingDao.getInventoryPaoMapForGrouping(drPaoIdentifier);
+    public Set<SimpleDevice> getUnavailableDevicesInDrGrouping(YukonPao yukonPao) {
+        Map<Integer, SimpleDevice> inventoryPaoMap = drGroupDeviceMappingDao.getInventoryPaoMapForGrouping(yukonPao.getPaoIdentifier());
         Map<Integer, SimpleAssetAvailability> availabilities = getAssetAvailability(inventoryPaoMap.keySet());
         
-        Set<YukonPao> unavailablePaos = new HashSet<>();
+        Set<SimpleDevice> unavailablePaos = new HashSet<>();
         for (Map.Entry<Integer, SimpleAssetAvailability> entry : availabilities.entrySet()) {
             SimpleAssetAvailability availability = entry.getValue();
             if (availability.getStatus() == AssetAvailabilityStatus.UNAVAILABLE) {
                 Integer inventoryId = entry.getKey();
                 YukonPao unavailablePao = inventoryPaoMap.get(inventoryId);
-                unavailablePaos.add(unavailablePao);
+                SimpleDevice simpleDevice = new SimpleDevice(unavailablePao);
+                unavailablePaos.add(simpleDevice);
             }
         }
         return unavailablePaos;

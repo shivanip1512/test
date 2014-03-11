@@ -3,6 +3,7 @@ package com.cannontech.dr.assetavailability.dao;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 
@@ -37,8 +38,8 @@ public interface DRGroupDeviceMappingDao {
     public Set<Integer> getLoadGroupIdsForDrGroup(PaoIdentifier paoIdentifier);
     
     /**
-     * @return A map of inventoryId to YukonPao for all two-way inventory in the specified load group, program,
+     * @return A map of inventoryId to SimpleDevice for all two-way inventory in the specified load group, program,
      * scenario or control area.
      */
-    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier);
+    public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao);
 }

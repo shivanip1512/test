@@ -3,6 +3,7 @@ package com.cannontech.dr.assetavailability.dao;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.MethodNotImplementedException;
@@ -56,7 +57,7 @@ public class MockDrGroupDeviceMappingDao implements DRGroupDeviceMappingDao {
     }
 
     @Override
-    public Map<Integer, YukonPao> getInventoryPaoMapForGrouping(PaoIdentifier paoIdentifier) {
+    public Map<Integer, SimpleDevice> getInventoryPaoMapForGrouping(YukonPao yukonPao) {
         throw new MethodNotImplementedException();
     }
 }
