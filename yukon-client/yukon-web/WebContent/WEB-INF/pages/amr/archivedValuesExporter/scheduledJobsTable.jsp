@@ -38,10 +38,12 @@
                                 <cm:dropdown triggerClasses="fr">
                                     <cm:dropdownOption key="yukon.web.components.button.edit.label" href="${editUrl}" icon="icon-pencil"/>
                                     <cm:dropdownOption key="yukon.web.components.button.history.label" href="${historyUrl}" icon="icon-script"/>
-                                    <cm:dropdownOption id="#deleteScheduleItem_${job.id}"
-                                    key="yukon.web.components.button.delete.label"
-                                    data-href="${deleteUrl}" icon="icon-cross"/>
+                                    <cm:dropdownOption id="deleteScheduleItem_${job.id}"
+                                        key="yukon.web.components.button.delete.label"
+                                        data-href="${deleteUrl}" 
+                                        icon="icon-cross"/>
                                 </cm:dropdown>
+                                <d:confirm on="#deleteScheduleItem_${job.id}" nameKey="deleteSchedule"/>
                             </td>
                         </tr>
                     </c:forEach>

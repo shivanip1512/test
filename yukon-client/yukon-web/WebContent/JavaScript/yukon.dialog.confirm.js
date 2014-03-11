@@ -172,23 +172,20 @@ yukon.modules.dialogConfirm = function (mod) {
         if (defaults.on) {
             //store the data on the element
             var element = jQuery(defaults.on);
-            element.data("args", defaults);
+            element.data('args', defaults);
 
             //remove the href redirect for buttons as applied in yukon.js for buttons with 
             //a data-href attribute since the binding is likely to be higher in the call
             //stack than the binding for this function.  Simply removing the data-href attribute
-            //solves the problem as yukon.js delegates this attribute on the document.
-            jQuery(defaults.on).each(function (idx, elem) {
-                elem = jQuery(elem);
-                if (elem.attr("data-href") != "") {
-                    elem.data("href", elem.attr("data-href"));
-                    elem.removeAttr("data-href");
-                }
-                if (elem.attr("onclick") != "") {
-                    elem.data("data-onclick", elem.attr("onclick"));
-                    elem.removeAttr("onclick");
-                }
-            });
+            //solves the problem as yukon.js binds that event to the document.
+            if (element.is('[data-href]')) {
+                element.data('href', element.attr('data-href'));
+                element.removeAttr('data-href');
+            }
+            if (element.is('[onclick]')) {
+                element.data('onclick', element.attr('onclick'));
+                element.removeAttr('onclick');
+            }
 
             //register the event handler
             jQuery(document).on(defaults.eventType, defaults.on, _show_window);
