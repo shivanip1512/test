@@ -290,23 +290,20 @@
 
         <!-- Helper Popups -->
         <d:inline nameKey="helper.rounding" okEvent="none" on="#helperRounding" options="{'modal' : false}">
-            <cti:url var="roundingHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp" />
             <div class="helpDialogContents">
-                <jsp:include page="${roundingHelperUrl}" />
+                <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp"/>
             </div>
         </d:inline>
 
         <d:inline nameKey="helper.value" okEvent="none" on="#helperValue" options="{'modal' : false}">
-            <cti:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp" />
             <div class="helpDialogContents">
-                <jsp:include page="${valueHelperUrl}" />
+                <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
             </div>
         </d:inline>
 
         <d:inline nameKey="helper.timestamp" okEvent="none" on="#helperTimestamp" options="{'modal' : false}">
-            <cti:url var="timestampHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp" />
             <div class="helpDialogContents">
-                <jsp:include page="${timestampHelperUrl}" />
+                <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
             </div>
         </d:inline>
 

@@ -72,7 +72,7 @@
         </c:forEach>
         
         <audio id="alert-audio">
-            <source src="/WebConfig/yukon/audio/beep1-shortened.mp3" type="audio/mpeg">
+            <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
         </audio>
     </head>
 <body class="<c:out value="${module.moduleName}"/>_module">
