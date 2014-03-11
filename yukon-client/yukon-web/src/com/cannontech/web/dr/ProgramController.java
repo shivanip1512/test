@@ -195,12 +195,7 @@ public class ProgramController extends ProgramControllerBase {
             @PathVariable String type) 
     throws IOException {
         
-        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
-        if (type.equalsIgnoreCase("all")) filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
-        else if (type.equalsIgnoreCase("active")) filters.add(AssetAvailabilityCombinedStatus.ACTIVE);
-        else if (type.equalsIgnoreCase("inactive")) filters.add(AssetAvailabilityCombinedStatus.INACTIVE);
-        else if (type.equalsIgnoreCase("optedout")) filters.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-        else if (type.equalsIgnoreCase("unavailable")) filters.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        List<AssetAvailabilityCombinedStatus> filters = getAssetAvailabilityFilters(type);
         
         downloadAssetAvailability(id, userContext, filters.toArray(new AssetAvailabilityCombinedStatus[]{}), response);
     }

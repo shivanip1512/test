@@ -70,7 +70,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.cannontech.web.util.WebFileUtils;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -140,8 +139,10 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @RequestMapping("/controlArea/list")
     public String list(ModelMap model,
             @ModelAttribute("backingBean") ControlAreaListBackingBean backingBean,
-            BindingResult bindingResult, FlashScope flashScope,
+            BindingResult bindingResult, 
+            FlashScope flashScope,
             YukonUserContext userContext) {
+        
         filterValidator.validate(backingBean, bindingResult);
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
@@ -314,12 +315,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
             @PathVariable String type) 
     throws IOException {
         
-        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
-        if (type.equalsIgnoreCase("all")) filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
-        else if (type.equalsIgnoreCase("active")) filters.add(AssetAvailabilityCombinedStatus.ACTIVE);
-        else if (type.equalsIgnoreCase("inactive")) filters.add(AssetAvailabilityCombinedStatus.INACTIVE);
-        else if (type.equalsIgnoreCase("optedout")) filters.add(AssetAvailabilityCombinedStatus.OPTED_OUT);
-        else if (type.equalsIgnoreCase("unavailable")) filters.add(AssetAvailabilityCombinedStatus.UNAVAILABLE);
+        List<AssetAvailabilityCombinedStatus> filters = getAssetAvailabilityFilters(type);
         
         downloadAssetAvailability(id, userContext, filters.toArray(new AssetAvailabilityCombinedStatus[]{}), response);
     }

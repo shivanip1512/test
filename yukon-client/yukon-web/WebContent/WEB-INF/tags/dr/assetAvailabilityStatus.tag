@@ -75,7 +75,7 @@
                         <cm:dropdownOption label="Inactive" href="${assetId}/aa/download/inactive"/>
                     </c:if>
                     <c:if test="${optedOutSize > 0}">
-                        <cm:dropdownOption label="Opted Out" href="${assetId}/aa/download/optedout"/>
+                        <cm:dropdownOption label="Opted Out" href="${assetId}/aa/download/opted_out"/>
                     </c:if>
                     <c:if test="${unavailableSize > 0}">
                         <cm:dropdownOption label="Unavailable" href="${assetId}/aa/download/unavailable"/>

@@ -45,6 +45,7 @@ import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public abstract class DemandResponseControllerBase {
+    
     private static final Logger log = YukonLogManager.getLogger(DemandResponseControllerBase.class);
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private AssetAvailabilityChartService assetAvailabilityChartService;
@@ -339,5 +340,17 @@ public abstract class DemandResponseControllerBase {
         }
         return dataRows;
     }
-
+    
+    protected List<AssetAvailabilityCombinedStatus> getAssetAvailabilityFilters(String type) {
+        
+        List<AssetAvailabilityCombinedStatus> filters = new ArrayList<>();
+        if (type.equalsIgnoreCase("all")) {
+            filters = Lists.newArrayList(AssetAvailabilityCombinedStatus.values());
+        } else {
+            filters = Collections.singletonList(AssetAvailabilityCombinedStatus.valueOf(type.toUpperCase()));
+        }
+        
+        return filters;
+    }
+    
 }

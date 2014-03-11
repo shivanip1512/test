@@ -5,8 +5,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:url var="actionUrl" value="/stars/consumer/optout/optOutQuestions"/>
-
 <cti:standardPage module="consumer" page="optoutlist">
     <cti:standardMenu/>
 
@@ -19,9 +17,9 @@
     <div align="center">
         <cti:msg key="yukon.dr.consumer.optoutlist.description"/>
         <br>
-        <br>
 
         <c:set var="showNextButton" value="false" />
+        <cti:url var="actionUrl" value="/stars/consumer/optout/optOutQuestions"/>
         <form:form id="form" action="${actionUrl}" method="POST" commandName="optOutBackingBean">
             <table class="results-table" align="center" width="99%">
                 <tr>

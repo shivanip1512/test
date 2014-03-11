@@ -43,8 +43,8 @@ function createJSON () {
 </script>    
 
 <c:set var="showNextButton" value="false" />
-
-<form:form id="form" commandName="optOutBackingBean" action="/stars/operator/program/optOut/optOutQuestions" 
+<cti:url var="optOutUrl" value="/stars/operator/program/optOut/optOutQuestions"/>
+<form:form id="form" commandName="optOutBackingBean" action="${optOutUrl}" 
            method="POST" onsubmit="createJSON();">
            
     <input type="hidden" name="accountId" value="${accountId}" />

@@ -38,8 +38,8 @@
     <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
         <i:inline key=".description"/><br><br>
     </cti:checkRolesAndProperties>
-    
-    <form:form id="optOutForm" action="/stars/operator/program/optOut/deviceSelection" commandName="optOutBackingBean">
+    <cti:url var="optOutUrl" value="/stars/operator/program/optOut/deviceSelection"/>
+    <form:form id="optOutForm" action="${optOutUrl}" commandName="optOutBackingBean">
 
          <input type="hidden" name="accountId" value="${accountId}" />
 
