@@ -17,6 +17,13 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10911;
 /* End YUK-12988 */
 
+/* Start YUK-12523 */
+/* @error ignore-begin */
+DROP TABLE YukonUserGroup_old;
+DROP TABLE YukonUserRole;
+/* @error ignore-end */
+/* End YUK-12523 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
