@@ -67,8 +67,9 @@ public abstract class JSFUtil {
 
     public static String redirect(String url) {
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-            FacesContext.getCurrentInstance().responseComplete();
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            facesContext.getExternalContext().redirect(facesContext.getExternalContext().getRequestContextPath() + url);
+            facesContext.responseComplete();
         } catch (IOException e) {
             CTILogger.error("Unable to redirect to " + url, e);
         }
@@ -100,21 +101,18 @@ public abstract class JSFUtil {
         }
         return items;
     }
-    
-    @SuppressWarnings("unchecked")
+
     public static LiteYukonUser getYukonUser() {
         FacesContext fc = FacesContext.getCurrentInstance();
         if( fc != null ){
             ExternalContext externalContext = fc.getExternalContext();
-            Map map = externalContext.getSessionMap();
+            Map<?, ?> map = externalContext.getSessionMap();
             LiteYukonUser liteYukonUser = (LiteYukonUser) map.get(LoginController.YUKON_USER);
             return liteYukonUser;
         }
-        else
-        {
-            throw new RuntimeException("Could not get Current Instance of FacesContext, returning null user");
-        }
+        throw new RuntimeException("Could not get Current Instance of FacesContext, returning null user");
     }
+
     public static YukonUserContext getYukonUserContext() {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest)context.getRequest();
