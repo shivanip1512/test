@@ -90,8 +90,8 @@ public class CustomerAccountIndexManager extends SimpleIndexManager {
 
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
-        if (database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB 
-               && DBChangeMsg.CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category) ) {
+        if (database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB
+               && DBChangeMsg.CAT_CUSTOMER_ACCOUNT.equalsIgnoreCase(category)) {
             // Customer account change msg
             return this.processCustomerAccountChange(id);
         }
