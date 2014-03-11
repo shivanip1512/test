@@ -159,7 +159,8 @@ jQuery(function() {
         <!-- Create/edit -->
         <tags:sectionContainer2 nameKey="generateReport" styleClass="stacked">
             <c:if test="${empty allFormats}">
-                <span class="empty-list"><i:inline key=".noFormatsCreated"/></span>
+                <div class="empty-list stacked"><i:inline key=".noFormatsCreated"/></div>
+                <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </c:if>
             <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
                 <form:hidden path="archivedValuesExportFormatType"/>
