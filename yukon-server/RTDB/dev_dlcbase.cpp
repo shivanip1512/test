@@ -669,7 +669,7 @@ int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
             pOut->MessageFlags |= MessageFlag_BroadcastOnMacroSubroutes;
         }
 
-        if( (Route = CtiDeviceBase::getRoute( pOut->Request.RouteID )) )
+        if( (Route = getRoute( pOut->Request.RouteID )) )
         {
             pOut->TargetID  = getID();
 

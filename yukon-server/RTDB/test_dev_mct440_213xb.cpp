@@ -9,6 +9,9 @@
 #include "config_device.h"
 #include "mgr_config.h"
 #include "boost_test_helpers.h"
+#include "dev_ccu.h"
+#include "rte_ccu.h"
+#include "connection_client.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -34,6 +37,25 @@ public:
     virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
     {
         return _config;
+    }
+};
+
+struct test_CtiDeviceCCU : CtiDeviceCCU
+{
+    test_CtiDeviceCCU()
+    {
+        _paObjectID = 12345;
+    }
+};
+
+struct test_CtiRouteCCU : CtiRouteCCU
+{
+    CtiDeviceSPtr ccu;
+
+    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
+    {
+        _tblPAO.setID(1234);
+        setDevicePointer(ccu);
     }
 };
 
@@ -144,11 +166,28 @@ struct test_Mct440_213xBDevice : Cti::Devices::Mct440_213xBDevice
         return 0;
     }
 
+
 };
 
 struct test_Mct440_213xB : test_Mct440_213xBDevice
 {
     test_Mct440_213xB() : test_Mct440_213xBDevice("Test MCT-440-213xB")  {}
+};
+
+//
+// Test device with a route
+//
+struct test_Mct440_213xB_route : test_Mct440_213xBDevice
+{
+    CtiRouteSPtr rte;
+
+    test_Mct440_213xB_route() : test_Mct440_213xBDevice("Test MCT-440-213xB"), rte(new test_CtiRouteCCU)
+    {}
+
+    virtual CtiRouteSPtr getRoute(LONG rteId) const
+    {
+        return rte;
+    }
 };
 
 struct test_DeviceConfig : public Cti::Config::DeviceConfig
@@ -4253,7 +4292,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
     {
         test_DeviceConfig test_cfg;
-        test_Mct440_213xB test_dev;
+        test_Mct440_213xB_route test_dev;
+
+        CtiClientConnection connHandle("fake_host");
 
         {
             ////// empty configuration (no valid configuration) //////
@@ -4263,6 +4304,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             test_dev.setConfigManager(&cfgMgr);
 
             CtiCommandParser parse("putconfig install all");
+
+            pRequest->setConnectionHandle((void*)&connHandle);
 
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
@@ -4336,11 +4379,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 4 );
-            BOOST_CHECK_EQUAL( retList.size(), 5 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
             while( ! retList.empty() )
@@ -4351,7 +4396,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true)(true); // 5 error messages
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 5 error messages + 4 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4371,11 +4416,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 5 );
-            BOOST_CHECK_EQUAL( retList.size(), 4 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
             while( ! retList.empty() )
@@ -4386,7 +4433,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true)(true); // 4 error messages
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 4 error messages + 5 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4406,11 +4453,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 6 );
-            BOOST_CHECK_EQUAL( retList.size(), 3 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
             while( ! retList.empty() )
@@ -4421,7 +4470,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true)(true); // 3 error messages
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 3 error messages + 6 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4441,11 +4490,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 7 );
-            BOOST_CHECK_EQUAL( retList.size(), 2 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
             while( ! retList.empty() )
@@ -4456,7 +4507,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true)(true); // 2 error messages
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 2 error messages + 7 messages sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4479,11 +4530,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 8 );
-            BOOST_CHECK_EQUAL( retList.size(), 1 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
 
             std::vector<bool> expectMoreRcv;
             while( ! retList.empty() )
@@ -4494,7 +4547,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             }
 
             const std::vector<bool> expectMoreExp = boost::assign::list_of
-                    (true); // 1 error messages
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 1 error messages + 8 message sent on route
 
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
@@ -4515,11 +4568,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             CtiCommandParser parse("putconfig install all");
 
+            pRequest->setConnectionHandle((void*)&connHandle);
+
             BOOST_CHECK_EQUAL( NoError, test_dev.beginExecuteRequest(pRequest.get(), parse, vgList, retList, outList) );
 
             BOOST_CHECK_EQUAL( vgList.size(),  0 );
             BOOST_CHECK_EQUAL( outList.size(), 9 );
-            BOOST_CHECK_EQUAL( retList.size(), 0 );
+            BOOST_CHECK_EQUAL( retList.size(), 9 );
+
+            std::vector<bool> expectMoreRcv;
+            while( ! retList.empty() )
+            {
+                const CtiReturnMsg *retMsg = static_cast<const CtiReturnMsg *>(retList.front());
+                expectMoreRcv.push_back( retMsg->ExpectMore() );
+                retList.pop_front();
+            }
+
+            const std::vector<bool> expectMoreExp = boost::assign::list_of
+                    (true)(true)(true)(true)(true)(true)(true)(true)(true); // 9 message sent on route
+
+            BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
+                                           expectMoreExp.begin() , expectMoreExp.end() );
         }
     }
 }
