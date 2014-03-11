@@ -14,7 +14,7 @@ public enum YNBoolean implements DatabaseRepresentationSource {
             return true;
         }
     },
-    NO{
+    NO {
         @Override
         public Object getDatabaseRepresentation() {
             return "N";
@@ -32,5 +32,4 @@ public enum YNBoolean implements DatabaseRepresentationSource {
     public static YNBoolean valueOf(boolean value) {
         return value ? YES : NO;
     }
-    
 }

@@ -48,8 +48,8 @@ public class JwsController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RolePropertyDao rolePropertyDao;
 
-    private Cache<String, String> jarDownloadTokens
-        = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
+    private Cache<String, String> jarDownloadTokens =
+        CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
     private Path jarFileBase = Paths.get(CtiUtilities.getYukonBase(), "Client/bin");
 
@@ -60,13 +60,12 @@ public class JwsController {
         return "applications.jsp";
     }
 
-    /** 
+    /**
      * This is exposed without login filter. No user available
      */
     @RequestMapping("/{requestedJar:.+\\.jar}")
     public void getJar(HttpServletRequest request, HttpServletResponse response, @PathVariable String requestedJar,
             @RequestParam("version-id") String requestedVersion) throws IOException {
-
         if (jarDownloadTokens.getIfPresent(request.getRemoteHost()) == null) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return;
@@ -81,8 +80,8 @@ public class JwsController {
 
         String jarVersionId = Long.toString(Files.getLastModifiedTime(jarFile).toMillis());
         if (!requestedVersion.equals(jarVersionId)) {
-            String errorMsg = requestedJar + " is at version " + jarVersionId
-                            + ". Requested version (" + requestedVersion +") is not valid.";
+            String errorMsg = requestedJar + " is at version " + jarVersionId + ". Requested version ("
+                + requestedVersion + ") is not valid.";
             log.error(errorMsg);
             response.setContentType("application/x-java-jnlp-error");
             response.getWriter().write(errorMsg);
@@ -109,8 +108,8 @@ public class JwsController {
      */
     @RequestMapping("/{requestedJnlp:(?:client_libs|bc)\\.jnlp}")
     public void getExtensionJnlp(HttpServletRequest request, HttpServletResponse response,
-            @PathVariable JwsJnlp requestedJnlp, @RequestParam("version-id") String requestedVersion) throws IOException {
-
+            @PathVariable JwsJnlp requestedJnlp, @RequestParam("version-id") String requestedVersion)
+            throws IOException {
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
         doc.addContent(jnlpElem);
@@ -142,8 +141,8 @@ public class JwsController {
 
         String jnlpVersionId = Long.toString(jnlpVersion);
         if (!requestedVersion.equals(jnlpVersionId)) {
-            String errorMsg = requestedJnlp.name() + " is at version " + jnlpVersionId
-                            + ". Requested version (" + requestedVersion +") is not valid.";
+            String errorMsg = requestedJnlp.name() + " is at version " + jnlpVersionId + ". Requested version ("
+                + requestedVersion + ") is not valid.";
             log.error(errorMsg);
             response.setContentType("application/x-java-jnlp-error");
             response.getWriter().write(errorMsg);
@@ -165,7 +164,7 @@ public class JwsController {
 
     @RequestMapping("/{requestedJnlp:(?:dbeditor|tdc|trending|esub|commander)\\.jnlp}")
     public void getApplicationJnlp(HttpServletRequest request, HttpServletResponse response,
-                @PathVariable JwsJnlp requestedJnlp, LiteYukonUser user) throws IOException {
+            @PathVariable JwsJnlp requestedJnlp, LiteYukonUser user) throws IOException {
         jarDownloadTokens.put(request.getRemoteHost(), requestedJnlp.getTitle());
 
         response.setContentType("application/x-java-jnlp-file");
@@ -217,7 +216,8 @@ public class JwsController {
         setJnlpProperty("user", user.getUsername(), resourcesElem);
         setJnlpProperty("server.base", CtiUtilities.getYukonBase(), resourcesElem);
         setJnlpProperty("host", ServletUtil.getHostURL(request).toString(), resourcesElem);
-        setJnlpProperty("rememberMe", globalSettingDao.getString(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME), resourcesElem);
+        setJnlpProperty("rememberMe", globalSettingDao.getString(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME),
+            resourcesElem);
         setJnlpProperty("version", VersionTools.getYUKON_VERSION(), resourcesElem);
         setJnlpProperty("version.details", VersionTools.getYukonDetails(), resourcesElem);
 
@@ -233,10 +233,10 @@ public class JwsController {
     private void setJnlpProperty(String name, String value, Element element) {
         Element propertyElement = new Element("property");
         propertyElement.setAttribute("name", "jnlp.yukon." + name);
-        propertyElement.setAttribute("value",value);
+        propertyElement.setAttribute("value", value);
         element.addContent(propertyElement);
     }
-    
+
     private long addJarToElement(String jarToAdd, Element element) throws IOException {
         Path jarFile = jarFileBase.resolve(jarToAdd);
         long versionNum = Files.getLastModifiedTime(jarFile).toMillis();
@@ -268,7 +268,7 @@ public class JwsController {
 
     @InitBinder
     public void initialize(WebDataBinder webDataBinder) {
-        webDataBinder.registerCustomEditor(JwsJnlp.class, new PropertyEditorSupport () {
+        webDataBinder.registerCustomEditor(JwsJnlp.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String value) {
                 setValue(JwsJnlp.getFromPath(value));
