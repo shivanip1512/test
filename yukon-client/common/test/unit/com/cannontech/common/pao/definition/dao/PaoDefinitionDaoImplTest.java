@@ -81,11 +81,9 @@ public class PaoDefinitionDaoImplTest {
     @Before
     public void setUp() throws Exception {
         dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new MockEmptyDeviceDefinitionDao());
-
         device = new SimpleDevice(10, 1019); // 1019 = MCT 310
-        device.setType(1019);
     }
-    
+
     public void assertAttributeLookupsMatch(String message, Set<Attribute> attributes, Set<AttributeDefinition> lookups) {
         Builder<Attribute> builder = ImmutableSet.builder();
         for (AttributeDefinition lookup : lookups) {
@@ -140,19 +138,19 @@ public class PaoDefinitionDaoImplTest {
     public void testGetAllPointTemplates() {
 
         // Test with supported device type
-        Set<PointTemplate> expectedTemplates = this.getExpectedAllTemplates();
+        Set<PointTemplate> expectedTemplates = getExpectedAllTemplates();
 
         Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device.getDeviceType());
 
         // Test the overloaded method - should return same results
         Set<PointTemplate> acutalDefinitionTemplates = dao.getAllPointTemplates(dao.getPaoDefinition(device.getDeviceType()));
         assertEquals("Expected definition templates did not match device templates",
-                     this.getSortedList(actualTemplates),
-                     this.getSortedList(acutalDefinitionTemplates));
+                     getSortedList(actualTemplates),
+                     getSortedList(acutalDefinitionTemplates));
 
         assertEquals("Expected all point templates did not match: ",
-                     this.getSortedList(expectedTemplates),
-                     this.getSortedList(actualTemplates));
+                     getSortedList(expectedTemplates),
+                     getSortedList(actualTemplates));
 
     }
 
@@ -169,12 +167,12 @@ public class PaoDefinitionDaoImplTest {
         // Test the overloaded method - should return same results
         Set<PointTemplate> acutalDefinitionTemplates = dao.getInitPointTemplates(dao.getPaoDefinition(device.getDeviceType()));
         assertEquals("Expected definition templates did not match device templates",
-                     this.getSortedList(actualTemplates),
-                     this.getSortedList(acutalDefinitionTemplates));
+                     getSortedList(actualTemplates),
+                     getSortedList(acutalDefinitionTemplates));
 
         assertEquals("Expected init point templates did not match: ",
-                     this.getSortedList(expectedTemplates),
-                     this.getSortedList(actualTemplates));
+                     getSortedList(expectedTemplates),
+                     getSortedList(actualTemplates));
 
     }
 
@@ -402,22 +400,30 @@ public class PaoDefinitionDaoImplTest {
         try {
             dao.getValueForTagLong(PaoType.MCT370, PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
             fail("should not be compatible get long");
-        } catch(Exception e) {}
-        
+        } catch (Exception e) {
+            // exception expected for test
+        }
+
         try {
             dao.getValueForTagString(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
             fail("should not be compatible get string");
-        } catch(Exception e) {}
-        
+        } catch (Exception e) {
+            // exception expected for test
+        }
+
         try {
             dao.getValueForTagLong(PaoType.MCT310, PaoTag.DUMMY_LONG_TAG);
             fail("should not exist on pao");
-        } catch(Exception e) {}
-        
+        } catch (Exception e) {
+            // exception expected for test
+        }
+
         try {
             dao.getValueForTagString(PaoType.MCT370, PaoTag.NETWORK_MANAGER_ATTRIBUTE_READS);
             fail("doesn't allow values");
-        } catch(Exception e) {}
+        } catch (Exception e) {
+            // exception expected for test
+        }
     }
     
     @Test
@@ -521,7 +527,6 @@ public class PaoDefinitionDaoImplTest {
         // Test that device definition is custom
         
         // Test with supported device type
-        device.setType(1019);
         PaoDefinition expectedDefinition = new PaoDefinitionImpl(PaoType.getForId(1019),
                                                                        "Custom Device 1",
                                                                        "customDisplay1",
@@ -583,8 +588,7 @@ public class PaoDefinitionDaoImplTest {
      * Helper method to get the set of all point templates for device1
      * @return Set of all point templates
      */
-    private Set<PointTemplate> getExpectedAllTemplates() {
-
+    private static Set<PointTemplate> getExpectedAllTemplates() {
         // Get the init templates first
         Set<PointTemplate> expectedTemplates = PaoDefinitionDaoImplTest.getExpectedInitTemplates();
 
@@ -611,7 +615,7 @@ public class PaoDefinitionDaoImplTest {
      * @param set - Set to get list for
      * @return A sorted list containing ever object that was in the set
      */
-    private List<PointTemplate> getSortedList(Set<PointTemplate> set) {
+    private static List<PointTemplate> getSortedList(Set<PointTemplate> set) {
         List<PointTemplate> list = new ArrayList<PointTemplate>();
         list.addAll(set);
         Collections.sort(list);

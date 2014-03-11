@@ -98,7 +98,7 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with unsupported device
         try {
-            device.setType(9999999);
+            device = new SimpleDevice(1, 9999999);
             actualPoints = service.createDefaultPointsForPao(device);
             fail("createDefaultPointsForPao should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -119,12 +119,12 @@ public class PaoDefinitionServiceImplTest {
         assertTrue("device1 is changeable", service.isPaoTypeChangeable(device));
 
         // Test with device that is not changeable
-        device.setType(DeviceTypes.MCT318L);
+        device = new SimpleDevice(1, DeviceTypes.MCT318L);
         assertTrue("device3 is not changeable", !service.isPaoTypeChangeable(device));
 
         // Test with unsupported device
         try {
-            device.setType(999999);
+            device = new SimpleDevice(1, 999999);
             service.isPaoTypeChangeable(device);
             fail("isPaoTypeChangeable should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -151,13 +151,13 @@ public class PaoDefinitionServiceImplTest {
         assertEquals("Changeable devices were not as expected", expectedPaos, actualPaos);
 
         // Test with device that is not changeable
-        device.setType(DeviceTypes.MCT318L);
+        device = new SimpleDevice(1, DeviceTypes.MCT318L);
         Set<PaoDefinition> actualDevices2 = service.getChangeablePaos(device);
         assertTrue("Should be empty set", actualDevices2.isEmpty());
 
         // Test with unsupported device
         try {
-            device.setType(999999);
+            device = new SimpleDevice(1, 999999);
             service.getChangeablePaos(device);
             fail("getChangeablePaos should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -188,7 +188,7 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with unsupported device
         try {
-            device.setType(999999);
+            device = new SimpleDevice(1, 999999);
             actualPoints = service.createAllPointsForPao(device);
             fail("createAllPointsForPao should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -206,7 +206,7 @@ public class PaoDefinitionServiceImplTest {
     public void testGetPointTemplatesToAdd() {
 
         // Test add points from type 'device2' to type 'device1'
-        device.setType(DeviceTypes.MCT370);
+        device = new SimpleDevice(1, DeviceTypes.MCT370);
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
         // Pulse Accumulators
@@ -243,10 +243,10 @@ public class PaoDefinitionServiceImplTest {
         // Test add points from type 'device1' to type 'device3' (is an invalid
         // change)
         try {
-            device.setType(DeviceTypes.MCT318L);
+            device = new SimpleDevice(1, DeviceTypes.MCT318L);
             PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(device.getDeviceType());
 
-            device.setType(DeviceTypes.MCT310);
+            device = new SimpleDevice(1, DeviceTypes.MCT310);
             service.getPointTemplatesToAdd(device, paoDefinition);
             fail("getPointTemplatesToAdd should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -286,10 +286,10 @@ public class PaoDefinitionServiceImplTest {
         // Test remove points from type 'device1' to type 'device3' (is an
         // invalid change)
         try {
-            device.setType(DeviceTypes.MCT318L);
+            device = new SimpleDevice(1, DeviceTypes.MCT318L);
             PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(device.getDeviceType());
 
-            device.setType(DeviceTypes.MCT310);
+            device = new SimpleDevice(1, DeviceTypes.MCT310);
             service.getPointTemplatesToRemove(device, paoDefinition);
             fail("getPointTemplatesToRemove should've thrown an exception");
         } catch (IllegalArgumentException e) {
@@ -335,10 +335,10 @@ public class PaoDefinitionServiceImplTest {
         // Test transfer points from type 'device1' to type 'device3' (is an
         // invalid change)
         try {
-            device.setType(DeviceTypes.MCT318L);
+            device = new SimpleDevice(1, DeviceTypes.MCT318L);
             PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(device.getDeviceType());
 
-            device.setType(DeviceTypes.MCT310);
+            device = new SimpleDevice(1, DeviceTypes.MCT310);
             service.getPointTemplatesToTransfer(device, paoDefinition);
             fail("getPointTemplatesToTransfer should've thrown an exception");
         } catch (IllegalArgumentException e) {

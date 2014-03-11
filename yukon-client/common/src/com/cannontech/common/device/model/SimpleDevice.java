@@ -1,9 +1,5 @@
 package com.cannontech.common.device.model;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.core.style.ToStringCreator;
-
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -12,81 +8,41 @@ import com.cannontech.common.pao.YukonPao;
 import com.google.common.base.Function;
 
 public final class SimpleDevice implements YukonDevice {
-    private int deviceId;
-	private PaoType type;
+    private final PaoIdentifier paoIdentifier;
 
-	public SimpleDevice(int deviceId, int type) {
+    public SimpleDevice(int deviceId, int type) {
         this(deviceId, PaoType.getForId(type));
     }
 
     public SimpleDevice(int deviceId, PaoType type) {
-		this.deviceId = deviceId;
-		this.type = type;
-    }
-    
-    public SimpleDevice(YukonPao pao) {
-    	PaoUtils.validateDeviceType(pao);
-    	this.deviceId = pao.getPaoIdentifier().getPaoId();
-    	this.type = pao.getPaoIdentifier().getPaoType();
+        paoIdentifier = new PaoIdentifier(deviceId, type);
     }
 
-    public SimpleDevice() {
+    public SimpleDevice(YukonPao pao) {
+        PaoUtils.validateDeviceType(pao);
+        paoIdentifier = pao.getPaoIdentifier();
     }
 
     public int getDeviceId() {
-        return deviceId;
+        return paoIdentifier.getPaoId();
     }
 
-    public void setDeviceId(int deviceId) {
-		this.deviceId = deviceId;
-    }
-    
     public PaoType getDeviceType() {
-        return type;
+        return paoIdentifier.getPaoType();
     }
-    
-    public void setDeviceType(PaoType deviceType) {
-		type = deviceType;
-    }
-    
+
     public int getType() {
-    	return type.getDeviceTypeId();
+        return paoIdentifier.getPaoType().getDeviceTypeId();
     }
-    
-    public void setType(int type) {
-    	this.type = PaoType.getForId(type);
-    }
-    
+
     @Override
     public PaoIdentifier getPaoIdentifier() {
-    	return new PaoIdentifier(deviceId, type);
+        return paoIdentifier;
     }
 
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("deviceId", getDeviceId());
-        tsc.append("type", type);
-        return tsc.toString();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SimpleDevice == false) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        SimpleDevice device = (SimpleDevice) obj;
-        return new EqualsBuilder().append(getDeviceId(), device.getDeviceId())
-                                  .append(getDeviceType(), device.getDeviceType())
-                                  .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(getDeviceId()).append(getDeviceType()).toHashCode();
+        return paoIdentifier.toString();
     }
 
     public static Function<SimpleDevice, PaoIdentifier> PAO_IDENTIFIER_FUNCTION =
@@ -97,11 +53,20 @@ public final class SimpleDevice implements YukonDevice {
             }
         };
 
-    public static Function<SimpleDevice, Integer> PAO_ID_FUNCTION =
-        new Function<SimpleDevice, Integer>() {
-            @Override
-            public Integer apply(SimpleDevice simpleDevice) {
-                return simpleDevice.getPaoIdentifier().getPaoId();
-            }
-        };
+    public static Function<SimpleDevice, Integer> PAO_ID_FUNCTION = new Function<SimpleDevice, Integer>() {
+        @Override
+        public Integer apply(SimpleDevice simpleDevice) {
+            return simpleDevice.getPaoIdentifier().getPaoId();
+        }
+    };
+
+    @Override
+    public int hashCode() {
+        return paoIdentifier.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj != null && paoIdentifier.equals(((SimpleDevice)obj).getPaoIdentifier());
+    }
 }

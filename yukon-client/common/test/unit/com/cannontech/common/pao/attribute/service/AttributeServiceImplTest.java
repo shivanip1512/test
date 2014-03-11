@@ -39,8 +39,6 @@ public class AttributeServiceImplTest extends TestCase {
         ReflectionTestUtils.setField(service, "pointService", pointService);
 
         device = new SimpleDevice(1, 1019);
-        device.setType(1019);
-
     }
 
     /**
@@ -74,14 +72,14 @@ public class AttributeServiceImplTest extends TestCase {
         // Test for device with no attributes
         expectedAtributes = new HashSet<Attribute>();
 
-        device.setType(1036);
+        device = new SimpleDevice(1, 1036);
         actualAtributes = service.getExistingAttributes(device, expectedAtributes);
 
         assertEquals("There shouldn't be any attributes", expectedAtributes, actualAtributes);
 
         // Test with invalid device
         try {
-            device.setType(-1);
+            device = new SimpleDevice(1, -1);
             actualAtributes = service.getExistingAttributes(device, actualAtributes);
         } catch (IllegalArgumentException e) {
             // expected exception
