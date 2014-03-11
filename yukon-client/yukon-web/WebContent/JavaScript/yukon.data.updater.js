@@ -120,8 +120,15 @@ function initiateCannonDataUpdate(url, delayMs) {
         cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap,
                 allIdentifierValues = {},
-                gotNewData = false;
-            if ('undefined' === typeof idMap && someValueHasUpdated) {
+                gotNewData = false,
+                isEmpty = function (obj) {
+                    for(var prop in obj) {
+                        if(obj.hasOwnProperty(prop))
+                            return false;
+                    }
+                    return true;
+                };
+            if (('undefined' === typeof idMap || isEmpty(idMap)) && someValueHasUpdated) {
                 (it.callback)();
                 return;
             }
