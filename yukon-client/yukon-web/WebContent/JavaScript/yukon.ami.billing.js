@@ -235,19 +235,19 @@ yukon.ami.billing = (function() {
         },
         _initialized = false,
 
-        _url_generate_billing_file = '/servlet/BillingServlet',
-        _url_scheduled_billing_form = '/scheduledBilling/showForm',
-        _url_schedule_export = '/scheduledBilling/scheduleExport.json',
+        _url_generate_billing_file = yukon.url('/servlet/BillingServlet'),
+        _url_scheduled_billing_form = yukon.url('/scheduledBilling/showForm'),
+        _url_schedule_export = yukon.url('/scheduledBilling/scheduleExport.json'),
 
-        _url_list_schedule_jobs = '/billing/_jobs',
-        _url_delete_scheduled_job = '/scheduledBilling/delete.json',
+        _url_list_schedule_jobs = yukon.url('/billing/_jobs'),
+        _url_delete_scheduled_job = yukon.url('/scheduledBilling/delete.json'),
 
-        _url_format_copy = '/dynamicBilling/_copy.html',
-        _url_format_create = '/dynamicBilling/_create.html',
-        _url_format_delete = '/dynamicBilling/delete.json',
-        _url_format_edit = '/dynamicBilling/_edit.html',
-        _url_format_save = '/dynamicBilling/save.json',
-        _url_base_setup = '/dynamicBilling/',
+        _url_format_copy = yukon.url('/dynamicBilling/_copy.html'),
+        _url_format_create = yukon.url('/dynamicBilling/_create.html'),
+        _url_format_delete = yukon.url('/dynamicBilling/delete.json'),
+        _url_format_edit = yukon.url('/dynamicBilling/_edit.html'),
+        _url_format_save = yukon.url('/dynamicBilling/save.json'),
+        _url_base_setup = yukon.url('/dynamicBilling/'),
         mod;
 
     /* PUBLIC METHODS */

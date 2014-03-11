@@ -49,13 +49,13 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.scheduledFileExport.WaterLeakExportGenerationParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
@@ -84,7 +84,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
-import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
@@ -121,7 +121,6 @@ public class WaterLeakReportController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
@@ -294,14 +293,17 @@ public class WaterLeakReportController {
 		
     	return "redirect:jobs";
     }
-    
-    @RequestMapping("jobs")
-    public String jobs(ModelMap model,Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
 
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-		scheduledFileExportJobsTagService.populateModel(model, FileExportType.WATER_LEAK, ScheduledExportType.WATER_LEAK, page, itemsPerPage);
-		return "waterLeakReport/jobs.jsp";
-	}
+    @RequestMapping("jobs")
+    public String jobs(ModelMap model, PagingParameters paging) {
+        SearchResults<ScheduledFileExportJobData> reportsResult
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.WATER_LEAK, paging);
+
+        model.addAttribute("jobType", FileExportType.WATER_LEAK);
+        model.addAttribute("scheduledJobsSearchResult", reportsResult);
+        return "waterLeakReport/jobs.jsp";
+    }
+    
     
     @RequestMapping("delete")
 	public String delete(ModelMap model, int jobId, FlashScope flashScope) {

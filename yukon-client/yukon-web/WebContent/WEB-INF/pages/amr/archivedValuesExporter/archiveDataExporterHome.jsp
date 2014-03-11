@@ -8,6 +8,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
 <cti:standardPage page="bulk.archivedValueExporter" module="tools">
 
@@ -134,7 +135,9 @@ jQuery(function() {
     });
     
     jQuery('#b-create').click(function(event) {
-        var buttons = [{'text' : '<cti:msg2 key="yukon.web.components.button.create.label"/>','class' : 'primary', 'click' : function() {window.location.href='create?formatType=' + jQuery('input[name=newFormatType]:checked').val();}},
+        var buttons = [{'text' : '<cti:msg2 key="yukon.web.components.button.create.label"/>','class' : 'primary', 
+            'click' : function() {window.location.href='create?formatType=' + 
+                    jQuery('input[name=newFormatType]:checked').val();}},
                        {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close');}}];
         var dialogOpts = {'buttons' : buttons, 'width' : 500, 'height' : 'auto'};
         jQuery("#create-format-dialog").dialog(dialogOpts);
@@ -167,6 +170,11 @@ jQuery(function() {
                             <form:select path="formatId" cssClass="fl">
                                 <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
                             </form:select>
+                            <c:if test="${not empty allFormats}">
+                                <cti:button nameKey="edit" icon="icon-pencil" href="edit" id="b-edit" />
+                                <cti:button nameKey="copy" icon="icon-page-copy" href="copy" id="b-copy" />
+                            </c:if>
+                            <cti:button nameKey="create" icon="icon-plus-green" id="b-create" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.defaults.devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
@@ -208,59 +216,19 @@ jQuery(function() {
                     <cti:button id="runButton" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-page-white-excel"/>
                     <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-calendar-view-day"/>
                 </c:if>
-                <c:if test="${not empty allFormats}">
-                    <cti:button nameKey="edit" icon="icon-pencil" href="edit" id="b-edit"/>
-                    <cti:button nameKey="copy" icon="icon-page-copy" href="copy" id="b-copy"/>
-                </c:if>
-                <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </div>
         </tags:sectionContainer2>
 
-    <%-- Jobs  --%>
-        <tags:boxContainer2 nameKey="jobsBox"> 
-            <div style="overflow-y: auto;max-height: 249px;">
-                <c:if test="${fn:length(filterResult.resultList) > 0}">
-                    <table class="compact-results-table">
-                        <thead>
-                            <th><i:inline key=".nameHeader"/></th>
-                            <th><i:inline key=".scheduleHeader"/></th>
-                            <th><i:inline key=".nextRunHeader"/></th>
-                            <th><i:inline key=".actionsHeader"/></th>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach var="job" items="${filterResult.resultList}">
-                                <tr>
-                                    <td>${fn:escapeXml(job.name)}</td>
-                                    <td>${job.cronString}</td>
-                                    <td><cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/></td>
-                                    <td>
-                                        <cti:url var="editUrl" value="scheduleReport">
-                                            <cti:param name="jobId" value="${job.id}"/>
-                                        </cti:url>
-                                        <cti:button nameKey="edit" icon="icon-pencil" renderMode="image" href="${editUrl}"/>
-                                        <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                                            <cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}"/>
-                                        </cti:url>
-                                        <cti:button nameKey="history" renderMode="image" href="${historyUrl}" icon="icon-script"/>
-                                        <cti:url var="deleteUrl" value="deleteJob">
-                                            <cti:param name="jobId" value="${job.id}"/>
-                                        </cti:url>
-                                        <cti:button id="deleteScheduleItem_${job.id}" nameKey="remove" renderMode="image" href="${deleteUrl}" icon="icon-cross"/>
-                                        <d:confirm on="#deleteScheduleItem_${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </c:if>
-                <c:if test="${fn:length(filterResult.resultList) == 0}">
-                    <span class="empty-list" colspan="3"><i:inline key=".noJobs"/></span>
-                </c:if>
-            </div>
-        </tags:boxContainer2>
+        <c:if test="${not empty allFormats}">
+            <h3><i:inline key=".preview.title"/></h3>
+            <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}</c:forEach></pre>
+        </c:if>
+
+        <div class="f-table-container" data-reloadable>
+            <%@ include file="scheduledJobsTable.jsp" %>
+        </div>
     </div>
-    
+
     <div id="runDialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="runForm" commandName="archivedValuesExporter" >
@@ -340,10 +308,4 @@ jQuery(function() {
              </div>
          </form:form>
     </div>
-
-    <c:if test="${not empty allFormats}">
-        <h3><i:inline key=".preview.title"/></h3>
-        <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}</c:forEach></pre>
-    </c:if>
-
 </cti:standardPage>

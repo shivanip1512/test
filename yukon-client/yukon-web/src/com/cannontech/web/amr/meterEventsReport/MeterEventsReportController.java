@@ -47,6 +47,7 @@ import com.cannontech.common.bulk.collection.device.service.DeviceCollectionServ
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -54,7 +55,6 @@ import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationPara
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -80,7 +80,7 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
-import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
@@ -111,7 +111,6 @@ public class MeterEventsReportController {
     @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
@@ -298,15 +297,17 @@ public class MeterEventsReportController {
         
         return "redirect:jobs";
     }
-    
+
     @RequestMapping("jobs")
-    public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
-        
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        scheduledFileExportJobsTagService.populateModel(model, FileExportType.METER_EVENTS, ScheduledExportType.METER_EVENT, page, itemsPerPage);
+    public String jobs(ModelMap model, PagingParameters paging) {
+        SearchResults<ScheduledFileExportJobData> reportsResult
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.METER_EVENT, paging);
+
+        model.addAttribute("jobType", FileExportType.METER_EVENTS);
+        model.addAttribute("scheduledJobsSearchResult", reportsResult);
         return "meterEventsReport/jobs.jsp";
     }
-    
+
     @RequestMapping("delete")
     public String delete(ModelMap model, int jobId, FlashScope flashScope) {
         YukonJob job = jobManager.getJob(jobId);

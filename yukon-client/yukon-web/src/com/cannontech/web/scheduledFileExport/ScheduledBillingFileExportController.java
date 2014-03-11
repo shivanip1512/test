@@ -24,10 +24,11 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -38,7 +39,6 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
-import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
@@ -54,7 +54,6 @@ public class ScheduledBillingFileExportController {
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private JobManager jobManager;
-    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
@@ -64,12 +63,14 @@ public class ScheduledBillingFileExportController {
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
     @RequestMapping("showForm")
-    public String showForm(ModelMap model, YukonUserContext userContext, HttpServletRequest request,
+    public String showForm(ModelMap model, YukonUserContext userContext, 
             @ModelAttribute("exportData") ScheduledFileExportData exportData, Integer jobId, Integer fileFormat, 
             Integer demandDays, Integer energyDays, @RequestParam(defaultValue="false") boolean removeMultiplier,
-            @RequestParam(defaultValue="null") String[] billGroup) throws ServletRequestBindingException {
+            @RequestParam(defaultValue="null") String[] billGroup) {
 
-        if(billGroup == null) billGroup = new String[0];
+        if(billGroup == null) {
+            billGroup = new String[0];
+        }
 
         CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
 
@@ -107,7 +108,7 @@ public class ScheduledBillingFileExportController {
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(billGroup));
-        String groupNames = getGroupNamesString(deviceGroups, userContext);
+        String groupNames = getGroupNamesString(deviceGroups);
         model.addAttribute("groupNames", groupNames);
 
         String formatName = FileFormatTypes.getFormatType(fileFormat);
@@ -117,7 +118,7 @@ public class ScheduledBillingFileExportController {
     }
 
     @RequestMapping(value="scheduleExport.json")
-    public @ResponseBody Map<String, Object> scheduleExport(ModelMap model, YukonUserContext userContext,
+    public @ResponseBody Map<String, Object> scheduleExport(YukonUserContext userContext,
             HttpServletRequest request, @ModelAttribute("exportData") ScheduledFileExportData exportData,
             BindingResult bindingResult, String[] deviceGroups, int fileFormat, int demandDays, int energyDays,
             boolean removeMultiplier, Integer jobId) {
@@ -158,17 +159,19 @@ public class ScheduledBillingFileExportController {
 
         return JsonUtils.getSuccessJson(msgObj, accessor);
     }
-    
+
     @RequestMapping("jobs")
-    public String jobs(ModelMap model, Integer itemsPerPage, @RequestParam(defaultValue="1") int page) {
-        
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        scheduledFileExportJobsTagService.populateModel(model, FileExportType.BILLING, ScheduledExportType.BILLING, page, itemsPerPage);
+    public String jobs(ModelMap model, PagingParameters paging) {
+        SearchResults<ScheduledFileExportJobData> reportsResult
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.BILLING, paging);
+
+        model.addAttribute("jobType", FileExportType.BILLING);
+        model.addAttribute("scheduledJobsSearchResult", reportsResult);
         return "jobs.jsp";
     }
 
     @RequestMapping(value = "delete.json")
-    public @ResponseBody Map<String, Object> delete(ModelMap model, int jobId, YukonUserContext userContext) {
+    public @ResponseBody Map<String, Object> delete(int jobId, YukonUserContext userContext) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
@@ -179,7 +182,7 @@ public class ScheduledBillingFileExportController {
         return JsonUtils.getSuccessJson(msgObj, accessor);
     }
 
-    public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups, YukonUserContext userContext) {
+    public static String getGroupNamesString(Set<? extends DeviceGroup> deviceGroups) {
         String groupNames = "";
         int maxDisplayedGroupNames = deviceGroups.size() > MAX_GROUPS_DISPLAYED ? MAX_GROUPS_DISPLAYED : deviceGroups.size();
         Iterator<? extends DeviceGroup> iterator = deviceGroups.iterator();

@@ -33,7 +33,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
@@ -52,11 +51,11 @@ import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorSer
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -64,7 +63,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -93,7 +92,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
-import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportJobsTagService;
+import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledArchivedDataFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
@@ -128,20 +127,16 @@ public class ArchivedValuesExporterController {
     @Autowired private AttributeService attributeService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private JobManager jobManager;
-    @Autowired private ScheduledFileExportJobsTagService scheduledFileExportJobsTagService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
-    
-    private static final Integer DEFAULT_PAGES = 1;
-    private static final String DEFAULT_PAGES_STRING = "1";
+
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
     @RequestMapping("view")
     public String view(ModelMap model, HttpServletRequest request, YukonUserContext userContext, 
-                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter, Integer itemsPerPage, 
-                       @RequestParam(defaultValue=DEFAULT_PAGES_STRING) int page) 
-                       throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
-        
+                       @ModelAttribute ArchivedValuesExporter archivedValuesExporter) 
+                   throws ServletRequestBindingException, DeviceCollectionCreationException, JsonProcessingException {
+
         List<ExportFormat> allFormats = archiveValuesExportFormatDao.getAllFormats();
         ExportFormat format = getExportFormat(archivedValuesExporter.getFormatId(), allFormats);
         List<String> generatePreview = exportReportGeneratorService.generatePreview(format, userContext);
@@ -171,17 +166,25 @@ public class ArchivedValuesExporterController {
             model.addAttribute("deviceCollection", deviceCollection);
             archivedValuesExporter.setDeviceCollection(deviceCollection);
         }
-        
-        itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
-        
-        //Jobs List Prep
-        scheduledFileExportJobsTagService.populateModel(model, FileExportType.ARCHIVED_DATA_EXPORT, ScheduledExportType.ARCHIVED_DATA_EXPORT, page, itemsPerPage);
-        
+
+        scheduledJobsTable(model, new PagingParameters(10, 1));
+
         return "archivedValuesExporter/archiveDataExporterHome.jsp";
     }
-    
+
+    @RequestMapping("scheduledJobsTable")
+    public String scheduledJobsTable(ModelMap model, PagingParameters paging) {
+        SearchResults<ScheduledFileExportJobData> reportsResult
+            = scheduledFileExportService.getScheduledFileExportJobData(ScheduledExportType.ARCHIVED_DATA_EXPORT,
+                                                                       paging);
+
+        model.addAttribute("jobType", FileExportType.ARCHIVED_DATA_EXPORT);
+        model.addAttribute("scheduledJobsSearchResult", reportsResult);
+        return "archivedValuesExporter/scheduledJobsTable.jsp";
+    }
+
     @RequestMapping("deleteJob")
-    public String deleteJob(ModelMap model, int jobId, FlashScope flashScope) {
+    public String deleteJob(int jobId, FlashScope flashScope) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
@@ -192,10 +195,9 @@ public class ArchivedValuesExporterController {
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
         return "redirect:view";
     }
-    
+
     @RequestMapping("selectDevices")
-    public String selectDevices(ModelMap model, HttpServletRequest request,
-            @ModelAttribute ArchivedValuesExporter archivedValuesExporter) {
+    public String selectDevices(ModelMap model, @ModelAttribute ArchivedValuesExporter archivedValuesExporter) {
         model.addAttribute("archivedValuesExporter", archivedValuesExporter);
         return "archivedValuesExporter/selectDevices.jsp";
     }
@@ -204,8 +206,7 @@ public class ArchivedValuesExporterController {
     public String selected(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
                            @ModelAttribute ArchivedValuesExporter archivedValuesExporter)
                            throws DeviceCollectionCreationException, ServletException, JsonProcessingException {
-        return view(model, request, userContext, archivedValuesExporter,
-                    CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
+        return view(model, request, userContext, archivedValuesExporter);
     }
 
     @RequestMapping("create")
@@ -451,7 +452,7 @@ public class ArchivedValuesExporterController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             
-            return view(model, request, userContext, archivedValuesExporter, CtiUtilities.DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGES);
+            return view(model, request, userContext, archivedValuesExporter);
         }
 
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();

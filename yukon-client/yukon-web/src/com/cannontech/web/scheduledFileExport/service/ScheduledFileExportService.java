@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.user.YukonUserContext;
@@ -51,4 +53,7 @@ public interface ScheduledFileExportService {
      * scheduledFileExportJobs tag).
      */
     ScheduledFileExportJobData getExportJobData(ScheduledRepeatingJob job);
+
+    SearchResults<ScheduledFileExportJobData> getScheduledFileExportJobData(ScheduledExportType scheduleType,
+                                                                             PagingParameters paging);
 }

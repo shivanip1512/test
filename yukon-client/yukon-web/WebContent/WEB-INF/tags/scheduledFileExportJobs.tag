@@ -13,10 +13,10 @@
 <%@ attribute name="ajaxEnableUrls"  type="java.lang.Boolean" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.jobs">
-    <c:if test="${fn:length(searchResult.resultList) == 0}">
+    <c:if test="${empty searchResult.resultList}">
         <span class="empty-list"><i:inline key=".noJobs"/></span>
     </c:if>
-    <c:if test="${fn:length(searchResult.resultList) > 0}">
+    <c:if test="${not empty searchResult.resultList}">
         <table class="compact-results-table">
             <thead>
                 <th><i:inline key=".nameHeader"/></th>

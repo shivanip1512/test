@@ -41,6 +41,10 @@ public class SearchResults<T> {
         return indexBasedForWholeList((currentPage - 1) * itemsPerPage, itemsPerPage, itemList);
     }
 
+    public static <T> SearchResults<T> pageBasedForWholeList(PagingParameters pagingParameters, List<T> itemList) {
+        return indexBasedForWholeList(pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), itemList);
+    }
+
     /**
      * Build a SearchResult based on a start index for a result list which contains all results.
      */

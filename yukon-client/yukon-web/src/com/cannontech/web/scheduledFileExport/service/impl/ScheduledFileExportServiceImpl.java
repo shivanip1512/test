@@ -1,5 +1,6 @@
 package com.cannontech.web.scheduledFileExport.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,8 +12,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -29,6 +32,7 @@ import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTa
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ScheduledFileExportServiceImpl implements ScheduledFileExportService {
@@ -112,6 +116,20 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
     @Override
     public int deleteBillingJobsByFormatId(int formatId) {
         return deleteJobsByFormatId(formatId, ScheduledExportType.BILLING);
+    }
+
+    @Override
+    public SearchResults<ScheduledFileExportJobData> getScheduledFileExportJobData(ScheduledExportType scheduleType,
+                                                                                    PagingParameters paging) {
+
+        List<ScheduledRepeatingJob> exportJobs = getJobsByType(scheduleType);
+        List<ScheduledFileExportJobData> jobDataObjects = Lists.newArrayListWithCapacity(exportJobs.size());
+        for(ScheduledRepeatingJob job : exportJobs) {
+            jobDataObjects.add(getExportJobData(job));
+        }
+        Collections.sort(jobDataObjects);
+
+        return SearchResults.pageBasedForWholeList(paging, jobDataObjects);
     }
 
     private int deleteJobsByFormatId(int formatId, ScheduledExportType type) {

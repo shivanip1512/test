@@ -122,8 +122,8 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.notificationEmailAddresses">Notification Email Addresses</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess">File export "{0}" scheduled successfully.</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess">File export "{0}" updated successfully.</entry>
-    
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.jobsBox.title">Scheduled Data Exports</entry>
+
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.scheduledJobs.title">Schedules</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nameHeader">Name</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.scheduleHeader">Schedule</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nextRunHeader">Next Run</entry>

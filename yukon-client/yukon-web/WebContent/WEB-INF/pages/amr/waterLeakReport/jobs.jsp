@@ -3,5 +3,5 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage page="waterLeakReport.jobs" module="amr">
-	<tags:scheduledFileExportJobs searchResult="${filterResult}" jobType="${jobType}" baseUrl="jobs" editUrl="report" deleteUrl="delete" />
+	<tags:scheduledFileExportJobs searchResult="${scheduledJobsSearchResult}" jobType="${jobType}" baseUrl="jobs" editUrl="report" deleteUrl="delete" />
 </cti:standardPage>
