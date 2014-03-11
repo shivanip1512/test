@@ -906,7 +906,8 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-    public List<OverrideHistory> getOptOutHistoryForAccount(String accountNumber, Date startTime, Date stopTime, LiteYukonUser user, String programName) 
+    public List<OverrideHistory> getOptOutHistoryForAccount(String accountNumber, Date startTime, Date stopTime,
+                                                            LiteYukonUser user, String programName) 
 		throws AccountNotFoundException, ProgramNotFoundException {
 
 		List<OverrideHistory> historyList = new ArrayList<OverrideHistory>();
@@ -929,9 +930,10 @@ public class OptOutServiceImpl implements OptOutService {
 		if (programName != null) {
 		    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 			Program program = programService.getByProgramName(programName, energyCompany);
-			
-			List<Integer> optedOutInventory = 
-				enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+
+		     // Get the enrolled inventory by program and time period
+	        List<Integer> optedOutInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
+	            optedOutInventory.addAll(optOutEventDao.getScheduledOptOutInventory(program, startTime, stopTime));
 			for (OverrideHistory history : inventoryHistoryList) {
 				
 				// Only add the history for inventory that was opted out of the given program
