@@ -519,17 +519,4 @@ public class ServletUtils {
         writer.println(");");
         writer.println("</script>");
     }
-
-    /**
-     * Use this method with old-school simplePopup dialogs.  Hopefully there should be no new
-     * calls to this.  Instead, prefer using the jQuery dialog boxes with closeDialog.
-     * @deprecated Use jQuery dialogs with dialogFormSuccess instead.
-     */
-    @Deprecated
-    public static void closePopup(HttpServletResponse resp, String popupId) throws IOException {
-        resp.getWriter().print("<script type=\"text/javascript\">");
-        resp.getWriter().print("jQuery('#" + popupId + "').dialog('close');");
-        resp.getWriter().print("window.location = window.location;");
-        resp.getWriter().print("</script>");
-    }
 }

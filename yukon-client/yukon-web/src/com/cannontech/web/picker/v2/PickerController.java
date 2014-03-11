@@ -30,14 +30,14 @@ import com.google.common.collect.Maps;
 @Controller
 @RequestMapping("/v2/*")
 public class PickerController {
-    @Autowired private PickerFactory pickerService;
+    @Autowired private PickerFactory pickerFactory;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ObjectFormattingService objectFormattingService;
 
     @RequestMapping("build")
     public String build(Model model, String type, String id, Boolean multiSelectMode, Boolean immediateSelectMode,
             String mode, YukonUserContext userContext) {
-        Picker<?> picker = pickerService.getPicker(type);
+        Picker<?> picker = pickerFactory.getPicker(type);
 
         model.addAttribute("title", picker.getDialogTitle());
         model.addAttribute("id", id);
@@ -53,7 +53,7 @@ public class PickerController {
     @RequestMapping("idSearch")
     @ResponseBody
     public Map<String, ?> idSearch(String type, Integer[] initialIds, String extraArgs, YukonUserContext context) {
-        Picker<?> picker = pickerService.getPicker(type);
+        Picker<?> picker = pickerFactory.getPicker(type);
 
         SearchResults<?> searchResult = picker.search(Lists.newArrayList(initialIds), extraArgs, context);
 
@@ -73,7 +73,7 @@ public class PickerController {
             count = Integer.MAX_VALUE;
         }
 
-        Picker<?> picker = pickerService.getPicker(type);
+        Picker<?> picker = pickerFactory.getPicker(type);
         SearchResults<?> searchResult = picker.search(ss, start, count, extraArgs, context);
 
         response.setContentType("application/json");
