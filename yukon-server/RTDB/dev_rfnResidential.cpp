@@ -1531,7 +1531,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             {
                 if( parse.isKeyValid( "force" ) )
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnOnDemandDisconnectSetConfigurationCommand>( *config_reconnect_param ) );
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( *config_reconnect_param ) );
                 }
             }
             else 
@@ -1542,7 +1542,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnOnDemandDisconnectSetConfigurationCommand>( *config_reconnect_param ) );
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( *config_reconnect_param ) );
                 }
             }
 
@@ -1722,7 +1722,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             {
                 if( parse.isKeyValid( "force" ) )
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnThresholdDisconnectSetConfigurationCommand>( *config_reconnect_param,
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>( *config_reconnect_param,
                                                                                                                         *config_demand_interval,
                                                                                                                         *config_demand_threshold,
                                                                                                                         *config_connect_delay,
@@ -1737,7 +1737,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnThresholdDisconnectSetConfigurationCommand>( *config_reconnect_param,
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>( *config_reconnect_param,
                                                                                                                         *config_demand_interval,
                                                                                                                         *config_demand_threshold,
                                                                                                                         *config_connect_delay,
@@ -1824,7 +1824,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             {
                 if( parse.isKeyValid( "force" ) )
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_disconnect_minutes,
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>( *config_disconnect_minutes,
                                                                                                                       *config_connect_minutes) );
                 }
             }
@@ -1836,7 +1836,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 }
                 else
                 {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnCyclingDisconnectSetConfigurationCommand>( *config_disconnect_minutes,
+                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>( *config_disconnect_minutes,
                                                                                                                       *config_connect_minutes) );
                 }
             }
@@ -1954,13 +1954,13 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnDemandFreezeC
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, cmd.freezeDay );
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnOnDemandDisconnectSetConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.reconnectParam ) );
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnThresholdDisconnectSetConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.reconnectParam ) );
@@ -1970,7 +1970,7 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnThresholdDisc
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, cmd.maxDisconnects );
 }
 
-void RfnResidentialDevice::handleCommandResult( const Commands::RfnCyclingDisconnectSetConfigurationCommand & cmd )
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand & cmd )
 {
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, cmd.disconnectMinutes );

@@ -151,23 +151,23 @@ RfnRemoteDisconnectCommand::TlvList RfnRemoteDisconnectSetConfigurationCommand::
 //-----------------------------------------------------------
 // On-Demand Disconnect Set-Configuration Functions
 //-----------------------------------------------------------
-RfnOnDemandDisconnectSetConfigurationCommand::RfnOnDemandDisconnectSetConfigurationCommand( const Reconnect reconnect_param )
+RfnRemoteDisconnectSetOnDemandConfigurationCommand::RfnRemoteDisconnectSetOnDemandConfigurationCommand( const Reconnect reconnect_param )
     :   reconnectParam( reconnect_param )
 {
     // Empty
 }
 
-void RfnOnDemandDisconnectSetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+void RfnRemoteDisconnectSetOnDemandConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
 {
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnOnDemandDisconnectSetConfigurationCommand::getDisconnectMode() const
+RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetOnDemandConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_OnDemand; 
 }
 
-RfnCommand::Bytes RfnOnDemandDisconnectSetConfigurationCommand::getData()
+RfnCommand::Bytes RfnRemoteDisconnectSetOnDemandConfigurationCommand::getData()
 {
     RfnCommand::Bytes data;
 
@@ -179,7 +179,7 @@ RfnCommand::Bytes RfnOnDemandDisconnectSetConfigurationCommand::getData()
 //-----------------------------------------------------------
 // Demand Threshold Disconnect Configuration Functions
 //-----------------------------------------------------------
-RfnThresholdDisconnectSetConfigurationCommand::RfnThresholdDisconnectSetConfigurationCommand( const Reconnect      reconnect_param,
+RfnRemoteDisconnectSetThresholdConfigurationCommand::RfnRemoteDisconnectSetThresholdConfigurationCommand( const Reconnect      reconnect_param,
                                                                                               const DemandInterval demand_interval,
                                                                                               const double         demand_threshold,
                                                                                               const unsigned       connect_delay,
@@ -209,17 +209,17 @@ RfnThresholdDisconnectSetConfigurationCommand::RfnThresholdDisconnectSetConfigur
             << ") overflow (maximum 20)" );
 }
 
-void RfnThresholdDisconnectSetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+void RfnRemoteDisconnectSetThresholdConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
 {
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnThresholdDisconnectSetConfigurationCommand::getDisconnectMode() const
+RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetThresholdConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_DemandThreshold; 
 }
 
-RfnCommand::Bytes RfnThresholdDisconnectSetConfigurationCommand::getData()
+RfnCommand::Bytes RfnRemoteDisconnectSetThresholdConfigurationCommand::getData()
 {
     RfnCommand::Bytes data;
 
@@ -241,7 +241,7 @@ RfnCommand::Bytes RfnThresholdDisconnectSetConfigurationCommand::getData()
 //-----------------------------------------------------------
 // Cycling Disconnect Set-Configuration Functions
 //-----------------------------------------------------------
-RfnCyclingDisconnectSetConfigurationCommand::RfnCyclingDisconnectSetConfigurationCommand( const unsigned disconnect_minutes,
+RfnRemoteDisconnectSetCyclingConfigurationCommand::RfnRemoteDisconnectSetCyclingConfigurationCommand( const unsigned disconnect_minutes,
                                                                                           const unsigned connect_minutes )
     :   disconnectMinutes( disconnect_minutes ),
         connectMinutes( connect_minutes )
@@ -255,17 +255,17 @@ RfnCyclingDisconnectSetConfigurationCommand::RfnCyclingDisconnectSetConfiguratio
             << ") overflow (maximum 1440)" );
 }
 
-void RfnCyclingDisconnectSetConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
+void RfnRemoteDisconnectSetCyclingConfigurationCommand::invokeResultHandler( RfnCommand::ResultHandler &rh ) const
 {
     rh.handleCommandResult( *this );
 }
 
-RfnRemoteDisconnectCommand::DisconnectMode RfnCyclingDisconnectSetConfigurationCommand::getDisconnectMode() const
+RfnRemoteDisconnectCommand::DisconnectMode RfnRemoteDisconnectSetCyclingConfigurationCommand::getDisconnectMode() const
 {
     return DisconnectMode_Cycling; 
 }
 
-RfnCommand::Bytes RfnCyclingDisconnectSetConfigurationCommand::getData()
+RfnCommand::Bytes RfnRemoteDisconnectSetCyclingConfigurationCommand::getData()
 {
     RfnCommand::Bytes data;
 

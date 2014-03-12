@@ -28,9 +28,9 @@ class RfnSetOvUvAlarmRepeatIntervalCommand;
 class RfnSetOvUvNewAlarmReportIntervalCommand;
 class RfnSetOvUvSetOverVoltageThresholdCommand;
 class RfnSetOvUvSetUnderVoltageThresholdCommand;
-class RfnOnDemandDisconnectSetConfigurationCommand;
-class RfnThresholdDisconnectSetConfigurationCommand;
-class RfnCyclingDisconnectSetConfigurationCommand;
+class RfnRemoteDisconnectSetOnDemandConfigurationCommand;
+class RfnRemoteDisconnectSetThresholdConfigurationCommand;
+class RfnRemoteDisconnectSetCyclingConfigurationCommand;
 class RfnRemoteDisconnectGetConfigurationCommand;
 
 struct RfnCommandResult
@@ -55,30 +55,30 @@ public:
 
     struct ResultHandler
     {
-        virtual void handleCommandResult(const RfnCommand &)                                    {}
-        virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)          {}
-        virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)          {}
-        virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)           {}
-        virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)                 {}
-        virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)             {}
-        virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &)          {}
-        virtual void handleCommandResult(const RfnVoltageProfileGetConfigurationCommand &)      {}
-        virtual void handleCommandResult(const RfnVoltageProfileSetConfigurationCommand &)      {}
-        virtual void handleCommandResult(const RfnTouConfigurationCommand &)                    {}
-        virtual void handleCommandResult(const RfnTouScheduleGetConfigurationCommand &)         {}
-        virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)         {}
-        virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)             {}
-        virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)           {}
-        virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)         {}
-        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)             {}
-        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatIntervalCommand &)          {}
-        virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)       {}
-        virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)      {}
-        virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)     {}
-        virtual void handleCommandResult(const RfnOnDemandDisconnectSetConfigurationCommand &)  {}
-        virtual void handleCommandResult(const RfnThresholdDisconnectSetConfigurationCommand &) {}
-        virtual void handleCommandResult(const RfnCyclingDisconnectSetConfigurationCommand &)   {}
-        virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)    {}
+        virtual void handleCommandResult(const RfnCommand &)                                          {}
+        virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
+        virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
+        virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}
+        virtual void handleCommandResult(const RfnGetDemandFreezeInfoCommand &)                       {}
+        virtual void handleCommandResult(const RfnLoadProfileGetRecordingCommand &)                   {}
+        virtual void handleCommandResult(const RfnVoltageProfileGetRecordingCommand &)                {}
+        virtual void handleCommandResult(const RfnVoltageProfileGetConfigurationCommand &)            {}
+        virtual void handleCommandResult(const RfnVoltageProfileSetConfigurationCommand &)            {}
+        virtual void handleCommandResult(const RfnTouConfigurationCommand &)                          {}
+        virtual void handleCommandResult(const RfnTouScheduleGetConfigurationCommand &)               {}
+        virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)               {}
+        virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)                   {}
+        virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatCountCommand &)                   {}
+        virtual void handleCommandResult(const RfnSetOvUvAlarmRepeatIntervalCommand &)                {}
+        virtual void handleCommandResult(const RfnSetOvUvNewAlarmReportIntervalCommand &)             {}
+        virtual void handleCommandResult(const RfnSetOvUvSetOverVoltageThresholdCommand &)            {}
+        virtual void handleCommandResult(const RfnSetOvUvSetUnderVoltageThresholdCommand &)           {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectSetOnDemandConfigurationCommand &)  {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectSetThresholdConfigurationCommand &) {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectSetCyclingConfigurationCommand &)   {}
+        virtual void handleCommandResult(const RfnRemoteDisconnectGetConfigurationCommand &)          {}
     };
 
     //  to be overridden by children that require a result handler

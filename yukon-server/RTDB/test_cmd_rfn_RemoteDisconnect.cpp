@@ -7,9 +7,9 @@
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnRemoteDisconnectCommand;
-using Cti::Devices::Commands::RfnOnDemandDisconnectSetConfigurationCommand;
-using Cti::Devices::Commands::RfnThresholdDisconnectSetConfigurationCommand;
-using Cti::Devices::Commands::RfnCyclingDisconnectSetConfigurationCommand;
+using Cti::Devices::Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand;
+using Cti::Devices::Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand;
+using Cti::Devices::Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand;
 using Cti::Devices::Commands::RfnRemoteDisconnectGetConfigurationCommand;
 
 using boost::assign::list_of;
@@ -33,7 +33,7 @@ const CtiTime execute_time( CtiDate( 6, 3, 2014 ) , 12 );
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 {
-    RfnOnDemandDisconnectSetConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm );
+    RfnRemoteDisconnectSetOnDemandConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm );
 
     // execute
     {
@@ -77,11 +77,11 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_OnDemand_SetConfiguration )
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfiguration )
 {
-    RfnThresholdDisconnectSetConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                       RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                       5.0,
-                                                       10,
-                                                       0 );
+    RfnRemoteDisconnectSetThresholdConfigurationCommand cmd( RfnRemoteDisconnectCommand::Reconnect_Arm,
+                                                             RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                             5.0,
+                                                             10,
+                                                             0 );
 
     // execute
     {
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 {
-    RfnCyclingDisconnectSetConfigurationCommand cmd( 60, 256 );
+    RfnRemoteDisconnectSetCyclingConfigurationCommand cmd( 60, 256 );
 
     // execute
     {
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Demand threshold underflow 
     try
     {
-        RfnThresholdDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                RfnRemoteDisconnectCommand::DemandInterval_Five,
                                                                -1.0,
                                                                0,
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Demand threshold overflow 
     try
     {
-        RfnThresholdDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                RfnRemoteDisconnectCommand::DemandInterval_Five,
                                                                13.0,
                                                                0,
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Connect delay overflow
     try
     {
-        RfnThresholdDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                RfnRemoteDisconnectCommand::DemandInterval_Five,
                                                                0.0,
                                                                31,
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     // Max disconnects overflow
     try
     {
-        RfnThresholdDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
+        RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                RfnRemoteDisconnectCommand::DemandInterval_Five,
                                                                0.0,
                                                                0,
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration_con
     {
         try
         {
-            RfnCyclingDisconnectSetConfigurationCommand command( input.first, input.second );
+            RfnRemoteDisconnectSetCyclingConfigurationCommand command( input.first, input.second );
         }
         catch ( const RfnCommand::CommandException & ex )
         {
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_OnDemand_SetConfiguration_decoding_exceptions
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnOnDemandDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm );
+    RfnRemoteDisconnectSetOnDemandConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnThresholdDisconnectSetConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
+    RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                            RfnRemoteDisconnectCommand::DemandInterval_Five,
                                                            10.0,
                                                            10,
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_Cycling_SetConfiguration_decoding_exceptions 
 
     std::vector< RfnCommand::CommandException > actual;
 
-    RfnCyclingDisconnectSetConfigurationCommand command( 60, 60 );
+    RfnRemoteDisconnectSetCyclingConfigurationCommand command( 60, 60 );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {
