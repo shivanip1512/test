@@ -4,7 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.archivedValueExporter">
     <tags:sectionContainer2 nameKey="scheduledJobs">
@@ -12,7 +11,7 @@
             <span class="empty-list" colspan="3"><i:inline key=".noJobs"/></span>
         </c:if>
         <c:if test="${not empty scheduledJobsSearchResult.resultList}">
-            <table class="compact-results-table has-actions">
+            <table class="compact-results-table has-actions dashed">
                 <thead>
                     <th><i:inline key=".nameHeader"/></th>
                     <th><i:inline key=".scheduleHeader"/></th>
@@ -31,12 +30,11 @@
                             <cti:param name="jobId" value="${job.id}"/>
                         </cti:url>
                         <tr>
-                            <td>${fn:escapeXml(job.name)}</td>
+                            <td><a href="${editUrl}">${fn:escapeXml(job.name)}</a></td>
                             <td>${job.cronString}</td>
                             <td>
                                 <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
                                 <cm:dropdown triggerClasses="fr">
-                                    <cm:dropdownOption key="yukon.web.components.button.edit.label" href="${editUrl}" icon="icon-pencil"/>
                                     <cm:dropdownOption key="yukon.web.components.button.history.label" href="${historyUrl}" icon="icon-script"/>
                                     <cm:dropdownOption id="deleteScheduleItem_${job.id}"
                                         key="yukon.web.components.button.delete.label"
