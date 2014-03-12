@@ -32,10 +32,12 @@ public class ValidationMonitorEditorController {
     @RequestMapping("edit")
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
                        Double threshold, Boolean reread, Double slopeError, Double peakHeightMinimum, Boolean setQuestionable){
-        if(validationMonitorId == null) validationMonitorId = -1;
+        if(validationMonitorId == null) {
+            validationMonitorId = -1;
+        }
         ValidationMonitor validationMonitor = null;
         try {
-            if( validationMonitorId > -1 ){
+            if( validationMonitorId > -1 ) {
                 validationMonitor = validationMonitorDao.getById(validationMonitorId);
                 model.addAttribute("mode", PageEditMode.EDIT);
             } else {
@@ -43,8 +45,8 @@ public class ValidationMonitorEditorController {
                 model.addAttribute("mode", PageEditMode.CREATE);
             }
             
-            /* Use entered values instead of existing values if present. */
-            /* When validation failed, they don't have to retype everything. */
+            //Use entered values instead of existing values if present. 
+            //When validation failed, they don't have to retype everything.
             if (name == null) {
                 name = validationMonitor.getName();
             }
@@ -93,7 +95,6 @@ public class ValidationMonitorEditorController {
         
         String editError = null;
         
-        /* Is this a new monitor? */
         boolean isNewMonitor = true;
         ValidationMonitor validationMonitor;
         try {
