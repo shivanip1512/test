@@ -226,7 +226,6 @@ UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE Role
 
 /* Start YUK-12892 */
 /* @start-block */
-BEGIN TRANSACTION
 DECLARE
     @errorCount   NUMERIC = 0,
     @count        NUMERIC,
