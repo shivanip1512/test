@@ -26,21 +26,25 @@
     </c:if>
     
     <%-- MISC FORMS --%>
-    <form id="configDeleteForm" action="/amr/vee/monitor/delete" method="post">
+    <cti:url var="deleteUrl" value="/amr/vee/monitor/delete"/>
+    <form id="configDeleteForm" action="${deleteUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="deleteValidationMonitorId" value="${validationMonitorId}">
     </form>
-    
-    <form id="toggleEnabledForm" action="/amr/vee/monitor/toggleEnabled" method="post">
+
+    <cti:url var="enabledUrl" value="/amr/vee/monitor/toggleEnabled"/>
+    <form id="toggleEnabledForm" action="${enabledUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
     </form>
     
-    <form id="cancelForm" action="/meter/start" method="get">
+    <cti:url var="startUrl" value="/meter/start"/>
+    <form id="cancelForm" action="${startUrl}" method="get">
     </form>
     
     <%-- UPDATE FORM --%>
-    <form id="updateForm" action="/amr/vee/monitor/update" method="post">
+    <cti:url var="updateUrl" value="/amr/vee/monitor/update"/>
+    <form id="updateForm" action="${updateUrl}" method="post">
         <cti:csrfToken/>
         <input type="hidden" name="validationMonitorId" value="${validationMonitorId}">
         
