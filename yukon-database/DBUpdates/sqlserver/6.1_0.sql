@@ -226,63 +226,77 @@ UPDATE YukonGroupRole SET Value = REPLACE (Value, 'limit', '"limit"') WHERE Role
 
 /* Start YUK-12892 */
 /* @start-block */
+BEGIN TRANSACTION
 DECLARE
-    @errorCount NUMERIC = 0,
-    @count      NUMERIC,
-    @paoName    VARCHAR(60);
+    @errorCount   NUMERIC = 0,
+    @count        NUMERIC,
+    @serialNumber VARCHAR(60),
+    @truncatedSN  VARCHAR(60)
 DECLARE potential_duplicates_curs CURSOR FOR (
-       SELECT PAOName
-       FROM YukonPAObject
-       WHERE PAOClass = 'RFMESH'
-        AND PAOName LIKE '0%');
+    SELECT LMHB.ManufacturerSerialNumber
+    FROM LMHardwareBase LMHB
+    JOIN InventoryBase IB ON LMHB.InventoryId = IB.InventoryId
+    JOIN YukonPAObject YPAO ON IB.DeviceID = YPAO.PAObjectID
+    WHERE YPAO.Type IN ('LCR-6200 RFN', 'LCR-6600 RFN')
+     AND ISNUMERIC(LMHB.ManufacturerSerialNumber) = 1
+     AND LMHB.ManufacturerSerialNumber LIKE '0%');
 BEGIN
     OPEN potential_duplicates_curs;
-    FETCH NEXT FROM potential_duplicates_curs INTO @paoName;
+    FETCH FROM potential_duplicates_curs INTO @serialNumber;
     WHILE @@FETCH_STATUS = 0
     BEGIN
-       SELECT @count = COUNT(PAOName)
-       FROM YukonPAObject
-       WHERE PAOName = CAST(CAST(@paoName AS NUMERIC) AS VARCHAR);
+        SELECT @count = COUNT(LMHB.ManufacturerSerialNumber)
+       FROM LMHardwareBase LMHB
+       WHERE  LMHB.ManufacturerSerialNumber = CAST(CAST(@serialNumber AS NUMERIC) AS VARCHAR)
+         AND  @serialNumber <> CAST(CAST(@serialNumber AS NUMERIC) AS VARCHAR);
 
        IF @count > 0
        BEGIN
           SET @errorCount = @errorCount + 1;
        END
-       FETCH NEXT FROM potential_duplicates_curs INTO @paoName;
+       FETCH NEXT FROM potential_duplicates_curs INTO @serialNumber;
     END
-    CLOSE potential_duplicates_curs;
-    DEALLOCATE potential_duplicates_curs;
+    
     IF @errorCount > 0
     BEGIN
         RAISERROR('There are devices in the YukonPAObject table and related tables that have duplicate serial numbers that differ only in number of leading zeros.  These duplicates should be resolved by deleting one of the devices so that the truncation of leading zeros can proceed. See YUK-12892 for more information.', 16, 1);
-    END 
+    END
+    ELSE
+    BEGIN
+       CLOSE potential_duplicates_curs;
+       OPEN potential_duplicates_curs;
+       FETCH FROM potential_duplicates_curs INTO @serialNumber;
+       WHILE @@FETCH_STATUS = 0
+       BEGIN
+          SELECT @truncatedSN = CAST(CAST(@serialNumber AS NUMERIC) AS VARCHAR);
+          PRINT 'Converting SN: ' + @serialNumber + ' to: ' + @truncatedSN;
+
+          UPDATE RfnAddress
+          SET SerialNumber = @truncatedSN
+          WHERE DeviceId = (SELECT DeviceId 
+                        FROM InventoryBase IB
+                        JOIN LMHardwareBase LMHB ON IB.InventoryID = LMHB.InventoryID
+                        WHERE LMHB.ManufacturerSerialNumber = @serialNumber);
+
+          UPDATE InventoryBase
+          SET DeviceLabel = @truncatedSN
+          WHERE DeviceLabel = @serialNumber;
+
+          UPDATE LMHardwareBase
+          SET ManufacturerSerialNumber = @truncatedSN
+          WHERE ManufacturerSerialNumber = @serialNumber;
+
+          UPDATE YukonPAObject
+          SET PAOName = @truncatedSN
+          WHERE PAOName = @serialNumber;
+
+          FETCH NEXT FROM potential_duplicates_curs INTO @serialNumber;
+       END
+    END
+    CLOSE potential_duplicates_curs;
+    DEALLOCATE potential_duplicates_curs;
 END;
 /* @end-block */
-
-UPDATE RfnAddress
-SET SerialNumber = (CAST(CAST(SerialNumber AS NUMERIC) AS VARCHAR))
-WHERE SerialNumber LIKE '0%';
- 
-UPDATE InventoryBase
-SET DeviceLabel = (CAST(CAST(DeviceLabel AS NUMERIC) AS VARCHAR))
-FROM InventoryBase IB
-    JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
-WHERE DeviceLabel LIKE '0%' 
-  AND YPO.PAOClass = 'RFMESH'
-  AND DeviceLabel = YPO.PAOName;
- 
-UPDATE LMHardwareBase
-SET ManufacturerSerialNumber = (CAST(CAST(ManufacturerSerialNumber AS NUMERIC) AS VARCHAR))
-FROM LMHardwareBase LMB
-    JOIN InventoryBase IB ON IB.InventoryID = LMB.InventoryID
-    JOIN YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
-WHERE ManufacturerSerialNumber LIKE '0%' 
-  AND YPO.PAOClass = 'RFMESH';
- 
-UPDATE YukonPAObject
-SET PAOName = (CAST(CAST(PAOName AS NUMERIC) AS VARCHAR))
-WHERE PAOName LIKE '0%' 
-  AND PAOClass = 'RFMESH';
 /* End YUK-12892 */
 
 /**************************************************************/
