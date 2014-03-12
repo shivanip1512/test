@@ -37,7 +37,8 @@ yukon.ami.validation = (function () {
     
     jQuery(function () {
         jQuery('#review-form [id="display-type-checkbox"]').click(function(e) {
-            jQuery.post('/amr/veeReview/reviewTable', jQuery('#review-form').serialize()).done(function(result) {
+            var reviewTableUrl = yukon.url('/amr/veeReview/reviewTable');
+            jQuery.post(reviewTableUrl, jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
                 yukon.ui.unbusy(jQuery('#saveButton'));
             });
@@ -50,8 +51,8 @@ yukon.ami.validation = (function () {
             } else {
                 urlParams = '';
             }
-            
-            jQuery.post('/amr/veeReview/save' + urlParams, jQuery('#review-form').serialize()).done(function(result) {
+            var saveUrl = yukon.url('/amr/veeReview/save');
+            jQuery.post(saveUrl + urlParams, jQuery('#review-form').serialize()).done(function(result) {
                 jQuery('#reviewTable').html(result);
                 yukon.ui.unbusy(jQuery('#saveButton'));
                 jQuery('#accept-all').removeClass('on');
