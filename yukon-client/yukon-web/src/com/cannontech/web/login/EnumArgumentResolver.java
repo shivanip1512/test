@@ -4,7 +4,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
 
 public class EnumArgumentResolver {
-
     protected boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().isEnum();
     }
@@ -17,5 +16,4 @@ public class EnumArgumentResolver {
         Object result = Enum.valueOf(parameterType, parameter);
         return result;
     }
-
 }

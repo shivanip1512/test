@@ -8,8 +8,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 
-public class UserContextHandlerMethodArgumentResolver extends UserContextArgumentResolver implements HandlerMethodArgumentResolver {
-
+public class UserContextHandlerMethodArgumentResolver extends UserContextArgumentResolver
+        implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return super.supportsParameter(parameter);

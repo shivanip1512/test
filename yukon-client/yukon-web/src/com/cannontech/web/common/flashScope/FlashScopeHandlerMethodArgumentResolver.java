@@ -8,7 +8,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class FlashScopeHandlerMethodArgumentResolver extends FlashScopeArgumentResolver
         implements HandlerMethodArgumentResolver {
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return super.supportsParameter(parameter);
@@ -17,6 +16,6 @@ public class FlashScopeHandlerMethodArgumentResolver extends FlashScopeArgumentR
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return resolveArgument(parameter, webRequest);
+        return resolveArgument(webRequest);
     }
 }

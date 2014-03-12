@@ -6,11 +6,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public class InventoryCollectionWebArgumentResolver extends InventoryCollectionArgumentResolver
         implements WebArgumentResolver {
-
     @Override
     public Object resolveArgument(MethodParameter parameter, NativeWebRequest webRequest) throws Exception {
         if (supportsParameter(parameter)) {
-            return super.resolveArgument(parameter, webRequest);
+            return super.resolveArgument(webRequest);
         }
         return UNRESOLVED;
     }

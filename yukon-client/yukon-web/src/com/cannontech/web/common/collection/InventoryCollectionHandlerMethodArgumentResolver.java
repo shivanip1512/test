@@ -8,15 +8,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class InventoryCollectionHandlerMethodArgumentResolver extends InventoryCollectionArgumentResolver
         implements HandlerMethodArgumentResolver {
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return super.supportsParameter(parameter);
     }
-    
+
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        return resolveArgument(parameter, webRequest);
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        return resolveArgument(webRequest);
     }
 }

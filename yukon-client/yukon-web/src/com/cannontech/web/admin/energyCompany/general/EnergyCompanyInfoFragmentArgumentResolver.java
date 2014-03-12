@@ -12,7 +12,6 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoService;
 
 
 public class EnergyCompanyInfoFragmentArgumentResolver {
-
     @Autowired private EnergyCompanyInfoService energyCompanyInfoService;
 
     protected boolean supportsParameter(MethodParameter parameter) {
@@ -20,7 +19,7 @@ public class EnergyCompanyInfoFragmentArgumentResolver {
         return parameterType.isAssignableFrom(EnergyCompanyInfoFragment.class);
     }
 
-    protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
+    protected Object resolveArgument(NativeWebRequest webRequest) throws Exception {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
         int ecId = ServletRequestUtils.getRequiredIntParameter(nativeRequest, "ecId");
         EnergyCompanyInfoFragment energyCompanyInfoFragment = energyCompanyInfoService.getEnergyCompanyInfoFragment(ecId);

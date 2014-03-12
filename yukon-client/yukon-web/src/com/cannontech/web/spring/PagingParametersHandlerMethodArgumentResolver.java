@@ -13,7 +13,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.CtiUtilities;
 
 public class PagingParametersHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
@@ -22,10 +21,10 @@ public class PagingParametersHandlerMethodArgumentResolver implements HandlerMet
 
     @Override
     public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
-        int itemsPerPage = 
-                CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(nativeRequest, "itemsPerPage"));
+        int itemsPerPage =
+            CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(nativeRequest, "itemsPerPage"));
         int page = ServletRequestUtils.getIntParameter(nativeRequest, "page", 1);
 
         return new PagingParameters(itemsPerPage, page);

@@ -10,7 +10,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 
 public class AccountInfoFragmentArgumentResolver {
-
     @Autowired private OperatorAccountService operatorAccountService;
 
     protected boolean supportsParameter(MethodParameter parameter) {
@@ -18,7 +17,7 @@ public class AccountInfoFragmentArgumentResolver {
         return parameterType.isAssignableFrom(AccountInfoFragment.class);
     }
 
-    protected Object resolveArgument(MethodParameter parameter, NativeWebRequest webRequest) throws Exception {
+    protected Object resolveArgument(NativeWebRequest webRequest) throws Exception {
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
         int accountId = ServletRequestUtils.getRequiredIntParameter(nativeRequest, "accountId");
         AccountInfoFragment accountInfoFragment = operatorAccountService.getAccountInfoFragment(accountId);

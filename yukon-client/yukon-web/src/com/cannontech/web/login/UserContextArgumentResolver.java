@@ -17,7 +17,7 @@ public class UserContextArgumentResolver {
     protected boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
         return parameterType.isAssignableFrom(YukonUserContext.class)
-                || parameterType.isAssignableFrom(LiteYukonUser.class);
+            || parameterType.isAssignableFrom(LiteYukonUser.class);
     }
 
     protected Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest) throws Exception {
@@ -34,5 +34,4 @@ public class UserContextArgumentResolver {
 
         return WebArgumentResolver.UNRESOLVED;
     }
-
 }
