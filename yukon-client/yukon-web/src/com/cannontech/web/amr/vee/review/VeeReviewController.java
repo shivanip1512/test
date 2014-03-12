@@ -212,11 +212,11 @@ public class VeeReviewController {
         return sumOfSelectedTagCounts;
     }
     
-    public class DisplayType {
+    public final static class DisplayType {
         
-        private RphTag rphTag;
-        private boolean checked;
-        private int count;
+        private final RphTag rphTag;
+        private final boolean checked;
+        private final int count;
         
         public DisplayType(RphTag rphTag, boolean checked, int count) {
             this.rphTag = rphTag;
@@ -254,12 +254,12 @@ public class VeeReviewController {
         return tags;
     }
     
-    public class ExtendedReviewPoint {
+    public final static class ExtendedReviewPoint {
         
-        private ReviewPoint reviewPoint;
-        private PointValueHolder prevPointValue;
-        private PointValueHolder nextPointValue;
-        private List<RphTag> otherTags;
+        private final ReviewPoint reviewPoint;
+        private final PointValueHolder prevPointValue;
+        private final PointValueHolder nextPointValue;
+        private final List<RphTag> otherTags;
         
         public ExtendedReviewPoint(ReviewPoint reviewPoint, PointValueHolder prevPointValue, PointValueHolder nextPointValue, List<RphTag> otherTags) {
             this.reviewPoint = reviewPoint;
