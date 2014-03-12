@@ -1,9 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-/**
- * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
- * @author: alauinger
- */
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -64,95 +60,89 @@ import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
 public final class PaoDaoImpl implements PaoDao {
-    
-    private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " 
-        + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " 
-        + "FROM yukonpaobject y "
-        + "left outer join devicedirectcommsettings d ON y.paobjectid = d.deviceid "
-        + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " 
+    private final static String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, "
+        + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid "
+        + "FROM yukonpaobject y " + "left outer join devicedirectcommsettings d ON y.paobjectid = d.deviceid "
+        + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID "
         + "left outer join deviceroutes dr ON y.paobjectid = dr.deviceid ";
-    
+
     private final ParameterizedRowMapper<PaoIdentifier> yukonPaoRowMapper = new YukonPaoRowMapper();
     private final ParameterizedRowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
     private final static PaoIdentifierRowMapper paoIdentifierRowMapper = new PaoIdentifierRowMapper();
 
     private JdbcOperations jdbcOps;
-    private YukonJdbcOperations yukonJdbcOperations;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    private YukonJdbcOperations jdbcOperations;
+    private YukonJdbcTemplate jdbcTemplate;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(int)
-     */
+    @Override
     public YukonPao getYukonPao(int paoId) {
         try {
-        	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append("SELECT PAObjectID, Category, Type");
-        	sql.append("FROM YukonPAObject");
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAObjectID, Category, Type");
+            sql.append("FROM YukonPAObject");
             sql.append("WHERE PAObjectID").eq(paoId);
-            
-            YukonPao pao = yukonJdbcOperations.queryForObject(sql, yukonPaoRowMapper);
-            
+
+            YukonPao pao = jdbcOperations.queryForObject(sql, yukonPaoRowMapper);
+
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoId + " cannot be found.");
         }
     }
-    
+
     @Override
     public YukonPao findYukonPao(String paoName, PaoType paoType) {
-    	return findYukonPao(paoName, paoType.getPaoCategory(), paoType.getPaoClass());
+        return findYukonPao(paoName, paoType.getPaoCategory(), paoType.getPaoClass());
     }
-    
+
     @Override
     public YukonPao findYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
-    	try {    		
-    		return queryForPao(paoName, paoCategory, paoClass);
-    	} catch (IncorrectResultSizeDataAccessException e) {
+        try {
+            return queryForPao(paoName, paoCategory, paoClass);
+        } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
     };
-    
+
     @Override
     public YukonPao getYukonPao(String paoName, PaoType paoType) throws NotFoundException {
         return getYukonPao(paoName, paoType.getPaoCategory(), paoType.getPaoClass());
     };
-    
+
     @Override
-    public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) 
-            throws NotFoundException {
+    public YukonPao getYukonPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) throws NotFoundException {
         try {
             return queryForPao(paoName, paoCategory, paoClass);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject named " + paoName + " cannot be found.");
         }
     };
-    
+
     private YukonPao queryForPao(String paoName, PaoCategory paoCategory, PaoClass paoClass) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAObjectID, Type");
         sql.append("FROM YukonPAObject");
         sql.append("WHERE PaoName").eq(paoName);
-        sql.append("   AND Category").eq(paoCategory);
-        sql.append("   AND PaoClass").eq(paoClass);
-        
-        YukonPao pao = yukonJdbcTemplate.queryForObject(sql, yukonPaoRowMapper);
-        
+        sql.append(    "AND Category").eq(paoCategory);
+        sql.append(    "AND PaoClass").eq(paoClass);
+
+        YukonPao pao = jdbcTemplate.queryForObject(sql, yukonPaoRowMapper);
+
         return pao;
     }
-    
+
+    @Override
     public LiteYukonPAObject getLiteYukonPAO(int paoID) {
         try {
             String sql = litePaoSql + "where y.paobjectid=?";
 
-            LiteYukonPAObject pao = (LiteYukonPAObject) jdbcOps.queryForObject(sql,
-                                                                               new Object[] { paoID },
-                                                                               litePaoRowMapper);
+            LiteYukonPAObject pao = jdbcOps.queryForObject(sql, new Object[] { paoID }, litePaoRowMapper);
+
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoID + " cannot be found.");
@@ -161,9 +151,10 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public Map<PaoIdentifier, LiteYukonPAObject> getLiteYukonPaosById(Iterable<PaoIdentifier> paos) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(litePaoSql);
@@ -182,8 +173,7 @@ public final class PaoDaoImpl implements PaoDao {
         YukonRowMapper<Map.Entry<Integer, LiteYukonPAObject>> mappingRowMapper =
             new YukonRowMapper<Map.Entry<Integer, LiteYukonPAObject>>() {
                 @Override
-                public Entry<Integer, LiteYukonPAObject> mapRow(YukonResultSet rs)
-                        throws SQLException {
+                public Entry<Integer, LiteYukonPAObject> mapRow(YukonResultSet rs) throws SQLException {
                     LiteYukonPAObject pao = litePaoRowMapper.mapRow(rs.getResultSet(), 0);
                     return Maps.immutableEntry(pao.getPaoIdentifier().getPaoId(), pao);
                 }
@@ -192,27 +182,23 @@ public final class PaoDaoImpl implements PaoDao {
         return template.mappedQuery(sqlGenerator, paos, mappingRowMapper, transform);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(Sring, int, int, int)
-     */
-    public LiteYukonPAObject getLiteYukonPAObject(final String deviceName, 
-            final int category, final int paoClass, final int type) {
-        
+    @Override
+    public LiteYukonPAObject getLiteYukonPAObject(final String deviceName, final int category, final int paoClass,
+        final int type) {
+
         try {
             SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
             sqlBuilder.append("WHERE UPPER(y.PAOName) = UPPER(?) ");
-            sqlBuilder.append("AND y.Category = ? "); 
-            sqlBuilder.append("AND y.PAOClass = ? ");
-            sqlBuilder.append("AND y.Type = ? ");
+            sqlBuilder.append(    "AND y.Category = ? ");
+            sqlBuilder.append(    "AND y.PAOClass = ? ");
+            sqlBuilder.append(    "AND y.Type = ? ");
             String stringCategory = PaoCategory.getPaoCategory(category);
             String stringClass = PaoClass.getPaoClass(paoClass);
             String stringType = PaoType.getPaoTypeString(type);
-            
-            LiteYukonPAObject pao = 
-                (LiteYukonPAObject) jdbcOps.queryForObject(sqlBuilder.getSql(), 
-                                                           new Object[]{deviceName, stringCategory, stringClass, stringType}, 
-                                                           litePaoRowMapper);
+
+            LiteYukonPAObject pao =
+                jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] { deviceName,
+                stringCategory, stringClass, stringType }, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with deviceName '" + deviceName + "' cannot be found.");
@@ -220,48 +206,50 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    @Deprecated /* Use findUnique(String paoName, PaoCategory category, PaoClass paoClass) */
+    @Deprecated
+    /* Use findUnique(String paoName, PaoCategory category, PaoClass paoClass) */
     public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass) {
         return findUnique(paoName, PaoCategory.getForDbString(category), PaoClass.getForDbString(paoClass));
     }
-    
+
     @Override
     public LiteYukonPAObject findUnique(String paoName, PaoCategory category, PaoClass paoClass) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder(litePaoSql);
             sql.append("WHERE UPPER(y.PAOName) = UPPER(").appendArgument(paoName).append(")");
-            sql.append(  "AND y.Category").eq(category);
-            sql.append(  "AND y.PAOClass").eq(paoClass);
-            LiteYukonPAObject pao = yukonJdbcTemplate.queryForObject(sql, litePaoRowMapper);
+            sql.append(    "AND y.Category").eq(category);
+            sql.append(    "AND y.PAOClass").eq(paoClass);
+            LiteYukonPAObject pao = jdbcTemplate.queryForObject(sql, litePaoRowMapper);
             return pao;
         } catch (IncorrectResultSizeDataAccessException e) {
-                //no objects returned is good
-                return null;
+            // no objects returned is good
+            return null;
         }
     }
-    
+
     @Override
     public boolean isNameAvailable(String paoName, PaoType paoType) {
         return findUnique(paoName, paoType.getPaoCategory(), paoType.getPaoClass()) == null;
     }
-    
+
+    @Override
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
         String typeStr = PaoType.getPaoTypeString(paoType);
         String sql = litePaoSql;
         sql += "where UPPER(type)=? ";
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql,
-                                                     new Object[] { StringUtils.upperCase(typeStr) },
-                                                     litePaoRowMapper);
+        List<LiteYukonPAObject> paos =
+            jdbcOps.query(sql, new Object[] { StringUtils.upperCase(typeStr) }, litePaoRowMapper);
         return paos;
     }
 
-    public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType,
-            Integer[] paoCategory, Integer[] paoClass, Integer[] pointTypes,
-            Integer[] uOfMId) {
+    @Override
+    public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType, Integer[] paoCategory, Integer[] paoClass,
+        Integer[] pointTypes, Integer[] uOfMId) {
 
         StringBuilder sql = new StringBuilder(litePaoSql);
-        sql.append("left outer join point p on y.paobjectid=p.paobjectid " + "left outer join pointunit pu on p.pointid=pu.pointid ");
+        sql.append("left outer join point p on y.paobjectid=p.paobjectid "
+            + "left outer join pointunit pu on p.pointid=pu.pointid ");
 
         String[] pointTypesStr = PointTypes.convertPointTypes(pointTypes);
         SqlUtil.buildInClause("where", "y", "type", paoType, sql);
@@ -270,15 +258,11 @@ public final class PaoDaoImpl implements PaoDao {
         SqlUtil.buildInClause("and", "p", "pointtype", pointTypesStr, sql);
         SqlUtil.buildInClause("and", "pu", "uomid", uOfMId, sql);
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(),
-                                                     litePaoRowMapper);
+        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(), litePaoRowMapper);
         return paos;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getAllCapControlSubBuses()
-     */
+    @Override
     public List getAllCapControlSubBuses() {
         List subBusList = null;
         synchronized (databaseCache) {
@@ -287,7 +271,7 @@ public final class PaoDaoImpl implements PaoDao {
 
         return subBusList;
     }
-    
+
     public List<LiteYukonPAObject> getAllCapControlSubStations() {
         List<LiteYukonPAObject> subStationList = null;
         synchronized (databaseCache) {
@@ -297,10 +281,12 @@ public final class PaoDaoImpl implements PaoDao {
         return subStationList;
     }
 
+    @Override
     public int getNextPaoId() {
         return nextValueHelper.getNextValue("YukonPaObject");
     }
 
+    @Override
     public int[] getNextPaoIds(int count) {
         int[] ids = new int[count];
         for (int i = 0; i < ids.length; i++) {
@@ -309,37 +295,34 @@ public final class PaoDaoImpl implements PaoDao {
         return ids;
     }
 
+    @Override
     public String getYukonPAOName(int paoID) {
         try {
             String sql = "select paoname from yukonpaobject where paobjectid=?";
-            String name = (String) jdbcOps.queryForObject(sql,
-                                                          new Object[] { paoID },
-                                                          String.class);
+            String name = jdbcOps.queryForObject(sql, new Object[] { paoID }, String.class);
             return name;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A PAObject with id " + paoID + "cannot be found.");
         }
     }
-    
+
     @Override
     public Map<Integer, String> getYukonPAONames(Iterable<Integer> ids) {
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+
         final Map<Integer, String> resultMap = new HashMap<Integer, String>();
-        
+
         template.query(new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT paobjectid, paoname");
                 sql.append("FROM yukonpaobject");
                 sql.append("WHERE paobjectid").in(subList);
-                
+
                 return sql;
             }
-        }, 
-        ids, 
-        new RowCallbackHandler() {
+        }, ids, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Integer key = rs.getInt("paobjectid");
@@ -347,35 +330,32 @@ public final class PaoDaoImpl implements PaoDao {
                 resultMap.put(key, value);
             }
         });
-        
+
         return resultMap;
     }
 
+    @Override
     public LiteYukonPAObject[] getAllLiteRoutes() {
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
-    	sql.append(  "null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null for routes
-    	sql.append("FROM  YukonPAObject y");
-    	sql.append("WHERE Category").eq(PaoCategory.ROUTE);
-    	sql.append("ORDER BY y.PAOName");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
+        sql.append(    "null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null for routes
+        sql.append("FROM  YukonPAObject y");
+        sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+        sql.append("ORDER BY y.PAOName");
 
-    	List<LiteYukonPAObject> routeList = yukonJdbcOperations.query(sql, new LitePaoRowMapper());
+        List<LiteYukonPAObject> routeList = jdbcOperations.query(sql, new LitePaoRowMapper());
 
-    	LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
-    	routeList.toArray(retVal);
-    	return retVal;
+        LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
+        routeList.toArray(retVal);
+        return retVal;
     }
-    
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getRoutesByType(int[])
-     */
+
+    @Override
     public LiteYukonPAObject[] getRoutesByType(int[] routeTypes) {
-        java.util.ArrayList routeList = new java.util.ArrayList(10);
+        ArrayList routeList = new ArrayList(10);
         synchronized (databaseCache) {
             List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
-            java.util.Collections.sort(routes,
-                                       com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
+            Collections.sort(routes, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 
             for (LiteYukonPAObject litePao : routes) {
                 for (int j = 0; j < routeTypes.length; j++)
@@ -392,13 +372,9 @@ public final class PaoDaoImpl implements PaoDao {
         return retVal;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see com.cannontech.core.dao.PaoDao#getAllUnusedCCPAOs(java.lang.Integer)
-     */
+    @Override
     public LiteYukonPAObject[] getAllUnusedCCPAOs(Integer ignoreID) {
         synchronized (databaseCache) {
-
             List lPaos = databaseCache.getAllUnusedCCDevices();
 
             LiteYukonPAObject retVal[] = (LiteYukonPAObject[]) lPaos.toArray(new LiteYukonPAObject[lPaos.size()]);
@@ -407,8 +383,8 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
-    public int countLiteYukonPaoByName(String name, boolean partialMatch)
-            throws NotFoundException {
+    @Override
+    public int countLiteYukonPaoByName(String name, boolean partialMatch) throws NotFoundException {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         if (partialMatch) {
             sqlBuilder.append("SELECT COUNT(*) ");
@@ -421,14 +397,13 @@ public final class PaoDaoImpl implements PaoDao {
         }
 
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        return (Integer) jdbcOps.queryForObject(sqlBuilder.getSql(), Integer.class);
+        return jdbcOps.queryForObject(sqlBuilder.getSql(), Integer.class);
     }
 
-    public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
-            boolean partialMatch) {
-
+    @Override
+    public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder(litePaoSql);
-        
+
         if (partialMatch) {
             sqlBuilder.append("WHERE UPPER(y.PAOName) LIKE UPPER(?) ");
         } else {
@@ -440,107 +415,101 @@ public final class PaoDaoImpl implements PaoDao {
             name += "%";
         }
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sqlBuilder.getSql(),
-                                                     new Object[] { name },
-                                                     litePaoRowMapper);
+        List<LiteYukonPAObject> paos = jdbcOps.query(sqlBuilder.getSql(), new Object[] { name }, litePaoRowMapper);
         return paos;
     }
 
+    @Override
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber) {
-
         String sql = litePaoSql;
         sql += " LEFT OUTER JOIN deviceMeterGroup dmg ON y.paobjectid = dmg.deviceid ";
         sql += " WHERE upper(meternumber) = ?";
 
-        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(),
-                                                     new Object[] { StringUtils.upperCase(meterNumber) },
-                                                     litePaoRowMapper);
+        List<LiteYukonPAObject> paos =
+            jdbcOps.query(sql.toString(), new Object[] { StringUtils.upperCase(meterNumber) }, litePaoRowMapper);
 
         return paos;
-
     }
-    
-    
+
     /**
      * Returns a list of LiteYukonPaobjects where DeviceCarrierSettings.address is address
-     * @param address
-     * @return ArrayList<LiteYukonPaobject>
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address)
-    {
-        List<LiteYukonPAObject> liteYukonPaobects = new ArrayList(); 
+    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address) {
+        List<LiteYukonPAObject> liteYukonPaobects = new ArrayList();
         try {
-            String sqlString = 
-                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, " +
-                " pao.Type, pao.PAOClass, pao.Description, pao.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " +
-                " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
-                " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
-                " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
-                " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
-                " where address = ? " +
-                " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
-            
-            liteYukonPaobects = jdbcOps.query(sqlString, new Object[] { new Integer(address)}, litePaoRowMapper);
+            String sqlString =
+                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, "
+                    + " pao.Type, pao.PAOClass, pao.Description, pao.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid "
+                    + " FROM " + YukonPAObject.TABLE_NAME + " pao " + " left outer join "
+                    + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " + " left outer join "
+                    + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " + " left outer join "
+                    + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " + " where address = ? "
+                    + " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
+
+            liteYukonPaobects = jdbcOps.query(sqlString, new Object[] { new Integer(address) }, litePaoRowMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No liteYukonPaobjects found with (carrier) address(" + address + ")");
         }
         return liteYukonPaobects;
     }
-    
-    public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress) {
 
+    @Override
+    public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress) {
         try {
-        	SqlStatementBuilder sql = new SqlStatementBuilder();
-        	sql.append("SELECT pao.PAObjectID, pao.Type");
-        	sql.append("FROM YukonPAObject pao");
-        	sql.append(  "JOIN DeviceCarrierSettings DCS ON pao.PAOBJECTID = DCS.DEVICEID");
-        	sql.append("WHERE address").gte(startAddress);
-        	sql.append(  "and address").lte(endAddress);
-        	sql.append(  "and pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
-        	sql.append("ORDER BY pao.Category, pao.PAOClass, pao.PAOName");
-            
-           List<PaoIdentifier> result = yukonJdbcOperations.query(sql, new YukonPaoRowMapper());
-           
-           return result;
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT pao.PAObjectID, pao.Type");
+            sql.append("FROM YukonPAObject pao");
+            sql.append("JOIN DeviceCarrierSettings DCS ON pao.PAOBJECTID = DCS.DEVICEID");
+            sql.append("WHERE address").gte(startAddress);
+            sql.append("and address").lte(endAddress);
+            sql.append("and pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
+            sql.append("ORDER BY pao.Category, pao.PAOClass, pao.PAOName");
+
+            List<PaoIdentifier> result = jdbcOperations.query(sql, new YukonPaoRowMapper());
+
+            return result;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No Paos found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
+            throw new NotFoundException("No Paos found in (carrier) address range(" + startAddress + " - " + endAddress
+                + ")");
         }
     }
-    
+
+    @Override
     public long getObjectCountByAddressRange(int startAddress, int endAddress) {
+        long count = 0;
 
-       long count = 0;
-       
-       try {
-           String sqlString = 
-               "SELECT COUNT(pao.PAObjectID) " +
-               " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
-               " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
-               " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
-               " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
-               " where address >= ? AND address <= ?" +
-               " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
-           
-               count = jdbcOps.queryForLong(sqlString, new Object[] { startAddress, endAddress });
+        try {
+            String sqlString =
+                "SELECT COUNT(pao.PAObjectID) "
+                        + " FROM " + YukonPAObject.TABLE_NAME + " pao "
+                        + " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid "
+                        + " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID "
+                        + " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid "
+                        + " where address >= ? AND address <= ?" + " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
 
-       } catch (IncorrectResultSizeDataAccessException e) {
-           throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
-       }
+            count = jdbcOps.queryForLong(sqlString, new Object[] { startAddress, endAddress });
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress
+                + " - " + endAddress + ")");
+        }
 
-       return count;
-   }
-    
+        return count;
+    }
+
     @Override
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader() {
         return new PaoLoader<DisplayablePao>() {
             @Override
             public Map<PaoIdentifier, DisplayablePao> getForPaos(Iterable<PaoIdentifier> identifiers) {
                 Map<PaoIdentifier, String> namesForYukonDevices = getNamesForPaos(identifiers);
-                Map<PaoIdentifier, DisplayablePao> result = Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
+                Map<PaoIdentifier, DisplayablePao> result =
+                    Maps.newHashMapWithExpectedSize(namesForYukonDevices.size());
 
                 for (Entry<PaoIdentifier, String> entry : namesForYukonDevices.entrySet()) {
-                    DisplayableDevice displayableMeter = new DisplayableDevice(entry.getKey().getPaoIdentifier(), entry.getValue());
+                    DisplayableDevice displayableMeter =
+                        new DisplayableDevice(entry.getKey().getPaoIdentifier(), entry.getValue());
                     result.put(entry.getKey(), displayableMeter);
                 }
 
@@ -550,59 +519,61 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     public Map<PaoIdentifier, String> getNamesForPaos(Iterable<PaoIdentifier> identifiers) {
-    	
-    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcOperations);
-		
-		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-		    public SqlFragmentSource generate(List<Integer> subList) {
-		    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcOperations);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT ypo.PAObjectID, ypo.PAOName FROM YukonPAObject ypo WHERE ypo.PAObjectID").in(subList);
                 return sql;
-		    }
-		};
-        
-        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
-			public Integer apply(PaoIdentifier from) {
-				return from.getPaoId();
-			}
-		};
-
-        ParameterizedRowMapper<Entry<Integer, String>> rowMapper = new ParameterizedRowMapper<Entry<Integer, String>>() {
-            public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return Maps.immutableEntry(rs.getInt("PAObjectID"), rs.getString("PAOName"));
             }
         };
+
+        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
+            @Override
+            public Integer apply(PaoIdentifier from) {
+                return from.getPaoId();
+            }
+        };
+
+        ParameterizedRowMapper<Entry<Integer, String>> rowMapper =
+            new ParameterizedRowMapper<Entry<Integer, String>>() {
+                @Override
+                public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return Maps.immutableEntry(rs.getInt("PAObjectID"), rs.getString("PAOName"));
+                }
+            };
 
         return template.mappedQuery(sqlGenerator, identifiers, rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
 
     @Override
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(Iterable<Integer> paoIds) {
-    	
-    	ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcOperations);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcOperations);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-            	
-            	SqlStatementBuilder sql = new SqlStatementBuilder();
-            	sql.append("SELECT ypo.PAObjectID, ypo.Type");
-            	sql.append("FROM YukonPAObject ypo");
-            	sql.append("WHERE ypo.PAObjectID IN (");
-            	sql.appendArgumentList(subList);
-            	sql.append(")");
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, ypo.Type");
+                sql.append("FROM YukonPAObject ypo");
+                sql.append("WHERE ypo.PAObjectID IN (");
+                sql.appendArgumentList(subList);
+                sql.append(")");
                 return sql;
             }
         };
-        
-    	return template.query(sqlGenerator, paoIds, new YukonPaoRowMapper());
+
+        return template.query(sqlGenerator, paoIds, new YukonPaoRowMapper());
     }
-    
+
+    @Override
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
         String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";
-        List<LiteYukonPAObject> paoList = this.jdbcOps.query(
-                                                             sql,
-                                                             new Object[]{paoClass, "%" + name.toUpperCase() + "%"},
-                                                             litePaoRowMapper);
+        List<LiteYukonPAObject> paoList =
+            jdbcOps.query(sql, new Object[] { paoClass, "%" + name.toUpperCase() + "%" }, litePaoRowMapper);
         return paoList;
     }
 
@@ -621,15 +592,15 @@ public final class PaoDaoImpl implements PaoDao {
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }
-    
+
     @Autowired
-    public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-        this.yukonJdbcOperations = yukonJdbcOperations;
+    public void setYukonJdbcOperations(YukonJdbcOperations jdbcOperations) {
+        this.jdbcOperations = jdbcOperations;
     }
-    
+
     @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public List getAllSubsForUser(LiteYukonUser user) {
@@ -646,30 +617,31 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses) {
-        ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT YP.PaobjectId, YP.Type, CS.Address");
                 sql.append("FROM YukonPaobject YP");
-                sql.append(  "JOIN DeviceCarrierSettings CS ON YP.PaobjectId = CS.DeviceId");
+                sql.append("JOIN DeviceCarrierSettings CS ON YP.PaobjectId = CS.DeviceId");
                 sql.append("WHERE CS.Address").in(subList);
                 return sql;
             }
         };
 
         Function<Integer, Integer> typeMapper = Functions.identity();
-        YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper = new YukonRowMapper<Entry<Integer,PaoIdentifier>>() {
-            @Override
-            public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                PaoIdentifier paoIdentifier =
-                    new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
-                Integer carrierAddress = rs.getInt("Address");
-                return Maps.immutableEntry(carrierAddress, paoIdentifier);
-            }
-        };
+        YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Entry<Integer, PaoIdentifier>>() {
+                @Override
+                public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                    PaoIdentifier paoIdentifier =
+                        new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
+                    Integer carrierAddress = rs.getInt("Address");
+                    return Maps.immutableEntry(carrierAddress, paoIdentifier);
+                }
+            };
 
         Map<Integer, PaoIdentifier> retVal =
             template.mappedQuery(sqlGenerator, carrierAddresses, rowMapper, typeMapper);
@@ -679,43 +651,43 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public Map<String, PaoIdentifier> findPaoIdentifiersByMeterNumber(Iterable<String> meterNumbers) {
-        ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
+            @Override
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT YP.PaobjectId, YP.Type, MG.MeterNumber");
                 sql.append("FROM YukonPaobject YP");
-                sql.append(  "LEFT JOIN DeviceMeterGroup MG ON YP.PaobjectId = MG.DeviceId");
+                sql.append("LEFT JOIN DeviceMeterGroup MG ON YP.PaobjectId = MG.DeviceId");
                 sql.append("WHERE MG.MeterNumber").in(subList);
                 return sql;
             }
         };
 
         Function<String, String> typeMapper = Functions.identity();
-        YukonRowMapper<Map.Entry<String, PaoIdentifier>> rowMapper = new YukonRowMapper<Entry<String,PaoIdentifier>>() {
-            @Override
-            public Entry<String, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                PaoIdentifier paoIdentifier =
-                    new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
-                String meterNumber = rs.getString("MeterNumber");
-                return Maps.immutableEntry(meterNumber, paoIdentifier);
-            }
-        };
+        YukonRowMapper<Map.Entry<String, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Entry<String, PaoIdentifier>>() {
+                @Override
+                public Entry<String, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                    PaoIdentifier paoIdentifier =
+                        new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
+                    String meterNumber = rs.getString("MeterNumber");
+                    return Maps.immutableEntry(meterNumber, paoIdentifier);
+                }
+            };
 
-        Map<String, PaoIdentifier> retVal =
-            template.mappedQuery(sqlGenerator, meterNumbers, rowMapper, typeMapper);
+        Map<String, PaoIdentifier> retVal = template.mappedQuery(sqlGenerator, meterNumbers, rowMapper, typeMapper);
 
         return retVal;
     }
 
     @Override
     public Map<String, PaoIdentifier> findPaoIdentifiersByName(Iterable<String> names) {
-        ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<String> sqlGenerator = new SqlFragmentGenerator<String>() {
+            @Override
             public SqlFragmentSource generate(List<String> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT PaobjectId, Type, PaoName");
@@ -726,63 +698,61 @@ public final class PaoDaoImpl implements PaoDao {
         };
 
         Function<String, String> typeMapper = Functions.identity();
-        YukonRowMapper<Map.Entry<String, PaoIdentifier>> rowMapper = new YukonRowMapper<Entry<String,PaoIdentifier>>() {
-            @Override
-            public Entry<String, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                PaoIdentifier paoIdentifier =
-                    new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
-                String paoName = rs.getString("PaoName");
-                return Maps.immutableEntry(paoName, paoIdentifier);
-            }
-        };
+        YukonRowMapper<Map.Entry<String, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Entry<String, PaoIdentifier>>() {
+                @Override
+                public Entry<String, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                    PaoIdentifier paoIdentifier =
+                        new PaoIdentifier(rs.getInt("PaobjectId"), rs.getEnum("Type", PaoType.class));
+                    String paoName = rs.getString("PaoName");
+                    return Maps.immutableEntry(paoName, paoIdentifier);
+                }
+            };
 
-        Map<String, PaoIdentifier> retVal =
-            template.mappedQuery(sqlGenerator, names, rowMapper, typeMapper);
+        Map<String, PaoIdentifier> retVal = template.mappedQuery(sqlGenerator, names, rowMapper, typeMapper);
 
         return retVal;
     }
 
     @Override
     public Integer getRouteIdForRouteName(String routeName) {
-        
-    	Integer result = null;
-		try {
-			SqlStatementBuilder sql = new SqlStatementBuilder();
-			sql.append("SELECT y.PAObjectID");
-			sql.append("FROM  YukonPAObject y");
-			sql.append("WHERE Category").eq(PaoCategory.ROUTE);
-			sql.append(  "and upper(y.PAOName)").eq(routeName.toUpperCase());
+        Integer result = null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT y.PAObjectID");
+            sql.append("FROM  YukonPAObject y");
+            sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+            sql.append("and upper(y.PAOName)").eq(routeName.toUpperCase());
 
-			result = yukonJdbcOperations.queryForInt(sql);
-		} catch (EmptyResultDataAccessException e) {
-			// return default
-		}
+            result = jdbcOperations.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            // return default
+        }
 
-    	return result;
+        return result;
     }
-    
+
     @Override
-    public int getDisabledDeviceCount(DeviceGroup group){
-        
+    public int getDisabledDeviceCount(DeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select count(PAObjectID) from YukonPAObject ypo");
         sql.append("where ypo.DisableFlag").eq_k(YNBoolean.YES);
         SqlFragmentSource groupSqlWhereClause =
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "YPO.paObjectId");
         sql.append("AND").appendFragment(groupSqlWhereClause);
-        return yukonJdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForInt(sql);
     }
 
-  @Override
-  public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags) {
-      Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag, paoTags);
+    @Override
+    public List<PaoIdentifier> getAllPaoIdentifiersForTags(PaoTag paoTag, PaoTag... paoTags) {
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(paoTag, paoTags);
 
-      SqlStatementBuilder sql = new SqlStatementBuilder();
-      sql.append("SELECT paObjectId, type FROM yukonPAObject");
-      sql.append("WHERE type").in(paoTypes);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT paObjectId, type FROM yukonPAObject");
+        sql.append("WHERE type").in(paoTypes);
 
-      List<PaoIdentifier> paoIdentifiers =  yukonJdbcTemplate.query(sql, paoIdentifierRowMapper);
+        List<PaoIdentifier> paoIdentifiers = jdbcTemplate.query(sql, paoIdentifierRowMapper);
 
-      return paoIdentifiers;
-  }
+        return paoIdentifiers;
+    }
 }
