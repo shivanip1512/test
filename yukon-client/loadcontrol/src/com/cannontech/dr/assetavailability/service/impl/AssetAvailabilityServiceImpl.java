@@ -260,9 +260,8 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             SimpleAssetAvailability availability = entry.getValue();
             if (availability.getStatus() == AssetAvailabilityStatus.UNAVAILABLE) {
                 Integer inventoryId = entry.getKey();
-                YukonPao unavailablePao = inventoryPaoMap.get(inventoryId);
-                SimpleDevice simpleDevice = new SimpleDevice(unavailablePao);
-                unavailablePaos.add(simpleDevice);
+                SimpleDevice unavailableDevice = inventoryPaoMap.get(inventoryId);
+                unavailablePaos.add(unavailableDevice);
             }
         }
         return unavailablePaos;
