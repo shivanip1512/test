@@ -107,7 +107,7 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
     return true; // No error occured!
 }
 
-bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &conn)
+bool CtiTableDynamicPointAlarming::Update( Cti::Database::DatabaseConnection &conn )
 {
     if(getAction().empty())
     {
@@ -173,7 +173,7 @@ bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &con
         << getPointID()
         << getAlarmCondition();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::LogDebug( isDebugLudicrous() )))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected( isDebugLudicrous() )))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!
     }
