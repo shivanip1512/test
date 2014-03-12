@@ -173,7 +173,7 @@ bool CtiTableDynamicPointAlarming::Update( Cti::Database::DatabaseConnection &co
         << getPointID()
         << getAlarmCondition();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected( isDebugLudicrous() )))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ , Cti::Database::LogDebug( isDebugLudicrous() ), Cti::Database::LogNoRowsAffected::Disable ))
     {
         return Insert(conn); // Try a vanilla insert if the update failed!
     }
