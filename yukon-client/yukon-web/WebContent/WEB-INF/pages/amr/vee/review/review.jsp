@@ -15,7 +15,8 @@
             <span class="empty-list"><i:inline key=".emptyList" /></span>
         </c:when>
         <c:otherwise>
-            <form id="review-form" action="/amr/veeReview/save" method="post">
+            <cti:url var="saveUrl" value="/amr/veeReview/save"/>
+            <form id="review-form" action="${saveUrl}" method="post">
                 <input type="hidden" id="checkAllState" value="">
                  <c:if test="${!noPoints}">
                     <div class="column-12-12 stacked clearfix">
