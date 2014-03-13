@@ -23,16 +23,10 @@ public interface ContactDao {
 
     /**
      * @param phoneNo
-     * @param phoneNotifCatIDs Array of notification category IDs, currently the options are:
-     * YukonListEntryTypes.YUK_ENTRY_ID_PHONE, YUK_ENTRY_ID_HOME_PHONE, YUK_ENTRY_ID_WORK_PHONE,
      * @param partialMatch If true, phoneNo is to be matched partially from the last digit
      * @return Array of LiteContact for phoneNo
      */
-    public LiteContact[] getContactsByPhoneNo(String phoneNo,
-            int[] phoneNotifCatIDs, boolean partialMatch);
-
-    public LiteContact[] getContactsByPhoneNo(String phoneNo,
-            int[] phoneNotifCatIDs);
+    public LiteContact[] getContactsByPhoneNo(String phoneNo, boolean partialMatch);
 
     /**
      * Returns the LiteContact for email_.

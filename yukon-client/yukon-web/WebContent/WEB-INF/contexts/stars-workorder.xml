@@ -5,6 +5,7 @@
 
     <bean id="starsWorkOrderActionController" class="com.cannontech.web.stars.action.StarsWorkorderActionController" abstract="true">
         <property name="roleDao" ref="roleDao"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
         <property name="authDao" ref="authDao"/>
         <property name="contactDao" ref="contactDao"/>
         <property name="contactNotificationDao" ref="contactNotificationDao"/>

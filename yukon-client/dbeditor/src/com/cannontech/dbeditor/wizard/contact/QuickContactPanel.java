@@ -4,13 +4,12 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.customer.Contact;
 
 public class QuickContactPanel extends DataInputPanel
 {
-//	private ContactNotificationTableModel tableModel = null;
 	private javax.swing.JLabel ivjJLabelAddress = null;
 	private javax.swing.JTextField ivjJTextFieldAddress = null;
 	private javax.swing.JLabel ivjJLabelFirstName = null;
@@ -221,6 +220,7 @@ private javax.swing.JTextField getJTextFieldLastName() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
+@Override
 public Object getValue(Object val)
 {
 	Contact cnt = new Contact();
@@ -239,7 +239,7 @@ public Object getValue(Object val)
     		
     	cntCn.setNotification( getJTextFieldAddress().getText() );
     	cntCn.setNotificationCatID( 
-    			new Integer(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+    			new Integer(ContactNotificationType.EMAIL.getDefinitionId()) );
     
     	cnt.getContactNotifVect().add( cntCn );
     }
@@ -330,6 +330,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	

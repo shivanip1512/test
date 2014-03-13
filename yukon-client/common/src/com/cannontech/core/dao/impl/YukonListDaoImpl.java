@@ -14,21 +14,18 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.constants.YukonSelectionListOrder;
-import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.util.Validator;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 
@@ -75,7 +72,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     // Base Queries
     private SqlStatementBuilder selectYukonListEntriesSql = new SqlStatementBuilder();
@@ -264,23 +260,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         return yukonJdbcTemplate.queryForObject(sql, new YukonSelectionListRowMapper());
     }
     
-    // Contact YukonListEntry Helper Methods
-    @Override
-    public boolean isListEntryValid(int definitionId, String entry) {
-        boolean isValidEntry = true;
-        if (definitionId > 0) {
-            if (isFax(definitionId)) {
-                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
-            } else if (isPhoneNumber(definitionId)) {
-                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
-            } else if (YukonListEntryTypes.YUK_DEF_ID_EMAIL == definitionId) {
-                isValidEntry = Validator.isEmailAddress(entry);
-            } else if (YukonListEntryTypes.YUK_DEF_ID_PIN == definitionId) {
-                isValidEntry = Validator.isNumber(entry);
-            }
-        }
-        return isValidEntry;
-    }
 	
 	@Override
     public boolean areSameInYukon(int entryID1, int entryID2) {
@@ -288,37 +267,6 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 		YukonListEntry entry2 = getYukonListEntry( entryID2 );
 		return (entry1 != null && entry2 != null && entry1.getYukonDefID() == entry2.getYukonDefID());
 	}
-
-	@Override
-    public boolean isPhoneNumber(int listEntryID) {
-		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPhoneType();
-	}
-
-    @Override
-    public boolean isEmail(int listEntryID) {
-    	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isEmailType();
-    }
-
-    @Override
-    public boolean isShortEmail(int listEntryID){
-    	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isShortEmailType();
-    }
-
-	@Override
-    public boolean isPIN(int listEntryID){
-		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPinType();
-	}
-	
-	@Override
-    public boolean isFax(int listEntryID){
-		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isFaxType();
-	}
-	
-	@Override
-    public boolean isPager(int listEntryID) {
-		return false;
-			 //listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PAGER;
-	}	
 
     @Override
     public YukonListEntry getYukonListEntry(final YukonSelectionList list, final String entryText) {

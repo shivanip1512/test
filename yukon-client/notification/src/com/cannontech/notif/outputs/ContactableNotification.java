@@ -17,6 +17,7 @@ public class ContactableNotification extends ContactableBase {
         _liteNotif = liteNotif;
     }
     
+    @Override
     public LiteCICustomer getContactableCustomer() throws UnknownCustomerException {
         if (_customer != null) {
             return _customer;
@@ -28,9 +29,10 @@ public class ContactableNotification extends ContactableBase {
         return _customer;
     }
     
+    @Override
     public List<LiteContactNotification> getNotifications(NotificationTypeChecker checker) {
         List<LiteContactNotification> result;
-        if (checker.validNotifcationType(_liteNotif.getNotificationCategoryID())) {
+        if (checker.validNotifcationType(_liteNotif.getContactNotificationType())) {
             result = new ArrayList<LiteContactNotification>(1);
             result.add(_liteNotif);
         } else {
@@ -39,6 +41,7 @@ public class ContactableNotification extends ContactableBase {
         return result;
     }
     
+    @Override
     public String toString() {
         return _liteNotif.toString() + "[contactNotificationId=" + _liteNotif.getContactNotifID() + "]";
     }

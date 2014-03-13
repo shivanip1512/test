@@ -10,12 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 
 public enum YukonDefinition implements DisplayableEnum, DatabaseRepresentationSource {
-    EMAIL(YUK_DEF_ID_EMAIL, null),
-    PHONE(YUK_DEF_ID_PHONE, null),
-    PIN(YUK_DEF_ID_PIN, null),
-    PAGE(YUK_DEF_ID_PAGE, null),
-    FAX(YUK_DEF_ID_FAX, null),
-
     CUST_EVENT_LMPROGRAM(YUK_DEF_ID_CUST_EVENT_LMPROGRAM, LM_CUSTOMER_EVENT),
     CUST_EVENT_LMHARDWARE(YUK_DEF_ID_CUST_EVENT_LMHARDWARE, LM_CUSTOMER_EVENT),
     CUST_EVENT_LMTHERMOSTAT_MANUAL(YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL, LM_CUSTOMER_EVENT),

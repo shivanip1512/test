@@ -13,39 +13,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public interface YukonListDao {
 
-    public boolean isListEntryValid(int definitionId, String entryText);
-
     public boolean areSameInYukon(int entryID1, int entryID2);
-
-    /**
-     * Checks for a valid phone number entry
-     */
-    public boolean isPhoneNumber(int listEntryID);
-
-    /**
-     * Checks for an email entry
-     */
-    public boolean isEmail(int listEntryID);
-
-    /**
-     * Checks for an short email (SMS) entry
-     */
-    public boolean isShortEmail(int listEntryID);
-
-    /**
-     * Checks for a PIN entry
-     */
-    public boolean isPIN(int listEntryID);
-
-    /**
-     * Checks for a fax entry
-     */
-    public boolean isFax(int listEntryID);
-
-    /**
-     * Checks for a pager entry
-     */
-    public boolean isPager(int listEntryID);
 
     public YukonListEntry getYukonListEntry(YukonSelectionList list, String entryText);
     

@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import com.cannontech.common.model.ContactNotificationType;
+
 public interface NotificationTypeChecker {
-    public boolean validNotifcationType(int notificationCategoryId);
+    public boolean validNotifcationType(ContactNotificationType notificationType);
 }

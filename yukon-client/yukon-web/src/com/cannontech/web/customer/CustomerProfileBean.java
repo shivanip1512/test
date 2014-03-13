@@ -7,7 +7,7 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.RandomStringUtils;
 
-import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.contact.ContactNotification;
-import com.cannontech.web.util.JSFUtil;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class CustomerProfileBean {
     private LiteYukonUser yukonUser;
@@ -33,8 +33,7 @@ public class CustomerProfileBean {
     private DBPersistentDao dbPersistentDao;
     private boolean needsInitialization = true;
     
-    final private SelectItem[] notificationSelections = 
-        JSFUtil.convertSelectionListById(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
+    private SelectItem[] notificationSelections;  
 
     public LiteYukonUser getYukonUser() {
         return yukonUser;
@@ -69,6 +68,14 @@ public class CustomerProfileBean {
         dbPersistentDao.performDBChange(primaryContact, Transaction.RETRIEVE);
         
         newContact = new Contact();
+        
+        notificationSelections = new SelectItem[ContactNotificationType.values().length];
+        for (ContactNotificationType notificationType : ContactNotificationType.values()) {
+            
+            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(notificationType.getFormatKey());
+            SelectItem item = new SelectItem(notificationType.getDefinitionId(), message.toString());
+            
+        }
     }
     
     public String save() {

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.RowMapper;
@@ -26,7 +26,7 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
         sql.append("   JOIN ContactNotifGroupMap GM ON NG.NotificationGroupID = GM.NotificationGroupID");
         sql.append("   JOIN ContactNotification CN ON GM.ContactID = CN.ContactID");
         sql.append("WHERE NG.NotificationGroupID").eq(notificationGroup.getNotificationGroupID());
-        sql.append("   AND CN.NotificationCategoryID").eq_k(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        sql.append("   AND CN.NotificationCategoryID").eq_k(ContactNotificationType.EMAIL);
         
         return jdbcTemplate.query(sql, RowMapper.STRING);
     }

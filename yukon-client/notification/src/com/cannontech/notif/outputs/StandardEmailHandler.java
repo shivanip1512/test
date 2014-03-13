@@ -1,9 +1,8 @@
 package com.cannontech.notif.outputs;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Handles all outgoing email messages for the NotificationServer.
@@ -12,11 +11,13 @@ public class StandardEmailHandler extends GenericEmailHandler {
 
     //TEM consider using NotifTypeCheckerFactory here...
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
-        public boolean validNotifcationType(int notificationCategoryId) {
-            return YukonSpringHook.getBean(YukonListDao.class).isEmail(notificationCategoryId);
+        @Override
+        public boolean validNotifcationType(ContactNotificationType notificationType) {
+            return notificationType.isEmailType();
         };
     };
 
+    @Override
     public NotificationTypeChecker getTypeChecker() {
         return checker;
     }

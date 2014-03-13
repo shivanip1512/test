@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -122,6 +122,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getAllContacts(int)
      */
+    @Override
     public List<LiteContact> getAllContacts(LiteCustomer customer) {
         Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
         if (customer != null) {
@@ -144,6 +145,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getPrimaryContact(int)
      */
+    @Override
     public LiteContact getPrimaryContact(int customerID_) {
         LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
         if (customer != null) {
@@ -228,6 +230,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         return false;
     }
 
+    @Override
     public LiteCustomer getLiteCustomer(int customerId) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT c.*, ectam.EnergyCompanyId, ci.*");
@@ -245,6 +248,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         return customer;
     }
 
+    @Override
     public CustomerInformation getCustomerInformation(int customerId) {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         // customerId customerTypeId primaryContactId companyName
@@ -252,7 +256,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         sql.append("SELECT c.CustomerId, ci.CompanyName, con.ContFirstName, con.ContLastName, cn.Notification");
         sql.append("FROM Customer c");
         sql.append("  JOIN Contact con on c.primaryContactId = con.ContactId");
-        sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId").eq_k(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+        sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId").eq_k(ContactNotificationType.HOME_PHONE);
         sql.append("  LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
         sql.append("WHERE c.CustomerId").eq(customerId);
         sql.append("ORDER BY cn.Ordering");
@@ -298,6 +302,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getLiteCICustomer(int)
      */
+    @Override
     public LiteCICustomer getLiteCICustomer(int customerID) {
         // Get the customer from AllCustomersMap (make use of the map), retun
         // null if NOT instance LiteCICustomer
@@ -313,6 +318,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getCustomerForUser(com.cannontech.database.data.lite.LiteYukonUser)
      */
+    @Override
     public LiteCICustomer getCICustomerForUser(LiteYukonUser user) {
         LiteContact liteContact = yukonUserDao.getLiteContact(user.getUserID());
         if (liteContact == null) {
@@ -336,6 +342,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         return customer;
     }
     
+    @Override
     public void callbackWithAllCiCustomers(final SimpleCallback<LiteCICustomer> callback) {
 
         final SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -348,6 +355,7 @@ public final class CustomerDaoImpl implements CustomerDao {
 
         final CiCustomerRowMapper customerRowMapper = new CiCustomerRowMapper();
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 LiteCICustomer lc = customerRowMapper.mapRow(rs);
                 try {
@@ -381,10 +389,12 @@ public final class CustomerDaoImpl implements CustomerDao {
     }
     
     private static class CustomerRowMapper extends SeparableRowMapper<LiteCustomer> {
+        @Override
         protected LiteCustomer createObject(YukonResultSet rs) throws SQLException {
             return new LiteCustomer(rs.getInt("CustomerId"));
         }
         
+        @Override
         public void mapRow(YukonResultSet rs, LiteCustomer customer) throws SQLException {
             customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
             customer.setCustomerTypeID(rs.getInt("CustomerTypeId"));
@@ -406,10 +416,12 @@ public final class CustomerDaoImpl implements CustomerDao {
             super(new CustomerRowMapper());
         }
         
+        @Override
         protected LiteCICustomer createObject(YukonResultSet rs) throws SQLException {
             return new LiteCICustomer(rs.getInt("CustomerId"));
         }
         
+        @Override
         public void mapRow(YukonResultSet rs, LiteCICustomer customer) throws SQLException {
 
             final LiteCICustomer ciCustomer = customer;

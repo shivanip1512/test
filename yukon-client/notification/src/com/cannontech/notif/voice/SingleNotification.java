@@ -8,12 +8,11 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.concurrent.PropertyChangeMulticaster;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.NotificationTypeChecker;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.notif.outputs.Contactable;
 import com.cannontech.notif.outputs.Notification;
-import com.cannontech.spring.YukonSpringHook;
 
 
 /**
@@ -30,8 +29,9 @@ public class SingleNotification {
     public static final String NOTIFICATION_STATE = "notifstate";
     
     static public final NotificationTypeChecker checker = new NotificationTypeChecker() {
-        public boolean validNotifcationType(int notificationCategoryId) {
-            return YukonSpringHook.getBean(YukonListDao.class).isPhoneNumber(notificationCategoryId);
+        @Override
+        public boolean validNotifcationType(ContactNotificationType notificationType) {
+            return notificationType.isPhoneType();
         };
     };
         
@@ -68,6 +68,7 @@ public class SingleNotification {
 		
 		final Call call = nextCall;
 		nextCall.addCompletionCallback(new Runnable() {
+            @Override
             public void run() {
                 if (call.isSuccess()) {
                     _notificationLogger.logIndividualNotification(contactNotif, true);
@@ -124,6 +125,7 @@ public class SingleNotification {
         return _message;
     }
     
+    @Override
     public String toString() {
         return _token + " (" + _contactable + ")";
     }

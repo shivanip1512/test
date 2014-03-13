@@ -19,8 +19,6 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
@@ -29,7 +27,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -52,7 +49,6 @@ import com.cannontech.yukon.IDatabaseCache;
 public class NotificationPanel extends com.cannontech.common.gui.util.DataInputPanel implements ActionListener {
 	private javax.swing.JTree ivjJTreeNotifis = null;
 	private javax.swing.JScrollPane ivjJScrollJTree = null;
-	private NotifcationAddressTableModel notifTableModel = null;
 	private CheckNodeSelectionListener nodeListener = null;
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JCheckBox ivjJCheckBoxPhoneCall = null;
@@ -71,6 +67,7 @@ public NotificationPanel() {
 	initialize();
 }
 
+@Override
 public void actionPerformed(ActionEvent e)
 {
 	if( e.getSource() == getJCheckBoxPhoneCall() ) {
@@ -111,36 +108,6 @@ private void doCheckBoxAction( JCheckBox checkBox )
 	}
 
 }
-
-/**
- * Returns all the LiteContactNotifcations for the given list of LiteContact objects
- *
- */
-//private void addContactNotifs( List contacts )
-//{
-//	if( contacts == null ) return;
-//
-//	boolean hasPhone = false;
-//	for( int i = 0; i < contacts.size(); i++)
-//	{
-//		LiteContact lc = (LiteContact)contacts.get(i);
-//		for( int j = 0; j < lc.getLiteContactNotifications().size(); j++ )
-//		{
-//			LiteContactNotification lcn = (LiteContactNotification)lc.getLiteContactNotifications().get(j);			
-//			if( DaoFactory.getYukonListDao().isPhoneNumber(lcn.getNotificationCategoryID())
-//				|| DaoFactory.getYukonListDao().isEmail(lcn.getNotificationCategoryID()) )
-//			{
-//				getJTableNotifTableModel().addRow( lcn );
-//	
-//				hasPhone |= DaoFactory.getYukonListDao().isPhoneNumber( lcn.getNotificationCategoryID() );
-//			}
-//		}
-//		
-//	}
-//
-//	//if there is a phone number in this list of contacts, make the check box enabled
-//	getJCheckBoxPhoneCall().setEnabled( hasPhone );
-//}
 
 /**
  * Return the JCheckBoxPhoneCall property value.
@@ -216,16 +183,6 @@ private javax.swing.JScrollPane getJScrollJTree() {
 	}
 	return ivjJScrollJTree;
 }
-
-
-private NotifcationAddressTableModel getJTableNotifTableModel()
-{
-	if( notifTableModel == null )
-		notifTableModel = new NotifcationAddressTableModel();
-		
-	return notifTableModel;
-}
-
 
 /**
  * This method was created in VisualAge.
@@ -329,11 +286,10 @@ private void addContactNotifsToTree( LiteContact contact, LiteBaseNode parent )
 	List<LiteContactNotification> notificationsForContact = YukonSpringHook.getBean(ContactNotificationDao.class).getNotificationsForContact(contact);
 
 	for (LiteContactNotification lcn : notificationsForContact) {
-		YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
-        if ( lcn.getNotificationCategoryID() != 0 && 
-                (yukonListDao.isPhoneNumber(lcn.getNotificationCategoryID())
-                        || yukonListDao.isEmail(lcn.getNotificationCategoryID()) 
-                        || yukonListDao.isShortEmail(lcn.getNotificationCategoryID())) ) {
+        if ( lcn.getNotificationCategoryID() != 0 &&
+                (lcn.getContactNotificationType().isPhoneType() ||
+                        lcn.getContactNotificationType().isEmailType() ||
+                        lcn.getContactNotificationType().isShortEmailType())) {
             
 			LiteBaseNode notifNode = new LiteBaseNode( lcn );
 			notifNode.setUserValue( NotifMap.DEF_ATTRIBS );
@@ -349,7 +305,8 @@ private CheckNodeSelectionListener getNodeListener()
 	if( nodeListener == null )
 		nodeListener = new CheckNodeSelectionListener( getJTreeNotifs() )
 		{
-			public void mouseClicked(MouseEvent e) {
+			@Override
+            public void mouseClicked(MouseEvent e) {
 				super.mouseClicked( e );
 				int row = getJTreeNotifs().getRowForLocation(e.getX(), e.getY());
 				
@@ -365,6 +322,7 @@ private CheckNodeSelectionListener getNodeListener()
 /**
  * getValue method comment.
  */
+@Override
 @SuppressWarnings("unchecked")
 public Object getValue(Object obj) 
 {
@@ -478,6 +436,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	return true;
@@ -486,6 +445,7 @@ public boolean isInputValid()
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if( o == null )
@@ -498,8 +458,8 @@ public void setValue(Object o)
 	for( int i = 0; i < notifGrp.getNotifDestinationMap().length; i++ )
 	{
 		LiteContactNotification lContNotif =
-			(LiteContactNotification)YukonSpringHook.getBean(ContactNotificationDao.class).getContactNotification(
-				notifGrp.getNotifDestinationMap()[i].getRecipientID());
+			YukonSpringHook.getBean(ContactNotificationDao.class).getContactNotification(
+        	notifGrp.getNotifDestinationMap()[i].getRecipientID());
 
 		//set the selected node
 		DefaultMutableTreeNode tnode = getJTreeModel().findNode( 
@@ -606,9 +566,6 @@ private void setSelectionCount()
  */
 public void nodeSelectionChanged( boolean checkBoxCliked )
 {
-	//remove all rows from the table
-	getJTableNotifTableModel().clear();
-
     int selRow = getJTreeNotifs().getMaxSelectionRow();
     if(selRow != -1)
     {
@@ -638,15 +595,9 @@ public void nodeSelectionChanged( boolean checkBoxCliked )
 			if( checkBoxCliked ) {
 				if( lb instanceof LiteContactNotification )
 				{
-					//only allow phone number definitions to be changed
-					YukonListEntry entry =
-						YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( ((LiteContactNotification)lb).getNotificationCategoryID() );
-			
-					getJCheckBoxPhoneCall().setEnabled(
-						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_PHONE );
-	
-					getJCheckBoxEmails().setEnabled(
-						entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_EMAIL );
+				    LiteContactNotification liteContactNotification = (LiteContactNotification)lb;
+					getJCheckBoxPhoneCall().setEnabled(liteContactNotification.getContactNotificationType().isPhoneType());
+					getJCheckBoxEmails().setEnabled(liteContactNotification.getContactNotificationType().isEmailType());
 				}
 				else if( lb instanceof LiteContact )
 				{	

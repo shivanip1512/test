@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
@@ -157,7 +156,7 @@ public class GeneralController extends AbstractConsumerController {
         		new LiteContactNotification(
         				-1, 
         				primaryContact.getContactID(), 
-        				YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, 
+        				ContactNotificationType.EMAIL.getDefinitionId(), 
         				disabled, 
         				oddsForControlEmail);
             

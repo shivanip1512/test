@@ -8,10 +8,8 @@ package com.cannontech.dbeditor.wizard.contact;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.db.contact.ContactNotification;
-import com.cannontech.spring.YukonSpringHook;
 
 public class ContactNotificationTableModel extends javax.swing.table.AbstractTableModel 
 {
@@ -70,6 +68,7 @@ public void addRowValue(ContactNotification cntNotif)
 /**
  * getColumnCount method comment.
  */
+@Override
 public int getColumnCount() {
 	return COLUMN_NAMES.length;
 }
@@ -78,6 +77,7 @@ public int getColumnCount() {
  * @return java.lang.String
  * @param index int
  */
+@Override
 public String getColumnName(int index) {
 	return COLUMN_NAMES[index];
 }
@@ -99,6 +99,7 @@ public ContactNotification getContactNotificationRow(int row)
 /**
  * getRowCount method comment.
  */
+@Override
 public int getRowCount() {
 	return getRows().size();
 }
@@ -117,6 +118,7 @@ private java.util.Vector getRows()
 /**
  * getValueAt method comment.
  */
+@Override
 public Object getValueAt(int row, int col) 
 {
 
@@ -130,8 +132,7 @@ public Object getValueAt(int row, int col)
 				return cntNotif.getNotification();
 
 		 	case COLUMN_TYPE:
-				return YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(
-						cntNotif.getNotificationCatID().intValue());
+				return ContactNotificationType.getTypeForNotificationCategoryId(cntNotif.getNotificationCatID());
 
 		 	case COLUMN_DISABLED:
 				return cntNotif.getDisableFlag();
@@ -150,6 +151,7 @@ public Object getValueAt(int row, int col)
  * @param row int
  * @param column int
  */
+@Override
 public boolean isCellEditable(int row, int column) 
 {
 	return true;
@@ -202,6 +204,7 @@ public void setRowValue(int rowNumber, ContactNotification cntNotif)
 	}
 }
 
+@Override
 public void setValueAt(Object value, int row, int col) 
 {
 	if( row < getRows().size() && col < getColumnCount() )
@@ -215,10 +218,7 @@ public void setValueAt(Object value, int row, int col)
 				break;
 				
 			case COLUMN_TYPE:
-				cntNotif.setNotificationCatID(
-					new Integer(((YukonListEntry)value).getEntryID()) );
-//					DaoFactory.getYukonListDao().getYukonListEntry(
-//						cntNotif.getNotificationCatID().intValue()).getEntryText();
+				cntNotif.setNotificationCatID(((ContactNotificationType)value).getDefinitionId());
 				break;
 					
 			case COLUMN_DISABLED:

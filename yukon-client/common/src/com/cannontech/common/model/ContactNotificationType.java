@@ -1,29 +1,45 @@
 package com.cannontech.common.model;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 
 public enum ContactNotificationType implements DisplayableEnum, DatabaseRepresentationSource {
-	
-	CALL_BACK_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, ContactNotificationMethodType.PHONE), 
-    CELL_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE, ContactNotificationMethodType.PHONE), 
-    EMAIL(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL, ContactNotificationMethodType.EMAIL),
-    EMAIL_TO_CELL(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_CELL, ContactNotificationMethodType.SHORT_EMAIL),
-    EMAIL_TO_PAGER(YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_PAGER, ContactNotificationMethodType.SHORT_EMAIL),
-    FAX(YukonListEntryTypes.YUK_ENTRY_ID_FAX, ContactNotificationMethodType.FAX),
-    HOME_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, ContactNotificationMethodType.PHONE),
-    IVR_LOGIN(YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN, ContactNotificationMethodType.PIN),
-    PHONE(YukonListEntryTypes.YUK_ENTRY_ID_PHONE, ContactNotificationMethodType.PHONE),
-	VOICE_PIN(YukonListEntryTypes.YUK_ENTRY_ID_PIN, ContactNotificationMethodType.PIN),
-	WORK_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, ContactNotificationMethodType.PHONE);
+
+    CALL_BACK_PHONE(10, ContactNotificationMethodType.PHONE), 
+    CELL_PHONE(8, ContactNotificationMethodType.PHONE), 
+    EMAIL(1, ContactNotificationMethodType.EMAIL),
+    EMAIL_TO_CELL(9, ContactNotificationMethodType.SHORT_EMAIL),
+    EMAIL_TO_PAGER(3, ContactNotificationMethodType.SHORT_EMAIL),
+    FAX(4, ContactNotificationMethodType.FAX),
+    HOME_PHONE(5, ContactNotificationMethodType.PHONE),
+    IVR_LOGIN(11, ContactNotificationMethodType.PIN),
+    PHONE(2, ContactNotificationMethodType.PHONE),
+	VOICE_PIN(7, ContactNotificationMethodType.PIN),
+	WORK_PHONE(6, ContactNotificationMethodType.PHONE);
 
     private int definitionId;
     private ContactNotificationMethodType contactNotificationMethodType;
 
+    private final static ImmutableMultimap<ContactNotificationMethodType, ContactNotificationType> lookup;
+    
+    static {
+        Builder<ContactNotificationMethodType, ContactNotificationType> builder = ImmutableMultimap.builder();
+        for (ContactNotificationType notificationType : ContactNotificationType.values()) {
+            builder.put(notificationType.getContactNotificationMethodType(), notificationType);
+        }
+        lookup = builder.build();
+    }
+    
     private ContactNotificationType(int definitionId, ContactNotificationMethodType contactNotificationMethodType) {
         this.definitionId = definitionId;
         this.contactNotificationMethodType = contactNotificationMethodType;
+    }
+    
+    public static ImmutableCollection<ContactNotificationType> getFor(ContactNotificationMethodType methodType) {
+        return lookup.get(methodType);
     }
     
     public int getDefinitionId() {

@@ -11,6 +11,7 @@ public interface ContactNotificationDao {
 	/**
 	 * @deprecated Use {@link #getNotificationForContact(int)}
 	 */
+    @Deprecated
     public LiteContactNotification getContactNotification(int contactNotifID);
     
     public LiteContactNotification getNotificationForContact(int notificationId);
@@ -18,6 +19,7 @@ public interface ContactNotificationDao {
     /**
 	 * @deprecated Use {@link #getNotificationsForContact(int)}
 	 */
+    @Deprecated
     public List<LiteContactNotification> getAllContactNotifications();
 
     /**
@@ -90,4 +92,9 @@ public interface ContactNotificationDao {
      */
     public List<LiteContactNotification> getNotificationsForNotificationByType(String notification,
                                                                   ContactNotificationType contactNotificationType);
+    
+    /**
+     * Checks if formatting of entryText is valid for notificationType
+     */
+    public boolean isListEntryValid(ContactNotificationType notificationType, String entryText);
 }

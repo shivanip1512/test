@@ -4,9 +4,6 @@ package com.cannontech.dbeditor.wizard.contact;
  * Creation date: (11/21/00 4:08:38 PM)
  * @author: 
  */
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
@@ -15,15 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.i18n.DisplayableEnumCellRenderer;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.customer.Contact;
@@ -42,7 +36,7 @@ public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel 
 	private javax.swing.JTable ivjJTableEmail = null;
 	private javax.swing.JTextField ivjJTextFieldAddress = null;
 	private javax.swing.JLabel ivjJLabelNotifyType = null;
-	private javax.swing.JComboBox ivjJComboBoxNotifyType = null;
+	private javax.swing.JComboBox<ContactNotificationType> ivjJComboBoxNotifyType = null;
 	private javax.swing.JCheckBox ivjJCheckBoxDisable = null;
 	private javax.swing.JComboBox ivjJComboBoxLoginUser = null;
 	private javax.swing.JLabel ivjJLabelFirstName = null;
@@ -69,6 +63,7 @@ public ContactPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	
@@ -100,6 +95,7 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 
@@ -418,29 +414,18 @@ private javax.swing.JComboBox getJComboBoxLoginUser() {
 	return ivjJComboBoxLoginUser;
 }
 
-private javax.swing.JComboBox getJComboBoxNotifyType() {
+private javax.swing.JComboBox<ContactNotificationType> getJComboBoxNotifyType() {
 	if (ivjJComboBoxNotifyType == null) {
 		try {
-			ivjJComboBoxNotifyType = new javax.swing.JComboBox();
+			ivjJComboBoxNotifyType = new javax.swing.JComboBox<ContactNotificationType>();
 			ivjJComboBoxNotifyType.setName("JComboBoxNotifyType");
 			ivjJComboBoxNotifyType.setToolTipText("Set the way this contact is to be notified");
+			ivjJComboBoxNotifyType.setRenderer(new DisplayableEnumCellRenderer());
 
-			YukonSelectionList contactSelectionList = 
-			    YukonSpringHook.getBean(YukonListDao.class).getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
-			List<YukonListEntry> listOfEntries = contactSelectionList.getYukonListEntries();
-
-			Collections.sort(listOfEntries, new Comparator<YukonListEntry>() {
-                @Override
-                public int compare(YukonListEntry o1, YukonListEntry o2) {
-                    return new CompareToBuilder().append(o1.getEntryOrder(), o2.getEntryOrder()).append(o1.getEntryID(), o2.getEntryID()).toComparison();
-                }
-			    
-			});
-			
-			for(YukonListEntry entry : listOfEntries) {
-                ivjJComboBoxNotifyType.addItem(entry);
+			for (ContactNotificationType notificationType : ContactNotificationType.values()) {
+			    ivjJComboBoxNotifyType.addItem(notificationType);
 			}
-			
+
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -733,7 +718,8 @@ private javax.swing.JTable getJTableEmail() {
 			//set up the renderer and editor for the notifcation column
 			JTextField txtFieldEditor = new JTextField();
 			txtFieldEditor.addKeyListener(new java.awt.event.KeyAdapter() {
-				public void keyTyped(java.awt.event.KeyEvent e) {
+				@Override
+                public void keyTyped(java.awt.event.KeyEvent e) {
 					fireInputUpdate();
 				};
 			});
@@ -742,7 +728,9 @@ private javax.swing.JTable getJTableEmail() {
 			notifEd.setClickCountToStart(2);
 			
 			JComboBox typeCombo = new JComboBox();
+			typeCombo.setRenderer(new DisplayableEnumCellRenderer());
 			ComboBoxTableRenderer typeRenderer = new ComboBoxTableRenderer();
+			typeRenderer.setRenderer(new DisplayableEnumCellRenderer());
 			for(int i = 0; i < getJComboBoxNotifyType().getItemCount(); i++)
 			{
 				typeCombo.addItem(getJComboBoxNotifyType().getItemAt(i));
@@ -764,13 +752,15 @@ private javax.swing.JTable getJTableEmail() {
 
 			//add listeners to each combobox so we know when the values change
 			typeCombo.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
+				@Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {
 					fireInputUpdate();
 				}
 			});
 
 			disabledCombo.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
+				@Override
+                public void actionPerformed(java.awt.event.ActionEvent e) {
 					fireInputUpdate();
 				}
 			});
@@ -889,6 +879,7 @@ private ContactNotificationTableModel getTableModel()
  * @return java.lang.Object
  * @param o java.lang.Object
  */
+@Override
 public Object getValue(Object val) 
 {
 	Contact cnt = null;
@@ -909,15 +900,14 @@ public Object getValue(Object val)
 	cnt.getContact().setLogInID(new Integer(
 		((LiteYukonUser)getJComboBoxLoginUser().getSelectedItem()).getLiteID()));
 
-	YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
 	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
 	Vector<ContactNotification> holder = new Vector<ContactNotification>();
 	for(int i = 0; i < getTableModel().getRowCount(); i++) {
 		ContactNotification cn = getTableModel().getContactNotificationRow(i);
 		cn.setOrdering(new Integer(i));
-		
+		ContactNotificationType notificationType = ContactNotificationType.getTypeForNotificationCategoryId(cn.getNotificationCatID());
 		/** Strip anything but digits for phone number types */
-		if (yukonListDao.isPhoneNumber(cn.getNotificationCatID()) ||  yukonListDao.isFax(cn.getNotificationCatID())){
+		if (notificationType.isPhoneType() || notificationType.isFaxType()){
 		  cn.setNotification(phoneService.strip(cn.getNotification()));
 		}
 		holder.addElement(cn);
@@ -1075,6 +1065,7 @@ constraintsJButtonAddress.gridheight = 2;
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() {
 	if (getJTextFieldFirstName().getText() == null 
 		 || getJTextFieldFirstName().getText().length() <= 0) {
@@ -1106,19 +1097,17 @@ public boolean isInputValid() {
  */
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-    YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
 	Object o = getJComboBoxNotifyType().getSelectedItem();
 	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
 	
-	if (o != null && (o instanceof YukonListEntry))
-	{	
-		YukonListEntry entry = (YukonListEntry)o;
+	if (o != null && (o instanceof ContactNotificationType)) {	
+	    ContactNotificationType notificationType = (ContactNotificationType)o;
 		ContactNotification cn = new ContactNotification();
-		cn.setNotificationCatID(new Integer(entry.getEntryID()));
+		cn.setNotificationCatID(new Integer(notificationType.getDefinitionId()));
 		String notification =  getJTextFieldAddress().getText();
 		
 		/** Strip anything but digits for phone number types */
-        if (yukonListDao.isPhoneNumber(cn.getNotificationCatID()) ||  yukonListDao.isFax(cn.getNotificationCatID())){
+        if (notificationType.isPhoneType() || notificationType.isFaxType()){
             notification = phoneService.removeNonDigits(notification);
         }
 		cn.setNotification(notification) ;
@@ -1200,15 +1189,13 @@ private void checkEntry()
 {
 	Object o = getJComboBoxNotifyType().getSelectedItem();
 	
-	if (o != null && (o instanceof YukonListEntry))
-	{
-		YukonListEntry entry = (YukonListEntry)o;
+	if (o != null && (o instanceof ContactNotificationType)) {
+	    ContactNotificationType notificationType = (ContactNotificationType)o;
 		
 		//is there a good input into the text field?		
 		getJButtonAdd().setEnabled(
-				YukonSpringHook.getBean(YukonListDao.class).isListEntryValid(
-						entry.getYukonDefID(),
-						getJTextFieldAddress().getText()));
+				YukonSpringHook.getBean(ContactNotificationDao.class).isListEntryValid(notificationType, 
+				                                                                       getJTextFieldAddress().getText()));
 	}	
 } 
 
@@ -1217,13 +1204,12 @@ private void checkEntry()
  * of the first invalid notification is returned.
  */
 private String isAllEntryFieldsValid() {
-    YukonListDao yukonListDao = YukonSpringHook.getBean(YukonListDao.class);
+
 	for(int i = 0; i < getTableModel().getRowCount(); i++) {
 		ContactNotification notif = getTableModel().getContactNotificationRow(i);
-		YukonListEntry listEntry = (YukonListEntry) getTableModel().getValueAt(i, ContactNotificationTableModel.COLUMN_TYPE);
-
-		//is there a good input into the text field?
-        if (!yukonListDao.isListEntryValid(listEntry.getYukonDefID(), notif.getNotification())) {
+		try {
+		    getTableModel().getValueAt(i, ContactNotificationTableModel.COLUMN_TYPE);
+		} catch (IllegalArgumentException e) {
 			return notif.getNotification();  //failure
 		}
 	}
@@ -1252,7 +1238,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aContactPanel);
 		frame.setSize(aContactPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1291,6 +1278,7 @@ private void setSelectedLogin(Contact cnt)
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
+@Override
 public void setValue(Object val) 
 {
 	if (val == null)
@@ -1310,7 +1298,7 @@ public void setValue(Object val)
 	
 	for(int i = 0; i < cnt.getContactNotifVect().size(); i++)
 	{
-		ContactNotification cntNotif = (ContactNotification)cnt.getContactNotifVect().get(i);
+		ContactNotification cntNotif = cnt.getContactNotifVect().get(i);
 
 		getTableModel().addRowValue(cntNotif);
 	}
@@ -1318,11 +1306,13 @@ public void setValue(Object val)
 
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater(new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getJTextFieldFirstName().requestFocus(); 
@@ -1333,6 +1323,7 @@ public void setFirstFocus()
 /**
  * @param event ListSelectionEvent
  */
+@Override
 public void valueChanged(javax.swing.event.ListSelectionEvent event) 
 {
 	javax.swing.ListSelectionModel lsm = (javax.swing.ListSelectionModel) event.getSource();

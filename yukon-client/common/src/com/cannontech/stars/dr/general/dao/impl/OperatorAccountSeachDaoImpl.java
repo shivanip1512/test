@@ -14,13 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.model.Address;
+import com.cannontech.common.model.ContactNotificationMethodType;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.customer.CustomerTypes;
@@ -32,9 +33,9 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
@@ -61,16 +62,14 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// PHONE NUMBER
 	@Override
 	public List<Integer> getAccountIdsByPhoneNumber(String phoneNumber, Set<Integer> energyCompanyIds) {
 		
-		Set<ContactNotificationType> phoneNumberNotificationCategories = Sets.newHashSetWithExpectedSize(2);
-		phoneNumberNotificationCategories.add(ContactNotificationType.HOME_PHONE);
-		phoneNumberNotificationCategories.add(ContactNotificationType.WORK_PHONE);
+	    ImmutableCollection<ContactNotificationType> phoneTypes = ContactNotificationType.getFor(ContactNotificationMethodType.PHONE);
 		String formattedPhoneNumber = "";
         try {
             formattedPhoneNumber = ServletUtils.formatPhoneNumberForSearch(phoneNumber);
@@ -85,11 +84,11 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
 		sql.append("WHERE (cn.Notification").contains(phoneNumber);
 		sql.append("OR cn.Notification").contains(formattedPhoneNumber).append(")");
-		sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
+		sql.append("AND cn.NotificationCategoryId").in(phoneTypes);
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
-		List<Integer> accountIds = yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		List<Integer> accountIds = yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 				
 		return accountIds;
 	}
@@ -119,7 +118,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cont.ContLastName, cont.ContFirstName");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// SERIAL NUMBER
@@ -136,7 +135,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ib.AccountId").gt(0);
 		sql.append("ORDER BY lhb.ManufacturerSerialNumber");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// MAP NUMBER
@@ -152,7 +151,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY site.SiteNumber");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// ADDRESS
@@ -169,7 +168,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY addr.LocationAddress1, addr.LocationAddress2, addr.CityName, addr.StateCode");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// ALT TRACKING NUMBER
@@ -185,7 +184,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cust.AltTrackNum");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
 	
 	// COMPANY NAME
@@ -201,7 +200,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY cicb.CompanyName");
 		
-		return yukonJdbcOperations.query(sql, new IntegerRowMapper());
+		return yukonJdbcOperations.query(sql, RowMapper.INTEGER);
 	}
      
 	@Override
@@ -223,6 +222,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
         Function<Integer, Integer> mapper = Functions.identity();
 
         ParameterizedRowMapper<Entry<Integer, AccountSearchResult>> rowMapper = new ParameterizedRowMapper<Entry<Integer, AccountSearchResult>>() {
+            @Override
             public Entry<Integer, AccountSearchResult> mapRow(ResultSet rs, int rowNum) throws SQLException {
             	AccountSearchResult accountSearchResult = accountSearchResultRowMapper.mapRow(rs, rowNum);
                 return Maps.immutableEntry(accountSearchResult.getAccountId(), accountSearchResult);
@@ -238,6 +238,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		
 		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
 			
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
             	
             	SqlStatementBuilder sql = new SqlStatementBuilder();

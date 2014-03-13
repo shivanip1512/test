@@ -11,6 +11,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.core.dao.YukonListDao;
@@ -265,10 +266,11 @@ public class YukonToCRSFuncs
         return null;
     }
 
-    public static ContactNotification retrieveContactNotification(Integer contactID, int notifCatID)
+    public static ContactNotification retrieveContactNotification(Integer contactID, ContactNotificationType notificationType)
     {
         SqlStatement stmt = new SqlStatement("SELECT * FROM " + ContactNotification.TABLE_NAME + " WHERE CONTACTID = " + 
-                                             contactID + " AND NOTIFICATIONCATEGORYID = " + notifCatID, CtiUtilities.getDatabaseAlias());
+                                             contactID + " AND NOTIFICATIONCATEGORYID = " + notificationType.getDefinitionId(),
+                                             CtiUtilities.getDatabaseAlias());
         
         try
         {
@@ -409,11 +411,11 @@ public class YukonToCRSFuncs
     	return isChanged;
     }
     
-    private static boolean updateContactNotification(Integer contactID, int notifCatID, String newValue)
+    private static boolean updateContactNotification(Integer contactID, ContactNotificationType notificationType, String newValue)
     {
     	//TODO add support for bad entry
     	boolean isChanged = false;
-        ContactNotification contNotif = YukonToCRSFuncs.retrieveContactNotification(contactID, notifCatID);
+        ContactNotification contNotif = YukonToCRSFuncs.retrieveContactNotification(contactID, notificationType);
         if( contNotif != null)
         {
             if(newValue != null && newValue.length() > 0 && !newValue.equalsIgnoreCase(contNotif.getNotification()))
@@ -693,7 +695,7 @@ public class YukonToCRSFuncs
 		{
 			ContactNotification homeNotif = new ContactNotification();
 			homeNotif.setContactID(contact.getContact().getContactID());
-			homeNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+			homeNotif.setNotificationCatID(ContactNotificationType.HOME_PHONE.getDefinitionId());
 			homeNotif.setNotification(homePhone);
 			contact.getContactNotifVect().add(homeNotif);
 		}
@@ -701,7 +703,7 @@ public class YukonToCRSFuncs
 		{
 			ContactNotification workNotif = new ContactNotification();
 			workNotif.setContactID(contact.getContact().getContactID());
-			workNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+			workNotif.setNotificationCatID(ContactNotificationType.WORK_PHONE.getDefinitionId());
 			workNotif.setNotification(workPhone);
 			contact.getContactNotifVect().add(workNotif);
 		}
@@ -709,7 +711,7 @@ public class YukonToCRSFuncs
 		{
 			ContactNotification crsNotif = new ContactNotification();
 			crsNotif.setContactID(contact.getContact().getContactID());
-			crsNotif.setNotificationCatID(new Integer(YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE));
+			crsNotif.setNotificationCatID(ContactNotificationType.CALL_BACK_PHONE.getDefinitionId());
 			crsNotif.setNotification(crsContactPhone);
 			contact.getContactNotifVect().add(crsNotif);
 		}
@@ -812,9 +814,9 @@ public class YukonToCRSFuncs
 
 	public static void updateAllContactInfo(Contact contactDB, String firstName, String lastName, String homePhone, String workPhone, String crsContactPhone) {
 		boolean isChanged = updateContact(contactDB, firstName, lastName);
-		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, homePhone) || isChanged;
-		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE, workPhone) || isChanged;
-		isChanged = updateContactNotification(contactDB.getContactID(), YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, crsContactPhone) || isChanged;
+		isChanged = updateContactNotification(contactDB.getContactID(), ContactNotificationType.HOME_PHONE, homePhone) || isChanged;
+		isChanged = updateContactNotification(contactDB.getContactID(), ContactNotificationType.WORK_PHONE, workPhone) || isChanged;
+		isChanged = updateContactNotification(contactDB.getContactID(), ContactNotificationType.CALL_BACK_PHONE, crsContactPhone) || isChanged;
 
 		if( isChanged)
 		{

@@ -7,20 +7,6 @@
     <entry key="yukon.dr.consumer.chanceOfControl.LIKELY">- Chance of control is likely.</entry>
     <entry key="yukon.dr.consumer.chanceOfControl.UNLIKELY">- Chance of control is unlikely.</entry>
     
-    <!--  Contact Notification types -->
-    <entry key="yukon.dr.consumer.contact.(none)">(notification type)</entry>
-    <entry key="yukon.dr.consumer.contact.CallBackPhone">Call Back Phone</entry>
-    <entry key="yukon.dr.consumer.contact.CellPhone">Cell Phone</entry>
-    <entry key="yukon.dr.consumer.contact.Email">Email</entry>
-    <entry key="yukon.dr.consumer.contact.EmailtoCell">Email to Cell</entry>
-    <entry key="yukon.dr.consumer.contact.EmailtoPager">Email to Pager</entry>
-    <entry key="yukon.dr.consumer.contact.FaxNumber">Fax Number</entry>
-    <entry key="yukon.dr.consumer.contact.HomePhone">Home Phone</entry>
-    <entry key="yukon.dr.consumer.contact.PhoneNumber">Phone Number</entry>
-    <entry key="yukon.dr.consumer.contact.WorkPhone">Work Phone</entry>
-    <entry key="yukon.dr.consumer.contact.IVRLogin">IVR Login</entry>
-    <entry key="yukon.dr.consumer.contact.VoicePIN">Voice PIN</entry>
-    
     <!--  general.jsp -->
     <entry key="yukon.dr.consumer.general.header">Welcome To Energy Company Services!</entry>
     <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!&lt;br&gt;&lt;br&gt;This site is designed to help manage your programs online from anywhere with access to a Web browser.</entry>

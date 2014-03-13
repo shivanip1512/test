@@ -14,17 +14,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -33,7 +28,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -64,7 +58,6 @@ public class ContactController extends AbstractConsumerController {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private GlobalSettingDao globalSettingsDao;
     @Autowired private LiteContactValidator liteContactValidator;
@@ -89,24 +82,15 @@ public class ContactController extends AbstractConsumerController {
         
         promptForEmail(map, yukonUserContext.getYukonUser(), customerAccountId);
 
-        // Get the YukonSelectionList for the contact notification types
-        YukonSelectionList selectionList = yukonListDao.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE);
-        List<YukonListEntry> listEntries = selectionList.getYukonListEntries();
-
         // Build a list of ContactNotificationOption based on the list entries
         // in the notification type list
         List<ContactNotificationOption> notificationOptionList = new ArrayList<ContactNotificationOption>();
-        for (YukonListEntry entry : listEntries) {
+        for (ContactNotificationType notificationType: ContactNotificationType.values()) {
 
-            int entryID = entry.getEntryID();
+            int entryID = notificationType.getDefinitionId();
             ContactNotificationOption option = new ContactNotificationOption(entryID);
-            String text = entry.getEntryText();
-            if (CtiUtilities.STRING_NONE.equalsIgnoreCase(text)) {
-            	// do not put the '(none)' option into the list
-                continue;
-            }
-            String code = MessageCodeGenerator.generateCode("yukon.dr.consumer.contact",
-                                                            text);
+            
+            String code = notificationType.getFormatKey();
             YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(code);
             option.setOptionText(message);
 

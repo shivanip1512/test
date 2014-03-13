@@ -16,7 +16,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -27,9 +26,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlUtils;
@@ -45,7 +42,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -55,7 +51,6 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class ContactDaoImpl implements ContactDao {
     
     @Autowired private AddressDao addressDao;
-    @Autowired private YukonListDao yukonListDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private IDatabaseCache databaseCache;
@@ -166,55 +161,14 @@ public final class ContactDaoImpl implements ContactDao {
         }
         return contactIDs;
     }
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactsByPhoneNo(java.lang.String, int[], boolean)
-     */
+
 	@Override
-    public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs, boolean partialMatch) {
+    public LiteContact[] getContactsByPhoneNo(String phoneNo, boolean partialMatch) {
 		if (phoneNo == null) return null;
 		
-		//java.util.Arrays.sort( phoneNotifCatIDs );
-		synchronized (databaseCache) 
-        {
+		synchronized (databaseCache) {
 			return databaseCache.getContactsByPhoneNumber(phoneNo, partialMatch);
-            
-            /*
-             * For now we won't worry about verifying notification categories, so if somebody put
-             * a phone number in for their email or pager, they will find it here too.  Not worth the 
-             * performance hit at Xcel right now.
-             */
-            /*LiteContact[] theCandidates = cache.getContactsByPhoneNumber(phoneNo, partialMatch);
-			LiteContact[] theWinners = new LiteContact[theCandidates.length];
-            
-            //need to double check that these are actually of phone number type since the cache
-            //function does not verify notification category.
-			for (int i = 0; i < theCandidates.length; i++) 
-            {
-				for (int j = 0; j < theCandidates[i].getLiteContactNotifications().size(); j++) {
-					LiteContactNotification lNotif = (LiteContactNotification)
-							theCandidates[i].getLiteContactNotifications().get(j);
-					
-					if (java.util.Arrays.binarySearch(phoneNotifCatIDs, lNotif.getNotificationCategoryID()) < 0)
-					{
-						
-					}
-				}
-			}
-		}
-		
-		LiteContact[] contacts = new LiteContact[ contList.size() ];
-		contList.toArray( contacts );
-		return contacts;*/
         }
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactsByPhoneNo(java.lang.String, int[])
-     */
-	@Override
-    public LiteContact[] getContactsByPhoneNo(String phoneNo, int[] phoneNotifCatIDs) {
-		return getContactsByPhoneNo( phoneNo, phoneNotifCatIDs, false );
 	}
 
 	/* (non-Javadoc)
@@ -293,7 +247,7 @@ public final class ContactDaoImpl implements ContactDao {
         //find all the phone numbers in the list ContactNotifications
         for(LiteContactNotification ltCntNotif : contactNotificationDao.getNotificationsForContact(contact)) {   
                 
-            if (yukonListDao.isPhoneNumber(ltCntNotif.getNotificationCategoryID())) {
+            if (ltCntNotif.getContactNotificationType().isPhoneType()) {
                 phoneList.add( ltCntNotif );
             }
         }
@@ -422,7 +376,7 @@ public final class ContactDaoImpl implements ContactDao {
         List<LiteContactNotification> liteContactNotifications = contactNotificationDao.getNotificationsForContact(contactId);
         for (Iterator<LiteContactNotification> iter = liteContactNotifications.iterator(); iter.hasNext();) {
             LiteContactNotification contactNotification = iter.next();
-            if (contactNotification.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_PIN) {
+            if (contactNotification.getContactNotificationType() == ContactNotificationType.VOICE_PIN) {
                 return true;
             }
         }

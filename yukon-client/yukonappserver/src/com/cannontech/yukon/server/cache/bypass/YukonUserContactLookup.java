@@ -6,19 +6,24 @@
  */
 package com.cannontech.yukon.server.cache.bypass;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-
-import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationMethodType;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.ImmutableCollection;
 
 /**
  * @author jdayton
@@ -28,6 +33,30 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class YukonUserContactLookup 
 {
+    // This is duplicate of ContactDao. But didn't want to cross reference that object in yukonappserver package.
+    private static YukonRowMapper<LiteContact> rowMapper = new YukonRowMapper<LiteContact>() {
+        final ContactNotificationDao contactNotificationDao = YukonSpringHook.getBean(ContactNotificationDao.class);
+        @Override
+        public LiteContact mapRow(YukonResultSet rs) throws SQLException {
+            int id = rs.getInt("ContactId");
+            int loginId = rs.getInt("LoginId");
+            int addressId = rs.getInt("AddressId");
+            String firstName = SqlUtils.convertDbValueToString(rs.getString("ContFirstName")).trim();
+            String lastName = SqlUtils.convertDbValueToString(rs.getString("ContLastName")).trim();
+
+            LiteContact contact = new LiteContact(id);
+            contact.setLoginID(loginId);
+            contact.setAddressID(addressId);
+            contact.setContFirstName(firstName);
+            contact.setContLastName(lastName);
+            
+            List<LiteContactNotification> notifications = contactNotificationDao.getNotificationsForContact(contact.getContactID());
+            contact.getLiteContactNotifications().addAll(notifications);
+            
+            return contact;
+        };
+    };
+        
 	/**
 	 * Constructor for DaoFactory.getYukonUserDao().
 	 */
@@ -91,67 +120,40 @@ public class YukonUserContactLookup
     
     public static LiteContact[] loadContactsByPhoneNumber(String phone, boolean partialMatch)
     {
-        com.cannontech.database.SqlStatement stmt;
-        com.cannontech.database.SqlStatement stmtRevised = null;
-        /*
-         * Just get the ContactIDs first.  We'll want to do a retrieve so we get notifications, etc.
-         */
-        if(partialMatch)
-        {        
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION LIKE '%" + phone + 
-                                                           "%' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
-                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
-            //legacy numbers have hyphens in the db; let's at least attempt to be understanding about it
-            if(phone.length() == 10)
-                stmtRevised = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                            ContactNotification.TABLE_NAME + " WHERE NOTIFICATION LIKE '%" + phone.substring(0, 3) + "-" + phone.substring(3, 6) + "-" + phone.substring(6) +
-                                                            "' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
-                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
-        }
-        else
-        {
-            stmt = new com.cannontech.database.SqlStatement("SELECT CONTACTID FROM " +
-                                                           ContactNotification.TABLE_NAME + " WHERE NOTIFICATION = '" + phone + 
-                                                           "' AND NOTIFICATIONCATEGORYID IN (SELECT ENTRYID FROM " + YukonListEntry.TABLE_NAME +
-                                                           " WHERE YUKONDEFINITIONID =" + YukonListEntryTypes.YUK_DEF_ID_PHONE + ")", "yukon");
-        }
-        
-        LiteContact[] foundContacts;
-        
-        try
-        {
-            stmt.execute();
-            
-            foundContacts = new LiteContact[stmt.getRowCount()];
+        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
 
-            for( int j = 0; j < stmt.getRowCount(); j++ ) {
-                LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmt.getRow(j)[0]).intValue());
-                newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
-                foundContacts[j] = newlyFound;
-            }
-            
-            //legacy phone numbers have hyphens in the db; let's at least attempt to be understanding about it
-            if(partialMatch && foundContacts.length < 1 && stmtRevised != null) {
-                stmtRevised.execute();
-                foundContacts = new LiteContact[stmtRevised.getRowCount()];
-                
-                for( int j = 0; j < stmtRevised.getRowCount(); j++ ) {
-                    LiteContact newlyFound = new LiteContact(((java.math.BigDecimal) stmtRevised.getRow(j)[0]).intValue());
-                    newlyFound.retrieve(CtiUtilities.getDatabaseAlias());
-                    foundContacts[j] = newlyFound;
-                }
-            }
-            
-            return foundContacts;
+        ImmutableCollection<ContactNotificationType> phoneTypes = ContactNotificationType.getFor(ContactNotificationMethodType.PHONE);
+
+        sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LoginID, c.AddressID ");
+        sql.append("FROM Contact c JOIN ContactNotification cn on c.ContactId = cn.ContactId");
+        sql.append("WHERE NotificationCategoryId").in(phoneTypes);
+        if (partialMatch) {
+            sql.append("AND Notification").contains(phone);
+        } else {
+            sql.append("AND Notification").eq(phone);
         }
-        catch( Exception e )
-        {
-            com.cannontech.clientutils.CTILogger.error( "Error retrieving contacts that use phone number " + phone + ": " + e.getMessage(), e );
+        List<LiteContact> contacts = yukonJdbcTemplate.query(sql, rowMapper);
+        
+        
+        //legacy numbers have hyphens in the db; let's at least attempt to be understanding about it
+        if(phone.length() == 10) {
+            String oldPhoneSyntax = phone.substring(0, 3) + "-" + phone.substring(3, 6) + "-" + phone.substring(6);
+            SqlStatementBuilder legacySql = new SqlStatementBuilder();
+            legacySql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LoginID, c.AddressID ");
+            sql.append("FROM Contact c JOIN ContactNotification cn on c.ContactId = cn.ContactId");
+            legacySql.append("WHERE Notification").startsWith(oldPhoneSyntax);
+            legacySql.append("WHERE NotificationCategoryId").in(phoneTypes);
+            
+            contacts.addAll(yukonJdbcTemplate.query(legacySql, rowMapper));
         }
         
-        foundContacts = new LiteContact[0];
-        return foundContacts;
+        if (contacts.size() > 0) {
+            LiteContact[] foundContacts = new LiteContact[contacts.size()];
+            return contacts.toArray(foundContacts);
+        } else {
+            return new LiteContact[0];
+        }
     }
     
     public static LiteContact loadContactsByEmail(String email)

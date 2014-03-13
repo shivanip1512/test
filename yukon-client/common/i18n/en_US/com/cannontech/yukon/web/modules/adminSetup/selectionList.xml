@@ -117,11 +117,6 @@
 <entry key="yukon.dr.selectionList.SETTLEMENT_TYPE">Settlement</entry>
 <entry key="yukon.dr.selectionList.CI_CUST_TYPE">CI Customer Type</entry>
 
-<entry key="yukon.dr.selectionList.definition.EMAIL">Email</entry>
-<entry key="yukon.dr.selectionList.definition.PHONE">Phone Number</entry>
-<entry key="yukon.dr.selectionList.definition.PIN">PIN/Login</entry>
-<entry key="yukon.dr.selectionList.definition.PAGE">Pager</entry>
-<entry key="yukon.dr.selectionList.definition.FAX">Fax Number</entry>
 <entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMPROGRAM">Program</entry>
 <entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMHARDWARE">Hardware</entry>
 <entry key="yukon.dr.selectionList.definition.CUST_EVENT_LMTHERMOSTAT_MANUAL">Thermostat Manual</entry>

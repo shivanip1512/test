@@ -20,7 +20,6 @@ import org.joda.time.DateTimeZone;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
@@ -1374,8 +1373,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public List<Object> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
-        LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getContactsByPhoneNo(
-                phoneNo, new int[] {YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE}, true );
+        LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getContactsByPhoneNo(phoneNo, true);
         
 		int[] contactIDs = new int[ contacts.length ];
 		for (int i = 0; i < contacts.length; i++)

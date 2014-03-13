@@ -27,6 +27,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -325,4 +326,19 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
+    
+    public boolean isListEntryValid(ContactNotificationType notificationType, String entry) {
+        boolean isValidEntry = true;
+            if (notificationType.isFaxType()) {
+                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
+            } else if (notificationType.isPhoneType()) {
+                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
+            } else if (notificationType.isEmailType()) {
+                isValidEntry = Validator.isEmailAddress(entry);
+            } else if (notificationType.isPinType()) {
+                isValidEntry = Validator.isNumber(entry);
+            }
+        return isValidEntry;
+    }
+
 }
