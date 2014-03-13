@@ -77,10 +77,8 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                                     BigDecimal decimal = new BigDecimal(value);
                                     int numDigits = floatField.getDecimalDigits();
                                     if (decimal.scale() > numDigits) {
-                                        String defaultMsg = "Please limit the value to " + Integer.toString(numDigits)  
-                                                + " digit(s) after the decimal";
                                         Object[] args = {Integer.toString(numDigits)};
-                                        errors.rejectValue(path, baseKey + ".decimalDigits", args, defaultMsg);
+                                        errors.rejectValue(path, baseKey + ".decimalDigits", args, "");
                                     }
                                 }
                             } else {
