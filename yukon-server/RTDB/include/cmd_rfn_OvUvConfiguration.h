@@ -156,7 +156,7 @@ struct IM_EX_DEVDB RfnSetOvUvSetOverVoltageThresholdCommand : public RfnSetOvUvS
 
     virtual void invokeResultHandler( ResultHandler &rh ) const;
 
-    const unsigned ovThresholdValue;
+    const double ovThresholdValue;
 };
 
 struct IM_EX_DEVDB RfnSetOvUvSetUnderVoltageThresholdCommand : public RfnSetOvUvSetThresholdCommand
@@ -165,7 +165,7 @@ struct IM_EX_DEVDB RfnSetOvUvSetUnderVoltageThresholdCommand : public RfnSetOvUv
 
     virtual void invokeResultHandler( ResultHandler &rh ) const;
 
-    const unsigned uvThresholdValue;
+    const double uvThresholdValue;
 };
 
 

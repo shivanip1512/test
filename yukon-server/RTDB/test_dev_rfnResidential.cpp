@@ -40,6 +40,7 @@ struct test_DeviceConfig : public DeviceConfig
     test_DeviceConfig() : DeviceConfig(-1, string()) {}
 
     using DeviceConfig::insertValue;
+    using DeviceConfig::findValue;
 };
 
 class test_ConfigManager : public CtiConfigManager
@@ -365,7 +366,68 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 {
-    test_RfnResidentialDevice dut;
+    typedef map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
+
+    const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list_of
+    // day table
+    ( CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    RfnStrings::MondaySchedule    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   RfnStrings::TuesdaySchedule   )
+    ( CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, RfnStrings::WednesdaySchedule )
+    ( CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  RfnStrings::ThursdaySchedule  )
+    ( CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    RfnStrings::FridaySchedule    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  RfnStrings::SaturdaySchedule  )
+    ( CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    RfnStrings::SundaySchedule    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   RfnStrings::HolidaySchedule   )
+    // default rate
+    ( CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate,    RfnStrings::DefaultTouRate    )
+    // schedule 1
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate0,    RfnStrings::Schedule1Rate0    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time1,    RfnStrings::Schedule1Time1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate1,    RfnStrings::Schedule1Rate1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time2,    RfnStrings::Schedule1Time2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate2,    RfnStrings::Schedule1Rate2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time3,    RfnStrings::Schedule1Time3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate3,    RfnStrings::Schedule1Rate3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time4,    RfnStrings::Schedule1Time4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate4,    RfnStrings::Schedule1Rate4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Time5,    RfnStrings::Schedule1Time5    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule1Rate5,    RfnStrings::Schedule1Rate5    )
+    // schedule 2
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate0,    RfnStrings::Schedule2Rate0    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time1,    RfnStrings::Schedule2Time1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate1,    RfnStrings::Schedule2Rate1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time2,    RfnStrings::Schedule2Time2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate2,    RfnStrings::Schedule2Rate2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time3,    RfnStrings::Schedule2Time3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate3,    RfnStrings::Schedule2Rate3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time4,    RfnStrings::Schedule2Time4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate4,    RfnStrings::Schedule2Rate4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Time5,    RfnStrings::Schedule2Time5    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule2Rate5,    RfnStrings::Schedule2Rate5    )
+    // schedule 3
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate0,    RfnStrings::Schedule3Rate0    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time1,    RfnStrings::Schedule3Time1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate1,    RfnStrings::Schedule3Rate1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time2,    RfnStrings::Schedule3Time2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate2,    RfnStrings::Schedule3Rate2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time3,    RfnStrings::Schedule3Time3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate3,    RfnStrings::Schedule3Rate3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time4,    RfnStrings::Schedule3Time4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate4,    RfnStrings::Schedule3Rate4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Time5,    RfnStrings::Schedule3Time5    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule3Rate5,    RfnStrings::Schedule3Rate5    )
+    // schedule 4
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate0,    RfnStrings::Schedule4Rate0    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time1,    RfnStrings::Schedule4Time1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate1,    RfnStrings::Schedule4Rate1    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time2,    RfnStrings::Schedule4Time2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate2,    RfnStrings::Schedule4Rate2    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time3,    RfnStrings::Schedule4Time3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate3,    RfnStrings::Schedule4Rate3    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time4,    RfnStrings::Schedule4Time4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate4,    RfnStrings::Schedule4Rate4    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5,    RfnStrings::Schedule4Time5    )
+    ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,    RfnStrings::Schedule4Rate5    );
 
     test_DeviceConfig cfg;
 
@@ -440,204 +502,277 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
     test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
-
     {
-        CtiCommandParser parse("putconfig install tou");
+        //
+        // Test Put Config Install
+        //
 
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+        test_RfnResidentialDevice dut;
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         {
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou verify");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
         }
 
         {
-            Commands::RfnCommandSPtr command = rfnRequests.front();
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou");
 
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x60)(0x04)
-                    (0x0A)
-                    (0x01)(0x03) // day table
-                    (0x80)(0xB2)(0x48)
-                    (0x02)(0x0A) // schedule 1 times
-                    (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
-                    (0x03)(0x0A) // schedule 2 times
-                    (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
-                    (0x04)(0x0A) // schedule 3 times
-                    (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
-                    (0x05)(0x0A) // schedule 4 times
-                    (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
-                    (0x06)(0x03) // schedule 1 rates
-                    (0x88)(0x86)(0x00)
-                    (0x07)(0x03) // schedule 2 rates
-                    (0x43)(0x34)(0x00)
-                    (0x08)(0x03) // schedule 3 rates
-                    (0x1A)(0xA2)(0x01)
-                    (0x09)(0x03) // schedule 4 rates
-                    (0xD1)(0x10)(0x01)
-                    (0x0A)(0x01) // default TOU rate
-                    (0x01);
+            {
+                const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                           exp.begin() , exp.end() );
+                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            }
+
+            {
+                Commands::RfnCommandSPtr command = rfnRequests.front();
+
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                std::vector<unsigned char> exp = boost::assign::list_of
+                        (0x60)(0x04)
+                        (0x0A)
+                        (0x01)(0x03) // day table
+                        (0x80)(0xB2)(0x48)
+                        (0x02)(0x0A) // schedule 1 times
+                        (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
+                        (0x03)(0x0A) // schedule 2 times
+                        (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
+                        (0x04)(0x0A) // schedule 3 times
+                        (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
+                        (0x05)(0x0A) // schedule 4 times
+                        (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
+                        (0x06)(0x03) // schedule 1 rates
+                        (0x88)(0x86)(0x00)
+                        (0x07)(0x03) // schedule 2 rates
+                        (0x43)(0x34)(0x00)
+                        (0x08)(0x03) // schedule 3 rates
+                        (0x1A)(0xA2)(0x01)
+                        (0x09)(0x03) // schedule 4 rates
+                        (0xD1)(0x10)(0x01)
+                        (0x0A)(0x01) // default TOU rate
+                        (0x01);
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                               exp.begin() , exp.end() );
+
+                dut.extractCommandResult( *command );
+
+                std::string dynamicInfo;
+                boost::optional<std::string> configValue;
+
+                for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
+                {
+                    BOOST_CHECK( (configValue = cfg.findValue<std::string>( p.second ))
+                            && dut.getDynamicInfo( p.first, dynamicInfo )
+                            && *configValue == dynamicInfo );
+                }
+            }
         }
-    }
 
-    {
-        resetTestState();
-        CtiCommandParser parse("putconfig install tou verify");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
-
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       ConfigNotCurrent );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
-    }
-
-    {
-        resetTestState();
-        CtiCommandParser parse("getconfig install tou");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+        //
+        // NOTE: At this point the configuration is expected to be valid
+        //
 
         {
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
 
         {
-            Commands::RfnCommandSPtr command = rfnRequests.front();
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou verify");
 
-            Commands::RfnCommand::RfnRequestPayload request_rcv = command->executeCommand( execute_time );
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
-            std::vector<unsigned char> request_exp = boost::assign::list_of
-                    (0x60)(0x05)(0x00);
-
-            BOOST_CHECK_EQUAL_COLLECTIONS( request_rcv.begin() , request_rcv.end() ,
-                                           request_exp.begin() , request_exp.end() );
-
-            std::vector<unsigned char> response = boost::assign::list_of
-                    (0x61)(0x00)(0x00)(0x00)(0x00)
-                    (0x0A)
-                    (0x01)(0x03) // day table
-                    (0x80)(0xB2)(0x48)
-                    (0x02)(0x0A) // schedule 1 switch times
-                    (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
-                    (0x03)(0x0A) // schedule 2 switch times
-                    (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
-                    (0x04)(0x0A) // schedule 3 switch times
-                    (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
-                    (0x05)(0x0A) // schedule 4 switch time
-                    (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
-                    (0x06)(0x03) // schedule 1 rates
-                    (0x88)(0x86)(0x00)
-                    (0x07)(0x03) // schedule 2 rates
-                    (0x43)(0x34)(0x00)
-                    (0x08)(0x03) // schedule 3 rates
-                    (0x1A)(0xA2)(0x01)
-                    (0x09)(0x03) // schedule 4 rates
-                    (0xD1)(0x10)(0x01)
-                    (0x0A)(0x01) // default TOU rate
-                    (0x01);
-
-            command->decodeCommand( decode_time, response );
-
-            dut.extractCommandResult( *command );
-        }
-    }
-
-    //
-    // NOTE: At this point the configuration is expected to be valid
-    //
-
-    {
-        resetTestState();
-        CtiCommandParser parse("putconfig install tou");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
-
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
-    }
-
-    {
-        resetTestState();
-        CtiCommandParser parse("putconfig install tou verify");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
-
-        const CtiReturnMsg &returnMsg = returnMsgs.front();
-
-        BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
-        BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
-    }
-
-    {
-        resetTestState();
-        CtiCommandParser parse("putconfig install tou force");
-
-        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
-        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-        BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
-
-        {
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
 
         {
-            Commands::RfnCommandSPtr command = rfnRequests.front();
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou force");
 
-            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
-            std::vector<unsigned char> exp = boost::assign::list_of
-                    (0x60)(0x04)
-                    (0x0A)
-                    (0x01)(0x03) // day table
-                    (0x80)(0xB2)(0x48)
-                    (0x02)(0x0A) // schedule 1 times
-                    (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
-                    (0x03)(0x0A) // schedule 2 times
-                    (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
-                    (0x04)(0x0A) // schedule 3 times
-                    (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
-                    (0x05)(0x0A) // schedule 4 times
-                    (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
-                    (0x06)(0x03) // schedule 1 rates
-                    (0x88)(0x86)(0x00)
-                    (0x07)(0x03) // schedule 2 rates
-                    (0x43)(0x34)(0x00)
-                    (0x08)(0x03) // schedule 3 rates
-                    (0x1A)(0xA2)(0x01)
-                    (0x09)(0x03) // schedule 4 rates
-                    (0xD1)(0x10)(0x01)
-                    (0x0A)(0x01) // default TOU rate
-                    (0x01);
+            {
+                const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                           exp.begin() , exp.end() );
+                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            }
+
+            {
+                Commands::RfnCommandSPtr command = rfnRequests.front();
+
+                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                std::vector<unsigned char> exp = boost::assign::list_of
+                        (0x60)(0x04)
+                        (0x0A)
+                        (0x01)(0x03) // day table
+                        (0x80)(0xB2)(0x48)
+                        (0x02)(0x0A) // schedule 1 times
+                        (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
+                        (0x03)(0x0A) // schedule 2 times
+                        (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
+                        (0x04)(0x0A) // schedule 3 times
+                        (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
+                        (0x05)(0x0A) // schedule 4 times
+                        (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
+                        (0x06)(0x03) // schedule 1 rates
+                        (0x88)(0x86)(0x00)
+                        (0x07)(0x03) // schedule 2 rates
+                        (0x43)(0x34)(0x00)
+                        (0x08)(0x03) // schedule 3 rates
+                        (0x1A)(0xA2)(0x01)
+                        (0x09)(0x03) // schedule 4 rates
+                        (0xD1)(0x10)(0x01)
+                        (0x0A)(0x01) // default TOU rate
+                        (0x01);
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                               exp.begin() , exp.end() );
+            }
+        }
+    }
+
+    {
+        //
+        // Test Get Config Install
+        //
+
+        test_RfnResidentialDevice dut;
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
+
+        {
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou verify");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ConfigNotCurrent );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is NOT current." );
+        }
+
+        {
+            resetTestState();
+            CtiCommandParser parse("getconfig install tou");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+            {
+                const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+            }
+
+            {
+                Commands::RfnCommandSPtr command = rfnRequests.front();
+
+                Commands::RfnCommand::RfnRequestPayload request_rcv = command->executeCommand( execute_time );
+
+                std::vector<unsigned char> request_exp = boost::assign::list_of
+                        (0x60)(0x05)(0x00);
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( request_rcv.begin() , request_rcv.end() ,
+                                               request_exp.begin() , request_exp.end() );
+
+                std::vector<unsigned char> response = boost::assign::list_of
+                        (0x61)(0x00)(0x00)(0x00)(0x00)
+                        (0x0A)
+                        (0x01)(0x03) // day table
+                        (0x80)(0xB2)(0x48)
+                        (0x02)(0x0A) // schedule 1 switch times
+                        (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
+                        (0x03)(0x0A) // schedule 2 switch times
+                        (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
+                        (0x04)(0x0A) // schedule 3 switch times
+                        (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
+                        (0x05)(0x0A) // schedule 4 switch time
+                        (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
+                        (0x06)(0x03) // schedule 1 rates
+                        (0x88)(0x86)(0x00)
+                        (0x07)(0x03) // schedule 2 rates
+                        (0x43)(0x34)(0x00)
+                        (0x08)(0x03) // schedule 3 rates
+                        (0x1A)(0xA2)(0x01)
+                        (0x09)(0x03) // schedule 4 rates
+                        (0xD1)(0x10)(0x01)
+                        (0x0A)(0x01) // default TOU rate
+                        (0x01);
+
+                command->decodeCommand( decode_time, response );
+
+                dut.extractCommandResult( *command );
+
+                std::string dynamicInfo;
+                boost::optional<std::string> configValue;
+
+                for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
+                {
+                    BOOST_CHECK( (configValue = cfg.findValue<std::string>( p.second ))
+                            && dut.getDynamicInfo( p.first, dynamicInfo )
+                            && *configValue == dynamicInfo );
+                }
+            }
+        }
+
+        //
+        // NOTE: At this point the configuration is expected to be valid
+        //
+
+        {
+            resetTestState();
+            CtiCommandParser parse("putconfig install tou verify");
+
+            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
+
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoError );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config tou is current." );
         }
     }
 }
@@ -1017,6 +1152,18 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
 
         BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
                                        exp.begin() , exp.end() );
+
+        dut.extractCommandResult( *command );
+
+        double   test_DemandInterval = 0;
+        unsigned test_LoadProfileInterval = 0;
+
+        BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      test_DemandInterval ));
+        BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, test_LoadProfileInterval ));
+
+        BOOST_CHECK_EQUAL( test_DemandInterval,      17 );
+        BOOST_CHECK_EQUAL( test_LoadProfileInterval, 34 );
+
     }
 }
 
@@ -1100,13 +1247,41 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_voltage_profile )
     {
         Commands::RfnCommandSPtr command = rfnRequests.front();
 
-        Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+        {
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-        std::vector<unsigned char> exp = boost::assign::list_of
-                ( 0x68 )( 0x01 )( 0x00 );
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    ( 0x68 )( 0x01 )( 0x00 );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                       exp.begin() , exp.end() );
+            BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                           exp.begin() , exp.end() );
+        }
+
+        {
+            std::vector<unsigned char> response = boost::assign::list_of
+                    ( 0x69 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x00 )( 0x02 )( 0x44 )( 0x22 );
+
+            const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
+
+            const std::string exp = "Status: Success (0)\n"
+                                    "Voltage Demand interval: 17.0 minutes\n"
+                                    "Load Profile Demand interval: 34 minutes";
+
+            BOOST_CHECK_EQUAL( rcv.description, exp );
+        }
+
+        {
+            dut.extractCommandResult( *command );
+
+            double   test_DemandInterval = 0;
+            unsigned test_LoadProfileInterval = 0;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandInterval,      test_DemandInterval ));
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval, test_LoadProfileInterval ));
+
+            BOOST_CHECK_EQUAL( test_DemandInterval,      17 );
+            BOOST_CHECK_EQUAL( test_LoadProfileInterval, 34 );
+        }
     }
 }
 
@@ -1378,6 +1553,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x24)(0x01);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            long test_ovuvEnabled;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled, test_ovuvEnabled ));
+            BOOST_CHECK_EQUAL( static_cast<bool>(test_ovuvEnabled), true );
         }
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
@@ -1388,6 +1570,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x26)(0x05);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            unsigned test_ovuvAlarmReportingInterval;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, test_ovuvAlarmReportingInterval ));
+            BOOST_CHECK_EQUAL( test_ovuvAlarmReportingInterval, 5 );
         }
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
@@ -1398,6 +1587,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x27)(0x3c);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            unsigned test_ovuvAlarmRepeatInterval;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, test_ovuvAlarmRepeatInterval ));
+            BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatInterval, 60 );
         }
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
@@ -1408,6 +1604,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x28)(0x02);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            unsigned test_ovuvAlarmRepeatCount;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, test_ovuvAlarmRepeatCount ));
+            BOOST_CHECK_EQUAL( test_ovuvAlarmRepeatCount, 2 );
         }
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
@@ -1418,6 +1621,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x25)(0x03)(0x07)(0xe6)(0x00)(0x01)(0xe2)(0x40)(0x10)(0x80)(0x00)(0x01)(0xc0);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            double test_ovThreshold;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, test_ovThreshold ));
+            BOOST_CHECK_EQUAL( test_ovThreshold, 123.456 );
         }
         {
             Commands::RfnCommandSPtr command = *rfnRequest_itr++;
@@ -1428,6 +1638,13 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
                     (0x25)(0x03)(0x07)(0xe7)(0x00)(0x01)(0x34)(0x35)(0x10)(0x80)(0x00)(0x01)(0xc0);
 
             BOOST_CHECK_EQUAL( rcv, exp );
+
+            dut.extractCommandResult( *command );
+
+            double test_uvThreshold;
+
+            BOOST_CHECK( dut.getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold,  test_uvThreshold ));
+            BOOST_CHECK_EQUAL( test_uvThreshold, 78.901 );
         }
     }
 }

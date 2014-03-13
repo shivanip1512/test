@@ -20,6 +20,12 @@ const std::map<unsigned char, std::string>  responseResolver = boost::assign::ma
     ( 0x01, "Configuration Success" )
     ( 0x02, "Configuration Failure" );
 
+template <typename F>
+bool isInteger( F val )
+{
+    return floor(val) == val;
+}
+
 }
 
 
@@ -210,6 +216,9 @@ RfnSetOvUvSetThresholdCommand::RfnSetOvUvSetThresholdCommand( const MeterID mete
 {
     validate( Condition( meter_id != Unspecified, BADPARAM )
             << "Invalid Meter ID: Unspecified (" << meter_id << ")" );
+
+    validate( Condition( isInteger( threshold_volts * 1000.0 ), BADPARAM )
+            << "Invalid threshold " << threshold_volts << ": Precision should not exceed 0.001" );
 }
 
 

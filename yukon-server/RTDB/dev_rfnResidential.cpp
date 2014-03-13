@@ -522,7 +522,7 @@ int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * p
         }
     }
 
-    if( *configFreezeDay == *paoFreezeDay )  // both exist and are equal
+    if( configFreezeDay == paoFreezeDay )  // both exist and are equal
     {
         if( ! parse.isKeyValid("force") )
         {
@@ -1105,9 +1105,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if( *configOvUvEnabled == *paoOvUvEnabled )  // both exist and are equal
+        if( configOvUvEnabled == paoOvUvEnabled )  // both exist and are equal
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 Commands::RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = *configOvUvEnabled
                     ? Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
@@ -1169,9 +1169,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if ( *configOvUvReportingInterval == *paoOvUvReportingInterval )
+        if( configOvUvReportingInterval == paoOvUvReportingInterval )
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvNewAlarmReportIntervalCommand>( *configOvUvReportingInterval ) );
             }
@@ -1225,9 +1225,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if ( *configOvUvRepeatInterval == *paoOvUvRepeatInterval )
+        if( configOvUvRepeatInterval == paoOvUvRepeatInterval )
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatIntervalCommand>( *configOvUvRepeatInterval ) );
             }
@@ -1281,9 +1281,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if ( *configOvUvRepeatCount == *paoOvUvRepeatCount )
+        if( configOvUvRepeatCount == paoOvUvRepeatCount )
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatCountCommand>( *configOvUvRepeatCount ) );
             }
@@ -1333,9 +1333,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if ( *configOvThreshold == *paoOvThreshold )
+        if( configOvThreshold == paoOvThreshold )
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, *configOvThreshold ) );
             }
@@ -1381,9 +1381,9 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
             }
         }
 
-        if ( *configUvThreshold == *paoUvThreshold )
+        if( configUvThreshold == paoUvThreshold )
         {
-            if ( parse.isKeyValid("force") )
+            if( parse.isKeyValid("force") )
             {
                 rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, *configUvThreshold ) );
             }
@@ -1401,7 +1401,7 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
         }
     }
 
-    if ( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+    if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
     {
         return ConfigCurrent;
     }
@@ -1527,7 +1527,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                 pao_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, pao_value );
             }
 
-            if( disconnectModesMatch && *pao_disconnect_type == *config_disconnect_type )
+            if( disconnectModesMatch && pao_disconnect_type == config_disconnect_type )
             {
                 if( parse.isKeyValid( "force" ) )
                 {
@@ -1714,11 +1714,11 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             }
 
             if ( disconnectModesMatch && 
-                 *config_reconnect_param  == *pao_reconnect_param  &&
-                 *config_demand_interval  == *pao_demand_interval  &&
-                 *config_demand_threshold == *pao_demand_threshold &&
-                 *config_connect_delay    == *pao_connect_delay    &&
-                 *config_max_disconnects  == *pao_max_disconnects)
+                 config_reconnect_param  == pao_reconnect_param  &&
+                 config_demand_interval  == pao_demand_interval  &&
+                 config_demand_threshold == pao_demand_threshold &&
+                 config_connect_delay    == pao_connect_delay    &&
+                 config_max_disconnects  == pao_max_disconnects)
             {
                 if( parse.isKeyValid( "force" ) )
                 {
@@ -1819,8 +1819,8 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
             }
 
             if ( disconnectModesMatch && 
-                 *config_connect_minutes     == *pao_connect_minutes &&
-                 *config_disconnect_minutes  == *pao_disconnect_minutes )
+                 config_connect_minutes    == pao_connect_minutes &&
+                 config_disconnect_minutes == pao_disconnect_minutes )
             {
                 if( parse.isKeyValid( "force" ) )
                 {
@@ -1845,7 +1845,7 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
         }
     }
 
-    if ( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+    if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
     {
         return ConfigCurrent;
     }
