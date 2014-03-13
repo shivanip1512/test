@@ -9,62 +9,7 @@
 <%@ attribute name="cronExpressionTagState" required="true" rtexprvalue="true" type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
 <%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
-<script type="text/javascript">
-jQuery(function() {
-    
-    function toggleField(checkBoxId, changeItemId) {
-        if (jQuery(checkBoxId).is(":checked")) {
-            jQuery(changeItemId).removeAttr("disabled").closest("tr").show(250);
-        } else {
-            jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide(250);
-        }
-    };
-
-    toggleTimestampPatternField = function() {
-        toggleField("#appendDateToFileName", "#timestampPatternField");
-    };
-
-    toggleFileExtensionField = function() {
-        toggleField("#overrideFileExtension", "#exportFileExtension");
-    };
-
-    toggleExportPathField = function() {
-        toggleField("#includeExportCopy", "#exportPath");
-    };
-
-    var lastDisplayName = false;
-    sameAsNameClicked = function() {
-        if (jQuery("#sameAsSchedName").is(":checked")) {
-            lastDisplayName = jQuery("#exportFileName").val();
-            jQuery("#exportFileName").val(jQuery("#scheduleName").val());
-            jQuery("#exportFileName").attr("disabled","disabled");
-        } else {
-            if (lastDisplayName) {
-                jQuery("#exportFileName").val(lastDisplayName);
-            }
-            jQuery("#exportFileName").removeAttr("disabled");
-        }
-    };
-    nameChanged = function() {
-        if (jQuery("#sameAsSchedName").is(":checked")) {
-            jQuery("#exportFileName").val(jQuery("#scheduleName").val());
-        }
-    };
-
-    jQuery("#appendDateToFileName").click(toggleTimestampPatternField);
-    jQuery("#overrideFileExtension").click(toggleFileExtensionField);
-    jQuery("#includeExportCopy").click(toggleExportPathField);
-    jQuery("#scheduleName").keyup(nameChanged);
-    jQuery("#scheduleName").change(nameChanged);
-    jQuery("#sameAsSchedName").click(sameAsNameClicked);
-
-    toggleTimestampPatternField();
-    toggleFileExtensionField();
-    toggleExportPathField();
-    sameAsNameClicked();
-    
-});
-</script>
+<cti:includeScript link="/JavaScript/yukon.tag.scheduled_file_export_inputs.js"/>
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.inputs">
 <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
