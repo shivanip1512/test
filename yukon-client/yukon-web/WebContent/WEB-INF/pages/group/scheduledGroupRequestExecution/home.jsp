@@ -40,12 +40,12 @@
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson" selectGroupName="${deviceGroupName}" selectedNodePathVar="selectedNodePath"/>
         
         <%-- TOGGLE/DELETE FORMS --%>
-        <form id="toggleJobEnabledForm" action="/group/scheduledGroupRequestExecution/toggleJobEnabled" method="post">
+        <form id="toggleJobEnabledForm" action="<cti:url value="/group/scheduledGroupRequestExecution/toggleJobEnabled"/>" method="post">
             <cti:csrfToken/>
             <input type="hidden" name="toggleJobId" value="${editJobId}">
         </form>
         
-        <form id="disabledAndDeleteJobForm" action="/group/scheduledGroupRequestExecution/deleteJob" method="post">
+        <form id="disabledAndDeleteJobForm" action="<cti:url value="/group/scheduledGroupRequestExecution/deleteJob"/>" method="post">
             <cti:csrfToken/>
             <input type="hidden" name="deleteJobId" value="${editJobId}">
         </form>
@@ -188,35 +188,34 @@
                          </cti:displayForPageEditModes>
                          
                     </tags:nameValueContainer>
-                    
+
+                    <div class="page-action-area">
+                        <cti:displayForPageEditModes modes="CREATE">
+                            <cti:button type="submit" label="${scheduleButtonText}" busy="true" classes="primary action"/>
+                        </cti:displayForPageEditModes>
+                            
+                        <cti:displayForPageEditModes modes="EDIT">
+        
+                            <cti:button type="submit" label="${updateButtonText}" busy="true" classes="primary action"/>
+                            <c:if test="${status ne 'RUNNING'}">
+                            <c:choose>
+                                <c:when test="${disabled}">
+                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
+                                </c:otherwise>
+                            </c:choose>
+                            </c:if>
+                            
+                            <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
+                                label="${disableAndDeleteJobButtonText}" 
+                                busy="true"
+                                classes="delete"/>
+        
+                         </cti:displayForPageEditModes>
+                   </div>
                 </form>
-                    
-                <div class="page-action-area">
-                    <cti:displayForPageEditModes modes="CREATE">
-                        <cti:button type="submit" label="${scheduleButtonText}" busy="true" classes="primary action"/>
-                    </cti:displayForPageEditModes>
-                        
-                    <cti:displayForPageEditModes modes="EDIT">
-    
-                        <cti:button type="submit" label="${updateButtonText}" busy="true" classes="primary action"/>
-                        <c:if test="${status ne 'RUNNING'}">
-                        <c:choose>
-                            <c:when test="${disabled}">
-                                <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
-                            </c:when>
-                            <c:otherwise>
-                                <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
-                            </c:otherwise>
-                        </c:choose>
-                        </c:if>
-                        
-                        <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
-                            label="${disableAndDeleteJobButtonText}" 
-                            busy="true"
-                            classes="delete"/>
-    
-                     </cti:displayForPageEditModes>
-               </div>
             </cti:tabbedContentSelectorContent>
         
         </cti:tabbedContentSelector>
