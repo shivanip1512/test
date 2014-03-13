@@ -29,7 +29,6 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -58,11 +57,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class InventoryBaseDaoImpl implements InventoryBaseDao {
+    private final static Logger log = YukonLogManager.getLogger(InventoryBaseDaoImpl.class);
     
-    private static final Logger log = YukonLogManager.getLogger(InventoryBaseDaoImpl.class);
-    
-    private static final YukonRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
-    private static final YukonRowMapper<InventoryBase> inventoryBaseRowMapper = new YukonRowMapper<InventoryBase>() {
+    private final static YukonRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
+    private final static YukonRowMapper<InventoryBase> inventoryBaseRowMapper = new YukonRowMapper<InventoryBase>() {
         @Override
         public InventoryBase mapRow(YukonResultSet rs) throws SQLException {
             InventoryBase inventoryBase = new InventoryBase();
@@ -85,12 +83,12 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     private SimpleTableAccessTemplate<LiteInventoryBase> liteInventoryTemplate;
 
-    private static final String selectInventorySql;
-    private static final String insertECToInventorySql;
-    private static final String insertLmHardwareSql;
-    private static final String insertMeterHardwareSql;
-    private static final String updateLmHardwareSql;
-    private static final String updateMeterHardwareSql;
+    private final static String selectInventorySql;
+    private final static String insertECToInventorySql;
+    private final static String insertLmHardwareSql;
+    private final static String insertMeterHardwareSql;
+    private final static String updateLmHardwareSql;
+    private final static String updateMeterHardwareSql;
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;    
@@ -530,7 +528,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         sql.append("WHERE NOT EXISTS");
         sql.append(  "(SELECT * FROM InventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId)");
 
-        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
         
         return paoList;
     }
@@ -553,7 +551,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         sql.append("AND ib.AccountId = 0");
         sql.append("AND yle.YukonDefinitionId").eq_k(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT);
 
-        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+        List<PaoIdentifier> paoList = yukonJdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 
         return paoList;
     }

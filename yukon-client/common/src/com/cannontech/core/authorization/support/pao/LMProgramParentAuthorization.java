@@ -18,10 +18,9 @@ import com.google.common.collect.SetMultimap;
  * parent authorizations
  */
 public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
+    @Autowired private DemandResponseDao demandResponseDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
-    private DemandResponseDao demandResponseDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    
     @Override
     protected boolean checkPaoType(YukonPao pao) {
     	return paoDefinitionDao.isTagSupported(pao.getPaoIdentifier().getPaoType(), PaoTag.LM_PROGRAM);
@@ -29,7 +28,6 @@ public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
 
     @Override
     protected List<SetMultimap<PaoIdentifier, PaoIdentifier>> getParentMaps(Set<PaoIdentifier> paos) {
-
         List<SetMultimap<PaoIdentifier, PaoIdentifier>> parentMapList = Lists.newArrayList();
 
         // Get control area parents map
@@ -46,7 +44,7 @@ public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
     }
 
     @Override
-    protected List<YukonPao> getParents(PaoIdentifier pao) {
+    protected List<? extends YukonPao> getParents(PaoIdentifier pao) {
         return demandResponseDao.getControlAreasAndScenariosForProgram(pao);
     }
     
@@ -54,13 +52,4 @@ public class LMProgramParentAuthorization extends LMParentBaseAuthorization {
     public String toString() {
         return permission + " and  program parent authorization";
     }
-
-    public void setDemandResponseDao(DemandResponseDao demandResponseDao) {
-        this.demandResponseDao = demandResponseDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
 }

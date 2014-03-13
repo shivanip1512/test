@@ -25,7 +25,7 @@ public class PaoUtils {
         new Function<PaoIdentifier, Integer>() {
             @Override
             public Integer apply(PaoIdentifier from) {
-                return from.getPaoIdentifier().getPaoId();
+                return from.getPaoId();
             }
         };
 

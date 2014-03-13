@@ -100,6 +100,7 @@ public class ChunkingMappedSqlTemplate {
 
         final Map<C, R> resultMap = Maps.newLinkedHashMap();
         processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            @Override
             public void handle(C a, R b) {
                 resultMap.put(a, b);
             }
@@ -125,6 +126,7 @@ public class ChunkingMappedSqlTemplate {
         
         final ArrayListMultimap<C, R> resultMap = ArrayListMultimap.create();
         processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            @Override
             public void handle(C a, R b) {
                 resultMap.put(a, b);
             }
@@ -161,6 +163,7 @@ public class ChunkingMappedSqlTemplate {
 
         final SetMultimap<R, C> resultMap = HashMultimap.create();
         processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            @Override
             public void handle(C a, R b) {
                 resultMap.put(b, a);
             }
@@ -168,7 +171,35 @@ public class ChunkingMappedSqlTemplate {
 
         return resultMap;
     }
-    
+
+    /**
+     * Returns a mapping of results to inputs. Query is run in a chunking manner.
+     * @param <I> Type of value used by the SqlFragmentGenerator. Often Integer or String.
+     * @param <C> Type of values in the input list and the result map value type. 
+     *        May be a complex type that contains a field of type &lt;I&gt;, see 
+     *        inputTypeToSqlGeneratorTypeMapper parameter.
+     * @param <R> Type of model object created by the row mapper and the result map key type.
+     * @param sqlGenerator An SqlFragmentGenerator that takes objects of type &lt;I&gt; to create 
+     *        its IN-Clause  
+     * @param inputList A list of input values.
+     * @param rowMapper A typical row mapper, but instead of returning just the model object 
+     *        it should return a single Map.Entry that wraps the search value as the key and the 
+     *        model object as the value.
+     * @param inputTypeToSqlGeneratorTypeMapper A mapper that can convert from the input type to 
+     *        the SqlFragmentGenerator type. This allows complex types to be passed as the input 
+     *        and be the basis of the result, but the function defines what discrete part of the 
+     *        input type to use for the query search value. Tip: If your input type is the same as 
+     *        your generator type, use Functions.identity() to create your 
+     *        inputTypeToSqlGeneratorTypeMapper.
+     * @return
+     */
+    public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(SqlFragmentGenerator<I> sqlGenerator, Iterable<C> input,
+            YukonRowMapper<Map.Entry<I, R>> rowMapper, Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+        ParameterizedRowMapper<Map.Entry<I, R>> parameterizedRowMapper =
+                new YukonRowMapperAdapter<Map.Entry<I,R>>(rowMapper);
+        return reverseMultimappedQuery(sqlGenerator, input, parameterizedRowMapper, inputTypeToSqlGeneratorTypeMapper);
+    }
+
     private <R, I, C> void processQuery(final SqlFragmentGenerator<I> sqlGenerator,
             final Iterable<C> input, final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
             Function<C, I> inputTypeToSqlGeneratorTypeMapper, PairProcessor<C, R> processor) {
@@ -182,6 +213,7 @@ public class ChunkingMappedSqlTemplate {
 
             private int row = 0;
 
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Entry<I, R> entry = rowMapper.mapRow(rs, row++);
                 intermediaryResult.put(entry.getKey(), entry.getValue());

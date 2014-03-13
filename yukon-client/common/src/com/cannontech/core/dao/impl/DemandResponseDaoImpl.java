@@ -1,14 +1,12 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -19,19 +17,19 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DemandResponseDao;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.google.common.base.Function;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 public class DemandResponseDaoImpl implements DemandResponseDao {
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    
     @Override
-    public List<YukonPao> getControlAreasAndScenariosForProgram(YukonPao program) {
-        
+    public List<PaoIdentifier> getControlAreasAndScenariosForProgram(YukonPao program) {
         int programId = program.getPaoIdentifier().getPaoId();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -45,16 +43,14 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.append("    SELECT scenarioId FROM lmControlScenarioProgram WHERE programId=");
         sql.appendArgument(programId);
         sql.append("    )");
-        
-        List<YukonPao> parentList = new ArrayList<YukonPao>();
-        yukonJdbcTemplate.query(sql, new YukonPaoRowMapper(), parentList);
-        
+
+        List<PaoIdentifier> parentList = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
+
         return parentList;
     }
 
     @Override
-    public List<YukonPao> getProgramsForGroup(YukonPao group) {
-
+    public List<PaoIdentifier> getProgramsForGroup(YukonPao group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT y.PAObjectID, y.Category, y.Type"); 
         sql.append("FROM yukonpaobject y");
@@ -64,19 +60,16 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
         sql.append("    WHERE lmGroupDeviceId").eq(group.getPaoIdentifier().getPaoId());
         sql.append("    )");
         
-        List<YukonPao> programList = new ArrayList<YukonPao>();
-        yukonJdbcTemplate.query(sql, new YukonPaoRowMapper(), programList);
+        List<PaoIdentifier> programList = jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
         
         return programList;
     }
     
     @Override
-    public SetMultimap<PaoIdentifier, PaoIdentifier> getProgramToGroupMappingForGroups(
-                                                               Collection<PaoIdentifier> groups) {
-        
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getProgramToGroupMappingForGroups(Collection<PaoIdentifier> groups) {
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT deviceId, lmGroupDeviceId, type");
                 sql.append("FROM lmProgramDirectGroup");
@@ -85,33 +78,27 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return sql;
             }
         };
-        ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper = 
-            new ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
-            public Entry<Integer, PaoIdentifier> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer programId = rs.getInt("deviceId");
-                String paoTypeStr = rs.getString("type");
-                PaoType paoType = PaoType.getForDbString(paoTypeStr);                
-                PaoIdentifier program = new PaoIdentifier(programId, paoType);
-                
+        YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
+            @Override
+            public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                PaoIdentifier program = rs.getPaoIdentifier("deviceId",  "type");
+
                 Integer groupId = rs.getInt("lmGroupDeviceId");
                 return Maps.immutableEntry(groupId, program);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdFunction();
 
-        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 
-                                                   Lists.newArrayList(groups), 
-                                                   rowMapper, 
-                                                   typeMapper);
-        
+        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(groups), rowMapper,
+            PaoUtils.getPaoIdFunction());
     }
     
     @Override
     public SetMultimap<PaoIdentifier, PaoIdentifier> getControlAreaToProgramMappingForPrograms(
                                                                Collection<PaoIdentifier> programs) {
-        
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -121,35 +108,30 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return sql;
             }
         };
-        ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper = 
-            new ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
-            public Entry<Integer, PaoIdentifier> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer controlAreaId = rs.getInt("deviceId");
-                PaoIdentifier controlArea = new PaoIdentifier(controlAreaId, PaoType.LM_CONTROL_AREA);
-                
-                Integer programId = rs.getInt("lmProgramDeviceId");
-                
-                return Maps.immutableEntry(programId, controlArea);
-            }
-        };
-        Function<PaoIdentifier, Integer> typeMapper = new Function<PaoIdentifier, Integer>() {
-           public Integer apply(PaoIdentifier from) {
-               return from.getPaoId();
-           }; 
-        };
+        YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
+                @Override
+                public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                    Integer controlAreaId = rs.getInt("deviceId");
+                    PaoIdentifier controlArea = new PaoIdentifier(controlAreaId, PaoType.LM_CONTROL_AREA);
 
-        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(programs), rowMapper, typeMapper);
+                    Integer programId = rs.getInt("lmProgramDeviceId");
 
+                    return Maps.immutableEntry(programId, controlArea);
+                }
+            };
+
+        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(programs), rowMapper,
+            PaoUtils.getPaoIdFunction());
     }
     
     @Override
     public SetMultimap<PaoIdentifier, PaoIdentifier> getScenarioToProgramMappingForPrograms(
                                                                     Collection<PaoIdentifier> programs) {
-
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT scenarioId, programId");
                 sql.append("FROM lmControlScenarioProgram");
@@ -157,29 +139,20 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return sql;
             }
         };
-        ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper = 
-            new ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
-            public Entry<Integer, PaoIdentifier> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer scenarioId = rs.getInt("scenarioId");
-                PaoIdentifier scenario = new PaoIdentifier(scenarioId, PaoType.LM_CONTROL_AREA);
-                
-                Integer programId = rs.getInt("programId");
-                return Maps.immutableEntry(programId, scenario);
-            }
-        };
-        Function<PaoIdentifier, Integer> typeMapper = new Function<PaoIdentifier, Integer>() {
-           public Integer apply(PaoIdentifier from) {
-               return from.getPaoId();
-           }; 
-        };
+        YukonRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper =
+            new YukonRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
+                @Override
+                public Entry<Integer, PaoIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                    Integer scenarioId = rs.getInt("scenarioId");
+                    PaoIdentifier scenario = new PaoIdentifier(scenarioId, PaoType.LM_CONTROL_AREA);
 
-        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(programs), rowMapper, typeMapper);
-        
-    }
-    
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
+                    Integer programId = rs.getInt("programId");
+                    return Maps.immutableEntry(programId, scenario);
+                }
+            };
 
+        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(programs), rowMapper,
+            PaoUtils.getPaoIdFunction());
+    }
 }

@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -20,29 +23,27 @@ import com.google.common.collect.Sets.SetView;
  * Abstract base class for LM parent authorization
  */
 public abstract class LMParentBaseAuthorization implements PaoAuthorization {
-    
-    private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
     protected Permission permission; 
     
     protected abstract boolean checkPaoType(YukonPao pao);
+
     /**
-     * Method to get a list of parent paos for the given pao 
-     * @param pao - Pao to get parents for
-     * @return Parent paos
+     * Get a list of parent PAOs for the given pao.
+     * @param pao - PAO to get parents for
+     * @return Parent PAOs
      */
-    protected abstract List<YukonPao> getParents(PaoIdentifier pao);
-    
+    protected abstract List<? extends YukonPao> getParents(PaoIdentifier pao);
+
     /**
-     * Method to get a list of parent pao to pao mappings for the given list of paos
-     * @param paos - List of paos to get parent mappings for
+     * Get a list of parent PAO to PAO mappings for the given list of PAOs
+     * @param paos - List of PAOs to get parent mappings for
      * @return List of parent to pao mappings
      */
     protected abstract List<SetMultimap<PaoIdentifier, PaoIdentifier>> getParentMaps(Set<PaoIdentifier> paos);
-    
-    public AuthorizationResponse isAuthorized(LiteYukonUser user, 
-                                              Permission permission, 
-                                              PaoIdentifier pao) {
-        
+
+    @Override
+    public AuthorizationResponse isAuthorized(LiteYukonUser user, Permission permission, PaoIdentifier pao) {
         Collection<PaoIdentifier> unknownObjects = Lists.newArrayList();
         Set<PaoIdentifier> authorizedObjects = Sets.newHashSet();
         this.process(Collections.singletonList(pao), 
@@ -53,24 +54,21 @@ public abstract class LMParentBaseAuthorization implements PaoAuthorization {
         
         if(authorizedObjects.size() == 1) {
             return AuthorizationResponse.AUTHORIZED;
-        } else {
-            return AuthorizationResponse.UNKNOWN;
         }
+        return AuthorizationResponse.UNKNOWN;
     }
     
-    public void process(Collection<PaoIdentifier> inputObjects,
-                        Collection<PaoIdentifier> unknownObjects,
-                        Set<PaoIdentifier> authorizedObjects,
-                        LiteYukonUser user, Permission permission) {
-        
-        if(!this.permission.equals(permission)) {
+    @Override
+    public void process(Collection<PaoIdentifier> inputObjects, Collection<PaoIdentifier> unknownObjects,
+            Set<PaoIdentifier> authorizedObjects, LiteYukonUser user, Permission permission) {
+        if (!this.permission.equals(permission)) {
             unknownObjects.addAll(inputObjects);
             return;
         }
 
         Set<PaoIdentifier> objectSet = Sets.newHashSet();
         // Filter out anything that isn't the right type
-        for(PaoIdentifier pao : inputObjects) {
+        for (PaoIdentifier pao : inputObjects) {
             if (checkPaoType(pao)) {
                 objectSet.add(pao);
             } else {
@@ -82,8 +80,7 @@ public abstract class LMParentBaseAuthorization implements PaoAuthorization {
 
         // Get a list of parent to object mappings.
         List<SetMultimap<PaoIdentifier, PaoIdentifier>> parentMaps = getParentMaps(objectSet);
-        for(SetMultimap<PaoIdentifier, PaoIdentifier> parentMap : parentMaps) {
-            
+        for (SetMultimap<PaoIdentifier, PaoIdentifier> parentMap : parentMaps) {
             // Process authorizations for each type of parent mapping
             Set<PaoIdentifier> parentSet = parentMap.keySet();
             if(parentSet.size() > 0) {
@@ -102,13 +99,9 @@ public abstract class LMParentBaseAuthorization implements PaoAuthorization {
         // Any objects that weren't authorized by a parent are unknown
         SetView<PaoIdentifier> unknownPrograms = Sets.difference(objectSet, authorizedPrograms);
         unknownObjects.addAll(unknownPrograms);
+    }
 
-    }
-    
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-    
+    @Required
     public void setPermission(Permission permission) {
         this.permission = permission;
     }

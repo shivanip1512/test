@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -46,9 +45,10 @@ import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
@@ -65,21 +65,24 @@ import com.google.common.collect.SetMultimap;
 
 @ManagedResource
 public class RawPointHistoryValidationService {
+    private final static Logger log = YukonLogManager.getLogger(RawPointHistoryValidationService.class);
+
     private long changeIdChunkSize = 20000;
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private PointReadService pointReadService;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PointReadService pointReadService;
+    @Autowired private ValidationMonitorDao validationMonitorDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private RphTagDao rphTagDao;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private ValidationEventLogService validationEventLogService;
+    @Autowired private PaoLoadingService paoLoadingService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+
     private ScheduledExecutorService executorService;
-    private ValidationMonitorDao validationMonitorDao;
-    private AttributeService attributeService;
-    private RphTagDao rphTagDao;
-    private RawPointHistoryDao rawPointHistoryDao;
-    private PersistedSystemValueDao persistedSystemValueDao;
-    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    private ValidationEventLogService validationEventLogService;
-    private PaoLoadingService paoLoadingService;
-    private PaoDefinitionDao paoDefinitionDao;
-    
+
     private AtomicLong changeIdsEvaluated = new AtomicLong(0);
     private AtomicLong rowsPulled = new AtomicLong(0);
     private AtomicLong lastChunkSize = new AtomicLong(0);
@@ -87,10 +90,9 @@ public class RawPointHistoryValidationService {
     private AtomicLong totalMsProcessing = new AtomicLong(0);
     private AtomicLong workingExecutions = new AtomicLong(0);
     private AtomicLong sleepingExecutions = new AtomicLong(0);
-    
-    private static Logger log = YukonLogManager.getLogger(RawPointHistoryValidationService.class);
-    
+
     private static ParameterizedRowMapper<RawPointHistoryWrapper> rawPointHistoryRowMapper = new ParameterizedRowMapper<RawPointHistoryWrapper>()  {
+        @Override
         public RawPointHistoryWrapper mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             RawPointHistoryWrapper wrapper = new RawPointHistoryWrapper();
@@ -117,6 +119,7 @@ public class RawPointHistoryValidationService {
         executorService = Executors.newScheduledThreadPool(8); // must be greater than 1
         
         executorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
             public void run() {
                 boolean didSomething;
                 long startingIdForLoggingPurposes = -1;
@@ -130,7 +133,7 @@ public class RawPointHistoryValidationService {
                         
                         long maxRphChangeId = 0;
                         try {
-                            maxRphChangeId = yukonJdbcTemplate.queryForLong(sql1);
+                            maxRphChangeId = jdbcTemplate.queryForLong(sql1);
                         } catch (EmptyResultDataAccessException e) {
                             // maxRphChangeId = 0;
                         }
@@ -202,7 +205,6 @@ public class RawPointHistoryValidationService {
     }
 
     private long processChunkOfRows(long lastChangeIdProcessed, long stopChangeId) throws ProcessingException {
-          
         if (lastChangeIdProcessed >= stopChangeId) {
             return lastChangeIdProcessed;
         }
@@ -224,13 +226,12 @@ public class RawPointHistoryValidationService {
         sql2.append("where rph.CHANGEID").gt(lastChangeIdProcessed);
         sql2.append("  and rph.CHANGEID").lte(stopChangeId);
 
-        final YukonPaoRowMapper yukonPaoRowMapper = new YukonPaoRowMapper();
-        
         final WaitableExecutor waitableExecutor = new WaitableExecutor(executorService);
 
-        yukonJdbcTemplate.query(sql2, new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                PaoIdentifier paoIdentifier = yukonPaoRowMapper.mapRow(rs, 1);
+        jdbcTemplate.query(sql2, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                PaoIdentifier paoIdentifier = rs.getPaoIdentifier("paobjectId", "type");
                 int pointOffset = rs.getInt("PointOffset");
                 String pointTypeStr = rs.getString("PointType");
                 PointType pointType = PointType.getForString(pointTypeStr);
@@ -243,9 +244,10 @@ public class RawPointHistoryValidationService {
                 final RawPointHistoryWorkUnit workUnit = new RawPointHistoryWorkUnit();
                 workUnit.paoPointIdentifier = paoPointIdentifier;
                 workUnit.pointId = pointId;
-                workUnit.thisValue = rawPointHistoryRowMapper.mapRow(rs, 1);
+                workUnit.thisValue = rawPointHistoryRowMapper.mapRow(rs.getResultSet(), 1);
                 
                 waitableExecutor.execute(new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             if (!attributeService.isPointAttribute(paoPointIdentifier, BuiltInAttribute.USAGE)) return;
@@ -275,8 +277,8 @@ public class RawPointHistoryValidationService {
         return stopChangeId;
     }
     
-    private ImmutableSet<ValidationMonitor> findValidationMonitors(SetMultimap<ValidationMonitor, Integer> deviceGroupCache,
-                                                                       PaoPointIdentifier paoPointIdentifier) {
+    private ImmutableSet<ValidationMonitor> findValidationMonitors(
+            SetMultimap<ValidationMonitor, Integer> deviceGroupCache, PaoPointIdentifier paoPointIdentifier) {
         ImmutableSet.Builder<ValidationMonitor> builder = ImmutableSet.builder();
         for (ValidationMonitor validationMonitor : deviceGroupCache.keySet()) {
             if (deviceGroupCache.containsEntry(validationMonitor, paoPointIdentifier.getPaoIdentifier().getPaoId())) {
@@ -332,8 +334,8 @@ public class RawPointHistoryValidationService {
              .append("where numberedRows.rn <= 2")
              .append("order by Timestamp, ChangeId");
         
-        List<RawPointHistoryWrapper> valuesBefore = yukonJdbcTemplate.query(builder1, rawPointHistoryRowMapper);
-        List<RawPointHistoryWrapper> valuesAfter = yukonJdbcTemplate.query(builder2, rawPointHistoryRowMapper);
+        List<RawPointHistoryWrapper> valuesBefore = jdbcTemplate.query(builder1, rawPointHistoryRowMapper);
+        List<RawPointHistoryWrapper> valuesAfter = jdbcTemplate.query(builder2, rawPointHistoryRowMapper);
         
         Builder<RawPointHistoryWrapper> builder = ImmutableList.builder();
         builder.addAll(Lists.reverse(valuesAfter));
@@ -375,7 +377,6 @@ public class RawPointHistoryValidationService {
     }
 
     private void writeOutRphTags(Multimap<RawPointHistoryWrapper, RphTag> tags) {
-        
         Collection<Entry<RawPointHistoryWrapper, RphTag>> entries = tags.entries();
         for (Entry<RawPointHistoryWrapper, RphTag> entry : entries) {
             rphTagDao.insertTag(entry.getKey().changeId, entry.getValue());
@@ -410,11 +411,9 @@ public class RawPointHistoryValidationService {
      * @param tags
      * @return 
      */
-    public static AnalysisResult analyzeThreeHistoryRows(RawPointHistoryWorkUnit workUnit, 
-            ValidationMonitor validationMonitor, 
-            List<RawPointHistoryWrapper> values,
+    public static AnalysisResult analyzeThreeHistoryRows(RawPointHistoryWorkUnit workUnit,
+            ValidationMonitor validationMonitor, List<RawPointHistoryWrapper> values,
             Multimap<RawPointHistoryWrapper, RphTag> tags) {
-        
         boolean peakInTheMiddle = false;
         boolean considerReRead = false;
         
@@ -426,7 +425,8 @@ public class RawPointHistoryValidationService {
             boolean increasing = values.get(0).getValue() >= values.get(2).getValue() - validationMonitor.getKwhReadingError();
             double height = calculateHeight(values.get(2), values.get(1), values.get(0));
             boolean peakIsGreatEnough = Math.abs(height) > validationMonitor.getPeakHeightMinimum();
-            LogHelper.trace(log, "for %d: jumpUp=%b, jumpDown=%b, fall=%b, increasing=%b, height=%.1f, peakIsGreatEnough=%b", workUnit.thisValue.changeId, jumpUp, jumpDown, fall, increasing, height, peakIsGreatEnough);
+            LogHelper.trace(log, "for %d: jumpUp=%b, jumpDown=%b, fall=%b, increasing=%b, height=%.1f, peakIsGreatEnough=%b",
+                workUnit.thisValue.changeId, jumpUp, jumpDown, fall, increasing, height, peakIsGreatEnough);
 
 
             // look for Peak Up
@@ -502,7 +502,6 @@ public class RawPointHistoryValidationService {
 
     private void processThreeHistoryRows(RawPointHistoryWorkUnit workUnit, ValidationMonitor validationMonitor,
             List<RawPointHistoryWrapper> values, Multimap<RawPointHistoryWrapper, RphTag> tags) {
-        
         AnalysisResult analysisResult = analyzeThreeHistoryRows(workUnit, validationMonitor, values, tags);
         
         if (analysisResult.considerReRead && validationMonitor.isReReadOnUnreasonable() ) {
@@ -642,61 +641,5 @@ public class RawPointHistoryValidationService {
     @ManagedAttribute
     public float getAverageRowsPerWakeup() {
         return (float)changeIdsEvaluated.get() / sleepingExecutions.get();
-    }
-    
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Autowired
-    public void setPointReadService(PointReadService pointReadService) {
-        this.pointReadService = pointReadService;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setValidationMonitorDao(ValidationMonitorDao validationMonitorDao) {
-        this.validationMonitorDao = validationMonitorDao;
-    }
-    
-    @Autowired
-    public void setVendorSpecificSqlBuilderFactory(
-            VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
-        this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
-    }
-    
-    @Autowired
-    public void setPersistedSystemValueDao(PersistedSystemValueDao persistedSystemValueDao) {
-        this.persistedSystemValueDao = persistedSystemValueDao;
-    }
-    
-    @Autowired
-    public void setRphTagDao(RphTagDao rphTagDao) {
-        this.rphTagDao = rphTagDao;
-    }
-    
-    @Autowired
-    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
-        this.rawPointHistoryDao = rawPointHistoryDao;
-    }
-    
-    @Autowired
-    public void setValidationEventLogService(ValidationEventLogService validationEventLogService) {
-        this.validationEventLogService = validationEventLogService;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-		this.paoLoadingService = paoLoadingService;
-	}
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

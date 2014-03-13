@@ -3,6 +3,8 @@ package com.cannontech.core.authorization.support.pao;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -18,10 +20,9 @@ import com.google.common.collect.SetMultimap;
  * authorizations
  */
 public class LMGroupParentAuthorization extends LMParentBaseAuthorization {
+    @Autowired private DemandResponseDao demandResponseDao;
+    @Autowired private LoadGroupDao loadGroupDao;
 
-    private DemandResponseDao demandResponseDao;
-    private LoadGroupDao loadGroupDao;
-    
     @Override
     protected boolean checkPaoType(YukonPao pao) {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();
@@ -31,7 +32,6 @@ public class LMGroupParentAuthorization extends LMParentBaseAuthorization {
 
     @Override
     protected List<SetMultimap<PaoIdentifier, PaoIdentifier>> getParentMaps(Set<PaoIdentifier> paos) {
-
         List<SetMultimap<PaoIdentifier, PaoIdentifier>> parentMapList = Lists.newArrayList();
 
         // Get macro group parents map
@@ -48,25 +48,16 @@ public class LMGroupParentAuthorization extends LMParentBaseAuthorization {
     }
 
     @Override
-    protected List<YukonPao> getParents(PaoIdentifier pao) {
-        List<YukonPao> parents = demandResponseDao.getProgramsForGroup(pao);
+    protected List<? extends YukonPao> getParents(PaoIdentifier pao) {
+        List<PaoIdentifier> parents = demandResponseDao.getProgramsForGroup(pao);
         List<PaoIdentifier> macroGroupParents = loadGroupDao.getParentMacroGroups(pao);
         parents.addAll(macroGroupParents);
         
         return parents;
     }
-    
-    public void setDemandResponseDao(DemandResponseDao demandResponseDao) {
-        this.demandResponseDao = demandResponseDao;
-    }
-    
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao){
-        this.loadGroupDao = loadGroupDao;        
-    }
-    
+
     @Override
     public String toString() {
         return permission + " and group parent authorization";
     }
-
 }

@@ -14,34 +14,32 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
-import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.RowAndFieldMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao {
-
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
 
-    private static final RowAndFieldMapper<CommandRequestExecutionResult> rowAndFieldMapper;
+    private final static RowAndFieldMapper<CommandRequestExecutionResult> rowAndFieldMapper;
     private SimpleTableAccessTemplate<CommandRequestExecutionResult> template;
     private final static FieldMapper<CommandRequestUnsupported> unsupportedRowMapper;
     private SimpleTableAccessTemplate<CommandRequestUnsupported> unsupportedTemplate;
 
-    private static final String selectResultIdsById;
-    private static final String selectCountById;
-    private static final String selectSuccessCountById;
-    private static final String selectFailCountById;
+    private final static String selectResultIdsById;
+    private final static String selectCountById;
+    private final static String selectSuccessCountById;
+    private final static String selectFailCountById;
 
     static {
-    	
 		selectResultIdsById = "SELECT CRER.CommandRequestExecResultId FROM CommandRequestExecResult CRER WHERE CommandRequestExecId = ? ORDER BY CompleteTime";
 		
 		selectCountById = "SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount FROM CommandRequestExecResult CRER WHERE CRER.CommandRequestExecId = ?";
@@ -87,7 +85,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("ORDER BY CompleteTime");
         
         List<CommandRequestExecutionResult> list = 
-            yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
+            jdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
         return list;
 	}
 
@@ -102,43 +100,43 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 	    };
 	    
     	List<Integer> resultIds = 
-    	    yukonJdbcTemplate.query(selectResultIdsById, mapper, commandRequestExecutionId);
+    	    jdbcTemplate.query(selectResultIdsById, mapper, commandRequestExecutionId);
     	return resultIds;
     }
     
     @Override
     public int getCountByExecutionId(int commandRequestExecutionId) {
-    	return yukonJdbcTemplate.queryForInt(selectCountById, commandRequestExecutionId);
+    	return jdbcTemplate.queryForInt(selectCountById, commandRequestExecutionId);
     }
     
     @Override
     public int getSucessCountByExecutionId(int commandRequestExecutionId) {
-    	return yukonJdbcTemplate.queryForInt(selectSuccessCountById, commandRequestExecutionId);
+    	return jdbcTemplate.queryForInt(selectSuccessCountById, commandRequestExecutionId);
     }
     
 	@Override
     public int getFailCountByExecutionId(int commandRequestExecutionId) {
-		return yukonJdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
+		return jdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
 	}
 	
 	@Override
     public List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
-		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 	}
 
 	@Override
     public List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
 	    sql.append("  AND CRER.ErrorCode = 0");
-		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 	}
 
 	@Override
     public List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
 	    sql.append("  AND CRER.ErrorCode > 0");
-		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
 	}
 
     @Override
@@ -148,7 +146,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("FROM CommandRequestUnsupported CRER");
         sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
-        return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
+        return jdbcTemplate.query(sql, RowMapper.PAO_IDENTIFIER);
     }
 
     private SqlStatementBuilder getBaseDeviceSqlForExecutionId(int commandRequestExecutionId) {
@@ -172,17 +170,17 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         sql.append("FROM CommandRequestUnsupported");
         sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
         
-        return yukonJdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @PostConstruct
     public void postConstruct() {
-        template = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<>(jdbcTemplate, nextValueHelper);
         template.setTableName("CommandRequestExecResult");
         template.setPrimaryKeyField("CommandRequestExecResultId");
         template.setFieldMapper(rowAndFieldMapper); 
         
-        unsupportedTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
+        unsupportedTemplate = new SimpleTableAccessTemplate<>(jdbcTemplate, nextValueHelper);
         unsupportedTemplate.setTableName("CommandRequestUnsupported");
         unsupportedTemplate.setPrimaryKeyField("CommandRequestUnsupportedId");
         unsupportedTemplate.setFieldMapper(unsupportedRowMapper);

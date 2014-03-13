@@ -278,22 +278,15 @@
                 </bean>
 
         		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
-				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization">
-					<property name="paoPermissionService" ref="paoPermissionService" />
-				</bean>
+				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization"/>
 
         		<!-- Group parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
 				<bean class="com.cannontech.core.authorization.support.pao.LMGroupParentAuthorization">
-					<property name="paoAuthorizationService" ref="paoAuthorizationService" />
-                    <property name="demandResponseDao" ref="demandResponseDao" />
-                    <property name="loadGroupDao" ref="loadGroupDao" />
                     <property name="permission" value="LM_VISIBLE"/>
 				</bean>
 
         		<!-- Program parent permissions from the UserPaoPermission and GroupPaoPermission db tables -->
 				<bean class="com.cannontech.core.authorization.support.pao.LMProgramParentAuthorization">
-					<property name="paoAuthorizationService" ref="paoAuthorizationService" />
-                    <property name="demandResponseDao" ref="demandResponseDao" />
                     <property name="permission" value="LM_VISIBLE"/>
 				</bean>
 

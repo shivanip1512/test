@@ -38,16 +38,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
-
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
 
-    private static class ApplianceCategoryRowMapper extends
-            AbstractRowMapperWithBaseQuery<ApplianceCategory> {
+    private static class ApplianceCategoryRowMapper extends AbstractRowMapperWithBaseQuery<ApplianceCategory> {
         private final Map<Integer, WebConfiguration> webConfigurations;
         private ApplianceCategoryRowMapper() {
             webConfigurations = Maps.newHashMap();
@@ -63,25 +61,23 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             retVal.append(    "ecm.energyCompanyId, ac.consumerSelectable, ac.averageKwLoad, yle.yukonDefinitionId");
             retVal.append("FROM applianceCategory ac");
             retVal.append(    "JOIN yukonListEntry yle ON ac.categoryId = yle.entryId");
-            retVal.append(    "JOIN ecToGenericMapping ecm ON ac.applianceCategoryId = ecm.itemId AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
+            retVal.append(    "JOIN ecToGenericMapping ecm");
+            retVal.append(        "ON ac.applianceCategoryId = ecm.itemId");
+            retVal.append(        "AND ecm.mappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
             return retVal;
         }
 
         @Override
-        public ApplianceCategory mapRow(YukonResultSet rs)
-                throws SQLException {
+        public ApplianceCategory mapRow(YukonResultSet rs) throws SQLException {
             int applianceCategoryId = rs.getInt("applianceCategoryId");
             String name = rs.getString("description");
             int applianceTypeDefinitionId = rs.getInt("yukonDefinitionId");
-            ApplianceTypeEnum applianceType =
-                ApplianceTypeEnum.getByDefinitionId(applianceTypeDefinitionId);
-            boolean consumerSelectable =
-                rs.getString("consumerSelectable").equalsIgnoreCase("y");
+            ApplianceTypeEnum applianceType = ApplianceTypeEnum.getByDefinitionId(applianceTypeDefinitionId);
+            boolean consumerSelectable = rs.getBoolean("consumerSelectable");
             int energyCompanyId = rs.getInt("energyCompanyId");
             Integer webConfigurationId = rs.getInt("webConfigurationId");
             Double applianceLoad = rs.getDouble("averageKwLoad");
-            WebConfiguration webConfiguration =
-                webConfigurations.get(webConfigurationId);
+            WebConfiguration webConfiguration = webConfigurations.get(webConfigurationId);
 
             ApplianceCategory applianceCategory =
                 new ApplianceCategory(applianceCategoryId, name, applianceType,
@@ -94,8 +90,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
-
-        // Getting available appliance category energy companies.
+        // Get available appliance category energy companies.
         YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         Set<Integer> appCatEnergyCompanyIds = getAppCatEnergyCompanyIds(yukonEnergyCompany);
 
@@ -105,7 +100,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         sql.append("AND EnergyCompanyId").in(appCatEnergyCompanyIds);
         
-        List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        List<Integer> applianceCategoryIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
         return applianceCategoryIdList;
     }    
 
@@ -115,7 +110,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("SELECT EnergyCompanyId FROM ECToGenericMapping");
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         sql.append("AND ItemId").eq(applianceCategoryId);
-        return yukonJdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForInt(sql);
     }
 
     @Override
@@ -126,7 +121,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("AND ItemId").in(appCatIds);
 
         final Map<Integer, Integer> energyCompanyMap = new HashMap<>();
-        yukonJdbcTemplate.query(sql , new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql , new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int appCatId = rs.getInt("ItemId");
@@ -140,12 +135,11 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
-
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(yukonEnergyCompany.getEnergyCompanyId());
+        YukonEnergyCompany ec = ecService.getEnergyCompanyByAccountId(customerAccountId);
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIdsByEC(ec.getEnergyCompanyId());
 
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
-        
+
         for (final Integer applianceCategoryId : applianceCategoryIdList) {
             final ApplianceCategory applianceCategory = getById(applianceCategoryId);
             set.add(applianceCategory);
@@ -161,7 +155,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append(rowMapper.getBaseQuery());
         sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
 
-        ApplianceCategory applianceCategory = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        ApplianceCategory applianceCategory = jdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration =
             webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
         applianceCategory.setWebConfiguration(webConfiguration);
@@ -181,7 +175,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("       OR ywc.alternateDisplayName").eq(applianceCategoryName).append(")");
         sql.append("AND ecm.energyCompanyId").in(energyCompanyIds);
 
-        List<ApplianceCategory> applianceCategories = yukonJdbcTemplate.query(sql, rowMapper);
+        List<ApplianceCategory> applianceCategories = jdbcTemplate.query(sql, rowMapper);
         for (ApplianceCategory applianceCategory : applianceCategories) {
             WebConfiguration webConfiguration =
                 webConfigurationDao.getForApplianceCateogry(applianceCategory.getApplianceCategoryId());
@@ -190,14 +184,12 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
         if (applianceCategories.size() > 0) {
             return applianceCategories;
-        } else {
-            throw new NotFoundException("The appliance category name supplied does not exist.");
         }
+        throw new NotFoundException("The appliance category name supplied does not exist.");
     }
 
     @Override
     public List<Integer> getEnergyCompaniesByApplianceCategoryId(int applianceCategoryId){
-
         final SqlStatementBuilder ecIdFromAppCatQuery = new SqlStatementBuilder();
         ecIdFromAppCatQuery.append("SELECT EnergyCompanyId");
         ecIdFromAppCatQuery.append("FROM ECtoGenericMapping");
@@ -205,13 +197,12 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         ecIdFromAppCatQuery.append("AND MappingCategory").eq_k(EcMappingCategory.APPLIANCE_CATEGORY);
         
         List<Integer> energyCompanyIds =
-            yukonJdbcTemplate.query(ecIdFromAppCatQuery, RowMapper.INTEGER);
+            jdbcTemplate.query(ecIdFromAppCatQuery, RowMapper.INTEGER);
 
         if (energyCompanyIds.size() > 0) {
             return energyCompanyIds;
-        } else {
-            throw new NotFoundException("The supplied appliance category is not attached to any energy companies.");
         }
+        throw new NotFoundException("The supplied appliance category is not attached to any energy companies.");
     }
 
     @Override
@@ -223,7 +214,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("WHERE ac.applianceCategoryId").in(applianceCategoryIds);
 
         List<ApplianceCategory> applianceCategories =
-            yukonJdbcTemplate.query(sql, rowMapper);
+            jdbcTemplate.query(sql, rowMapper);
 
         Map<Integer, ApplianceCategory> retVal = Maps.newHashMap();
         for (ApplianceCategory applianceCategory : applianceCategories) {
@@ -239,13 +230,13 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany) {
-        boolean inheritParentAppCats = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS, yukonEnergyCompany.getEnergyCompanyId());
+        boolean inheritParentAppCats =
+            ecSettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS,
+                yukonEnergyCompany.getEnergyCompanyId());
         if (inheritParentAppCats) {
             return ecMappingDao.getParentEnergyCompanyIds(yukonEnergyCompany.getEnergyCompanyId());
-        } else {
-            return Collections.singleton(yukonEnergyCompany.getEnergyCompanyId());
         }
-        
+        return Collections.singleton(yukonEnergyCompany.getEnergyCompanyId());
     }
 
     @Override

@@ -31,9 +31,7 @@
   	<property name="yukonUserDao" ref="yukonUserDao"/>
     <property name="databaseCache" ref="databaseCache"/>
   </bean>
-  <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl">
-    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
-  </bean>
+  <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl"/>
   <bean id="deviceCustomerListDao" class="com.cannontech.core.dao.impl.DeviceCustomerListDaoImpl" />
   <bean id="graphCustomerListDao" class="com.cannontech.core.dao.impl.GraphCustomerListDaoImpl" />
   <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl">
@@ -66,10 +64,7 @@
   </bean>
   <bean id="notificationGroupDao" class="com.cannontech.core.dao.impl.NotificationGroupDaoImpl"/>
   <bean id="paoDao" class="com.cannontech.core.dao.impl.PaoDaoImpl" >
-  	<property name="authDao" ref="authDao"/>
-    <property name="jdbcOps" ref="jdbcTemplate"/> 
-    <property name="databaseCache" ref="databaseCache"/>   
-    <property name="nextValueHelper" ref="nextValueHelper"/>
+    <property name="jdbcOps" ref="jdbcTemplate"/>
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl"/>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" />

@@ -44,7 +44,6 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
@@ -121,19 +120,18 @@ public class OperatorAccountController {
     @Autowired private SubstationDao substationDao;
     @Autowired private AccountImportDataValidator accountImportDataValidator;
     @Autowired private AccountImportService accountImportService;
-    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonUserDao userDao;
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ResidentialLoginService residentialLoginService;
     @Autowired private TransactionOperations transactionTemplate;
     @Autowired private LoginValidatorFactory loginValidatorFactory;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private CsrfTokenService csrfTokenService;
-    @Autowired private YukonEnergyCompanyService yecService;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -209,7 +207,7 @@ public class OperatorAccountController {
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT)
     public String imports(ModelMap model, YukonUserContext userContext) {
         
-        boolean isEcOperator = yecService.isEnergyCompanyOperator(userContext.getYukonUser());
+        boolean isEcOperator = ecService.isEnergyCompanyOperator(userContext.getYukonUser());
         if (!isEcOperator) throw NotAuthorizedException.ecOperator(userContext.getYukonUser());
         
         List<AccountImportResult> completed = new ArrayList<>();
@@ -259,8 +257,7 @@ public class OperatorAccountController {
     
     // DO ACCOUNT IMPORT
     @RequestMapping("doAccountImport")
-    public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) {
-        
+    public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), prescanResult.getEmail(), false);
@@ -317,7 +314,7 @@ public class OperatorAccountController {
         String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
         
         // no search
-        if (StringUtils.isBlank(searchByStr) || !yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())) {
+        if (StringUtils.isBlank(searchByStr) || !ecService.isEnergyCompanyOperator(userContext.getYukonUser())) {
             modelMap.addAttribute("accountSearchResultHolder", AccountSearchResultHolder.emptyAccountSearchResultHolder());
             modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
             return "operator/account/accountList.jsp";
@@ -335,7 +332,7 @@ public class OperatorAccountController {
         int startIndex = (page - 1) * itemsPerPage;
         
         // it is important for searching to use the energyCompany of the user
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
         
@@ -350,25 +347,23 @@ public class OperatorAccountController {
             modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
             
             return "redirect:view";
-            
-        // account list
-        } else {
-            
-            if (accountSearchResultHolder.isHasWarning()) {
-                flashScope.setWarning(Collections.singletonList(accountSearchResultHolder.getWarning()));
-            }
-            Object[] searchResultTitleArguments = new Object[]{new YukonMessageSourceResolvable(searchBy.getFormatKey()), searchValue};
-            modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
-            modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
-            modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
-            return "operator/account/accountList.jsp";
         }
+
+        // account list
+        if (accountSearchResultHolder.isHasWarning()) {
+            flashScope.setWarning(Collections.singletonList(accountSearchResultHolder.getWarning()));
+        }
+        Object[] searchResultTitleArguments = new Object[]{new YukonMessageSourceResolvable(searchBy.getFormatKey()), searchValue};
+        modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
+        modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
+        modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
+        return "operator/account/accountList.jsp";
     }
     
     // NEW ACCOUNT PAGE
     @RequestMapping("accountCreate")
     public String accountCreate(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
-        if(yukonEnergyCompanyService.isEnergyCompanyOperator(userContext.getYukonUser())){
+        if(ecService.isEnergyCompanyOperator(userContext.getYukonUser())){
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, userContext.getYukonUser());
             
             boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
@@ -402,19 +397,15 @@ public class OperatorAccountController {
     
     // CREATE ACCOUNT
     @RequestMapping(method=RequestMethod.POST, value="createAccount")
-    public String createAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral,
-                                BindingResult bindingResult,
-                                FlashScope flashScope,
-                                ModelMap modelMap, 
-                                HttpServletRequest request,
-                                final HttpSession session,
-                                final LiteYukonUser user) throws ServletRequestBindingException {
+    public String createAccount(final @ModelAttribute AccountGeneral accountGeneral, BindingResult bindingResult,
+            FlashScope flashScope, ModelMap model, final HttpSession session, final LiteYukonUser user)
+            throws ServletRequestBindingException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD, user);
         
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         
         AccountDto accountDto = accountGeneral.getAccountDto();
@@ -480,7 +471,7 @@ public class OperatorAccountController {
                 });
                 
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.accountCreated"));
-                modelMap.addAttribute("accountId", accountId);
+                model.addAttribute("accountId", accountId);
                 return "redirect:view";
             }
             
@@ -495,7 +486,7 @@ public class OperatorAccountController {
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 
-                setupAccountCreationModelMap(modelMap, user);
+                setupAccountCreationModelMap(model, user);
                 
                 return "operator/account/account.jsp";
             }
@@ -516,7 +507,7 @@ public class OperatorAccountController {
     }
     // ACCOUNT EDIT PAGE
     @RequestMapping("edit")
-    public String edit(HttpServletRequest request, int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
+    public String edit(int accountId, ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.EDIT);
         setupAccountPage(model, context, fragment, accountId);
@@ -525,7 +516,7 @@ public class OperatorAccountController {
     }
     
     private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(context.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountId);
@@ -579,7 +570,7 @@ public class OperatorAccountController {
     public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) throws IOException {
         LiteYukonUser user = null; 
         if (userId != null) {
-            user = yukonUserDao.getLiteYukonUser(userId);
+            user = userDao.getLiteYukonUser(userId);
         }
         
         LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
@@ -665,7 +656,7 @@ public class OperatorAccountController {
         /* Verify the user has permission to edit accounts */
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
@@ -794,33 +785,26 @@ public class OperatorAccountController {
     
     // DELETE LOGIN
     @RequestMapping(value="deleteLogin", method=RequestMethod.POST)
-    public String deleteLogin(HttpServletRequest request,
-                               String loginMode,
-                               ModelMap modelMap, 
-                               YukonUserContext userContext,
-                               FlashScope flashScope,
-                               AccountInfoFragment accountInfoFragment) {
+    public String deleteLogin(String loginMode, ModelMap model, YukonUserContext userContext, FlashScope flashScope,
+            AccountInfoFragment accountInfoFragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteYukonUser custYukonUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
 
         LoginModeEnum loginModeEnum = LoginModeEnum.valueOf(loginMode);
         if (LoginModeEnum.EDIT.equals(loginModeEnum)) {
-            yukonUserDao.deleteUser(custYukonUser.getUserID());
+            userDao.deleteUser(custYukonUser.getUserID());
         }
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.account.userDeleted"));
         
-        modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
+        model.addAttribute("accountId", accountInfoFragment.getAccountId());
         return "redirect:view";
     }
     
     // DELETE ACCOUNT
     @RequestMapping(value="deleteAccount", method=RequestMethod.POST)
-    public String deleteAccount(HttpServletRequest request, 
-                                int accountId,
-                                ModelMap modelMap, 
-                                YukonUserContext userContext,
-                                FlashScope flashScope) throws ServletRequestBindingException {
+    public String deleteAccount(int accountId, YukonUserContext userContext, FlashScope flashScope)
+            throws ServletRequestBindingException {
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         accountEventLogService.accountDeletionAttempted(userContext.getYukonUser(), customerAccount.getAccountNumber(), EventSource.OPERATOR);
         accountService.deleteAccount(accountId, userContext.getYukonUser());
@@ -831,12 +815,11 @@ public class OperatorAccountController {
     
     // ACCOUNT LOG
     @RequestMapping("accountLog")
-    public String accountLog(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
+    public String accountLog(ModelMap model, AccountInfoFragment accountInfoFragment) {
+        List<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());
+        model.addAttribute("accountEvents",accountEvents);
         
-        ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());
-        modelMap.addAttribute("accountEvents",accountEvents);
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         return "operator/account/accountLog.jsp";
     }
     
@@ -873,7 +856,7 @@ public class OperatorAccountController {
         result.setCurrentUser(user);
         result.setAccountFileUpload(accountFileUpload);
         result.setHardwareFileUpload(hardwareFileUpload);
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         result.setEnergyCompany(energyCompany);
         result.setEmail(email);
@@ -893,7 +876,7 @@ public class OperatorAccountController {
     }
     
     private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
@@ -903,7 +886,7 @@ public class OperatorAccountController {
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         boolean supportsPasswordSet = 
-                authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthType());
+                authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthenticationCategory());
         modelMap.addAttribute("supportsPasswordSet", supportsPasswordSet);
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
@@ -924,9 +907,8 @@ public class OperatorAccountController {
         
         modelMap.addAttribute("showLoginSection", hasEditLoginPrivileges(userContext.getYukonUser()));
 
-        AuthType currentAuthType = authenticationService.getDefaultAuthType();
         modelMap.addAttribute("supportsPasswordSet",
-                              authenticationService.supportsPasswordSet(currentAuthType));
+            authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthenticationCategory()));
 
         modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
         if (residentialUser.getUserID() == UserUtils.USER_NONE_ID) {
@@ -943,7 +925,7 @@ public class OperatorAccountController {
     }
     
     private void checkEditingDefaultUser(String username) {
-        LiteYukonUser defaultUserCheck = yukonUserDao.findUserByUsername(username);
+        LiteYukonUser defaultUserCheck = userDao.findUserByUsername(username);
         
         if (defaultUserCheck != null && defaultUserCheck.getUserID() == UserUtils.USER_NONE_ID) {
             throw new RuntimeException("You cannot edit the the default user.");

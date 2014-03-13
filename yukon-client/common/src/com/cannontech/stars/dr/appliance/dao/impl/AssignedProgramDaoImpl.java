@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.appliance.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -16,6 +14,8 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper.SortBy;
@@ -27,8 +27,8 @@ import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 
 public class AssignedProgramDaoImpl implements AssignedProgramDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private WebConfigurationDao webConfigurationDao;
+    @Autowired private YukonJdbcTemplate ydbcTemplate;
+    @Autowired private WebConfigurationDao webConfigurationDao;
 
     @Override
     public AssignedProgram getById(int assignedProgramId) {
@@ -37,10 +37,8 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         sql.append(rowMapper.getBaseQuery());
         sql.append("AND p.programId").eq(assignedProgramId);
 
-        AssignedProgram assignedProgram =
-            yukonJdbcTemplate.queryForObject(sql, rowMapper);
-        WebConfiguration webConfiguration =
-            webConfigurationDao.getForAssignedProgram(assignedProgramId);
+        AssignedProgram assignedProgram = ydbcTemplate.queryForObject(sql, rowMapper);
+        WebConfiguration webConfiguration = webConfigurationDao.getForAssignedProgram(assignedProgramId);
         assignedProgram.setWebConfiguration(webConfiguration);
 
         return assignedProgram;
@@ -51,12 +49,12 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         Map<Integer, WebConfiguration> webConfigurations =
             webConfigurationDao.getForAssignedPrograms(assignedProgramIds);
 
-        ChunkingSqlTemplate template =
-            new ChunkingSqlTemplate(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(ydbcTemplate);
 
         final AssignedProgramRowMapper rowMapper =
             new AssignedProgramRowMapper(SortBy.PROGRAM_NAME, false, -1, webConfigurations);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(rowMapper.getBaseQuery());
@@ -72,12 +70,11 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
     }
 
     @Override
-    public Map<Integer, Integer> getProgramIdsByAssignedProgramIds(
-            Iterable<Integer> assignedProgramIds) {
-        ChunkingMappedSqlTemplate template =
-            new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+    public Map<Integer, Integer> getProgramIdsByAssignedProgramIds(Iterable<Integer> assignedProgramIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(ydbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT deviceId, programId");
@@ -88,10 +85,9 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         };
 
         Function<Integer, Integer> typeMapper = Functions.identity();
-        ParameterizedRowMapper<Map.Entry<Integer, Integer>> rowMapper = new ParameterizedRowMapper<Entry<Integer,Integer>>() {
+        YukonRowMapper<Map.Entry<Integer, Integer>> rowMapper = new YukonRowMapper<Entry<Integer, Integer>>() {
             @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum)
-                    throws SQLException {
+            public Entry<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 Integer programId = rs.getInt("deviceId");
                 Integer assignedProgramId = rs.getInt("programId");
                 return Maps.immutableEntry(assignedProgramId, programId);
@@ -104,21 +100,10 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
     }
 
     @Override
-    public int getHighestProgramOrderForApplianceCategory(
-            int applianceCategoryId) {
+    public int getHighestProgramOrderForApplianceCategory(int applianceCategoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(programOrder) FROM lmProgramWebPublishing");
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
-        return yukonJdbcTemplate.queryForInt(sql);
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
-        this.webConfigurationDao = webConfigurationDao;
+        return ydbcTemplate.queryForInt(sql);
     }
 }
