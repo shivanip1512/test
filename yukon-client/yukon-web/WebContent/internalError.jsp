@@ -126,7 +126,7 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
                 <strong>Status code:</strong> ${statusCode}
             </p>
             <p>
-                <strong>Message</strong>: <span id="rootErrorMessage">${fn:escapeXml(message)} 
+                <strong>Message</strong>: <span id="rootErrorMessage">${fn:escapeXml(message)} </span>
             </p>
             <p>
                 <strong>Error type</strong>: ${errorType}
