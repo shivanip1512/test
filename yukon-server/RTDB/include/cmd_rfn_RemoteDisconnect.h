@@ -120,10 +120,10 @@ public:
     virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectSetThresholdConfigurationCommand( const Reconnect      reconnect_param,
-                                                   const DemandInterval demand_interval,
-                                                   const double         demand_threshold,
-                                                   const unsigned       connect_delay,
-                                                   const unsigned       max_disconnects );
+                                                         const DemandInterval demand_interval,
+                                                         const double         demand_threshold,
+                                                         const unsigned       connect_delay,
+                                                         const unsigned       max_disconnects );
 
     virtual DisconnectMode getDisconnectMode() const;
 
@@ -148,7 +148,7 @@ public:
     virtual void invokeResultHandler( RfnCommand::ResultHandler &rh ) const;
 
     RfnRemoteDisconnectSetCyclingConfigurationCommand( const unsigned disconnect_minutes,
-                                                 const unsigned connect_minutes );
+                                                       const unsigned connect_minutes );
 
     virtual DisconnectMode getDisconnectMode() const;
 

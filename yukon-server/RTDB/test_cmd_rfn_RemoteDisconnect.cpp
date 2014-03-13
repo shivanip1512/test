@@ -181,10 +181,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                               RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                               -1.0,
-                                                               0,
-                                                               0);
+                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                                     -1.0,
+                                                                     0,
+                                                                     0);
     }
     catch ( const RfnCommand::CommandException & ex )
     {
@@ -195,10 +195,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                               RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                               13.0,
-                                                               0,
-                                                               0);
+                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                                     13.0,
+                                                                     0,
+                                                                     0);
     }
     catch ( const RfnCommand::CommandException & ex )
     {
@@ -209,10 +209,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                               RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                               0.0,
-                                                               31,
-                                                               0);
+                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                                     0.0,
+                                                                     31,
+                                                                     0);
     }
     catch ( const RfnCommand::CommandException & ex )
     {
@@ -223,10 +223,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                               RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                               0.0,
-                                                               0,
-                                                               21);
+                                                                     RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                                     0.0,
+                                                                     0,
+                                                                     21);
     }
     catch ( const RfnCommand::CommandException & ex )
     {
@@ -322,10 +322,10 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DemandThreshold_SetConfiguration_decoding_exc
     std::vector< RfnCommand::CommandException > actual;
 
     RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
-                                                           RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                           10.0,
-                                                           10,
-                                                           10 );
+                                                                 RfnRemoteDisconnectCommand::DemandInterval_Five,
+                                                                 10.0,
+                                                                 10,
+                                                                 10 );
 
     for each ( const RfnCommand::RfnResponsePayload & response in responses )
     {

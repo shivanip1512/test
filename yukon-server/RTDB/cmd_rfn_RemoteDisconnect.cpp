@@ -180,10 +180,10 @@ RfnCommand::Bytes RfnRemoteDisconnectSetOnDemandConfigurationCommand::getData()
 // Demand Threshold Disconnect Configuration Functions
 //-----------------------------------------------------------
 RfnRemoteDisconnectSetThresholdConfigurationCommand::RfnRemoteDisconnectSetThresholdConfigurationCommand( const Reconnect      reconnect_param,
-                                                                                              const DemandInterval demand_interval,
-                                                                                              const double         demand_threshold,
-                                                                                              const unsigned       connect_delay,
-                                                                                              const unsigned       max_disconnects )
+                                                                                                          const DemandInterval demand_interval,
+                                                                                                          const double         demand_threshold,
+                                                                                                          const unsigned       connect_delay,
+                                                                                                          const unsigned       max_disconnects )
     :   reconnectParam( reconnect_param ),
         demandInterval( demand_interval ),
         demandThreshold( demand_threshold ),
@@ -242,7 +242,7 @@ RfnCommand::Bytes RfnRemoteDisconnectSetThresholdConfigurationCommand::getData()
 // Cycling Disconnect Set-Configuration Functions
 //-----------------------------------------------------------
 RfnRemoteDisconnectSetCyclingConfigurationCommand::RfnRemoteDisconnectSetCyclingConfigurationCommand( const unsigned disconnect_minutes,
-                                                                                          const unsigned connect_minutes )
+                                                                                                      const unsigned connect_minutes )
     :   disconnectMinutes( disconnect_minutes ),
         connectMinutes( connect_minutes )
 {
