@@ -13,6 +13,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@page isErrorPage="true" %>
 
 <%
@@ -125,7 +126,7 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
                 <strong>Status code:</strong> ${statusCode}
             </p>
             <p>
-                <strong>Message</strong>: <span id="rootErrorMessage"><spring:escapeBody htmlEscape="true"> ${message}
+                <strong>Message</strong>: <span id="rootErrorMessage">${fn:escapeXml(message)} 
             </p>
             <p>
                 <strong>Error type</strong>: ${errorType}
@@ -138,7 +139,6 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
             </p>
         </div>
     </div>
-<%-- <% } %> --%>
 </c:if>
     
 </body>
