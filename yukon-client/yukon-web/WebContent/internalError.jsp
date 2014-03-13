@@ -16,17 +16,22 @@
 <%@page isErrorPage="true" %>
 
 <%
-    String homeUrl = "/home";
 boolean showStack = false;
 try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-    homeUrl = ServletUtil.createSafeUrl(request, rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user));
     
     String suppressStackStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
     showStack = !BooleanUtils.toBoolean(suppressStackStr);
+    showStack = true;
+    if (showStack) {
+        pageContext.setAttribute("yukonVersion", VersionTools.getYUKON_VERSION());
+        pageContext.setAttribute("yukonDetails", VersionTools.getYukonDetails());
+        
+    }
 
 } catch (NotLoggedInException ignore) {}    
+pageContext.setAttribute("showStack", showStack);
 
 
 Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
@@ -34,18 +39,25 @@ Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.excep
 // because this page is declared as an error page, the exception object will be populated
 throwable = (Throwable)ObjectUtils.defaultIfNull(throwable, exception);
 String errorKey = (String)request.getAttribute(ErrorHelperFilter.LOG_KEY);
+pageContext.setAttribute("errorKey", errorKey);
+
 Throwable root = CtiUtilities.getRootCause(throwable);
 
-Object status_code = request.getAttribute("javax.servlet.error.status_code");
-status_code = ObjectUtils.defaultIfNull(status_code, "no status code");
+Object statusCode = request.getAttribute("javax.servlet.error.status_code");
+statusCode = ObjectUtils.defaultIfNull(statusCode, "no status code");
+pageContext.setAttribute("statusCode", statusCode.toString());
 Object message = root.getMessage();
 message = ObjectUtils.defaultIfNull(message, "no message");
-Object error_type = request.getAttribute("javax.servlet.error.exception_type");
-error_type = ObjectUtils.defaultIfNull(error_type, "no error type");
-Object request_uri = request.getAttribute("javax.servlet.error.request_uri");
-request_uri = ObjectUtils.defaultIfNull(request_uri, "no request uri");
-
+pageContext.setAttribute("message", message.toString());
+Object errorType = request.getAttribute("javax.servlet.error.exception_type");
+errorType = ObjectUtils.defaultIfNull(errorType, "no error type");
+pageContext.setAttribute("errorType", message.toString());
+Object requestURI = request.getAttribute("javax.servlet.error.request_uri");
+requestURI = ObjectUtils.defaultIfNull(requestURI, "no request uri");
+pageContext.setAttribute("requestURI", requestURI.toString());
 String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(pageContext.getServletContext(), throwable);
+pageContext.setAttribute("friendlyExceptionMessage", friendlyExceptionMessage);
+pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throwable));
 %>
 
 <html>
@@ -64,48 +76,71 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
         <cti:logo key="yukon.web.error.logo" />
     </cti:link>
 </div>
-<% if (friendlyExceptionMessage != null) { %>
-<br/>
-<div id="errorFriendly">
-<c:set var="friendlyExceptionMessage" value="<%=friendlyExceptionMessage %>"/>
-<cti:msg key="yukon.web.error.detailedFriendlyMessage" argument="${friendlyExceptionMessage}" />
-</div>
-<br/>
-<% } else{%>
-<div id="errorMain"><cti:msg key="yukon.web.error.genericMainMessage" /></div>
-<% }%>
+<c:choose>
+    <c:when test="${not empty friendlyExceptionMessage}">
+        <br/>
+        <div id="errorFriendly">
+            <cti:msg key="yukon.web.error.detailedFriendlyMessage" argument="${friendlyExceptionMessage}" />
+        </div>
+        <br/>
+    </c:when>
+    <c:otherwise>
+        <div id="errorMain"><cti:msg key="yukon.web.error.genericMainMessage" /></div>
+    </c:otherwise>
+</c:choose>
 
-<% if (errorKey == null) { %>
-<div id="errorSub"><cti:msg key="yukon.web.error.genericSubMessage"/></div>
-<% } else { %>
-<c:set var="errorKey" value="<%=errorKey %>"/>
-    <div id="errorSub">
-        <cti:msg key="yukon.web.error.genericSubMessageWithKey" argument="${errorKey}"/>
+<c:choose>
+    <c:when test="${empty errorKey}">
+        <div id="errorSub"><cti:msg key="yukon.web.error.genericSubMessage"/></div>
+    </c:when>
+    <c:otherwise>
+        <div id="errorSub">
+            <cti:msg key="yukon.web.error.genericSubMessageWithKey" argument="${errorKey}"/>
+        </div>
+    </c:otherwise>
+</c:choose>
+
+<c:if test="${showStack}">
+    <cti:includeScript link="PROTOTYPE" force="true"/>
+    <script type="text/javascript">
+    function showStack( chkBox ) {
+        var elem = document.getElementById('stackTrace');
+        elem.style.display = 'block';
+        document.getElementById('showMore').style.display = 'none';
+    
+    }
+    </script>
+    <div id="errorDetail">
+        <div id="showMore">
+            <a href="javascript:showStack()">Detailed information</a>
+        </div>
+        <div style="display: none" id="stackTrace">
+             <p>
+                <strong>Yukon Version:</strong> ${yukonVersion}
+             </p>
+             <p>
+                <strong>Yukon Version Details:</strong> ${yukonVersion}
+             </p>
+             <p>
+                <strong>Status code:</strong> ${statusCode}
+            </p>
+            <p>
+                <strong>Message</strong>: <span id="rootErrorMessage"><spring:escapeBody htmlEscape="true"> ${message}
+            </p>
+            <p>
+                <strong>Error type</strong>: ${errorType}
+            </p>
+            <p>
+                <strong>Request URI</strong>: ${requestURI}
+            </p>
+            <p>
+                ${stackTrace}
+            </p>
+        </div>
     </div>
-<% } %>
-<% if (showStack) { %>
-<cti:includeScript link="PROTOTYPE" force="true"/>
-<script type="text/javascript">
-function showStack( chkBox ) {
-	var elem = document.getElementById('stackTrace');
-	elem.style.display = 'block';
-	document.getElementById('showMore').style.display = 'none';
-
-}
-</script>
-<div id="errorDetail">
-<div id="showMore"><a href="javascript:showStack()">Detailed information</a></div>
-<div style="display: none" id="stackTrace">
-    <b>Yukon Version:</b> <%= VersionTools.getYUKON_VERSION()%>
-    <br><b>Yukon Version Details:</b> <%= VersionTools.getYukonDetails() %>
-    <br><b>Status code:</b> <%= status_code.toString()%>
-    <br><b>Message</b>: <span id="rootErrorMessage"><spring:escapeBody htmlEscape="true"><%= message.toString()%></spring:escapeBody></span>
-    <br><b>Error type</b>: <%= error_type.toString()%>
-    <br><b>Request URI</b>: <%= request_uri.toString()%>
-    <%= ServletUtil.printNiceHtmlStackTrace(throwable)%>
-</div>
-</div>
-<% } %>
+<%-- <% } %> --%>
+</c:if>
+    
 </body>
 
 </html>

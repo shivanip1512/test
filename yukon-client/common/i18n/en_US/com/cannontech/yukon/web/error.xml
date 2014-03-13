@@ -7,6 +7,10 @@
     <entry key="yukon.web.error.detailedFriendlyMessage">{0}</entry>
     <entry key="yukon.web.error.genericMainMessage">An error occurred while processing your request</entry>
     <entry key="yukon.web.error.genericSubMessage">Try to execute your request again.</entry>
+    <entry key="yukon.web.error.404Message">404 - page not found</entry>
+    <entry key="yukon.web.error.403Message">403 - forbidden</entry>
+    <entry key="yukon.web.error.401Message">401 - unauthorized</entry>
+    <entry key="yukon.web.error.400Message">400 - bad request</entry>
     <entry key="yukon.web.error.genericSubMessageWithKey">Try to execute your request again ({0}).</entry>
 
     <entry key="yukon.web.error.required">Field is required.</entry>
