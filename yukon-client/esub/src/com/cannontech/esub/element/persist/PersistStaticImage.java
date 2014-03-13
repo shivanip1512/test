@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.StaticImage;

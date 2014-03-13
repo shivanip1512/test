@@ -21,7 +21,7 @@ import javax.swing.event.ListSelectionListener;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.TagMsg;

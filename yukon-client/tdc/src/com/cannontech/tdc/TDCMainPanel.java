@@ -52,7 +52,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.TagDao;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;

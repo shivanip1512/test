@@ -190,6 +190,11 @@
     <body-content>empty</body-content>
     <tag-class>com.cannontech.web.taglib.CsrfTokenTag</tag-class>
     <description>Inserts a hidden field containing the valid CSRF token found in the current session</description>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
   
    <tag>

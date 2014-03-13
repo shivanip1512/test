@@ -1,6 +1,6 @@
 package com.cannontech.dbeditor.wizard.state;
 
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.spring.YukonSpringHook;
 
 /**

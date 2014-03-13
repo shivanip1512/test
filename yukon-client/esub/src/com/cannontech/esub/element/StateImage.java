@@ -13,7 +13,7 @@ import java.util.Properties;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;

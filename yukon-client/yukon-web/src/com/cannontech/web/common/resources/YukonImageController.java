@@ -35,8 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.core.dao.YukonImageDao;
-import com.cannontech.core.dao.impl.YukonImage;
+import com.cannontech.core.image.dao.YukonImageDao;
+import com.cannontech.core.image.model.YukonImage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
@@ -189,9 +189,9 @@ public class YukonImageController {
     }
 
     @RequestMapping(value="/images/{id}", method=RequestMethod.DELETE)
-    public @ResponseBody Map<String, Object> delete(YukonUserContext context, @PathVariable int id) {
+    public @ResponseBody Map<String, Object> delete(YukonUserContext userContext, @PathVariable int id) {
         
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         try {
             List<Theme> themes = themeDao.getThemes();
             Set<Integer> nonDeletableImages = new HashSet<>();
@@ -201,8 +201,7 @@ public class YukonImageController {
                 nonDeletableImages.add(backgroundId);
                 nonDeletableImages.add(logoId);
             }
-            if (id == YukonImage.DEFAULT_BACKGROUND.getId()
-                || id == YukonImage.DEFAULT_LOGO.getId()) {
+            if (YukonImage.isStandardImageId(id)) {
                 throw new IllegalArgumentException(accessor.getMessage(keyBase + "delete.default"));
             } else if (nonDeletableImages.contains(id)) {
                 throw new IllegalArgumentException(accessor.getMessage(keyBase + "delete.inuse"));

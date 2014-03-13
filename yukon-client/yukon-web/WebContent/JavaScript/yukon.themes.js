@@ -187,10 +187,11 @@ yukon.themes = (function () {
                     imagePicker = button.closest('.image-picker'),
                     originalImageId = imagePicker.data('originalImageId');
 
+                imageUrl = imageUrl.substring(0, imageUrl.indexOf('/thumb'));
                 e.preventDefault();
                 if ('undefined' !== typeof imageUrl) {
                     jQuery.ajax({
-                      url: imageUrl,
+                      url: yukon.url(imageUrl),
                       type: 'post',
                       // _method is needed by the HiddenHttpMethodFilter which allows us to use other methods like DELETE and PUT
                       data: { _method: 'DELETE'}
@@ -221,8 +222,9 @@ yukon.themes = (function () {
         /** Initialize the file uploaders for uploading images. Uses a jquery file upload plugin. */
         initFileUpload: function (category) {
             
-            var uploadForm = jQuery('div[data-category="' + category + '"] form');
-
+            var uploadForm = jQuery('div[data-category="' + category + '"] form'),
+                token = jQuery('#csrf-token').val();
+            
             uploadForm.fileupload({
                 dataType: 'text',
                 start: function (e) {
@@ -261,11 +263,11 @@ yukon.themes = (function () {
                     percent.text(progress + "%");
                 }
             });
-            uploadForm.fileupload('option', 'formData', {'category': category});
+            uploadForm.fileupload('option', 'formData', {'category': category, 'com.cannontech.yukon.request.csrf.token': token});
         }
     };
     return mod;
-}());
+})();
 
 jQuery(function () {
     yukon.themes.init(jQuery('#button-keys').data('buttonKeys'));

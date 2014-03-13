@@ -1,4 +1,4 @@
-package com.cannontech.core.dao;
+package com.cannontech.core.image.dao;
 
 import java.io.IOException;
 import java.util.List;

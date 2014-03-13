@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 
 import com.cannontech.common.gui.table.ICTITableRenderer;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.spring.YukonSpringHook;
 

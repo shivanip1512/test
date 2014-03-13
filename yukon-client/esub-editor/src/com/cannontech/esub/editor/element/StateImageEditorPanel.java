@@ -29,7 +29,7 @@ import com.cannontech.common.gui.util.DataInputPanelListener;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.StateDao;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteBase;

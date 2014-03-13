@@ -14,7 +14,10 @@ import com.cannontech.web.security.csrf.CsrfTokenService;
 
 @Configurable(value="csrfTokenTagPrototype", autowire=Autowire.BY_NAME)
 public class CsrfTokenTag extends YukonTagSupport {
+    
     @Autowired private CsrfTokenService csrfTokenService;
+    
+    private String var;
 
     @Override
     public void doTag() throws JspException, IOException {
@@ -23,6 +26,15 @@ public class CsrfTokenTag extends YukonTagSupport {
         String token = csrfTokenService.getTokenForSession(request.getSession());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<input type=\"hidden\" name=\""+CsrfTokenService.REQUEST_CSRF_TOKEN+"\" value=\""+token+"\">");
+        if (var == null) {
+            out.print("<input type=\"hidden\" name=\""+CsrfTokenService.REQUEST_CSRF_TOKEN+"\" value=\""+token+"\">");
+        } else {
+            getJspContext().setAttribute(var, token);
+        }
     }
+    
+    public void setVar(String var) {
+        this.var = var;
+    }
+    
 }

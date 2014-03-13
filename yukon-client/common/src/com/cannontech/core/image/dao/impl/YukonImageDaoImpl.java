@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.core.image.dao.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;

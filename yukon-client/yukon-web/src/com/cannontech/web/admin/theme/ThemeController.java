@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.YukonImageDao;
-import com.cannontech.core.dao.impl.YukonImage;
+import com.cannontech.core.image.dao.YukonImageDao;
+import com.cannontech.core.image.model.YukonImage;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -39,8 +39,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.resources.ThemeableResourceCache;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.support.MappedPropertiesHelper;
+import com.cannontech.web.util.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
@@ -53,8 +53,6 @@ public class ThemeController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ResourceLoader loader;
     @Autowired private YukonImageDao yid;
-    
-    private final ObjectMapper jsonObjectMapper = new ObjectMapper();
     
     private SimpleValidator<Theme> validator = new SimpleValidator<Theme>(Theme.class) {
         @Override
@@ -176,7 +174,7 @@ public class ThemeController {
     public String imagePicker(ModelMap model, String category, Integer selected) {
         
         List<ImagePickerImage> pickerImages = new ArrayList<>();
-        Set<Integer> nonDeletableImages = Sets.newHashSet(YukonImage.DEFAULT_BACKGROUND.getId(), YukonImage.DEFAULT_LOGO.getId());
+        Set<Integer> nonDeletableImages = Sets.newHashSet(YukonImage.getStandardImageIds());
         
         List<Theme> themes = themeDao.getThemes();
         for (Theme theme : themes) {
@@ -241,7 +239,7 @@ public class ThemeController {
         
         model.addAttribute("themes", themes);
         try {
-            model.addAttribute("colorMap", jsonObjectMapper.writeValueAsString(colorMap));
+            model.addAttribute("colorMap", JsonUtils.toJson(colorMap));
         } catch (JsonProcessingException e) {
             // if this blows up just don't bother with the cute color icons
         }

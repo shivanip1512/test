@@ -4,7 +4,7 @@ import javax.swing.JPopupMenu;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.dao.YukonImageDao;
+import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.spring.YukonSpringHook;
 /**

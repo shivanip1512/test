@@ -1,15 +1,17 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="adminSetup" page="config.themes">
 
 <cti:includeScript link="JQUERY_UI_WIDGET"/>
 <cti:includeScript link="JQUERY_IFRAME_TRANSPORT"/>
 <cti:includeScript link="JQUERY_FILE_UPLOAD"/>
+
+<cti:csrfToken var="token"/>
 
 <style>
 .theme-palette {
@@ -118,6 +120,7 @@
                     <tags:hidden path="themeId"/>
                     <tags:hidden path="editable"/>
                     <tags:hidden path="currentTheme"/>
+                    <input type="hidden" id="csrf-token" value="${token}">
                     
                     <div class="separated-sections">
                     
