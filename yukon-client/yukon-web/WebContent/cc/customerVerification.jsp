@@ -25,7 +25,7 @@
     <f:facet name="header">
       <t:outputText value="Customer"/>
     </f:facet>
-    <t:selectBooleanCheckbox onclick="doCalcSelectedLoad();" value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
+    <t:selectBooleanCheckbox onclick="yukon.curtailment.doCalcSelectedLoad();" value="#{thisCustomer.selected}" disabled="#{!thisCustomer.allowOverride}"/>
     <t:outputText value="#{thisCustomer.customer.companyName}"/>
     <f:facet name="footer">
       <t:outputText value="Load Reduction Selected:"/>
@@ -75,7 +75,7 @@
 </div>
 </h:form>
   <cti:dataUpdaterCallback
-    function="doCalcSelectedLoad"
+    function="yukon.curtailment.doCalcSelectedLoad"
     initialize="true"/>
 </cti:standardPage>
 </f:view>
