@@ -47,7 +47,7 @@
                                         <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
                                     </td>
                                     <td class="actions">
-                                        <cti:button renderMode="buttonImage" icon="icon-cross removeBtn"/>
+                                        <cti:button renderMode="buttonImage" icon="icon-cross" classes="f-remove"/>
                                     </td>
                                 </tr>
                             </cti:displayForPageEditModes>
@@ -73,12 +73,14 @@
             <cti:displayForPageEditModes modes="EDIT">
                 <div class="page-action-area">
                     <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" name="cancel" href="/user/profile"/>
+                    <cti:url var="cancelUrl" value="/user/profile"/>
+                    <cti:button nameKey="cancel" name="cancel" href="${cancelUrl}"/>
                 </div>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="VIEW">
                 <div class="action-area">
-                    <cti:button nameKey="edit" icon="icon-pencil" name="edit" href="/user/profile/edit"/>
+                    <cti:url var="editUrl" value="/user/profile/edit"/>
+                    <cti:button nameKey="edit" icon="icon-pencil" name="edit" href="${editUrl}"/>
                     <c:if test="${canResetPassword}">
                         <cti:button id="btnChangePassword" icon="icon-key" nameKey="changePassword.button"/>
                     </c:if>
@@ -89,7 +91,7 @@
         <cti:displayForPageEditModes modes="VIEW">
             <c:if test="${canResetPassword}">
                 <d:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
-                    <div class="column-14-10">
+                    <div class="column-12-12">
                         <div class="column one">
                             <form id="loginBackingBean">
                                 <input type="hidden" name="k" value="${changePwdKey}">
@@ -238,7 +240,7 @@
             <input type="text" name="contact.otherNotifications" class="f-contactNotif-val">
         </td>
         <td class="actions">
-            <cti:button renderMode="buttonImage" icon="icon-cross" classes="removeBtn"/>
+            <cti:button renderMode="buttonImage" icon="icon-cross" classes="f-remove"/>
         </td>
     </tr>
 </tbody></table>

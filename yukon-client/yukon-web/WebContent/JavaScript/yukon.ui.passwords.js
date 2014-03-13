@@ -17,7 +17,7 @@ yukon.ui.passwords = (function () {
             jQuery('.f-check_password').keyup(function(event){
                 jQuery('button.unlock').attr('disabled', 'true');
                 jQuery('#loginBackingBean').ajaxSubmit({
-                    url: '/login/checkPassword',
+                    url: yukon.url('/login/checkPassword'),
                     type: 'POST',
                     dataType: 'json',
                     success: function(data){
