@@ -23,6 +23,24 @@ DROP TABLE YukonUserRole;
 /* @error ignore-end */
 /* End YUK-12523 */
 
+/* Start YUK-13117 */
+UPDATE DeviceConfigCategory
+SET CategoryType = 'mctDisconnectConfiguration'
+WHERE CategoryType = 'disconnectConfiguration';
+
+UPDATE DeviceConfigCategoryItem 
+SET ItemValue = 'ARM' 
+WHERE ItemValue = 'true' AND ItemName = 'reconnectButton';
+
+UPDATE DeviceConfigCategoryItem 
+SET ItemValue = 'IMMEDIATE' 
+WHERE ItemValue = 'false' AND ItemName = 'reconnectButton';
+
+UPDATE DeviceConfigCategoryItem 
+SET ItemName = 'reconnectParam' 
+WHERE ItemName = 'reconnectButton';
+/* End YUK-13117 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
