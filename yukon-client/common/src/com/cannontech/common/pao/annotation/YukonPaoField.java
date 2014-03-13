@@ -9,8 +9,8 @@ import com.cannontech.common.pao.service.PaoPersistenceService;
 
 /**
  * This annotation is used to identify database column fields within a model object which are 
- * annotated by either {@link YukonPao} or {@link YukonPaoPart}. It is standard to place this on pertinent getter
- * methods, but should never be placed on both the getter AND the setter for the same property descriptor.
+ * annotated by either {@link YukonPao} or {@link YukonPaoPart}. This annotation should be placed on pertinent 
+ * getter methods, and must never be placed on both the getter AND the setter for the same property descriptor.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -10,7 +10,10 @@ import com.cannontech.common.pao.service.PaoPersistenceService;
 /**
  * This annotation is used for representing classes that comprise various classes annotated by the 
  * {@link YukonPao} annotation. Classes with this annotation don't represent "complete" paos, but represent
- * a table that is used as a part of a representation of a complete pao. 
+ * a table that is used as a part of a representation of a complete pao. Where classes with the {@link YukonPao}
+ * annotated are designed with an inheritance structure, classes with this annotation are always stand-alone 
+ * objects that are used via composition within {@link YukonPao} annotated classes to complete the representation
+ * of classes that represent PAO Types.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

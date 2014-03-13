@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.model.Ccu721;
 import com.cannontech.common.pao.model.CompleteCapControlArea;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -22,6 +23,11 @@ public @interface YukonPao {
 
     /**
      * Returns whether or not the annotated model object has a table representing its data. Defaults to true.
+     * An explicit value of false here indicates that the annotated class doesn't have a backing table, which 
+     * (at least currently) indicates that the class represents a PAO Type and is a logical collection of 
+     * <i>other</i> tables. Most of these cases involves a class extended from an already-existing table-backed
+     * class with additional {@link YukonPaoPart} annotated classes contained within it. See {@link Ccu721} for
+     * an example of a case where this should be explicitly false.
      * @return true if the annotated model object has a backing table, false otherwise.
      */
     boolean tableBacked() default true;
@@ -55,7 +61,9 @@ public @interface YukonPao {
     String idColumnName() default UNSPECIFIED;
     
     /**
-     * Get the pao types that are represented by the annotated class.
+     * Get the pao types that are represented by the annotated class. In most cases (but not always), 
+     * classes that represent PAO Types are leaf-nodes of the class hierarchy structure of the 
+     * {@link PaoPersistenceService}.
      * @return an array of the pao types that are represented by the annotated class.
      */
     PaoType[] paoTypes() default {};
