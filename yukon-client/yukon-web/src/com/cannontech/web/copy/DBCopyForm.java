@@ -8,7 +8,9 @@ import javax.faces.context.FacesContext;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
@@ -40,6 +42,7 @@ public class DBCopyForm extends DBEditorForm {
 
     }
 
+    @Override
     protected void checkForErrors() throws Exception {
 
     }
@@ -64,6 +67,9 @@ public class DBCopyForm extends DBEditorForm {
             } catch (TransactionException e) {
                 message.setDetail(ERROR_COPY + e.getMessage());
                 message.setSeverity(FacesMessage.SEVERITY_ERROR);
+                if(e.getCause().getMessage().contains("duplicate")) {
+                    message.setSummary("There may already be a object with that name.");
+                }
             } finally {
                 FacesContext.getCurrentInstance().addMessage("copy_object",
                                                              message);
