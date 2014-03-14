@@ -327,6 +327,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
     
+    @Override
     public boolean isListEntryValid(ContactNotificationType notificationType, String entry) {
         boolean isValidEntry = true;
             if (notificationType.isFaxType()) {
