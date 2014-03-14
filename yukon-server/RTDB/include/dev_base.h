@@ -256,6 +256,45 @@ public:
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     long getDynamicInfo(PaoInfoKeys k) const;
 
+    template <typename T>
+    boost::optional<T> findDynamicInfo(PaoInfoKeys k) const
+    {
+        T val;
+
+        if( ! getDynamicInfo(k, val) )
+        {
+            return boost::none;
+        }
+
+        return val;
+    }
+
+    template <>
+    boost::optional<unsigned char> findDynamicInfo(PaoInfoKeys k) const
+    {
+        long val;
+
+        if( ! getDynamicInfo(k, val) || val < 0 || val > std::numeric_limits<unsigned char>::max() )
+        {
+            return boost::none;
+        }
+
+        return static_cast<unsigned char>(val);
+    }
+
+    template <>
+    boost::optional<bool> findDynamicInfo(PaoInfoKeys k) const
+    {
+        long val;
+
+        if( ! getDynamicInfo(k, val) )
+        {
+            return boost::none;
+        }
+
+        return static_cast<bool>(val);
+    }
+
     bool getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id);
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const;

@@ -27,9 +27,10 @@ namespace { // anonymous namespace
 /**
  * throws MissingConfigDataException() if no config value exist
  */
-std::string getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
+template<typename T>
+T getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
 {
-    boost::optional<std::string> val = deviceConfig->findValue<std::string>( configKey );
+    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
 
     if( ! val )
     {
@@ -37,6 +38,46 @@ std::string getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const 
     }
 
     return *val;
+}
+
+/**
+ * throws InvalidConfigDataException() if config data is out of range
+ */
+template<>
+unsigned char getConfigData<unsigned char>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
+{
+    long l_val = getConfigData<long>(deviceConfig, configKey);
+
+    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned char'.
+    if( l_val < 0 || l_val > std::numeric_limits<unsigned char>::max() )
+    {
+        std::ostringstream cause;
+        cause << "invalid value " << l_val << " is out range, expected [0 - " << std::numeric_limits<unsigned char>::max() << "]";
+
+        throw InvalidConfigDataException( configKey, cause.str() );
+    }
+
+    return static_cast<unsigned char>( l_val );
+}
+
+/**
+ * throws InvalidConfigDataException() if config data is negative
+ */
+template<>
+unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
+{
+    long l_val = getConfigData<long>(deviceConfig, configKey);
+
+    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
+    if( l_val < 0 )
+    {
+        std::ostringstream cause;
+        cause << "invalid value " << l_val << ", expected >= 0";
+
+        throw InvalidConfigDataException( configKey, cause.str() );
+    }
+
+    return static_cast<unsigned>( l_val );
 }
 
 /**
@@ -53,6 +94,34 @@ typename Map::mapped_type getConfigData( const Map & configMap, const std::strin
     }
 
     return *val;
+}
+
+/**
+ * resolve config data for map or bimap mapview
+ * throws InvalidConfigDataException() if data is not found
+ */
+template <class MapType, typename KeyType>
+typename MapType::iterator::value_type::second_type resolveConfigData( MapType& m, KeyType& configData, const std::string & configKey )
+{
+    MapType::const_iterator itr = m.find(configData);
+
+    if( itr == m.end() )
+    {
+        std::ostringstream cause;
+
+        cause << "invalid value " << configData << ", expected [";
+
+        for( itr = m.begin(); itr != m.end(); ++itr)
+        {
+            cause << itr->first << ";";
+        }
+
+        cause << "]";
+
+        throw InvalidConfigDataException( configKey, cause.str() );
+    }
+
+    return itr->second;
 }
 
 /**
@@ -80,7 +149,6 @@ unsigned getSecondsFromTimeString( std::string time )
     return hour * 3600 + minute * 60;
 }
 
-
 const std::map<int, Commands::RfnOvUvConfigurationCommand::MeterID> DeviceTypeToMeterId = boost::assign::map_list_of
         (TYPE_RFN410CL,  Commands::RfnOvUvConfigurationCommand::CentronC1SX)
         (TYPE_RFN420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX)
@@ -93,8 +161,6 @@ const std::map<int, Commands::RfnOvUvConfigurationCommand::MeterID> DeviceTypeTo
         (TYPE_RFN420FRD, Commands::RfnOvUvConfigurationCommand::LGFocusAX)
         (TYPE_RFN420FL,  Commands::RfnOvUvConfigurationCommand::LGFocusAL)
         ;
-
-namespace { // anonymous namespace
 
 const std::set<int> disconnectConfigTypes = boost::assign::list_of
         (TYPE_RFN410FD)
@@ -122,8 +188,6 @@ const std::map<unsigned, Commands::RfnRemoteDisconnectCommand::DemandInterval> i
     ( 10, Commands::RfnRemoteDisconnectCommand::DemandInterval_Ten     )
     ( 15, Commands::RfnRemoteDisconnectCommand::DemandInterval_Fifteen )
     ;
-
-} // anonymous namespace
 
 Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const int deviceType )
 {
@@ -478,68 +542,48 @@ int RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMsg     * p
                                                         ReturnMsgList     & returnMsgs,
                                                         RfnCommandList    & rfnRequests )
 {
-    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
-
-    if( ! deviceConfig )
+    try
     {
-        return NoConfigData;
-    }
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    boost::optional<unsigned char>  configFreezeDay,
-                                    paoFreezeDay;
-
-    {
-        const std::string           configKey( Config::RfnStrings::demandFreezeDay );
-        const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
-
-        if ( ! configValue  )
+        if( ! deviceConfig )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
             return NoConfigData;
         }
 
-        // Rudimentary check to see that we can coerce the 'long' into an 'unsigned char'.
-        //  - the command object will perform further validation of its input.
-        if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned char>::max() )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        const unsigned char configFreezeDay               = getConfigData   <unsigned char> ( deviceConfig, Config::RfnStrings::demandFreezeDay );
+        const boost::optional<unsigned char> paoFreezeDay = findDynamicInfo <unsigned char> ( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay );
 
-            return ErrorInvalidConfigData;
-        }
-
-        configFreezeDay = static_cast<unsigned>( *configValue );
-    }
-
-    {
-        long pao_value;
-
-        if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay, pao_value ) )
-        {
-            paoFreezeDay = static_cast<unsigned>( pao_value );
-        }
-    }
-
-    if( configFreezeDay == paoFreezeDay )  // both exist and are equal
-    {
-        if( ! parse.isKeyValid("force") )
+        // check if the dynamic info has the current configuration
+        if( configFreezeDay == paoFreezeDay && ! parse.isKeyValid("force") )
         {
             return ConfigCurrent;
         }
-    }
-    else
-    {
+
+        // if this is verify only
         if( parse.isKeyValid("verify") )
         {
             return ConfigNotCurrent;
         }
+
+        rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( configFreezeDay ) );
+
+        return NoError;
     }
+    catch( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
 
-    rfnRequests.push_back( boost::make_shared<Commands::RfnDemandFreezeConfigurationCommand>( *configFreezeDay ) );
+        return NoConfigData;
+    }
+    catch( const InvalidConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
 
-    return NoError;
+        return ErrorInvalidConfigData;
+    }
 }
 
 
@@ -1030,7 +1074,7 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 
     for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
     {
-        configValue = getConfigData( deviceConfig, p.second ); // throws MissingConfigDataException()
+        configValue = getConfigData<std::string>( deviceConfig, p.second ); // throws MissingConfigDataException()
 
         configMap[p.second] = configValue;
 
@@ -1072,341 +1116,141 @@ int RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq,
                                                 ReturnMsgList    & returnMsgs,
                                                 RfnCommandList   & rfnRequests )
 {
-    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+    using Commands::RfnOvUvConfigurationCommand;
+    using Commands::RfnSetOvUvAlarmProcessingStateCommand;
+    using Commands::RfnSetOvUvNewAlarmReportIntervalCommand;
+    using Commands::RfnSetOvUvAlarmRepeatIntervalCommand;
+    using Commands::RfnSetOvUvAlarmRepeatCountCommand;
+    using Commands::RfnSetOvUvSetOverVoltageThresholdCommand;
+    using Commands::RfnSetOvUvSetUnderVoltageThresholdCommand;
 
-    if( ! deviceConfig )
+    try
     {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+        if( ! deviceConfig )
+        {
+            return NoConfigData;
+        }
+
+        {
+            const bool configOvUvEnabled               = getConfigData   <bool> ( deviceConfig, Config::RfnStrings::OvUvEnabled );
+            const boost::optional<bool> paoOvUvEnabled = findDynamicInfo <bool> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled );
+
+            if( configOvUvEnabled != paoOvUvEnabled || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = configOvUvEnabled
+                      ? RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
+                      : RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
+
+                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmProcessingStateCommand>( state ) );
+            }
+        }
+
+        {
+            const unsigned configOvUvReportingInterval               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvAlarmReportingInterval );
+            const boost::optional<unsigned> paoOvUvReportingInterval = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval );
+
+            if( configOvUvReportingInterval != paoOvUvReportingInterval || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetOvUvNewAlarmReportIntervalCommand>( configOvUvReportingInterval ) );
+            }
+        }
+
+        {
+             const unsigned configOvUvRepeatInterval               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvAlarmRepeatInterval );
+             const boost::optional<unsigned> paoOvUvRepeatInterval = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval );
+
+             if( configOvUvRepeatInterval != paoOvUvRepeatInterval || parse.isKeyValid("force") )
+             {
+                 if( parse.isKeyValid("verify") )
+                 {
+                     return ConfigNotCurrent;
+                 }
+
+                 rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatIntervalCommand>( configOvUvRepeatInterval ) );
+             }
+        }
+
+        {
+            const unsigned configOvUvRepeatCount               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::OvUvRepeatCount );
+            const boost::optional<unsigned> paoOvUvRepeatCount = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount );
+
+            if( configOvUvRepeatCount != paoOvUvRepeatCount || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetOvUvAlarmRepeatCountCommand>( configOvUvRepeatCount ) );
+            }
+        }
+
+        // get the meter ID
+        const RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
+
+        {
+            const double configOvThreshold               = getConfigData   <double> ( deviceConfig, Config::RfnStrings::OvThreshold );
+            const boost::optional<double> paoOvThreshold = findDynamicInfo <double> ( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold );
+
+            if( configOvThreshold != paoOvThreshold || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, configOvThreshold ) );
+            }
+        }
+
+        {
+            const double configUvThreshold               = getConfigData   <double> ( deviceConfig, Config::RfnStrings::UvThreshold );
+            const boost::optional<double> paoUvThreshold = findDynamicInfo <double> ( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold );
+
+            if( configUvThreshold != paoUvThreshold || parse.isKeyValid("force") )
+            {
+                if( parse.isKeyValid("verify") )
+                {
+                    return ConfigNotCurrent;
+                }
+
+                rfnRequests.push_back( boost::make_shared<RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, configUvThreshold ) );
+            }
+        }
+
+        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+        {
+            return ConfigCurrent;
+        }
+
+        return NoError;
+    }
+    catch( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
         return NoConfigData;
     }
-
+    catch( const InvalidConfigDataException &e )
     {
-        boost::optional<bool>   configOvUvEnabled,
-                                paoOvUvEnabled;
-        {
-            const std::string           configKey( Config::RfnStrings::OvUvEnabled );
-            const boost::optional<bool> configValue = deviceConfig->findValue<bool>( configKey );
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
 
-            if ( ! configValue  )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-
-            configOvUvEnabled = *configValue;
-        }
-        {
-            long pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled, pao_value ) )
-            {
-                paoOvUvEnabled = static_cast<bool>( pao_value );
-            }
-        }
-
-        if( configOvUvEnabled == paoOvUvEnabled )  // both exist and are equal
-        {
-            if( parse.isKeyValid("force") )
-            {
-                Commands::RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = *configOvUvEnabled
-                    ? Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
-                    : Commands::RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
-
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmProcessingStateCommand>( state ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                Commands::RfnSetOvUvAlarmProcessingStateCommand::AlarmStates state = *configOvUvEnabled
-                    ? Commands::RfnSetOvUvAlarmProcessingStateCommand::EnableOvUv
-                    : Commands::RfnSetOvUvAlarmProcessingStateCommand::DisableOvUv;
-
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmProcessingStateCommand>( state ) );
-            }
-        }
+        return ErrorInvalidConfigData;
     }
-
-    {
-        boost::optional<unsigned>   configOvUvReportingInterval,
-                                    paoOvUvReportingInterval;
-        {
-            const std::string           configKey( Config::RfnStrings::OvUvAlarmReportingInterval );
-            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
-
-            if ( ! configValue  )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-
-            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-            //  - the command object will perform further validation of its input.
-            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return ErrorInvalidConfigData;
-            }
-
-            configOvUvReportingInterval = static_cast<unsigned>( *configValue );
-        }
-        {
-            long pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmReportingInterval, pao_value ) )
-            {
-                paoOvUvReportingInterval = static_cast<unsigned>( pao_value );
-            }
-        }
-
-        if( configOvUvReportingInterval == paoOvUvReportingInterval )
-        {
-            if( parse.isKeyValid("force") )
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvNewAlarmReportIntervalCommand>( *configOvUvReportingInterval ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvNewAlarmReportIntervalCommand>( *configOvUvReportingInterval ) );
-            }
-        }
-    }
-
-    {
-        boost::optional<unsigned>   configOvUvRepeatInterval,
-                                    paoOvUvRepeatInterval;
-        {
-            const std::string           configKey( Config::RfnStrings::OvUvAlarmRepeatInterval );
-            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
-
-            if ( ! configValue  )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-
-            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-            //  - the command object will perform further validation of its input.
-            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return ErrorInvalidConfigData;
-            }
-
-            configOvUvRepeatInterval = static_cast<unsigned>( *configValue );
-        }
-        {
-            long pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvAlarmRepeatInterval, pao_value ) )
-            {
-                paoOvUvRepeatInterval = static_cast<unsigned>( pao_value );
-            }
-        }
-
-        if( configOvUvRepeatInterval == paoOvUvRepeatInterval )
-        {
-            if( parse.isKeyValid("force") )
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatIntervalCommand>( *configOvUvRepeatInterval ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatIntervalCommand>( *configOvUvRepeatInterval ) );
-            }
-        }
-    }
-
-    {
-        boost::optional<unsigned>   configOvUvRepeatCount,
-                                    paoOvUvRepeatCount;
-        {
-            const std::string           configKey( Config::RfnStrings::OvUvRepeatCount );
-            const boost::optional<long> configValue = deviceConfig->findValue<long>( configKey );
-
-            if ( ! configValue  )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-
-            // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-            //  - the command object will perform further validation of its input.
-            if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return ErrorInvalidConfigData;
-            }
-
-            configOvUvRepeatCount = static_cast<unsigned>( *configValue );
-        }
-        {
-            long pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvUvRepeatCount, pao_value ) )
-            {
-                paoOvUvRepeatCount = static_cast<unsigned>( pao_value );
-            }
-        }
-
-        if( configOvUvRepeatCount == paoOvUvRepeatCount )
-        {
-            if( parse.isKeyValid("force") )
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatCountCommand>( *configOvUvRepeatCount ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvAlarmRepeatCountCommand>( *configOvUvRepeatCount ) );
-            }
-        }
-    }
-
-    // get the meter ID
-
-    Commands::RfnOvUvConfigurationCommand::MeterID  meterID = getMeterIdForDeviceType(getType());
-
-    {
-        boost::optional<double> configOvThreshold,
-                                paoOvThreshold;
-        {
-            const std::string   configKey( Config::RfnStrings::OvThreshold );
-            const double        configValue = deviceConfig->getFloatValueFromKey( configKey );
-
-            if ( configValue != std::numeric_limits<double>::min() )
-            {
-                configOvThreshold = configValue;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-        }
-        {
-            double pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_OvThreshold, pao_value ) )
-            {
-                paoOvThreshold = pao_value;
-            }
-        }
-
-        if( configOvThreshold == paoOvThreshold )
-        {
-            if( parse.isKeyValid("force") )
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, *configOvThreshold ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetOverVoltageThresholdCommand>( meterID, *configOvThreshold ) );
-            }
-        }
-    }
-
-    {
-        boost::optional<double> configUvThreshold,
-                                paoUvThreshold;
-        {
-            const std::string   configKey( Config::RfnStrings::UvThreshold );
-            const double        configValue = deviceConfig->getFloatValueFromKey( configKey );
-
-            if ( configValue != std::numeric_limits<double>::min() )
-            {
-                configUvThreshold = configValue;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                return NoConfigData;
-            }
-        }
-        {
-            double pao_value;
-
-            if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_UvThreshold, pao_value ) )
-            {
-                paoUvThreshold = pao_value;
-            }
-        }
-
-        if( configUvThreshold == paoUvThreshold )
-        {
-            if( parse.isKeyValid("force") )
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, *configUvThreshold ) );
-            }
-        }
-        else
-        {
-            if( parse.isKeyValid("verify") )
-            {
-                return ConfigNotCurrent;
-            }
-            else
-            {
-                rfnRequests.push_back( boost::make_shared<Commands::RfnSetOvUvSetUnderVoltageThresholdCommand>( meterID, *configUvThreshold ) );
-            }
-        }
-    }
-
-    if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-    {
-        return ConfigCurrent;
-    }
-
-    return NoError;
 }
 
 int RfnResidentialDevice::executeGetConfigOvUv( CtiRequestMsg    * pReq,
@@ -1445,412 +1289,142 @@ int RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    * pReq,
                                                       RfnCommandList   & rfnRequests )
 {
     using Commands::RfnRemoteDisconnectCommand;
+    using Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand;
+    using Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand;
+    using Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand;
 
-    if( ! disconnectConfigSupported() )
+    try
     {
-        return NoMethod;
+        if( ! disconnectConfigSupported() )
+        {
+            return NoMethod;
+        }
+
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+        if( ! deviceConfig )
+        {
+            return NoConfigData;
+        }
+
+        const std::string configDisconnectMode               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::DisconnectMode );
+        const boost::optional<std::string> paoDisconnectMode = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode );
+
+        const RfnRemoteDisconnectCommand::DisconnectMode disconnectMode = resolveConfigData( disconnectModeResolver.right, configDisconnectMode, Config::RfnStrings::DisconnectMode );
+
+        const bool disconnectModesMatch = (configDisconnectMode == paoDisconnectMode);
+
+        switch( disconnectMode )
+        {
+            case RfnRemoteDisconnectCommand::DisconnectMode_OnDemand:
+            {
+                const std::string configReconnectParam               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::ReconnectParam );
+                const boost::optional<std::string> paoReconnectParam = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam );
+
+                const RfnRemoteDisconnectCommand::Reconnect reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
+
+                if( ! disconnectModesMatch ||
+                    configReconnectParam != paoReconnectParam  ||
+                    parse.isKeyValid("force") )
+                {
+                    if( parse.isKeyValid("verify") )
+                    {
+                        return ConfigNotCurrent;
+                    }
+
+                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetOnDemandConfigurationCommand>( reconnectParam ));
+                }
+
+                break;
+            }
+            case RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold:
+            {
+                const std::string configReconnectParam               = getConfigData   <std::string> ( deviceConfig, Config::RfnStrings::ReconnectParam );
+                const unsigned configDemandInterval                  = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::DisconnectDemandInterval );
+                const double configDemandThreshold                   = getConfigData   <double>      ( deviceConfig, Config::RfnStrings::DemandThreshold );
+                const unsigned configConnectDelay                    = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::ConnectDelay );
+                const unsigned configMaxDisconnect                   = getConfigData   <unsigned>    ( deviceConfig, Config::RfnStrings::MaxDisconnects );
+
+                const boost::optional<std::string> paoReconnectParam = findDynamicInfo <std::string> ( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam );
+                const boost::optional<unsigned> paoDemandInterval    = findDynamicInfo <unsigned>    ( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval );
+                const boost::optional<double> paoDemandThreshold     = findDynamicInfo <double>      ( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold );
+                const boost::optional<unsigned> paoConnectDelay      = findDynamicInfo <unsigned>    ( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay );
+                const boost::optional<unsigned> paoMaxDisconnect     = findDynamicInfo <unsigned>    ( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects );
+
+                const RfnRemoteDisconnectCommand::Reconnect      reconnectParam = resolveConfigData( reconnectResolver.right, configReconnectParam, Config::RfnStrings::ReconnectParam );
+                const RfnRemoteDisconnectCommand::DemandInterval demandInterval = resolveConfigData( intervalResolver,        configDemandInterval, Config::RfnStrings::DisconnectDemandInterval );
+
+                if ( ! disconnectModesMatch ||
+                     configReconnectParam  != paoReconnectParam  ||
+                     configDemandInterval  != paoDemandInterval  ||
+                     configDemandThreshold != paoDemandThreshold ||
+                     configConnectDelay    != paoConnectDelay    ||
+                     configMaxDisconnect   != paoMaxDisconnect   ||
+                     parse.isKeyValid("force"))
+                {
+                    if( parse.isKeyValid("verify") )
+                    {
+                        return ConfigNotCurrent;
+                    }
+
+                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetThresholdConfigurationCommand>(
+                            reconnectParam,
+                            demandInterval,
+                            configDemandThreshold,
+                            configConnectDelay,
+                            configMaxDisconnect ));
+                }
+
+                break;
+            }
+            case RfnRemoteDisconnectCommand::DisconnectMode_Cycling:
+            {
+                const unsigned configDisconnectMinutes               = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::DisconnectMinutes );
+                const unsigned configConnectMinutes                  = getConfigData   <unsigned> ( deviceConfig, Config::RfnStrings::ConnectMinutes );
+
+                const boost::optional<unsigned> paoDisconnectMinutes = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes );
+                const boost::optional<unsigned> paoConnectMinutes    = findDynamicInfo <unsigned> ( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes );
+
+                if ( ! disconnectModesMatch ||
+                     configDisconnectMinutes != paoDisconnectMinutes ||
+                     configConnectMinutes    != paoConnectMinutes    ||
+                     parse.isKeyValid("force") )
+                {
+                    if( parse.isKeyValid("verify") )
+                    {
+                        return ConfigNotCurrent;
+                    }
+
+                    rfnRequests.push_back( boost::make_shared<RfnRemoteDisconnectSetCyclingConfigurationCommand>(
+                            configDisconnectMinutes,
+                            configConnectMinutes ));
+                }
+
+                break;
+            }
+        }
+
+        if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
+        {
+            return ConfigCurrent;
+        }
+
+        return NoError;
     }
-
-    Config::DeviceConfigSPtr deviceConfig = getDeviceConfig(); 
-
-    if( ! deviceConfig )
+    catch( const MissingConfigDataException &e )
     {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
         return NoConfigData;
     }
-
-    const boost::optional<std::string> disconnectMode = deviceConfig->findValue<std::string>( Config::RfnStrings::DisconnectMode );
-
-    if( ! disconnectMode )
+    catch( const InvalidConfigDataException &e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DisconnectMode 
-             << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-        return NoConfigData;
-    }
-
-    boost::optional<RfnRemoteDisconnectCommand::DisconnectMode> pao_disconnect_type,
-        config_disconnect_type = bimapFind<RfnRemoteDisconnectCommand::DisconnectMode>( disconnectModeResolver.right, *disconnectMode );
-
-    if( ! config_disconnect_type )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectMode 
-             << "\": " << *disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
 
         return ErrorInvalidConfigData;
     }
-
-    {
-        std::string paoValue;
-        getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, paoValue );
-        pao_disconnect_type = bimapFind<RfnRemoteDisconnectCommand::DisconnectMode>( disconnectModeResolver.right, paoValue );
-    }
-
-    const bool disconnectModesMatch = *config_disconnect_type == *pao_disconnect_type;
-
-    switch( *config_disconnect_type )
-    {
-        case RfnRemoteDisconnectCommand::DisconnectMode_OnDemand:
-        {
-            boost::optional<RfnRemoteDisconnectCommand::Reconnect> config_reconnect_param,
-                                                                   pao_reconnect_param;
-
-            {
-                const boost::optional<std::string> configValue = deviceConfig->findValue<std::string>( Config::RfnStrings::ReconnectParam );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::ReconnectParam 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                config_reconnect_param =  bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, *configValue );
-
-                if( ! config_reconnect_param )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectMode 
-                         << "\": " << *disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-            }
-
-            {
-                std::string pao_value;
-
-                getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, pao_value );
-
-                pao_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, pao_value );
-            }
-
-            if( disconnectModesMatch && pao_disconnect_type == config_disconnect_type )
-            {
-                if( parse.isKeyValid( "force" ) )
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( *config_reconnect_param ) );
-                }
-            }
-            else 
-            {
-                if( parse.isKeyValid( "verify" ) )
-                {
-                    return ConfigNotCurrent;
-                }
-                else
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetOnDemandConfigurationCommand>( *config_reconnect_param ) );
-                }
-            }
-
-            break;
-        }
-        case RfnRemoteDisconnectCommand::DisconnectMode_DemandThreshold:
-        {
-            boost::optional<RfnRemoteDisconnectCommand::Reconnect> config_reconnect_param, pao_reconnect_param;
-            boost::optional<RfnRemoteDisconnectCommand::DemandInterval> config_demand_interval, pao_demand_interval;
-            boost::optional<double> config_demand_threshold, pao_demand_threshold;
-            boost::optional<unsigned> config_connect_delay, pao_connect_delay;
-            boost::optional<unsigned> config_max_disconnects, pao_max_disconnects;
-
-            {
-                const boost::optional<std::string> configValue = deviceConfig->findValue<std::string>( Config::RfnStrings::ReconnectParam );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::ReconnectParam 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                config_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, *configValue );
-                if( ! config_reconnect_param )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::ReconnectParam 
-                         << "\": " << *configValue << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-            }
-
-            {
-                std::string pao_value;
-                getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, pao_value );
-                pao_reconnect_param = bimapFind<RfnRemoteDisconnectCommand::Reconnect>( reconnectResolver.right, pao_value );
-            }
-
-            {
-                const boost::optional<long> configValue = deviceConfig->findValue<long>( Config::RfnStrings::DisconnectDemandInterval );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DisconnectDemandInterval 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-                //  - the command object will perform further validation of its input.
-                if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" 
-                         << Config::RfnStrings::DisconnectDemandInterval << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-
-                unsigned configValueKey = static_cast<unsigned>( *configValue );
-
-                config_demand_interval = mapFind( intervalResolver, configValueKey );
-                if( ! config_demand_interval )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value for config key \"" << Config::RfnStrings::DisconnectDemandInterval 
-                         << "\": " << configValueKey << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-            }
-
-            {
-                unsigned pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval, pao_value ) )
-                {
-                    pao_demand_interval = mapFind( intervalResolver, pao_value );
-                }
-            }
-
-            {
-                config_demand_threshold = deviceConfig->findValue<double>( Config::RfnStrings::DemandThreshold );
-                if( ! config_demand_threshold )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DemandThreshold 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-            }
-
-            {
-                double pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, pao_value ) )
-                {
-                    pao_demand_threshold = pao_value;
-                }
-            }
-
-            {
-                boost::optional<long> configValue = deviceConfig->findValue<long>( Config::RfnStrings::ConnectDelay );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::ConnectDelay 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-                //  - the command object will perform further validation of its input.
-                if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" 
-                         << Config::RfnStrings::ConnectDelay << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-
-                config_connect_delay = static_cast<unsigned>( *configValue );
-            }
-
-            {
-                unsigned pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay, pao_value ) )
-                {
-                    pao_connect_delay = pao_value;
-                }
-            }
-
-            {
-                boost::optional<long> configValue = deviceConfig->findValue<long>( Config::RfnStrings::MaxDisconnects );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::MaxDisconnects 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-                //  - the command object will perform further validation of its input.
-                if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" 
-                         << Config::RfnStrings::MaxDisconnects << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-
-                config_max_disconnects = static_cast<unsigned>( *configValue );
-            }
-
-            {
-                unsigned pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, pao_value ) )
-                {
-                    pao_max_disconnects = pao_value;
-                }
-            }
-
-            if ( disconnectModesMatch && 
-                 config_reconnect_param  == pao_reconnect_param  &&
-                 config_demand_interval  == pao_demand_interval  &&
-                 config_demand_threshold == pao_demand_threshold &&
-                 config_connect_delay    == pao_connect_delay    &&
-                 config_max_disconnects  == pao_max_disconnects)
-            {
-                if( parse.isKeyValid( "force" ) )
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>( *config_reconnect_param,
-                                                                                                                        *config_demand_interval,
-                                                                                                                        *config_demand_threshold,
-                                                                                                                        *config_connect_delay,
-                                                                                                                        *config_max_disconnects ) );
-                }
-            }
-            else
-            {
-                if( parse.isKeyValid( "verify" ) )
-                {
-                    return ConfigNotCurrent;
-                }
-                else
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetThresholdConfigurationCommand>( *config_reconnect_param,
-                                                                                                                        *config_demand_interval,
-                                                                                                                        *config_demand_threshold,
-                                                                                                                        *config_connect_delay,
-                                                                                                                        *config_max_disconnects ) );
-                }
-            }
-
-            break;
-        }
-        case RfnRemoteDisconnectCommand::DisconnectMode_Cycling:
-        {
-            boost::optional<unsigned> config_connect_minutes, pao_connect_minutes;
-            boost::optional<unsigned> config_disconnect_minutes, pao_disconnect_minutes;
-
-            {
-                boost::optional<long> configValue = deviceConfig->findValue<long>( Config::RfnStrings::ConnectMinutes );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::ConnectMinutes 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-                //  - the command object will perform further validation of its input.
-                if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" 
-                         << Config::RfnStrings::ConnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-
-                config_connect_minutes = static_cast<unsigned>( *configValue );
-            }
-
-            {
-                unsigned pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes, pao_value ) )
-                {
-                    pao_connect_minutes = pao_value;
-                }
-            }
-
-            {
-                boost::optional<long> configValue = deviceConfig->findValue<long>( Config::RfnStrings::DisconnectMinutes );
-                if( ! configValue )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << Config::RfnStrings::DisconnectMinutes 
-                         << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return NoConfigData;
-                }
-
-                // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-                //  - the command object will perform further validation of its input.
-                if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" 
-                         << Config::RfnStrings::DisconnectMinutes << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                    return ErrorInvalidConfigData;
-                }
-
-                config_disconnect_minutes = static_cast<unsigned>( *configValue );
-            }
-
-            {
-                unsigned pao_value;
-                if ( getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, pao_value ) )
-                {
-                    pao_disconnect_minutes = pao_value;
-                }
-            }
-
-            if ( disconnectModesMatch && 
-                 config_connect_minutes    == pao_connect_minutes &&
-                 config_disconnect_minutes == pao_disconnect_minutes )
-            {
-                if( parse.isKeyValid( "force" ) )
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>( *config_disconnect_minutes,
-                                                                                                                      *config_connect_minutes) );
-                }
-            }
-            else
-            {
-                if( parse.isKeyValid( "verify" ) )
-                {
-                    return ConfigNotCurrent;
-                }
-                else
-                {
-                    rfnRequests.push_back( boost::make_shared<Commands::RfnRemoteDisconnectSetCyclingConfigurationCommand>( *config_disconnect_minutes,
-                                                                                                                      *config_connect_minutes) );
-                }
-            }
-
-            break;
-        }
-    }
-
-    if( ! parse.isKeyValid("force") && rfnRequests.size() == 0 )
-    {
-        return ConfigCurrent;
-    }
-
-    return NoError;
 }
 
 bool RfnResidentialDevice::disconnectConfigSupported() const
@@ -2021,6 +1595,8 @@ std::string RfnResidentialDevice::getReconnectParamString( Commands::RfnRemoteDi
 
     return *reconnectStr;
 }
+
+
 
 namespace {
 
