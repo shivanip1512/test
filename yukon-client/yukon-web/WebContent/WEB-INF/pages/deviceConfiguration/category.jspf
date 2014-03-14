@@ -105,7 +105,7 @@
                             </c:choose>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
-                            <tags:simpleInputType id="categoryInputs[${field.fieldName}]" input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
+                            <tags:simpleInputType id="category-inputs-${field.fieldName}" input="${field.inputType}" path="categoryInputs[${field.fieldName}]"/>
                         </cti:displayForPageEditModes>
                     </c:otherwise>
                 </c:choose>

@@ -86,7 +86,72 @@ yukon.deviceConfig = (function () {
             _determineScheduleAddButtonVisibility(num);
         });
     },
-    
+
+    _hidingMap = [
+        {
+            keyHolder: '#disconnectMode',
+            valueHideMap : [
+                {
+                    value : 'ON_DEMAND',
+                    hide : ['#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects', '#disconnectMinutes', '#connectMinutes'],
+                    show : ['#reconnectParam']
+                },
+                {
+                    value : 'DEMAND_THRESHOLD',
+                    hide : ['#disconnectMinutes', '#connectMinutes'],
+                    show : ['#reconnectParam', '#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects']
+                },
+                {
+                    value : 'CYCLING',
+                    hide : ['#reconnectParam', '#demandInterval', '#disconnectDemandThreshold', '#disconnectLoadLimitConnectDelay', '#maxDisconnects'],
+                    show : ['#disconnectMinutes', '#connectMinutes']
+                }
+            ]
+        }
+    ],
+
+    _hideShowElement = function (hidingMapEntry, timeout) {
+        var value = jQuery(hidingMapEntry.keyHolder).find(':input').val(),
+            currentEntry,
+            ii,
+            jj,
+            elem;
+
+        if (typeof timeout !== 'number') {
+            timeout = 0;
+        }
+
+        for (ii = 0; ii < hidingMapEntry.valueHideMap.length; ii += 1) {
+            currentEntry = hidingMapEntry.valueHideMap[ii];
+            if (value === currentEntry.value) {
+                for (jj = 0; jj < currentEntry.hide.length; jj += 1) {
+                    elem = currentEntry.hide[jj];
+                    jQuery(elem).slideUp(timeout);
+                }
+                for (jj = 0; jj < currentEntry.show.length; jj += 1) {
+                    elem = currentEntry.show[jj];
+                    jQuery(elem).slideDown(timeout);
+                }
+            }
+        }
+    },
+
+    _hideThingsInMap = function () {
+        var currentEntry,
+            ii,
+            input;
+
+        for (ii = 0; ii < _hidingMap.length; ii += 1) {
+            currentEntry = _hidingMap[ii];
+            input = jQuery(currentEntry.keyHolder).find(':input');
+            _hideShowElement(currentEntry, 0);
+
+            jQuery(document).on('change', input, function () {
+                _hideShowElement(currentEntry, 200);
+            });
+        }
+    },
+
     mod = {
         /******************
          * Public Methods *
@@ -119,6 +184,8 @@ yukon.deviceConfig = (function () {
             
                     _makeAjaxCall('createInPlace', params, btn);        
                 });
+
+                _hideThingsInMap();
             });
         }, 
         
