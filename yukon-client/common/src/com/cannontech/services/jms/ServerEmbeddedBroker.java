@@ -21,7 +21,7 @@ public class ServerEmbeddedBroker {
     private static final long DEFAULT_WAIT_FOR_START_MILLIS = 120000; // 2 minutes
     
     private Logger log = YukonLogManager.getLogger(ServerEmbeddedBroker.class);
-	
+    
     private final String name;
     private final String listenerHost;
     private static final String localhostConnector = "tcp://localhost:61616";
@@ -30,6 +30,13 @@ public class ServerEmbeddedBroker {
     private long memoryUsageLimit = DEFAULT_MEMORY_USAGE_LIMIT;
     private long tempQueueMemoryUsageLimit = DEFAULT_TEMPQUEUE_MEMORY_USAGE_LIMIT;
     private long waitForStartMillis = DEFAULT_WAIT_FOR_START_MILLIS;
+
+    // FIXME:
+    // YUK-13147 
+    // This is a part temporary fix to prevent client connection from starting the vm transport.
+    // https://issues.apache.org/jira/browse/AMQ-5086
+    private static boolean brokerStarted = false;
+    private static final Object brokerStartedLock = new Object();
 
     /**
      * @param name name used for the broker, mostly for debug
@@ -83,9 +90,34 @@ public class ServerEmbeddedBroker {
             broker.setDestinationPolicy(map);
 
             broker.start();
+
+            // FIXME:
+            // YUK-13147 
+            // This is a part temporary fix to prevent client connection from starting the vm transport.
+            // https://issues.apache.org/jira/browse/AMQ-5086
+            synchronized (brokerStartedLock) {
+                brokerStarted = true;
+                brokerStartedLock.notifyAll();
+            }
+
         } catch (Exception e) {
             log.warn("Caught exception starting server broker", e);
             throw new RuntimeException("Unable to start broker", e);
         }
+    }
+
+    // FIXME:
+    // YUK-13147
+    // This is a part temporary fix to prevent client connection from starting the vm transport.
+    // https://issues.apache.org/jira/browse/AMQ-5086
+    static public void waitForBrokerToStart(Logger log) throws InterruptedException {
+        synchronized (brokerStartedLock) {
+            while (!brokerStarted) {
+                if (log != null) {
+                    log.warn("Waiting for the broker to start.");
+                }
+                brokerStartedLock.wait();
+            }
+       }
     }
 }

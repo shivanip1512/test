@@ -1,14 +1,17 @@
 package com.cannontech.messaging.connection.amq;
 
-import org.apache.log4j.Logger;
-
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.log4j.Logger;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.services.jms.ServerEmbeddedBroker;
 
 public class AmqConnectionFactoryService {
 
@@ -43,14 +46,19 @@ public class AmqConnectionFactoryService {
         this.connectionFactory = connectionFactory;
     }
 
-    public ActiveMQConnection createConnection() throws JMSException {
+    public ActiveMQConnection createConnection() throws JMSException, InterruptedException {
+        // FIXME:
+        // YUK-13147 
+        // This is a part temporary fix to prevent client connection from starting the vm transport.
+        // https://issues.apache.org/jira/browse/AMQ-5086
+        final String applicationName = BootstrapUtils.getApplicationName();
+        if (applicationName.equals("ServiceManager")) {
+            ServerEmbeddedBroker.waitForBrokerToStart(logger);
+        }
+
         ActiveMQConnection connection = (ActiveMQConnection) connectionFactory.createConnection();
         connection.setProducerWindowSize(_1MB);        
         return connection;
-    }
-
-    public ConnectionFactory getConnectionFactory() {
-        return connectionFactory;
     }
 
     public void setFactory(ActiveMQConnectionFactory connectionFactory) {
@@ -63,5 +71,18 @@ public class AmqConnectionFactoryService {
 
     public static void setDefaultService(AmqConnectionFactoryService defaultConnectionFactoryService) {
         AmqConnectionFactoryService.defaultService = defaultConnectionFactoryService;
+    }
+
+    public String getBrokerUrl() throws Exception {
+        ActiveMQConnectionFactory amqConnectionfactory = (ActiveMQConnectionFactory) getTargetObject(
+                connectionFactory, ConnectionFactory.class);
+        return amqConnectionfactory.getBrokerURL();
+    }
+
+    static private <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
+        if (AopUtils.isJdkDynamicProxy(proxy)) {
+            return targetClass.cast(((Advised) proxy).getTargetSource().getTarget());
+        }
+        return targetClass.cast(proxy); // expected to be cglib proxy then, which is simply a specialized class
     }
 }

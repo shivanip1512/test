@@ -4,15 +4,11 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.BytesMessage;
-import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
 import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 
 import com.cannontech.message.util.Message;
 import com.cannontech.messaging.connection.ConnectionBase;
@@ -69,7 +65,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
 
     protected abstract AmqConnectionMonitor createConnectionMonitor(T transport, MessageListener listener);
 
-    protected ActiveMQConnection createConnection() throws ConnectionException {
+    protected ActiveMQConnection createConnection() throws ConnectionException, InterruptedException {
         try {
             return getConnectionService().createConnection();
         }
@@ -271,12 +267,7 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     public URI getConnectionUri() throws ConnectionException {
         try {
             if (isManagedConnection()) {
-                ConnectionFactory connectionFactory = getConnectionService().getConnectionFactory();
-                
-                ActiveMQConnectionFactory amqConnectionfactory = (ActiveMQConnectionFactory) getTargetObject(
-                        connectionFactory, ConnectionFactory.class);
-                
-                return URI.create(amqConnectionfactory.getBrokerURL());
+                return URI.create(getConnectionService().getBrokerUrl());
             }
             else {
                 return URI.create(connection.getBrokerInfo().getBrokerURL());
@@ -285,13 +276,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         catch (Exception e) {
             throw new ConnectionException("Error while retrieving broker URI");
         }
-    }
-
-    static private <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
-      if (AopUtils.isJdkDynamicProxy(proxy)) {
-        return (T) targetClass.cast(((Advised) proxy).getTargetSource().getTarget());
-      } 
-      return (T) targetClass.cast(proxy); // expected to be cglib proxy then, which is simply a specialized class
     }
 
     public void setConnectionService(AmqConnectionFactoryService connectionSvc) {
