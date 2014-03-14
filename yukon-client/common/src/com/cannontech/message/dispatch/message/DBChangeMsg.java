@@ -120,6 +120,9 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final String CAT_WEB_CONFIG = "Web Configuration";
     public static final String CAT_STARS_PUBLISHED_PROGRAM = "Stars Published Program";
     
+    // Object Types
+    public static final String OBJ_DEVICE = "device";
+    
     public static final int RELOAD_ALL = 0;
 
 

@@ -54,7 +54,7 @@ public class DNPBase extends AddressBase implements DBCopiable {
             dbChangeMsgs.add(new DBChangeMsg(getPAObjectID(), 
                                              DBChangeMsg.CHANGE_CONFIG_DB, 
                                              DBChangeMsg.CAT_DEVICE_CONFIG, 
-                                             "device", 
+                                             DBChangeMsg.OBJ_DEVICE, 
                                              dbChangeType));
             
             DBChangeMsg[] dbChange = new DBChangeMsg[dbChangeMsgs.size()];
