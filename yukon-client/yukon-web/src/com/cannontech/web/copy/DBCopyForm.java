@@ -5,8 +5,12 @@ import java.io.IOException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
@@ -14,6 +18,7 @@ import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.editor.DBEditorForm;
 import com.cannontech.web.util.CBCCopyUtils;
 
@@ -52,28 +57,38 @@ public class DBCopyForm extends DBEditorForm {
         message.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
 
         if (origObject != null) {
-            try {
-                copyObject = CBCCopyUtils.copy(origObject);
-                if (CBCCopyUtils.isPoint(copyObject)) {
-                    ((PointBase) copyObject).getPoint().setPointName(paoName);
-                } else {
-                    ((YukonPAObject) copyObject).setPAOName(paoName);
-                }
-                addDBObject(copyObject, message);
 
+            try {
+                if (StringUtils.isBlank(paoName)) {
+                    message.setDetail(ERROR_COPY + "A name must be specified for this object.");
+                    message.setSeverity(FacesMessage.SEVERITY_ERROR);
+                } else {
+                    copyObject = CBCCopyUtils.copy(origObject);
+                    if (CBCCopyUtils.isPoint(copyObject)) {
+                        ((PointBase) copyObject).getPoint().setPointName(paoName);
+                        addDBObject(copyObject, message);
+                    } else if (origObject instanceof YukonPAObject) {
+                        YukonPAObject paObject = (YukonPAObject)origObject;
+                        PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+                        if (paoDao.isNameAvailable(paoName, PaoType.getForDbString(paObject.getPAOType()))) {
+                            ((YukonPAObject) copyObject).setPAOName(paoName);
+                            addDBObject(copyObject, message);
+                        } else {    // name already in use
+                            message.setDetail(ERROR_COPY + "There is already a Cap Bank or CBC with the name '" + paoName + "'");
+                            message.setSeverity(FacesMessage.SEVERITY_ERROR);
+                        }
+                    }
+                }    
             } catch (IllegalArgumentException e) {
                 message.setDetail(ERROR_COPY + e.getMessage());
                 message.setSeverity(FacesMessage.SEVERITY_ERROR);
             } catch (TransactionException e) {
                 message.setDetail(ERROR_COPY + e.getMessage());
                 message.setSeverity(FacesMessage.SEVERITY_ERROR);
-                if(e.getCause().getMessage().contains("duplicate")) {
-                    message.setSummary("There may already be a object with that name.");
-                }
             } finally {
-                FacesContext.getCurrentInstance().addMessage("copy_object",
-                                                             message);
+                FacesContext.getCurrentInstance().addMessage("copy_object", message);
             }
+            
             if (message.getSeverity() != FacesMessage.SEVERITY_ERROR) {
                 if (copyObject instanceof CapBankController) {
                     if (copyPoints)
