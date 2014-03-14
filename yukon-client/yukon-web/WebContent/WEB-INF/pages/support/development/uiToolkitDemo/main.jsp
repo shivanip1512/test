@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 
-<cti:standardPage module="support" page="uiToolkitDemo">
+<cti:standardPage module="dev" page="uiToolkitDemo">
 
 <style>
 .no_chrome {

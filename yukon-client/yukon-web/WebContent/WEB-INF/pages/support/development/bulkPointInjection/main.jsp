@@ -4,7 +4,7 @@
 <%@ taglib prefix="date" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<cti:standardPage module="support" page="bulkPointInjection">
+<cti:standardPage module="dev" page="bulkPointInjection">
 <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
 
 <script type="text/javascript">

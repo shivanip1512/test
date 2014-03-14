@@ -2,7 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="support" page="pointInjection">
+<cti:standardPage module="dev" page="pointInjection">
 
 <script type="text/javascript">
 

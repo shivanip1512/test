@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msgScope paths="modules.support.pickerTest">
+<cti:msgScope paths="modules.dev.pickerTest">
 
 <c:set var="pickerType" value="pointPicker"/>
 <c:if test="${!empty param.pickerType}">

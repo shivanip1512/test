@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="support" page="webServices.eimTest">
+<cti:standardPage module="dev" page="webServices.eimTest">
 <cti:url var="sampleXmlUrl" value="sampleXml"/>
 
 <script type="text/javascript">

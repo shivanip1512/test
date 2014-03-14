@@ -52,6 +52,9 @@ public enum JsLibrary {
     JQUERY_FLOTCHARTS_TIME("/JavaScript/lib/jQuery/plugins/flotcharts/jquery.flot.time.min.js"), //http://www.flotcharts.org/
     JQUERY_EXCANVAS("/JavaScript/lib/jQuery/plugins/flotcharts/excanvas.min.js"), //http://www.flotcharts.org/
 
+    HIGH_STOCK("/resources/js/lib/highstock/highstock.js"),
+    HIGH_STOCK_EXPORTING("/resources/js/lib/highstock/modules/exporting.js"),
+    HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js"),
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
     YUKON("/JavaScript/yukon.js"),

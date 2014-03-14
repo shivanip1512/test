@@ -2,6 +2,7 @@
 @page-width: 988px;
 @page-background: #6e6d71;
 @page-background-font-color: white;
+@content-background: white;
 
 @nav-background: whiteSmoke;
 @nav-shadow: #5a595d;
@@ -31,13 +32,12 @@ body {margin: 0;padding:0;color: @font-color;font: 14px/1.3 Helvetica,sans-serif
 
 nav, header, footer, section, aside, hgroup, section {display:block;}
 
-#page {background-color: white; min-width: @page-width;}
-#content {clear: both;margin: 0;padding: 0;width: 100%;min-width: @page-width;min-height: 500px;outline: 0;border-bottom: 1px solid @nav-border;}
+#page {min-width: @page-width;}
+#content {background-color: @content-background;clear: both;margin: 0;padding: 0;width: 100%;min-width: @page-width;min-height: 500px;outline: 0;border-bottom: 1px solid @nav-border;}
 #content .main-container {padding-bottom: 10px;}
-
-.bc-bar, .page-title-bar {width: @page-width;margin: 0 auto;padding: 5px 0;font-size: .9em;line-height: 26px;}
+.bars {background-color: @content-background;}
+.bc-bar, .page-title-bar {background-color: @content-background;width: @page-width;margin: 0 auto;padding: 5px 0;font-size: .9em;line-height: 26px;}
 .page-title-bar .page-heading {float: left; display: inline-block;}
-.page-title-bar {margin-bottom: 5px;}
 .bc-bar {padding-bottom: 0;}
 .page-title-bar .page-actions {float: right; display: inline-block;}
 .page-title-bar .page-actions .button {margin-right: 0;}
@@ -47,7 +47,7 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .title-search-bar .search-field {line-height: 18px;min-width: 250px;padding: 3px 5px;}
 .ui-autocomplete {z-index: 1000 !important;}
 
-.yukon-header .outer {height: 44px;background-color:@page-background;}
+.yukon-header .outer {height: 44px;}
 .yukon-header .inner {overflow: visible;margin:0 auto;width: @page-width;}
 .yukon-header .inner .toolbar {float: right;margin-top: 8px;}
 .yukon-header .inner .toolbar .b-user-menu > .button {margin-right: 0;}
@@ -98,7 +98,7 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 
 .login-content {background: url(@login-background-url) no-repeat scroll center top #e0e0f5;min-height: 420px;position: relative;}
 
-.yukon-footer {margin: 0 auto;background-color: @page-background;}
+.yukon-footer {margin: 0 auto;}
 .yukon-footer .utility {background-color: @nav-background;box-shadow: 0 6px 4px @nav-shadow;}
 .yukon-footer .utility nav {margin: 0 auto;width: @page-width;overflow: auto;}
 .yukon-footer .utility nav ul li {margin-right: 25px;float:right;}
@@ -136,6 +136,7 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .column-24,
 .column-4-20,
 .column-6-18,
+.column-7-17,
 .column-8-16,
 .column-10-14,
 .column-12-12,
@@ -168,6 +169,8 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .column-4-20 > .two {width: 82.99595142%;}
 .column-6-18 > .one {width: 23.48178138%;}
 .column-6-18 > .two {width: 74.49392713%;}
+.column-7-17 > .one {width: 28.57624831%;}
+.column-7-17 > .two {width: 69.39946018%;}
 .column-8-16 > .one {width: 31.98380567%;}
 .column-8-16 > .two {width: 65.9919028340081%;}
 .column-10-14 > .one {width: 40.48582996%;}
@@ -241,3 +244,8 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .column-6-6-6-6 > .three {width: 23.48178138%;}
 .column-6-6-6-6 > .four {width: 23.48178138%;}
 .wide .column-24 {max-width: 99%;}
+
+/* dev only stuff */
+.dev-module {
+    background-image: url(../../../resources/images/textures/bright-squares.png);
+}

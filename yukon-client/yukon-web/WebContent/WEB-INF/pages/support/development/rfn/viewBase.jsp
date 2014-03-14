@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="support" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest">
 
 <script type="text/javascript">
 jQuery(function() {

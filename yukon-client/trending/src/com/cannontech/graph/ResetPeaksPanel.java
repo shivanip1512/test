@@ -101,7 +101,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 			if( getGDSArray() == null)
 			{
 				//Load all Peak type GDS
-				List allGDS = YukonSpringHook.getBean(GraphDao.class).getAllGraphDataSeries(GDSTypesFuncs.PEAK_TYPE);
+				List allGDS = YukonSpringHook.getBean(GraphDao.class).getAllGraphDataSeriesByType(GDSTypesFuncs.PEAK_TYPE);
 				GraphDataSeries [] gdsArray = new GraphDataSeries[allGDS.size()];
 				allGDS.toArray(gdsArray);
 				setGDSArray(gdsArray);

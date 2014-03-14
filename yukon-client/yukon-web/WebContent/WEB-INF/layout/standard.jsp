@@ -9,13 +9,14 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<c:set var="modClass" value="${module.moduleName}-module"/>
 <!DOCTYPE html>
-<!--[if lt IE 7 ]>  <html dir="ltr" class="no-js ie6 ltie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
-<!--[if IE 7 ]>     <html dir="ltr" class="no-js ie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
-<!--[if IE 8 ]>     <html dir="ltr" class="no-js ie8 ltie9 ltie10 ltie11"> <![endif]-->
-<!--[if IE 9 ]>     <html dir="ltr" class="no-js ie9 ltie10 ltie11"> <![endif]-->
-<!--[if IE 10 ]>    <html dir="ltr" class="no-js ie10 ltie11"> <![endif]-->
-<!--[if !(IE)]><!--><html dir="ltr" class="no-js"><!--<![endif]-->
+<!--[if lt IE 7 ]>  <html dir="ltr" class="${modClass} no-js ie6 ltie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 7 ]>     <html dir="ltr" class="${modClass} no-js ie7 ltie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 8 ]>     <html dir="ltr" class="${modClass} no-js ie8 ltie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 9 ]>     <html dir="ltr" class="${modClass} no-js ie9 ltie10 ltie11"> <![endif]-->
+<!--[if IE 10 ]>    <html dir="ltr" class="${modClass} no-js ie10 ltie11"> <![endif]-->
+<!--[if !(IE)]><!--><html dir="ltr" class="${modClass} no-js"><!--<![endif]-->
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -75,7 +76,7 @@
             <source src="<cti:url value="/WebConfig/yukon/audio/beep1-shortened.mp3"/>" type="audio/mpeg">
         </audio>
     </head>
-<body class="<c:out value="${module.moduleName}"/>_module">
+<body>
 <cti:msgScope paths="layout.standard">
 
 <div id="modal-glass" style="display:none;">
@@ -121,36 +122,38 @@
             </nav>
         </div>
     </div>
-    <div class="bc-bar">
-        <div class="inner clearfix">
-            <cti:outputContent writable="${bcRenderer}"/>
-        </div>
-    </div>
-    <div class="page-title-bar">
-        <div class="inner clearfix">
-	        <c:if test="${not empty pageDetail.pageHeading}">
-                <c:if test="${canFavorite}">
-                    <cti:button id="favButton" 
-                        classes="b-favorite" 
-                        renderMode="image" 
-                        icon="icon-favorite-not" 
-                        data-module="${module.moduleName}" 
-                        data-name="${info.pageName}" 
-                        data-label-args="${labelArgs}" />
-                </c:if>
-			    <h1 class="page-heading">
-			        ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
-			        <spring:escapeBody htmlEscape="true">
-			        ${pageDetail.pageHeading}
-			        </spring:escapeBody>
-			        ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
-			    </h1>
-			</c:if>
-            <div class="page-actions">
-                <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn"/>
-                <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
+    <div class="bars">
+        <div class="bc-bar">
+            <div class="inner clearfix">
+                <cti:outputContent writable="${bcRenderer}"/>
             </div>
-		</div>
+        </div>
+        <div class="page-title-bar">
+            <div class="inner clearfix">
+                <c:if test="${not empty pageDetail.pageHeading}">
+                    <c:if test="${canFavorite}">
+                        <cti:button id="favButton" 
+                            classes="b-favorite" 
+                            renderMode="image" 
+                            icon="icon-favorite-not" 
+                            data-module="${module.moduleName}" 
+                            data-name="${info.pageName}" 
+                            data-label-args="${labelArgs}" />
+                    </c:if>
+                    <h1 class="page-heading">
+                        ${requestScope['com.cannontech.web.layout.part.headingPrefix']}
+                        <spring:escapeBody htmlEscape="true">
+                        ${pageDetail.pageHeading}
+                        </spring:escapeBody>
+                        ${requestScope['com.cannontech.web.layout.part.headingSuffix']}
+                    </h1>
+                </c:if>
+                <div class="page-actions">
+                    <cm:dropdown id="b-page-actions" type="button" triggerClasses="fr dn"/>
+                    <cti:button id="b-search-results" classes="fr dn" nameKey="searchResults" renderMode="buttonImage" icon="icon-resultset-first-grey"/>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 

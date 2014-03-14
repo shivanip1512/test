@@ -1879,7 +1879,7 @@ public class GraphClient extends JPanel
                                          JOptionPane.WARNING_MESSAGE);
                     }
                 }
-                getGraph().update();
+                getGraph().update(null, null);
                 getFreeChartPanel().setChart(getFreeChart());
             } else if (getTabbedPane().getSelectedComponent() == getTabularTabScrollPane()) {
                 getGraph().setViewType(GraphRenderers.TABULAR);
@@ -1890,7 +1890,7 @@ public class GraphClient extends JPanel
                 }
                 if (!getTabularSlider().getModel().getValueIsAdjusting()) {
                     getTabularSlider().removeChangeListener(this);
-                    getGraph().update();
+                    getGraph().update(null, null);
                     StringBuffer buf = new StringBuffer();
                     buf.append(buildHTMLBuffer(new TabularHtml()));
                     getTabularEditorPane().setText(buf.toString());
@@ -1905,7 +1905,7 @@ public class GraphClient extends JPanel
                     getSummaryEditorPane().setText("<CENTER>Please Select a Trend from the list");
                 else {
                     StringBuffer buf = new StringBuffer();
-                    getGraph().update();
+                    getGraph().update(null, null);
                     buf.append(buildHTMLBuffer(new PeakHtml()));
                     buf.append(buildHTMLBuffer(new UsageHtml()));
                     getSummaryEditorPane().setText(buf.toString());
@@ -1929,12 +1929,12 @@ public class GraphClient extends JPanel
         if (selectedItem != null) {
             if (getTabbedPane().getSelectedComponent() == getGraphTabPanel()) {
                 getGraph().setViewType(savedViewType);
-                getGraph().update();
+                getGraph().update(null, null);
                 getFreeChartPanel().setChart(getFreeChart());
             } else if (getTabbedPane().getSelectedComponent() == getTabularTabScrollPane()) {
                 getTabularSlider().removeChangeListener(this);
                 getGraph().setViewType(GraphRenderers.TABULAR);
-                getGraph().update();
+                getGraph().update(null, null);
                 StringBuffer buf = new StringBuffer();
                 buf.append(buildHTMLBuffer(new TabularHtml()));
 
@@ -1947,7 +1947,7 @@ public class GraphClient extends JPanel
                 StringBuffer buf = new StringBuffer();
 
                 getGraph().setViewType(GraphRenderers.SUMMARY);
-                getGraph().update();
+                getGraph().update(null, null);
                 buf.append(buildHTMLBuffer(new PeakHtml()));
                 buf.append(buildHTMLBuffer(new UsageHtml()));
                 buf.append("</CENTER></HTML>");

@@ -96,7 +96,7 @@ public class WebGraph implements Runnable
 			// Graph .png file creation
 			String fileName = getFileName(GraphRenderers.LINE, gDef.getGraphDefinition().getName());
 			graph.setUpdateTrend(true);
-			graph.update();
+			graph.update(null, null);
 			writePNG(fileName);
 	
 			StringBuffer buf = new StringBuffer("<HTML><LINK REL=\"stylesheet\" HREF=\"CannonStyle.ccs\" TYPE=\"text/css\"><CENTER>");		

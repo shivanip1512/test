@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.modules.dev.moduleName">Development</entry>
+
+    <!-- module wide key -->
+    
+    <!-- home -->
+    <entry key="yukon.web.modules.dev.home.pageName">Development Pages</entry>
+    <entry key="yukon.web.modules.dev.home.contextualPageName">Development</entry>
+    
+    <!-- Web Service Test -->
+    <entry key="yukon.web.modules.dev.webServices.account.pageName">Account Service Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.pageDescription">Account Services</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.functionality">Functionality</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.bgeIntegrationReqDocRef">BGE Integration Requirements Doc Ref</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.inputTest">Input Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.deleteAccount">Delete Account</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.addAccount">Add Account</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.updateAccount">Update Account</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.section3">Section 3, #3</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.error">Error</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.result">Result</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.operator">Operator (yukon user)</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.lastName">Last Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.firstName">First Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.homePhone">Home Phone</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.workPhone">Work Phone</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.emailAddress">Email Address</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.altTracking">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.map">Map #</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.commercial">commercial? (true-false)</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.companyName">Company Name (commercial only)</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.address1">Address 1</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.address2">Address 2</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.city">City</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.state">State</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.zip">Zip</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.county">County</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billAddress1">Billing Address 1</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billAddress2">Billing Address 2</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billCity">Billing City</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billState">Billing State</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billZip">Billing Zip</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.billCounty">Billing >County</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.substationName">Substation Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.feeder">Feeder</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.pole">Pole</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.transformerSize">Transformer Size</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.serviceVoltage">Service Voltage</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.username">Username</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.password">Password</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.userGroup">User Group</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.run">RUN</entry>
+    <entry key="yukon.web.modules.dev.webServices.account.testBtn.label">TEST</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.pageName">Web Service XML Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.pageDescription">Web Service</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.sampleRequests">Sample Requests...</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.request.title">Request</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.response.title">Response</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.uri">URI</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.username">User Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.resetUsername">Reset</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.otherUri">Other</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.formatResponse">Format Response</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.submitRequest">Submit Request</entry>
+    <entry key="yukon.web.modules.dev.webServices.eimTest.noRequestMade">No request has been made yet.</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.pageName">Load Control Services Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.pageDescription">Load Control Services</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.functionality">Functionality</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.inputTest">Input Test</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.programStatusByName">Program Status By Program Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.programStatusAllActive">All Currently Active Programs</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.startByScenarioName">Start By Scenario Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.startByProgramName">Start By Program Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.stopByScenarioName">Stop By Scenario Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.stopByProgramName">Stop By Program Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.scenarioProgramList">Scenario List O' Programs (Starting Gears)</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.enrollingInAProgram">Enrolling a device in a program</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.unenrollingInAProgram">Unenrolling a device in a program</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.addDevice">Add a device to an account</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.updateDevice">Update a device on an account</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.removeDevice">Remove a device on an account</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.run">RUN</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.scenarioName">Scenario Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.forceExecute">Force Execute</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.observeAndExecute">Observe Constraints And Execute</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.gearName">Gear Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.applianceCategoryName">Appliance Category Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.applianceKW">applianceKW</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.relay">Relay</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.seasonalLoad">Seasonal Load</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.fieldInstallDate">Field Install Date</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.serviceCompanyName">Service Company Name</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.deviceLabel">Device Label</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.fieldRemoveDate">Field Remove Date</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.hhMM">(HH:MM)</entry>
+    <entry key="yukon.web.modules.dev.webServices.loadControl.testBtn.label">TEST</entry>
+    
+    <!-- UI Demos -->
+    <entry key="yukon.web.modules.dev.uiDemos.pageName">UI Demos</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.confirmGotoHome.title">Confirm GOTO</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.confirmGotoHome.message">Are you sure you want to go home?  (Some say you can't go home.)</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.searchWikipedia.title">Confirm Search</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.searchWikipedia.message">Are you sure you want to search Wikipedia?</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog1.title">In-line Test, no OK</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inline1.label">In-line 1, no okAction</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog2.title">In-line Test, submit</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inline2.label">In-line 2, submit okAction</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog3.title">In-line Test, custom event</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inline3.label">In-line 3, custom event okAction</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog4.title">In-line Test, options</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inline4.label">In-line 4, options</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.title">In-line Test, options (custom buttons)</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.button1">Button 1</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inlineDialog5.button2">Button 2</entry>
+    <entry key="yukon.web.modules.dev.uiDemos.inline5.label">In-line 5, options (custom buttons)</entry>
+    
+    <!-- Point Injection -->
+    <entry key="yukon.web.modules.dev.pointInjection.pageName">Point Injection</entry>
+    <entry key="yukon.web.modules.dev.pointInjection.myPicker.label">Foo</entry>
+    <entry key="yukon.web.modules.dev.pointInjection.addRow.label">Add Row</entry>
+    
+    <!-- Bulk Point Injection -->
+    <entry key="yukon.web.modules.dev.bulkPointInjection.pageName">Bulk Point Injection</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.startTime">Start Time</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.stopTime">Stop Time</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.period">Period</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.noPeriod">Period cannot be zero or blank.</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.periodWindow">Period Window</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.quality">Quality</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.noQuality">Quality must have at least one value selected.</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.distributionAlg">Distribution Algorithm</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.incremental">Incremental</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.decimalPlaces">Decimal Places</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.valueRangeLow">Value Range Low</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.valueRangeHigh">Value Range High</entry>
+    <entry key="yukon.web.modules.dev.bulkPointInjection.archive">Archive</entry>
+    
+    <!-- UI Toolkit Demos -->
+    <entry key="yukon.web.modules.dev.uiToolkitDemo.pageName">UI Toolkit Demos</entry>
+    
+    <!-- Setup Database -->
+    <entry key="yukon.web.modules.dev.setupDatabase.pageName">Setup Development Database</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.log">* See console log for execution details</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.runSetup.label">Run Setup</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.options">Options</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties">Update Role Properties</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties.title">Enables (most) role properties one would want enabled on a development machine</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.title">AMR</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr">AMR</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties.title">Role Properties</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties">Role Properties</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.roleProperties.roleGroup">Role Group to update</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.createCartObjects">Create Cart Objects</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.createRfnTemplateMeters">Create RFN Template Meters</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.routeId">Select Route</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.numAdditionalMeters"># of Additional MCTs (per type)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.meterTypes">Meter Types</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMin">Address Range Min</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.amr.addressRangeMax">Address Range Max</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.title">Cap Control</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol">Cap Control</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.cbcTypes">CBC Types</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.regulatorTypes">Regulator Types</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.areas"># of Areas</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.subs"># of Subs (per Area)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.subBuses"># of SubBuses (per Sub)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.feeders"># of Feeders (per SubBus)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.capBanks"># of CapBanks (per Feeder)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.cbcs"># of CBCs (per CapBank)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.regulators"># of Regulators (per type)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.capcontrol.object.offset">Offset # (for names)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog">Event Log</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.username">Username</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.indicatorString">Indicator Prefix prepended to all string arguments</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.eventSource">Event Source</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.eventLog.iterations"># of inserts per type</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.title">Stars</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars">Stars</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.hardwareTypes">Hardware Types</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.numAccounts"># of Accounts</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.createNewEC">New Energy Company Name</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.numExtra"># of Extra Hardware (per type)</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.accountNumMin">Account # Range Start</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.accountNumMax">Account # Range End</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.serialNumMin">Serial # Range Start</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.option.stars.serialNumMax">Serial # Range End</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic">{0}</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty">Cannot be empty</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive">Must be Positive</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.unavailable">Unavailable</entry>
+    <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.accountExists">Account already exists: {0}</entry>
+    
+    <!-- Misc Methods -->
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.pageName">Miscellaneous Methods</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.insertProgramTypes.label">Insert Program Types</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.sendTestTextMessage.label">Send Message Event</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.sendTestCancelMessage.label">Send Cancel Message Event</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.sendControlStopNotificationMessage.label">Send Control Notification Stop</entry>
+    <entry key="yukon.web.modules.dev.miscellaneousMethod.sendControlStartNotificationMessage.label">Send Control Notification Start</entry>
+    
+    <!-- RFN Test -->
+    <entry key="yukon.web.modules.dev.rfnTest.pageName">RFN Test</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.numEventsSent">{0,choice,0#no events sent|1#{0} event sent successfully|1&lt;{0} events sent successfully}</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.sendEvent.title">RFN Event Archive Request Test</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.sendAlarm.title">RFN Alarm Archive Request Test</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.viewDataSimulator.pageName">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.tests.title">Archive Request Test Pages</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.send.label">Send Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.broadcast.label">Send Verification Command</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.meterReadArchiveRequest.label">Meter Read Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrArchiveRequest.label">LCR Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.label">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.eventArchiveRequest.label">Event Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.label">Alarm Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.CLEARED">Cleared</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.COUNT">Count</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.DIRECTION">Direction</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.MEASURED_VALUE">Measured Value</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.EVENT_START_TIME">Event Start Time</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.THRESHOLD_VALUE">Threshold Value</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.UOM">UOM</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.UOM_MODIFIERS">UOM Modifiers</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.title">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200">RFN LCR 6200 Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageId">MessageId</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.messageIdTimestamp">MessageId Timestamp</entry>
+    
+    <!-- I18N Demo -->
+    <entry key="yukon.web.modules.dev.i18nDemo.pageName">I18N Demo</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey"/>]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExampleMsg"><![CDATA[
+        <entry key="yukon.web.modules.module.page.awesomeKey"><![CDATA[Your thing: <span class="error">{0}</span>!]]]]><![CDATA[></entry>
+    ]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.defaultEscapingExample"><![CDATA[Your thing: <span class="error">{0}</span>!]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.fullHTMLEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey" htmlEscape="true"/>]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.noHTMLEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey" htmlEscapeArguments="false"/>]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.JavaScriptEscapingExampleCode"><![CDATA[<cti:msg2 key=".containsJSCode" javaScriptEscape="true"/>]]></entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.scope.title">Scope {0}</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.testMessage">Test "i18nDemo"</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.nested.testMessage">Test "i18nDemo.nested"</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.choiceExample">There {0,choice,0#are no items|1#is one item|1&lt;are {0} items}.</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.decimalExample.2places">{0,number,0.00}</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.decimalExample.withCommas">{0,number,#,##0.0}</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.NONE">Please Choose...</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.RED">Red</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.ORANGE">Orange</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.YELLOW">Yellow</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.GREEN">Green</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.BLUE">Blue</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.INDIGO">Indigo</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.VIOLET">Violet</entry>
+    <entry key="yukon.web.modules.dev.i18nDemo.colors.OTHER">Other</entry>
+    
+    <!-- Picker Test -->
+    <entry key="yukon.web.modules.dev.pickerTest.pageName">Picker Test</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.linkPickers.title">Link Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.buttonPickers.title">Button Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick7.label">Pick 7 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick8.label">Pick 8 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick9.label">Pick 9 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick11.label">Pick 11 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.memoryGroupedPickers.title">Memory Grouped Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick12.label">Pick 12 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick13.label">Pick 13 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick14.label">Pick 14 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.selectionPickers.title">Selection Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick16.label">Pick 2 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick18.label">Pick 4 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick19.label">Pick 5 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.pick20.label">Pick 6 (i18n)</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.rememberingPickers.title">Remembering Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickerTest.inlinePickers.title">Inline Pickers</entry>
+    
+</properties>

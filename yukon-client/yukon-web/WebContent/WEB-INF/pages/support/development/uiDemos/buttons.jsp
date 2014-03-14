@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msgScope paths="modules.support.uiDemos">
+<cti:msgScope paths="modules.dev.uiDemos">
 
 <style type="text/css">
 .description {line-height: 26px;margin-left:20px;}

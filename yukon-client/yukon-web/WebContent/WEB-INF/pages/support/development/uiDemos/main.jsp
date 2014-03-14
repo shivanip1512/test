@@ -1,13 +1,13 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="support" page="uiDemos">
+<cti:standardPage module="dev" page="uiDemos">
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <cti:includeScript link="JQUERY_COOKIE" />
 
     <div class="column-4-20">
-        <div class="column one">
-            <ul id="dev-sections" class="side-tabs">
+        <div class="column one side-nav">
+            <ul id="dev-sections">
                 <li class="selected"><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/containers"/>">Containers</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/buttons"/>">Buttons</a></li>
                 <li><a href="javascript:void(0);" data-url="<cti:url value="/support/development/uiDemos/pickers"/>">Pickers</a></li>

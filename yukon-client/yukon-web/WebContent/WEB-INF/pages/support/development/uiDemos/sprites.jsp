@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:msgScope paths="modules.support.uiDemos">
+<cti:msgScope paths="modules.dev.uiDemos">
 <h1>Icons and their associated CSS classes</h1>
 <tags:sectionContainer title="16px icons">
     <c:forEach items="${sprites16Array}" var="spriteProperty" varStatus="status">

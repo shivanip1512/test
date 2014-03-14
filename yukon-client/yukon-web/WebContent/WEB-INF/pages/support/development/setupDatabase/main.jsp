@@ -6,7 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
-<cti:standardPage module="support" page="setupDatabase">
+<cti:standardPage module="dev" page="setupDatabase">
 <cti:includeScript link="JQUERY_GRID"/>
 <cti:includeScript link="JQUERY_COOKIE"/>
     

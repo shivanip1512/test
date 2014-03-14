@@ -1,10 +1,7 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="support" page="development">
+<cti:standardPage module="dev" page="home">
     <div class="column-8-8-8">
         <div class="column one">
             <tags:sectionContainer title="UI Demos">
@@ -12,7 +9,7 @@
                     <li><a href="<cti:url value="/support/development/uiDemos/main"/>">UI Demos</a></li>
                     <li><a href="<cti:url value="/support/development/uiToolkitDemo/main"/>">UI Toolkit</a></li>
                 </ul>
-            </tags:sectionContainer>   
+            </tags:sectionContainer>
         </div>
         <div class="column two">
             <tags:sectionContainer title="Development Setup">
@@ -23,7 +20,7 @@
                     <li><a href="<cti:url value="/support/development/miscellaneousMethod/main"/>">Miscellaneous Methods</a></li>
                     <li><a href="<cti:url value="/support/development/rfn/viewBase"/>">RFN Test</a></li>
                 </ul>
-            </tags:sectionContainer>   
+            </tags:sectionContainer>
         </div>
         <div class="column three nogutter">
             <tags:sectionContainer title="Web Services Tests">
@@ -34,5 +31,5 @@
                 </ul>
             </tags:sectionContainer>
         </div>
-     </div>
+    </div>
 </cti:standardPage>

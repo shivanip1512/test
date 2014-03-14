@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="support" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest">
 
     <script>
         jQuery(document).ready(function() {

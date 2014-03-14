@@ -5,7 +5,7 @@
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<cti:msgScope paths="modules.support.i18nDemo">
+<cti:msgScope paths="modules.dev.i18nDemo">
 
 <div class="i18nDemo">
 

@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  */
 public enum SiteModule implements DatabaseRepresentationSource {
     AMI("amr", SiteMapCategory.AMI),
+    DEV("dev", SiteMapCategory.DEVELOPMENT),
     DR("dr", SiteMapCategory.DR),
     CAPCONTROL("capcontrol", SiteMapCategory.VV),
     OPERATOR("operator", SiteMapCategory.ASSETS),

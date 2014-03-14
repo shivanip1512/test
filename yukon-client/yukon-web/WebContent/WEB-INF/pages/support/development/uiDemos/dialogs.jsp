@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
-<cti:msgScope paths="modules.support.uiDemos">
+<cti:msgScope paths="modules.dev.uiDemos">
 
 <script type="text/javascript">
 jQuery(document).ready(function() {

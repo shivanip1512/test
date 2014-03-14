@@ -43,7 +43,7 @@ public class UiDemosController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.support.i18nDemo.colors." + name();
+            return "yukon.web.modules.dev.i18nDemo.colors." + name();
         }
     }
 

@@ -31,7 +31,7 @@
         <permissions>
           <role name="TRENDING" />
         </permissions>
-        <link>/operator/Metering/Metering.jsp</link>
+        <link>/trends</link>
       </option>
       <option name="import" section="true">
         <permissions>

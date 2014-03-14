@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
 
-<cti:msgScope paths="modules.support.i18nDemo">
+<cti:msgScope paths="modules.dev.i18nDemo">
 
 <p class="pageDescription">
 This page shows some examples of how to use i18n message key scoping in Yukon.  This is the same

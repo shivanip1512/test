@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
-<cti:standardPage page="webServices.loadControl" module="support">
+<cti:standardPage page="webServices.loadControl" module="dev">
 
     <script>
         

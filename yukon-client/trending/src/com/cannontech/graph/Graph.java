@@ -15,6 +15,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.joda.time.Instant;
 import org.w3c.dom.Element;
 
 import com.cannontech.clientutils.CTILogger;
@@ -638,14 +639,16 @@ public void setUpdateTrend(boolean update)
 {
 	updateTrend = update;
 }
-public void update()
-{
+public void update(Instant start, Instant stop) {
+    if (start == null) start = new Instant(getStartDate());
+    if (stop == null) stop = new Instant(getStopDate());
+    
 	if( isUpdateTrend())
 	{
 		TrendModel newModel = null;
 		if( getGenerationType() == GDEF_GENERATION)
 		{
-			newModel = new TrendModel(getGraphDefinition(), getStartDate(), getStopDate(), getTrendProperties(), getNumberOfEvents()); 
+			newModel = new TrendModel(getGraphDefinition(), start.toDate(), stop.toDate(), getTrendProperties(), getNumberOfEvents()); 
 		}
 		else if ( getGenerationType() == POINT_GENERATION)
 		{
@@ -660,7 +663,7 @@ public void update()
 				chartTitle += lp.getPointName();
 			}			
 			chartTitle += " Trend";
-			newModel = new TrendModel(getStartDate(), getStopDate(), chartTitle, lps);
+			newModel = new TrendModel(start.toDate(), stop.toDate(), chartTitle, lps);
 
 			for( int i = 0; i < pointIDs.length; i++ )
 			{

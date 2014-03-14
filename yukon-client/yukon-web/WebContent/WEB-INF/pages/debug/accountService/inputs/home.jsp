@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage page="webServices.account" module="support">
+<cti:standardPage page="webServices.account" module="dev">
     
   
     <%-- RESULT AREA --%>

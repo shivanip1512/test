@@ -8,19 +8,28 @@ import com.cannontech.database.db.graph.GraphDataSeries;
 
 public interface GraphDao {
 
-    public LiteGraphDefinition getLiteGraphDefinition(int id);
+    /** Get all paos for a graph */
+    public List<LiteYukonPAObject> getLiteYukonPaobjects(int graphDefinitionId);
 
-    public List<LiteYukonPAObject> getLiteYukonPaobjects(int gDefID);
-
+    /** Get all data series */
     public List<GraphDataSeries> getAllGraphDataSeries();
 
-    public List<GraphDataSeries> getAllGraphDataSeries(int type_);
+    /** Get data series by type */
+    public List<GraphDataSeries> getAllGraphDataSeriesByType(int type);
 
-    /**
-     * Method to get a list of all graph definitions for a given user
-     * @param yukonUserId - User to get graphs for
-     * @return The list of graphs associated with the user
-     */
-    public List<LiteGraphDefinition> getGraphDefinitionsForUser(int yukonUserId);
+    /** Get a graph */
+    public LiteGraphDefinition getLiteGraphDefinition(int graphDefinitionId);
+
+    /** Get all graphs */
+    public List<LiteGraphDefinition> getGraphDefinitions();
+
+    /** Get all graphs for a user*/
+    public List<LiteGraphDefinition> getGraphDefinitionsForUser(int userId);
+    
+    /** Get all graphs for an energy company */
+    public List<LiteGraphDefinition> getGraphDefinitionsForEnergyCompany(int ecId);
+
+    /** Get all the data series for a graph */
+    public List<GraphDataSeries> getGraphDataSeries(int graphDefinitionId);
 
 }

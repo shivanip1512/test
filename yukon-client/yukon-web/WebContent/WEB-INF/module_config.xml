@@ -175,6 +175,10 @@
       <page name="search" type="BASIC">
         <link>/search</link>
       </page>
+      <page name="trends" type="BASIC"/>
+      <page name="trend" type="DETAIL">
+        <labelArgument>${trendName}</labelArgument>
+      </page>
       <page name="tdc.home" type="BASIC">
         <link>/tdc</link>
         <pages>
@@ -675,30 +679,6 @@
             </pages>
           </page>
           <page name="indexes" type="BASIC"/>
-        </pages>
-      </page>
-      <page name="development" type="BASIC">
-        <requireRoleProperty value="DEVELOPMENT_MODE" />
-        <link>/support/development/main</link>
-        <pages>
-          <page name="webServices.eimTest" type="BASIC" />
-          <page name="webServices.loadControl" type="BASIC" />
-          <page name="webServices.account" type="BASIC" />
-          <page name="uiDemos" type="BASIC" />
-          <page name="pointInjection" type="BASIC" />
-          <page name="bulkPointInjection" type="BASIC" />
-          <page name="uiToolkitDemo" type="BASIC" />
-          <page name="setupDatabase" type="BASIC" />
-          <page name="miscellaneousMethod" type="BASIC" />
-          <page name="rfnTest" type="BASIC">
-            <link>/support/development/rfn/viewBase</link>
-            <pages>
-              <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
-              <page name="rfnTest.viewEventArchive" type="DETAIL" />
-              <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
-              <page name="rfnTest.viewDataSimulator" type="BASIC" />
-            </pages>
-          </page>
         </pages>
       </page>
       <page name="siteMap" type="BASIC">
@@ -1413,17 +1393,46 @@
     </menu>
   </module>
 
-    <module name="user">
-        <skin name="STANDARD" />
-        <pages>
-            <page name="profile.VIEW" type="BASIC">
-                <link>/user/profile</link>
-                <pages>
-                    <page name="profile.EDIT" type="BASIC" hideFavorite="true">
-                    </page>
-                </pages>
-            </page>
-        </pages>
-    </module>
+  <module name="user">
+    <skin name="STANDARD"/>
+    <pages>
+       <page name="profile.VIEW" type="BASIC">
+         <link>/user/profile</link>
+         <pages>
+           <page name="profile.EDIT" type="BASIC" hideFavorite="true"/>
+         </pages>
+       </page>
+    </pages>
+  </module>
     
+  <module name="dev">
+    <skin name="STANDARD"/>
+    <pages>
+      <page name="home" type="BASIC">
+        <requireRoleProperty value="DEVELOPMENT_MODE" />
+        <link>/support/development/main</link>
+        <pages>
+          <page name="webServices.eimTest" type="BASIC" />
+          <page name="webServices.loadControl" type="BASIC" />
+          <page name="webServices.account" type="BASIC" />
+          <page name="uiDemos" type="BASIC" />
+          <page name="pointInjection" type="BASIC" />
+          <page name="bulkPointInjection" type="BASIC" />
+          <page name="uiToolkitDemo" type="BASIC" />
+          <page name="setupDatabase" type="BASIC" />
+          <page name="miscellaneousMethod" type="BASIC" />
+          <page name="rfnTest" type="BASIC">
+            <link>/support/development/rfn/viewBase</link>
+            <pages>
+              <page name="rfnTest.viewMeterReadArchive" type="DETAIL" />
+              <page name="rfnTest.viewEventArchive" type="DETAIL" />
+              <page name="rfnTest.viewAlarmArchive" type="DETAIL" />
+              <page name="rfnTest.viewDataSimulator" type="BASIC" />
+            </pages>
+          </page>
+        </pages>
+      </page>
+    </pages>
+  </module>
+  
 </modules>

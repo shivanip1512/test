@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.${module}.${page}">
-<html>
+<html class="blank-module">
 
     <head>
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
@@ -44,7 +44,7 @@
         <cti:css key="yukon.web.login.loginStyles"/>
     </head>
 
-    <body class="blank_module">
+    <body>
     <div id="page">
         <header class="yukon-header">
             <div class="outer" role="banner">

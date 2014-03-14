@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="support" page="miscellaneousMethod">
+<cti:standardPage module="dev" page="miscellaneousMethod">
 
 <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
     <cti:dataGridCell>

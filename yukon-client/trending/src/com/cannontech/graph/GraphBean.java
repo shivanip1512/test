@@ -239,7 +239,7 @@ public class GraphBean extends Graph
 	{
 		if( getViewType() == GraphRenderers.TABULAR)
 		{
-			update();
+			update(null, null);
 			
 			StringBuffer buf =  new StringBuffer();
 			buf.append(buildHTMLBuffer(new TabularHtml()));
@@ -251,7 +251,7 @@ public class GraphBean extends Graph
 		{			
 			StringBuffer buf = new StringBuffer();
 	
-			update();
+			update(null, null);
 			buf.append(buildHTMLBuffer(new PeakHtml()));
 			buf.append(buildHTMLBuffer(new UsageHtml()));
 			buf.append("</CENTER></HTML>");
@@ -260,7 +260,7 @@ public class GraphBean extends Graph
 		}
 		else
 		{
-			update();
+		    update(null, null);
 		}
 	}
 	

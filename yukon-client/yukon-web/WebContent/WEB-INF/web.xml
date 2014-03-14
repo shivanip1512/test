@@ -299,6 +299,12 @@
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
    </servlet>
+
+    <servlet>
+        <servlet-name>trends</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+   </servlet>
    
     <servlet>
         <servlet-name>deviceConfiguration</servlet-name>
@@ -848,6 +854,12 @@
         <servlet-name>tdc</servlet-name>
         <url-pattern>/tdc</url-pattern>
         <url-pattern>/tdc/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>trends</servlet-name>
+        <url-pattern>/trends</url-pattern>
+        <url-pattern>/trends/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
