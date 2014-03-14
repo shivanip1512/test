@@ -931,14 +931,14 @@ public class OptOutServiceImpl implements OptOutService {
 		    LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
 			Program program = programService.getByProgramName(programName, energyCompany);
 
-		     // Get the enrolled inventory by program and time period
-	        List<Integer> optedOutInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
-	            optedOutInventory.addAll(optOutEventDao.getScheduledOptOutInventory(program, startTime, stopTime));
+		    Set<Integer> inventory = new HashSet<>();
+	        inventory.addAll(enrollmentDao.getOptedOutInventory(program, startTime, stopTime));
+	        inventory.addAll(optOutEventDao.getScheduledOptOutInventory(program, startTime, stopTime));
 			for (OverrideHistory history : inventoryHistoryList) {
 				
 				// Only add the history for inventory that was opted out of the given program
 				Integer inventoryId = history.getInventoryId();
-				if(optedOutInventory.contains(inventoryId)) {
+				if(inventory.contains(inventoryId)) {
 					history.setPrograms(Collections.singletonList(program));
 					historyList.add(history);
 				}
@@ -982,14 +982,15 @@ public class OptOutServiceImpl implements OptOutService {
 		List<OverrideHistory> historyList = new ArrayList<>();
 		
 		// Get the enrolled inventory by program and time period
-		List<Integer> enrolledInventory = enrollmentDao.getOptedOutInventory(program, startTime, stopTime);
-		    enrolledInventory.addAll(optOutEventDao.getScheduledOptOutInventory(program, startTime, stopTime));
+		Set<Integer> inventory = new HashSet<>();
+		inventory.addAll(enrollmentDao.getOptedOutInventory(program, startTime, stopTime));
+		inventory.addAll(optOutEventDao.getScheduledOptOutInventory(program, startTime, stopTime));
 
 		// For each inventory, get the opt out event and create the override history object
-		for(Integer inventoryId : enrolledInventory) {
+		for(Integer inventoryId : inventory) {
 
-			Set<Program> programList
-			    = new HashSet<>(enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime));
+			Set<Program> programList = new HashSet<>();
+			programList.addAll(enrollmentDao.getEnrolledProgramIdsByInventory(inventoryId, startTime, stopTime));
 
 			List<OverrideHistory> inventoryHistoryList
 			    = optOutEventDao.getOptOutHistoryForInventory(inventoryId, startTime, stopTime, 
