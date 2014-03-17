@@ -169,7 +169,9 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 // Skip all intervals occuring in the future since the device sends us 36
                 // intervals every time even if they have not happened yet. 
                 // Also skip if interval value is 0xFFFF which indicates an invalid hour. 
-                if (currentIntervalTimestamp.isBefore(firstIntervalTimestamp) || interval == 0xFFFF) continue;
+                if (currentIntervalTimestamp.isBefore(firstIntervalTimestamp) || interval == 0xFFFF) {
+                    continue;
+                }
                 
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
