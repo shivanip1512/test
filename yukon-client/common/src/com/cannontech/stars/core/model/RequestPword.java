@@ -94,7 +94,7 @@ public class RequestPword
             
             LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).findContactByEmail(email);
             if (liteContact == null) {
-                setState( RET_FAILED, "EMAIL_NOT_UNIQUE");
+                setState( RET_FAILED, "EMAIL_NOT_FOUND");
             } else { //found exactly one
                 foundData.add( " Contact Name: " + liteContact.getContFirstName() + " " + liteContact.getContLastName() );
                 foundData.add( " Username: " + YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(liteContact.getLoginID()).getUsername() );
