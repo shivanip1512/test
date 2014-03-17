@@ -574,15 +574,18 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
                 dut.extractCommandResult( *command );
 
-                std::string dynamicInfo;
-                boost::optional<std::string> configValue;
+                const std::vector<bool> dynamicInfo_exp( touScheduleCompareKeys.size(), true );
+                      std::vector<bool> dynamicInfo_rcv;
 
                 for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
                 {
-                    BOOST_CHECK( (configValue = cfg.findValue<std::string>( p.second ))
-                            && dut.getDynamicInfo( p.first, dynamicInfo )
-                            && *configValue == dynamicInfo );
+                    std::string dynamicInfo;
+                    dynamicInfo_rcv.push_back( dut.getDynamicInfo( p.first, dynamicInfo ) &&
+                            dynamicInfo == cfg.findValue<std::string>( p.second ) );
                 }
+
+                BOOST_CHECK_EQUAL_COLLECTIONS( dynamicInfo_rcv.begin(), dynamicInfo_rcv.end(),
+                                               dynamicInfo_exp.begin(), dynamicInfo_exp.end() );
             }
         }
 
