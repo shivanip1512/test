@@ -25,9 +25,10 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.VALIDATION_ENGINE)
 public class ValidationMonitorEditorController {
 
-    private ValidationMonitorDao validationMonitorDao;
-    private ValidationMonitorService validationMonitorService;
-    private Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
+    private final static Logger log = YukonLogManager.getLogger(ValidationMonitorEditorController.class);
+    @Autowired private ValidationMonitorDao validationMonitorDao;
+    @Autowired private ValidationMonitorService validationMonitorService;
+    
 
     @RequestMapping("edit")
     public String edit(ModelMap model, Integer validationMonitorId, String editError, String name, String deviceGroupName, 
@@ -186,13 +187,5 @@ public class ValidationMonitorEditorController {
         return "redirect:edit";
     }
     
-    @Autowired
-    public void setValidationMonitorDao(ValidationMonitorDao validationMonitorDao){
-        this.validationMonitorDao = validationMonitorDao;
-    }
     
-    @Autowired
-    public void setValidationMonitorService(ValidationMonitorService validationMonitorService) {
-		this.validationMonitorService = validationMonitorService;
-	}
 }
