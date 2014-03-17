@@ -134,8 +134,7 @@ yukon.modules.base = function (box) {
     };
     // Handle app name prepending here
     box.url = function (url) {
-        var urlPrefix = 'undefined' !== typeof YG ? YG.APP_NAME : '';
-        return urlPrefix + url;
+        return YG.APP_NAME + url;
     };
 };
 

@@ -1,6 +1,8 @@
-<%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="com.cannontech.core.roleproperties.YukonRoleProperty" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:outputDoctype levels="${info.htmlLevel}, transitional"/>
 <html>
@@ -30,11 +32,12 @@
         <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
+        <tags:jsGlobals/>
+        
         <!-- Consolidated Script Files -->
         <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
 
-        <tags:jsGlobals/>
 </head>
 
 <body id="PurplePageBody" class="Background" text="#000000" leftmargin="0" topmargin="0"

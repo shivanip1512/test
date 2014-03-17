@@ -33,11 +33,12 @@
         <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<cti:url value="${file}"/>" >
         </c:forEach>
         
+        <tags:jsGlobals/>
+        
         <!-- Consolidated Script Files -->
         <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
 
-        <tags:jsGlobals/>
     </head>
     
 	<body class="<c:out value="${module.moduleName}"/>_module">
