@@ -1,5 +1,11 @@
 package com.cannontech.web.tdc;
 
+import static com.cannontech.common.tdc.model.ColumnType.POINT_QUALITY;
+import static com.cannontech.common.tdc.model.ColumnType.POINT_TIME_STAMP;
+import static com.cannontech.common.tdc.model.ColumnType.POINT_VALUE;
+import static com.cannontech.common.tdc.model.ColumnType.U_OF_M;
+import static com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +33,6 @@ public class TdcDownloadHelper {
     private Display display;
     private List<DisplayData> displayData;
     private YukonUserContext context;
-
-
 
     public TdcDownloadHelper(MessageSourceAccessor accessor,
                              PointDataRegistrationService registrationService,
@@ -60,95 +64,129 @@ public class TdcDownloadHelper {
 
     public List<List<String>> getDataGrid() {
         List<List<String>> dataGrid = new ArrayList<>();
-        UpdateValue value;
-        for (DisplayData data : displayData) {
-            List<String> row = new ArrayList<>();
-            for (Column column : display.getColumns()) {
-                switch (column.getType()) {
-                case POINT_ID:
-                    row.add(String.valueOf(data.getPointId()));
-                    break;
-                case POINT_NAME:
-                    row.add(data.getPointName());
-                    break;
-                case POINT_TYPE:
-                    row.add(accessor.getMessage(data.getPointType()));
-                    break;
-                case POINT_STATE:
-                    YukonMessageSourceResolvable msg =
-                        new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.point.enabled."
-                                                         + data.isPointEnabled());
-                    row.add(accessor.getMessage(msg));
-                    break;
-                case DEVICE_NAME:
-                    row.add(data.getDeviceName());
-                    break;
-                case DEVICE_TYPE:
-                    row.add(data.getDevice().getDeviceType().getPaoTypeName());
-                    break;
-                case DEVICE_CURRENT_STATE:
-                    row.add(data.getDeviceCurrentState());
-                    break;
-                case DEVICE_ID:
-                    row.add(String.valueOf(data.getDevice().getDeviceId()));
-                    break;
-                case POINT_VALUE:
-                    value =
+        if (isDataAvailable()) {
+            UpdateValue value;
+            for (DisplayData data : displayData) {
+                List<String> row = new ArrayList<>();
+                for (Column column : display.getColumns()) {
+                    if (data.isBlank() && display.getType() == CUSTOM_DISPLAYS) {
+                        row.add("");
+                    } else {
+                        switch (column.getType()) {
+                        case POINT_ID:
+                            row.add(String.valueOf(data.getPointId()));
+                            break;
+                        case POINT_NAME:
+                            row.add(data.getPointName());
+                            break;
+                        case POINT_TYPE:
+                            row.add(accessor.getMessage(data.getPointType()));
+                            break;
+                        case POINT_STATE:
+                            YukonMessageSourceResolvable msg =
+                                new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.point.enabled."
+                                                                 + data.isPointEnabled());
+                            row.add(accessor.getMessage(msg));
+                            break;
+                        case DEVICE_NAME:
+                            row.add(data.getDeviceName());
+                            break;
+                        case DEVICE_TYPE:
+                            row.add(data.getDevice().getDeviceType().getPaoTypeName());
+                            break;
+                        case DEVICE_CURRENT_STATE:
+                            row.add(data.getDeviceCurrentState());
+                            break;
+                        case DEVICE_ID:
+                            row.add(String.valueOf(data.getDevice().getDeviceId()));
+                            break;
+                        case POINT_VALUE:
+                            value =
+                                registrationService.getLatestValue(data.getPointId(),
+                                                                   Format.VALUE_UNIT.name(),
+                                                                   context);
+                            row.add(value.getValue());
+                            break;
+                        case POINT_QUALITY:
+                            value =
+                                registrationService.getLatestValue(data.getPointId(),
+                                                                   Format.QUALITY.name(),
+                                                                   context);
+                            row.add(value.getValue());
+                            break;
+                        case POINT_TIME_STAMP:
+                            value =
+                                registrationService.getLatestValue(data.getPointId(),
+                                                                   Format.DATE.name(),
+                                                                   context);
+                            row.add(value.getValue());
+                            break;
+                        case TIME_STAMP:
+                            String formattedDate =
+                                dateFormattingService.format(data.getDate(),
+                                                             DateFormatEnum.BOTH,
+                                                             context);
+                            row.add(formattedDate);
+                            break;
+                        case TEXT_MESSAGE:
+                            row.add(data.getTextMessage());
+                            break;
+                        case ADDITIONAL_INFO:
+                            row.add(data.getAdditionalInfo());
+                            break;
+                        case DESCRIPTION:
+                            row.add(data.getDescription());
+                            break;
+                        case USERNAME:
+                            row.add(data.getUserName());
+                            break;
+                        case STATE:
+                            row.add(tdcService.getPointState(data.getPointId()));
+                            break;
+                        case TAG:
+                            row.add(data.getTagName());
+                            break;
+                        case U_OF_M:
+                            value =
+                                registrationService.getLatestValue(data.getPointId(),
+                                                                   Format.UNIT.name(),
+                                                                   context);
+                            row.add(value.getValue());
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                }
+                dataGrid.add(row);
+            }
+        }
+        return dataGrid;
+    }
+
+    /*
+     * Check if the Point Data is available to display.
+     */
+    private boolean isDataAvailable() {
+        boolean isDataAvailable = true;
+        boolean checkPointData = display.getType() == CUSTOM_DISPLAYS && (
+                                 display.hasColumn(POINT_VALUE) || display.hasColumn(POINT_QUALITY)
+                                         || display.hasColumn(POINT_TIME_STAMP)
+                                         || display.hasColumn(U_OF_M));
+        if (checkPointData) {
+            for (DisplayData data : displayData) {
+                if (!data.isBlank()) {
+                    UpdateValue value =
                         registrationService.getLatestValue(data.getPointId(),
                                                            Format.VALUE_UNIT.name(),
                                                            context);
-                    row.add(value.getValue());
-                    break;
-                case POINT_QUALITY:
-                    value =
-                        registrationService.getLatestValue(data.getPointId(),
-                                                           Format.QUALITY.name(),
-                                                           context);
-                    row.add(value.getValue());
-                    break;
-                case POINT_TIME_STAMP:
-                    value =
-                        registrationService.getLatestValue(data.getPointId(),
-                                                           Format.DATE.name(),
-                                                           context);
-                    row.add(value.getValue());
-                    break;
-                case TIME_STAMP:
-                    String formattedDate =
-                        dateFormattingService.format(data.getDate(), DateFormatEnum.BOTH, context);
-                    row.add(formattedDate);
-                    break;
-                case TEXT_MESSAGE:
-                    row.add(data.getTextMessage());
-                    break;
-                case ADDITIONAL_INFO:
-                    row.add(data.getAdditionalInfo());
-                    break;
-                case DESCRIPTION:
-                    row.add(data.getDescription());
-                    break;
-                case USERNAME:
-                    row.add(data.getUserName());
-                    break;
-                case STATE:
-                    row.add(tdcService.getPointState(data.getPointId()));
-                    break;
-                case TAG:
-                    row.add(data.getTagName());
-                    break;
-                case U_OF_M:
-                    value =
-                        registrationService.getLatestValue(data.getPointId(),
-                                                           Format.UNIT.name(),
-                                                           context);
-                    row.add(value.getValue());
-                    break;
-                default:
+                    if (value.isUnavailable()) {
+                        isDataAvailable = false;
+                    }
                     break;
                 }
             }
-            dataGrid.add(row);
         }
-        return dataGrid;
+        return isDataAvailable;
     }
 }

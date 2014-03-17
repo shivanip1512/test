@@ -46,7 +46,7 @@
         <tbody>
             <c:forEach var="row" items="${displayData}">
                 <c:choose>
-                    <c:when test="${row.isBlank()}">
+                    <c:when test="${row.isBlank() && display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                         <tr class="vh">
                             <td colspan="${display.columns.size() + 3}">&nbsp;</td> 
                         </tr>
