@@ -1,3 +1,9 @@
+/**
+ * Singleton to manage the commercial curtailment pages.
+ * 
+ * @requires jQuery 1.9+
+ */
+
 yukon.namespace('yukon.curtailment');
 
 yukon.curtailment = (function () {

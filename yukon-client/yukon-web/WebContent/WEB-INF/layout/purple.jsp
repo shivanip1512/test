@@ -34,20 +34,7 @@
         <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<cti:url value="${file}"/>"></script>
         </c:forEach>
 
-        <!-- Some prerequisite globals -->
-        <cti:url var="appName" value="/"/>
-        <c:if test="${appName == '/'}">
-            <%-- When we're running as the root web application, we need an empty string for a prefix. --%>
-            <c:set var="appName" value=""/>
-        </c:if>
-        <script type="text/javascript">
-        var YG = {
-                PHONE: {
-                    FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
-                },
-                APP_NAME: '${appName}'
-        };
-        </script>
+        <tags:jsGlobals/>
 </head>
 
 <body id="PurplePageBody" class="Background" text="#000000" leftmargin="0" topmargin="0"
