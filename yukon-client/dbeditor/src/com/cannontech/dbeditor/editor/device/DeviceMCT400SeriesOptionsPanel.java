@@ -1,23 +1,34 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 /**
  * Insert the type's description here.
  * Creation date: (11/19/2004 9:07:11 AM)
  * @author: 
  */
 public class DeviceMCT400SeriesOptionsPanel extends com.cannontech.common.gui.util.DataInputPanel {
+    private MCT400SeriesBase mct400 = null;
 	private javax.swing.JLabel ivjJLabelDisconnectAddress = null;
 	private javax.swing.JPanel ivjJPanelDisconnect = null;
 	private javax.swing.JTextField ivjJTextFieldDisconnectAddress = null;
 	IvjEventHandler ivjEventHandler = new IvjEventHandler();
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
 			if (e.getSource() == DeviceMCT400SeriesOptionsPanel.this.getJCheckBoxEnableDisconnect()) 
 				connEtoC2(e);
 		};
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e) {
 			if (e.getSource() == DeviceMCT400SeriesOptionsPanel.this.getJTextFieldDisconnectAddress()) 
 				connEtoC1(e);
 		};
@@ -235,9 +246,10 @@ private javax.swing.JTextField getJTextFieldDisconnectAddress() {
  * @return java.lang.Object
  * @param o java.lang.Object
  */
+@Override
 public Object getValue(Object o) 
 {
-	MCT400SeriesBase mct400 = (MCT400SeriesBase)o;
+    mct400 = (MCT400SeriesBase)o;
 	
 	if(getJCheckBoxEnableDisconnect().isSelected() &&
 		getJTextFieldDisconnectAddress().getText().length() > 0)
@@ -324,7 +336,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aDeviceMCT400SeriesOptionsPanel);
 		frame.setSize(aDeviceMCT400SeriesOptionsPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -341,9 +354,10 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param o java.lang.Object
  */
+@Override
 public void setValue(Object o) 
 {
-	MCT400SeriesBase mct400 = (MCT400SeriesBase)o;
+	mct400 = (MCT400SeriesBase)o;
 	
 	if(mct400.getDeviceMCT400Series().getDisconnectAddress() != null) {
 		Integer addy = mct400.getDeviceMCT400Series().getDisconnectAddress();
@@ -352,14 +366,30 @@ public void setValue(Object o)
 	}
 }
 
+@Override
 public boolean isInputValid() 
 {
-	if( getJCheckBoxEnableDisconnect().isSelected() 
-		&& (getJTextFieldDisconnectAddress().getText() == null
-		 || getJTextFieldDisconnectAddress().getText().length() < 1 ))
+    String addressText = getJTextFieldDisconnectAddress().getText();
+	if( getJCheckBoxEnableDisconnect().isSelected() && StringUtils.isBlank(addressText))
 	{
 		setErrorString("You have enabled disconnect.  Please specify an address.");
 		return false;
+	}
+	
+    List<String> devices = MCT400SeriesBase.isDiscAddressUnique(Integer.valueOf(addressText), mct400.getPAObjectID());
+    if (!CollectionUtils.isEmpty(devices)) {
+        String message = "The disconnect address '" + addressText
+            + "' is already used by the following devices,\n"
+            + "are you sure you want to use it again?\n";
+        
+        int res = DatabaseEditorOptionPane.showAlreadyUsedConfirmDialog(this,
+                                                                        message,
+                                                                        "Address Already Used",
+                                                                        devices);
+        if (res == JOptionPane.NO_OPTION) {
+            setErrorString(null);
+            return false;
+        }
 	}
 	
 	return true;
