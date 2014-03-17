@@ -47,7 +47,7 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         String cookieValue = usernameEncrypted + cookieValueSeparater + passwordEncrypted;
         Cookie cookie = new Cookie(LoginController.REMEMBER_ME_COOKIE, cookieValue);
         cookie.setMaxAge(Integer.MAX_VALUE);
-        cookie.setPath("/" + request.getContextPath());
+        cookie.setPath(request.getContextPath());
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }

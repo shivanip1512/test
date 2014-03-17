@@ -206,7 +206,6 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.startDate">Start Date</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.endDate">End Date</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysPrevious">Days Previous</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.field">Field</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.unsupportedField">Unsupported Field</entry>
     

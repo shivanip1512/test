@@ -1,6 +1,5 @@
 package com.cannontech.core.dao;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,8 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
@@ -209,7 +208,7 @@ public interface RawPointHistoryDao {
      * @return
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
-                                                                                        Iterable<Attribute> attributes,
+                                                                                        Iterable<? extends Attribute> attributes,
                                                                                         ReadableRange<Instant> dateRange,
                                                                                         int maxRows,
                                                                                         boolean excludeDisabledPaos,

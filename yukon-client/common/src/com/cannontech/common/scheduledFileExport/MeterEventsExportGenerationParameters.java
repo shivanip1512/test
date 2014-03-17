@@ -11,10 +11,10 @@ public class MeterEventsExportGenerationParameters implements ExportFileGenerati
 	private final boolean onlyAbnormalEvents;
 	private final boolean includeDisabledDevices;
 	private final DeviceCollection deviceCollection;
-	private final Set<Attribute> attributes;
+	private final Set<? extends Attribute> attributes;
 
 	public MeterEventsExportGenerationParameters(int daysPrevious, boolean onlyLatestEvent, boolean onlyAbnormalEvents, 
-			boolean includeDisabledDevices, DeviceCollection deviceCollection, Set<Attribute> attributes) {
+			boolean includeDisabledDevices, DeviceCollection deviceCollection, Set<? extends Attribute> attributes) {
 		this.daysPrevious = daysPrevious;
 		this.onlyAbnormalEvents = onlyAbnormalEvents;
 		this.onlyLatestEvent = onlyLatestEvent;
@@ -48,7 +48,7 @@ public class MeterEventsExportGenerationParameters implements ExportFileGenerati
 		return deviceCollection;
 	}
 
-	public Set<Attribute> getAttributes() {
+	public Set<? extends Attribute> getAttributes() {
 		return attributes;
 	}
 	

@@ -329,7 +329,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
-                                                                                        Iterable<Attribute> attributes,
+                                                                                        Iterable<? extends Attribute> attributes,
                                                                                         ReadableRange<Instant> dateRange,
                                                                                         final int maxRows,
                                                                                         final boolean excludeDisabledPaos,

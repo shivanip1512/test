@@ -28,7 +28,6 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoPointValueService;
 import com.cannontech.core.service.PointFormattingService;
-import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
@@ -51,7 +50,7 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
     
     @Override
     public <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> devices,
-                                                                                Set<Attribute> attributes,
+                                                                                Set<? extends Attribute> attributes,
                                                                                 ReadableRange<Instant> range,
                                                                                 Integer maxRows,
                                                                                 boolean includeDisabledPaos,

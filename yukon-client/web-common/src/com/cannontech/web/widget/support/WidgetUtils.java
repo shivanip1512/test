@@ -30,9 +30,6 @@ public class WidgetUtils {
     }
 
     public static String generateJsonString(Object obj) throws JsonProcessingException {
-        if (obj instanceof String){
-            return "\"" + StringEscapeUtils.escapeJavaScript((String) obj) + "\"";
-        }
         return jsonObjectMapper.writeValueAsString(obj);
     }
 

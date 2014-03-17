@@ -10,7 +10,7 @@
 <cti:standardPage page="meterEventsReport.selectDevices" module="amr">
 	<tags:sectionContainer2 nameKey="selectionContainer">
         <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="groupDataJson"/>
-        <tags:deviceSelection action="selected"
+        <tags:deviceSelection action="home"
             groupDataJson="${groupDataJson}"
             pickerType="meterPicker" 
             blockOnSubmit="true"/>

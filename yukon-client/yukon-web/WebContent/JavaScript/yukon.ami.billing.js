@@ -102,7 +102,7 @@ yukon.ami.billing = (function() {
                 maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn clearfix stacked">\n'+ new_html +'\n</div>');
                 maybeNewPane.insertAfter(settingsPane);
             }
-            yukon.tag.scheduled_file_export_inputs.initializeFields();
+            yukon.tag.scheduledFileExportInputs.initializeFields();
 
             settingsPane.hide();
             maybeNewPane.show();

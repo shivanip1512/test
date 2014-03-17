@@ -44,5 +44,8 @@
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.history.hoverText">View export history</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.delete.hoverText">Delete this schedule</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.noJobs">No scheduled exports.</entry>
+    <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.scheduledJobs.title">Schedules</entry>
+    <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.deleteSchedule.message">Are you sure you want to delete this schedule?</entry>
+    <entry key="yukon.web.modules.tools.scheduledFileExport.jobs.deleteSchedule.title">Confirm Schedule Deletion</entry>
     
 </properties>

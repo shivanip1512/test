@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.bulk.archivedValueExporter">
     <tags:sectionContainer2 nameKey="scheduledJobs">

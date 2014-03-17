@@ -27,7 +27,7 @@ public interface PaoPointValueService {
      * @return List of values for the point
      */
     <P extends YukonPao> List<MeterPointValue> getMeterPointValues(Iterable<P> list,
-                                                                   Set<Attribute> attributes,
+                                                                   Set<? extends Attribute> attributes,
                                                                    ReadableRange<Instant> range,
                                                                    Integer maxRows,
                                                                    boolean includeDisabledPaos,

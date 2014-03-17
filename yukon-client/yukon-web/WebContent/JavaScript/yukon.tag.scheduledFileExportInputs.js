@@ -1,13 +1,12 @@
-yukon.namespace('yukon.tag');
-yukon.namespace('yukon.tag.scheduled_file_export_inputs');
+yukon.namespace('yukon.tag.scheduledFileExportInputs');
 
-yukon.tag.scheduled_file_export_inputs = (function () {
+yukon.tag.scheduledFileExportInputs = (function () {
     var 
     _toggleField = function(checkBoxId, changeItemId) {
         if (jQuery(checkBoxId).is(":checked")) {
             jQuery(changeItemId).removeAttr("disabled").closest("tr").show(250);
         } else {
-            jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide(250);
+            jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide();
         }
     },
 
@@ -65,11 +64,11 @@ yukon.tag.scheduled_file_export_inputs = (function () {
              
              _intializeAllFields();
              }
-         }
+         };
 
     return mod;
 }());
 
 jQuery(function () {
-    yukon.tag.scheduled_file_export_inputs.init();
+    yukon.tag.scheduledFileExportInputs.init();
 });

@@ -49,7 +49,7 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 	private boolean onlyAbnormalEvents;
 	private boolean includeDisabledDevices;
 	private int collectionId;
-	private Set<Attribute> attributes;
+	private Set<? extends Attribute> attributes;
 	
 	@Override
 	public void start() {
@@ -113,11 +113,11 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		this.includeDisabledDevices = includeDisabledDevices;
 	}
 
-	public Set<Attribute> getAttributes() {
+	public Set<? extends Attribute> getAttributes() {
 		return attributes;
 	}
 
-	public void setAttributes(Set<Attribute> attributes) {
+	public void setAttributes(Set<? extends Attribute> attributes) {
 		this.attributes = attributes;
 	}
 	

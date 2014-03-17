@@ -17,7 +17,7 @@
         <span class="empty-list"><i:inline key=".noJobs"/></span>
     </c:if>
     <c:if test="${not empty searchResult.resultList}">
-        <table class="compact-results-table">
+        <table class="compact-results-table dashed">
             <thead>
                 <th><i:inline key=".nameHeader"/></th>
                 <th><i:inline key=".scheduleHeader"/></th>
