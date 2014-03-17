@@ -300,6 +300,8 @@ public class OperatorOptOutController {
 
         if (noSurveysToTake && optOutBackingBean.getLegacyQuestions().isEmpty()) {
             // There are no surveys.  Check for legacy questions.
+            // These i18n keys are no longer included in optOut.xml, and are only referenced here.
+            // This is to support customers that have localized older versions of the i18n files.
             List<String> questions =
                 helper.getConfirmQuestions(messageSourceResolver,
                     userContext, "yukon.dr.operator.optoutconfirm.question.");
