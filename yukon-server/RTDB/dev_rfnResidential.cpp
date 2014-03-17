@@ -3,7 +3,7 @@
 #include "std_helper.h"
 #include "config_data_rfn.h"
 #include "config_device.h"
-#include "MissingConfigDataException.h"
+#include "config_exceptions.h"
 #include "dev_rfnResidential.h"
 #include "devicetypes.h"
 
@@ -41,6 +41,7 @@ T getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::strin
 }
 
 /**
+ * Specialization of getConfigData()
  * throws InvalidConfigDataException() if config data is out of range
  */
 template<>
@@ -61,6 +62,7 @@ unsigned char getConfigData<unsigned char>( const Config::DeviceConfigSPtr & dev
 }
 
 /**
+ * Specialization of getConfigData()
  * throws InvalidConfigDataException() if config data is negative
  */
 template<>
@@ -111,12 +113,11 @@ typename MapType::iterator::value_type::second_type resolveConfigData( MapType& 
 
         cause << "invalid value " << configData << ", expected [";
 
-        for( itr = m.begin(); itr != m.end(); ++itr)
+        for( itr = m.begin(); itr != m.end(); )
         {
-            cause << itr->first << ";";
+            cause << itr->first;
+            cause << ( ++itr == m.end() ? "]" : "; ");
         }
-
-        cause << "]";
 
         throw InvalidConfigDataException( configKey, cause.str() );
     }

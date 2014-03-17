@@ -3,7 +3,7 @@
 #include "std_helper.h"
 #include "config_data_rfn.h"
 #include "config_device.h"
-#include "MissingConfigDataException.h"
+#include "config_exceptions.h"
 #include "dev_rfnCommercial.h"
 #include "devicetypes.h"
 

@@ -1125,6 +1125,65 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
+
+    {
+        ///// Missing config data /////
+
+        test_DeviceConfig cfg;
+
+        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:disconnect" );
+        }
+
+    }
+
+    {
+        resetTestState();
+
+        ///// Invalid config data /////
+
+        test_DeviceConfig cfg;
+
+        // add remote disconnect config
+        cfg.insertValue( RfnStrings::DisconnectMode, "NOT_A_DISCONNECT_MODE" ); // invalid disconnect mode
+
+        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install disconnect");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ErrorInvalidConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:disconnect" );
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_voltage_profile )
 {
     test_RfnResidentialDevice dut;
@@ -1729,6 +1788,69 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
         BOOST_CHECK_EQUAL_COLLECTIONS(
                 expected.begin(), expected.end(),
                 results.begin(),  results.end());
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_config )
+{
+    test_RfnResidentialDevice dut;
+    dut._type = TYPE_RFN410FX;
+
+    {
+        ///// Missing config data /////
+
+        test_DeviceConfig cfg;
+
+        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        CtiCommandParser parse("putconfig install ovuv");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       NoConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: Invalid config data. Config name:ovuv" );
+        }
+
+    }
+
+    {
+        resetTestState();
+
+        ///// Invalid config data /////
+
+        test_DeviceConfig cfg;
+
+        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+        cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
+        cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
+        cfg.insertValue( RfnStrings::OvUvAlarmRepeatInterval,    "-60" ); // insert invalid negative value
+        cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
+        cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
+        cfg.insertValue( RfnStrings::UvThreshold,                "78.901" );
+
+        CtiCommandParser parse("putconfig install ovuv");
+
+        BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
+        BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       ErrorInvalidConfigData );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "ERROR: NoMethod or invalid config. Config name:ovuv" );
+        }
     }
 }
 

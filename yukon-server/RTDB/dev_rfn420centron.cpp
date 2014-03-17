@@ -1,11 +1,8 @@
 #include "precompiled.h"
 
 #include "dev_rfn420centron.h"
-
 #include "config_data_rfn.h"
-
-#include "MissingConfigDataException.h"
-
+#include "config_exceptions.h"
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>

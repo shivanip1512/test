@@ -3,7 +3,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include "MissingConfigDataException.h"
+#include "config_exceptions.h"
 #include "config_data_rfn.h"
 #include "dev_rfn420focus.h"
 

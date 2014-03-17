@@ -2402,8 +2402,8 @@ dev_rfn420centron.obj:	precompiled.h dev_rfn420centron.h \
 		connection_base.h xfer.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_CentronLcdConfiguration.h \
-		MissingConfigDataException.h std_helper.h
-dev_rfn420focus.obj:	precompiled.h MissingConfigDataException.h \
+		config_exceptions.h std_helper.h
+dev_rfn420focus.obj:	precompiled.h config_exceptions.h \
 		dev_rfn420focus.h dev_rfnResidential.h dev_rfn.h \
 		rfn_identifier.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
@@ -2428,7 +2428,7 @@ dev_rfn420focus.obj:	precompiled.h MissingConfigDataException.h \
 		cmd_rfn_OvUvConfiguration.h cmd_rfn_FocusLcdConfiguration.h
 dev_rfncommercial.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		MissingConfigDataException.h dev_rfnCommercial.h dev_rfn.h \
+		config_exceptions.h dev_rfnCommercial.h dev_rfn.h \
 		rfn_identifier.h logger.h thread.h mutex.h guard.h \
 		CtiPCPtrQueue.h cmd_rfn.h cmd_device.h dev_single.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
@@ -2451,7 +2451,7 @@ dev_rfncommercial.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		cmd_rfn_OvUvConfiguration.h devicetypes.h
 dev_rfnresidential.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		MissingConfigDataException.h dev_rfnResidential.h dev_rfn.h \
+		config_exceptions.h dev_rfnResidential.h dev_rfn.h \
 		rfn_identifier.h logger.h thread.h mutex.h guard.h \
 		CtiPCPtrQueue.h cmd_rfn.h cmd_device.h dev_single.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
