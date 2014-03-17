@@ -10,12 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.ContactNotificationMethodType;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
@@ -29,6 +31,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.RowMapper;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -47,6 +50,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ImmutableCollection;
 
 public final class ContactDaoImpl implements ContactDao {
     
@@ -57,7 +61,8 @@ public final class ContactDaoImpl implements ContactDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
-    
+
+    private final Logger log = YukonLogManager.getLogger(ContactDaoImpl.class);
     private final YukonRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
     @Override
@@ -106,9 +111,6 @@ public final class ContactDaoImpl implements ContactDao {
         return resultMap;
     }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#retrieveContactIDsByLastName(java.lang.String, boolean)
-     */
 	public int[] retrieveContactIDsByLastName(String lastName_, boolean partialMatch)
     {
         int [] contactIDs = null;
@@ -149,7 +151,7 @@ public final class ContactDaoImpl implements ContactDao {
                 contactIDs[i] = contactIDList.get(i).intValue();
         }
         catch( Exception e ){
-            CTILogger.error( "Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e );
+            log.error("Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e);
         }
         finally {
             try {
@@ -163,32 +165,38 @@ public final class ContactDaoImpl implements ContactDao {
     }
 
 	@Override
-    public LiteContact[] getContactsByPhoneNo(String phoneNo, boolean partialMatch) {
-		if (phoneNo == null) return null;
+    public List<LiteContact> findContactsByPhoneNo(String phone, boolean partialMatch) {
+		if (phone == null) return null;
 		
-		synchronized (databaseCache) {
-			return databaseCache.getContactsByPhoneNumber(phoneNo, partialMatch);
+        SqlStatementBuilder sql = getContactByNotificationSql(phone, ContactNotificationMethodType.PHONE, partialMatch);
+        List<LiteContact> contacts = yukonJdbcTemplate.query(sql, rowMapper);
+        
+        //legacy numbers have hyphens in the db; let's at least attempt to be understanding about it
+        if(phone.length() == 10) {
+            String oldPhoneSyntax = phone.substring(0, 3) + "-" + phone.substring(3, 6) + "-" + phone.substring(6);
+            SqlStatementBuilder legacySql = getContactByNotificationSql(oldPhoneSyntax, ContactNotificationMethodType.PHONE, true);
+            contacts.addAll(yukonJdbcTemplate.query(legacySql, rowMapper));
         }
+
+        return contacts;
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContactByEmailNotif(java.lang.String)
-     */
 	@Override
-    public LiteContact getContactByEmailNotif( String email_ ) 
+    public LiteContact findContactByEmail(String email) 
 	{
-		if( email_ == null )
+		if (email == null) {
 			return null;
+		}
 
-		synchronized( databaseCache )
-		{
-			return databaseCache.getContactsByEmail(email_);
+		SqlStatementBuilder sql = getContactByNotificationSql(email, ContactNotificationMethodType.EMAIL, false);
+		try {
+		    return yukonJdbcTemplate.queryForObject(sql, rowMapper);
+		} catch(IncorrectResultSizeDataAccessException e) {
+		    log.error("Error finding contact for email " + email+ "; Actual size:" + e.getActualSize(), e);
+		    return null;
 		}
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getUnassignedContacts()
-     */
 	@Override
     public LiteContact[] getUnassignedContacts() {
 
@@ -196,7 +204,7 @@ public final class ContactDaoImpl implements ContactDao {
 		try {
 			contIDs = Contact.getOrphanedContacts();
 		} catch( SQLException se ) {
-			CTILogger.error( "Unable to get the Unassigned Contacts from the database", se );
+			log.error("Unable to get the Unassigned Contacts from the database", se);
 		}
 
 		List<LiteContact> contList = new ArrayList<LiteContact>(32);
@@ -208,9 +216,6 @@ public final class ContactDaoImpl implements ContactDao {
 		return contList.toArray( new LiteContact[contList.size()] );
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getAllEmailAddresses(int)
-     */
 	@Override
     public String[] getAllEmailAddresses( int contactId ) {
 		LiteContact contact = getContact( contactId );
@@ -224,9 +229,6 @@ public final class ContactDaoImpl implements ContactDao {
 		return strList.toArray( new String[strList.size()] );
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getAllPINNotifDestinations(int)
-     */
 	@Override
     public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
 	{
@@ -235,9 +237,6 @@ public final class ContactDaoImpl implements ContactDao {
 		return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
 	}
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getAllPhonesNumbers(int)
-     */
     @Override
     public LiteContactNotification[] getAllPhonesNumbers( int contactID_ )
     {
@@ -256,30 +255,24 @@ public final class ContactDaoImpl implements ContactDao {
         return phoneList.toArray( phones );
     }
     
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getAllContactNotifications()
-     */
 	@Override
     public List<LiteContactNotification> getAllContactNotifications() 
 	{
 		return contactNotificationDao.getAllContactNotifications();
 	}
 
-
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getOwnerCICustomer(int)
-     */
 	@Override
     public LiteCICustomer getOwnerCICustomer( int addtlContactID_ ) 
 	{
 		int customerId = -1;
-        String sql = "SELECT c.CustomerID " 
-            + " FROM CustomerAdditionalContact ca, Customer c " 
-            + " WHERE c.CustomerTypeID = " + CustomerTypes.CUSTOMER_CI + " " 
-            + " AND c.CustomerID = ca.CustomerID " 
-            + " AND ca.ContactID = ?";
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+		sql.append("SELECT c.CustomerID ");
+		sql.append(" FROM CustomerAdditionalContact ca, Customer c ");
+		sql.append(" WHERE c.CustomerTypeID").eq_k(CustomerTypes.CUSTOMER_CI);
+		sql.append(" AND c.CustomerID = ca.CustomerID ");
+		sql.append(" AND ca.ContactID").eq(addtlContactID_);
         try {
-            customerId = yukonJdbcTemplate.queryForInt(sql, addtlContactID_);
+            customerId = yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
             // will return null customer
         }
@@ -294,9 +287,6 @@ public final class ContactDaoImpl implements ContactDao {
         return liteCICust;
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getPrimaryContactCICustomer(int)
-     */
 	@Override
     public LiteCICustomer getPrimaryContactCICustomer( int primaryContactID_ ) 
 	{
@@ -308,9 +298,6 @@ public final class ContactDaoImpl implements ContactDao {
         return liteCICust;
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getCICustomer(int)
-     */
 	@Override
     public LiteCICustomer getCICustomer (int contactID_)
 	{
@@ -321,9 +308,6 @@ public final class ContactDaoImpl implements ContactDao {
 		return liteCICust;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getCustomer(int)
-     */
 	@Override
     public LiteCustomer getCustomer(int contactID) {
 	    LiteCustomer liteCust = databaseCache.getACustomerByPrimaryContactID(contactID);
@@ -332,10 +316,7 @@ public final class ContactDaoImpl implements ContactDao {
         }
 		return liteCust;
 	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#isPrimaryContact(int)
-     */
+
 	@Override
     public boolean isPrimaryContact(int contactId) {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -349,10 +330,7 @@ public final class ContactDaoImpl implements ContactDao {
 	        return false;
 	    }
 	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getYukonUser(int)
-     */
+
 	@Override
     public LiteYukonUser getYukonUser(int contactID_) 
 	{
@@ -366,10 +344,7 @@ public final class ContactDaoImpl implements ContactDao {
 
 		return null;
 	}	
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#hasPin(int)
-     */
+
     @Override
     public boolean hasPin(int contactId) {
         
@@ -480,7 +455,9 @@ public final class ContactDaoImpl implements ContactDao {
         int contactId = contact.getContactID();
         DbChangeType dbChangeType;
         
-        StringBuilder sql = new StringBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink;
+        
         if (contactId == -1) { // Insert if id is -1, otherwise update
             /*
              * HACK: Legacy code depends on conacts having a dummy address row.
@@ -501,30 +478,20 @@ public final class ContactDaoImpl implements ContactDao {
             
             contactId = nextValueHelper.getNextValue("Contact");
             contact.setContactID(contactId);
-
-            sql.append("INSERT INTO Contact");
-            sql.append(" (ContFirstName, ContLastName, LogInId, AddressId, ContactId)");
-            sql.append(" VALUES (?,?,?,?,?)");
+            
+            sink = sql.insertInto("Contact");
         } else {
             // Update if id is not -1
             dbChangeType = DbChangeType.UPDATE;
-
-            sql.append("UPDATE Contact");
-            sql.append(" SET ContFirstName = ?, ContLastName = ?, LogInId = ?, AddressId = ?");
-            sql.append(" WHERE ContactId = ?");
-
+            sink = sql.update("Contact");
         }
 
-        String firstName = SqlUtils.convertStringToDbValue(contact.getContFirstName());
-        String lastName = SqlUtils.convertStringToDbValue(contact.getContLastName());
-        int loginId = contact.getLoginID();
-        int addressId = contact.getAddressID();
-        yukonJdbcTemplate.update(sql.toString(),
-                                  firstName,
-                                  lastName,
-                                  loginId,
-                                  addressId,
-                                  contactId);
+        sink.addValue("ContFirstName", SqlUtils.convertStringToDbValue(contact.getContFirstName()));
+        sink.addValue("ContLastName", SqlUtils.convertStringToDbValue(contact.getContLastName()));
+        sink.addValue("LogInId", contact.getLoginID());
+        sink.addValue("AddressId", contact.getAddressID());
+        sink.addValue("ContactId", contactId);
+        yukonJdbcTemplate.update(sql);
 
         contactNotificationDao.saveNotificationsForContact(contactId,
                                                            contact.getLiteContactNotifications());
@@ -600,15 +567,17 @@ public final class ContactDaoImpl implements ContactDao {
     @Transactional
     public void associateAdditionalContact(int customerId, int contactId) {
 
-    	StringBuilder sql = new StringBuilder("INSERT INTO CustomerAdditionalContact");
-        sql.append(" (CustomerId, ContactId, Ordering)");
-        sql.append(" VALUES (?,?,?)");
+        SqlStatementBuilder orderSql = new SqlStatementBuilder();
+        orderSql.append("SELECT MAX(Ordering) + 1 FROM CustomerAdditionalContact WHERE CustomerId").eq(customerId);
+        int order = yukonJdbcTemplate.queryForInt(orderSql);
         
-        StringBuilder orderSql = new StringBuilder("SELECT MAX(Ordering) + 1 FROM CustomerAdditionalContact WHERE CustomerId = ?");
-        int order = yukonJdbcTemplate.queryForInt(orderSql.toString(), customerId);
-        
-        yukonJdbcTemplate.update(sql.toString(), customerId, contactId, order);
-        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("CustomerAdditionalContact");
+        sink.addValue("CustomerId", customerId);
+        sink.addValue("ContactId", contactId);
+        sink.addValue("Ordering", order);
+        yukonJdbcTemplate.update(sql);
+
         dbChangeManager.processDbChange(contactId,
                                         DBChangeMsg.CHANGE_CONTACT_DB,
                                         DBChangeMsg.CAT_CUSTOMERCONTACT,
@@ -658,4 +627,28 @@ public final class ContactDaoImpl implements ContactDao {
             return contact;
         }
     }
+    
+    /** 
+     * Helper method to return sqlStatementBuilder for returning LiteContact.
+     * @param notification - notification value to search for
+     * @param notificationMethodType - category of types to limit to.
+     * @param partialMatch - true when doing a "like" clause. 
+     * @return
+     */
+    private SqlStatementBuilder getContactByNotificationSql(String notification, 
+            ContactNotificationMethodType notificationMethodType, boolean partialMatch) {
+        
+        ImmutableCollection<ContactNotificationType> methodTypes = ContactNotificationType.getFor(notificationMethodType);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT c.ContactId, c.ContFirstName, c.ContLastName, c.LoginID, c.AddressID ");
+        sql.append("FROM Contact c JOIN ContactNotification cn on c.ContactId = cn.ContactId");
+        sql.append("WHERE NotificationCategoryId").in(methodTypes);
+        if (partialMatch) {
+            sql.append("AND UPPER(Notification)").contains(notification.toUpperCase());
+        } else {
+            sql.append("AND UPPER(Notification)").eq(notification.toUpperCase());
+        }
+        return sql;
+    }
+
 }

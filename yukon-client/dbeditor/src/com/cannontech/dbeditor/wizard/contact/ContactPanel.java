@@ -17,13 +17,13 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.i18n.DisplayableEnumCellRenderer;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.user.UserUtils;
 
 
@@ -1194,7 +1194,7 @@ private void checkEntry()
 		
 		//is there a good input into the text field?		
 		getJButtonAdd().setEnabled(
-				YukonSpringHook.getBean(ContactNotificationDao.class).isListEntryValid(notificationType, 
+				YukonSpringHook.getBean(ContactNotificationService.class).isListEntryValid(notificationType, 
 				                                                                       getJTextFieldAddress().getText()));
 	}	
 } 

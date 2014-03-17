@@ -26,14 +26,15 @@ public interface ContactDao {
      * @param partialMatch If true, phoneNo is to be matched partially from the last digit
      * @return Array of LiteContact for phoneNo
      */
-    public LiteContact[] getContactsByPhoneNo(String phoneNo, boolean partialMatch);
+    public List<LiteContact> findContactsByPhoneNo(String phoneNo, boolean partialMatch);
 
     /**
-     * Returns the LiteContact for email_.
+     * Returns the LiteContact for email.
+     * If multiple contacts are found for the email, null is returned.
+     * If no results are found for the email, null is returned.
      * @return com.cannontech.database.data.lite.LiteContact
-     * @param contactID_ int
      */
-    public LiteContact getContactByEmailNotif(String email_);
+    public LiteContact findContactByEmail(String email);
 
     /**
      * Returns all the LiteContacts that do not belong to a Customer.

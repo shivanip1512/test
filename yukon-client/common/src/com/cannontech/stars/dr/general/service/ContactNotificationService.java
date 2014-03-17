@@ -3,9 +3,14 @@ package com.cannontech.stars.dr.general.service;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.user.YukonUserContext;
 
 public interface ContactNotificationService {
+
+    
+    /**
+     * Checks if formatting of entryText is valid for notificationType
+     */
+    public boolean isListEntryValid(ContactNotificationType notificationType, String entryText);
 
 	/**
 	 * Creates/saves a basic LiteContactNotification object.

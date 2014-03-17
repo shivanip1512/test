@@ -206,10 +206,6 @@ public interface IDatabaseCache {
 
     public LiteContact getAContactByContactID(int contactID);
 
-    public LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch);
-
-    public LiteContact getContactsByEmail(String email);
-
     public LiteContactNotification getAContactNotifByNotifID(int contNotifyID);
 
     public LiteCustomer getACustomerByPrimaryContactID(int contactID);

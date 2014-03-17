@@ -20,14 +20,12 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -37,7 +35,6 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class ContactNotificationDaoImpl implements ContactNotificationDao {
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private SimpleJdbcTemplate simpleJdbcTemplate;
-    @Autowired private YukonJdbcOperations yukonJdbcOperations;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -76,25 +73,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
             List<LiteContactNotification> notificationList) {
 
 	    // Get a list of existing notification ids
-        StringBuilder sql = new StringBuilder("SELECT ContactNotifId");
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT ContactNotifId");
         sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactId = ?");
+        sql.append(" WHERE ContactId").eq(contactId);
 
-        List<Integer> previousNotificationIds = simpleJdbcTemplate.query(
-                    sql.toString(),
-                    new ParameterizedRowMapper<Integer>() {
-
-                        @Override
-                        public Integer mapRow(
-                                ResultSet rs,
-                                int rowNum)
-                                throws SQLException {
-
-                            int notificationId = rs.getInt("ContactNotifId");
-                            return notificationId;
-                        }
-                    },
-                    contactId);
+        List<Integer> previousNotificationIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
 
         // Save new/updated notifications
         List<Integer> currentNotificationIds = new ArrayList<Integer>();
@@ -132,8 +116,9 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
             sql.append(" (ContactID, NotificationCategoryID, DisableFlag, Notification, Ordering, ContactNotifID)");
             sql.append(" VALUES (?,?,?,?,?,?)");
             
-            StringBuilder orderSql = new StringBuilder("SELECT MAX(Ordering) + 1 FROM ContactNotification WHERE ContactId = ?");
-            order = simpleJdbcTemplate.queryForInt(orderSql.toString(), contactId);
+            SqlStatementBuilder orderSql = new SqlStatementBuilder();
+            orderSql.append("SELECT MAX(Ordering) + 1 FROM ContactNotification WHERE ContactId").eq(contactId);
+            order = yukonJdbcTemplate.queryForInt(orderSql);
             
         } else {
             // Update if id is not -1
@@ -166,15 +151,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     @Override
     public List<LiteContactNotification> getNotificationsForContact(int contactId) {
 
-        StringBuilder sql = new StringBuilder("SELECT *");
-        sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactId = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * FROM ContactNotification");
+        sql.append(" WHERE ContactId").eq(contactId);
         sql.append(" ORDER BY Ordering");
 
-        List<LiteContactNotification> notificationList = simpleJdbcTemplate.query(sql.toString(),
-                                                                                  new LiteContactNotificationRowMapper(),
-                                                                                  contactId);
-
+        List<LiteContactNotification> notificationList = yukonJdbcTemplate.query(sql, new LiteContactNotificationRowMapper());
         return notificationList;
     }
     
@@ -186,7 +168,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     	sql.append("FROM ContactNotification cn");
     	sql.append("WHERE cn.ContactNotifId").eq(notificationId);
 
-        LiteContactNotification notification = yukonJdbcOperations.queryForObject(sql, new LiteContactNotificationRowMapper());
+        LiteContactNotification notification = yukonJdbcTemplate.queryForObject(sql, new LiteContactNotificationRowMapper());
 
         return notification;
     }
@@ -229,8 +211,9 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     
     @Override
     public List<Integer> getNotificationIdsForContact(int contactId) {
-        String sql = "SELECT ContactNotifId FROM ContactNotification WHERE ContactId = ?";
-        List<Integer> notifs = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), contactId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactNotifId FROM ContactNotification WHERE ContactId").eq(contactId);
+        List<Integer> notifs = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return notifs;
     }
     
@@ -326,20 +309,4 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
-    
-    @Override
-    public boolean isListEntryValid(ContactNotificationType notificationType, String entry) {
-        boolean isValidEntry = true;
-            if (notificationType.isFaxType()) {
-                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
-            } else if (notificationType.isPhoneType()) {
-                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
-            } else if (notificationType.isEmailType()) {
-                isValidEntry = Validator.isEmailAddress(entry);
-            } else if (notificationType.isPinType()) {
-                isValidEntry = Validator.isNumber(entry);
-            }
-        return isValidEntry;
-    }
-
 }

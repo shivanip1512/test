@@ -18,8 +18,8 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 
 /**
  * @author rneuharth
@@ -86,27 +86,23 @@ public class RequestPword
 		return resultString;
 	}
     
-    private void handleEmail()
-    {
+    private void handleEmail() {
         //unique system wide email address
-        if( email != null )
-        {
+        if (email != null) {
             //we may continue after this, remove all the stored data
             foundData.clear();
             
-            LiteContact lc = YukonSpringHook.getBean(ContactDao.class).getContactByEmailNotif( email );
-            if( lc == null )
-                setState( RET_FAILED, "EMAIL_NOT_FOUND" );
-            else
-            {
-                foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
-                foundData.add( " Username: " + YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(lc.getLoginID()).getUsername() );
+            LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).findContactByEmail(email);
+            if (liteContact == null) {
+                setState( RET_FAILED, "EMAIL_NOT_UNIQUE");
+            } else { //found exactly one
+                foundData.add( " Contact Name: " + liteContact.getContFirstName() + " " + liteContact.getContLastName() );
+                foundData.add( " Username: " + YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(liteContact.getLoginID()).getUsername() );
 
-                LiteEnergyCompany[] cmps = processContact( lc );
+                LiteEnergyCompany[] cmps = processContact(liteContact);
                 processEnergyCompanies( cmps );
             }
         }
-        
     }
     
     private void handleUserName()

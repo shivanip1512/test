@@ -1373,11 +1373,11 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public List<Object> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
-        LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getContactsByPhoneNo(phoneNo, true);
+        List<LiteContact> contacts = YukonSpringHook.getBean(ContactDao.class).findContactsByPhoneNo(phoneNo, true);
         
-		int[] contactIDs = new int[ contacts.length ];
-		for (int i = 0; i < contacts.length; i++)
-			contactIDs[i] = contacts[i].getContactID();
+		int[] contactIDs = new int[ contacts.size()];
+		for (int i = 0; i < contacts.size(); i++)
+			contactIDs[i] = contacts.get(i).getContactID();
 		
 		return searchAccountByContactIDs( contactIDs, searchMembers );
     }

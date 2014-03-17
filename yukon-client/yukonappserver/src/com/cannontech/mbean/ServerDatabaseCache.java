@@ -10,11 +10,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -94,8 +97,6 @@ import com.cannontech.yukon.server.cache.YukonRoleLoader;
 import com.cannontech.yukon.server.cache.YukonRolePropertyLoader;
 import com.cannontech.yukon.server.cache.bypass.MapKeyInts;
 import com.cannontech.yukon.server.cache.bypass.YukonCustomerLookup;
-import com.cannontech.yukon.server.cache.bypass.YukonUserContactLookup;
-import com.cannontech.yukon.server.cache.bypass.YukonUserContactNotificationLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserEnergyCompanyLookup;
 import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 
@@ -114,6 +115,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private PointDao pointDao = null;
 	private PaoDao paoDao = null;
 	@Autowired private UserGroupDao userGroupDao;
+	@Autowired private ContactNotificationDao contactNotificationDao;
+	@Autowired private ContactDao contactDao;
+	
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
@@ -212,6 +216,7 @@ protected ServerDatabaseCache(String databaseAlias) {
  * Creation date: (3/29/2001 12:27:17 PM)
  * @param newItem com.cannontech.database.db.DBPersistent
  */
+@Override
 public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, DbChangeType dbChangeType )
 {
 	return newItem.getDBChangeMsgs( dbChangeType);
@@ -220,6 +225,7 @@ public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, D
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteAlarmCategory> getAllAlarmCategories(){
 
 	if( allAlarmCategories != null )
@@ -239,6 +245,7 @@ public synchronized List<LiteAlarmCategory> getAllAlarmCategories(){
  * com.cannontech.database.data.lite.LiteYukonImage
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteYukonImage> getAllYukonImages()
 {
    if( allYukonImages != null )
@@ -256,6 +263,7 @@ public synchronized List<LiteYukonImage> getAllYukonImages()
 /**
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() 
 {
 	if( allCapControlFeeders == null )
@@ -277,6 +285,7 @@ public synchronized List<LiteYukonPAObject> getAllCapControlFeeders()
 /**
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() 
 {
 	if( allCapControlSubBuses == null )
@@ -296,6 +305,7 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses()
 	return allCapControlSubBuses;
 }
 
+@Override
 public synchronized List<LiteYukonPAObject> getAllCapControlSubStations() 
 {
     if( allCapControlSubStations == null )
@@ -340,6 +350,7 @@ private synchronized void loadAllContacts() {
  *  com.cannontech.dbeditor.wizard.device.lmprogram.LMProgramEnergyExchangeCustomerListPanel.initializeAddPanel()
  *  com.cannontech.dbeditor.editor.notification.group.NotificationPanel.getJTreeNotifs()
  */
+@Override
 public List<LiteCICustomer> getAllCICustomers() {
     List<LiteCICustomer> tempAllCICustomers = allCICustomers;
     if (tempAllCICustomers == null) {
@@ -355,6 +366,7 @@ public List<LiteCICustomer> getAllCICustomers() {
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
 {
 	if( allDeviceMeterGroups != null )
@@ -373,6 +385,7 @@ public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
  * getAllDevices method comment.
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllDevices() 
 {
 	if( allDevices == null )
@@ -395,6 +408,7 @@ public synchronized List<LiteYukonPAObject> getAllDevices()
 /**
  * Get all MCTs
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllMCTs() {
 	if (allMCTs == null) {
 		allMCTs = new ArrayList<LiteYukonPAObject>( getAllDevices().size() / 2 );
@@ -415,6 +429,7 @@ public synchronized List<LiteYukonPAObject> getAllMCTs() {
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteGraphDefinition> getAllGraphDefinitions()
 {
 	if( allGraphDefinitions != null )
@@ -431,6 +446,7 @@ public synchronized List<LiteGraphDefinition> getAllGraphDefinitions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules()
 {
 
@@ -449,6 +465,7 @@ public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteBaseline> getAllBaselines()
 {
 
@@ -463,6 +480,7 @@ public synchronized List<LiteBaseline> getAllBaselines()
 	}
 }
 
+@Override
 public synchronized List<LiteSeasonSchedule> getAllSeasonSchedules()
 {
 
@@ -477,6 +495,7 @@ public synchronized List<LiteSeasonSchedule> getAllSeasonSchedules()
 	}
 }
 
+@Override
 public synchronized List<LiteTOUSchedule> getAllTOUSchedules()
 {
 
@@ -491,6 +510,7 @@ public synchronized List<LiteTOUSchedule> getAllTOUSchedules()
 	}
 }
 
+@Override
 public synchronized List<LiteTOUDay> getAllTOUDays()
 {
 
@@ -505,6 +525,7 @@ public synchronized List<LiteTOUDay> getAllTOUDays()
 	}
 }
 
+@Override
 public List<LiteGear> getAllGears(){
 	List<LiteGear> allGears = new ArrayList<LiteGear>();
 	GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
@@ -512,6 +533,7 @@ public List<LiteGear> getAllGears(){
 	return allGears;
 }
 
+@Override
 public synchronized List<LiteCommand> getAllCommands() {
 	if (allCommands== null)
 	{
@@ -523,6 +545,7 @@ public synchronized List<LiteCommand> getAllCommands() {
 	return allCommands;
 }
 
+@Override
 public synchronized java.util.Map<Integer, LiteCommand> getAllCommandsMap()
 {
 	if( allCommandsMap != null )
@@ -536,6 +559,7 @@ public synchronized java.util.Map<Integer, LiteCommand> getAllCommandsMap()
 	}
 }
 
+@Override
 public synchronized List<LiteConfig> getAllConfigs()
 {
 
@@ -550,6 +574,7 @@ public synchronized List<LiteConfig> getAllConfigs()
 	}
 }
 
+@Override
 public synchronized List<LiteLMConstraint> getAllLMProgramConstraints()
 {
 
@@ -564,6 +589,7 @@ public synchronized List<LiteLMConstraint> getAllLMProgramConstraints()
 	}
 }
 
+@Override
 public synchronized List<LiteLMProgScenario> getAllLMScenarioProgs()
 {
 
@@ -577,6 +603,7 @@ public synchronized List<LiteLMProgScenario> getAllLMScenarioProgs()
 	return allLMScenarioProgs;
 }
 
+@Override
 public synchronized List<LiteYukonPAObject> getAllLMScenarios()
 {
 
@@ -597,6 +624,7 @@ public synchronized List<LiteYukonPAObject> getAllLMScenarios()
 	return allLMScenarios;
 }
 
+@Override
 public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions()
 {
 
@@ -613,6 +641,7 @@ public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 {
 	if( allLMPrograms == null )
@@ -638,6 +667,7 @@ public synchronized List<LiteYukonPAObject> getAllLMPrograms()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
 {
     if( allLMPrograms == null )
@@ -660,6 +690,7 @@ public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
 /* (non-Javadoc)
  * @see com.cannontech.yukon.IDatabaseCache#getAllLMControlAreas()
  */
+@Override
 public List<LiteYukonPAObject> getAllLMControlAreas()
 {
 	if( allLMControlAreas == null )
@@ -681,6 +712,7 @@ public List<LiteYukonPAObject> getAllLMControlAreas()
 /* (non-Javadoc)
  * @see com.cannontech.yukon.IDatabaseCache#getAllLMGroups()
  */
+@Override
 public List<LiteYukonPAObject> getAllLMGroups()
 {
     if( allLMGroups == null )
@@ -701,6 +733,7 @@ public List<LiteYukonPAObject> getAllLMGroups()
  * getAllLoadManagement method comment.
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllLoadManagement() 
 {
 	if( allLoadManagement == null )
@@ -723,6 +756,7 @@ public synchronized List<LiteYukonPAObject> getAllLoadManagement()
 /**
  * Called in four external places.
  */
+@Override
 public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups()
 {
 	if( allNotificationGroups != null )
@@ -741,6 +775,7 @@ public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups(
 /**
  * Called in three external places.
  */
+@Override
 public synchronized List<LiteNotificationGroup> getAllContactNotificationGroupsWithNone()
 {
     List<LiteNotificationGroup> notifGroup = new ArrayList<LiteNotificationGroup>();
@@ -759,6 +794,7 @@ public synchronized List<LiteNotificationGroup> getAllContactNotificationGroupsW
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
+@Override
 public synchronized List<LitePoint> getAllSystemPoints(){
 
     if( allSystemPoints != null )
@@ -778,6 +814,7 @@ public synchronized List<LitePoint> getAllSystemPoints(){
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
+@Override
 public synchronized java.util.Map<Integer, LiteYukonPAObject> getAllPAOsMap()
 {
 	if( allPAOsMap != null )
@@ -791,12 +828,14 @@ public synchronized java.util.Map<Integer, LiteYukonPAObject> getAllPAOsMap()
 	}
 }
 
+@Override
 public synchronized java.util.Map<Integer, LiteContactNotification> getAllContactNotifsMap()
 {
     loadAllContacts();
     return allContactNotifsMap;
 }
 
+@Override
 public synchronized List<LitePointLimit> getAllPointLimits() {
 	if( allPointLimits != null ) 
 		return allPointLimits;
@@ -812,6 +851,7 @@ public synchronized List<LitePointLimit> getAllPointLimits() {
  * getAllPorts method comment.
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllPorts() 
 {
 	if( allPorts == null )
@@ -835,6 +875,7 @@ public synchronized List<LiteYukonPAObject> getAllPorts()
  * getAllRoutes method comment.
  *
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllRoutes() 
 {
 	if( allRoutes == null )
@@ -857,6 +898,7 @@ public synchronized List<LiteYukonPAObject> getAllRoutes()
  * Creation date: (3/14/00 3:19:19 PM)
  * @return java.util.Collection
  */
+@Override
 public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap()
 {
 	if( allStateGroupMap == null )
@@ -870,6 +912,7 @@ public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap()
 	return allStateGroupMap;
 }
 
+@Override
 public synchronized List<LiteTag> getAllTags() {
 	if(allTags == null)
 	{
@@ -882,6 +925,7 @@ public synchronized List<LiteTag> getAllTags() {
 }
 
 // This cache is derive from the Device cache
+@Override
 public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 {
 
@@ -952,6 +996,7 @@ public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
  */
+@Override
 public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 {
 	if( allYukonPAObjects != null && allPAOsMap != null)
@@ -970,7 +1015,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
 	 */
-	public synchronized List<LiteYukonGroup> getAllYukonGroups() {		
+	@Override
+    public synchronized List<LiteYukonGroup> getAllYukonGroups() {		
 		if(allYukonGroups == null) {
 			allYukonGroups = new ArrayList<LiteYukonGroup>();
 			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
@@ -982,7 +1028,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
 	 */
-	public synchronized List<LiteYukonRole> getAllYukonRoles() {		
+	@Override
+    public synchronized List<LiteYukonRole> getAllYukonRoles() {		
 		if( allYukonRoles == null) {
 			allYukonRoles = new ArrayList<LiteYukonRole>();
 			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
@@ -991,7 +1038,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		return allYukonRoles;				
 	}
 		
-	public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() { 
+	@Override
+    public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() { 
 		if( allYukonRoleProperties == null) {
 			allYukonRoleProperties = new ArrayList<LiteYukonRoleProperty>();
 			final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
@@ -1003,7 +1051,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
 	 */
-	public synchronized Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap() 
+	@Override
+    public synchronized Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap() 
 	{
 		if(allYukonGroupRolePropertiesMap == null) 
 		{
@@ -1018,7 +1067,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	/**
 	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
 	 */
-	public List<LiteEnergyCompany> getAllEnergyCompanies() {
+	@Override
+    public List<LiteEnergyCompany> getAllEnergyCompanies() {
         List<LiteEnergyCompany> ec = allEnergyCompanies;
         if(ec == null) {
             ec = new ArrayList<LiteEnergyCompany>();
@@ -1034,7 +1084,8 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 	 * Creation date: (3/14/00 3:19:19 PM)
 	 * @return java.util.Collection
 	 */
-	public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands(){
+	@Override
+    public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands(){
 
 		if( allDeviceTypeCommands != null )
 			return allDeviceTypeCommands;
@@ -1255,6 +1306,7 @@ public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
  * available optimizations can be made to ignore it.
  *
  */
+@Override
 public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
                                                    boolean noObjectNeeded)
 {
@@ -2450,6 +2502,7 @@ private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, i
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllAlarmCategories()
 {
 	allAlarmCategories = null;
@@ -2460,6 +2513,7 @@ public synchronized void releaseAllAlarmCategories()
  * Please be keeping this method in sync
  * 
  */
+@Override
 public synchronized void releaseAllCache()
 {
 	allYukonPAObjects = null;
@@ -2525,6 +2579,7 @@ public synchronized void releaseAllCache()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllContacts()
 {
 	allContactsMap.clear();
@@ -2534,6 +2589,7 @@ public synchronized void releaseAllContacts()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllDeviceMeterGroups()
 {
 	allDeviceMeterGroups = null;
@@ -2542,6 +2598,7 @@ public synchronized void releaseAllDeviceMeterGroups()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllYukonImages()
 {
    allYukonImages = null;
@@ -2550,6 +2607,7 @@ public synchronized void releaseAllYukonImages()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllGraphDefinitions()
 {
 	allGraphDefinitions = null;
@@ -2558,56 +2616,67 @@ public synchronized void releaseAllGraphDefinitions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllHolidaySchedules()
 {
 	allHolidaySchedules = null;
 }
 
+@Override
 public synchronized void releaseAllBaselines()
 {
 	allBaselines = null;
 }
 
+@Override
 public synchronized void releaseAllSeasonSchedules()
 {
 	allSeasonSchedules = null;
 }
+@Override
 public synchronized void releaseAllCommands()
 {
 	allCommands = null;
 	allCommandsMap = null;
 }
 
+@Override
 public synchronized void releaseAllTOUSchedules()
 {
 	allTOUSchedules = null;
 }
 
+@Override
 public synchronized void releaseAllTOUDays()
 {
 	allTOUDays = null;
 }
 
+@Override
 public synchronized void releaseAllConfigs()
 {
 	allConfigs = null;
 }
 
+@Override
 public synchronized void releaseAllTags()
 {
 	allTags = null;
 }
 
+@Override
 public synchronized void releaseAllLMProgramConstraints()
 {
 	allLMProgramConstraints = null;
 }
 
+@Override
 public synchronized void releaseAllLMScenarios()
 {
 	allLMScenarios = null;
 }
 
+@Override
 public synchronized void releaseAllLMPAOExclusions()
 {
 	allLMPAOExclusions = null;
@@ -2616,11 +2685,13 @@ public synchronized void releaseAllLMPAOExclusions()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllNotificationGroups()
 {
 	allNotificationGroups = null;
 }
 
+@Override
 public void releaseAllCustomers()
 {
 	customerCache.clear();
@@ -2648,6 +2719,7 @@ public synchronized void releaseAllYukonGroups(){
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllStateGroups()
 {
 	allStateGroupMap = null;
@@ -2657,6 +2729,7 @@ public synchronized void releaseAllStateGroups()
  * Insert the method's description here.
  * Creation date: (3/14/00 3:22:47 PM)
  */
+@Override
 public synchronized void releaseAllYukonPAObjects()
 {
 	allYukonPAObjects = null;
@@ -2666,6 +2739,7 @@ public synchronized void releaseAllYukonPAObjects()
 /**
  * Insert the method's description here.
  */
+@Override
 public synchronized void releaseAllDeviceTypeCommands()
 {
 	allDeviceTypeCommands = null;
@@ -2676,6 +2750,7 @@ public synchronized void releaseAllDeviceTypeCommands()
  * Creation date: (3/14/00 3:22:47 PM)
  * @param newAlias java.lang.String
  */
+@Override
 public synchronized void setDatabaseAlias(String newAlias){
 	databaseAlias = newAlias;
 }
@@ -2685,6 +2760,7 @@ public synchronized void setDatabaseAlias(String newAlias){
  * if this role has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.  
  */
+@Override
 public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID) 
 {
 	MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), roleID);
@@ -2718,6 +2794,7 @@ public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID)
  *  to see if this contact has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.
  */
+@Override
 public LiteContact getAContactByUserID(int userID) 
 {
     LiteContact specifiedContact = null;
@@ -2727,17 +2804,22 @@ public LiteContact getAContactByUserID(int userID)
     //not in cache, go to DB.
     if(specifiedContact == null)
     {
-        specifiedContact = YukonUserContactLookup.loadSpecificUserContact(userID);
-        //found it, put it in the cache for later searches
-        if (specifiedContact != null) {
-            userContactMap.put(userID, specifiedContact);
-            allContactsMap.put(specifiedContact.getContactID(), specifiedContact);
+        List<LiteContact> userContacts = contactDao.getContactsByLoginId(userID);
+        if (!CollectionUtils.isEmpty(userContacts)) {
+            //we will assume there is only one in this list, dao is accomodating multiple contacts per user...oh boy.
+            specifiedContact = userContacts.get(0);;
+            //found it, put it in the cache for later searches
+            if (specifiedContact != null) {
+                userContactMap.put(userID, specifiedContact);
+                allContactsMap.put(specifiedContact.getContactID(), specifiedContact);
+            }
         }
     }
     
     return specifiedContact;
 }
 
+@Override
 public synchronized LiteContact getAContactByContactID(int contactID) 
 {
     //check cache for previous grabs
@@ -2746,7 +2828,7 @@ public synchronized LiteContact getAContactByContactID(int contactID)
     //not in cache, go to DB.
     if(specifiedContact == null)
     {
-        specifiedContact = YukonUserContactLookup.loadSpecificContact(contactID);
+        specifiedContact = contactDao.getContact(contactID);
 
         //found it, put it in the cache for later searches
         if (specifiedContact != null) {
@@ -2758,16 +2840,8 @@ public synchronized LiteContact getAContactByContactID(int contactID)
     return specifiedContact;
 }
 
-public synchronized LiteContact[] getContactsByPhoneNumber(String phone, boolean partialMatch) 
-{
-    return YukonUserContactLookup.loadContactsByPhoneNumber(phone, partialMatch);
-}
-        
-public synchronized LiteContact getContactsByEmail(String email) 
-{
-    return YukonUserContactLookup.loadContactsByEmail(email);
-}
 
+@Override
 public synchronized LiteContactNotification getAContactNotifByNotifID(int contNotifyID) 
 {
     loadAllContacts();
@@ -2777,7 +2851,7 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
     //not in cache, go to DB.
     if(specifiedNotify == null)
     {
-        specifiedNotify = YukonUserContactNotificationLookup.loadSpecificContactNotificationByID(contNotifyID);
+        specifiedNotify = contactNotificationDao.getNotificationForContact(contNotifyID);
         //found it, put it in the cache for later searches
         allContactNotifsMap.put(new Integer(contNotifyID), specifiedNotify);
         //make sure the contact is also loaded
@@ -2790,6 +2864,7 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
 /*This method takes a primaryContactId to look for the relevant customer. It will
  * be taken directly from the database.
  */
+@Override
 public LiteCustomer getACustomerByPrimaryContactID(int primaryContactId) 
 {
     return YukonCustomerLookup.loadSpecificCustomerByPrimaryContactID(primaryContactId);
@@ -2799,6 +2874,7 @@ public LiteCustomer getACustomerByPrimaryContactID(int primaryContactId)
  *  to see if this customer has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.
  */
+@Override
 public LiteCustomer getACustomerByCustomerID(int customerID) 
 {
     LiteCustomer specifiedCustomer = null;
@@ -2816,6 +2892,7 @@ public LiteCustomer getACustomerByCustomerID(int customerID)
     return specifiedCustomer;
 }
 
+@Override
 public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser) {
 
 	// try to load from map
@@ -2843,6 +2920,7 @@ public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUs
  * Scrub out the userRoleMap.  Any LiteYukonRoles that were in here will have to be
  *recovered from the database.
  */
+@Override
 public synchronized void releaseUserRoleMap() 
 {
 	userRoleMap = null;
@@ -2852,11 +2930,13 @@ public synchronized void releaseUserRoleMap()
  * Scrub out the userRolePropertyValueMap.  Any String values that were in here will have to be
  *recovered from the database.
  */
+@Override
 public synchronized void releaseUserRolePropertyValueMap() 
 {
 	userRolePropertyValueMap = null;
 }
 
+@Override
 public synchronized void releaseUserContactMap()
 {
     userContactMap.clear();
@@ -2891,6 +2971,7 @@ public synchronized void adjustUserMappings(int userID)
     return;
 }
 
+@Override
 public synchronized List<Integer> getDevicesByCommPort(int portId) 
 {
     
@@ -2898,6 +2979,7 @@ public synchronized List<Integer> getDevicesByCommPort(int portId)
     
 }
 
+@Override
 public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
     return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
     

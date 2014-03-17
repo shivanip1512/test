@@ -92,9 +92,4 @@ public interface ContactNotificationDao {
      */
     public List<LiteContactNotification> getNotificationsForNotificationByType(String notification,
                                                                   ContactNotificationType contactNotificationType);
-    
-    /**
-     * Checks if formatting of entryText is valid for notificationType
-     */
-    public boolean isListEntryValid(ContactNotificationType notificationType, String entryText);
 }
