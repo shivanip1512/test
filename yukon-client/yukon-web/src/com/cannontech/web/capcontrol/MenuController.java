@@ -1,6 +1,5 @@
 package com.cannontech.web.capcontrol;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +22,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -222,17 +220,6 @@ public class MenuController {
         commands.add(CommandType.VERIFY_SELECTED_BANK);
        
         model.addAttribute("commands", commands);
-    }
-
-    @RequestMapping("regulatorPointList") //TODO MOVE
-    public String regulatorPointList(ModelMap model, int regulatorId) {
-        String regulatorName = paoDao.getYukonPAOName(regulatorId);
-        List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regulatorId);
-        Collections.sort(pointMappings);
-        model.addAttribute("mappings", pointMappings);
-        model.addAttribute("regulatorName", regulatorName);
-        
-        return "tier/popupmenu/regulatorPointList.jsp";
     }
 
     @RequestMapping("localControl")

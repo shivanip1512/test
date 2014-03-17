@@ -435,10 +435,6 @@
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 
-  <module name="monitors"><!-- had some vee menus before -->
-    <skin name="STANDARD" />
-  </module>
-
   <module name="dr">
     <skin name="STANDARD" />
     <search bean="drSearchProducer" />
@@ -530,10 +526,6 @@
     </pages>
   </module>
 
-  <module name="internal">
-    <skin name="INNER" />
-  </module>
-
   <module name="capcontrol">
     <skin name="STANDARD" />
     <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
@@ -600,12 +592,6 @@
       </page>
       <page name="import" type="BASIC"/>
     </pages>
-</module>
-
-  <module name="capcontrol_internal">
-    <!-- The module is used for the inner frames that are used on the cap control pages. -->
-    <skin name="INNER" />
-    <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
   </module>
 
   <module name="commercialcurtailment">
