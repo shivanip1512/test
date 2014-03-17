@@ -22,7 +22,7 @@ public class WidgetUtilsTest {
     @Test
     public void testString() throws JsonProcessingException {
         String json = WidgetUtils.generateJsonString("Hello' World");
-        Assert.assertEquals(json, "\"Hello\\' World\"");
+        Assert.assertEquals(json, "\"Hello' World\"");
     }
     
     @Test
