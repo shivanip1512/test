@@ -23,13 +23,13 @@ yukon.themes = (function () {
     mod = {
             
         init: function(cfg) {
-            
-            var pmo = jQuery('#palette-map').data('paletteMap'),
-                pmoObj,
+
+            var paletteMapObjects = jQuery('#palette-map').data('paletteMap'),
+                paletteObjectId,
+                paletteCells,
                 popups = jQuery('div[data-image-picker]'),
-                tcols,
                 colors;
-            
+
             // Move popup divs up to the body so we don't 
             // end up putting a form inside another form.
             popups.each(function(idx, elem) {
@@ -40,11 +40,11 @@ yukon.themes = (function () {
             _chooseText = cfg.chooseText;
             _okText = cfg.okText;
             _cancelText = cfg.cancelText;
-            
+
             if (initialized) {
                 return;
             }
-            
+
             /** Initialize each color picker */ 
             jQuery('.f-color-input').each(function (idx, item) {
                 var item = jQuery(item),
@@ -80,46 +80,44 @@ yukon.themes = (function () {
                     ]
                 });
             });
-            
+
             /** Delete the theme */
             jQuery('#b-delete').click(function(e) {
                 jQuery('input[name=_method]').val('DELETE');
                 jQuery('#theme-form').submit();
             });
-            
+
             /** Show an image picker */
             jQuery('a[data-image-picker]').click(function(e) {
-                
+
                 var link = jQuery(e.currentTarget),
                     href = link.attr('href'),
                     popup = jQuery('div[data-image-picker=' + link.attr('data-image-picker') + ']');
-                
+
                 popup.load(href, function() {
                     var buttons = [],
                         okButton = {'text' : _okText, 'click': function() { popup.trigger('yukon.image.selected'); }, 'class': 'primary action'},
                         cancelButton = {'text' : _cancelText, 'click' : function() { jQuery(this).dialog('close'); }},
-                        titleBar,
                         imagePicker,
                         selected,
                         first,
                         category = link.data('imageCategory');
-                    
+
                     mod.initFileUpload(category);
                     buttons.push(cancelButton);
                     buttons.push(okButton);
-                    
+
                     popup.dialog({ autoOpen: false,
                                    height: 'backgrounds' === category ? 650 : 500,
                                    width: 700,
                                    modal : false,
                                    buttons : buttons });
-                    
+
                     popup.dialog('open');
-                    titleBar = jQuery(popup).prev();
-                    
+
                     // Move selected image to beginning of list
-                    imagePicker = titleBar.parent().find('.image-picker');
-                    
+                    imagePicker = popup.find('.image-picker');
+
                     // Avoid breakage if only one image in the list
                     if (1 < imagePicker.find('.image').length) {
                         selected = imagePicker.find('.selected').parent().remove();
@@ -135,7 +133,7 @@ yukon.themes = (function () {
             jQuery(document).on('show.spectrum', 'input', function(e) {
                 e.preventDefault();
             });
-            
+
             /** Set an image as selected */
             jQuery(document).on('click', '.image-picker .image', function(e) {
                 var selected = jQuery(e.currentTarget),
@@ -145,7 +143,7 @@ yukon.themes = (function () {
                 imagePicker.find('.image').removeClass('selected');
                 selected.addClass('selected');
             });
-            
+
             /** New image was choosen */
             jQuery(document).on('yukon.image.selected', '[data-image-picker]', function(e) {
                 var imgPicker = jQuery(e.currentTarget),
@@ -159,11 +157,11 @@ yukon.themes = (function () {
                 link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected + '/thumb');
             });
 
-            /** Build pallet icon for each theme using it's colors */
-            for (pmoObj in pmo) {
-                tcols = jQuery('table[data-theme="' + pmoObj + '"] td');
-                colors = pmo[pmoObj];
-                tcols.each(function (index, el) {
+            /** Build pallet icon for each theme using its colors */
+            for (paletteObjectId in paletteMapObjects) {
+                paletteCells = jQuery('table[data-theme="' + paletteObjectId + '"] td');
+                colors = paletteMapObjects[paletteObjectId];
+                paletteCells.each(function (index, el) {
                     jQuery(el).css('backgroundColor', colors[index]);
                 });
             }
@@ -171,7 +169,6 @@ yukon.themes = (function () {
             /** Delete image button handler  */
             jQuery(document).on('click', '.delete-image', function (e) {
                 var button = jQuery(e.currentTarget),
-                    imageUrl = button.closest('.image').find('a img').attr('src'),
                     okcancel;
 
                 e.preventDefault();
@@ -209,7 +206,7 @@ yukon.themes = (function () {
                     });
                 }
             });
-            
+
             /** Delete image button confirm cancel handler */
             jQuery(document).on('click', '.cancel', function (e) {
                 var button = jQuery(e.currentTarget);
@@ -218,13 +215,13 @@ yukon.themes = (function () {
             });
             initialized = true;
         },
-        
+
         /** Initialize the file uploaders for uploading images. Uses a jquery file upload plugin. */
         initFileUpload: function (category) {
-            
+
             var uploadForm = jQuery('div[data-category="' + category + '"] form'),
                 token = jQuery('#csrf-token').val();
-            
+
             uploadForm.fileupload({
                 dataType: 'text',
                 start: function (e) {

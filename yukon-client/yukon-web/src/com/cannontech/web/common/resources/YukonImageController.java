@@ -50,11 +50,11 @@ import com.cannontech.web.util.JsonUtils;
 @Controller
 public class YukonImageController {
 
-    @Autowired private YukonImageDao yid;
+    @Autowired private YukonImageDao imageDao;
     @Autowired private ThemeDao themeDao;
-    @Autowired private ResourceLoader loader;
-    @Autowired private RolePropertyDao rpDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private ResourceLoader resourceLoader;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private final static String keyBase = "yukon.common.imagePicker.";
 
@@ -71,7 +71,7 @@ public class YukonImageController {
     }
 
     private LiteYukonImage getFullImage(int id) throws IOException, SQLException {
-        LiteYukonImage fullImage = yid.getLiteYukonImage(id);
+        LiteYukonImage fullImage = imageDao.getLiteYukonImage(id);
         if (fullImage == null) {
             fullImage = getDefaultImages(id);
         }
@@ -115,8 +115,8 @@ public class YukonImageController {
     }
 
     private Dimension getScaledDimensions(BufferedImage imageSrc, Dimension defaultDimension) {
-        double currentHeight = imageSrc.getHeight();
-        double currentWidth = imageSrc.getWidth();
+        double currentHeight = (double) imageSrc.getHeight();
+        double currentWidth = (double) imageSrc.getWidth();
         double requestedHeightScaling = (defaultDimension.getHeight() / currentHeight);
         double requestedWidthScaling = (defaultDimension.getWidth() / currentWidth);
         double actualScaling = Math.min(requestedHeightScaling, requestedWidthScaling);
@@ -129,15 +129,15 @@ public class YukonImageController {
     private LiteYukonImage getDefaultImages(int id) throws IOException, SQLException {
         LiteYukonImage image = null;
         if (id == YukonImage.DEFAULT_LOGO.getId()) {
-            image = yid.add(YukonImage.DEFAULT_LOGO.getId(), 
+            image = imageDao.add(YukonImage.DEFAULT_LOGO.getId(), 
                             YukonImage.DEFAULT_LOGO.getCategory(), 
                             YukonImage.DEFAULT_LOGO.getName(), 
-                            loader.getResource(YukonImage.DEFAULT_LOGO.getPath()));
+                            resourceLoader.getResource(YukonImage.DEFAULT_LOGO.getPath()));
         } else if (id == YukonImage.DEFAULT_BACKGROUND.getId()) {
-            image = yid.add(YukonImage.DEFAULT_BACKGROUND.getId(), 
+            image = imageDao.add(YukonImage.DEFAULT_BACKGROUND.getId(), 
                             YukonImage.DEFAULT_BACKGROUND.getCategory(), 
                             YukonImage.DEFAULT_BACKGROUND.getName(), 
-                            loader.getResource(YukonImage.DEFAULT_BACKGROUND.getPath()));
+                            resourceLoader.getResource(YukonImage.DEFAULT_BACKGROUND.getPath()));
         }
         return image;
     }
@@ -191,7 +191,7 @@ public class YukonImageController {
     @RequestMapping(value="/images/{id}", method=RequestMethod.DELETE)
     public @ResponseBody Map<String, Object> delete(YukonUserContext userContext, @PathVariable int id) {
         
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             List<Theme> themes = themeDao.getThemes();
             Set<Integer> nonDeletableImages = new HashSet<>();
@@ -207,7 +207,7 @@ public class YukonImageController {
                 throw new IllegalArgumentException(accessor.getMessage(keyBase + "delete.inuse"));
             }
             
-            yid.delete(id);
+            imageDao.delete(id);
             
         } catch (Exception e) {
             Map<String, Object> message = new HashMap<>();
@@ -222,12 +222,12 @@ public class YukonImageController {
     }
 
     @RequestMapping(value="/images", method=RequestMethod.POST)
-    public void upload(HttpServletResponse resp, HttpServletRequest req, YukonUserContext context, @RequestParam(defaultValue="logos") String category) throws IOException {
+    public void upload(HttpServletResponse resp, HttpServletRequest req, YukonUserContext userContext, @RequestParam(defaultValue="logos") String category) throws IOException {
         
         Map<String, Object> json = new HashMap<>();
         
         try {
-            rpDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, context.getYukonUser());
+            rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_SUPER_USER, userContext.getYukonUser());
             
             boolean isMultipart = ServletFileUpload.isMultipartContent(req);
             if (!isMultipart) {
@@ -244,13 +244,13 @@ public class YukonImageController {
                 throw new IllegalArgumentException("Only image files are valid.");
             }
             InputStream inputStream = file.getInputStream();
-            LiteYukonImage image = yid.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
+            LiteYukonImage image = imageDao.add(category, file.getOriginalFilename(), new InputStreamResource(inputStream));
             Map<String, Object> imageStats = new HashMap<>(); 
             imageStats.put("id", image.getImageID());
             imageStats.put("name", image.getImageName());
             imageStats.put("category", image.getImageCategory());
             
-            MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             String size = accessor.getMessage("yukon.common.prefixedByteValue.kibi", image.getImageValue().length * .001);
             imageStats.put("size", size);
             json.put("image", imageStats);
