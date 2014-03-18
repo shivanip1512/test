@@ -1457,15 +1457,6 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CntNot_YkLs</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>NotificationCategoryID</i__columnName>
-            <i__foreignColumnName>EntryID</i__foreignColumnName>
-            <i__foreignTableName>YukonListEntry</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_Cust_YkLs</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>RateScheduleID</i__columnName>
