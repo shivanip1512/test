@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/18/2014 2:25:48 PM                         */
+/* Created on:     3/18/2014 4:37:40 PM                         */
 /*==============================================================*/
 
 
@@ -8619,8 +8619,8 @@ INSERT INTO UnitMeasure VALUES ( 37,'VA', 0,'VA','(none)' );
 INSERT INTO UnitMeasure VALUES ( 38,'ft^3', 0,'Cubic Feet','(none)' );
 INSERT INTO UnitMeasure VALUES ( 39,'Watts', 0,'Watts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 40,'Hz', 0,'Hertz','(none)' );
-INSERT INTO UnitMeasure VALUES ( 41,'Volts', 1,'Volts from V2H','(none)' );
-INSERT INTO UnitMeasure VALUES ( 42,'Amps', 1,'Amps from A2H','(none)' );
+INSERT INTO UnitMeasure VALUES ( 41,'VoltsV2H', 1,'Volts from V2H','(none)' );
+INSERT INTO UnitMeasure VALUES ( 42,'AmpsA2H', 1,'Amps from A2H','(none)' );
 INSERT INTO UnitMeasure VALUES ( 43,'Tap', 0,'LTC Tap Position','(none)' );
 INSERT INTO UnitMeasure VALUES ( 44,'Miles', 0,'Miles','(none)' );
 INSERT INTO UnitMeasure VALUES ( 45,'Ms', 0,'Milliseconds','(none)' );

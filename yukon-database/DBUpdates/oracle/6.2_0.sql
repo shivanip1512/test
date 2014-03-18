@@ -249,6 +249,16 @@ DELETE FROM YukonSelectionList
 WHERE ListName = 'ContactType';
 /* End YUK-13141 */
 
+/* Start YUK-13065 */
+UPDATE UnitMeasure 
+SET UOMName = 'VoltsV2H' 
+WHERE UOMID = 41;
+
+UPDATE UnitMeasure 
+SET UOMName = 'AmpsA2H' 
+WHERE UOMID = 42;
+/* End YUK-13065 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
