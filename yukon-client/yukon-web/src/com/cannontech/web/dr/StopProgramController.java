@@ -36,10 +36,8 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckGlobalSetting;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonUtils;
 import com.google.common.collect.Maps;
@@ -258,7 +256,6 @@ public class StopProgramController extends ProgramControllerBase {
     }
 
     @RequestMapping("stopMultiple")
-    @CheckGlobalSetting(GlobalSettingType.GOOGLE_ANALYTICS_ENABLED)
     public String stopMultiple(HttpServletResponse resp, ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
