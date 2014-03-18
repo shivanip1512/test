@@ -7,13 +7,8 @@
 
 <cti:msgScope paths="yukon.web.modules.amr.meterEventsReport.report">
 
+<cti:toJson id="meterEventsTableModelData" object="${meterEventsTableModelData}"/>
 
-    <script type="text/json" id="meterEventsTableModelData">
-        {
-            "sort" : "${sort}",
-            "descending" : ${descending eq true}
-        }
-    </script>
 <cti:formatDate var="fromInstantFormatted" value="${meterEventsFilter.fromInstant}" type="DATE"/>
 <cti:formatDate var="toInstantFormatted" value="${meterEventsFilter.toInstant}" type="DATE"/>
 <cti:url var="filteredUrl" value="meterEventsTable">

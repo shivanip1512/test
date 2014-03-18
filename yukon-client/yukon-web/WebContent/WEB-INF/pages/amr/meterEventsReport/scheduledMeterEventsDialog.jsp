@@ -7,11 +7,8 @@
     <div id="flashScopeMsg">
         <cti:flashScopeMessages/>
     </div>
-    <script type="text/json" id="scheduleModelData">
-        {
-            "success" : ${success eq true}
-        }
-    </script>
+    
+    <cti:toJson id="scheduleModelData" object="${scheduleModelData}"/>
     <form:form id="scheduleForm" action="saveScheduledMeterEventJob" method="post" commandName="exportData">
         <cti:deviceCollection deviceCollection="${deviceCollection}" />
         <tags:nameValueContainer2>

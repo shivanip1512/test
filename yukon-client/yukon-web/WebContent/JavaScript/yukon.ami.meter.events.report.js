@@ -1,9 +1,6 @@
-yukon.namespace('yukon.ami');
-yukon.namespace('yukon.ami.meter');
-yukon.namespace('yukon.ami.meter.events');
-yukon.namespace('yukon.ami.meter.events.report');
+yukon.namespace('yukon.ami.meterEventsReport');
 
-yukon.ami.meter.events.report = (function () {
+yukon.ami.meterEventsReport = (function () {
 
     var mod,
         eventTypesTreeInitialized = false,
@@ -17,7 +14,7 @@ yukon.ami.meter.events.report = (function () {
             var attribute = attributeMap[eventNode.attributes[i]]; // matches java enum
             var selected = allAttributesMap[attribute];
             if (typeof(selected) != 'undefined') {
-                nodes.push({title: eventNode.attributes[i], select: selected, a : 1, attribute: attribute});
+                nodes.push({title: eventNode.attributes[i], select: selected, attribute: attribute});
             }
         }
         return nodes;
@@ -100,7 +97,7 @@ yukon.ami.meter.events.report = (function () {
         formSerialized += "&" + jQuery("#scheduleForm").serialize();
         jQuery.post("saveScheduledMeterEventJob?" + formSerialized, function (data) {
             var response = jQuery(data),
-                scheduleModelData = JSON.parse(response.filter("#scheduleModelData").html());
+                scheduleModelData = yukon.fromJson(response.filter("#scheduleModelData"));
             if (scheduleModelData.success) {
                 jQuery("#scheduleDialog").dialog('close');
                 _reloadScheduledJobsTable(response.filter("#flashScopeMsg"));
@@ -121,18 +118,15 @@ yukon.ami.meter.events.report = (function () {
         var data = {jobId : jobId};
 
         jQuery.post("delete", data, 'json').done(function (data) {
-            var flashScope = jQuery("<div>").attr('class','user-message success').html(data.successMsg);
-            _reloadScheduledJobsTable(flashScope);
-            jQuery("#scheduledJobsTableFlashScope").html(flashScope);
+            var flashScopeEl = jQuery("<div>").attr('class','user-message success').text(data.successMsg);
+            _reloadScheduledJobsTable(flashScopeEl);
+            jQuery("#scheduledJobsTableFlashScope").html(flashScopeEl);
         });
     }
     
-    function _createScheduleReportDialog(titleHtml) {
-        jQuery("#scheduleDialog").dialog({'modal': true, 'position' : 'center', 'height' : 'auto',
-            'width' : 'auto', 
-            create: function () {
-                jQuery(this).siblings().find(".ui-dialog-title").html(titleHtml); 
-        }});
+    function _createScheduleReportDialog(title) {
+        jQuery("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'position' : 'center', 'height' : 'auto',
+            'width' : 'auto'});
     }
     
     function _updateMeterEventsTable() {
@@ -151,7 +145,7 @@ yukon.ami.meter.events.report = (function () {
         },
 
         init: function() {
-            _modelData = JSON.parse(jQuery("#modelData").html());
+            _modelData = yukon.fromJson("#modelData");
             jQuery("#updateMeterEventsBtn").click(_updateMeterEventsTable);
 
             jQuery("#scheduleMeterEventsBtn").click(function() {
@@ -172,7 +166,7 @@ yukon.ami.meter.events.report = (function () {
             });
 
             jQuery("#exportCsvBtn").click(function () {
-                var _meterEventsTableModel = JSON.parse(jQuery("#meterEventsTableModelData").html()),
+                var _meterEventsTableModel = yukon.fromJson("#meterEventsTableModelData"),
                     downloadForm = jQuery("#downloadFormContents").empty();
                 jQuery("#filterForm").find(":input[name]").each(function() {
                     var self = jQuery(this);
@@ -224,5 +218,5 @@ yukon.ami.meter.events.report = (function () {
 }());
 
 jQuery(function () {
-    yukon.ami.meter.events.report.init();
+    yukon.ami.meterEventsReport.init();
 });

@@ -17,35 +17,7 @@
         <cti:includeScript link="/JavaScript/yukon.ami.meter.events.report.js"/>
         <cti:includeScript link="/JavaScript/yukon.cron.js"/>
 
-        <c:set var="popupTitleArg" value=""/>
-        <c:if test="${not empty exportData.scheduleName}">
-            <c:set var="popupTitleArg" value="\"${fn:escapeXml(exportData.scheduleName)}\""/>
-        </c:if>
-        <cti:msg2 var="popupTitle" key=".schedulePopup.title" argument="${popupTitleArg}" htmlEscapeArguments="false"/>
-        <cti:msg2 var="newPopupTitle" key=".schedulePopup.title" argument="" htmlEscapeArguments="false"/>
-        <script type="text/json" id="modelData">
-        {
-            "meterEventTypesMap" : ${meterEventTypesMapJson},
-            "generalEvents" : ${generalEventsJson},
-            "hardwareEvents" : ${hardwareEventsJson},
-            "tamperEvents" : ${tamperEventsJson},
-            "outageEvents" : ${outageEventsJson},
-            "meteringEvents" : ${meteringEventsJson},
-            "allTitle" : "<cti:msg2 key=".filter.tree.all" javaScriptEscape="true"/>",
-            "generalTitle" : "<cti:msg2 key=".filter.tree.general" javaScriptEscape="true"/>",
-            "hardwareTitle" : "<cti:msg2 key=".filter.tree.hardware" javaScriptEscape="true"/>",
-            "tamperTitle" : "<cti:msg2 key=".filter.tree.tamper" javaScriptEscape="true"/>",
-            "outageTitle" : "<cti:msg2 key=".filter.tree.outage" javaScriptEscape="true"/>",
-            "meteringTitle" : "<cti:msg2 key=".filter.tree.metering" javaScriptEscape="true"/>",
-            "schedulePopupTitle" : ${cti:jsonString(popupTitle)},
-            "newSchedulePopupTitle" : ${cti:jsonString(newPopupTitle)},
-            "confirmScheduleDeletion" : "<cti:msg2 key="modules.tools.scheduledFileExport.jobs.deleteSchedule.title"
-                                         javaScriptEscape="true"/>",
-            "okBtnLbl" : "<cti:msg2 key="components.button.ok.label" javaScriptEscape="true"/>",
-            "cancelBtnLbl" : "<cti:msg2 key="components.button.cancel.label" javaScriptEscape="true"/>",
-            "openScheduleDialog" : ${not empty jobId}
-        }
-        </script>
+        <cti:toJson id="modelData" object="${jsonModel}"/>
 
         <tags:sectionContainer2 nameKey="filterSectionHeader">
             <form id="filterForm" action="meterEventsTable">

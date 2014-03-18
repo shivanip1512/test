@@ -83,9 +83,7 @@ import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledMeterEventsFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonUtils;
 import com.cannontech.web.util.WebFileUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -110,12 +108,12 @@ public class MeterEventsReportController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
-    
+
     private ScheduledFileExportValidator scheduledFileExportValidator = 
             new ScheduledFileExportValidator(this.getClass());
-
     private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(OutageStatus.GOOD.name().toLowerCase(),
                                                                            EventStatus.CLEARED.name().toLowerCase());
+    private final String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
 
     static enum SortBy {NAME, METER_NUMBER, TYPE, DATE, EVENT, VALUE;}
 
@@ -138,7 +136,7 @@ public class MeterEventsReportController {
     }
 
     @RequestMapping(value="home", params="jobId")
-    public String homeWithJob(ModelMap model, Integer jobId, YukonUserContext userContext) throws JsonProcessingException {
+    public String homeWithJob(ModelMap model, Integer jobId, YukonUserContext userContext) {
         setupExistingJobHomeModelMap(model, jobId, userContext);
         scheduledJobsTable(model, new PagingParameters(10, 1));
         return "meterEventsReport/home.jsp";
@@ -146,7 +144,7 @@ public class MeterEventsReportController {
 
     @RequestMapping(value="home", params="collectionType")
     public String homeWithDeviceCollection(ModelMap model, DeviceCollection deviceCollection,
-                       YukonUserContext userContext) throws JsonProcessingException {
+                       YukonUserContext userContext) {
         setupNewHomeModelMap(model, deviceCollection, userContext);
         scheduledJobsTable(model, new PagingParameters(10, 1));
         return "meterEventsReport/home.jsp";
@@ -158,8 +156,8 @@ public class MeterEventsReportController {
         return "meterEventsReport/home.jsp";
     }
     
-    private void setupExistingJobHomeModelMap(ModelMap model, Integer jobId, YukonUserContext userContext)
-            throws JsonProcessingException {
+    private void setupExistingJobHomeModelMap(ModelMap model, Integer jobId, YukonUserContext userContext) {
+        
         Instant toInstant = new Instant();
         Instant fromInstant = toInstant.minus(Duration.standardDays(7));
 
@@ -196,14 +194,8 @@ public class MeterEventsReportController {
 
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
 
-        model.addAttribute("meterEventTypesMapJson", JsonUtils.toJson(meterEventTypesMap));
-        model.addAttribute("generalEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getGeneral(), userContext));
-        model.addAttribute("hardwareEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getHardware(), userContext));
-        model.addAttribute("tamperEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getTamper(), userContext));
-        model.addAttribute("outageEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getOutage(), userContext));
-        model.addAttribute("meteringEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getMetering(), userContext));
-
         model.addAttribute("exportData", exportData);
+        model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, false));
         model.addAttribute("cronExpressionTagState", cronExpressionTagState);
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
@@ -215,9 +207,7 @@ public class MeterEventsReportController {
         model.addAttribute("jobId", jobId);
     }
     
-    private void setupNewHomeModelMap(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext)
-            throws JsonProcessingException {
-
+    private void setupNewHomeModelMap(ModelMap model, DeviceCollection deviceCollection, YukonUserContext userContext) {
         LocalDate now = new LocalDate(userContext.getJodaTimeZone());
         Instant toInstantMidnight = now.plusDays(1).toDateTimeAtStartOfDay().toInstant().minus(1);
         Instant fromInstantStartOfDay = now.toDateTimeAtStartOfDay().toInstant().minus(Duration.standardDays(7));
@@ -235,17 +225,12 @@ public class MeterEventsReportController {
                 new MeterEventsFilter(fromInstantStartOfDay, toInstantMidnight, availableEventAttributes, false, false, false);
         meterEventsTable(model, meterEventsFilter, new PagingParameters(10, 1), deviceCollection,
                          SortBy.DATE, false, userContext);
-        
+
         model.addAttribute("numSelectedEventTypes", availableEventAttributes.size());
-        model.addAttribute("meterEventTypesMapJson", JsonUtils.toJson(meterEventTypesMap));
-        model.addAttribute("generalEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getGeneral(), userContext));
-        model.addAttribute("hardwareEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getHardware(), userContext));
-        model.addAttribute("tamperEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getTamper(), userContext));
-        model.addAttribute("outageEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getOutage(), userContext));
-        model.addAttribute("meteringEventsJson", getAttributesJsonArray(MeterEventStatusTypeGroupings.getMetering(), userContext));
 
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         model.addAttribute("exportData", exportData);
+        model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, false));
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
@@ -254,6 +239,34 @@ public class MeterEventsReportController {
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("fromInstant", fromInstantStartOfDay);
         model.addAttribute("toInstant", toInstantMidnight);
+    }
+
+    private Map<String, Object> getJsonModel(YukonUserContext userContext, Map<Attribute, Boolean> meterEventTypesMap,
+        ScheduledFileExportData exportData, boolean isNewSchedule) {
+        MessageSourceAccessor messageAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> jsonModel = Maps.newHashMapWithExpectedSize(18);
+        jsonModel.put("meterEventTypesMap", meterEventTypesMap);
+        jsonModel.put("generalEvents", getAttributesData(MeterEventStatusTypeGroupings.getGeneral(), userContext));
+        jsonModel.put("hardwareEvents", getAttributesData(MeterEventStatusTypeGroupings.getHardware(), userContext));
+        jsonModel.put("tamperEvents", getAttributesData(MeterEventStatusTypeGroupings.getTamper(), userContext));
+        jsonModel.put("outageEvents", getAttributesData(MeterEventStatusTypeGroupings.getOutage(), userContext));
+        jsonModel.put("meteringEvents", getAttributesData(MeterEventStatusTypeGroupings.getMetering(), userContext));
+        
+        jsonModel.put("allTitle", messageAccessor.getMessage(baseKey + ".filter.tree.all"));
+        jsonModel.put("generalTitle", messageAccessor.getMessage(baseKey + ".filter.tree.general"));
+        jsonModel.put("hardwareTitle", messageAccessor.getMessage(baseKey + ".filter.tree.hardware"));
+        jsonModel.put("tamperTitle", messageAccessor.getMessage(baseKey + ".filter.tree.tamper"));
+        jsonModel.put("outageTitle", messageAccessor.getMessage(baseKey + ".filter.tree.outage"));
+        jsonModel.put("meteringTitle", messageAccessor.getMessage(baseKey + ".filter.tree.metering"));
+        jsonModel.put("schedulePopupTitle", 
+                messageAccessor.getMessage(baseKey + ".schedulePopup.title", exportData.getScheduleName()));
+        jsonModel.put("newSchedulePopupTitle", messageAccessor.getMessage(baseKey + ".schedulePopup.title"));
+        jsonModel.put("confirmScheduleDeletion", 
+                messageAccessor.getMessage("yukon.web.modules.tools.scheduledFileExport.jobs.deleteSchedule.title"));
+        jsonModel.put("okBtnLbl", messageAccessor.getMessage("yukon.web.components.button.ok.label"));
+        jsonModel.put("cancelBtnLbl", messageAccessor.getMessage("yukon.web.components.button.cancel.label"));
+        jsonModel.put("openScheduleDialog", !isNewSchedule);
+        return jsonModel;
     }
 
     @RequestMapping("meterEventsTable")
@@ -284,6 +297,11 @@ public class MeterEventsReportController {
         model.addAttribute("sort", sort);
         model.addAttribute("descending", descending);
 
+        Map<String, Object> meterEventsTableModelData = Maps.newHashMapWithExpectedSize(2);
+        meterEventsTableModelData.put("sort", sort);
+        meterEventsTableModelData.put("descending", descending);
+        model.addAttribute("meterEventsTableModelData", meterEventsTableModelData);
+        
         return "meterEventsReport/meterEventsTable.jsp";
     }
 
@@ -326,6 +344,7 @@ public class MeterEventsReportController {
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
             model.addAttribute("jobId", jobId);
+            model.addAttribute("scheduleModelData", Collections.singletonMap("success", false));
             return "meterEventsReport/scheduledMeterEventsDialog.jsp";
         }
 
@@ -348,7 +367,7 @@ public class MeterEventsReportController {
                                                                    exportData.getScheduleName()));
         }
 
-        model.addAttribute("success", true);
+        model.addAttribute("scheduleModelData", Collections.singletonMap("success", true));
 
         return "meterEventsReport/scheduledMeterEventsDialog.jsp";
     }
@@ -416,7 +435,7 @@ public class MeterEventsReportController {
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
             dataRow[2] = dateTimeString;
             dataRow[3] = event.getPointName();
-            dataRow[4] = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);;
+            dataRow[4] = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);
             dataRows.add(dataRow);
         }
         
@@ -438,7 +457,7 @@ public class MeterEventsReportController {
         return resultsDeviceCollection;
     }
 
-    private String getAttributesJsonArray(Set<BuiltInAttribute> originalSet, YukonUserContext context) throws JsonProcessingException {
+    private Map<String, Object> getAttributesData(Set<BuiltInAttribute> originalSet, YukonUserContext context) {
         Map<String, BuiltInAttribute> attributeMap = Maps.newHashMapWithExpectedSize(originalSet.size());
         List<String> strList = new ArrayList<>(originalSet.size());
         for (BuiltInAttribute attr: originalSet) {
@@ -451,7 +470,7 @@ public class MeterEventsReportController {
         Map<String, Object> jsonObj = Maps.newHashMapWithExpectedSize(2);
         jsonObj.put("attributes", strList);
         jsonObj.put("attributeMap", attributeMap);
-        return JsonUtils.toJson(jsonObj);
+        return jsonObj;
     }
 
     @InitBinder
