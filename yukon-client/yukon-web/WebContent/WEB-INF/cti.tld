@@ -355,6 +355,30 @@
   </tag>
   
   <tag>
+    <name>toJson</name>
+    <tag-class>com.cannontech.web.taglib.JsonTag</tag-class>
+    <body-content>emtpy</body-content>
+    <description>Converts any java object into html escaped json.</description>
+    <attribute>
+      <name>id</name>
+      <description>If supplied, will create a hidden input .</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>object</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <description>If supplied, will set the var to the json value.</description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>outputContent</name>
     <tag-class>com.cannontech.web.taglib.OutputContentTag</tag-class>
     <body-content>empty</body-content>

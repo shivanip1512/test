@@ -136,6 +136,11 @@ yukon.modules.base = function (box) {
     box.url = function (url) {
         return YG.APP_NAME + url;
     };
+    
+    // JavaScript side of JsonTag.java
+    box.fromJson = function(selector) {
+        return JSON.parse(decodeURIComponent(jQuery(selector).val()));
+    };
 };
 
 /** 
