@@ -24,6 +24,28 @@ yukon.surveys.edit = (function () {
             }
         },
 
+        _initQuestionDialog = function() {
+            var infoHolder = jQuery('[data-answer-keys]'),
+                answerKeys = infoHolder.data('answerKeys'),
+                ii;
+
+            _questionTypeChanged();
+            jQuery('#questionType').change(yukon.surveys.questionTypeChanged);
+            jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+
+            if (answerKeys !== '') {
+                mod.addAnswer.nextRowIdNum = 0;
+                mod.addAnswer.rowIdNums = [];
+                if (answerKeys) {
+                    for (ii = 0; ii < answerKeys.length; ii += 1) {
+                        mod.addAnswer(answerKeys[ii]);
+                    }
+                }
+                jQuery('#questionKey').focus();
+                jQuery('#questionKey').select();
+            }
+        },
+
         _disableMoveUp = function (rowIdNum) {
             var oldMoveIcon = jQuery('#moveUpIcon' + rowIdNum)[0],
                 disabledIcon = _moveUpDisabledIcon.cloneNode(true);
@@ -141,18 +163,18 @@ yukon.surveys.edit = (function () {
                     _moveDownDisabledIcon = icons[4];
                 }
                 editDetailsBtn.click(function () {
-                    var editDetailsUrl = editDetailsBtn.attr('data-detail-url');
+                    var editDetailsUrl = editDetailsBtn.data('detailUrl');
                     jQuery('#ajaxDialog').load(editDetailsUrl);
                 });
 
                 addQuestionBtn.click(function () {
-                    var addQuestionUrl = addQuestionBtn.attr('data-add-question-url');
-                    jQuery('#ajaxDialog').load(addQuestionUrl);
+                    var addQuestionUrl = addQuestionBtn.data('addQuestionUrl');
+                    jQuery('#ajaxDialog').load(addQuestionUrl, _initQuestionDialog);
                 });
 
                 jQuery('.editQuestionBtn').click(function (event) {
-                    var editQuestionUrl = jQuery(event.target).closest('[data-edit-question-url]').attr('data-edit-question-url');
-                    jQuery('#ajaxDialog').load(editQuestionUrl);
+                    var editQuestionUrl = jQuery(event.target).closest('[data-edit-question-url]').data('editQuestionUrl');
+                    jQuery('#ajaxDialog').load(editQuestionUrl, _initQuestionDialog);
                 });
 
                 jQuery(document).on('click', '.moveAnswerUp', _moveAnswerUp);
@@ -223,27 +245,7 @@ yukon.surveys.edit = (function () {
                     inputNode.focus();
                     inputNode.select();
                 }
-            },
-
-            initQuestions : function () {
-                _questionTypeChanged();
-                jQuery('#questionType').change(yukon.surveys.questionTypeChanged);
-                jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
-            },
-
-            initAnswerKeys : function (answerKeys) {
-                var localEdit = yukon.surveys.edit,
-                    ii;
-                localEdit.addAnswer.nextRowIdNum = 0;
-                localEdit.addAnswer.rowIdNums = [];
-                if (answerKeys) {
-                    for (ii = 0; ii < answerKeys.length; ii += 1) {
-                        localEdit.addAnswer(answerKeys[ii]);
-                    }
-                }
-                jQuery('#questionKey').focus();
-                jQuery('#questionKey').select();
             }
         };
     return mod;
-}());
+})();

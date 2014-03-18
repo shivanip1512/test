@@ -15,17 +15,12 @@
 
 <d:ajaxPage nameKey="editQuestion" module="adminSetup" page="survey.edit" okEvent="${okAction}">
 
-<script type="text/javascript">
-    jQuery(function() {
-        yukon.surveys.edit.initQuestions();
-        <cti:displayForPageEditModes modes="EDIT">
-        yukon.surveys.edit.initAnswerKeys(${cti:jsonString(answerKeys)});
-        </cti:displayForPageEditModes>
-    });
-</script>
+<cti:displayForPageEditModes modes="EDIT">
+    <c:set var="dataAnswerKeys" value="${cti:jsonString(answerKeys)}" />
+</cti:displayForPageEditModes>
 
 <cti:url var="submitUrl" value="saveQuestion"/>
-<form:form id="inputForm" commandName="question" action="${submitUrl}">
+<form:form id="inputForm" commandName="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}">
     <form:hidden path="surveyId"/>
     <form:hidden path="surveyQuestionId"/>
     <form:hidden path="displayOrder"/>
@@ -68,7 +63,7 @@
     <div id="additionalInfo_DROP_DOWN" class="additionalInfo">
 		<tags:boxContainer2 id="answersBox" nameKey="answers">
 	        <div class="scroll-medium">
-			    <table id="answerTable" class="compact-results-table row-highlighting">
+			    <table id="answerTable" class="compact-results-table row-highlighting clearfix">
                     <thead>
     			        <tr>
     			            <th><i:inline key=".answerKey"/></th>
