@@ -139,7 +139,7 @@ yukon.modules.base = function (box) {
     
     // JavaScript side of JsonTag.java
     box.fromJson = function(selector) {
-        return JSON.parse(decodeURIComponent(jQuery(selector).val()));
+        return JSON.parse(jQuery(selector).text());
     };
 };
 

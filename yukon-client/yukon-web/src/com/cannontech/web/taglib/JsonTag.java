@@ -3,6 +3,7 @@ package com.cannontech.web.taglib;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 
 import org.springframework.web.util.HtmlUtils;
 
@@ -23,7 +24,10 @@ public class JsonTag extends YukonTagSupport {
         if (var != null) {
             getJspContext().setAttribute(var, htmlEscapedJson);
         } else if (id != null) {
-            getJspContext().getOut().print("<input type=\"hidden\" id=\""+ id +"\" value=\"" + htmlEscapedJson + "\">");
+            JspWriter out = getJspContext().getOut();
+            out.print("<div id=\""+ id +"\" class=\"dn\">");
+            out.print(htmlEscapedJson);
+            out.print("</div>");
         } else {
             getJspContext().getOut().print(htmlEscapedJson);
         }
