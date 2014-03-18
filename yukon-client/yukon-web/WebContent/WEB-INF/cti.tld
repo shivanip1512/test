@@ -357,7 +357,7 @@
   <tag>
     <name>toJson</name>
     <tag-class>com.cannontech.web.taglib.JsonTag</tag-class>
-    <body-content>emtpy</body-content>
+    <body-content>empty</body-content>
     <description>Converts any java object into html escaped json.</description>
     <attribute>
       <name>id</name>
