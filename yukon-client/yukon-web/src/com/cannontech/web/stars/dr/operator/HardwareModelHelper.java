@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 
-import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -81,15 +80,9 @@ public class HardwareModelHelper {
                 int userId = SessionUtil.getParentLoginUserId(session, user.getUserID());
                 EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_INVENTORY, hardware.getDeviceStatusEntryId(), inventoryId);
             }
-        } catch (BadTemplateDeviceCreationException e) {
-            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError");
-        } catch (DeviceCreationException e) {
-            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError");
-        } catch (IgnoredTemplateException e) {
-            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError");
-        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-            result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
-        } catch (ObjectInOtherEnergyCompanyException e) {
+        } catch (DeviceCreationException|IgnoredTemplateException e) {  //includes BadTemplateDeviceCreationException 
+            result.rejectValue( "serialNumber", "yukon.web.modules.operator.hardware.error.rfCreationError", new Object[]{e.getMessage()}, "");
+        } catch (StarsDeviceSerialNumberAlreadyExistsException|ObjectInOtherEnergyCompanyException e) {
             result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (Lcr3102YukonDeviceCreationException e) {
             switch (e.getType()) {
