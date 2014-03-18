@@ -198,7 +198,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 reader.close();
                 // Set text in the range [5, 7) red
                 doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle("Font"), true);
-                if( style != null) {
+                if (style != null) {
                     doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle(style), false);
                 }
                 
@@ -221,9 +221,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
      */
     private void about() {
         Frame f = (Frame) SwingUtil.getParentFrame(YukonCommander.this.getContentPane());
-        AboutDialog aboutDialog = new AboutDialog( f, "About Commander", true );
+        AboutDialog aboutDialog = new AboutDialog(f, "About Commander", true);
 
-        aboutDialog.setLocationRelativeTo( f );
+        aboutDialog.setLocationRelativeTo(f);
         aboutDialog.setValue(null);
         aboutDialog.setVisible(true);
     }
@@ -470,7 +470,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
      * Returns an integer [YES/NO] indicating the option selected from a yes/no popupFrame.
      * @param message java.lang.String
      */
-    private int areYouSure(String message, int messageType ) {
+    private int areYouSure(String message, int messageType) {
         JFrame popupFrame = new JFrame();
         popupFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_24));
         return JOptionPane.showConfirmDialog(popupFrame, message, YC_TITLE, JOptionPane.YES_NO_OPTION, messageType);
@@ -528,7 +528,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     }
 
     public AdvancedOptionsPanel getAdvOptsPanel() {
-        if( advOptsPanel == null) {
+        if (advOptsPanel == null) {
             advOptsPanel  = new AdvancedOptionsPanel(getYC().getYCDefaults());
         }
         
@@ -591,7 +591,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             try {
                 ivjCommandLogPanel = new CommandLogPanel();
                 ivjCommandLogPanel.setName("CommandLogPanel");
-                ivjCommandLogPanel.setVisible( getYC().getYCDefaults().getShowMessageLog() );
+                ivjCommandLogPanel.setVisible(getYC().getYCDefaults().getShowMessageLog());
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -1017,7 +1017,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     
                     //if we had something selected we just lost it... so reselect it now
                     if (selectedObject != null) {
-                        getTreeViewPanel().selectByString( selectedObject.toString() );
+                        getTreeViewPanel().selectByString(selectedObject.toString());
                     }
                     
                     // Update TOUSchedule list if a tou schedule msg is received
@@ -1287,7 +1287,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             DefaultDatabaseCache.getInstance().releaseAllCache();
             //release the stored routes
             restoreCurrentTree();
-        } catch( Exception e ) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
             frame.setCursor(savedCursor);
@@ -1310,8 +1310,8 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         if (selectedItem instanceof LiteBase) {
             LiteBase lb = (LiteBase)selectedItem;
             tvp.selectLiteBase((LiteBaseTreeModel) tvp.getTree().getModel(), lb);
-        } else if(selectedItem instanceof String) {
-            tvp.selectByString( selectedItem.toString());
+        } else if (selectedItem instanceof String) {
+            tvp.selectByString(selectedItem.toString());
         } else {
             tvp.selectObject(null);
             CTILogger.info("WARNING:  nothing reselected in the tree, dbChangeMessageListener is missing an instanceof");
@@ -1333,7 +1333,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         while (true) {
             int dialogActionValue = fileChooser.showSaveDialog(parent);
             if (dialogActionValue == JFileChooser.CANCEL_OPTION 
-                    || dialogActionValue == JFileChooser.ERROR_OPTION){
+                    || dialogActionValue == JFileChooser.ERROR_OPTION) {
                 break;
             }
             
@@ -1359,9 +1359,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     fWriter.close();
                     break;
                 } catch(FileNotFoundException fnfe) {
-                    JOptionPane.showMessageDialog( parent, "Invalid File Name", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog(parent, "Invalid File Name", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch(IOException e) {
-                    JOptionPane.showMessageDialog( parent, "An error occurred saving to a file", "Error", JOptionPane.ERROR_MESSAGE );
+                    JOptionPane.showMessageDialog(parent, "An error occurred saving to a file", "Error", JOptionPane.ERROR_MESSAGE);
                 } finally {
                     try {
                         if (fWriter != null) {
@@ -1389,7 +1389,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             t.getTree().getSelectionModel().setSelectionPath(null);
             
             return;
-        } else if(!((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().contains(tempSerialNumber)) {
+        } else if (!((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().contains(tempSerialNumber)) {
             ((EditableTextModel)getTreeViewPanel().getSelectedTreeModel()).getEntryVector().add(tempSerialNumber);
     
             // Refresh the tree selection.
@@ -1416,7 +1416,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
      * @param typeSelected int
      */
     private void setModelType(Class<? extends LiteBaseTreeModel> typeSelected) {
-        getYC().setModelType( typeSelected);
+        getYC().setModelType(typeSelected);
     }
     
     private void setRouteID(int routeID) {
@@ -1446,7 +1446,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         getYC().setAllRoutes(null); //dump the stored routes, will reload from cache on next getAllRoutes call
         LiteYukonPAObject[] routes = (LiteYukonPAObject[]) yc.getAllRoutes();
         for(int i = 0; i < routes.length; i++) {
-            getSerialRoutePanel().getRouteComboBox().addItem( routes[i]);
+            getSerialRoutePanel().getRouteComboBox().addItem(routes[i]);
             
             if (saveSelectedRoute != null 
                     && routes[i].toString() == saveSelectedRoute.toString()) {
@@ -1473,7 +1473,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             return;
         }
             
-        setModelType( model.getClass() );
+        setModelType(model.getClass());
         Object selectedItem = getTreeViewPanel().getSelectedItem();
         
         if (TreeModelEnum.isEditableSerial(getModelType())) {
@@ -1492,7 +1492,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 
         updateCommandMenu(selectedItem);
         
-        if (selectedItem == null ) {
+        if (selectedItem == null) {
             getCommandPanel().getAvailableCommandsComboBox().removeAllItems();
             getCommandPanel().getExecuteCommandComboBoxTextField().setText("");
         }
@@ -1505,7 +1505,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     private void updateTreePathSelection(Object currentSelection) {
         TreeViewPanel t =  getTreeViewPanel();
         TreePath selectedPath = SwingUtil.getTreePath(t.getTree(), currentSelection);
-        t.getTree().getSelectionModel().setSelectionPath( selectedPath );
+        t.getTree().getSelectionModel().setSelectionPath(selectedPath);
     }
     
     /**
@@ -1521,7 +1521,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             return;
         }
             
-        setModelType( model.getClass() );
+        setModelType(model.getClass());
         Object selectedItem = getTreeViewPanel().getSelectedItem();
         setTreeItem(selectedItem);
 
@@ -1529,7 +1529,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     }
     
     public void setTreeItem(Object selectedItem) {
-        getYC().setTreeItem( selectedItem);
+        getYC().setTreeItem(selectedItem);
         
         String savedDevType = getYC().getDeviceType();
         String displayTitle = YC_TITLE;
@@ -1564,8 +1564,8 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             }
         } else if (TreeModelEnum.isEditableSerial(getModelType())) {
             
-            setSerialNumber( (String)selectedItem);
-            getSerialRoutePanel().setSerialNumberText( getSerialNumber().toString() );
+            setSerialNumber((String)selectedItem);
+            getSerialRoutePanel().setSerialNumberText(getSerialNumber().toString());
             
             if (getModelType() == EditableExpresscomModel.class) {
                 getYC().setDeviceType(CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL);
@@ -1676,7 +1676,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             if (event.getComponent() == getDebugOutputTextPane()) {
                 clearCommand = CLEAR_OUTPUT_DEBUG;
                 printCommand = PRINT_OUTPUT_DEBUG;
-            } else if( event.getComponent() == getDisplayOutputTextPane()) {
+            } else if (event.getComponent() == getDisplayOutputTextPane()) {
                 clearCommand = CLEAR_OUTPUT_DISPLAY;
                 printCommand = PRINT_OUTPUT_DISPLAY;
             }
