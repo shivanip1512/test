@@ -87,7 +87,7 @@
 		            <c:choose>
 		                <c:when test="${resultsMap[device].synced}">
 		                    <tr>
-		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].meter.name)}</td>
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].device.name)}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
 		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${successResult}</td>
@@ -95,7 +95,7 @@
 		                </c:when>
 		                <c:otherwise>
 		                    <tr class="error">
-		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].meter.name)}</td>
+		                        <td onclick="forwardToMeterHome(${device.deviceId});" nowrap="nowrap">${fn:escapeXml(resultsMap[device].device.name)}</td>
 		                        <td nowrap="nowrap">${resultsMap[device].config.name}</td>
 		                        <td nowrap="nowrap">${device.deviceType}</td>
 		                        <td>${failureResult} ${resultsMap[device].discrepancies}</td>

@@ -2,25 +2,25 @@ package com.cannontech.common.device.config.model;
 
 import java.util.List;
 
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.google.common.collect.Lists;
 
 public class VerifyResult {
-    private YukonMeter meter;
+    private DisplayablePao device;
     private LightDeviceConfiguration config;
     private List<String> matching = Lists.newArrayList();
     private List<String> discrepancies = Lists.newArrayList();
 
-    public VerifyResult(YukonMeter meter) {
-        this.meter = meter;
+    public VerifyResult(DisplayablePao device) {
+        this.device = device;
     }
 
-    public YukonMeter getMeter() {
-        return meter;
+    public DisplayablePao getDevice() {
+        return device;
     }
-
-    public void setMeter(YukonMeter meter) {
-        this.meter = meter;
+    
+    public void setDevice(DisplayablePao device) {
+        this.device = device;
     }
 
     public LightDeviceConfiguration getConfig() {

@@ -3,14 +3,13 @@ package com.cannontech.common.device.config.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -34,10 +33,15 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
@@ -47,23 +51,29 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired private GroupCommandExecutor groupCommandExecutor;
     @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired private MeterDao meterDao;
+    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback, String command, DeviceRequestType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
         List<SimpleDevice> supportedDevices = new ArrayList<SimpleDevice>();
         for (SimpleDevice device : deviceCollection.getDeviceList()) {
-            LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-        	if (configuration != null && 
-        	    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
-        		supportedDevices.add(device);
-        	} else {
-        		unsupportedDevices.add(device);
-        	}
+            if (!isConfigCommandSupported(device)) {
+                unsupportedDevices.add(device);
+            } else {
+                // hit the db to find out I guess.
+                LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
+            	if (configuration != null && 
+            	    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getDeviceType())) {
+            		supportedDevices.add(device);
+            	} else {
+            		unsupportedDevices.add(device);
+            	}
+            }
         }
         
         StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
@@ -110,18 +120,25 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 return buildStandardRequest(from, commandString);
             }
         };
-        
+
+        Map<PaoIdentifier, DisplayablePao> displayableDeviceLookup = paoLoadingService.getDisplayableDeviceLookup(devices);
         for (YukonDevice device : devices) {
-            YukonMeter meter = meterDao.getForYukonDevice(device);
-            LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
-            if (configuration != null && 
-                deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, meter.getPaoType())) {
-                VerifyResult verifyResult = new VerifyResult(meter);
-                verifyResult.setConfig(configuration);
-                result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
-            }else {
+            if (!isConfigCommandSupported(device)) {
                 deviceList.remove(device);
                 result.getUnsupportedList().add(new SimpleDevice(device));
+            } else {
+                // hit the db to find out I guess.
+                DisplayablePao displayableDevice = displayableDeviceLookup.get(device.getPaoIdentifier());
+                LightDeviceConfiguration configuration = deviceConfigurationDao.findConfigurationForDevice(device);
+                if (configuration != null && 
+                    deviceConfigurationDao.isTypeSupportedByConfiguration(configuration, device.getPaoIdentifier().getPaoType())) {
+                    VerifyResult verifyResult = new VerifyResult(displayableDevice);
+                    verifyResult.setConfig(configuration);
+                    result.getVerifyResultsMap().put(new SimpleDevice(device.getPaoIdentifier()), verifyResult);
+                }else {
+                    deviceList.remove(device);
+                    result.getUnsupportedList().add(new SimpleDevice(device));
+                }
             }
         }
 
@@ -207,5 +224,23 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         request.setCommandCallback(new PorterCommandCallback(command));
         return request;
+    }
+    
+    /**
+     * Helper method to save on some database hits.
+     * Returns false if any 
+     *  - PaoTag.DEVICE_CONFIGURATION is not supported
+     *  - ConfigurationType is DNP (not supported for read, send, verify commands)
+     * Else returns true.
+     * @param device
+     */
+    private boolean isConfigCommandSupported(YukonDevice device) {
+        if (!paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.DEVICE_CONFIGURATION)) {
+            return false;
+        }
+        if (paoDefinitionDao.isDnpConfigurationType(device.getPaoIdentifier().getPaoType())) {
+            return false;
+        }
+        return true;
     }
 }
