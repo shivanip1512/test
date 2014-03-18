@@ -80,7 +80,7 @@
 
     <tags:sectionContainer2 nameKey="hardwareAssigned">
         <div class="scroll-medium">
-        <table id="hardwareAssignedTable" class="compact-results-table with-form-controls">
+        <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix">
             <thead>
                 <tr>
                     <th></th>

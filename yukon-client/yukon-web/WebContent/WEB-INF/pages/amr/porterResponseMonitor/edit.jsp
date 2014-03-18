@@ -105,7 +105,7 @@
         
         <tags:sectionContainer2 nameKey="rulesTable" hideEnabled="false">
             <div class="scroll-large">
-            <table id="rules-table" class="compact-results-table with-form-controls">
+            <table id="rules-table" class="compact-results-table with-form-controls clearfix">
                 <thead>
                     <tr>
                         <th><i:inline key=".rulesTable.header.ruleOrder"/></th>

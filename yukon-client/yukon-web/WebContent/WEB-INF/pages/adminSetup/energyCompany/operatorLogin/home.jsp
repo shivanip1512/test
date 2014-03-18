@@ -53,7 +53,7 @@
 </script>
     <div style="min-width: 400px;" class="fl">
             <div id="operatorLoginList" class="scroll-large">
-                <table class="compact-results-table row-highlighting with-form-controls">
+                <table class="compact-results-table row-highlighting with-form-controls clearfix">
                     <thead>
                     <th><i:inline key=".username" /></th>
                     <th><i:inline key=".loginEnabled" /></th>

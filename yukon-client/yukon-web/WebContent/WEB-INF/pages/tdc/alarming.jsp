@@ -12,7 +12,7 @@
 <cti:msgScope paths="modules.tools.tdc">
     <cti:msg2 key="yukon.web.modules.tools.tdc.activeAlarms.title" arguments="${alarms.size()}" var="title" />
     <tags:sectionContainer title="${title}">
-        <table class="compact-results-table has-actions with-form-controls separated no-stripes">
+        <table class="compact-results-table has-actions with-form-controls separated no-stripes clearfix">
             <thead></thead>
             <tfoot></tfoot>
             <tbody>

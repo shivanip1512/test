@@ -454,9 +454,7 @@ function confirmRemoveAllDevices(confirmText) {
                                         </c:if>
                                     </c:when>
                                     <c:otherwise>
-                                        <jsp:include page="deviceMembers.jsp">
-                                            <jsp:param name="groupName" value="${fn:escapeXml(group.fullName)}"/>
-                                        </jsp:include>
+                                        <%@ include file="deviceMembers.jsp" %>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

@@ -354,7 +354,7 @@
                     </c:if>
                     <div>
                         <div>
-                            <span class="notes"
+                            <span class="notes"></span>
                         </div>
                     </div>
                     <table id="recentEventsTable" class="compact-results-table ${tableClass}">

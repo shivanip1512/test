@@ -19,7 +19,7 @@
             
                 <tags:boxContainer2 nameKey="metersDetectedA" arguments="${phaseAMetersSize}" hideEnabled="true" showInitially="${phaseAMetersSize > 0}">
                     <div class="scroll-large">
-                        <table class="compact-results-table">
+                        <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".meterName"/></th>
@@ -67,7 +67,7 @@
                 
                 <tags:boxContainer2 nameKey="metersDetectedB" arguments="${phaseBMetersSize}" hideEnabled="true" showInitially="${phaseBMetersSize > 0}">
                     <div class="scroll-large">
-                        <table class="compact-results-table">
+                        <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".meterName"/></th>
@@ -115,7 +115,7 @@
                     
                 <tags:boxContainer2 nameKey="metersDetectedC" arguments="${phaseCMetersSize}" hideEnabled="true" showInitially="${phaseCMetersSize > 0}">
                     <div class="scroll-large">
-                        <table class="compact-results-table">
+                        <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".meterName"/></th>
@@ -164,7 +164,7 @@
                 <c:if test="${!data.readAfterAll}">
                     <tags:boxContainer2 nameKey="metersDetectedAB" arguments="${phaseABMetersSize}" hideEnabled="true" showInitially="${phaseABMetersSize > 0}">
                         <div class="scroll-large">
-                            <table class="compact-results-table">
+                            <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".meterName" /></th>
@@ -234,7 +234,7 @@
                     <%-- AC --%>
                     <tags:boxContainer2 nameKey="metersDetectedAC" arguments="${phaseACMetersSize}" hideEnabled="true" showInitially="${phaseACMetersSize > 0}">
                         <div class="scroll-large">
-                            <table class="compact-results-table">
+                            <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".meterName"/></th>
@@ -298,7 +298,7 @@
                     <%-- BC --%>
                     <tags:boxContainer2 nameKey="metersDetectedBC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseBCMetersSize > 0}">
                         <div class="scroll-large">
-                            <table class="compact-results-table">
+                            <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".meterName"/></th>
@@ -362,7 +362,7 @@
                     <%-- ABC --%>
                     <tags:boxContainer2 nameKey="metersDetectedABC" arguments="${phaseBCMetersSize}" hideEnabled="true" showInitially="${phaseABCMetersSize > 0}">
                         <div class="scroll-large">
-                            <table class="compact-results-table">
+                            <table class="compact-results-table clearfix">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".meterName"/></th>
@@ -442,13 +442,11 @@
 
                 <tags:boxContainer2 nameKey="metersUndefined" arguments="${undefinedMetersSize}" hideEnabled="true" showInitially="${undefinedMetersSize > 0}">
                     <div class="scroll-large">
-                        <table class="compact-results-table">
-                            <tbody>
-                                <c:forEach var="meter" items="${undefinedMeters}">
-                                    <tr><td>${fn:escapeXml(meter.name)}</td></tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                        <ul class="simple-list striped-list">
+                            <c:forEach var="meter" items="${undefinedMeters}">
+                                <li>${fn:escapeXml(meter.name)}</li>
+                            </c:forEach>
+                        </ul>
                     </div>
                     <c:if test="${undefinedCollection.deviceCount > 0}">
                         <div class="action-area">
@@ -463,7 +461,7 @@
                 
                 <tags:boxContainer2 nameKey="failureGroup" arguments="${failureMetersSize}" hideEnabled="true" showInitially="${failureMetersSize > 0}">
                     <div class="scroll-large">
-                        <table class="compact-results-table">
+                        <table class="compact-results-table clearfix">
                             <thead>
                                 <tr>
                                     <th><i:inline key=".meterName"/></th>

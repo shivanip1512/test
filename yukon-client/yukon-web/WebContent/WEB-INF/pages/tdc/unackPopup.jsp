@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <cti:msgScope paths="modules.tools.tdc">
-    <table class="compact-results-table has-actions with-form-controls">
+    <table class="compact-results-table has-actions with-form-controls clearfix">
         <thead></thead>
         <tfoot></tfoot>
         <tbody>
