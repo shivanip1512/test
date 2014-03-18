@@ -855,6 +855,7 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
 {
     using Commands::RfnTouScheduleConfigurationCommand;
     using Commands::RfnTouScheduleSetConfigurationCommand;
+    using Commands::RfnTouStateConfigurationCommand;
 
     try
     {
@@ -865,10 +866,17 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
             return NoConfigData;
         }
 
+        const bool sendForced = parse.isKeyValid("force");
+
         std::map<std::string, std::string> configMap;
+        const bool touScheduleMatches = isTouConfigCurrent( deviceConfig, configMap );
+
+        const bool configTouEnabled = getConfigData<bool>( deviceConfig, RfnStrings::touEnabled );
+
+        const bool touEnableMatches = (configTouEnabled == (getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TouEnabled) == (long)true));
 
         // check if the dynamic info has the current configuration
-        if( isTouConfigCurrent( deviceConfig, configMap ) && ! parse.isKeyValid("force") )
+        if( touScheduleMatches && touEnableMatches && ! sendForced )
         {
             return ConfigCurrent;
         }
@@ -879,110 +887,124 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
             return ConfigNotCurrent;
         }
 
-        RfnTouScheduleConfigurationCommand::Schedule schedule_to_send;
+        if( ! touEnableMatches || sendForced )
+        {
+            rfnRequests.push_back(
+                    boost::make_shared<RfnTouStateConfigurationCommand>(
+                            configTouEnabled ?
+                                RfnTouStateConfigurationCommand::TouEnable :
+                                RfnTouStateConfigurationCommand::TouDisable));
+        }
 
-        //
-        // Populate schedule to send
-        //
+        if( ! touScheduleMatches || sendForced )
+        {
+            RfnTouScheduleConfigurationCommand::Schedule schedule_to_send;
 
-        // day table
-        schedule_to_send._dayTable.resize(8);
+            //
+            // Populate schedule to send
+            //
 
-        schedule_to_send._dayTable[0] = getConfigData( configMap, RfnStrings::SundaySchedule    );
-        schedule_to_send._dayTable[1] = getConfigData( configMap, RfnStrings::MondaySchedule    );
-        schedule_to_send._dayTable[2] = getConfigData( configMap, RfnStrings::TuesdaySchedule   );
-        schedule_to_send._dayTable[3] = getConfigData( configMap, RfnStrings::WednesdaySchedule );
-        schedule_to_send._dayTable[4] = getConfigData( configMap, RfnStrings::ThursdaySchedule  );
-        schedule_to_send._dayTable[5] = getConfigData( configMap, RfnStrings::FridaySchedule    );
-        schedule_to_send._dayTable[6] = getConfigData( configMap, RfnStrings::SaturdaySchedule  );
-        schedule_to_send._dayTable[7] = getConfigData( configMap, RfnStrings::HolidaySchedule   );
+            // day table
+            schedule_to_send._dayTable.resize(8);
 
-        // default rate
-        schedule_to_send._defaultRate = getConfigData( configMap, RfnStrings::DefaultTouRate );
+            schedule_to_send._dayTable[0] = getConfigData( configMap, RfnStrings::SundaySchedule    );
+            schedule_to_send._dayTable[1] = getConfigData( configMap, RfnStrings::MondaySchedule    );
+            schedule_to_send._dayTable[2] = getConfigData( configMap, RfnStrings::TuesdaySchedule   );
+            schedule_to_send._dayTable[3] = getConfigData( configMap, RfnStrings::WednesdaySchedule );
+            schedule_to_send._dayTable[4] = getConfigData( configMap, RfnStrings::ThursdaySchedule  );
+            schedule_to_send._dayTable[5] = getConfigData( configMap, RfnStrings::FridaySchedule    );
+            schedule_to_send._dayTable[6] = getConfigData( configMap, RfnStrings::SaturdaySchedule  );
+            schedule_to_send._dayTable[7] = getConfigData( configMap, RfnStrings::HolidaySchedule   );
 
-        // switch rates
-        RfnTouScheduleConfigurationCommand::DailyRates schedule1_rates(6),
-                                                       schedule2_rates(6),
-                                                       schedule3_rates(6),
-                                                       schedule4_rates(6);
+            // default rate
+            schedule_to_send._defaultRate = getConfigData( configMap, RfnStrings::DefaultTouRate );
 
-        schedule1_rates[0] = getConfigData( configMap, RfnStrings::Schedule1Rate0 );
-        schedule1_rates[1] = getConfigData( configMap, RfnStrings::Schedule1Rate1 );
-        schedule1_rates[2] = getConfigData( configMap, RfnStrings::Schedule1Rate2 );
-        schedule1_rates[3] = getConfigData( configMap, RfnStrings::Schedule1Rate3 );
-        schedule1_rates[4] = getConfigData( configMap, RfnStrings::Schedule1Rate4 );
-        schedule1_rates[5] = getConfigData( configMap, RfnStrings::Schedule1Rate5 );
+            // switch rates
+            RfnTouScheduleConfigurationCommand::DailyRates schedule1_rates(6),
+                                                           schedule2_rates(6),
+                                                           schedule3_rates(6),
+                                                           schedule4_rates(6);
 
-        schedule2_rates[0] = getConfigData( configMap, RfnStrings::Schedule2Rate0 );
-        schedule2_rates[1] = getConfigData( configMap, RfnStrings::Schedule2Rate1 );
-        schedule2_rates[2] = getConfigData( configMap, RfnStrings::Schedule2Rate2 );
-        schedule2_rates[3] = getConfigData( configMap, RfnStrings::Schedule2Rate3 );
-        schedule2_rates[4] = getConfigData( configMap, RfnStrings::Schedule2Rate4 );
-        schedule2_rates[5] = getConfigData( configMap, RfnStrings::Schedule2Rate5 );
+            schedule1_rates[0] = getConfigData( configMap, RfnStrings::Schedule1Rate0 );
+            schedule1_rates[1] = getConfigData( configMap, RfnStrings::Schedule1Rate1 );
+            schedule1_rates[2] = getConfigData( configMap, RfnStrings::Schedule1Rate2 );
+            schedule1_rates[3] = getConfigData( configMap, RfnStrings::Schedule1Rate3 );
+            schedule1_rates[4] = getConfigData( configMap, RfnStrings::Schedule1Rate4 );
+            schedule1_rates[5] = getConfigData( configMap, RfnStrings::Schedule1Rate5 );
 
-        schedule3_rates[0] = getConfigData( configMap, RfnStrings::Schedule3Rate0 );
-        schedule3_rates[1] = getConfigData( configMap, RfnStrings::Schedule3Rate1 );
-        schedule3_rates[2] = getConfigData( configMap, RfnStrings::Schedule3Rate2 );
-        schedule3_rates[3] = getConfigData( configMap, RfnStrings::Schedule3Rate3 );
-        schedule3_rates[4] = getConfigData( configMap, RfnStrings::Schedule3Rate4 );
-        schedule3_rates[5] = getConfigData( configMap, RfnStrings::Schedule3Rate5 );
+            schedule2_rates[0] = getConfigData( configMap, RfnStrings::Schedule2Rate0 );
+            schedule2_rates[1] = getConfigData( configMap, RfnStrings::Schedule2Rate1 );
+            schedule2_rates[2] = getConfigData( configMap, RfnStrings::Schedule2Rate2 );
+            schedule2_rates[3] = getConfigData( configMap, RfnStrings::Schedule2Rate3 );
+            schedule2_rates[4] = getConfigData( configMap, RfnStrings::Schedule2Rate4 );
+            schedule2_rates[5] = getConfigData( configMap, RfnStrings::Schedule2Rate5 );
 
-        schedule4_rates[0] = getConfigData( configMap, RfnStrings::Schedule4Rate0 );
-        schedule4_rates[1] = getConfigData( configMap, RfnStrings::Schedule4Rate1 );
-        schedule4_rates[2] = getConfigData( configMap, RfnStrings::Schedule4Rate2 );
-        schedule4_rates[3] = getConfigData( configMap, RfnStrings::Schedule4Rate3 );
-        schedule4_rates[4] = getConfigData( configMap, RfnStrings::Schedule4Rate4 );
-        schedule4_rates[5] = getConfigData( configMap, RfnStrings::Schedule4Rate5 );
+            schedule3_rates[0] = getConfigData( configMap, RfnStrings::Schedule3Rate0 );
+            schedule3_rates[1] = getConfigData( configMap, RfnStrings::Schedule3Rate1 );
+            schedule3_rates[2] = getConfigData( configMap, RfnStrings::Schedule3Rate2 );
+            schedule3_rates[3] = getConfigData( configMap, RfnStrings::Schedule3Rate3 );
+            schedule3_rates[4] = getConfigData( configMap, RfnStrings::Schedule3Rate4 );
+            schedule3_rates[5] = getConfigData( configMap, RfnStrings::Schedule3Rate5 );
 
-        schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_rates;
-        schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_rates;
-        schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_rates;
-        schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_rates;
+            schedule4_rates[0] = getConfigData( configMap, RfnStrings::Schedule4Rate0 );
+            schedule4_rates[1] = getConfigData( configMap, RfnStrings::Schedule4Rate1 );
+            schedule4_rates[2] = getConfigData( configMap, RfnStrings::Schedule4Rate2 );
+            schedule4_rates[3] = getConfigData( configMap, RfnStrings::Schedule4Rate3 );
+            schedule4_rates[4] = getConfigData( configMap, RfnStrings::Schedule4Rate4 );
+            schedule4_rates[5] = getConfigData( configMap, RfnStrings::Schedule4Rate5 );
 
-        // switch times
-        RfnTouScheduleConfigurationCommand::DailyTimes schedule1_times(6),
-                                                       schedule2_times(6),
-                                                       schedule3_times(6),
-                                                       schedule4_times(6);
+            schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_rates;
+            schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_rates;
+            schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_rates;
+            schedule_to_send._rates[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_rates;
 
-        schedule1_times[0] = "00:00"; // midnight
-        schedule1_times[1] = getConfigData( configMap, RfnStrings::Schedule1Time1 );
-        schedule1_times[2] = getConfigData( configMap, RfnStrings::Schedule1Time2 );
-        schedule1_times[3] = getConfigData( configMap, RfnStrings::Schedule1Time3 );
-        schedule1_times[4] = getConfigData( configMap, RfnStrings::Schedule1Time4 );
-        schedule1_times[5] = getConfigData( configMap, RfnStrings::Schedule1Time5 );
+            // switch times
+            RfnTouScheduleConfigurationCommand::DailyTimes schedule1_times(6),
+                                                           schedule2_times(6),
+                                                           schedule3_times(6),
+                                                           schedule4_times(6);
 
-        schedule2_times[0] = "00:00"; // midnight
-        schedule2_times[1] = getConfigData( configMap, RfnStrings::Schedule2Time1 );
-        schedule2_times[2] = getConfigData( configMap, RfnStrings::Schedule2Time2 );
-        schedule2_times[3] = getConfigData( configMap, RfnStrings::Schedule2Time3 );
-        schedule2_times[4] = getConfigData( configMap, RfnStrings::Schedule2Time4 );
-        schedule2_times[5] = getConfigData( configMap, RfnStrings::Schedule2Time5 );
+            schedule1_times[0] = "00:00"; // midnight
+            schedule1_times[1] = getConfigData( configMap, RfnStrings::Schedule1Time1 );
+            schedule1_times[2] = getConfigData( configMap, RfnStrings::Schedule1Time2 );
+            schedule1_times[3] = getConfigData( configMap, RfnStrings::Schedule1Time3 );
+            schedule1_times[4] = getConfigData( configMap, RfnStrings::Schedule1Time4 );
+            schedule1_times[5] = getConfigData( configMap, RfnStrings::Schedule1Time5 );
 
-        schedule3_times[0] = "00:00"; // midnight
-        schedule3_times[1] = getConfigData( configMap, RfnStrings::Schedule3Time1 );
-        schedule3_times[2] = getConfigData( configMap, RfnStrings::Schedule3Time2 );
-        schedule3_times[3] = getConfigData( configMap, RfnStrings::Schedule3Time3 );
-        schedule3_times[4] = getConfigData( configMap, RfnStrings::Schedule3Time4 );
-        schedule3_times[5] = getConfigData( configMap, RfnStrings::Schedule3Time5 );
+            schedule2_times[0] = "00:00"; // midnight
+            schedule2_times[1] = getConfigData( configMap, RfnStrings::Schedule2Time1 );
+            schedule2_times[2] = getConfigData( configMap, RfnStrings::Schedule2Time2 );
+            schedule2_times[3] = getConfigData( configMap, RfnStrings::Schedule2Time3 );
+            schedule2_times[4] = getConfigData( configMap, RfnStrings::Schedule2Time4 );
+            schedule2_times[5] = getConfigData( configMap, RfnStrings::Schedule2Time5 );
 
-        schedule4_times[0] = "00:00"; // midnight
-        schedule4_times[1] = getConfigData( configMap, RfnStrings::Schedule4Time1 );
-        schedule4_times[2] = getConfigData( configMap, RfnStrings::Schedule4Time2 );
-        schedule4_times[3] = getConfigData( configMap, RfnStrings::Schedule4Time3 );
-        schedule4_times[4] = getConfigData( configMap, RfnStrings::Schedule4Time4 );
-        schedule4_times[5] = getConfigData( configMap, RfnStrings::Schedule4Time5 );
+            schedule3_times[0] = "00:00"; // midnight
+            schedule3_times[1] = getConfigData( configMap, RfnStrings::Schedule3Time1 );
+            schedule3_times[2] = getConfigData( configMap, RfnStrings::Schedule3Time2 );
+            schedule3_times[3] = getConfigData( configMap, RfnStrings::Schedule3Time3 );
+            schedule3_times[4] = getConfigData( configMap, RfnStrings::Schedule3Time4 );
+            schedule3_times[5] = getConfigData( configMap, RfnStrings::Schedule3Time5 );
 
-        schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_times;
-        schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_times;
-        schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_times;
-        schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_times;
+            schedule4_times[0] = "00:00"; // midnight
+            schedule4_times[1] = getConfigData( configMap, RfnStrings::Schedule4Time1 );
+            schedule4_times[2] = getConfigData( configMap, RfnStrings::Schedule4Time2 );
+            schedule4_times[3] = getConfigData( configMap, RfnStrings::Schedule4Time3 );
+            schedule4_times[4] = getConfigData( configMap, RfnStrings::Schedule4Time4 );
+            schedule4_times[5] = getConfigData( configMap, RfnStrings::Schedule4Time5 );
 
-        //
-        // create command
-        //
+            schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule1] = schedule1_times;
+            schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule2] = schedule2_times;
+            schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule3] = schedule3_times;
+            schedule_to_send._times[RfnTouScheduleConfigurationCommand::Schedule4] = schedule4_times;
 
-        rfnRequests.push_back( boost::make_shared<RfnTouScheduleSetConfigurationCommand>( schedule_to_send ));
+            //
+            // create command
+            //
+
+            rfnRequests.push_back(
+                    boost::make_shared<RfnTouScheduleSetConfigurationCommand>(
+                            schedule_to_send ));
+        }
 
         return NoError;
     }
@@ -1079,7 +1101,7 @@ bool RfnResidentialDevice::isTouConfigCurrent( const Config::DeviceConfigSPtr &d
 
         configMap[p.second] = configValue;
 
-        if( ! getDynamicInfo( p.first, dynamicInfo ) || configValue != dynamicInfo )
+        if( bConfigCurrent && ! getDynamicInfo( p.first, dynamicInfo ) || configValue != dynamicInfo )
         {
             bConfigCurrent = false;
         }
@@ -1742,20 +1764,39 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleGe
 {
     using Commands::RfnTouScheduleConfigurationCommand;
 
-    boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived();
-
-    if( ! schedule_received )
+    if( const boost::optional<RfnTouScheduleConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
     {
-        return;
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouScheduleConfigurationCommand::TouEnable);
     }
 
-    storeSchedule(*this, *schedule_received);
+    if( const boost::optional<RfnTouScheduleConfigurationCommand::Schedule> schedule_received = cmd.getTouScheduleReceived() )
+    {
+        storeSchedule(*this, *schedule_received);
+    }
 }
 
 
 void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand & cmd )
 {
+    using Commands::RfnTouScheduleSetConfigurationCommand;
+
+    if( const boost::optional<RfnTouScheduleSetConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouScheduleSetConfigurationCommand::TouEnable);
+    }
+
     storeSchedule(*this, cmd.schedule_to_send);
+}
+
+
+void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouStateConfigurationCommand & cmd )
+{
+    using Commands::RfnTouStateConfigurationCommand;
+
+    if( const boost::optional<RfnTouStateConfigurationCommand::TouState> touState = cmd.getTouState() )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouStateConfigurationCommand::TouEnable);
+    }
 }
 
 
@@ -1763,16 +1804,17 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnTouHolidayCon
 {
     using Commands::RfnTouHolidayConfigurationCommand;
 
-    boost::optional<RfnTouHolidayConfigurationCommand::Holidays> holidays_received = cmd.getHolidaysReceived();
-
-    if( ! holidays_received )
+    if( const boost::optional<RfnTouHolidayConfigurationCommand::TouState> touState = cmd.getTouStateReceived() )
     {
-        return;
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, *touState == RfnTouHolidayConfigurationCommand::TouEnable);
     }
 
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (*holidays_received)[0].asStringUSFormat() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
+    if( const boost::optional<RfnTouHolidayConfigurationCommand::Holidays> holidays_received = cmd.getHolidaysReceived() )
+    {
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday1, (*holidays_received)[0].asStringUSFormat() );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday2, (*holidays_received)[1].asStringUSFormat() );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_Holiday3, (*holidays_received)[2].asStringUSFormat() );
+    }
 }
 
 }

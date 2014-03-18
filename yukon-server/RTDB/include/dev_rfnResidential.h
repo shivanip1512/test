@@ -57,6 +57,7 @@ protected:
     void handleCommandResult( const Commands::RfnDemandFreezeConfigurationCommand                 & cmd );
     void handleCommandResult( const Commands::RfnTouScheduleGetConfigurationCommand               & cmd );
     void handleCommandResult( const Commands::RfnTouScheduleSetConfigurationCommand               & cmd );
+    void handleCommandResult( const Commands::RfnTouStateConfigurationCommand               & cmd );
     void handleCommandResult( const Commands::RfnTouHolidayConfigurationCommand                   & cmd );
     void handleCommandResult( const Commands::RfnGetOvUvAlarmConfigurationCommand                 & cmd );
     void handleCommandResult( const Commands::RfnSetOvUvAlarmProcessingStateCommand               & cmd );

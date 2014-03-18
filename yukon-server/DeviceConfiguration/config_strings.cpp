@@ -13,6 +13,8 @@ const string MCTStrings::Lead = "leadAddress";
 const string MCTStrings::Collection = "collectionAddress";
 const string MCTStrings::ServiceProviderID = "serviceProviderId";
 
+const string MCTStrings::touEnabled = "enableTou";
+
 const string MCTStrings::MondaySchedule = "monday";
 const string MCTStrings::TuesdaySchedule = "tuesday";
 const string MCTStrings::WednesdaySchedule = "wednesday";
@@ -227,6 +229,8 @@ const string RfnStrings::demandInterval        = "demandInterval";
 const string RfnStrings::profileInterval       = "profileInterval";
 
 const string RfnStrings::demandFreezeDay       = "demandFreezeDay";
+
+const string RfnStrings::touEnabled             = "enableTou";
 
 // day table
 const string RfnStrings::MondaySchedule        = "monday";

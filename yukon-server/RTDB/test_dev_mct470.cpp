@@ -5,6 +5,7 @@
 #include "config_device.h"
 #include "boostutil.h"
 #include "mgr_config.h"
+#include "config_data_mct.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -1037,6 +1038,187 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 3 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_tou_mct470)
+    {
+        using namespace Cti::Config;
+
+        mct._type = TYPEMCT470;
+
+        test_DeviceConfig config;
+
+        // add TOU config
+
+        // Schedule 1
+        config.insertValue( MCTStrings::Schedule1Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule1Time2, "10:06" );
+        config.insertValue( MCTStrings::Schedule1Time3, "12:22" );
+        config.insertValue( MCTStrings::Schedule1Time4, "23:33" );
+        config.insertValue( MCTStrings::Schedule1Time5, "23:44" );
+
+        config.insertValue( MCTStrings::Schedule1Rate0, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate1, "B" );
+        config.insertValue( MCTStrings::Schedule1Rate2, "C" );
+        config.insertValue( MCTStrings::Schedule1Rate3, "D" );
+        config.insertValue( MCTStrings::Schedule1Rate4, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate5, "B" );
+
+        // Schedule 2
+        config.insertValue( MCTStrings::Schedule2Time1, "01:23" );
+        config.insertValue( MCTStrings::Schedule2Time2, "03:12" );
+        config.insertValue( MCTStrings::Schedule2Time3, "04:01" );
+        config.insertValue( MCTStrings::Schedule2Time4, "05:23" );
+        config.insertValue( MCTStrings::Schedule2Time5, "16:28" );
+
+        config.insertValue( MCTStrings::Schedule2Rate0, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate1, "A" );
+        config.insertValue( MCTStrings::Schedule2Rate2, "B" );
+        config.insertValue( MCTStrings::Schedule2Rate3, "C" );
+        config.insertValue( MCTStrings::Schedule2Rate4, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate5, "A" );
+
+        // Schedule 3
+        config.insertValue( MCTStrings::Schedule3Time1, "01:02" );
+        config.insertValue( MCTStrings::Schedule3Time2, "02:03" );
+        config.insertValue( MCTStrings::Schedule3Time3, "04:05" );
+        config.insertValue( MCTStrings::Schedule3Time4, "05:06" );
+        config.insertValue( MCTStrings::Schedule3Time5, "06:07" );
+
+        config.insertValue( MCTStrings::Schedule3Rate0, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate1, "D" );
+        config.insertValue( MCTStrings::Schedule3Rate2, "A" );
+        config.insertValue( MCTStrings::Schedule3Rate3, "B" );
+        config.insertValue( MCTStrings::Schedule3Rate4, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate5, "D" );
+
+        // Schedule 4
+        config.insertValue( MCTStrings::Schedule4Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule4Time2, "08:59" );
+        config.insertValue( MCTStrings::Schedule4Time3, "12:12" );
+        config.insertValue( MCTStrings::Schedule4Time4, "23:01" );
+        config.insertValue( MCTStrings::Schedule4Time5, "23:55" );
+
+        config.insertValue( MCTStrings::Schedule4Rate0, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate1, "C" );
+        config.insertValue( MCTStrings::Schedule4Rate2, "D" );
+        config.insertValue( MCTStrings::Schedule4Rate3, "A" );
+        config.insertValue( MCTStrings::Schedule4Rate4, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate5, "C" );
+
+        // day table
+        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+
+        // default rate
+        config.insertValue( MCTStrings::DefaultTOURate, "B" );
+
+        // set TOU enabled
+        config.insertValue( MCTStrings::touEnabled, "true" );
+
+
+        test_ConfigManager  cfgMgr(DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
+
+        mct.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+
+
+        CtiCommandParser parse("putconfig install tou");
+
+        BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_CHECK( retList.empty() );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 6 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        // 3 writes
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x56 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      0 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x30 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     15 );
+
+            const unsigned char expected_message[] =
+            {
+                0xa7, 0x60, 0x01, 0x79, 0x1b, 0x86, 0x02, 0x34,
+                0xe4, 0x53, 0x15, 0x09, 0x10, 0x85, 0x93
+            };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x31 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     15 );
+
+            const unsigned char expected_message[] =
+            { 
+                0x3e, 0x0c, 0x18, 0x0c, 0x0c, 0x0e, 0x4e, 0x01,
+                0x6b, 0x26, 0x81, 0x0a, 0x09, 0x39, 0x01
+            };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+
+        // 3 reads
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xae );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xaf );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     13 );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xad );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     11 );
         }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_configbyte_mct430_matching_dynamicPaoInfo)
@@ -3470,7 +3652,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122))
+        (tuple_list_of(0,2,117)(2,1,122)(2,1,308))
         (empty)
         (empty)
         (empty)
@@ -3534,7 +3716,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122))
+        (tuple_list_of(0,2,117)(2,1,122)(2,1,308))
         (empty)
         (empty)
         (empty)
@@ -3598,7 +3780,7 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
         (empty)
         (empty)
         (empty)
-        (tuple_list_of(0,2,117)(2,1,122)(10,1,109))
+        (tuple_list_of(0,2,117)(2,1,122)(2,1,308)(10,1,109))
         (empty)
         (empty)
         (empty)

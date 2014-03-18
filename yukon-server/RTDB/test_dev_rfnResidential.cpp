@@ -500,6 +500,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
     // default rate
     cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
 
+    // set TOU enabled
+    cfg.insertValue( RfnStrings::touEnabled, "true" );
+
     test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
 
     {
@@ -531,61 +534,84 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
             BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
             {
                 const CtiReturnMsg &returnMsg = returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
             }
 
             {
-                Commands::RfnCommandSPtr command = rfnRequests.front();
-
-                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
-
-                std::vector<unsigned char> exp = boost::assign::list_of
-                        (0x60)(0x04)
-                        (0x0A)
-                        (0x01)(0x03) // day table
-                        (0x80)(0xB2)(0x48)
-                        (0x02)(0x0A) // schedule 1 times
-                        (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
-                        (0x03)(0x0A) // schedule 2 times
-                        (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
-                        (0x04)(0x0A) // schedule 3 times
-                        (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
-                        (0x05)(0x0A) // schedule 4 times
-                        (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
-                        (0x06)(0x03) // schedule 1 rates
-                        (0x88)(0x86)(0x00)
-                        (0x07)(0x03) // schedule 2 rates
-                        (0x43)(0x34)(0x00)
-                        (0x08)(0x03) // schedule 3 rates
-                        (0x1A)(0xA2)(0x01)
-                        (0x09)(0x03) // schedule 4 rates
-                        (0xD1)(0x10)(0x01)
-                        (0x0A)(0x01) // default TOU rate
-                        (0x01);
-
-                BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                               exp.begin() , exp.end() );
-
-                dut.extractCommandResult( *command );
-
-                const std::vector<bool> dynamicInfo_exp( touScheduleCompareKeys.size(), true );
-                      std::vector<bool> dynamicInfo_rcv;
-
-                for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
                 {
-                    std::string dynamicInfo;
-                    dynamicInfo_rcv.push_back( dut.getDynamicInfo( p.first, dynamicInfo ) &&
-                            dynamicInfo == cfg.findValue<std::string>( p.second ) );
-                }
+                    Commands::RfnCommandSPtr command = rfnRequests[0];
 
-                BOOST_CHECK_EQUAL_COLLECTIONS( dynamicInfo_rcv.begin(), dynamicInfo_rcv.end(),
-                                               dynamicInfo_exp.begin(), dynamicInfo_exp.end() );
+                    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                    std::vector<unsigned char> exp = boost::assign::list_of
+                            (0x60)(0x01)
+                            (0x00);
+
+                    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                                   exp.begin() , exp.end() );
+
+                    dut.extractCommandResult( *command );
+
+                    boost::optional<bool>   dynamicInfo,
+                                            configValue;
+
+                    BOOST_CHECK( (configValue = cfg.findValue<bool>( RfnStrings::touEnabled ))
+                                 && (dynamicInfo = dut.findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_TouEnabled ))
+                                 && configValue == dynamicInfo );
+                }
+                {
+                    Commands::RfnCommandSPtr command = rfnRequests[1];
+
+                    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                    std::vector<unsigned char> exp = boost::assign::list_of
+                            (0x60)(0x04)
+                            (0x0A)
+                            (0x01)(0x03) // day table
+                            (0x80)(0xB2)(0x48)
+                            (0x02)(0x0A) // schedule 1 times
+                            (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
+                            (0x03)(0x0A) // schedule 2 times
+                            (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
+                            (0x04)(0x0A) // schedule 3 times
+                            (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
+                            (0x05)(0x0A) // schedule 4 times
+                            (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
+                            (0x06)(0x03) // schedule 1 rates
+                            (0x88)(0x86)(0x00)
+                            (0x07)(0x03) // schedule 2 rates
+                            (0x43)(0x34)(0x00)
+                            (0x08)(0x03) // schedule 3 rates
+                            (0x1A)(0xA2)(0x01)
+                            (0x09)(0x03) // schedule 4 rates
+                            (0xD1)(0x10)(0x01)
+                            (0x0A)(0x01) // default TOU rate
+                            (0x01);
+
+                    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                                   exp.begin() , exp.end() );
+
+                    dut.extractCommandResult( *command );
+
+                    const std::vector<bool> dynamicInfo_exp( touScheduleCompareKeys.size(), true );
+                          std::vector<bool> dynamicInfo_rcv;
+
+                    for each( const TouScheduleCompareKeysMap::value_type & p in touScheduleCompareKeys )
+                    {
+                        std::string dynamicInfo;
+                        dynamicInfo_rcv.push_back( dut.getDynamicInfo( p.first, dynamicInfo ) &&
+                                dynamicInfo == cfg.findValue<std::string>( p.second ) );
+                    }
+
+                    BOOST_CHECK_EQUAL_COLLECTIONS( dynamicInfo_rcv.begin(), dynamicInfo_rcv.end(),
+                                                   dynamicInfo_exp.begin(), dynamicInfo_exp.end() );
+                }
             }
         }
 
@@ -627,46 +653,60 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 
             BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-            BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+            BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
             {
                 const CtiReturnMsg &returnMsg = returnMsgs.front();
 
                 BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
             }
 
             {
-                Commands::RfnCommandSPtr command = rfnRequests.front();
+                {
+                    Commands::RfnCommandSPtr command = rfnRequests[0];
 
-                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+                    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-                std::vector<unsigned char> exp = boost::assign::list_of
-                        (0x60)(0x04)
-                        (0x0A)
-                        (0x01)(0x03) // day table
-                        (0x80)(0xB2)(0x48)
-                        (0x02)(0x0A) // schedule 1 times
-                        (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
-                        (0x03)(0x0A) // schedule 2 times
-                        (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
-                        (0x04)(0x0A) // schedule 3 times
-                        (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
-                        (0x05)(0x0A) // schedule 4 times
-                        (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
-                        (0x06)(0x03) // schedule 1 rates
-                        (0x88)(0x86)(0x00)
-                        (0x07)(0x03) // schedule 2 rates
-                        (0x43)(0x34)(0x00)
-                        (0x08)(0x03) // schedule 3 rates
-                        (0x1A)(0xA2)(0x01)
-                        (0x09)(0x03) // schedule 4 rates
-                        (0xD1)(0x10)(0x01)
-                        (0x0A)(0x01) // default TOU rate
-                        (0x01);
+                    std::vector<unsigned char> exp = boost::assign::list_of
+                            (0x60)(0x01)
+                            (0x00);
 
-                BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
-                                               exp.begin() , exp.end() );
+                    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                                   exp.begin() , exp.end() );
+                }
+                {
+                    Commands::RfnCommandSPtr command = rfnRequests[1];
+
+                    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+                    std::vector<unsigned char> exp = boost::assign::list_of
+                            (0x60)(0x04)
+                            (0x0A)
+                            (0x01)(0x03) // day table
+                            (0x80)(0xB2)(0x48)
+                            (0x02)(0x0A) // schedule 1 times
+                            (0x00)(0x01)(0x02)(0x5d)(0x00)(0x88)(0x02)(0x9f)(0x00)(0x0b)
+                            (0x03)(0x0A) // schedule 2 times
+                            (0x00)(0x53)(0x00)(0x6d)(0x00)(0x31)(0x00)(0x52)(0x02)(0x99)
+                            (0x04)(0x0A) // schedule 3 times
+                            (0x00)(0x3e)(0x00)(0x3d)(0x00)(0x7a)(0x00)(0x3d)(0x00)(0x3d)
+                            (0x05)(0x0A) // schedule 4 times
+                            (0x00)(0x01)(0x02)(0x1a)(0x00)(0xc1)(0x02)(0x89)(0x00)(0x36)
+                            (0x06)(0x03) // schedule 1 rates
+                            (0x88)(0x86)(0x00)
+                            (0x07)(0x03) // schedule 2 rates
+                            (0x43)(0x34)(0x00)
+                            (0x08)(0x03) // schedule 3 rates
+                            (0x1A)(0xA2)(0x01)
+                            (0x09)(0x03) // schedule 4 rates
+                            (0xD1)(0x10)(0x01)
+                            (0x0A)(0x01) // default TOU rate
+                            (0x01);
+
+                    BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
+                                                   exp.begin() , exp.end() );
+                }
             }
         }
     }
@@ -721,7 +761,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
                                                request_exp.begin() , request_exp.end() );
 
                 std::vector<unsigned char> response = boost::assign::list_of
-                        (0x61)(0x00)(0x00)(0x00)(0x00)
+                        (0x61)(0x00)(0x00)(0x00)
+                        (0x01)       // TOU enabled
                         (0x0A)
                         (0x01)(0x03) // day table
                         (0x80)(0xB2)(0x48)
@@ -2093,6 +2134,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
     // default rate
     cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
 
+    // set TOU enabled
+    cfg.insertValue( RfnStrings::touEnabled, "true" );
+
     {
         ////// 3 valid configurations //////
 
@@ -2107,7 +2151,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 8 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )
@@ -2142,7 +2186,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )
@@ -2376,6 +2420,9 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
     // default rate
     cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
 
+    // set TOU enabled
+    cfg.insertValue( RfnStrings::touEnabled, "true" );
+
     {
         ////// 4 valid configurations //////
 
@@ -2390,7 +2437,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( returnMsgs.size(),  2 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 9 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )
@@ -2425,7 +2472,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( returnMsgs.size(),  1 );
-        BOOST_CHECK_EQUAL( rfnRequests.size(), 10 );
+        BOOST_CHECK_EQUAL( rfnRequests.size(), 11 );
 
         std::vector<bool> expectMoreRcv;
         while( ! returnMsgs.empty() )

@@ -181,6 +181,7 @@
     </category>
     
     <category type="tou">
+        <boolean field="enableTou" default="false"/>
         <map field="schedule1" type="RateTime">
             <entry field="time0"/>
             <entry field="time1"/>

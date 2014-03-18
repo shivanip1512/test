@@ -241,7 +241,11 @@ public:
 
         Key_DisplayItemDuration,
 
+        Key_MCT_TouEnabled,
+
         // RFN keys
+
+        Key_RFN_TouEnabled,
 
         Key_RFN_MondaySchedule,
         Key_RFN_TuesdaySchedule,

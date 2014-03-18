@@ -175,6 +175,10 @@ public:
     RfnTouStateConfigurationCommand(); // read
     RfnTouStateConfigurationCommand( TouState touState_to_send ); // write
 
+    boost::optional<TouState> getTouState() const;
+
+    virtual void invokeResultHandler(RfnCommand::ResultHandler &rh) const;
+
 protected:
 
     virtual unsigned char getOperation() const;

@@ -70,6 +70,8 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
             "mct scheduled freeze day")
         (Key_MCT_ScheduledFreezeConfigTimestamp,
             "mct scheduled freeze config timestamp")
+        (Key_MCT_TouEnabled,
+            "mct tou enabled")
         (Key_MCT_DayTable,
             "mct day table")
         (Key_MCT_DaySchedule1,
@@ -450,6 +452,8 @@ const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map =
         (Key_DisplayAlphameric10,    "display alphameric 10")
 
         (Key_DisplayItemDuration,    "display item duration")
+
+        (Key_RFN_TouEnabled,         "rfn tou enabled")
 
         (Key_RFN_MondaySchedule,     "rfn monday schedule")
         (Key_RFN_TuesdaySchedule,    "rfn tuesday schedule")

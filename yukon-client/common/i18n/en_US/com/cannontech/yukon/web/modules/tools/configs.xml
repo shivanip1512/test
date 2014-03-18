@@ -293,6 +293,8 @@
 
     <entry key="yukon.web.modules.tools.configs.category.tou.title">Time of Use</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.definition">The time of use schedules devices will apply to any data collected. For MCT-470 devices, the TOU schedules will only apply to data collected through their KYZ inputs.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.enableTou">Enable TOU</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.enableTou.description">When true, the device also stores usage into its TOU rate registers based on the TOU schedule specified below.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.schedule1">Schedule 1</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.schedule2">Schedule 2</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.schedule3">Schedule 3</entry>

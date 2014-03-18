@@ -61,6 +61,8 @@ struct IM_EX_CONFIG RfnStrings
 
     static const std::string demandFreezeDay;
 
+    static const std::string touEnabled;
+
     // day table
     static const std::string MondaySchedule;
     static const std::string TuesdaySchedule;

@@ -15,6 +15,8 @@ public:
     static const std::string Collection;
     static const std::string ServiceProviderID;
 
+    static const std::string touEnabled;
+
     static const std::string MondaySchedule;
     static const std::string TuesdaySchedule;
     static const std::string WednesdaySchedule;

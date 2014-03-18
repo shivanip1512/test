@@ -225,6 +225,8 @@ protected:
 
     point_info getData(const unsigned char *buf, const unsigned len, const ValueType470 vt) const;
 
+    virtual void decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys key, const unsigned char *begin, const unsigned char *end);
+
     static const error_map _error_info_old_lp;
     static const error_map _error_info_lgs4;
     static const error_map _error_info_alphaa3;

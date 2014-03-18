@@ -776,6 +776,21 @@ RfnTouStateConfigurationCommand::RfnTouStateConfigurationCommand( TouState touSt
 {
 }
 
+boost::optional<RfnTouConfigurationCommand::TouState> RfnTouStateConfigurationCommand::getTouState() const
+{
+    if( _touState_to_send )
+    {
+        return _touState_to_send;
+    }
+
+    return _touState_received;
+}
+
+void RfnTouStateConfigurationCommand::invokeResultHandler(RfnCommand::ResultHandler &rh) const
+{
+    rh.handleCommandResult(*this);
+}
+
 /**
  * Get Operation code for TOU Enable configuration.
  * @return Operation_GetTouState if read_only, otherwize, Operation_EnableTou or Operation_DisableTou
