@@ -7345,37 +7345,35 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
-            CtiTime timeNow = CtiTime();
+            const CtiTime fallbackTimeNow( CtiTime() - fallBackConstant ),
+                          fallbackLastSendTime( lastSendTime - fallBackConstant );
 
-            static const string sqlSub =   "SELECT CEL.pointid, CEL.datetime, CEL.subid, CEL.feederid, CEL.eventtype, "
-                                             "CEL.value, CEL.text "
-                                           "FROM cceventlog CEL "
-                                           "WHERE (CEL.text LIKE 'Open sent%' OR CEL.text LIKE 'Close sent%') AND "
-                                             "(CEL.datetime > ? AND CEL.datetime <= ?) AND CEL.subid = ? "
-                                           "ORDER BY CEL.datetime ASC";
-
-            static const string sqlFeeder =   "SELECT CEL.pointid, CEL.datetime, CEL.subid, CEL.feederid, CEL.eventtype, "
-                                                 "CEL.value, CEL.text "
-                                              "FROM cceventlog CEL "
-                                              "WHERE (CEL.text LIKE 'Open sent%' OR CEL.text LIKE 'Close sent%') AND "
-                                                 "(CEL.datetime > ? AND CEL.datetime <= ?) AND CEL.feederid = ? "
-                                              "ORDER BY CEL.datetime ASC";
+            static const std::string sql =
+                "SELECT "
+                    "CEL.PointID, "
+                    "CEL.DateTime, "
+                    "CEL.Value "
+                "FROM "
+                    "CCEventLog CEL "
+                "WHERE "
+                    "(CEL.Text LIKE 'Open Sent%' OR CEL.Text LIKE 'Close Sent%') AND "
+                    "CEL.DateTime > ? AND CEL.DateTime <= ?";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
             if( subbusId != 0)
             {
-                rdr.setCommandText(sqlSub);
-                rdr << (lastSendTime - fallBackConstant)
-                    << (timeNow - fallBackConstant)
+                rdr.setCommandText( sql + " AND CEL.SubID = ?" );
+                rdr << fallbackLastSendTime
+                    << fallbackTimeNow
                     << subbusId;
             }
             else
             {
-                rdr.setCommandText(sqlFeeder);
-                rdr << (lastSendTime - fallBackConstant)
-                    << (timeNow - fallBackConstant)
+                rdr.setCommandText( sql + " AND CEL.FeederID = ?" );
+                rdr << fallbackLastSendTime
+                    << fallbackTimeNow
                     << feederId;
             }
 
@@ -7396,9 +7394,9 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
                 CtiTime controlTime;
                 long controlValue;
 
-                rdr["pointid"] >> pointId;
-                rdr["datetime"] >> controlTime;
-                rdr["value"] >> controlValue;
+                rdr["PointID"] >> pointId;
+                rdr["DateTime"] >> controlTime;
+                rdr["Value"] >> controlValue;
 
                 if (controlValue == CtiCCCapBank::ClosePending ||
                     controlValue == CtiCCCapBank::CloseFail ||
@@ -7410,13 +7408,17 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
                 else
                 {
                     controlValue = CtiCCCapBank::Open;
-
                 }
-                if (controlTime <= timeNow - fallBackConstant)
+
+                if (controlTime <= fallbackTimeNow)
                 {
                     controlid_action_map->insert(make_pair(pointId,controlValue));
                 }
-                lastSendTime = controlTime;
+
+                if (controlTime > lastSendTime)     // update lastSendTime to the 'latest' time selected from the DB
+                {
+                    lastSendTime = controlTime; 
+                }
             }
         }
     }
@@ -7425,9 +7427,8 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-
-    return;
 }
+
 
 void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
                        PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map)
