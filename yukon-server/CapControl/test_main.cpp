@@ -6,6 +6,9 @@
 
 #include <memory>
 
+// Close all yukon messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
+
 namespace Cti {
 namespace Messaging {
 
