@@ -35,7 +35,7 @@ public class TouWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
         // Finds the existing attributes for the supplied meter
-        Set<Attribute> existingTouAttributes = attributeService.getExistingAttributes(meter, AttributeHelper.getTouAttributes());
+        Set<Attribute> existingTouAttributes = attributeService.getExistingAttributes(meter, AttributeHelper.getTouWidgetAttributes());
         boolean readable = deviceAttributeReadService.isReadable(Collections.singleton(meter), existingTouAttributes, user);
 
         // Add objects to mav.
@@ -60,7 +60,7 @@ public class TouWidget extends WidgetControllerBase {
 
         // Finds the existing attributes for the supplied meter
         Set<Attribute> existingTouAttributes = 
-                attributeService.getExistingAttributes(meter, AttributeHelper.getTouAttributes());
+                attributeService.getExistingAttributes(meter, AttributeHelper.getTouWidgetAttributes());
 
         ModelAndView mav = new ModelAndView("common/deviceAttributeReadResult.jsp");
         widgetHelper.initiateRead(request, meter, existingTouAttributes, mav.getModelMap(),

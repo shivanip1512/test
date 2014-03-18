@@ -41,6 +41,9 @@ jQuery(function() {
             <tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateD"
                                usageAttribute="${USAGE_RATE_D}"
                                peakAttribute="${PEAK_DEMAND_RATE_D}"/>
+            <tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateE"
+                               usageAttribute="${USAGE_RATE_E}"
+                               peakAttribute="${PEAK_DEMAND_RATE_E}"/>
         </div>
         <div id="${widgetParameters.widgetId}_results"></div>
         <div class="action-area clearfix full-width">

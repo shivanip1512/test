@@ -6,6 +6,20 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public class AttributeHelper {
+    public static Set<Attribute> getTouWidgetAttributes(){
+        Builder<Attribute> builder = ImmutableSet.builder();
+        return builder.add(BuiltInAttribute.USAGE_RATE_A,
+                           BuiltInAttribute.PEAK_DEMAND_RATE_A,
+                           BuiltInAttribute.USAGE_RATE_B,
+                           BuiltInAttribute.PEAK_DEMAND_RATE_B,
+                           BuiltInAttribute.USAGE_RATE_C,
+                           BuiltInAttribute.PEAK_DEMAND_RATE_C,
+                           BuiltInAttribute.USAGE_RATE_D,
+                           BuiltInAttribute.PEAK_DEMAND_RATE_D,
+                           BuiltInAttribute.USAGE_RATE_E,
+                           BuiltInAttribute.PEAK_DEMAND_RATE_E).build();
+    }
+    
     public static Set<Attribute> getTouAttributes(){
         Builder<Attribute> builder = ImmutableSet.builder();
         return builder.add(BuiltInAttribute.USAGE_RATE_A,
