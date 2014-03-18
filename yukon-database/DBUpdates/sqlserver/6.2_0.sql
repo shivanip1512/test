@@ -235,6 +235,19 @@ DELETE FROM Point WHERE PointId IN (
     WHERE PointType = 'Analog' AND PointOffset = 14 AND YP.Type IN ('LCR-6200 RFN', 'LCR-6600 RFN'));
 /* End YUK-13120 */
 
+/* Start YUK-13141 */
+ALTER TABLE ContactNotification
+DROP CONSTRAINT FK_CntNot_YkLs;
+
+DELETE FROM YukonListEntry 
+WHERE ListId IN (SELECT ListId 
+                 FROM YukonSelectionList 
+                 WHERE ListName = 'ContactType');
+
+DELETE FROM YukonSelectionList 
+WHERE ListName = 'ContactType';
+/* End YUK-13141 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
