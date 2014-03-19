@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -98,27 +100,27 @@ public class HomeController {
 
     @RequestMapping("/toggleFavorite")
     public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs,
-                                                             String path, YukonUserContext context) {
+            String path, YukonUserContext context, HttpServletRequest request) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, true, SiteModule.getByName(module),
-                                     name, arguments);
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), true,
+            SiteModule.getByName(module), name, arguments);
         return Collections.singletonMap("isFavorite", userPageDao.toggleFavorite(page));
     }
 
     @RequestMapping("/isFavorite")
-    public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext context) {
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, true);
+    public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext context,
+            HttpServletRequest request) {
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), true);
         return Collections.singletonMap("isFavorite", userPageDao.isFavorite(page));
     }
 
     @RequestMapping("/addToHistory")
     public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path, 
-            YukonUserContext context) {
-
+            YukonUserContext context, HttpServletRequest request) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), path, false, SiteModule.getByName(module),
-                                     name, arguments);
+        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), false,
+            SiteModule.getByName(module), name, arguments);
         userPageDao.updateHistory(page);
 
         return Collections.emptyMap();
@@ -126,7 +128,7 @@ public class HomeController {
 
     @RequestMapping("/toggleSubscribed")
     public @ResponseBody Map<String, Boolean> toggleSubscribed(SubscriptionType subscriptionType, Integer refId,
-                                                               YukonUserContext context) {
+            YukonUserContext context) {
         UserSubscription monitor = 
                 new UserSubscription (context.getYukonUser().getUserID(), subscriptionType, refId, null);
 
@@ -156,4 +158,12 @@ public class HomeController {
                 return userPage.getModule().getSiteMapCategory();
             }
         });
+
+    private final static String pathWithoutContextPath(String path, HttpServletRequest request) {
+        String contextPath = request.getContextPath();
+        if (path.startsWith(contextPath)) {
+            return path.substring(contextPath.length());
+        }
+        return path;
+    }
 }

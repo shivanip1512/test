@@ -48,7 +48,7 @@
                     <c:if test="${not empty history}">
                         <ol class="simple-list">
                             <c:forEach var="historyItem" items="${history}">
-                                <li><a href="${historyItem.path}"><cti:pageName userPage="${historyItem}"/></a></li>
+                                <li><a href="<cti:url value="${historyItem.path}"/>"><cti:pageName userPage="${historyItem}"/></a></li>
                             </c:forEach>
                         </ol>
                     </c:if>
