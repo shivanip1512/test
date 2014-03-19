@@ -361,7 +361,7 @@
     <description>Converts any java object into html escaped json.</description>
     <attribute>
       <name>id</name>
-      <description>If supplied, will create a hidden input .</description>
+      <description>If supplied, will create a hidden div.</description>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

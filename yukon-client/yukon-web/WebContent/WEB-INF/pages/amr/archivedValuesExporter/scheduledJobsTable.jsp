@@ -21,11 +21,11 @@
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="job" items="${scheduledJobsSearchResult.resultList}">
-                        <cti:url var="editUrl" value="scheduleReport"> --%>
+                        <cti:url var="editUrl" value="scheduleReport">
                             <cti:param name="jobId" value="${job.id}"/>
                         </cti:url>
                         <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                            <cti:param name="initiator" value="Archived Data Export Schedule: ${job.name}" />
+                            <cti:param name="initiator" value="Data Export Schedule: ${job.name}" />
                         </cti:url>
                         <cti:url var="deleteUrl" value="deleteJob">
                             <cti:param name="jobId" value="${job.id}"/>
