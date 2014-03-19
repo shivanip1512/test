@@ -163,8 +163,9 @@ org_apache_myfaces_PopupCalendar.prototype._showPopupPostProcess = function(over
             // the source attribute is to avoid a IE error message about non secure content on https connections
             iframe = document.createElement("iframe");
             iframe.setAttribute("id", overDiv.id + "_IFRAME'");
-            iframe.setAttribute("src", "javascript:false;")
+            iframe.setAttribute("src", "javascript:false;");
             Element.setStyle(iframe, "visibility:hidden; position: absolute; top:0px;left:0px;");
+            jQuery(iframe).css({'visibility': 'hidden', 'position': 'absolute', 'top': '0px', 'left': '0px'});
             
             //we can append it lazily since we are late here anyway and everything is rendered
             document.body.appendChild(iframe);
@@ -289,15 +290,14 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             this.calendarDiv.id = containerCtl.id + "_calendarDiv";
             this.calendarDiv.className = this.initData.themePrefix + "-div-style";
 
-            Event.observe(this.calendarDiv, "click", function()
-            {
-                this.bClickOnCalendar = true;
-            }.bind(this), false);
+            jQuery(this.calendarDiv).on('click', {thisCalendar: this}, function (event) {
+                event.data.thisCalendar.bClickOnCalendar = true;
+            });
 
             this.containerCtl.appendChild(this.calendarDiv);
 
             var mainTable = document.createElement("table");
-            Element.setStyle(mainTable, "width:" + ((this.initData.showWeekNumber == 1)?250:220) + "px;");
+            jQuery(mainTable).css('width', ((this.initData.showWeekNumber == 1) ? 250 : 220) + 'px');
             mainTable.className = this.initData.themePrefix + "-table-style";
 
             this.calendarDiv.appendChild(mainTable);
@@ -316,7 +316,7 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             mainRow.appendChild(mainCell);
 
             var contentTable = document.createElement("table");
-            Element.setStyle(contentTable, "width:" + ((this.initData.showWeekNumber == 1)?248:218) + "px;");
+            jQuery(contentTable).css('width', ((this.initData.showWeekNumber == 1)?248:218) + 'px');
 
             var contentBody = document.createElement("tbody");
             contentTable.appendChild(contentBody);
@@ -336,17 +336,16 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             if (this._isMonthSelectable())
             {
                 var acceptMonthCell = document.createElement("td");
-                Element.setStyle(acceptMonthCell, "text-align:right;");
+                jQuery(acceptMonthCell).css('text-align', 'right');
                 headerRow.appendChild(acceptMonthCell);
     
                 var acceptMonthLink = document.createElement("a");
                 acceptMonthLink.setAttribute("href", "#");
-                Event.observe(acceptMonthLink, "click", function(event)
-                {
-                    this.selectedDate.date = 1; // force first of the selected month
-                    this._closeCalendar();
-                    Event.stop(event);
-                }.bindAsEventListener(this), false);
+                jQuery(acceptMonthLink).on('click', {thisCalendar: this}, function (event) {
+                    event.data.thisCalendar.selectedDate.date = 1; // force first of the selected month
+                    event.data.thisCalendar._closeCalendar();
+                    return false;
+                });
     
                 acceptMonthCell.appendChild(acceptMonthLink);
                 this.acceptMonthSpan = document.createElement("span");
@@ -356,17 +355,15 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             }
 
             var closeButtonCell = document.createElement("td");
-            Element.setStyle(closeButtonCell, "text-align:right;");
+            jQuery(closeButtonCell).css('text-align', 'right');
             headerRow.appendChild(closeButtonCell);
 
             var closeCalendarLink = document.createElement("a");
             closeCalendarLink.setAttribute("href", "#");
-            Event.observe(closeCalendarLink, "click", function(event)
-            {
-                this._hideCalendar();
-                Event.stop(event);
-            }.bindAsEventListener(this), false);
-
+            jQuery(closeCalendarLink).on('click', {thisCal: this}, function (event) {
+                event.data.thisCal._hideCalendar();
+                return false;
+            });
             closeButtonCell.appendChild(closeCalendarLink);
 
             this.closeCalendarSpan = document.createElement("span");
@@ -416,8 +413,8 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             // This is ugly, as it's quite a load on the client to check this for every
             // keystroke/click. It would be nice to find an alternative...maybe register
             // these listeners only when a calendar is open?
-            Event.observe(document, "keypress", this._keypresshandler.bind(this), false);
-            Event.observe(document, "click", this._clickhandler.bind(this), false);
+            jQuery(document).on('keypress', this._keypresshandler.bind(this));
+            jQuery(document).on('click', this._clickhandler.bind(this));
         }
     }
 
@@ -448,22 +445,19 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
             todayLink.setAttribute("title", this.initData.gotoString);
             todayLink.setAttribute("href", "#")
             todayLink.appendChild(document.createTextNode(this._todayIsDate()));
-            Event.observe(todayLink, "click", function(event)
-            {
-                this.selectedDate.month = this.monthNow;
-                this.selectedDate.year = this.yearNow;
-                this._constructCalendar();
-                Event.stop(event);
-            }.bindAsEventListener(this), false);
-            Event.observe(todayLink, "mousemove", function()
-            {
-                window.status = this.initData.gotoString;
-            }.bind(this), false);
-            Event.observe(todayLink, "mouseout", function()
-            {
-                window.status = "";
-            }.bind(this), false);
-
+            jQuery(todayLink).on('click', {thisCalendar: this}, function (event) {
+                var thisCal = event.data.thisCalendar;
+                thisCal.selectedDate.month = thisCal.monthNow;
+                thisCal.selectedDate.year = thisCal.yearNow;
+                thisCal._constructCalendar();
+                return false;
+            });
+            jQuery(todayLink).on('mousemove', {thisCal: this}, function (event) {
+                window.status = event.data.thisCal.initData.gotoString;
+            });
+            jQuery(todayLink).on('mouseout', function (event) {
+                window.status = '';
+            });
             this.todaySpan.appendChild(todayLink);
         }
 
@@ -473,25 +467,24 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
         this.monthSpan = document.createElement("span");
         this.monthSpan.className = this.initData.themePrefix + "-title-control-normal-style";
 
-        Event.observe(this.monthSpan, "mouseover", function(event)
-        {
-            this._swapImage(this.changeMonthImg, "drop2.gif");
-            this.monthSpan.className = this.initData.themePrefix + "-title-control-select-style";
-            window.status = this.selectMonthMessage;
-        }.bindAsEventListener(this), false);
+        jQuery(this.monthSpan).on('mouseover', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            thisCal._swapImage(thisCal.changeMonthImg, "drop2.gif");
+            thisCal.monthSpan.className = thisCal.initData.themePrefix + "-title-control-select-style";
+            window.status = thisCal.initData.selectMonthMessage;
+        });
 
-        Event.observe(this.monthSpan, "mouseout", function(event)
-        {
-            this._swapImage(this.changeMonthImg, "drop1.gif");
-            this.monthSpan.className = this.initData.themePrefix + "-title-control-normal-style";
-            window.status = "";
-        }.bindAsEventListener(this), false);
+        jQuery(this.monthSpan).on('mouseout', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            thisCal._swapImage(thisCal.changeMonthImg, "drop1.gif");
+            thisCal.monthSpan.className = thisCal.initData.themePrefix + "-title-control-normal-style";
+            window.status = '';
+        });
 
-        Event.observe(this.monthSpan, "click", function(event)
-        {
-            this._popUpMonth();
-            Event.stop(event);
-        }.bind(this), false);
+        jQuery(this.monthSpan).on('click', {thisCal: this}, function (event) {
+            event.data.thisCal._popUpMonth();
+            return false;
+        });
 
         this.captionSpan.appendChild(this.monthSpan);
         this._appendNbsp(this.captionSpan);
@@ -499,25 +492,24 @@ org_apache_myfaces_PopupCalendar.prototype.init = function(containerCtl)
         this.yearSpan = document.createElement("span");
         this.yearSpan.className = this.initData.themePrefix + "-title-control-normal-style";
 
-        Event.observe(this.yearSpan, "mouseover", function(event)
-        {
-            this._swapImage(this.changeYearImg, "drop2.gif");
-            this.yearSpan.className = this.initData.themePrefix + "-title-control-select-style";
-            window.status = this.selectYearMessage;
-        }.bindAsEventListener(this), false);
+        jQuery(this.yearSpan).on('mouseover', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            thisCal._swapImage(thisCal.changeYearImg, "drop2.gif");
+            thisCal.yearSpan.className = thisCal.initData.themePrefix + "-title-control-select-style";
+            window.status = thisCal.initData.selectYearMessage;
+        });
 
-        Event.observe(this.yearSpan, "mouseout", function(event)
-        {
-            this._swapImage(this.changeYearImg, "drop1.gif");
-            this.yearSpan.className = this.initData.themePrefix + "-title-control-normal-style";
-            window.status = "";
-        }.bindAsEventListener(this), false);
+        jQuery(this.yearSpan).on('mouseout', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            thisCal._swapImage(thisCal.changeYearImg, "drop1.gif");
+            thisCal.yearSpan.className = thisCal.initData.themePrefix + "-title-control-normal-style";
+            window.status = '';
+        });
 
-        Event.observe(this.yearSpan, "click", function(event)
-        {
-            this._popUpYear();
-            Event.stop(event);
-        }.bind(this), false);
+        jQuery(this.yearSpan).on('click', {thisCal: this}, function (event) {
+            event.data.thisCal._popUpYear();
+            return false;
+        });
 
         this.captionSpan.appendChild(this.yearSpan);
         this._appendNbsp(this.captionSpan);
@@ -549,57 +541,47 @@ org_apache_myfaces_PopupCalendar.prototype._appendNavToCaption = function(direct
 org_apache_myfaces_PopupCalendar.prototype._createControl = function(direction, spanLeft, imgLeft)
 {
     spanLeft.className = this.initData.themePrefix + "-title-control-normal-style";
-    Event.observe(spanLeft, "mouseover", function(event)
-    {
-        this._swapImage(imgLeft, direction + "2.gif");
-        spanLeft.className = this.initData.themePrefix + "-title-control-select-style";
-        if (direction == "left")
-        {
-            window.status = this.scrollLeftMessage;
+    jQuery(spanLeft).on('mouseover', {thisCalendar: this}, function (event) {
+        var thisCal = event.data.thisCalendar;
+        thisCal._swapImage(imgLeft, direction + '2.gif');
+        spanLeft.className = thisCal.initData.themePrefix + '-title-control-select-style';
+        if (direction === 'left') {
+            window.status = thisCal.initData.scrollLeftMessage;
+        } else {
+            window.status = thisCal.initData.scrollRightMessage;
         }
-        else
-        {
-            window.status = this.scrollRightMessage;
+    });
+    jQuery(spanLeft).on('click', {thisCalendar: this}, function (event) {
+        var thisCal = event.data.thisCalendar;
+        if (direction === 'left') {
+            thisCal._decMonth();
+        } else {
+            thisCal._incMonth();
         }
-    }.bindAsEventListener(this), false);
-    Event.observe(spanLeft, "click", function()
-    {
-        if (direction == "left")
-        {
-            this._decMonth();
-        }
-        else
-        {
-            this._incMonth();
-        }
-    }.bind(this), false);
-    Event.observe(spanLeft, "mouseout", function(event)
-    {
-        clearInterval(this.intervalID1);
-        this._swapImage(imgLeft, direction + "1.gif");
-        spanLeft.className = "" + this.initData.themePrefix + "-title-control-normal-style";
-        window.status = "";
-    }.bindAsEventListener(this), false);
-    Event.observe(spanLeft, "mousedown", function()
-    {
-        clearTimeout(this.timeoutID1);
-        this.timeoutID1 = setTimeout((function()
-        {
-            if (direction == "left")
-            {
-                this._startDecMonth();
+    });
+    jQuery(spanLeft).on('mouseout', {thisCalendar: this}, function (event) {
+        var thisCal = event.data.thisCalendar;
+        clearInterval(thisCal.intervalID1);
+        thisCal._swapImage(imgLeft, direction + '1.gif');
+        spanLeft.className = '' + thisCal.initData.themePrefix + '-title-control-normal-style';
+        window.status = '';
+    });
+    jQuery(spanLeft).on('mousedown', {thisCalendar: this}, function (event) {
+        var thisCal = event.data.thisCalendar;
+        clearTimeout(thisCal.timeoutID1);
+        thisCal.timeoutID1 = setTimeout((function () {
+            if (direction === 'left') {
+                thisCal._startDecMonth();
+            } else {
+                thisCal._startIncMonth();
             }
-            else
-            {
-                this._startIncMonth();
-            }
-        }).bind(this), 500)
-    }.bind(this), false);
-    Event.observe(spanLeft, "mouseup", function()
-    {
-        clearTimeout(this.timeoutID1);
-        clearInterval(this.intervalID1);
-    }.bind(this), false);
+        }).bind(thisCal), 500);
+    });
+    jQuery(spanLeft).on('mouseup', {thisCalendar: this}, function (event) {
+        var thisCal = event.data.thisCalendar;
+        clearTimeout(thisCal.timeoutID1);
+        clearInterval(thisCal.intervalID1);
+    });
 }
 
 org_apache_myfaces_PopupCalendar.prototype._appendNbsp = function(element)
@@ -669,7 +651,7 @@ org_apache_myfaces_PopupCalendar.prototype._startDecMonth = function()
 {
     this.intervalID1 = setInterval((function()
     {
-        this._decMonth
+        this._decMonth();
     }).bind(this), 80);
 }
 
@@ -677,7 +659,7 @@ org_apache_myfaces_PopupCalendar.prototype._startIncMonth = function()
 {
     this.intervalID1 = setInterval((function()
     {
-        this._incMonth
+        this._incMonth();
     }).bind(this), 80);
 }
 
@@ -712,33 +694,35 @@ org_apache_myfaces_PopupCalendar.prototype._removeAllChildren = function(element
 
 org_apache_myfaces_PopupCalendar.prototype._constructMonth = function()
 {
+    var selectMonthTable,
+        i,
+        selectMonthTableBody;
+
     this._popDownYear();
     if (!this.monthConstructed)
     {
 
-        var selectMonthTable = document.createElement("table");
-        Element.setStyle(selectMonthTable, "width:70px;border-collapse:collapse;");
+        selectMonthTable = document.createElement("table");
+        jQuery(selectMonthTable).css({'width': '70px', 'border-collapse': 'collapse'});
         selectMonthTable.className = this.initData.themePrefix + "-dropdown-style";
 
         this._removeAllChildren(this.selectMonthDiv);
 
         this.selectMonthDiv.appendChild(selectMonthTable);
 
-        Event.observe(selectMonthTable, "mouseover", function()
-        {
-            clearTimeout(this.timeoutID1);
-        }.bind(this), false);
-        Event.observe(selectMonthTable, "mouseout", function(event)
-        {
-            clearTimeout(this.timeoutID1);
-            this.timeoutID1 = setTimeout((function()
-            {
-                this._popDownMonth()
-            }).bind(this), 100);
-            Event.stop(event);
-        }.bindAsEventListener(this), false);
+        jQuery(selectMonthTable).on('mouseover', {thisCalendar: this}, function (event) {
+            clearTimeout(event.data.thisCalendar.timeoutID1);
+        });
+        jQuery(selectMonthTable).on('mouseout', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            clearTimeout(thisCal.timeoutID1);
+            thisCal.timeoutID1 = setTimeout((function () {
+                thisCal._popDownMonth();
+            }).bind(thisCal), 100);
+            return false;
+        });
 
-        var selectMonthTableBody = document.createElement("tbody");
+        selectMonthTableBody = document.createElement("tbody");
         selectMonthTable.appendChild(selectMonthTableBody);
 
         for (i = 0; i < 12; i++)
@@ -750,7 +734,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructMonth = function()
             if (i == this.selectedDate.month)
             {
                 sNameNode = document.createElement("span");
-                Element.setStyle(sNameNode, "font-weight:bold;");
+                jQuery(sNameNode).css('font-weight', 'bold');
                 sNameNode.appendChild(document.createTextNode(sName));
                 sNameNode.setAttribute("userData",i);
             }
@@ -766,24 +750,24 @@ org_apache_myfaces_PopupCalendar.prototype._constructMonth = function()
             monthCell.setAttribute("userData",i);
             monthRow.appendChild(monthCell);
 
-            Event.observe(monthCell, "mouseover", function(event)
-            {
-                Event.element(event).className = this.initData.themePrefix + "-dropdown-select-style";
-            }.bind(this), false);
+            jQuery(monthCell).on('mouseover', {thisCalendar: this}, function (event) {
+                var target = event.currentTarget;
+                target.className = event.data.thisCalendar.initData.themePrefix + "-dropdown-select-style";
+            });
 
-            Event.observe(monthCell, "mouseout", function(event)
-            {
-                Event.element(event).className = this.initData.themePrefix + "-dropdown-normal-style";
-            }.bind(this), false);
-
-            Event.observe(monthCell, "click", function(event)
-            {
-                this.monthConstructed = false;
-                this.selectedDate.month = parseInt(Event.element(event).getAttribute("userData"),10);
-                this._constructCalendar();
-                this._popDownMonth();
-                Event.stop(event);
-            }.bindAsEventListener(this), false);
+            jQuery(monthCell).on('mouseout', {thisCalendar: this}, function (event) {
+                var target = event.currentTarget;
+                target.className = event.data.thisCalendar.initData.themePrefix + "-dropdown-normal-style";
+            });
+            jQuery(monthCell).on('click', {thisCalendar: this}, function (event) {
+                var thisCal = event.data.thisCalendar,
+                    target = event.currentTarget;
+                thisCal.monthConstructed = false;
+                thisCal.selectedDate.month = parseInt(target.getAttribute("userData"), 10);
+                thisCal._constructCalendar();
+                thisCal._popDownMonth();
+                return false;
+            });
 
             this._appendNbsp(monthCell);
             monthCell.appendChild(sNameNode);
@@ -815,6 +799,9 @@ org_apache_myfaces_PopupCalendar.prototype._popDownMonth = function()
 
 org_apache_myfaces_PopupCalendar.prototype._incYear = function()
 {
+    var i,
+        newYear;
+
     for (i = 0; i < 7; i++)
     {
         newYear = (i + this.nStartingYear) + 1;
@@ -853,6 +840,8 @@ org_apache_myfaces_PopupCalendar.prototype._createAndAddYear = function(newYear,
 
 org_apache_myfaces_PopupCalendar.prototype._decYear = function()
 {
+    var i,
+        newYear;
     for (i = 0; i < 7; i++)
     {
         newYear = (i + this.nStartingYear) - 1;
@@ -866,31 +855,30 @@ org_apache_myfaces_PopupCalendar.prototype._decYear = function()
 org_apache_myfaces_PopupCalendar.prototype._constructYear = function()
 {
     this._popDownMonth();
-    var sHTML = "";
+    //var sHTML = "";
+    var i;
     if (!this.yearConstructed)
     {
 
         var selectYearTable = document.createElement("table");
-        Element.setStyle(selectYearTable, "width:44px;border-collapse:collapse;");
+        jQuery().css({'width': '44px', 'border-collapse': 'collapse'});
         selectYearTable.className = this.initData.themePrefix + "-dropdown-style";
 
         this._removeAllChildren(this.selectYearDiv);
 
         this.selectYearDiv.appendChild(selectYearTable);
 
-        Event.observe(selectYearTable, "mouseover", function()
-        {
-            clearTimeout(this.timeoutID2);
-        }.bind(this), false);
-        Event.observe(selectYearTable, "mouseout", function(event)
-        {
-            clearTimeout(this.timeoutID2);
-            this.timeoutID2 = setTimeout((function()
-            {
-                this._popDownYear()
-            }).bind(this), 100);
-            Event.stop(event);
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearTable).on('mouseover', {thisCalendar: this}, function (event) {
+            clearTimeout(event.data.thisCalendar.timeoutID2);
+        });
+        jQuery(selectYearTable).on('mouseout', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            clearTimeout(thisCal.timeoutID2);
+            thisCal.timeoutID2 = setTimeout((function () {
+                thisCal._popDownYear();
+            }).bind(thisCal), 100);
+            return false;
+        });
 
 
         var selectYearTableBody = document.createElement("tbody");
@@ -906,33 +894,31 @@ org_apache_myfaces_PopupCalendar.prototype._constructYear = function()
 
         selectYearRowMinus.appendChild(selectYearCellMinus);
 
-        Event.observe(selectYearCellMinus, "mouseover", function(event)
-        {
-            Event.element(event).className = this.initData.themePrefix + "-dropdown-select-style";
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellMinus).on('mouseover', {thisCalendar: this}, function (event) {
+            var target = event.currentTarget;
+            target.className = event.data.thisCalendar.initData.themePrefix + '-dropdown-select-style';
+        });
 
-        Event.observe(selectYearCellMinus, "mouseout", function(event)
-        {
-            clearInterval(this.intervalID1);
-            Event.element(event).className = this.initData.themePrefix + "-dropdown-normal-style";
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellMinus).on('mouseout', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar,
+                target = event.currentTarget;
+            clearInterval(thisCal.intervalID1);
+            target.className = thisCal.initData.themePrefix + '-dropdown-normal-style';
+        });
 
-        Event.observe(selectYearCellMinus, "mousedown", function(event)
-        {
-            clearInterval(this.intervalID1);
-            this.intervalID1 = setInterval((function()
-            {
-                this._decYear();
-            }).bind(this), 30);
-            Event.stop(event);
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellMinus).on('mousedown', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            clearInterval(thisCal.intervalID1);
+            thisCal.intervalID1 = setInterval((function () {
+                thisCal._decYear();
+            }).bind(thisCal), 30);
+            return false;
+        });
 
-        Event.observe(selectYearCellMinus, "mouseup", function(event)
-        {
-            clearInterval(this.intervalID1);
-            Event.stop(event);
-        }.bindAsEventListener(this), false);
-
+        jQuery(selectYearCellMinus).on('mouseup', {thisCalendar: this}, function (event) {
+            clearInterval(event.data.thisCalendar.intervalID1);
+            return false;
+        });
 
         //sHTML = "<tr><td align='center' onmouseover='this.className=\""+this.initData.themePrefix+"-dropdown-select-style\"' onmouseout='clearInterval(this.intervalID1); this.className=\""+this.initData.themePrefix+"-dropdown-normal-style\"' onmousedown='clearInterval(this.intervalID1);this.intervalID1=setInterval(\"_decYear()\",30)' onmouseup='clearInterval(this.intervalID1)'>-</td></tr>";
 
@@ -947,7 +933,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructYear = function()
             if (i == this.selectedDate.year)
             {
                 sNameNode = document.createElement("span");
-                Element.setStyle(sNameNode, "font-weight:bold;");
+                jQuery(sNameNode).css('font-weight', 'bold');
                 sNameNode.appendChild(document.createTextNode(sName));
                 sNameNode.setAttribute("userData", sName);
             }
@@ -964,26 +950,23 @@ org_apache_myfaces_PopupCalendar.prototype._constructYear = function()
             yearCell.setAttribute("id",this.containerCtl.getAttribute("id")+"y" + j);
             yearRow.appendChild(yearCell);
 
-            Event.observe(yearCell, "mouseover", function(event)
-            {
-                Event.element(event).className = this.initData.themePrefix + "-dropdown-select-style";
-            }.bind(this), false);
+            jQuery(yearCell).on('mouseover', {thisCalendar: this}, function (event) {
+                event.currentTarget.className = event.data.thisCalendar.initData.themePrefix + "-dropdown-select-style";
+            });
 
-            Event.observe(yearCell, "mouseout", function(event)
-            {
-                Event.element(event).className = this.initData.themePrefix + "-dropdown-normal-style";
-            }.bind(this), false);
+            jQuery(yearCell).on('mouseout', {thisCalendar: this}, function (event) {
+                event.currentTarget.className = event.data.thisCalendar.initData.themePrefix + '-dropdown-normal-style';
+            });
 
-            Event.observe(yearCell, "click", function(event)
-            {
-                var elem = Event.element(event);
-                var sYear = null;
-                this.selectedDate.year = parseInt(this._formatInt(elem.getAttribute("userData"),10));
-                this.yearConstructed = false;
-                this._popDownYear();
-                this._constructCalendar();
-                Event.stop(event);
-            }.bindAsEventListener(this), false);
+            jQuery(yearCell).on('click', {thisCalendar: this}, function (event) {
+                var thisCal = event.data.thisCalendar,
+                    elem = event.currentTarget;
+                thisCal.selectedDate.year = parseInt(thisCal._formatInt(elem.getAttribute("userData"), 10));
+                thisCal.yearConstructed = false;
+                thisCal._popDownYear();
+                thisCal._constructCalendar();
+                return false;
+            });
 
             this._appendNbsp(yearCell);
             yearCell.appendChild(sNameNode);
@@ -1001,30 +984,27 @@ org_apache_myfaces_PopupCalendar.prototype._constructYear = function()
 
         selectYearRowPlus.appendChild(selectYearCellPlus);
 
-        Event.observe(selectYearCellPlus, "mouseover", function(event)
-        {
-            Event.element(event).className = this.initData.themePrefix + "-dropdown-select-style";
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellPlus).on('mouseover', {thisCalendar: this}, function (event) {
+            event.currentTarget.className = event.data.thisCalendar + '-dropdown-select-style';
+        });
 
-        Event.observe(selectYearCellPlus, "mouseout", function(event)
-        {
-            clearInterval(this.intervalID2);
-            Event.element(event).className = this.initData.themePrefix + "-dropdown-normal-style";
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellPlus).on('mouseout', {thisCalendar: this}, function (event) {
+            clearInterval(event.data.thisCalendar.intervalID2);
+            event.currentTarget.className = event.data.thisCalendar.initData.themePrefix + '-dropdown-normal-style';
+        });
 
-        Event.observe(selectYearCellPlus, "mousedown", function(event)
-        {
-            clearInterval(this.intervalID2);
-            this.intervalID2 = setInterval((function()
-            {
-                this._incYear();
-            }).bind(this), 30);
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellPlus).on('mousedown', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            clearInterval(thisCal.intervalID2);
+            thisCal.intervalID2 = setInterval((function () {
+                thisCal._incYear();
+            }).bind(thisCal), 30);
+        });
 
-        Event.observe(selectYearCellPlus, "mouseup", function(event)
-        {
-            clearInterval(this.intervalID2);
-        }.bindAsEventListener(this), false);
+        jQuery(selectYearCellPlus).on('mouseup', {thisCalendar: this}, function (event) {
+            clearInterval(event.data.thisCalendar.intervalID2);
+        });
+
 
         this.yearConstructed = true;
     }
@@ -1058,7 +1038,7 @@ org_apache_myfaces_PopupCalendar.prototype._popUpYear = function()
 org_apache_myfaces_PopupCalendar.prototype._appendCell = function(parentElement, value)
 {
     var cell = document.createElement("td");
-    Element.setStyle(cell, "text-align:right;");
+    jQuery(cell).css('text-align', 'right');
 
     if (value && value != "")
     {
@@ -1074,8 +1054,9 @@ org_apache_myfaces_PopupCalendar.prototype._appendCell = function(parentElement,
 
 org_apache_myfaces_PopupCalendar.prototype._getDateStyle = function(datePointer)
 {
-    var sStyle = this.initData.themePrefix + "-normal-day-style";
-    //regular day
+    var sStyle = this.initData.themePrefix + "-normal-day-style",
+        //regular day
+        k;
 
     if ((datePointer == this.dateNow) &&
         (this.selectedDate.month == this.monthNow) && (this.selectedDate.year == this.yearNow)) //today
@@ -1111,7 +1092,8 @@ org_apache_myfaces_PopupCalendar.prototype._getDateStyle = function(datePointer)
 
 org_apache_myfaces_PopupCalendar.prototype._getHolidayHint = function(datePointer)
 {
-    var sHint = "";
+    var sHint = "",
+        k;
     for (k = 0; k < this.holidaysCounter; k++)
     {
         if ((parseInt(this._formatInt(this.holidays[k].d), 10) == datePointer) && (parseInt(this._formatInt(this.holidays[k].m), 10) == (this.selectedDate.month + 1)))
@@ -1131,7 +1113,7 @@ org_apache_myfaces_PopupCalendar.prototype._addWeekCell = function(currentRow, s
     sNormalStyle, sSelectStyle)
 {
     var cell = document.createElement("td");
-    Element.setStyle(cell, "text-align:right;");
+    jQuery(cell).css('text-align', 'right');
 
     var weekDate = this.stdDateFormatter.getWeekDate(startDate);
     if (weekSelectable)
@@ -1147,35 +1129,33 @@ org_apache_myfaces_PopupCalendar.prototype._addWeekCell = function(currentRow, s
 
         cell.appendChild(link);
 
-        Event.observe(link, "mousemove", function(event)
-        {
-            window.status = this.initData.selectDateMessage.replace(
-                "[date]",
-                this._constructDate(link.dateObj));
-        }.bindAsEventListener(this), false);
+        jQuery(link).on('mousemove', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar;
+            window.status = thisCal.initData.selectDateMessage.replace(
+                    "[date]",
+                    thisCal._constructDate(link.dateObj));
+        });
 
-        Event.observe(link, "mouseout", function(event)
-        {
-            var elem = Event.element(event);
+        jQuery(link).on('mouseout', {thisCalendar: this}, function (event) {
+            var elem = event.currentTarget;
             elem.className = elem.sNormalStyle;
-            window.status = "";
-        }.bindAsEventListener(this), false);
+            window.status = '';
+        });
 
-        Event.observe(link, "click", function(event)
-        {
-            var elem = Event.element(event);
-            this.selectedDate.year = elem.dateObj.getFullYear();
-            this.selectedDate.month = elem.dateObj.getMonth();
-            this.selectedDate.date = elem.dateObj.getDate();
-            this._closeCalendar();
-            Event.stop(event);
-        }.bindAsEventListener(this), false);
+        jQuery(link).on('click', {thisCalendar: this}, function (event) {
+            var thisCal = event.data.thisCalendar,
+                elem = event.currentTarget;
+            thisCal.selectedDate.year = elem.dateObj.getFullYear();
+            thisCal.selectedDate.month = elem.dateObj.getMonth();
+            thisCal.selectedDate.date = elem.dateObj.getDate();
+            thisCal._closeCalendar();
+            return false;
+        });
 
-        Event.observe(link, "mouseover", function(event)
-        {
-            var elem = Event.element(event);
+        jQuery(link).on('mouseover', {thisCalendar: this}, function (event) {
+            var elem = event.currentTarget;
             elem.className = elem.sSelectStyle;
-        }.bindAsEventListener(this), false);
+        });
     }
     else
     {
@@ -1190,17 +1170,39 @@ org_apache_myfaces_PopupCalendar.prototype._addWeekCell = function(currentRow, s
 
 org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 {
-    var aNumDays = Array(31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-
-    var dateMessage;
-    var startDate = new Date(this.selectedDate.year, this.selectedDate.month, 1);
+    var aNumDays = Array(31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
+        startDate = new Date(this.selectedDate.year, this.selectedDate.month, 1),
+        numDaysInMonth,
+        msecs,
+        endDate,
+        contentTable,
+        contentBody,
+        contentRow,
+        showWeekNumberCell,
+        dividerCell,
+        dividerImg,
+        i,
+        dayNameCell,
+        currentRow,
+        weekSelectable,
+        sWeekNormalStyle,
+        sWeekSelectStyle,
+        dateCell,
+        sStyle,
+        sHint,
+        sSelectStyle,
+        sNormalStyle,
+        dateLink,
+        dateSpan,
+        acceptMonthImg,
+        closeButtonImg;
 
     if (this.selectedDate.month == 1)
     {
         // to compute the number of days in february, select first day of march,
         // subtract 24 hours then query the day-of-the-month.
-        var msecs = new Date (this.selectedDate.year, this.selectedDate.month + 1, 1).getTime();
-        var endDate = new Date (msecs - this._MSECS_PER_DAY);
+        msecs = new Date (this.selectedDate.year, this.selectedDate.month + 1, 1).getTime();
+        endDate = new Date (msecs - this._MSECS_PER_DAY);
         numDaysInMonth = endDate.getDate();
     }
     else
@@ -1216,29 +1218,29 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 
     this._removeAllChildren(this.contentSpan);
 
-    var contentTable = document.createElement("table");
-    Element.setStyle(contentTable, "border:0px;");
+    contentTable = document.createElement("table");
+    jQuery(contentTable).css('border', '0px');
     contentTable.className = this.initData.themePrefix + "-body-style";
 
     this.contentSpan.appendChild(contentTable);
 
-    var contentBody = document.createElement("tbody");
+    contentBody = document.createElement("tbody");
     contentTable.appendChild(contentBody);
 
-    var contentRow = document.createElement("tr");
+    contentRow = document.createElement("tr");
     contentBody.appendChild(contentRow);
 
     if (this.initData.showWeekNumber == 1)
     {
-        var showWeekNumberCell = document.createElement("td");
-        Element.setStyle(showWeekNumberCell, "width:27px;font-weight:bold;");
+        showWeekNumberCell = document.createElement("td");
+        jQuery(showWeekNumberCell).css({'width': '27px', 'font-weight': 'bold'});
 
         contentRow.appendChild(showWeekNumberCell);
 
         showWeekNumberCell.appendChild(document.createTextNode(this.initData.weekString));
 
-        var dividerCell = document.createElement("td");
-        Element.setStyle(dividerCell, "width:1px;");
+        dividerCell = document.createElement("td");
+        jQuery(dividerCell).css('width', '1px');
         if(this.ie) //fix for https://issues.apache.org/jira/browse/TOMAHAWK-1184
             dividerCell.setAttribute("rowSpan", "7");
         else    
@@ -1247,7 +1249,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 
         contentRow.appendChild(dividerCell);
 
-        var dividerImg = document.createElement("img");
+        dividerImg = document.createElement("img");
         dividerImg.setAttribute("src", this.initData.imgDir + "divider.gif");
         Element.setStyle(dividerImg, "width:1px;");
         dividerCell.appendChild(dividerImg);
@@ -1255,26 +1257,26 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 
     for (i = 0; i < 7; i++)
     {
-        var dayNameCell = document.createElement("td");
-        Element.setStyle(dayNameCell, "width:27px;text-align:right;font-weight:bold;");
+        dayNameCell = document.createElement("td");
+        jQuery(dayNameCell).css({'width': '27px', 'text-align': 'right', 'font-weight': 'bold'});
         contentRow.appendChild(dayNameCell);
 
         dayNameCell.appendChild(document.createTextNode(this.initData.dayName[i]));
     }
 
-    var currentRow = document.createElement("tr");
+    currentRow = document.createElement("tr");
     contentBody.appendChild(currentRow);
 
-    var weekSelectable = this._isWeekSelectable();
-    var sWeekNormalStyle = this.initData.themePrefix + "-normal-week-style";
-    var sWeekSelectStyle = sWeekNormalStyle + " " + this.initData.themePrefix + "-would-be-selected-week-style";
+    weekSelectable = this._isWeekSelectable();
+    sWeekNormalStyle = this.initData.themePrefix + "-normal-week-style";
+    sWeekSelectStyle = sWeekNormalStyle + " " + this.initData.themePrefix + "-would-be-selected-week-style";
 
     if (this.initData.showWeekNumber == 1)
     {
         this._addWeekCell(currentRow, startDate, weekSelectable, sWeekNormalStyle, sWeekSelectStyle);
     }
 
-    for (var i = 1; i <= dayPointer; i++)
+    for (i = 1; i <= dayPointer; i++)
     {
         this._appendCell(currentRow);
     }
@@ -1282,21 +1284,21 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
     for (datePointer = 1; datePointer <= numDaysInMonth; datePointer++)
     {
         dayPointer++;
-        var dateCell = document.createElement("td");
-        Element.setStyle(dateCell, "text-align:right;");
+        dateCell = document.createElement("td");
+        jQuery(dateCell).css('text-align', 'right');
 
         currentRow.appendChild(dateCell);
 
-        var sStyle = this._getDateStyle(datePointer);
-        var sHint = this._getHolidayHint(datePointer);
+        sStyle = this._getDateStyle(datePointer);
+        sHint = this._getHolidayHint(datePointer);
 
-        var sSelectStyle = sStyle + " " + this.initData.themePrefix + "-would-be-selected-day-style";
-        var sNormalStyle = sStyle;
+        sSelectStyle = sStyle + " " + this.initData.themePrefix + "-would-be-selected-day-style";
+        sNormalStyle = sStyle;
 
         if (this._isDaySelectable())
         {
 
-            var dateLink = document.createElement("a");
+            dateLink = document.createElement("a");
             dateLink.className = sStyle;
             dateLink.setAttribute("href", "#");
             dateLink.setAttribute("title", sHint);
@@ -1307,28 +1309,24 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 
             dateCell.appendChild(dateLink);
 
-            Event.observe(dateLink, "mousemove", function(event)
-            {
-                window.status = this.initData.selectDateMessage.replace("[date]", this._constructDate(datePointer, this.selectedDate.month, this.selectedDate.year));
-            }.bindAsEventListener(this), false);
-            Event.observe(dateLink, "mouseout", function(event)
-            {
-                var elem = Event.element(event);
-                elem.className = elem.sNormalStyle;
-                window.status = "";
-            }.bindAsEventListener(this), false);
-            Event.observe(dateLink, "click", function(event)
-            {
-                var elem = Event.element(event);
-                this.selectedDate.date = elem.datePointer;
-                this._closeCalendar();
-                Event.stop(event);
-            }.bindAsEventListener(this), false);
-            Event.observe(dateLink, "mouseover", function(event)
-            {
-                var elem = Event.element(event);
-                elem.className = elem.sSelectStyle;
-            }.bindAsEventListener(this), false);
+            jQuery(dateLink).on('mousemove', {thisCalendar: this}, function (event) {
+                var thisCal = event.data.thisCalendar;
+                window.status = thisCal.initData.selectDateMessage.replace("[date]", thisCal._constructDate(datePointer, thisCal.selectedDate.month, thisCal.selectedDate.year));
+            });
+            jQuery(dateLink).on('mouseout', {thisCalendar: this}, function (event) {
+                var target = event.currentTarget;
+                target.className = target.sNormalStyle;
+            });
+            jQuery(dateLink).on('click', {thisCalendar: this}, function (event) {
+                var thisCal = event.data.thisCalendar;
+                thisCal.selectedDate.date = event.currentTarget.datePointer;
+                thisCal._closeCalendar();
+                return false;
+            });
+            jQuery(dateLink).on('mouseover', {thisCalendar: this}, function (event) {
+                var target = event.currentTarget;
+                target.className = target.sSelectStyle;
+            });
 
             this._appendNbsp(dateLink);
             dateLink.appendChild(document.createTextNode(datePointer));
@@ -1336,7 +1334,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
         }
         else
         {
-            var dateSpan = document.createElement("span");
+            dateSpan = document.createElement("span");
             dateCell.appendChild(dateSpan);
 
             dateSpan.appendChild(document.createTextNode(datePointer));
@@ -1367,7 +1365,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
     this.changeMonthImg.setAttribute("src", this.initData.imgDir + "drop1.gif");
     this.changeMonthImg.setAttribute("width","12px");
     this.changeMonthImg.setAttribute("height","10px");
-    Element.setStyle(this.changeMonthImg, "border:0px;");
+    jQuery(this.changeMonthImg).css('border', '0px');
 
     this.monthSpan.appendChild(this.changeMonthImg);
 
@@ -1380,29 +1378,29 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
     this.changeYearImg.setAttribute("src", this.initData.imgDir + "drop1.gif");
     this.changeYearImg.setAttribute("width","12px");
     this.changeYearImg.setAttribute("height","10px");
-    Element.setStyle(this.changeYearImg, "border:0px;");
+    jQuery(this.changeYearImg).css('border', '0px');
     this.yearSpan.appendChild(this.changeYearImg);
 
     // Accept Month icon
     if (this.acceptMonthSpan)
     {
       this._removeAllChildren(this.acceptMonthSpan);
-      var acceptMonthImg = document.createElement("img");
+      acceptMonthImg = document.createElement("img");
       acceptMonthImg.setAttribute("src", this.initData.imgDir + "accept.gif");
       acceptMonthImg.setAttribute("width","15px");
       acceptMonthImg.setAttribute("height","13px");
-      Element.setStyle(acceptMonthImg, "border:0px;");
+      jQuery(this.acceptMonthImg).css('border', '0px');
       acceptMonthImg.setAttribute("alt", "Accept the current month selection");
       this.acceptMonthSpan.appendChild(acceptMonthImg);
     }
 
     // Close Popup icon
     this._removeAllChildren(this.closeCalendarSpan);
-    var closeButtonImg = document.createElement("img");
+    closeButtonImg = document.createElement("img");
     closeButtonImg.setAttribute("src", this.initData.imgDir + "close.gif");
     closeButtonImg.setAttribute("width","15px");
     closeButtonImg.setAttribute("height","13px");
-    Element.setStyle(closeButtonImg, "border:0px;");
+    jQuery(closeButtonImg).css('border', '0px');
     closeButtonImg.setAttribute("alt", "Close the calendar");
     this.closeCalendarSpan.appendChild(closeButtonImg);
 

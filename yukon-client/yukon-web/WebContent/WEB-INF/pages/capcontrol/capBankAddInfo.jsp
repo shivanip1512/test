@@ -1,5 +1,6 @@
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core" %>
+<%@ taglib prefix="x" uri="http://myfaces.apache.org/tomahawk" %>
+
 <jsp:directive.page import="com.cannontech.web.editor.CapControlForm" />
 <jsp:directive.page import="com.cannontech.web.util.JSFParamUtil" />
 

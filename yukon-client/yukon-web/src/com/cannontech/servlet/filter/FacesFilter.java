@@ -22,7 +22,8 @@ public class FacesFilter implements Filter {
     private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     private final static ImmutableList<String> excludedFilePaths = 
-        ImmutableList.of("/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*");
+        ImmutableList.of("/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/prototype.PrototypeResourceLoader/*",
+                         "/**/org.apache.myfaces.renderkit.html.util.MyFacesResourceLoader/*/calendar.HtmlCalendarRenderer/popcalendar.js");
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
             throws IOException, ServletException {

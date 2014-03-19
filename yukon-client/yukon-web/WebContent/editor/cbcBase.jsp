@@ -19,6 +19,7 @@
 
 <cti:includeScript link="/JavaScript/yukon.tables.js"/>
 <cti:includeScript link="/JavaScript/yukon.da.js"/>
+<cti:includeScript link="/resources/js/lib/tomahawk.hacks/popcalendar.js"/>
 
 <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
 
