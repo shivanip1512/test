@@ -14,7 +14,7 @@ com.cannontech.esub.element.DrawingMetaElement
 A "NCS" 0 0 0 0 $ 1 C $ 0 0
 0 0
 "Default" 0 32 "_"
-2 1024 768 -16777216 -1
+2 1024 768 -16777216 -206
 
 com.cannontech.esub.element.StaticText
 ! 110101100 20;20;284.253906;22.515625 5 0 $ ! ! 0 0
