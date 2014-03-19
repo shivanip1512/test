@@ -1,21 +1,13 @@
 package com.cannontech.web;
 
 /**
- * Enumeration for defining the 'correct' version of a library to include.  Currently used by
- * IncludeScriptTag.java
+ * Enumeration for defining javascript libraries in Yukon. 
+ * Currently used by IncludeScriptTag.java
  * 
- * Ideally we would not include multiple versions of JS libraries in the application, however if 
- * it is required you can add those versions here in the DEPRECATED VERSIONS section.
- * 
- * Each Enumeration is defined as follows:
- * 
- *  JSLibrary(path)
- *  
- *  @param path         String      Relative path to the location of the library - DO NOT include any
- *                                  file names in this path
+ * @param path Path to the location of the library.
  */
 public enum JsLibrary {
-    //if updating jquery be sure to include the noconflict call at the end of the file if prototype
+    
     JQUERY("/JavaScript/lib/jQuery/jquery-1.11.0.js"), //http://www.jquery.com
     JQUERY_MIN("/JavaScript/lib/jQuery/jquery-1.11.0.min.js"), //http://www.jquery.com
     
@@ -55,7 +47,9 @@ public enum JsLibrary {
     HIGH_STOCK("/resources/js/lib/highstock/highstock.js"),
     HIGH_STOCK_EXPORTING("/resources/js/lib/highstock/modules/exporting.js"),
     HIGH_STOCK_NO_DATA("/resources/js/lib/highstock/modules/no-data-to-display.js"),
+    
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
+    
     YUKON("/JavaScript/yukon.js"),
     YUKON_ALERTS("/JavaScript/yukon.alerts.js"),
     YUKON_FAVORITES("/JavaScript/yukon.favorites.js"),
@@ -67,7 +61,7 @@ public enum JsLibrary {
     
     MODERNIZR("/JavaScript/lib/modernizr/custom.js");
     
-    private String path = "";  //path to library
+    private String path = "";
     
     JsLibrary(String path) {
         this.path = path;
@@ -76,4 +70,5 @@ public enum JsLibrary {
     public String getPath() {
         return path;
     }
+    
 }

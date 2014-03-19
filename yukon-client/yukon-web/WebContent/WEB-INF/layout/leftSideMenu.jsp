@@ -1,13 +1,14 @@
 <%@ page errorPage="/internalError.jsp" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
-    	<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-        <title><c:out value="${title}"/></title>           
+        <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+        <title><c:out value="${title}"/></title>
 
         <!-- Layout CSS files -->
         <link rel="stylesheet" type="text/css" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" >
@@ -41,7 +42,7 @@
 
     </head>
     
-	<body class="<c:out value="${module.moduleName}"/>_module">
+    <body class="<c:out value="${module.moduleName}"/>_module">
     <div id="modal-glass" style="display:none;">
         <div class="tint"></div>
         <div class="loading">
@@ -51,18 +52,18 @@
         </div>
     </div>
     
-		<div id="Header">
-		    <div class="stdhdr_left"><div id="TopLeftLogo"><cti:logo key="yukon.web.layout.standard.upperleftlogo"/></div></div>
-		    <div class="stdhdr_middle"><div id="TopMiddleLogo"><cti:logo key="yukon.web.layout.standard.uppermiddlelogo"/></div></div>
-		    <div class="stdhdr_right"><div id="TopRightLogo"><cti:logo key="yukon.web.layout.standard.upperrightlogo"/></div></div>
-		    <div class="stdhdr_clear"></div>
-		</div>
+        <div id="Header">
+            <div class="stdhdr_left"><div id="TopLeftLogo"><cti:logo key="yukon.web.layout.standard.upperleftlogo"/></div></div>
+            <div class="stdhdr_middle"><div id="TopMiddleLogo"><cti:logo key="yukon.web.layout.standard.uppermiddlelogo"/></div></div>
+            <div class="stdhdr_right"><div id="TopRightLogo"><cti:logo key="yukon.web.layout.standard.upperrightlogo"/></div></div>
+            <div class="stdhdr_clear"></div>
+        </div>
 
         <table style="width:100%">
             <tr>
                 <td colspan="2" class="leftMenuHeader">
                     <cti:checkRolesAndProperties  value="RESIDENTIAL_SIGN_OUT_ENABLED">
-                        <a href="/servlet/LoginController?ACTION=LOGOUT"><cti:msg key="yukon.web.menu.logout" /></a>
+                        <a href="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>"><cti:msg key="yukon.web.menu.logout" /></a>
                     </cti:checkRolesAndProperties>
                     &nbsp;
                 </td>
@@ -75,7 +76,7 @@
                     <table class="contentTable">
                         <tr>
                             <td class="leftColumn">
-                                    <cti:outputContent writable="${bodyContent}"/>
+                                <cti:outputContent writable="${bodyContent}"/>
                             </td>
                             <td class="rightColumn">
                                 <cti:customerAccountInfoTag account="${customerAccount}" />
@@ -88,15 +89,15 @@
             </tr>
             <tr>
                 <td colspan="2">
-            		<div id="CopyRight">
-            			<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> |
-            			<cti:msg key="yukon.web.layout.standard.copyright"/> |
-            			Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
-            		</div>
+                    <div id="CopyRight">
+                        <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> |
+                        <cti:msg key="yukon.web.layout.standard.copyright"/> |
+                        Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
+                    </div>
                 </td>
             </tr>
         </table>
 
-        <ct:analyticsTrackPage/>
-	</body>
+        <tags:analyticsTrackPage/>
+    </body>
 </html>

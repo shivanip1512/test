@@ -218,7 +218,7 @@ function newScheduleAssignmentPopup(schedule, command) {
                                         </c:otherwise>
                                     </c:choose>
                                     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                        <form id="removeAssignmentForm" action="/capcontrol/schedule/removePao" method="post">
+                                        <form id="removeAssignmentForm" action="<cti:url value="/capcontrol/schedule/removePao"/>" method="post">
                                             <cti:csrfToken/>
                                             <input type="hidden" name="eventId" value="${item.eventId}">
                                             <input type="hidden" name="paoId" value="${item.paoId}">
