@@ -32,7 +32,9 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
         
         switch (this.source) {
             case "MeterEventsReportController":
-                YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
+                if (errors.getFieldError("daysPrevious") == null) {
+                    YukonValidationUtils.checkIsPositiveInt(errors, "daysPrevious", target.getDaysPrevious());
+                }
                 break;
             case "WaterLeakReportController":
                 YukonValidationUtils.checkIsPositiveInt(errors, "hoursPrevious", target.getHoursPrevious());
@@ -44,13 +46,12 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduleName", "yukon.web.modules.amr.billing.schedule.validation.invalidName");
         YukonValidationUtils.checkExceedsMaxLength(errors, "scheduleName", target.getScheduleName(), 100);
         
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileName", "yukon.web.modules.amr.billing.schedule.validation.invalidFileName");
-        YukonValidationUtils.checkExceedsMaxLength(errors, "exportFileName", target.getExportFileName(), 100);
+        String fileName = target.getExportFileName();
+        boolean exportFileNameError = YukonValidationUtils.checkIsBlank(errors, "exportFileName", fileName, false);
+        exportFileNameError |= YukonValidationUtils.checkExceedsMaxLength(errors, "exportFileName", fileName, 100);
 
         // First, just validate the Export File name
-        String fileName = target.getExportFileName();
-        boolean isValidFileName = WebFileUtils.isValidWindowsFilename(fileName);
-        if(!isValidFileName) {
+        if(!exportFileNameError && !WebFileUtils.isValidWindowsFilename(fileName)) {
             errors.rejectValue("exportFileName", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
         }
         // Next, validate the Timestamp (if checked)
@@ -67,8 +68,7 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
                     errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.invalidPattern");
                 }
                 // Now make sure it doesn't contain characters invalid for a filename, such as : or /
-                isValidFileName = WebFileUtils.isValidWindowsFilename(fileName + tsPattern);
-                if (!isValidFileName) {
+                if (!WebFileUtils.isValidWindowsFilename(fileName + tsPattern)) {
                     errors.rejectValue("timestampPatternField", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
                 }
             }
@@ -77,8 +77,7 @@ public class ScheduledFileExportValidator extends SimpleValidator<ScheduledFileE
         if (target.isOverrideFileExtension()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "exportFileExtension", "yukon.web.modules.amr.billing.schedule.validation.emptyFileExtension");
             // make sure the file extension doesn't contain characters invalid for a windows filename.
-            isValidFileName = WebFileUtils.isValidWindowsFilename(target.getExportFileExtension());
-            if (!isValidFileName) {
+            if (!WebFileUtils.isValidWindowsFilename(target.getExportFileExtension())) {
                 errors.rejectValue("exportFileExtension", "yukon.web.modules.amr.billing.schedule.validation.badCharacters");
             }
         }

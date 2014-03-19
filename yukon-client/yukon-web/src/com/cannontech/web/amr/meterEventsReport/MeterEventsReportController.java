@@ -230,7 +230,7 @@ public class MeterEventsReportController {
 
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         model.addAttribute("exportData", exportData);
-        model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, false));
+        model.addAttribute("jsonModel", getJsonModel(userContext, meterEventTypesMap, exportData, true));
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
         model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
@@ -260,7 +260,7 @@ public class MeterEventsReportController {
         jsonModel.put("meteringTitle", messageAccessor.getMessage(baseKey + ".filter.tree.metering"));
         jsonModel.put("schedulePopupTitle", 
                 messageAccessor.getMessage(baseKey + ".schedulePopup.title", exportData.getScheduleName()));
-        jsonModel.put("newSchedulePopupTitle", messageAccessor.getMessage(baseKey + ".schedulePopup.title"));
+        jsonModel.put("newSchedulePopupTitle", messageAccessor.getMessage(baseKey + ".schedulePopup.title", ""));
         jsonModel.put("confirmScheduleDeletion", 
                 messageAccessor.getMessage("yukon.web.modules.tools.scheduledFileExport.jobs.deleteSchedule.title"));
         jsonModel.put("okBtnLbl", messageAccessor.getMessage("yukon.web.components.button.ok.label"));
