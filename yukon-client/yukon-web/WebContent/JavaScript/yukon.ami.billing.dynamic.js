@@ -418,7 +418,7 @@ function updateFormatName () {
 
     //save everything first so that everything that can be submitted is up to date 
     save();
-    url = '/dynamicBilling/updateFormatName';
+    url = yukon.url('/dynamicBilling/updateFormatName');
 
     //the ajax request to the server
     $.ajax({
@@ -454,7 +454,7 @@ function updatePreview () {
 
     //save everything first so that everything that can be submitted is up to date 
     save();
-    url = '/dynamicBilling/updatePreview';
+    url = yukon.url('/dynamicBilling/updatePreview');
 
     currTime = new Date();
     if (currTime - prevHighlight < 1000){

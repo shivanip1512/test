@@ -12,18 +12,15 @@
 </script>
 
 <ct:simplePopup id="roundingHelper" title="Rounding Mode Help" onClose="toggleHelperPopup('roundingHelper');">
-    <cti:url var="roundingHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp"/>
-    <jsp:include page="${roundingHelperUrl}"/>
+    <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/roundingHelper.jsp"/>
 </ct:simplePopup>
 
 <ct:simplePopup id="valueHelper" title="Format Help" onClose="toggleHelperPopup('valueHelper');">
-    <cti:url var="valueHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
-    <jsp:include page="${valueHelperUrl}"/>
+    <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/valueHelper.jsp"/>
 </ct:simplePopup>
 
 <ct:simplePopup id="timestampHelper" title="Format Help" onClose="toggleHelperPopup('timestampHelper');">
-    <cti:url var="timestampHelperUrl" value="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
-    <jsp:include page="${timestampHelperUrl}"/>
+    <jsp:include page="/WEB-INF/pages/amr/dynamicBilling/timestampHelper.jsp"/>
 </ct:simplePopup>
 
 <script>
