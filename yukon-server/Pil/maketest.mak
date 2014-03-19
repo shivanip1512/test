@@ -23,6 +23,7 @@ INCLPATHS+= \
 ;$(COMMON)\include \
 ;$(CAPCONTROL)\include \
 ;$(DATABASE)\include \
+;$(DEVICECONFIGURATION)\include \
 ;$(SERVICE)\include \
 ;$(RTDB)\include \
 ;$(SERVER)\include \

@@ -150,7 +150,6 @@ dev_vectron.obj \
 dev_wctp.obj \
 dev_welco.obj \
 dlldev.obj \
-mgr_config.obj \
 mgr_device.obj \
 mgr_route.obj \
 rte_ccu.obj \

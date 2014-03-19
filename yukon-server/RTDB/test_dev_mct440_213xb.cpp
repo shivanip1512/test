@@ -6,8 +6,7 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "utility.h"  //  for delete_container
-#include "config_device.h"
-#include "mgr_config.h"
+#include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 #include "dev_ccu.h"
 #include "rte_ccu.h"
@@ -21,24 +20,6 @@ using namespace Cti::Config;
 using std::string;
 using std::vector;
 
-
-class test_ConfigManager : public CtiConfigManager
-{
-    Cti::Config::DeviceConfigSPtr   _config;
-
-public:
-
-    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   _config( config )
-    {
-        // empty
-    }
-
-    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return _config;
-    }
-};
 
 struct test_CtiDeviceCCU : CtiDeviceCCU
 {
@@ -188,13 +169,6 @@ struct test_Mct440_213xB_route : test_Mct440_213xBDevice
     {
         return rte;
     }
-};
-
-struct test_DeviceConfig : public Cti::Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig(-1, string()) {}
-
-    using DeviceConfig::insertValue;
 };
 
 namespace std {
@@ -3188,8 +3162,15 @@ struct executePutConfig_helper
 
     std::auto_ptr<CtiRequestMsg> pRequest;
 
-    executePutConfig_helper() : pRequest( new CtiRequestMsg )
-    {}
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    executePutConfig_helper() :
+        pRequest( new CtiRequestMsg ),
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+    }
 
     void resetTestState()
     {
@@ -3215,7 +3196,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
     BOOST_AUTO_TEST_CASE(test_executePutConfigTOU)
     {
-        test_DeviceConfig   test_cfg;
+        Cti::Test::test_DeviceConfig &test_cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         test_cfg.insertValue("sunday",   "schedule 1");
         test_cfg.insertValue("weekday", "schedule 2");
@@ -3256,11 +3237,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
         test_cfg.insertValue("defaultRate", "A");
 
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
         test_Mct440_213xB test_dev;
-
-        test_dev.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("installvalue tou force");
         CtiOutMessage *outMessage = CTIDBG_new OUTMESS;
@@ -4291,17 +4268,13 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all)
     {
-        test_DeviceConfig test_cfg;
+        Cti::Test::test_DeviceConfig &test_cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
         test_Mct440_213xB_route test_dev;
 
         CtiClientConnection connHandle("fake_host");
 
         {
             ////// empty configuration (no valid configuration) //////
-
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
 
             CtiCommandParser parse("putconfig install all");
 
@@ -4373,10 +4346,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             resetTestState();
 
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
-
             CtiCommandParser parse("putconfig install all");
 
             pRequest->setConnectionHandle((void*)&connHandle);
@@ -4409,10 +4378,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             ////// 2 valid configuration //////
 
             resetTestState();
-
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
 
             CtiCommandParser parse("putconfig install all");
 
@@ -4447,10 +4412,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             resetTestState();
 
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
-
             CtiCommandParser parse("putconfig install all");
 
             pRequest->setConnectionHandle((void*)&connHandle);
@@ -4483,10 +4444,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             ////// 4 valid configuration //////
 
             resetTestState();
-
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
 
             CtiCommandParser parse("putconfig install all");
 
@@ -4524,10 +4481,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
 
             resetTestState();
 
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
-
             CtiCommandParser parse("putconfig install all");
 
             pRequest->setConnectionHandle((void*)&connHandle);
@@ -4561,10 +4514,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             ////// 6 valid configuration //////
 
             resetTestState();
-
-            test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&test_cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-            test_dev.setConfigManager(&cfgMgr);
 
             CtiCommandParser parse("putconfig install all");
 

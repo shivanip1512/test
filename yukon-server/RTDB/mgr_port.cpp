@@ -21,24 +21,6 @@ using std::endl;
 using std::vector;
 
 
-bool findExecutingAndExcludedPort(const long key, CtiPortSPtr Port, void* d)
-{
-    CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
-
-    if(pAnxiousPort->getPortID() != Port->getPortID())      // And it is not me...
-    {
-        bool portexcluded = pAnxiousPort->isPortExcluded(Port->getPortID());
-
-        if(portexcluded)
-        {
-            // Ok, now decide if that excluded port is executing....
-            return Port->isExecuting();
-        }
-    }
-
-    return false;
-}
-
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
     switch( ul_reason_for_call )
@@ -69,31 +51,6 @@ inline bool isNotUpdated(CtiPortSPtr &Port, void* d)
 {
     // Return TRUE if it is NOT SET
     return( !Port->getUpdatedFlag() );
-}
-
-inline void applyRemoveProhibit(const long key, CtiPortSPtr Port, void* d)
-{
-    try
-    {
-        CtiPort *pAnxiousPort = (CtiPort *)d;       // This is the port that wishes to execute!
-        LONG pid = (LONG)pAnxiousPort->getPortID();       // This is the port id which is to be pulled from the prohibition list.
-
-        if(Port->isExecutionProhibited())   // There is at least one entry in the list...
-        {
-            bool found = Port->removeInfiniteExclusion( pid );
-
-            if(found && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << Port->getName() << " no longer prohibited because of " << pAnxiousPort->getName() << "." << endl;
-            }
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 }
 
 inline void applyClearExclusions(const long key, CtiPortSPtr Port, void* d)

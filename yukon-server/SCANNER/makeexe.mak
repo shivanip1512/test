@@ -53,7 +53,8 @@ $(COMPILEBASE)\lib\scansup.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+$(COMPILEBASE)\lib\cticonfig.lib \
 
 
 SCANNER_EXE_FULLBUILD = $[Filename,$(OBJ),ScannerExeFullBuild,target]

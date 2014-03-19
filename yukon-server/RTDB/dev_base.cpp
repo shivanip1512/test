@@ -20,13 +20,10 @@
 
 using namespace std;
 
-CtiMutex CtiDeviceBase::_configMux;
-
 CtiDeviceBase::~CtiDeviceBase()
 {
     _pointMgr = NULL;  //  We don't own these - null them out to make
     _routeMgr = NULL;  //    PC-Lint happy
-    _configMgr = NULL;
 }
 
 
@@ -61,12 +58,6 @@ CtiDeviceBase& CtiDeviceBase::setPointManager(CtiPointManager* aPtr)
     return *this;
 }
 
-CtiDeviceBase& CtiDeviceBase::setConfigManager(CtiConfigManager* aPtr)
-{
-    _configMgr = aPtr;
-    return *this;
-}
-
 void IM_EX_DEVDB attachPointManagerToDevice(const long id, CtiDeviceSPtr device, void *pointManager)
 {
     if( device )
@@ -82,15 +73,6 @@ void IM_EX_DEVDB attachRouteManagerToDevice(const long id, CtiDeviceSPtr device,
         device->setRouteManager(static_cast<CtiRouteManager *>(routeManager));
     }
 }
-
-void IM_EX_DEVDB attachConfigManagerToDevice(const long id, CtiDeviceSPtr device, void *configManager)
-{
-    if( device )
-    {
-        device->setConfigManager(static_cast<CtiConfigManager *>(configManager));
-    }
-}
-
 
 int CtiDeviceBase::invokeDeviceHandler(Cti::Devices::DeviceHandler &handler)
 {
@@ -424,8 +406,7 @@ _logOnNeeded(TRUE),
 _singleDevice(false),
 _routeMgr(NULL),
 _responsesOnTrxID(0),
-_currTrxID(0),
-_configMgr(NULL)
+_currTrxID(0)
 {
 }
 
@@ -440,8 +421,7 @@ _logOnNeeded(TRUE),
 _singleDevice(false),
 _routeMgr(NULL),
 _responsesOnTrxID(0),
-_currTrxID(0),
-_configMgr(NULL)
+_currTrxID(0)
 {
     *this = aRef;
 }
@@ -469,9 +449,6 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
         setAttemptSuccessCount(aRef.getAttemptSuccessCount());
         setResponsesOnTrxID( aRef.getResponsesOnTrxID());
         setTrxID(aRef.getCurrentTrxID());
-
-        _configMgr = aRef._configMgr;
-
 
         setDeviceBase( aRef.getDeviceBase() );
         _exclusion = aRef.exclusion();
@@ -1332,14 +1309,7 @@ inline ULONG CtiDeviceBase::getUniqueIdentifier() const
 
 Cti::Config::DeviceConfigSPtr CtiDeviceBase::getDeviceConfig()
 {
-    CtiLockGuard<CtiMutex> guard(_configMux);
-
-    if ( ! _configMgr )
-    {
-        return Cti::Config::DeviceConfigSPtr();   // no manager == null (no config)
-    }
-
-    return _configMgr->fetchConfig( getID(), static_cast<DeviceTypes>( getType() ) );
+    return Cti::ConfigManager::getConfigForIdAndType( getID(), static_cast<DeviceTypes>( getType() ) );
 }
 
 Cti::DeviceQueueInterface* CtiDeviceBase::getDeviceQueueHandler()

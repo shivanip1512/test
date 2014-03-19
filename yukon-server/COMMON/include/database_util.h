@@ -150,5 +150,7 @@ inline bool executeUpdater( DatabaseWriter& updater, const char* file, const int
     return executeUpdater( updater, file, line, logDebug, LogNoRowsAffected::Enable );
 }
 
+std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::string &table, const std::string &column);
+
 } // namespace Database
 } // namespace Cti

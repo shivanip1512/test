@@ -6,7 +6,6 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "utility.h"  //  for delete_container
-#include "config_device.h"
 #include "boost_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
@@ -94,13 +93,6 @@ struct test_Mct440_2133BDevice : Cti::Devices::Mct440_2133BDevice
 struct test_Mct440_2133B : test_Mct440_2133BDevice
 {
     test_Mct440_2133B() : test_Mct440_2133BDevice(TYPEMCT440_2133B, "Test MCT-440-2133B")  {}
-};
-
-struct test_DeviceConfig : public Cti::Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig(-1, string()) {}
-
-    using DeviceConfig::insertValue;
 };
 
 namespace std {

@@ -47,7 +47,6 @@ private:
 
     mutable Cti::readers_writer_lock_t _portDevicePrioritiesLock;
 
-    std::string createIdSqlClause  (const Cti::Database::id_set &paoids, const std::string table = "YP", const std::string attrib = "paobjectid");
     std::string createTypeSqlClause(std::string type=std::string(), const bool include_type=true);
 
     bool refreshDevices(Cti::RowReader& rdr);

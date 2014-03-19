@@ -31,7 +31,6 @@ private:
 
     void        refreshStaticPaoInfo(const Cti::Database::id_set &paoids);
     void        refreshRouteEncryptionKeys(const Cti::Database::id_set &paoids);
-    std::string createIdSqlClause(const Cti::Database::id_set &paoids, const std::string table, const std::string attrib);
 
 public:
 

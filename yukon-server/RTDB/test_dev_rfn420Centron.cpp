@@ -5,7 +5,7 @@
 #include "dev_rfn420centron.h"
 #include "cmd_rfn.h"
 #include "config_data_rfn.h"
-#include "mgr_config.h"
+#include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"
 
@@ -20,30 +20,13 @@ struct test_state_rfn420centron
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
     Cti::Devices::RfnDevice::RfnCommandList rfnRequests;
-};
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
 
-struct test_DeviceConfig : public Cti::Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig(-1, string()) {}
-
-    using DeviceConfig::insertValue;
-};
-
-class test_ConfigManager : public CtiConfigManager
-{
-    Cti::Config::DeviceConfigSPtr   _config;
-
-public:
-
-    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   _config( config )
+    test_state_rfn420centron() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
     {
-        // empty
-    }
-
-    virtual Cti::Config::DeviceConfigSPtr fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return _config;
     }
 };
 
@@ -63,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
 {
     test_Rfn420CentronDevice dut;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( Cti::Config::RfnStrings::LcdCycleTime,  "0" );
     cfg.insertValue( Cti::Config::RfnStrings::DisconnectDisplayDisabled, "true" );
@@ -94,10 +77,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn420Centron_putconfig_display )
     cfg.insertValue( Cti::Config::RfnStrings::displayItem24, "0" );
     cfg.insertValue( Cti::Config::RfnStrings::displayItem25, "0" );
     cfg.insertValue( Cti::Config::RfnStrings::displayItem26, "0" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
     {
         CtiCommandParser parse("putconfig install display");

@@ -28,9 +28,8 @@ using Cti::ThreadStatusKeeper;
 extern CtiDeviceManager   DeviceManager;
 extern CtiPointManager    PorterPointManager;
 extern CtiRouteManager    RouteManager;
-extern CtiConfigManager   ConfigManager;
 
-Cti::Pil::PilServer PIL(&DeviceManager, &PorterPointManager, &RouteManager, &ConfigManager);
+Cti::Pil::PilServer PIL(&DeviceManager, &PorterPointManager, &RouteManager);
 
 void PorterInterfaceThread (void *Arg)
 {

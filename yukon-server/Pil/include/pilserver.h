@@ -43,7 +43,6 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    CtiDeviceManager    *DeviceManager;
    CtiPointManager     *PointManager;
    CtiRouteManager     *RouteManager;
-   CtiConfigManager    *ConfigManager;
 
    RWThreadFunction     ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
    RWThreadFunction     _vgConnThread;     // Thread which manages VanGogh requests!
@@ -86,11 +85,10 @@ public:
 
    typedef CtiServer Inherited;
 
-   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
+   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL) :
       DeviceManager(DM),
       PointManager (PM),
       RouteManager (RM),
-      ConfigManager(CM),
       bServerClosing(FALSE),
       _currentParse(""),
       _currentUserMessageId(0),

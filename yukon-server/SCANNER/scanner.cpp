@@ -78,7 +78,6 @@ void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
 Cti::ScannableDeviceManager ScannerDeviceManager(Application_Scanner);
-CtiConfigManager            ConfigManager;
 CtiPointManager             ScannerPointManager;
 
 extern BOOL ScannerQuit;
@@ -1218,7 +1217,7 @@ void LoadScannableDevices(void *ptr)
                 ScannerDeviceManager.refreshAllDevices();
             }
 
-            ConfigManager.initialize();
+            Cti::ConfigManager::initialize();
 
             stop = stop.now();
 
@@ -1253,14 +1252,12 @@ void LoadScannableDevices(void *ptr)
                 }
 
                 pBase->setPointManager(&ScannerPointManager);
-                pBase->setConfigManager(&ConfigManager);
             }
         }
         else
         {
             ScannerDeviceManager.apply(applyValidateScanTimes, (void*)bforce);
             ScannerDeviceManager.apply(attachPointManagerToDevice, &ScannerPointManager);
-            ScannerDeviceManager.apply(attachConfigManagerToDevice, &ConfigManager);
         }
     }
 
@@ -1275,7 +1272,7 @@ void LoadScannableDevices(void *ptr)
 
     if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
     {
-        ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
+        Cti::ConfigManager::handleDbChange(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
     }
 
     if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!

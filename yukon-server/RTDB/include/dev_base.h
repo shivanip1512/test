@@ -23,7 +23,6 @@ class CtiRequestMsg;
 class CtiRouteManager;
 class CtiPointManager;
 class CtiTransmitterInfo;
-class CtiConfigManager;
 
 namespace Cti {
     class DeviceQueueInterface;
@@ -62,7 +61,6 @@ private:
     int _currTrxID;
     int _responsesOnTrxID;
     CtiTime _lastReport;
-    static CtiMutex _configMux;
 
 protected:
 
@@ -78,7 +76,6 @@ protected:
 
     CtiPointManager *_pointMgr;    //  Porter or Scanner's point manager, assigned by attachPointManagerToDevices()
     CtiRouteManager *_routeMgr;    //  Porter's route manager, assigned by attachRouteManagerToDevices()
-    CtiConfigManager *_configMgr;  //  Porter's config manager, assigned by attachConfigManagerToDevices()
 
     union
     {
@@ -118,8 +115,6 @@ public:
     CtiDeviceBase&       setRouteManager(CtiRouteManager* aPtr);
 
     CtiDeviceBase&       setPointManager(CtiPointManager* aPtr);
-
-    CtiDeviceBase&       setConfigManager(CtiConfigManager* aPtr);
 
     //  name hiding allows us to take this over from tbl_pao_lite
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

@@ -11,10 +11,9 @@
 #include <boost/tuple/tuple.hpp>
 
 
-
 namespace   {
 
-static const std::string configSql = 
+static const std::string configSql =
     "SELECT "
         "DC.DeviceConfigurationID, "
         "DCCM.DeviceConfigCategoryID, "
@@ -25,7 +24,7 @@ static const std::string configSql =
         "ON DC.DeviceConfigurationID = DCCM.DeviceConfigurationID";
 
 
-static const std::string categorySql = 
+static const std::string categorySql =
     "SELECT "
         "C.DeviceConfigCategoryID, "
         "C.CategoryType, "
@@ -38,7 +37,7 @@ static const std::string categorySql =
         "ON C.DeviceConfigCategoryID = I.DeviceConfigCategoryID";
 
 
-static const std::string deviceSql = 
+static const std::string deviceSql =
     "SELECT "
         "D.DeviceID, "
         "D.DeviceConfigurationID "
@@ -48,27 +47,21 @@ static const std::string deviceSql =
 }
 
 
-CtiConfigManager::CtiConfigManager()
+namespace Cti {
+
+
+IM_EX_CONFIG std::auto_ptr<ConfigManager> gConfigManager(new ConfigManager);
+
+
+void ConfigManager::initialize()
 {
-    // empty
+    gConfigManager->loadAllConfigs();
+    gConfigManager->loadAllCategoryItems();
+    gConfigManager->loadAllDeviceAssignments();
 }
 
 
-CtiConfigManager::~CtiConfigManager()
-{
-    // empty
-}
-
-
-void CtiConfigManager::initialize()
-{
-    loadAllConfigs();
-    loadAllCategoryItems();
-    loadAllDeviceAssignments();
-}
-
-
-void CtiConfigManager::loadAllConfigs()
+void ConfigManager::loadAllConfigs()
 {
     _configurations.clear();
 
@@ -76,7 +69,7 @@ void CtiConfigManager::loadAllConfigs()
 }
 
 
-void CtiConfigManager::loadConfig( const long configID )
+void ConfigManager::loadConfig( const long configID )
 {
     const std::string sql = configSql +
         " WHERE "
@@ -88,12 +81,12 @@ void CtiConfigManager::loadConfig( const long configID )
 }
 
 
-void CtiConfigManager::executeLoadConfig( const std::string & sql ) 
+void ConfigManager::executeLoadConfig( const std::string & sql )
 {
-    Cti::Timing::DebugTimer timer( "loading device configurations", DebugLevel & 0x80000000, 5.0 );
+    Timing::DebugTimer timer( "loading device configurations", DebugLevel & 0x80000000, 5.0 );
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseReader       rdr(connection, sql);
+    Database::DatabaseConnection   connection;
+    Database::DatabaseReader       rdr(connection, sql);
 
     rdr.execute();
 
@@ -108,7 +101,7 @@ void CtiConfigManager::executeLoadConfig( const std::string & sql )
         ConfigurationMap::iterator  configIter;
 
         boost::tie( configIter, boost::tuples::ignore ) =
-            _configurations.insert( configID, new Cti::Config::Configuration( configID, name ) );
+            _configurations.insert( configID, new Config::Configuration( configID, name ) );
 
         if ( ! rdr["DeviceConfigCategoryID"].isNull() )
         {
@@ -122,7 +115,7 @@ void CtiConfigManager::executeLoadConfig( const std::string & sql )
 }
 
 
-void CtiConfigManager::loadAllCategoryItems()
+void ConfigManager::loadAllCategoryItems()
 {
     _categories.clear();
 
@@ -130,7 +123,7 @@ void CtiConfigManager::loadAllCategoryItems()
 }
 
 
-void CtiConfigManager::loadCategoryItems( const long categoryID )
+void ConfigManager::loadCategoryItems( const long categoryID )
 {
     const std::string sql = categorySql +
         " WHERE "
@@ -142,12 +135,12 @@ void CtiConfigManager::loadCategoryItems( const long categoryID )
 }
 
 
-void CtiConfigManager::executeLoadItems( const std::string & sql )
+void ConfigManager::executeLoadItems( const std::string & sql )
 {
-    Cti::Timing::DebugTimer timer( "loading device configuration category items", DebugLevel & 0x80000000, 5.0 );
+    Timing::DebugTimer timer( "loading device configuration category items", DebugLevel & 0x80000000, 5.0 );
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseReader       rdr(connection, sql);
+    Database::DatabaseConnection   connection;
+    Database::DatabaseReader       rdr(connection, sql);
 
     rdr.execute();
 
@@ -168,14 +161,14 @@ void CtiConfigManager::executeLoadItems( const std::string & sql )
         CategoryMap::iterator   categoryIter;
 
         boost::tie( categoryIter, boost::tuples::ignore ) =
-            _categories.insert( categoryID, new Cti::Config::ConfigurationCategory( categoryID, name, categoryType ) );
+            _categories.insert( categoryID, new Config::ConfigurationCategory( categoryID, name, categoryType ) );
 
         categoryIter->second->addItem( itemName, value );
     }
 }
 
 
-void CtiConfigManager::loadAllDeviceAssignments()
+void ConfigManager::loadAllDeviceAssignments()
 {
     _deviceAssignments.clear();
 
@@ -183,7 +176,7 @@ void CtiConfigManager::loadAllDeviceAssignments()
 }
 
 
-void CtiConfigManager::loadDeviceAssignment( const long deviceID )
+void ConfigManager::loadDeviceAssignment( const long deviceID )
 {
     const std::string sql = deviceSql +
         " WHERE "
@@ -195,12 +188,12 @@ void CtiConfigManager::loadDeviceAssignment( const long deviceID )
 }
 
 
-void CtiConfigManager::executeLoadDeviceAssignments( const std::string & sql )
+void ConfigManager::executeLoadDeviceAssignments( const std::string & sql )
 {
-    Cti::Timing::DebugTimer timer( "loading device configuration assignments", DebugLevel & 0x80000000, 5.0 );
+    Timing::DebugTimer timer( "loading device configuration assignments", DebugLevel & 0x80000000, 5.0 );
 
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseReader       rdr(connection, sql);
+    Database::DatabaseConnection   connection;
+    Database::DatabaseReader       rdr(connection, sql);
 
     rdr.execute();
 
@@ -217,11 +210,23 @@ void CtiConfigManager::executeLoadDeviceAssignments( const std::string & sql )
 }
 
 
-void CtiConfigManager::processDBUpdate( const long          ID,
-                                        const std::string & category,
-                                        const std::string & objectType,
-                                        const int           updateType )
+void ConfigManager::handleDbChange( const long          ID,
+                                     const std::string & category,
+                                     const std::string & objectType,
+                                     const int           updateType )
 {
+    gConfigManager->processDBUpdate(ID, category, objectType, updateType);
+}
+
+void ConfigManager::processDBUpdate( const long          ID,
+                                     const std::string & category,
+                                     const std::string & objectType,
+                                     const int           updateType )
+{
+    const bool isUpdateOrAdd =
+            (updateType == ChangeTypeUpdate ||
+             updateType == ChangeTypeAdd);
+
     if ( category == "Device Config" )
     {
         if ( objectType == "config" )
@@ -229,19 +234,9 @@ void CtiConfigManager::processDBUpdate( const long          ID,
             _configurations.erase( ID );
             _cache.erase( ID );
 
-            switch ( updateType )
+            if( isUpdateOrAdd )
             {
-                case ChangeTypeUpdate:
-                case ChangeTypeAdd:
-                {
-                    loadConfig( ID );
-                    break;
-                }
-                case ChangeTypeDelete:
-                default:
-                {
-                    break;
-                }
+                loadConfig( ID );
             }
         }
         else if ( objectType == "category" )
@@ -252,7 +247,7 @@ void CtiConfigManager::processDBUpdate( const long          ID,
 
             for each ( ConfigurationMap::value_type & configIter in _configurations )
             {
-                const Cti::Config::Configuration & config = *configIter.second;
+                const Config::Configuration & config = *configIter.second;
 
                 if ( config.hasCategory( ID ) )     // found (category)ID in config
                 {
@@ -260,57 +255,37 @@ void CtiConfigManager::processDBUpdate( const long          ID,
                 }
             }
 
-            switch ( updateType )
+            if( isUpdateOrAdd )
             {
-                case ChangeTypeUpdate:
-                case ChangeTypeAdd:
-                {
-                    loadCategoryItems( ID );
-                    break;
-                }
-                case ChangeTypeDelete:
-                default:
-                {
-                    break;
-                }
+                loadCategoryItems( ID );
             }
         }
         else if ( objectType == "device" )
         {
             _deviceAssignments.erase( ID );
 
-            switch ( updateType )
+            if( isUpdateOrAdd )
             {
-                case ChangeTypeUpdate:
-                case ChangeTypeAdd:
-                {
-                    loadDeviceAssignment( ID );
-                    break;
-                }
-                case ChangeTypeDelete:
-                default:
-                {
-                    break;
-                }
+                loadDeviceAssignment( ID );
             }
         }
     }
 }
 
 
-Cti::Config::DeviceConfigSPtr   CtiConfigManager::buildConfig( const long configID, const DeviceTypes deviceType )
+Config::DeviceConfigSPtr   ConfigManager::buildConfig( const long configID, const DeviceTypes deviceType )
 {
     // grab device type categories
-    Cti::DeviceConfigLookup::CategoryNames deviceCategories = Cti::DeviceConfigLookup::Lookup( deviceType );
+    DeviceConfigLookup::CategoryNames deviceCategories = DeviceConfigLookup::Lookup( deviceType );
 
     // grab the config
     ConfigurationMap::const_iterator configSearch = _configurations.find( configID );
 
     if ( configSearch != _configurations.end() )
     {
-        const Cti::Config::Configuration & config = *configSearch->second;
+        const Config::Configuration & config = *configSearch->second;
 
-        Cti::Config::DeviceConfigSPtr    deviceConfiguration( new Cti::Config::DeviceConfig( config.getId(), config.getName() ) );
+        Config::DeviceConfigSPtr    deviceConfiguration( new Config::DeviceConfig( config.getId(), config.getName() ) );
 
         // iterate the configs categories
         for each ( const long categoryID in config )
@@ -320,20 +295,20 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::buildConfig( const long config
 
             if ( categorySearch != _categories.end() )
             {
-                const Cti::Config::ConfigurationCategory & category = *categorySearch->second;
+                const Config::ConfigurationCategory & category = *categorySearch->second;
 
                 // is it one of our actual physical devices categories?
                 if ( deviceCategories.find( category.getType() ) != deviceCategories.end() )
                 {
                     // do we have all of the category items?
-                    Cti::DeviceConfigLookup::CategoryFieldIterPair   thePair = 
-                        Cti::DeviceConfigLookup::equal_range( category.getType() );
+                    DeviceConfigLookup::CategoryFieldIterPair   thePair =
+                        DeviceConfigLookup::equal_range( category.getType() );
 
                     for ( ; thePair.first != thePair.second ; ++thePair.first )
                     {
                         const std::string & requiredFieldName = thePair.first->second;
 
-                        Cti::Config::ConfigurationCategory::const_iterator fieldName = category.find( requiredFieldName );
+                        Config::ConfigurationCategory::const_iterator fieldName = category.find( requiredFieldName );
 
                         if ( fieldName != category.end() )
                         {
@@ -345,7 +320,7 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::buildConfig( const long config
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " - Error: missing configuration item: " << requiredFieldName << " in configuration: " << config.getName() << std::endl;
 
-                            return Cti::Config::DeviceConfigSPtr();
+                            return Config::DeviceConfigSPtr();
                         }
                     }
                 }
@@ -355,11 +330,16 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::buildConfig( const long config
         return deviceConfiguration;
     }
 
-    return Cti::Config::DeviceConfigSPtr();
+    return Config::DeviceConfigSPtr();
 }
 
 
-Cti::Config::DeviceConfigSPtr   CtiConfigManager::fetchConfig( const long deviceID, const DeviceTypes deviceType )
+Config::DeviceConfigSPtr ConfigManager::getConfigForIdAndType( const long deviceID, const DeviceTypes deviceType )
+{
+    return gConfigManager->fetchConfig(deviceID, deviceType);
+}
+
+Config::DeviceConfigSPtr   ConfigManager::fetchConfig( const long deviceID, const DeviceTypes deviceType )
 {
     // lookup config ID from DeviceID
 
@@ -369,7 +349,7 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::fetchConfig( const long device
     {
         const long configID = configIDSearch->second;
 
-        Cti::Config::DeviceConfigSPtr   config = _cache[ configID ][ deviceType ];     // inserts null on failure
+        Config::DeviceConfigSPtr   config = _cache[ configID ][ deviceType ];     // inserts null on failure
 
         if ( ! config )
         {
@@ -381,6 +361,7 @@ Cti::Config::DeviceConfigSPtr   CtiConfigManager::fetchConfig( const long device
         return config;
     }
 
-    return Cti::Config::DeviceConfigSPtr();
+    return Config::DeviceConfigSPtr();
 }
 
+}

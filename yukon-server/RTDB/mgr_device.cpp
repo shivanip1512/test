@@ -7,6 +7,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
+#include "database_util.h"
 #include "dev_macro.h"
 #include "dev_cbc.h"
 #include "dev_dnp.h"
@@ -571,40 +572,6 @@ string CtiDeviceManager::createTypeSqlClause(string type, const bool include_typ
     return sqlType;
 }
 
-string CtiDeviceManager::createIdSqlClause(const Cti::Database::id_set &paoids, const string table, const string attrib)
-{
-    string sqlIDs;
-
-    if( !paoids.empty() )
-    {
-        ostringstream in_list;
-
-        if( paoids.size() == 1 )
-        {
-            //  special single id case
-
-            in_list << *(paoids.begin());
-
-            sqlIDs += table + "." + attrib + " = " + in_list.str();
-
-            return sqlIDs;
-        }
-        else
-        {
-            in_list << "(";
-
-            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, ostringstream>(in_list));
-
-            in_list << ")";
-
-            sqlIDs += table + "." + attrib + " IN " + in_list.str();
-
-            return sqlIDs;
-        }
-    }
-
-    return string();
-}
 
 bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const string &device_name, const CtiDeviceBase &device, string type, const bool include_type)
 {
@@ -615,7 +582,7 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 
     string       sql        = device.getSQLCoreStatement();
     const string typeClause = createTypeSqlClause(type, include_type);
-    const string idClause   = createIdSqlClause(paoids);
+    const string idClause   = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
 
     if( !typeClause.empty() )
     {
@@ -1217,7 +1184,7 @@ void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
     }
 
     static const string sqlCore = CtiTablePaoExclusion::getSQLCoreStatement();
-    const string idClause = createIdSqlClause(paoids, "PEX", "paoid");
+    const string idClause = Cti::Database::createIdSqlClause(paoids, "PEX", "paoid");
 
     string sql = sqlCore;
 
@@ -1319,7 +1286,7 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
     static const string sqlCore = "SELECT DMG.DeviceID, DMG.MeterNumber "
                                   "FROM devicemetergroup DMG, yukonpaobject YP "
                                   "WHERE DMG.DeviceID = YP.PAObjectID AND YP.Type LIKE 'ION%'";
-    const string idClause = createIdSqlClause(paoids);
+    const string idClause = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
 
     string sql = sqlCore;
 
@@ -1386,7 +1353,7 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
         const string childCountQuery = "SELECT COUNT ('ChildID') as childcount "
                                        "FROM GenericMacro GM "
                                        "WHERE GM.MacroType = 'GROUP'";
-        const string idClause = createIdSqlClause(paoids, "GM", "OwnerID");
+        const string idClause = Cti::Database::createIdSqlClause(paoids, "GM", "OwnerID");
 
         string sql = childCountQuery;
 
@@ -1410,7 +1377,7 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
     const string sqlCore =  "SELECT GM.ChildID, GM.OwnerID "
                             "FROM GenericMacro GM "
                             "WHERE GM.MacroType = 'GROUP'";
-    const string idClause = createIdSqlClause(paoids, "GM", "OwnerID");
+    const string idClause = Cti::Database::createIdSqlClause(paoids, "GM", "OwnerID");
     const string orderBy  = "ORDER BY GM.ChildOrder ASC";
 
     string sql = sqlCore;
@@ -1506,7 +1473,7 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
                                  "CFG.mctwire2, CFG.mctwire3, CFG.ke1, CFG.ke2, CFG.ke3 "
                                "FROM mctconfigmapping MCM, mctconfig CFG, yukonpaobject YP "
                                "WHERE MCM.mctid = YP.paobjectid AND MCM.configid = CFG.configid";
-        const string idClause = createIdSqlClause(paoids);
+        const string idClause = Cti::Database::createIdSqlClause(paoids, "YP", "paobjectid");
 
         string sql = sqlCore;
 
@@ -1583,7 +1550,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
         static const string sqlCore = "SELECT DMS.deviceid, DMS.disconnectaddress "
                                       "FROM devicemct400series DMS";
-        const string idClause = createIdSqlClause(paoids, "DMS", "deviceid");
+        const string idClause = Cti::Database::createIdSqlClause(paoids, "DMS", "deviceid");
 
         string sql = sqlCore;
 
@@ -1695,7 +1662,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
         {
             if(!paoids.empty())
             {
-                sql += " AND " + createIdSqlClause(paoids, "DPI", "paobjectid");
+                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "DPI", "paobjectid");
             }
             rdr.setCommandText(sql);
             rdr.execute();
@@ -1772,7 +1739,7 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
         {
             if(!paoids.empty())
             {
-                sql += " AND " + createIdSqlClause(paoids, "SPI", "paobjectid");
+                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "SPI", "paobjectid");
             }
             rdr.setCommandText(sql);
             rdr.execute();

@@ -8,15 +8,17 @@
 #include <boost/optional.hpp>
 
 
-class CtiConfigManager;
 
 
 namespace Cti {
+
+class ConfigManager;
+
 namespace Config {
 
 class IM_EX_CONFIG DeviceConfig
 {
-    friend class CtiConfigManager;
+    friend class ConfigManager;
 
 protected:
 

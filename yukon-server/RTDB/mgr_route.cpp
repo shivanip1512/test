@@ -13,6 +13,7 @@
 #include "dbaccess.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_util.h"
 
 #include <sstream>
 
@@ -626,7 +627,7 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
         {
             if(!paoids.empty())
             {
-                sql += " AND " + createIdSqlClause(paoids, "SPI", "paobjectid");
+                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "SPI", "paobjectid");
             }
             rdr.setCommandText(sql);
             rdr.execute();
@@ -681,42 +682,6 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
     }
 }
 
-string CtiRouteManager::createIdSqlClause(const Cti::Database::id_set &paoids, const string table, const string attrib)
-{
-    string sqlIDs;
-
-    if( !paoids.empty() )
-    {
-        ostringstream in_list;
-
-        if( paoids.size() == 1 )
-        {
-            //  special single id case
-
-            in_list << *(paoids.begin());
-
-            sqlIDs += table + "." + attrib + " = " + in_list.str();
-
-            return sqlIDs;
-        }
-        else
-        {
-            in_list << "(";
-
-            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, ostringstream>(in_list));
-
-            in_list << ")";
-
-            sqlIDs += table + "." + attrib + " IN " + in_list.str();
-
-            return sqlIDs;
-        }
-    }
-
-    return string();
-}
-
-
 void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & paoids )
 {
     if ( paoids.empty() )   // no routes to load
@@ -746,7 +711,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     std::string sql =   "SELECT Y.PAObjectID, E.Name, E.Value "
                         "FROM   EncryptionKey E JOIN YukonPAObjectEncryptionKey Y ON E.EncryptionKeyId = Y.EncryptionKeyId "
-                        "WHERE " + createIdSqlClause( paoids, "Y", "PAObjectID" );
+                        "WHERE " + Cti::Database::createIdSqlClause( paoids, "Y", "PAObjectID" );
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr( connection, sql );

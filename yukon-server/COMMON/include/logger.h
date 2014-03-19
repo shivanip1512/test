@@ -1,15 +1,13 @@
 #pragma once
 
 #ifdef _WINDOWS
-    
+
     #if !defined (NOMINMAX)
     #define NOMINMAX
     #endif
 
     #include <windows.h>
 #endif
-
-#include <rw/thr/prodcons.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

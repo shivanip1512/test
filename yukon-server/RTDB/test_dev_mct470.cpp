@@ -2,10 +2,10 @@
 
 #include "dev_mct470.h"
 #include "devicetypes.h"
-#include "config_device.h"
 #include "boostutil.h"
-#include "mgr_config.h"
 #include "config_data_mct.h"
+
+#include "rtdb_test_helpers.h"
 
 #include <boost/assign/list_of.hpp>
 
@@ -623,6 +623,14 @@ struct beginExecuteRequest_helper
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
     test_Mct470Device mct;
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    beginExecuteRequest_helper() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
+    {
+    }
 
     ~beginExecuteRequest_helper()
     {
@@ -632,31 +640,25 @@ struct beginExecuteRequest_helper
     }
 };
 
-struct test_DeviceConfig : public Cti::Config::DeviceConfig
+
+struct beginExecuteRequest_noConfig_helper
 {
-    test_DeviceConfig() :
-        DeviceConfig(-1, string())
+    CtiRequestMsg           request;
+    std::list<CtiMessage*>  vgList, retList;
+    std::list<OUTMESS*>     outList;
+    test_Mct470Device mct;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    beginExecuteRequest_noConfig_helper() :
+        overrideConfigManager(Cti::Config::DeviceConfigSPtr())
     {
     }
 
-    using DeviceConfig::insertValue;
-};
-
-class test_ConfigManager : public CtiConfigManager
-{
-    Cti::Config::DeviceConfigSPtr   _config;
-
-public:
-
-    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   _config( config )
+    ~beginExecuteRequest_noConfig_helper()
     {
-        // empty
-    }
-
-    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return _config;
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
     }
 };
 
@@ -667,15 +669,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -697,16 +695,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -759,15 +753,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT430S4;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -821,16 +811,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT430S4;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("tableReadInterval", "7");
         config.insertValue("tableType", "9");
         config.insertValue("serviceProviderId", "17");
         config.insertValue("meterNumber", "3");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install precannedtable");
 
@@ -883,13 +869,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -910,14 +892,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x51);
 
@@ -940,14 +918,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -991,14 +965,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
         config.insertValue("electronicMeter", "5");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x40);
 
@@ -1046,7 +1016,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         // add TOU config
 
@@ -1122,12 +1092,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         // set TOU enabled
         config.insertValue( MCTStrings::touEnabled, "true" );
 
-
-        test_ConfigManager  cfgMgr(DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
-
         CtiCommandParser parse("putconfig install tou");
 
         BOOST_CHECK_EQUAL( NoError, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
@@ -1180,7 +1144,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     15 );
 
             const unsigned char expected_message[] =
-            { 
+            {
                 0x3e, 0x0c, 0x18, 0x0c, 0x0c, 0x0e, 0x4e, 0x01,
                 0x6b, 0x26, 0x81, 0x0a, 0x09, 0x39, 0x01
             };
@@ -1225,13 +1189,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT430S4;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x51);
 
@@ -1254,13 +1214,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT430S4;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install configbyte");
 
@@ -1304,13 +1260,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT430S4;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "true");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         mct.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration, 0x40);
 
@@ -1382,14 +1334,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "3");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1498,14 +1446,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "1");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1614,14 +1558,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "2");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1730,14 +1670,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "8");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1820,14 +1756,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "5");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -1910,14 +1842,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "4");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2000,14 +1928,10 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
     {
         mct._type = TYPEMCT470;
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("enableDst", "false");
         config.insertValue("electronicMeter", "6");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putvalue ied reset");
 
@@ -2086,7 +2010,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             expected_message + sizeof(expected_message) );
     }
 
-    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_kvetch)
+    BOOST_FIXTURE_TEST_CASE(test_putvalue_ied_reset_kvetch, beginExecuteRequest_noConfig_helper)
     {
         mct._type = TYPEMCT470;
 
@@ -2120,7 +2044,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         }
     }
 
-    BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_no_deviceconfig_no_dynamicpaoinfo)
+    BOOST_FIXTURE_TEST_CASE(test_putvalue_ied_reset_no_deviceconfig_no_dynamicpaoinfo, beginExecuteRequest_noConfig_helper)
     {
         mct._type = TYPEMCT470;
 

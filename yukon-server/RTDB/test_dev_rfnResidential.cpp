@@ -4,7 +4,7 @@
 #include "dev_rfnResidential.h"
 #include "cmd_rfn.h"
 #include "config_data_rfn.h"
-#include "mgr_config.h"
+#include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
 using namespace Cti::Devices;
@@ -22,7 +22,13 @@ struct test_state_rfnResidential
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
-    test_state_rfnResidential() : request( new CtiRequestMsg )
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    test_state_rfnResidential() :
+        request( new CtiRequestMsg ),
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
     {
     }
 
@@ -34,32 +40,6 @@ struct test_state_rfnResidential
     }
 };
 
-
-struct test_DeviceConfig : public DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig(-1, string()) {}
-
-    using DeviceConfig::insertValue;
-    using DeviceConfig::findValue;
-};
-
-class test_ConfigManager : public CtiConfigManager
-{
-    Cti::Config::DeviceConfigSPtr   _config;
-
-public:
-
-    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   _config( config )
-    {
-        // empty
-    }
-
-    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return _config;
-    }
-};
 
 namespace std {
 
@@ -429,7 +409,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
     ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5,    RfnStrings::Schedule4Time5    )
     ( CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5,    RfnStrings::Schedule4Rate5    );
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     // Schedule 1
     cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
@@ -503,16 +483,12 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
     // set TOU enabled
     cfg.insertValue( RfnStrings::touEnabled, "true" );
 
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
     {
         //
         // Test Put Config Install
         //
 
         test_RfnResidentialDevice dut;
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         {
             resetTestState();
@@ -717,8 +693,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
         //
 
         test_RfnResidentialDevice dut;
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the deice so it can find the config
 
         {
             resetTestState();
@@ -954,15 +928,10 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_on_demand )
 
     dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::DisconnectMode, "ON_DEMAND" );
     cfg.insertValue( RfnStrings::ReconnectParam, "ARM" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
     {
         CtiCommandParser parse("putconfig install disconnect");
 
@@ -1024,7 +993,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
 
     dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::DisconnectMode, "DEMAND_THRESHOLD" );
     cfg.insertValue( RfnStrings::ReconnectParam, "IMMEDIATE" );
@@ -1032,11 +1001,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_demand_thresh
     cfg.insertValue( RfnStrings::DemandThreshold, "10.2" );
     cfg.insertValue( RfnStrings::ConnectDelay, "15" );
     cfg.insertValue( RfnStrings::MaxDisconnects, "10" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
     {
         CtiCommandParser parse("putconfig install disconnect");
 
@@ -1104,16 +1068,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_disconnect_cycling )
 
     dut.setType(TYPE_RFN420CD); // Make it a disconnect type.
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::DisconnectMode, "CYCLING" );
     cfg.insertValue( RfnStrings::DisconnectMinutes, "10" );
     cfg.insertValue( RfnStrings::ConnectMinutes, "20" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
     {
         CtiCommandParser parse("putconfig install disconnect");
 
@@ -1178,12 +1137,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
     {
         ///// Missing config data /////
 
-        test_DeviceConfig cfg;
-
-        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install disconnect");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
@@ -1204,14 +1157,10 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 
         ///// Invalid config data /////
 
-        test_DeviceConfig cfg;
+        Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         // add remote disconnect config
         cfg.insertValue( RfnStrings::DisconnectMode, "NOT_A_DISCONNECT_MODE" ); // invalid disconnect mode
-
-        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install disconnect");
 
@@ -1617,7 +1566,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
 {
     test_RfnResidentialDevice dut;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
     cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
@@ -1625,10 +1574,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv )
     cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
     cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
     cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
     dut._type = TYPE_RFN410FX;
 
@@ -1757,7 +1702,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
 {
     test_RfnResidentialDevice dut;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
     cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
@@ -1765,10 +1710,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_meter_ids )
     cfg.insertValue( RfnStrings::OvUvRepeatCount,            "2" );
     cfg.insertValue( RfnStrings::OvThreshold,                "123.456" );
     cfg.insertValue( RfnStrings::UvThreshold,                 "78.901" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
     //  set the dynamic pao info to match
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_OvUvEnabled,                 1);
@@ -1844,12 +1785,6 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_con
     {
         ///// Missing config data /////
 
-        test_DeviceConfig cfg;
-
-        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install ovuv");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
@@ -1870,11 +1805,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_ovuv_invalid_con
 
         ///// Invalid config data /////
 
-        test_DeviceConfig cfg;
-
-        test_ConfigManager cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
+        Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         cfg.insertValue( RfnStrings::OvUvEnabled,                "true" );
         cfg.insertValue( RfnStrings::OvUvAlarmReportingInterval, "5" );
@@ -1903,13 +1834,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_install_freezeday )
 {
     test_RfnResidentialDevice dut;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     cfg.insertValue( RfnStrings::demandFreezeDay, "7" );
-
-    test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-    dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
     dut._type = TYPE_RFN410FX;
 
@@ -1959,14 +1886,10 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
     test_RfnResidentialDevice dut;
     dut._type = TYPE_RFN410FX;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     {
         ////// empty configuration (no valid configuration) //////
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -1997,10 +1920,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         ////// 1 valid configuration //////
 
         resetTestState();
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2036,10 +1955,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
         ////// 2 valid configurations //////
 
         resetTestState();
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2142,10 +2057,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         resetTestState();
 
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
@@ -2177,10 +2088,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
         resetTestState();
 
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
@@ -2209,14 +2116,10 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
     test_RfnResidentialDevice dut;
     dut._type = TYPE_RFN420CD;
 
-    test_DeviceConfig cfg;
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     {
         ////// empty configuration (no valid configuration) //////
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2250,10 +2153,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         resetTestState();
 
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
@@ -2283,10 +2182,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         ////// 2 valid configurations //////
 
         resetTestState();
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2322,10 +2217,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         ////// 3 valid configurations //////
 
         resetTestState();
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2428,10 +2319,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
         resetTestState();
 
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
-
         CtiCommandParser parse("putconfig install all");
 
         BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
@@ -2462,10 +2349,6 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         ////// 5 valid configurations //////
 
         resetTestState();
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&cfg, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        dut.setConfigManager(&cfgMgr);  // attach config manager to the device so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 

@@ -7,7 +7,7 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "devicetypes.h"
-#include "mgr_config.h"
+#include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"
 
@@ -18,24 +18,6 @@ using std::string;
 using std::list;
 using std::vector;
 
-
-class test_ConfigManager : public CtiConfigManager
-{
-    Cti::Config::DeviceConfigSPtr   _config;
-
-public:
-
-    test_ConfigManager( Cti::Config::DeviceConfigSPtr config )
-        :   _config( config )
-    {
-        // empty
-    }
-
-    virtual Cti::Config::DeviceConfigSPtr   fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return _config;
-    }
-};
 
 struct test_CtiDeviceCCU : CtiDeviceCCU
 {
@@ -181,13 +163,6 @@ public:
     {
         return rte;
     }
-};
-
-struct test_DeviceConfig : public Cti::Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig(-1, string()) {}
-
-    using DeviceConfig::insertValue;
 };
 
 struct test_Mct410IconDevice : test_Mct410Device
@@ -601,11 +576,34 @@ struct mctExecute_helper : executeRequest_helper
     CtiRequestMsg request;
     OUTMESS *om;
 
-    mctExecute_helper()
+    boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    mctExecute_helper() :
+        fixtureConfig(new Cti::Test::test_DeviceConfig),
+        overrideConfigManager(fixtureConfig)
     {
         om = new OUTMESS;
     }
     ~mctExecute_helper()
+    {
+        delete om;
+    }
+};
+
+struct mctExecute_noConfig_helper : executeRequest_helper
+{
+    CtiRequestMsg request;
+    OUTMESS *om;
+
+    Cti::Test::Override_ConfigManager overrideConfigManager;
+
+    mctExecute_noConfig_helper() :
+        overrideConfigManager(Cti::Config::DeviceConfigSPtr())
+    {
+        om = new OUTMESS;
+    }
+    ~mctExecute_noConfig_helper()
     {
         delete om;
     }
@@ -2422,7 +2420,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
                 results_begin, results_end);
     }
 
-    BOOST_AUTO_TEST_CASE(test_putconfig_install_all_no_config)
+    BOOST_FIXTURE_TEST_CASE(test_putconfig_install_all_no_config, mctExecute_noConfig_helper)
     {
         test_Mct410IconDevice mct410;
 
@@ -2452,7 +2450,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
         mct410.setDisconnectAddress(1234567);
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("disconnectDemandThreshold", "2.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "4");
@@ -2460,10 +2458,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "17");
         config.insertValue("reconnectButton", "true");
         config.insertValue("demandFreezeDay", "12");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct410.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 
@@ -2562,7 +2556,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         test_Mct410IconDevice mct410;
         mct410.setDisconnectAddress(123456);
 
-        test_DeviceConfig config;
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
         config.insertValue("disconnectDemandThreshold", "4.71");
         config.insertValue("disconnectLoadLimitConnectDelay", "3");
@@ -2570,10 +2564,6 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         config.insertValue("connectMinutes", "18");
         config.insertValue("reconnectButton", "false");
         config.insertValue("demandFreezeDay", "21");
-
-        test_ConfigManager  cfgMgr(Cti::Config::DeviceConfigSPtr(&config, null_deleter())); //  null_deleter prevents destruction of the stack object when the shared_ptr goes out of scope.
-
-        mct410.setConfigManager(&cfgMgr);   // attach config manager to the deice so it can find the config
 
         CtiCommandParser parse("putconfig install all");
 

@@ -112,7 +112,6 @@ extern INT RunningInConsole;              // From portmain.cpp
 CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager(Application_Porter);
 CtiPointManager    PorterPointManager;
-CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
 void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RteMgr);
@@ -1383,8 +1382,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
             DeviceManager.apply(attachRouteManagerToDevice, &RouteManager);
             DeviceManager.apply(attachPointManagerToDevice, &PorterPointManager);
-            DeviceManager.apply(attachConfigManagerToDevice, &ConfigManager);
-            ConfigManager.initialize();
+            Cti::ConfigManager::initialize();
             DeviceManager.refreshGroupHierarchy();
             DeviceManager.apply(applyQueuedDevicePortMatchup, &PortManager);
         }
@@ -1398,7 +1396,6 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
             {
                 pDev->setRouteManager(&RouteManager);
                 pDev->setPointManager(&PorterPointManager);
-                pDev->setConfigManager(&ConfigManager);
 
                 if( pDev->isGroup() ) //Doing this call here saves us a tiny bit of time! yay!
                 {
@@ -1447,7 +1444,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
     if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))
     {
-        ConfigManager.processDBUpdate(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
+        Cti::ConfigManager::handleDbChange(pChg->getId(), pChg->getCategory(), pChg->getObjectType(), pChg->getTypeOfChange());
     }
 
 

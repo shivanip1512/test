@@ -56,7 +56,7 @@ struct test_RouteManager : CtiRouteManager
 struct Test_PilServer : Cti::Pil::PilServer
 {
     Test_PilServer() :
-        PilServer(&test_deviceManager, 0, &test_routeManager, 0)
+        PilServer(&test_deviceManager, 0, &test_routeManager)
     {}
 
     virtual std::vector<long> getDeviceGroupMembers(std::string groupname) const

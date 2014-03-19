@@ -46,6 +46,7 @@ database_writer.obj \
 database_connection.obj \
 database_transaction.obj \
 database_reader.obj \
+database_util.obj \
 dbaccess.obj \
 debug_timer.obj \
 desolvers.obj \
