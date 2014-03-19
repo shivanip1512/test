@@ -11,12 +11,12 @@
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
     
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(".f-edit-grp-name").click(function(event) {
-        jQuery("#editGroupNamePopup").dialog({width: 500});
+$(function() {
+    $(".f-edit-grp-name").click(function(event) {
+        $("#editGroupNamePopup").dialog({width: 500});
     });
-    jQuery(".f-add-sub-grp").click(function(event) {
-        jQuery("#addSubGroupPopup").dialog({width: 500});
+    $(".f-add-sub-grp").click(function(event) {
+        $("#addSubGroupPopup").dialog({width: 500});
     });
 });
 
@@ -24,7 +24,7 @@ function removeGroup(formName){
     var confirmRemove = confirm('${removeGroupAreYouSure}');
     if(confirmRemove) {
         if(formName != null) {
-            jQuery("#" + formName).submit();
+            $("#" + formName).submit();
         }
         return true;
     }
@@ -43,43 +43,43 @@ function isValidGroupName(name) {
 }
 
 function checkAndSubmitNewName(nameId, formId, buttonId) {
-    var newName = jQuery("#" + nameId).val();
+    var newName = $("#" + nameId).val();
     if(!isValidGroupName(newName)) {
         alert('${invalidGroupNameError}');
-        jQuery("#" + nameId).focus();
+        $("#" + nameId).focus();
     } else {
-        jQuery("#" + buttonId).attr("disabled", "disabled");
-        jQuery("#" + formId).submit();
+        $("#" + buttonId).attr("disabled", "disabled");
+        $("#" + formId).submit();
     }
 }
     
 function submitMoveGroupForm() {
-    jQuery("#moveGroupForm").submit();
+    $("#moveGroupForm").submit();
 }
 function submitCopyContentsToGroupForm() {
-    jQuery("#copyContentsToGroupForm").submit();
+    $("#copyContentsToGroupForm").submit();
 }
 
 function showDevices() {
-    jQuery("#showDevicesButton").attr("disabled", "disabled");
+    $("#showDevicesButton").attr("disabled", "disabled");
     // escape the group name to escape problem characters
     var groupName = '${cti:escapeJavaScript(group.fullName)}';
-    jQuery("#deviceMembers").load('/group/editor/getDevicesForGroup', {'groupName': groupName});
+    $("#deviceMembers").load('/group/editor/getDevicesForGroup', {'groupName': groupName});
 }
 
 function removeAllDevices(confirmText) {
     var doRemove = confirm(confirmText);
     if (doRemove) {
-        jQuery("#removeAllDevicesButton").attr("disabled", "disabled");
+        $("#removeAllDevicesButton").attr("disabled", "disabled");
         var groupName = '${cti:escapeJavaScript(group.fullName)}';
-        jQuery("#deviceMembers").load('/group/editor/removeAllDevicesFromGroup', {'groupName': groupName});
+        $("#deviceMembers").load('/group/editor/removeAllDevicesFromGroup', {'groupName': groupName});
     }
 }
 
 function confirmRemoveAllDevices(confirmText) {
     var doRemove = confirm(confirmText);
     if (doRemove) {
-        jQuery("#removeAllDevicesFromGroupForm").submit();
+        $("#removeAllDevicesFromGroupForm").submit();
     }
 }
 </script>

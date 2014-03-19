@@ -196,6 +196,6 @@
 
 <script type="text/javascript">
 yukon.ui.util.callAfterMainWindowLoad(function () {
-    cronExpFreqChange('${id}', jQuery('#' + '${id}_cronExpFreq')[0]);
+    cronExpFreqChange('${id}', $('#' + '${id}_cronExpFreq')[0]);
 });
 </script>

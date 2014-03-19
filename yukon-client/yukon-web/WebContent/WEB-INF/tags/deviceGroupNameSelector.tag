@@ -41,19 +41,19 @@
         yukon.namespace('yukon.ui.dialogs.${uniqueId}');
     }
 
-    jQuery(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
-        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent(jQuery(document.getElementById("${fieldId}")).val());
+    $(document).on('click', '#viewSelectedDevices_${uniqueId}', function() {
+        var url = '<cti:url value="/bulk/selectedDevicesTableForGroupName"/>' + '?groupName=' + encodeURIComponent($(document.getElementById("${fieldId}")).val());
         showSelectedDevices('#viewSelectedDevices_${uniqueId}', 'showSelectedDevices_${uniqueId}', url);
     });
 
-    jQuery(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
+    $(document).on('click', '.deviceGroupLink_${uniqueId}', function() {
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
-        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent(jQuery(document.getElementById("${fieldId}")).val());
+        var url = '<cti:url value="/group/editor/home"/>' + '?groupName=' + encodeURIComponent($(document.getElementById("${fieldId}")).val());
         window.location.href = url;
     });
     
-    jQuery(document).on('click', '.chooseGroupIcon_${uniqueId}', function() {
+    $(document).on('click', '.chooseGroupIcon_${uniqueId}', function() {
         var uniqueId = '${uniqueId}',
             devGroupTree,
             groupTreeObj,
@@ -80,14 +80,14 @@
             yukon.ui.dialogs.${uniqueId}.init = 'inited';
         } else {
             // for some reason, this is called multiple times
-            if (true === jQuery('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
+            if (true === $('#window_selectGroupTree_${uniqueId}').dialog('isOpen')) {
                 return;
             }
         }
-        jQuery('#window_selectGroupTree_${uniqueId}').dialog('open');
+        $('#window_selectGroupTree_${uniqueId}').dialog('open');
         if (-1 !== uniqueId.indexOf('deviceGroupNameSelectorTag')) {
             devGroupTree = document.getElementById('window_selectGroupTree_${uniqueId}');
-            groupTreeObj = jQuery(devGroupTree);
+            groupTreeObj = $(devGroupTree);
             titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
             dialogCont = groupTreeObj.closest('.ui-dialog');
             offsetTop = dialogCont.offset().top;
@@ -107,28 +107,28 @@
             // no scrollbars on tree div, prevents double scrollbars
             groupTreeObj.css('overflow', 'hidden');
             dialogContOffset = dialogCont.offset();
-            buttonPaneObj = jQuery(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
+            buttonPaneObj = $(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
             // position dialog
             dialogCont.offset({'left' : dialogContOffset.left, 'top' : offsetTop - buttonPaneObj.height()});
             // size tree height so it is fully scrollable
             maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
             // set max height of tree dialog so the scrolling works through all the entries
-            jQuery('#selectGroupTree_${uniqueId}').css('max-height', maxHeight);
+            $('#selectGroupTree_${uniqueId}').css('max-height', maxHeight);
         }
     });
     
 	function setSelectedGroupName_${uniqueId}() {
 		<c:if test="${empty pageScope.fieldValue}">
-			jQuery('#noGroupSelectedText_${uniqueId}').hide();
+			$('#noGroupSelectedText_${uniqueId}').hide();
 		</c:if>
-		jQuery('#deviceGroupName_${uniqueId}').html(jQuery(document.getElementById("${fieldId}")).val());
+		$('#deviceGroupName_${uniqueId}').html($(document.getElementById("${fieldId}")).val());
 
 		if (${pageScope.showSelectedDevicesIcon}) {
-			jQuery('#viewDevicesIconSpan_${uniqueId}').show();
+			$('#viewDevicesIconSpan_${uniqueId}').show();
 		}
 		
 		if (${pageScope.linkGroupName}) {
-			jQuery('.deviceGroupLink_${uniqueId}').show();
+			$('.deviceGroupLink_${uniqueId}').show();
 		}
 	}
 

@@ -24,13 +24,13 @@
     </tags:sectionContainer2>
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
     updateControlEvents('PAST_DAY');
 });
 
 function updateControlEvents(controlPeriod) {
-    yukon.ui.elementGlass.show(jQuery('#controlEventsDiv'));
-    jQuery.ajax({
+    yukon.ui.elementGlass.show($('#controlEventsDiv'));
+    $.ajax({
         url: '${innerViewUrl}',
         method: 'POST',
         data: { 
@@ -40,9 +40,9 @@ function updateControlEvents(controlPeriod) {
             'controlPeriod': controlPeriod
         }
     }).done(function(data){
-        jQuery('#controlEventsDiv').html(data);
+        $('#controlEventsDiv').html(data);
     }).always(function() {
-        yukon.ui.elementGlass.hide(jQuery('#controlEventsDiv'));
+        yukon.ui.elementGlass.hide($('#controlEventsDiv'));
     });
 }
 </script>  

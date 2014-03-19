@@ -8,8 +8,8 @@
 <cti:standardPage module="capcontrol" page="movedCapBanks">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     <script type="text/javascript">
-    jQuery(function() {
-        jQuery('#movedCBTable').on('click', 'a.moveLink', function (event) {
+    $(function() {
+        $('#movedCBTable').on('click', 'a.moveLink', function (event) {
             var a = event.currentTarget;
             yukon.da.getMovedBankMenu(a.id, event);
         });

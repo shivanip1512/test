@@ -11,35 +11,35 @@ yukon.dr.assetDetails = (function() {
     
     _getFilter = function() {
         var filter = [];
-        jQuery('[data-filter].on').each(function (idx, item) {
-            filter.push(jQuery(item).data('filter'));
+        $('[data-filter].on').each(function (idx, item) {
+            filter.push($(item).data('filter'));
         });
         return filter;
     },
 
     _doFilterTable  = function(event) {
-        jQuery(event.currentTarget).toggleClass('on');
+        $(event.currentTarget).toggleClass('on');
         var data = {'assetId': _assetId, 'filter': _getFilter()};
         if ("" != _itemsPerPage) {
             data.itemsPerPage = _itemsPerPage;
         }
-        jQuery('.device-detail-table').load('page', data);
+        $('.device-detail-table').load('page', data);
         return false;
     },
 
     _downloadToCsv = function(event) {
         var data = {'assetId': _assetId, 'filter': _getFilter()},
-            param = jQuery.param(data);
+            param = $.param(data);
         window.location = 'downloadToCsv?' + param;
         return false;
     },
 
     _pingDevices = function(event) {
-        jQuery('#pingResults').show();
-        jQuery('.progressbar-percent-complete').text("0%");
-        jQuery('.progressbar-inner-fail,.progressbar-inner-success').width(0);
+        $('#pingResults').show();
+        $('.progressbar-percent-complete').text("0%");
+        $('.progressbar-inner-fail,.progressbar-inner-success').width(0);
         var url = "pingDevices?assetId=" + _assetId;
-        jQuery.ajax({
+        $.ajax({
             url: url,
             method: 'POST'
         });
@@ -52,17 +52,17 @@ yukon.dr.assetDetails = (function() {
                 return;
             }
 
-            _assetId = jQuery("#assetId").val();
-            _itemsPerPage = jQuery("#itemsPerPage").val();
-            _aaDiv = jQuery('.f-asset-availability');
+            _assetId = $("#assetId").val();
+            _itemsPerPage = $("#itemsPerPage").val();
+            _aaDiv = $('.f-asset-availability');
 
-            jQuery(document).on('click', '[data-filter]', _doFilterTable);
-            jQuery(document).on('click', '#dd-download', _downloadToCsv);
-            jQuery(document).on('click', '#pingButton', _pingDevices);
+            $(document).on('click', '[data-filter]', _doFilterTable);
+            $(document).on('click', '#dd-download', _downloadToCsv);
+            $(document).on('click', '#pingButton', _pingDevices);
             
             if (_aaDiv.length) {
                 yukon.ui.elementGlass.show(_aaDiv);
-                jQuery.ajax('assetAvailability', {
+                $.ajax('assetAvailability', {
                     data: {'paoId': _assetId}
                 }).done(function(data) {
                     _aaDiv.html(data);
@@ -74,7 +74,7 @@ yukon.dr.assetDetails = (function() {
         },
         
         unbusyPingButton: function() {
-            yukon.ui.unbusy(jQuery('#pingButton'));
+            yukon.ui.unbusy($('#pingButton'));
         }
 
     };
@@ -83,6 +83,6 @@ yukon.dr.assetDetails = (function() {
     
 }());
 
-jQuery(function() {
+$(function() {
     yukon.dr.assetDetails.init();
 });

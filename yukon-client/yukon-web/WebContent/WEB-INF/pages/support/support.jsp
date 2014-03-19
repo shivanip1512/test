@@ -9,16 +9,16 @@
 
 <script type="text/javascript">
 function openFtpPopup(fileName){
-    jQuery.ajax({
+    $.ajax({
         url: "/support/infoOnBundle",
         data: {fileName: fileName}
     }).done(function(json) {
-        var form = jQuery("#ftpPopupForm");
-        jQuery("#uploadFileName").text(json.fileName);
-        jQuery("#uploadFileSize").text(json.fileSize);
-        jQuery("#uploadFileDate").text(json.fileDate);
-        jQuery("input[name=fileName]", "#ftpPopupForm").val(fileName);
-        jQuery("#ftpUploadPopup").dialog({
+        var form = $("#ftpPopupForm");
+        $("#uploadFileName").text(json.fileName);
+        $("#uploadFileSize").text(json.fileSize);
+        $("#uploadFileDate").text(json.fileDate);
+        $("input[name=fileName]", "#ftpPopupForm").val(fileName);
+        $("#ftpUploadPopup").dialog({
             buttons: {
                 upload: {
                     text: "<cti:msg2 key='.supportBundle.startUpload.label' />",
@@ -30,7 +30,7 @@ function openFtpPopup(fileName){
                 cancel: {
                     text: '<cti:msg2 key=".cancel"/>',
                     click: function() {
-                        jQuery(this).dialog("close");
+                        $(this).dialog("close");
                     }
                 }
             }
@@ -38,9 +38,9 @@ function openFtpPopup(fileName){
     });
 }
 
-jQuery(function() {
-    jQuery("#ftpUploadBtn").click(function() {
-        var chosenBundle = jQuery("input[name=fileName]:checked", "#previousBundlesForm").val();
+$(function() {
+    $("#ftpUploadBtn").click(function() {
+        var chosenBundle = $("input[name=fileName]:checked", "#previousBundlesForm").val();
         openFtpPopup(chosenBundle);
     });
 });

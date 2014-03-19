@@ -50,7 +50,7 @@
     // names will be the id, prefixed with tree_
     var tree_${id};
     var window_${id};
-    jQuery(document).ready(function() {
+    $(document).ready(function() {
         var offsetTop,
             titleBarObj,
             groupTreeObj,
@@ -85,7 +85,7 @@
                 draggable: true,
                 resizeStop: function( event, ui ) {
                     var maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
-                    jQuery('#${id}').css('max-height', maxHeight);
+                    $('#${id}').css('max-height', maxHeight);
                 }
             };
         
@@ -96,11 +96,11 @@
         }
         </c:if>
 
-        window_${id} = jQuery(document.getElementById("window_${id}")).dialog(args);
+        window_${id} = $(document.getElementById("window_${id}")).dialog(args);
 
-        groupTreeObj = jQuery('#' + 'window_${id}');
+        groupTreeObj = $('#' + 'window_${id}');
         titleBarObj = groupTreeObj.prev('.ui-dialog-titlebar');
-        buttonPaneObj = jQuery(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
+        buttonPaneObj = $(groupTreeObj.nextAll('.ui-dialog-buttonpane')[0]);
         dialogCont = groupTreeObj.closest('.ui-dialog');
         treeHelperPane = groupTreeObj.find('.tree_helper_controls');
         // ignores if present, creates if not
@@ -110,9 +110,9 @@
         }
         <c:if test="${!empty pageScope.triggerElement}">
         //click a button, get the window
-        jQuery(document.getElementById("${triggerElement}")).click(function(){
+        $(document.getElementById("${triggerElement}")).click(function(){
             var maxHeight;
-            jQuery(document.getElementById("window_${id}")).dialog('open');
+            $(document.getElementById("window_${id}")).dialog('open');
             offsetTop = dialogCont.offset().top;
             // save offset of popup once. Subsequently, dialogCont.offset().top appears to change
             // Store the first value of the top offset of the dialog. Subsequent values vary
@@ -130,7 +130,7 @@
             dialogCont.offset({'left' : dialogContOffset.left, 'top' : offsetTop - buttonPaneObj.height()});
             // size tree height so it is fully scrollable
             maxHeight = calcMaxHeight(dialogCont, titleBarObj, treeHelperPane, buttonPaneObj);
-            jQuery('#${id}').css('max-height', maxHeight);
+            $('#${id}').css('max-height', maxHeight);
         });
         </c:if>
     });

@@ -6,7 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
     <script type="text/javascript">
-    jQuery(function() {
+    $(function() {
         // function location: exporter.jsp
         renderPopup();
     });

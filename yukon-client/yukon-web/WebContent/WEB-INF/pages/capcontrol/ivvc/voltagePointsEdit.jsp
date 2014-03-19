@@ -11,9 +11,9 @@
     <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css" />
     
     <script>
-        jQuery(document).ready(function() {
-            jQuery("table.compact-results-table tbody tr td input:checkbox").change(function() {
-                jQuery(this).closest("tr").find("input:text").toggleDisabled();
+        $(document).ready(function() {
+            $("table.compact-results-table tbody tr td input:checkbox").change(function() {
+                $(this).closest("tr").find("input:text").toggleDisabled();
             });
             
             /**
@@ -22,9 +22,9 @@
              * error page would show this checkbox as unchecked. This code iterates through these and 
              * "checks" them for the user.
              */
-            jQuery("input.lowerLimit.error, input.upperLimit.error").each(function() {
+            $("input.lowerLimit.error, input.upperLimit.error").each(function() {
                 this.disabled = false;
-                jQuery(this).closest("tr").find("input:checkbox").attr("checked", true);
+                $(this).closest("tr").find("input:checkbox").attr("checked", true);
             });
             yukon.ui.focusFirstError();
         });

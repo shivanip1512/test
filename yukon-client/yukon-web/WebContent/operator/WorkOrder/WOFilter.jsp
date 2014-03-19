@@ -402,28 +402,28 @@
                     html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
                     form.insertAdjacentHTML("beforeEnd", html);
                 }
-                jQuery("#submitbutton").toggle();
+                $("#submitbutton").toggle();
                 document.body.style.cursor = "wait";
                 form.submit();
             }
         }
 
         function enableStartDate (startDateValue) {
-            var isChecked = jQuery('#enableStart').prop('checked');
+            var isChecked = $('#enableStart').prop('checked');
 
-            jQuery('#startDateDiv input').prop('disabled', !isChecked);
-            jQuery('#startCal').val(startDateValue);
+            $('#startDateDiv input').prop('disabled', !isChecked);
+            $('#startCal').val(startDateValue);
         }
 
         function enableStopDate (stopDateValue) {
-            var isChecked = jQuery('#enableStop').prop('checked');
+            var isChecked = $('#enableStop').prop('checked');
 
-            jQuery('#stopDateDiv input').prop('disabled', !isChecked);
-            jQuery('#stopCal').val(stopDateValue);
+            $('#stopDateDiv input').prop('disabled', !isChecked);
+            $('#stopCal').val(stopDateValue);
         }
-        jQuery( function () {
-            jQuery('#startDateDiv input').prop('disabled', !jQuery('#enableStart').prop('checked'));
-            jQuery('#stopDateDiv input').prop('disabled', !jQuery('#enableStop').prop('checked'));
+        $( function () {
+            $('#startDateDiv input').prop('disabled', !$('#enableStart').prop('checked'));
+            $('#stopDateDiv input').prop('disabled', !$('#enableStop').prop('checked'));
         });
         
     </script>

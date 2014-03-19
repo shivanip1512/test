@@ -32,10 +32,10 @@ yukon.PorterResponseMonitor = (function () {
          * adjusts button states for each row.
          */
         reindexAll: function() {
-            var rows = jQuery('#rules-table tbody tr');
+            var rows = $('#rules-table tbody tr');
             rows.each(function(index, elem) {
                 
-                var row = jQuery(elem);
+                var row = $(elem);
                 mod.reindex(row, index);
                 
                 if (rows.length === 1) { // only one row
@@ -57,20 +57,20 @@ yukon.PorterResponseMonitor = (function () {
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     
     /** SETUP ROWS AFTER PAGE LOAD*/
     // just get rid of the extra hidden input that spring uses for the checkbox state
-    jQuery('#rules-table tbody tr').each(function(idx, elem) {
-        jQuery(elem).find('[name^="_rule"]').remove();
+    $('#rules-table tbody tr').each(function(idx, elem) {
+        $(elem).find('[name^="_rule"]').remove();
     });
-    jQuery('#rules-table tbody tr:first-child .f-up').prop('disabled', true);
-    jQuery('#rules-table tbody tr:last-child .f-down').prop('disabled', true);
+    $('#rules-table tbody tr:first-child .f-up').prop('disabled', true);
+    $('#rules-table tbody tr:last-child .f-down').prop('disabled', true);
     
     /** ADD RULE */
-    jQuery('.f-add-rule').click(function(event) {
+    $('.f-add-rule').click(function(event) {
         
-        var row = jQuery('.f-template-row').clone();
+        var row = $('.f-template-row').clone();
         
         row.removeClass('f-template-row');
         row.appendTo('#rules-table tbody');
@@ -79,14 +79,14 @@ jQuery(function() {
     });
     
     /** REMOVE RULE */
-    jQuery(document).on('click','.f-remove', function(event) {
-        jQuery(this).closest('tr').remove();
+    $(document).on('click','.f-remove', function(event) {
+        $(this).closest('tr').remove();
         yukon.PorterResponseMonitor.reindexAll();
     });
     
     /** MOVE RULE UP */
-    jQuery(document).on('click','.f-up', function(event) {
-        var row = jQuery(this).closest('tr'),
+    $(document).on('click','.f-up', function(event) {
+        var row = $(this).closest('tr'),
             prevRow = row.prev();
         
         row.insertBefore(prevRow);
@@ -95,8 +95,8 @@ jQuery(function() {
     });
     
     /** MOVE RULE DOWN */
-    jQuery(document).on('click','.f-down', function(event) {
-        var row = jQuery(this).closest('tr'),
+    $(document).on('click','.f-down', function(event) {
+        var row = $(this).closest('tr'),
             nextRow = row.next();
         
         row.insertAfter(nextRow);

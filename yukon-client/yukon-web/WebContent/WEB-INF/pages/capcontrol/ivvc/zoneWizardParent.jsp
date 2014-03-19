@@ -14,7 +14,7 @@
     }
     
     cancelZoneWizard = function() {
-        jQuery('#zoneWizardPopup').dialog('close');
+        $('#zoneWizardPopup').dialog('close');
     }
 </script>
 

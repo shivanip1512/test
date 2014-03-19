@@ -6,9 +6,9 @@ function hideRevealSectionSetup(showElement,
                                 persistId, 
                                 slide) {
     // cache the jQuery objects
-    section = jQuery(document.getElementById(section));
-    showElement = jQuery(document.getElementById(showElement));
-    hideElement = jQuery(document.getElementById(hideElement));
+    section = $(document.getElementById(section));
+    showElement = $(document.getElementById(showElement));
+    hideElement = $(document.getElementById(hideElement));
 
     var doShow = function(doSlide) {
         section.slideDown(doSlide, 'swing');
@@ -22,7 +22,7 @@ function hideRevealSectionSetup(showElement,
     };
     
     var doHide = function(doSlide) {
-        jQuery(section).slideUp(doSlide, 'swing');
+        $(section).slideUp(doSlide, 'swing');
         hideElement.hide();
         showElement.show();
         if (persistId != '') {
@@ -47,7 +47,7 @@ function hideRevealSectionSetup(showElement,
         doHide(0);
     }
 
-    jQuery(document.getElementById(clickableElement)).click(function(event) {
+    $(document.getElementById(clickableElement)).click(function(event) {
         // convert from true/false (passed in) to a relevant numerical value
         slide = slide ? 400 : 0;
         if (section.is(":visible")) {

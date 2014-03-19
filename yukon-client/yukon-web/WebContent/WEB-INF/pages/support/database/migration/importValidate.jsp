@@ -60,8 +60,8 @@
     
     <script type="text/javascript">
         function setWarningProcessing() {
-            var warningProcessValue = jQuery('#warningProcessing option:selected').val();
-            jQuery('#warningProcessingValue').val(warningProcessValue);
+            var warningProcessValue = $('#warningProcessing option:selected').val();
+            $('#warningProcessingValue').val(warningProcessValue);
         }
     </script>
     
@@ -89,7 +89,7 @@
                           <input type="hidden" name="fileKey" value="${status.id}">
                       </form>
                     <div>
-                        <a href="javascript:void(0);" onclick="jQuery('#openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
+                        <a href="javascript:void(0);" onclick="$('#openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
                     </div>
                 </tags:nameValue>
                 <tags:nameValue name="${fileSizeLabel}">
@@ -167,8 +167,8 @@
         </form>
         
         <div class="page-action-area">
-            <cti:button onclick="jQuery('#confirmForm').submit();" label="${commitFile}"/>
-            <cti:button onclick="jQuery('#cancelForm').submit();" label="${cancel}"/>
+            <cti:button onclick="$('#confirmForm').submit();" label="${commitFile}"/>
+            <cti:button onclick="$('#cancelForm').submit();" label="${cancel}"/>
         </div>
 
    </tags:boxContainer>

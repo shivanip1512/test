@@ -16,7 +16,7 @@
 <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit"/>
 
 <script type="text/javascript">
-jQuery(function(){
+$(function(){
     yukon.ThermostatManualEditor.init({
         thermostat: {
             HEAT: {

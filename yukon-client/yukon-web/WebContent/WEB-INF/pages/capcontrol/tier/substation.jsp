@@ -31,7 +31,7 @@
 </c:if>
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
     yukon.da.checkPageExpire();
     yukon.da.initSubstation();
 });

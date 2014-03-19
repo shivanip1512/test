@@ -12,7 +12,7 @@
         <input type="hidden" name="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
         <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="primary action"/>
-            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         </div>
     </form>
 </cti:msgScope>

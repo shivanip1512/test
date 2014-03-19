@@ -6,15 +6,15 @@
 <cti:standardPage module="tools" page="bulk.fdrTranslationManagement">
     
     <script>
-    jQuery(document).ready(function(){
+    $(document).ready(function(){
         updateInterfaceSelection();
         
-        jQuery("#interfaceColumnSelector").change(function(){
+        $("#interfaceColumnSelector").change(function(){
             updateInterfaceSelection();
         });
         
-        jQuery('#importForm').submit(function() {
-            jQuery(this).ajaxSubmit({
+        $('#importForm').submit(function() {
+            $(this).ajaxSubmit({
                 dataType:   'json',
                 success:    function(data) {
                     if(data.error) {
@@ -33,14 +33,14 @@
     });
     
     function updateInterfaceSelection() {
-        var itemSelected = jQuery("#interfaceColumnSelector").val();
+        var itemSelected = $("#interfaceColumnSelector").val();
         //hide all rows
-        jQuery("[class^='interface_']").hide();
+        $("[class^='interface_']").hide();
         //show rows for the selected interface
-        jQuery(".interface_" + itemSelected).show();
+        $(".interface_" + itemSelected).show();
         //update the sample files link
         var filePath = "/WebConfig/custom/sample_bulk_files/fdr_translations/" + itemSelected + "_sample.csv";
-        jQuery("#sampleFileLink").attr("href", filePath);
+        $("#sampleFileLink").attr("href", filePath);
     }
     </script>
     

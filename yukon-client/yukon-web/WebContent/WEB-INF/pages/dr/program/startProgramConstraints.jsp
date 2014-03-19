@@ -64,7 +64,7 @@
             <cti:url var="backUrl" value="/dr/program/start/gearAdjustments"/>
         </c:if>
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

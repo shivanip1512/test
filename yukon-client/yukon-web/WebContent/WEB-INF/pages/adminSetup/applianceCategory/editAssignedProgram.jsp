@@ -58,21 +58,21 @@ submitForm = function() {
     return submitFormViaAjax('acDialog', 'assignedProgramForm');
 };
 
-jQuery(function(){
-    jQuery("#picker_assignedProgramPicker_label a").click(function(e) {
-        jQuery("#acDialog").dialog("close");
+$(function(){
+    $("#picker_assignedProgramPicker_label a").click(function(e) {
+        $("#acDialog").dialog("close");
         e.stopPropagation();
         return true;
     });
 });
 
 showProgramEditor = function() {
-    jQuery("#acDialog").dialog("open");
+    $("#acDialog").dialog("open");
 };
 
-jQuery(function(){
-    jQuery("#sameAsProgramName").click(function(){sameAsProgramNameClicked();});
-    jQuery("#sameAsDisplayName").click(function(){sameAsDisplayNameClicked();});
+$(function(){
+    $("#sameAsProgramName").click(function(){sameAsProgramNameClicked();});
+    $("#sameAsDisplayName").click(function(){sameAsDisplayNameClicked();});
 });
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="VIEW">
@@ -234,7 +234,7 @@ function showProgramEditor() {
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:button type="submit" nameKey="ok" classes="primary action"/>
         </cti:displayForPageEditModes>
-        <cti:button nameKey="cancel" onclick="jQuery('#acDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#acDialog').dialog('close');"/>
     </div>
 
 </form:form>

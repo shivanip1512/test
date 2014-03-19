@@ -25,13 +25,13 @@ yukon.surveys.edit = (function () {
         },
 
         _initQuestionDialog = function() {
-            var infoHolder = jQuery('[data-answer-keys]'),
+            var infoHolder = $('[data-answer-keys]'),
                 answerKeys = infoHolder.data('answerKeys'),
                 ii;
 
             _questionTypeChanged();
-            jQuery('#questionType').change(yukon.surveys.questionTypeChanged);
-            jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+            $('#questionType').change(yukon.surveys.questionTypeChanged);
+            $('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
 
             if (answerKeys !== '') {
                 mod.addAnswer.nextRowIdNum = 0;
@@ -41,42 +41,42 @@ yukon.surveys.edit = (function () {
                         mod.addAnswer(answerKeys[ii]);
                     }
                 }
-                jQuery('#questionKey').focus();
-                jQuery('#questionKey').select();
+                $('#questionKey').focus();
+                $('#questionKey').select();
             }
         },
 
         _disableMoveUp = function (rowIdNum) {
-            var oldMoveIcon = jQuery('#moveUpIcon' + rowIdNum)[0],
+            var oldMoveIcon = $('#moveUpIcon' + rowIdNum)[0],
                 disabledIcon = _moveUpDisabledIcon.cloneNode(true);
             disabledIcon.id = 'moveUpIcon' + rowIdNum;
             oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
         },
 
         _disableMoveDown = function (rowIdNum) {
-            var oldMoveIcon = jQuery('#moveDownIcon' + rowIdNum)[0],
+            var oldMoveIcon = $('#moveDownIcon' + rowIdNum)[0],
                 disabledIcon = _moveDownDisabledIcon.cloneNode(true);
             disabledIcon.id = 'moveDownIcon' + rowIdNum;
             oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
         },
 
         _enableMoveUp = function (rowIdNum) {
-            var oldMoveIcon = jQuery('#moveUpIcon' + rowIdNum)[0],
+            var oldMoveIcon = $('#moveUpIcon' + rowIdNum)[0],
                 enabledIcon = _moveUpIcon.cloneNode(true);
             enabledIcon.id = 'moveUpIcon' + rowIdNum;
             oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
         },
 
         _enableMoveDown = function (rowIdNum) {
-            var oldMoveIcon = jQuery('#moveDownIcon' + rowIdNum)[0],
+            var oldMoveIcon = $('#moveDownIcon' + rowIdNum)[0],
                 enabledIcon = _moveDownIcon.cloneNode(true);
             enabledIcon.id = 'moveDownIcon' + rowIdNum;
             oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
         },
 
         _deleteAnswer = function (event) {
-            var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum'),
-                row = jQuery('#answerRow' + rowIdNum)[0];
+            var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
+                row = $('#answerRow' + rowIdNum)[0];
             if (mod.addAnswer.rowIdNums.length > 1) {
                 if (rowIdNum === mod.addAnswer.rowIdNums[0]) {
                     _disableMoveUp(mod.addAnswer.rowIdNums[1]);
@@ -92,12 +92,12 @@ yukon.surveys.edit = (function () {
         },
 
         _moveAnswerUp = function (event) {
-            var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum'),
+            var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
                 index = _indexOfRow(rowIdNum),
                 previousRowId = mod.addAnswer.rowIdNums[index - 1],
-                rowToMove = jQuery('#answerRow' + rowIdNum)[0],
+                rowToMove = $('#answerRow' + rowIdNum)[0],
                 parent = rowToMove.parentNode,
-                previousRow = jQuery('#answerRow' + previousRowId)[0],
+                previousRow = $('#answerRow' + previousRowId)[0],
                 save;
 
             parent.removeChild(rowToMove);
@@ -118,12 +118,12 @@ yukon.surveys.edit = (function () {
         },
 
         _moveAnswerDown = function (event) {
-            var rowIdNum = jQuery(event.target).closest('tr').data('rowIdNum'),
+            var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
                 index = _indexOfRow(rowIdNum),
                 nextRowId = mod.addAnswer.rowIdNums[index + 1],
-                rowToMove = jQuery('#answerRow' + rowIdNum)[0],
+                rowToMove = $('#answerRow' + rowIdNum)[0],
                 parent = rowToMove.parentNode,
-                nextRow = jQuery('#answerRow' + nextRowId)[0],
+                nextRow = $('#answerRow' + nextRowId)[0],
                 save = mod.addAnswer.rowIdNums[index];
 
             parent.removeChild(nextRow);
@@ -143,19 +143,19 @@ yukon.surveys.edit = (function () {
         },
 
         _questionTypeChanged = function () {
-            var questionType = jQuery('#questionType').val();
-            jQuery('.additionalInfo').hide();
-            jQuery('.additionalInfo[id$=_' + questionType + ']').show();
+            var questionType = $('#questionType').val();
+            $('.additionalInfo').hide();
+            $('.additionalInfo[id$=_' + questionType + ']').show();
         },
 
         mod = {
             init: function (params) {
-                var editDetailsBtn = jQuery('#editDetailsBtn'),
-                    addQuestionBtn = jQuery('#addQuestionBtn'),
+                var editDetailsBtn = $('#editDetailsBtn'),
+                    addQuestionBtn = $('#addQuestionBtn'),
                     icons;
 
                 if (params.hasBeenTaken === 'false') {
-                    icons = jQuery('#templateIcons > button');
+                    icons = $('#templateIcons > button');
                     _moveUpIcon = icons[0];
                     _moveDownIcon = icons[1];
                     _deleteAnswerIcon = icons[2];
@@ -164,35 +164,35 @@ yukon.surveys.edit = (function () {
                 }
                 editDetailsBtn.click(function () {
                     var editDetailsUrl = editDetailsBtn.data('detailUrl');
-                    jQuery('#ajaxDialog').load(editDetailsUrl);
+                    $('#ajaxDialog').load(editDetailsUrl);
                 });
 
                 addQuestionBtn.click(function () {
                     var addQuestionUrl = addQuestionBtn.data('addQuestionUrl');
-                    jQuery('#ajaxDialog').load(addQuestionUrl, _initQuestionDialog);
+                    $('#ajaxDialog').load(addQuestionUrl, _initQuestionDialog);
                 });
 
-                jQuery('.editQuestionBtn').click(function (event) {
-                    var editQuestionUrl = jQuery(event.target).closest('[data-edit-question-url]').data('editQuestionUrl');
-                    jQuery('#ajaxDialog').load(editQuestionUrl, _initQuestionDialog);
+                $('.editQuestionBtn').click(function (event) {
+                    var editQuestionUrl = $(event.target).closest('[data-edit-question-url]').data('editQuestionUrl');
+                    $('#ajaxDialog').load(editQuestionUrl, _initQuestionDialog);
                 });
 
-                jQuery(document).on('click', '.moveAnswerUp', _moveAnswerUp);
-                jQuery(document).on('click', '.moveAnswerDown', _moveAnswerDown);
-                jQuery(document).on('click', '.deleteAnswer', _deleteAnswer);
+                $(document).on('click', '.moveAnswerUp', _moveAnswerUp);
+                $(document).on('click', '.moveAnswerDown', _moveAnswerDown);
+                $(document).on('click', '.deleteAnswer', _deleteAnswer);
 
-                jQuery(document).on('yukonDetailsUpdated', closeAjaxDialogAndRefresh);
-                jQuery(document).on('yukonQuestionSaved', closeAjaxDialogAndRefresh);
+                $(document).on('yukonDetailsUpdated', closeAjaxDialogAndRefresh);
+                $(document).on('yukonQuestionSaved', closeAjaxDialogAndRefresh);
             },
 
             addAnswer : function (answerKey) {
-                var answerTable = jQuery('#answerTable tbody'),
-                    newRow = jQuery(document.createElement("tr")),
+                var answerTable = $('#answerTable tbody'),
+                    newRow = $(document.createElement("tr")),
                     newRowIdNum,
                     isFirstRow,
-                    keyCell = jQuery(document.createElement("td")),
+                    keyCell = $(document.createElement("td")),
                     inputNode = document.createElement("input"),
-                    actionsCell = jQuery(document.createElement("td")),
+                    actionsCell = $(document.createElement("td")),
                     icon,
                     index,
                     inputElements,

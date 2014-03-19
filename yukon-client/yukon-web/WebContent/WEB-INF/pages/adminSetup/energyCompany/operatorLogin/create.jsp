@@ -12,19 +12,19 @@
     
     <script>
         function generatePassword() {
-            var dataHash = {userGroupName : jQuery('#userGroupName').val()};
-            var userId = jQuery('#userId');
+            var dataHash = {userGroupName : $('#userGroupName').val()};
+            var userId = $('#userId');
             if (userId.length && userId.val() != 0) {
                 dataHash[ 'userId'] = userId.val();
             }
 
-            jQuery.ajax({
+            $.ajax({
               url: '${generatedPasswordUrl}',
               data: dataHash,
               success: function(data){
-                   jQuery('#password1').val(data);
-                   jQuery('#password2').val(data);
-                   jQuery("#showPasswordCheckbox").attr('checked', true);
+                   $('#password1').val(data);
+                   $('#password2').val(data);
+                   $("#showPasswordCheckbox").attr('checked', true);
                    showPassword();
               }
            });
@@ -32,7 +32,7 @@
 
         function showPassword() {
             var yukUiAux = yukon.ui.util;
-            if(jQuery("#showPasswordCheckbox").is(":checked")) {
+            if($("#showPasswordCheckbox").is(":checked")) {
                 yukUiAux.changeInputType('password1', 'text');
                 yukUiAux.changeInputType('password2', 'text');
             }else{

@@ -9,9 +9,9 @@
 
 <cti:includeScript link="${jqueryPath}" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    jQuery(function () {
-        jQuery('#accountnumberinput').focus();
-        jQuery('#accountnumberinput').keydown(function (ev) {
+    $(function () {
+        $('#accountnumberinput').focus();
+        $('#accountnumberinput').keydown(function (ev) {
             var keyCode = ev.which;
             if (keyCode === 13) {
                 event.preventDefault();

@@ -2,30 +2,30 @@
  * Find the correct instance of DynamicTable for a given element and call the given method on it.
  */
 function callOnDynamicTable (event, method) {
-    var wrapperDiv = jQuery(event.target).closest('.dynamicTableWrapper')[0],
+    var wrapperDiv = $(event.target).closest('.dynamicTableWrapper')[0],
         divId = wrapperDiv.id,
         dynamicTableInstance = window[divId.substring(0, divId.length - 8)];
     dynamicTableInstance[method].apply(dynamicTableInstance, [event]);
 }
 
-jQuery(function () {
-    jQuery(document).on('click', '.dynamicTableWrapper .moveUpBtn',
+$(function () {
+    $(document).on('click', '.dynamicTableWrapper .moveUpBtn',
             function(event) {
                 callOnDynamicTable(event, 'moveItemUp');
             });
-    jQuery(document).on('click', '.dynamicTableWrapper .moveDownBtn',
+    $(document).on('click', '.dynamicTableWrapper .moveDownBtn',
             function(event) {
                 callOnDynamicTable(event, 'moveItemDown');
             });
-    jQuery(document).on('click', '.dynamicTableWrapper .removeBtn',
+    $(document).on('click', '.dynamicTableWrapper .removeBtn',
             function(event) {
                 callOnDynamicTable(event, 'removeItem');
             });
-    jQuery(document).on('click', '.dynamicTableWrapper .undoRemoveBtn',
+    $(document).on('click', '.dynamicTableWrapper .undoRemoveBtn',
             function(event) {
                 callOnDynamicTable(event, 'undoRemoveItem');
             });
-    jQuery(document).on('click', '.dynamicTableWrapper .addItem',
+    $(document).on('click', '.dynamicTableWrapper .addItem',
             function(event) {
                 callOnDynamicTable(event, 'addItem');
             });
@@ -43,7 +43,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     getVisibleRows = function () {
         var retVal = [];
         everyRow.call(this, function (row, undoRow) {
-            if ('none' !== jQuery(row).css('display')) {
+            if ('none' !== $(row).css('display')) {
                 retVal.push(row);
             }
         });
@@ -54,8 +54,8 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
      * Private method to force height of undo row and matching regular row to be the same height.
      */
     matchRowAndUndoRowHeights = function (row, undoRow) {
-        var rowHeight = jQuery(row).height(),
-            undoRowHeight = jQuery(undoRow).height();
+        var rowHeight = $(row).height(),
+            undoRowHeight = $(undoRow).height();
         if (undoRowHeight < rowHeight) {
             undoRow.style.height = rowHeight + "px";
         } else if (rowHeight > undoRowHeight) {
@@ -77,51 +77,51 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         }
 
         index = 0;
-        while (!jQuery(rows[index]).hasClass('undo-row')) {
+        while (!$(rows[index]).hasClass('undo-row')) {
             index += 1;
         }
         for (; index < rows.length; index += 2) {
             undoRow = rows[index];
-            row = jQuery(undoRow).prev()[0];
+            row = $(undoRow).prev()[0];
             action(row, undoRow);
         }
     },
 
     // Private methods to enable/disable move up and move down buttons.
     disableMoveUp = function (tableRow) {
-        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
+        var disabledMoveUpBtn = $(tableRow).find('.disabledMoveUpBtn');
         if (disabledMoveUpBtn[0]) {
             disabledMoveUpBtn.show();
-            jQuery(tableRow).find('.moveUpBtn').hide();
+            $(tableRow).find('.moveUpBtn').hide();
         }
     },
 
     enableMoveUp = function (tableRow) {
-        var disabledMoveUpBtn = jQuery(tableRow).find('.disabledMoveUpBtn');
+        var disabledMoveUpBtn = $(tableRow).find('.disabledMoveUpBtn');
         if (disabledMoveUpBtn[0]) {
             disabledMoveUpBtn.hide();
-            jQuery(tableRow).find('.moveUpBtn').show();
+            $(tableRow).find('.moveUpBtn').show();
         }
     },
 
     disableMoveDown = function (tableRow) {
-        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
+        var disabledMoveDownBtn = $(tableRow).find('.disabledMoveDownBtn');
         if (disabledMoveDownBtn[0]) {
             disabledMoveDownBtn.show();
-            jQuery(tableRow).find('.moveDownBtn').hide();
+            $(tableRow).find('.moveDownBtn').hide();
         }
     },
 
     enableMoveDown = function (tableRow) {
-        var disabledMoveDownBtn = jQuery(tableRow).find('.disabledMoveDownBtn');
+        var disabledMoveDownBtn = $(tableRow).find('.disabledMoveDownBtn');
         if ('undefined' !== typeof disabledMoveDownBtn && disabledMoveDownBtn[0]) {
             disabledMoveDownBtn.hide();
-            jQuery(tableRow).find('.moveDownBtn').show();
+            $(tableRow).find('.moveDownBtn').show();
         }
     },
     initRow = function(row, undoRow) {
         matchRowAndUndoRowHeights(row, undoRow);
-        if (jQuery(row).find('.isDeletionField').val() == 'true') {
+        if ($(row).find('.isDeletionField').val() == 'true') {
             this.hideRemovedItem(row);
         }
     },
@@ -133,13 +133,13 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.init = function() {
         var visibleRows,
             numVisible;
-        this.wrapper = jQuery('#' + this.tableId + '_wrapper')[0];
-        this.table = jQuery(this.wrapper).find('table')[0];
-        this.tempRequestDiv = jQuery(this.wrapper).find('div.tempRequest')[0];
+        this.wrapper = $('#' + this.tableId + '_wrapper')[0];
+        this.table = $(this.wrapper).find('table')[0];
+        this.tempRequestDiv = $(this.wrapper).find('div.tempRequest')[0];
         everyRow.call(this, initRow.bind(this));
         visibleRows = getVisibleRows.call(this);
         numVisible = visibleRows.length;
-        jQuery(visibleRows).each(function (index, row) {
+        $(visibleRows).each(function (index, row) {
             if (index === 0) {
                 disableMoveUp(row);
             } else {
@@ -165,25 +165,25 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             this.addItemParameters = {};
         }
         this.addItemParameters.itemIndex = this.nextRowId++;
-        parameters = jQuery.extend({}, this.addItemParameters);
+        parameters = $.extend({}, this.addItemParameters);
         url = 'addItem';
         thisContext = this;
         onComplete = yukon.doBind(this.addItemSuccess, this);
         if (extraArgs) {
             if (extraArgs.extraParameters) {
-                jQuery.extend(parameters, extraArgs.extraParameters);
+                $.extend(parameters, extraArgs.extraParameters);
             }
             if (extraArgs.url) {
                 url = extraArgs.url;
             }
         }
-        jQuery.ajax({
+        $.ajax({
             type: "GET",
             url: url,
             data: parameters
         }).done(function (data, status, xhrobj) {
             try {
-                jQuery(thisContext.tempRequestDiv).html(data);
+                $(thisContext.tempRequestDiv).html(data);
             } catch (replaceEx) {
                 alert('DynamicTable:addItem: exception=' + replaceEx);
             }
@@ -213,9 +213,9 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
                 that.addItemParameters = {};
             }
             that.addItemParameters.itemIndex = that.nextRowId++;
-            parameters = jQuery.extend({}, that.addItemParameters);
+            parameters = $.extend({}, that.addItemParameters);
             if (request.extraParameters) {
-                jQuery.extend(parameters, request.extraParameters);
+                $.extend(parameters, request.extraParameters);
             }
 
             url = 'addItem';
@@ -235,12 +235,12 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
                 }
             }
 
-            jQuery.ajax({
+            $.ajax({
                 type: "GET",
                 url: url,
                 data: parameters
             }).done(function (data, status, xhrobj) {
-                jQuery(that.tempRequestDiv).html(data);
+                $(that.tempRequestDiv).html(data);
                 onComplete();
             });
         };
@@ -251,8 +251,8 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     dynamicProto.addItemSuccess = function (doUnblock) {
         var wrapperDiv = document.getElementById(this.tableId + '_wrapper'),
             tempRequestDiv = wrapperDiv.getElementsByClassName('tempRequest'),
-            newRow = jQuery(tempRequestDiv).find('tr')[0],
-            newUndoRow = jQuery(newRow).next()[0],
+            newRow = $(tempRequestDiv).find('tr')[0],
+            newUndoRow = $(newRow).next()[0],
             tempRow = this.table.insertRow(-1),
             parentNode = tempRow.parentNode,
             noItemsMessageDiv;
@@ -260,10 +260,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         parentNode.appendChild(newUndoRow);
         this.updateMoveButtonVisibility.call(this, newRow);
         matchRowAndUndoRowHeights.call(this, newRow, newUndoRow);
-        if (jQuery(newRow).find("input:first[type='text']")) {
-            jQuery(newRow).find("input:first[type='text']").focus();
+        if ($(newRow).find("input:first[type='text']")) {
+            $(newRow).find("input:first[type='text']").focus();
         }
-        noItemsMessageDiv = jQuery(this.wrapper).find('.noItemsMessage')[0];
+        noItemsMessageDiv = $(this.wrapper).find('.noItemsMessage')[0];
         if (noItemsMessageDiv) {
             noItemsMessageDiv.parentNode.removeChild(noItemsMessageDiv);
         }
@@ -273,7 +273,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     };
 
     dynamicProto.moveItemUp = function (event) {
-        var thisRow = jQuery(event.target).closest('tr'),
+        var thisRow = $(event.target).closest('tr'),
             previousRow = thisRow.prev().prev();
         // keep going back until we find a visible one
         while (previousRow[0].rowIndex >= 2 && !previousRow.is(':visible')) {
@@ -283,7 +283,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     };
 
     dynamicProto.moveItemDown = function(event) {
-        var thisRow = jQuery(event.target).closest('tr'),
+        var thisRow = $(event.target).closest('tr'),
             nextRow = thisRow.next().next();
         while (nextRow.next() && !nextRow.is(':visible')) {
             nextRow = nextRow.next().next();
@@ -292,7 +292,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     };
 
     dynamicProto.removeItem = function(event) {
-        var row = jQuery(event.target).closest('tr'),
+        var row = $(event.target).closest('tr'),
             isDeletionInput;
         this.hideRemovedItem(row[0]);
         isDeletionInput = row.find('.isDeletionField');
@@ -304,10 +304,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
      * to the page as a result of validation errors.
      */
     dynamicProto.hideRemovedItem = function (row) {
-        var undoRow = jQuery(row).next(),
+        var undoRow = $(row).next(),
             visibleRows = getVisibleRows.call(this);
         undoRow.show();
-        jQuery(row).hide();
+        $(row).hide();
         if (visibleRows.length < 2) {
             return;
         }
@@ -320,7 +320,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     };
 
     dynamicProto.undoRemoveItem = function (event) {
-        var undoRow = jQuery(event.target).closest('tr'),
+        var undoRow = $(event.target).closest('tr'),
             row = undoRow.prev(),
             isDeletionInput;
         undoRow.hide();
@@ -375,32 +375,32 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             firstRow = secondRow;
             secondRow = temp;
         }
-        firstUndoRow = jQuery(firstRow).next()[0];
-        firstRowOrderInput = jQuery(firstRow).find('.orderField')[0];
-        secondUndoRow = jQuery(secondRow).next()[0];
-        secondRowOrderInput = jQuery(secondRow).find('.orderField')[0];
+        firstUndoRow = $(firstRow).next()[0];
+        firstRowOrderInput = $(firstRow).find('.orderField')[0];
+        secondUndoRow = $(secondRow).next()[0];
+        secondRowOrderInput = $(secondRow).find('.orderField')[0];
 
         visibleRows = getVisibleRows.call(this);
-        if (firstRow === jQuery(visibleRows).first()[0]) {
+        if (firstRow === $(visibleRows).first()[0]) {
             // this is the first row; update "move up" icons
             disableMoveUp(secondRow);
             enableMoveUp(firstRow);
         }
-        if (secondRow === jQuery(visibleRows).last()[0]) {
+        if (secondRow === $(visibleRows).last()[0]) {
             // swapping with last row; update "move down" icons
             disableMoveDown(firstRow);
             enableMoveDown(secondRow);
         }
 
-        temp = jQuery(firstRowOrderInput).val();
-        jQuery(firstRowOrderInput).val(jQuery(secondRowOrderInput).val());
-        jQuery(secondRowOrderInput).val(temp);
+        temp = $(firstRowOrderInput).val();
+        $(firstRowOrderInput).val($(secondRowOrderInput).val());
+        $(secondRowOrderInput).val(temp);
 
         parentNode = firstRow.parentNode;
-        firstGoesBefore = jQuery(secondUndoRow).next()[0];
+        firstGoesBefore = $(secondUndoRow).next()[0];
         parentNode.insertBefore(secondRow, firstRow);
         parentNode.insertBefore(secondUndoRow, firstRow);
-        if (jQuery(firstUndoRow).next()[0] !== secondRow) {
+        if ($(firstUndoRow).next()[0] !== secondRow) {
             // they weren't adjacent, need to move first row too
             if (firstGoesBefore) {
                 // second one is NOT the last one

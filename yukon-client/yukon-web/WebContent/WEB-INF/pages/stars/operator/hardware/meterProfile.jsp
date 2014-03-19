@@ -9,11 +9,11 @@
 <tags:setFormEditMode mode="${mode}"/>
     
 <script type="text/javascript">
-jQuery(document).on('click', '#deleteBtn', function() {
-    jQuery('#deleteHardwarePopup').dialog('open');
+$(document).on('click', '#deleteBtn', function() {
+    $('#deleteHardwarePopup').dialog('open');
 });
-jQuery(document).on('click', '#cancelDeleteBtn', function() {
-    jQuery('#deleteHardwarePopup').dialog('close');
+$(document).on('click', '#cancelDeleteBtn', function() {
+    $('#deleteHardwarePopup').dialog('close');
 });
 </script>
     

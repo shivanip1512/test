@@ -47,7 +47,7 @@
         </div>
         <div class="column two">
             <script type="text/javascript">
-            jQuery(function() {jQuery('#tabs-test').tabs();});
+            $(function() {$('#tabs-test').tabs();});
             </script>
             <div id="tabs-test">
                 <ul>

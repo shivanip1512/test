@@ -9,9 +9,9 @@
 <cti:standardPage module="operator" page="contact.${mode}">
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(document).on('click', '.f-delete', function(e) {
-        jQuery(e.currentTarget).closest('tr').remove();
+$(function() {
+    $(document).on('click', '.f-delete', function(e) {
+        $(e.currentTarget).closest('tr').remove();
     });
 });
 </script>

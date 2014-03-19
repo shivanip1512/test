@@ -73,7 +73,7 @@ yukon.analytics = (function () {
             }
 
             // Log all jQuery AJAX requests to Google Analytics
-            jQuery(document).ajaxSend(function (event, xhr, settings) {
+            $(document).ajaxSend(function (event, xhr, settings) {
             	var urlPath = settings.url;
             	var indexOfQueryParams = urlPath.indexOf('?');
             	if (indexOfQueryParams != -1) {

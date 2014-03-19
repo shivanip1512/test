@@ -3,9 +3,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery("#cisDetailsLink").click(function(event){
-        jQuery("#cisDetails").dialog({width: "auto", minWidth: 400});
+$(function() {
+    $("#cisDetailsLink").click(function(event){
+        $("#cisDetails").dialog({width: "auto", minWidth: 400});
     });
 });
 </script>

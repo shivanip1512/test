@@ -22,10 +22,10 @@
     </div>
 
 <script>
-    jQuery(function() {
-        jQuery("form").each(function(index) {
-            var formInputs = jQuery("#copyForm").clone().html();
-            jQuery(this).append(formInputs);
+    $(function() {
+        $("form").each(function(index) {
+            var formInputs = $("#copyForm").clone().html();
+            $(this).append(formInputs);
         });
     });
 </script>

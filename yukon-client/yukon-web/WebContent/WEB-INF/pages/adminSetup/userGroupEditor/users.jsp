@@ -11,7 +11,7 @@
 
 <script type="text/javascript">
 function addUsers() {
-    jQuery('#addUsersForm').submit();
+    $('#addUsersForm').submit();
 }
 </script>
     

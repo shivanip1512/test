@@ -9,22 +9,22 @@
 <c:url value="/adminSetup/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
 
 <script>
-jQuery(function(){
-	jQuery("a.icon-disabled").each(function(idx, val){
-		jQuery(val).attr('title', jQuery(val).attr('data-truejobNameMsg'));
+$(function(){
+	$("a.icon-disabled").each(function(idx, val){
+		$(val).attr('title', $(val).attr('data-truejobNameMsg'));
 	});
 	
-	jQuery("a.icon-enabled").each(function(idx, val){
-		jQuery(val).attr('title', jQuery(val).attr('data-falsejobNameMsg'));
+	$("a.icon-enabled").each(function(idx, val){
+		$(val).attr('title', $(val).attr('data-falsejobNameMsg'));
 	});
 	
-	jQuery("a.f-toggleJobEnabled").click(function(e){
-		jQuery.ajax({
-			url: '${toggleJobAjaxUrl}?jobId=' + jQuery(e.currentTarget).attr('data-jobid'),
+	$("a.f-toggleJobEnabled").click(function(e){
+		$.ajax({
+			url: '${toggleJobAjaxUrl}?jobId=' + $(e.currentTarget).attr('data-jobid'),
 			success: function(data) {
 				var icon = 'icon-disabled';
 				if (data == true) icon = 'icon-enabled';
-				jQuery(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
+				$(e.currentTarget).removeClass("icon-enabled icon-disabled").addClass(icon).attr('title', $(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
 			}
 		});
 	});

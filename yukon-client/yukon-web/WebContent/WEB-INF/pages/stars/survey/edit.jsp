@@ -24,7 +24,7 @@
 <c:set var="baseUrl" value="edit"/>
 
 <script type="text/javascript">
-    jQuery(function () {
+    $(function () {
         yukon.surveys.edit.init({hasBeenTaken : '${hasBeenTaken}'});
     });
 </script>

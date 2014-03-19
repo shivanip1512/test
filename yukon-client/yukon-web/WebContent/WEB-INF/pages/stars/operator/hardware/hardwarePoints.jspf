@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
     <c:if test="${hardware.hardwareType.rf}">
         setupClickHandler('#rfReadNow', '<cti:url value="/stars/operator/hardware/rf/readNow"/>');
     </c:if>
@@ -14,21 +14,21 @@ jQuery(function() {
     </c:if>
     
     function setupClickHandler(selector, url) {
-        jQuery(document).on('click', selector, function(event) {
-            jQuery.ajax({
+        $(document).on('click', selector, function(event) {
+            $.ajax({
                 url: url,
                 method: 'get',
                 data: {'deviceId': '${hardware.deviceId}'}
             }).done(function(data) {
-                jQuery('#commandStatus').html(data.message);
-                jQuery('#commandStatus').show();
+                $('#commandStatus').html(data.message);
+                $('#commandStatus').show();
                 if (data.success ==  true) {
-                    jQuery('#commandStatus').addClass('success').removeClass('error');
+                    $('#commandStatus').addClass('success').removeClass('error');
                 } else {
-                    jQuery('#commandStatus').removeClass('success').addClass('error');
+                    $('#commandStatus').removeClass('success').addClass('error');
                 }
             }).always(function() {
-                yukon.ui.unbusy(jQuery(selector));
+                yukon.ui.unbusy($(selector));
             });
         });
     }

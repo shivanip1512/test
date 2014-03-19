@@ -27,12 +27,12 @@
     </div>
 
 <script>
-jQuery(function () {
-    jQuery('#dev-sections a').click(function(e) {
-        var url = jQuery(this).data('url');
-        jQuery('#dev-content').load(url);
-        jQuery('#dev-sections li').removeClass('selected');
-        jQuery(this).closest('li').addClass('selected');
+$(function () {
+    $('#dev-sections a').click(function(e) {
+        var url = $(this).data('url');
+        $('#dev-content').load(url);
+        $('#dev-sections li').removeClass('selected');
+        $(this).closest('li').addClass('selected');
     });
 });
 </script>

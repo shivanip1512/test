@@ -8,7 +8,7 @@
 
 
 <script type="text/javascript">
-    jQuery(function() {selectedFieldsChanged();});
+    $(function() {selectedFieldsChanged();});
 </script>
 
 <ct:simplePopup id="roundingHelper" title="Rounding Mode Help" onClose="toggleHelperPopup('roundingHelper');">

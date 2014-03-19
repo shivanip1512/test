@@ -36,12 +36,12 @@ yukon.favorites = (function () {
         var data = {};
 
         if (typeof button === 'undefined') {
-            button = jQuery('#favButton');
+            button = $('#favButton');
         }
 
         data = _dataFavoriteButton(button);
 
-        jQuery.getJSON(yukon.url('/isFavorite'), data).done(function (json) {
+        $.getJSON(yukon.url('/isFavorite'), data).done(function (json) {
             _setIcon(button, json.isFavorite );
         });
     },
@@ -50,7 +50,7 @@ yukon.favorites = (function () {
 
         var data = _dataSubscribeButton(button);
 
-        jQuery.getJSON(yukon.url('/isSubscribed'), data).done(function (json) {
+        $.getJSON(yukon.url('/isSubscribed'), data).done(function (json) {
             _setIcon(button, json.isSubscribed, 'icon-feed', 'icon-feed disabled cp');
         });
     },
@@ -73,12 +73,12 @@ yukon.favorites = (function () {
 
     _addToHistory = function () {
 
-        var button = jQuery('#favButton'),
+        var button = $('#favButton'),
             data = {};
 
         if (button.length === 1) {
             data = _dataFavoriteButton(button);
-            jQuery.getJSON(yukon.url('/addToHistory'), data);
+            $.getJSON(yukon.url('/addToHistory'), data);
         }
     },
     
@@ -86,7 +86,7 @@ yukon.favorites = (function () {
 
         var data = _dataFavoriteButton(button);
 
-        jQuery.getJSON(yukon.url('/toggleFavorite'), data).done(function (json) {
+        $.getJSON(yukon.url('/toggleFavorite'), data).done(function (json) {
             _setIcon(button, json.isFavorite, iconOn, iconOff);
         });
     },
@@ -100,7 +100,7 @@ yukon.favorites = (function () {
             iconOff = 'icon-feed disabled cp';
         }
 
-        jQuery.getJSON(yukon.url('/toggleSubscribed'), data).done(function (json) {
+        $.getJSON(yukon.url('/toggleSubscribed'), data).done(function (json) {
             _setIcon(button, json.isSubscribed, iconOn, iconOff);
         });
     },
@@ -117,8 +117,8 @@ yukon.favorites = (function () {
 
             _addToHistory();
 
-            jQuery('.b-favorite:not(.remove)').each( function() {
-                var button = jQuery(this);
+            $('.b-favorite:not(.remove)').each( function() {
+                var button = $(this);
 
                 _initializeFavoriteIcon(button);
                 button.unbind('click');
@@ -127,9 +127,9 @@ yukon.favorites = (function () {
                 });
             });
 
-            jQuery('.b-favorite.remove').each( function() {
+            $('.b-favorite.remove').each( function() {
 
-                var button = jQuery(this);
+                var button = $(this);
 
                 button.unbind('click');
                 button.click(function() {
@@ -151,8 +151,8 @@ yukon.favorites = (function () {
 
             var localUi = yukon.ui;
 
-            jQuery('.b-subscribe:not(.remove)').each( function() {
-                var button = jQuery(this);
+            $('.b-subscribe:not(.remove)').each( function() {
+                var button = $(this);
 
                 _initializeSubscribedIcon(button);
                 button.unbind('click');
@@ -161,8 +161,8 @@ yukon.favorites = (function () {
                 });
             });
 
-            jQuery('.b-subscribe.remove').each( function() {
-                var button = jQuery(this);
+            $('.b-subscribe.remove').each( function() {
+                var button = $(this);
 
                 button.unbind('click');
                 button.click(function() {
@@ -181,6 +181,6 @@ yukon.favorites = (function () {
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     yukon.favorites.init();
 });

@@ -12,50 +12,50 @@ yukon.da.comments = (function () {
     
     var mod,
         _submitForm = function () {
-            var submitNormal = jQuery('#commentForm').data('submitNormal');
+            var submitNormal = $('#commentForm').data('submitNormal');
             if (submitNormal) {
-                jQuery('#commentForm').submit();
+                $('#commentForm').submit();
             } else {
-                jQuery.ajax({
-                    url: jQuery("#commentForm").attr("action"),
-                    data: jQuery("#commentForm").serialize(),
+                $.ajax({
+                    url: $("#commentForm").attr("action"),
+                    data: $("#commentForm").serialize(),
                     type: "POST"
                 }).done(function (data) {
-                    jQuery("#contentPopup").html(data);
+                    $("#contentPopup").html(data);
                 });
             }
         };
 
     mod = {
         addComment : function () {
-            var newComment = jQuery('#newCommentInput').val(),
+            var newComment = $('#newCommentInput').val(),
                 commentsUrl,
                 escapedText;
-            if (jQuery.trim(newComment).length !== 0) {
-                commentsUrl = jQuery('#commentForm').data('commentsUrl');
-                jQuery('#commentForm').attr('action', commentsUrl + 'add');
-                escapedText = jQuery('<div />').text(newComment).html();
-                jQuery('#comment').val(escapedText);
+            if ($.trim(newComment).length !== 0) {
+                commentsUrl = $('#commentForm').data('commentsUrl');
+                $('#commentForm').attr('action', commentsUrl + 'add');
+                escapedText = $('<div />').text(newComment).html();
+                $('#comment').val(escapedText);
                 _submitForm();
-                jQuery('#newCommentInput').prop('disabled', true);
+                $('#newCommentInput').prop('disabled', true);
             }
         },
 
         hideNewRow : function () {
-            jQuery('#newCommentInput').val('');
-            jQuery('#newRow').hide();
+            $('#newCommentInput').val('');
+            $('#newRow').hide();
         },
 
         showNewRow : function () {
-            jQuery("input[name='editCommentInput']").each(function (index, elem) {
+            $("input[name='editCommentInput']").each(function (index, elem) {
                 var elemsCommentId = elem.id.split('_')[1];
-                jQuery('#editCommentSpan_' + elemsCommentId).hide();
-                jQuery('#comment_' + elemsCommentId).show();
+                $('#editCommentSpan_' + elemsCommentId).hide();
+                $('#comment_' + elemsCommentId).show();
             });
-            jQuery('#newRow').show();
-            jQuery('#newCommentInput').prop('disabled', false);
-            jQuery('#newCommentInput').focus();
-            flashYellow(jQuery('#newRow')[0]);
+            $('#newRow').show();
+            $('#newCommentInput').prop('disabled', false);
+            $('#newCommentInput').focus();
+            flashYellow($('#newRow')[0]);
         },
 
         addOrCancel : function (event) {
@@ -83,44 +83,44 @@ yukon.da.comments = (function () {
         },
 
         cancelUpdate : function (commentId) {
-            jQuery('#comment_' + commentId).show();
-            jQuery('#editCommentSpan_' + commentId).hide();
-            jQuery('#editComment_' + commentId).val(jQuery('#comment_' + commentId).html());
+            $('#comment_' + commentId).show();
+            $('#editCommentSpan_' + commentId).hide();
+            $('#editComment_' + commentId).val($('#comment_' + commentId).html());
         },
     
         updateComment : function (commentId) {
-            var newComment = jQuery('#editComment_' + commentId).val(),
+            var newComment = $('#editComment_' + commentId).val(),
                 commentsUrl,
                 escapedText;
-            if (jQuery.trim(newComment).length !== 0) {
-                commentsUrl = jQuery('#commentForm').data('commentsUrl');
-                escapedText = jQuery('<div />').text(newComment).html();
-                jQuery('#comment').val(escapedText);
-                jQuery('#commentForm').attr('action', commentsUrl + 'update');
-                jQuery('#commentId').val(commentId);
+            if ($.trim(newComment).length !== 0) {
+                commentsUrl = $('#commentForm').data('commentsUrl');
+                escapedText = $('<div />').text(newComment).html();
+                $('#comment').val(escapedText);
+                $('#commentForm').attr('action', commentsUrl + 'update');
+                $('#commentId').val(commentId);
                 _submitForm();
             }
         },
 
         editComment : function (commentId) {
             mod.hideNewRow();
-            jQuery("input[name='editCommentInput']").each(function (index, elem) {
+            $("input[name='editCommentInput']").each(function (index, elem) {
                 var elemsCommentId;
                 if (elem.id !== 'editComment_' + commentId) {
                     elemsCommentId = elem.id.split('_')[1];
-                    jQuery('#editCommentSpan_' + elemsCommentId).hide();
-                    jQuery('#comment_' + elemsCommentId).show();
+                    $('#editCommentSpan_' + elemsCommentId).hide();
+                    $('#comment_' + elemsCommentId).show();
                 }
             });
-            jQuery('#comment_' + commentId).hide();
-            jQuery('#editCommentSpan_' + commentId).show();
-            jQuery('#editComment_' + commentId).focus();
+            $('#comment_' + commentId).hide();
+            $('#editCommentSpan_' + commentId).show();
+            $('#editComment_' + commentId).focus();
         },
     
         deleteComment : function (commentId) {
-            var commentsUrl = jQuery('#commentForm').data('commentsUrl');
-            jQuery('#commentId').val(commentId);
-            jQuery('#commentForm').attr('action', commentsUrl + 'remove');
+            var commentsUrl = $('#commentForm').data('commentsUrl');
+            $('#commentId').val(commentId);
+            $('#commentForm').attr('action', commentsUrl + 'remove');
             _submitForm();
         }
     };

@@ -18,7 +18,7 @@
     <cti:msg var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
 <script type="text/javascript">
-jQuery(function(){
+$(function(){
     yukon.ThermostatManualEditor.init({
         thermostat: {
             HEAT: {

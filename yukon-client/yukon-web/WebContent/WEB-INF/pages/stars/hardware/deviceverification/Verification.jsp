@@ -9,8 +9,8 @@
 
 <cti:includeScript link="${jqueryPath}" force="true"/>
 <script langauge="JavaScript" type="text/javascript">
-    jQuery(function () {
-        jQuery("#serialnumberinput").focus();
+    $(function () {
+        $("#serialnumberinput").focus();
     });
 </script>
 

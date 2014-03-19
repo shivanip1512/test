@@ -9,13 +9,13 @@
 <cti:url var="touSpecificsUrl" value="/meter/touPreviousReadings"><cti:param name="deviceId" value="${meter.deviceId}"/></cti:url>
 <div id="touDialog" title="<cti:msg2 key=".title"/>" class="scroll-large dn"></div>
 <script type="text/javascript">
-jQuery(function() {
-    jQuery('#touPopupLink').click(function(event) {
-        jQuery.ajax({
+$(function() {
+    $('#touPopupLink').click(function(event) {
+        $.ajax({
             url: "${touSpecificsUrl}",
             success: function(transport) {
-                jQuery("#touDialog").html(transport);
-                jQuery("#touDialog").dialog({width: "auto", minWidth: 400});
+                $("#touDialog").html(transport);
+                $("#touDialog").dialog({width: "auto", minWidth: 400});
             }
         });
     });

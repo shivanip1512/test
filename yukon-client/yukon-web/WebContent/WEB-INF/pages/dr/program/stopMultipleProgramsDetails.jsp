@@ -9,13 +9,13 @@
 
 <script type="text/javascript">
 
-jQuery(function(){
+$(function(){
     
     submitForm = function() {
         var url;
 
-        if (jQuery("#autoObserveConstraints").is(":checked") 
-                || jQuery("#autoObserveConstraints").is(":disabled")
+        if ($("#autoObserveConstraints").is(":checked") 
+                || $("#autoObserveConstraints").is(":disabled")
                 || ${!checkConstraintsAllowed}) {
             url = '<cti:url value="/dr/program/stop/stopMultiple"/>';
         } else {
@@ -25,8 +25,8 @@ jQuery(function(){
     }
     
     stopProgramChecked = function(event) {
-        if (!jQuery(event.target).is(':checked')) {
-            jQuery("#allProgramsCheckbox").removeAttr("checked");
+        if (!$(event.target).is(':checked')) {
+            $("#allProgramsCheckbox").removeAttr("checked");
         }
         updateComponents();
     }
@@ -36,31 +36,31 @@ jQuery(function(){
         var stopAll = true,
             allDisabled = true;
         
-        jQuery(".f-singleProgramChecked").each(function(index,element) {
+        $(".f-singleProgramChecked").each(function(index,element) {
             // Stopall should be checked if all the valid checkboxes are checked
-            stopAll = stopAll && (jQuery(element).is(":disabled") || jQuery(element).is(":checked"));
-            allDisabled = (allDisabled && jQuery(element).is(":disabled"));
+            stopAll = stopAll && ($(element).is(":disabled") || $(element).is(":checked"));
+            allDisabled = (allDisabled && $(element).is(":disabled"));
         });
         
         
         if (allDisabled) {
-            jQuery("#allProgramsCheckbox").removeAttr("checked");
-            jQuery("#allProgramsCheckbox").attr("disabled","disabled");
+            $("#allProgramsCheckbox").removeAttr("checked");
+            $("#allProgramsCheckbox").attr("disabled","disabled");
         } else if (stopAll) {
-            jQuery("#allProgramsCheckbox").removeAttr("disabled");
-            jQuery("#allProgramsCheckbox").attr("checked","checked");
+            $("#allProgramsCheckbox").removeAttr("disabled");
+            $("#allProgramsCheckbox").attr("checked","checked");
         } else {
-            jQuery("#allProgramsCheckbox").removeAttr("disabled");
-            jQuery("#allProgramsCheckbox").removeAttr("checked");
+            $("#allProgramsCheckbox").removeAttr("disabled");
+            $("#allProgramsCheckbox").removeAttr("checked");
         }
         
     }
     
     useStopGearChecked = function(event) {
-        if (jQuery(event.target).is(':checked')) {
-            jQuery(event.target).siblings(".f-useStopGearCheckedTarget").removeAttr("disabled");
+        if ($(event.target).is(':checked')) {
+            $(event.target).siblings(".f-useStopGearCheckedTarget").removeAttr("disabled");
         } else {
-            jQuery(event.target).siblings(".f-useStopGearCheckedTarget").attr("disabled","disabled");
+            $(event.target).siblings(".f-useStopGearCheckedTarget").attr("disabled","disabled");
         }
         updateComponents();
     }
@@ -70,38 +70,38 @@ jQuery(function(){
         var stopAll = true,
             allDisabled = true;
         
-        if (jQuery("#stopNowCheckbox").is(':checked')) {
-            jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
-            jQuery("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
+        if ($("#stopNowCheckbox").is(':checked')) {
+            $("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+            $("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
         } else {
-            jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+            $("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
 
-            jQuery(".f-useStopGearChecked").each(function(index,element) {
-                stopAll = stopAll && (jQuery(element).is(":disabled") || jQuery(element).is(":checked"));
-                allDisabled = (allDisabled && jQuery(element).is(":disabled"));
+            $(".f-useStopGearChecked").each(function(index,element) {
+                stopAll = stopAll && ($(element).is(":disabled") || $(element).is(":checked"));
+                allDisabled = (allDisabled && $(element).is(":disabled"));
             });
             
             if (allDisabled) {
-                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
-                jQuery("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
+                $("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+                $("#allProgramsUseStopGearsCheckbox").attr("disabled","disabled");
             } else if (stopAll) {
-                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
-                jQuery("#allProgramsUseStopGearsCheckbox").attr("checked","checked");
+                $("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+                $("#allProgramsUseStopGearsCheckbox").attr("checked","checked");
             } else {
-                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
-                jQuery("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
+                $("#allProgramsUseStopGearsCheckbox").removeAttr("disabled");
+                $("#allProgramsUseStopGearsCheckbox").removeAttr("checked");
             }
         }
     }
     
     allStopProgramChecked = function() {
         var index,
-        allChecked = jQuery("#allProgramsCheckbox").is(":checked");
+        allChecked = $("#allProgramsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
-            if (allChecked && !jQuery("#stopProgramCheckbox"+index).is(":disabled")) {
-                jQuery("#stopProgramCheckbox"+index).attr("checked","checked");
+            if (allChecked && !$("#stopProgramCheckbox"+index).is(":disabled")) {
+                $("#stopProgramCheckbox"+index).attr("checked","checked");
             } else {
-                jQuery("#stopProgramCheckbox"+index).removeAttr("checked");
+                $("#stopProgramCheckbox"+index).removeAttr("checked");
             }
         }
         updateComponents();
@@ -109,12 +109,12 @@ jQuery(function(){
     
     allUseStopGearChecked = function() {
         var index,
-        allChecked = jQuery("#allProgramsUseStopGearsCheckbox").is(":checked");
+        allChecked = $("#allProgramsUseStopGearsCheckbox").is(":checked");
         for (index = 0; index < ${fn:length(programs)}; index++) {
             if (allChecked) {
-                jQuery("#useStopGear" + index).attr("checked","checked");
+                $("#useStopGear" + index).attr("checked","checked");
             } else {
-                jQuery("#useStopGear" + index).removeAttr("checked");
+                $("#useStopGear" + index).removeAttr("checked");
             }
         }
         updateComponents();
@@ -125,23 +125,23 @@ jQuery(function(){
     }
     
     updateComponents = function() {
-        var stopNow = jQuery("#stopNowCheckbox").is(':checked'),
+        var stopNow = $("#stopNowCheckbox").is(':checked'),
             index;
-        jQuery('#stopDate').prop('disabled', stopNow);
+        $('#stopDate').prop('disabled', stopNow);
         
         for (index = 0; index < ${fn:length(programs)}; index++) {
 
-            if (!stopNow && jQuery("#stopProgramCheckbox" + index).is(":checked")) {
-                jQuery('#useStopGear'+index).removeAttr("disabled");
-                if(jQuery('#useStopGear'+index).is(":checked")) {
-                    jQuery('#programGear'+index).removeAttr("disabled");
+            if (!stopNow && $("#stopProgramCheckbox" + index).is(":checked")) {
+                $('#useStopGear'+index).removeAttr("disabled");
+                if($('#useStopGear'+index).is(":checked")) {
+                    $('#programGear'+index).removeAttr("disabled");
                 } else {
-                    jQuery('#programGear'+index).attr("disabled","disabled");
+                    $('#programGear'+index).attr("disabled","disabled");
                 }
             } else {
-                jQuery('#useStopGear'+index).removeAttr("checked");
-                jQuery('#useStopGear'+index).attr("disabled","disabled");
-                jQuery('#programGear'+index).attr("disabled","disabled");
+                $('#useStopGear'+index).removeAttr("checked");
+                $('#useStopGear'+index).attr("disabled","disabled");
+                $('#programGear'+index).attr("disabled","disabled");
             }
         }
 
@@ -154,44 +154,44 @@ jQuery(function(){
     updateActionButtons = function() {
         var atLeastOneGearChange = false;
 
-        jQuery(".f-useStopGearChecked").each(function(index,element) {
+        $(".f-useStopGearChecked").each(function(index,element) {
             atLeastOneGearChange = (atLeastOneGearChange || 
-                    (!jQuery(element).is(":disabled") && jQuery(element).is(":checked")));
+                    (!$(element).is(":disabled") && $(element).is(":checked")));
         });
         
         if (atLeastOneGearChange && ${checkConstraintsAllowed}) {
-            jQuery("#autoObserveConstraints").removeAttr("disabled");
-            if (jQuery("#autoObserveConstraints").is(":checked")) {
-                jQuery('#okButton').removeAttr("disabled");
-                jQuery('#nextButton').attr("disabled","disabled");
+            $("#autoObserveConstraints").removeAttr("disabled");
+            if ($("#autoObserveConstraints").is(":checked")) {
+                $('#okButton').removeAttr("disabled");
+                $('#nextButton').attr("disabled","disabled");
             } else {
-                jQuery('#okButton').attr("disabled","disabled");
-                jQuery('#nextButton').removeAttr("disabled");
+                $('#okButton').attr("disabled","disabled");
+                $('#nextButton').removeAttr("disabled");
             }
         } else {
-            jQuery("#autoObserveConstraints").removeAttr("checked");
-            jQuery("#autoObserveConstraints").attr("disabled","disabled");
-            jQuery('#okButton').removeAttr("disabled");
-            jQuery('#nextButton').attr("disabled","disabled");
+            $("#autoObserveConstraints").removeAttr("checked");
+            $("#autoObserveConstraints").attr("disabled","disabled");
+            $('#okButton').removeAttr("disabled");
+            $('#nextButton').attr("disabled","disabled");
         }
     }
     
     updateComponents();
     
-    jQuery(".f-singleProgramChecked").click(stopProgramChecked);
-    jQuery(".f-useStopGearChecked").click(useStopGearChecked);
-    jQuery("#allProgramsUseStopGearsCheckbox").click(allUseStopGearChecked);
-    jQuery("#allProgramsCheckbox").click(allStopProgramChecked);
-    jQuery("#stopNowCheckbox").click(stopNowChecked);
-    jQuery("#autoObserveConstraints").click(updateActionButtons);
+    $(".f-singleProgramChecked").click(stopProgramChecked);
+    $(".f-useStopGearChecked").click(useStopGearChecked);
+    $("#allProgramsUseStopGearsCheckbox").click(allUseStopGearChecked);
+    $("#allProgramsCheckbox").click(allStopProgramChecked);
+    $("#stopNowCheckbox").click(stopNowChecked);
+    $("#autoObserveConstraints").click(updateActionButtons);
     
 
     updateProgramState = function(index) {
         return function(data) {
             if (0 === data.state.indexOf('running') || 0 === data.state.indexOf('scheduled')) {
-                jQuery('#stopProgramCheckbox' + index).removeAttr("disabled");
+                $('#stopProgramCheckbox' + index).removeAttr("disabled");
             } else {
-                jQuery('#stopProgramCheckbox' + index).attr("disabled", "disabled");
+                $('#stopProgramCheckbox' + index).attr("disabled", "disabled");
                 document.getElementById('stopProgramCheckbox' + index).checked = false;
             }
             updateComponents();
@@ -199,7 +199,7 @@ jQuery(function(){
     }
 
 });
-jQuery( function () {
+$( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
 });
@@ -331,7 +331,7 @@ jQuery( function () {
         <c:if test="${autoObserveConstraintsAllowed || checkConstraintsAllowed}">
             <cti:button nameKey="next" id="nextButton" classes="primary action" type="submit"/>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

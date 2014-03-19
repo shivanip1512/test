@@ -2,7 +2,7 @@ var currentOrderByColum = 'STRATEGY';
 var currentAscendingOrder = true;
 
 var validateAndShow = function () {
-    if (jQuery.trim(jQuery('#strategyName').val()) === '' || jQuery.trim(jQuery('#substationName').val()) === '') {
+    if ($.trim($('#strategyName').val()) === '' || $.trim($('#substationName').val()) === '') {
         alert('Strategy and Substation names are required.');
         return;
     }
@@ -12,8 +12,8 @@ var validateAndShow = function () {
 var setMappedNameId = function () {
     var success = true;
 
-    toggleLmMappingsWaitIndicators(true, jQuery('#addButton')[0]);
-    if (jQuery.trim(jQuery('#mappedNameId').val()) === '') {
+    toggleLmMappingsWaitIndicators(true, $('#addButton')[0]);
+    if ($.trim($('#mappedNameId').val()) === '') {
         alert('Select a Program/Scenario name.');
         return;
     }
@@ -22,33 +22,33 @@ var setMappedNameId = function () {
             url,
             params;
 
-        if (mappedName != null && mappedName !== jQuery('#mappedName').html()) {
-            overwrite = confirm('Strategy/Substation ' + jQuery('#strategyName').val() + '/' + jQuery('#substationName').val() + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + jQuery('#mappedName').html() + '"?');
+        if (mappedName != null && mappedName !== $('#mappedName').html()) {
+            overwrite = confirm('Strategy/Substation ' + $('#strategyName').val() + '/' + $('#substationName').val() + ' is already mapped to "' + mappedName + '", are you want to overwrite it with "' + $('#mappedName').html() + '"?');
             success = overwrite;
         }
 
         if (overwrite) {
             url = '/multispeak/setup/lmMappings/addOrUpdateMapping';
             params = {
-                'strategyName': jQuery('#strategyName').val(),
-                'substationName': jQuery('#substationName').val(),
-                'mappedNameId': jQuery('#mappedNameId').val()
+                'strategyName': $('#strategyName').val(),
+                'substationName': $('#substationName').val(),
+                'mappedNameId': $('#mappedNameId').val()
             };
 
-            jQuery.ajax({
+            $.ajax({
                 url: url,
                 data: params
             }).done(function (data, textStatus, jqXHR) {
-                jQuery('#mappedNameDisplay').html(jQuery('#mappedName').html());
-                toggleLmMappingsWaitIndicators(false, jQuery('#addButton')[0]);
-                flashYellow(jQuery('#mappedNameDisplay')[0]);
+                $('#mappedNameDisplay').html($('#mappedName').html());
+                toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
+                flashYellow($('#mappedNameDisplay')[0]);
                 reloadAllMappingsTable(null, false);
             }).fail(function (jqXHR, textStatus, errorThrown) {
-                toggleLmMappingsWaitIndicators(false, jQuery('#addButton')[0]);
+                toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
                 alert('Error adding mapping: ' + jqXHR.responseText + ', error: ' + errorThrown);
             });
         } else {
-            toggleLmMappingsWaitIndicators(false, jQuery('#addButton')[0]);
+            toggleLmMappingsWaitIndicators(false, $('#addButton')[0]);
         }
     });
     return success;
@@ -58,13 +58,13 @@ function getMappedName (callback) {
 
     var url = '/multispeak/setup/lmMappings/findMapping';
     var params = {
-        'strategyName': jQuery('#strategyName').val(),
-        'substationName': jQuery('#substationName').val()
+        'strategyName': $('#strategyName').val(),
+        'substationName': $('#substationName').val()
     };
 
     // setting the async flag is now deprecated in jQuery. See the jQuery ajax docs.
     // the question is, was it necessary?
-    jQuery.ajax({
+    $.ajax({
         url: url,
         data: params
     }).done(function (data, textStatus, jqXHR) {
@@ -78,15 +78,15 @@ function getMappedName (callback) {
   
 
 function doLmMappingNameSearch () {
-    toggleLmMappingsWaitIndicators(true, jQuery('#searchButton')[0]);
+    toggleLmMappingsWaitIndicators(true, $('#searchButton')[0]);
     getMappedName(function (mappedName) {
         if (mappedName != null) {
-            jQuery('#mappedNameDisplay').html(mappedName);
+            $('#mappedNameDisplay').html(mappedName);
         } else {
-            jQuery('#mappedNameDisplay').html('Not Found');
+            $('#mappedNameDisplay').html('Not Found');
         }
-        toggleLmMappingsWaitIndicators(false, jQuery('#searchButton')[0]);
-        flashYellow(jQuery('#mappedNameDisplay')[0]);
+        toggleLmMappingsWaitIndicators(false, $('#searchButton')[0]);
+        flashYellow($('#mappedNameDisplay')[0]);
     });
 }
 
@@ -106,11 +106,11 @@ function reloadAllMappingsTable (col, isReorder) {
         'col': currentOrderByColum,
         'ascending': currentAscendingOrder
     };
-    jQuery.ajax({
+    $.ajax({
         url: url,
         data: params
     }).done(function (data, textStatus, jqXHR) {
-        jQuery('#allMappingsTableDiv').html(data);
+        $('#allMappingsTableDiv').html(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert('reloadAllMappingsTable: error: ' + textStatus);
     });
@@ -127,7 +127,7 @@ function removeLmMapping (mspLMInterfaceMappingId) {
     params = {
         'mspLMInterfaceMappingId': mspLMInterfaceMappingId
     };
-    jQuery.ajax({
+    $.ajax({
         url: url,
         data: params
     }).done(function (data, textStatus, jqXHR) {
@@ -139,10 +139,10 @@ function removeLmMapping (mspLMInterfaceMappingId) {
 
 function toggleLmMappingsWaitIndicators (isWaiting, buttonEl) {
     if (isWaiting) {
-        jQuery('#waitImg').show();
-        jQuery(buttonEl).prop('disabled', true);
+        $('#waitImg').show();
+        $(buttonEl).prop('disabled', true);
     } else {
-        jQuery('#waitImg').hide();
-        jQuery(buttonEl).prop('disabled', false);
+        $('#waitImg').hide();
+        $(buttonEl).prop('disabled', false);
     }
 }

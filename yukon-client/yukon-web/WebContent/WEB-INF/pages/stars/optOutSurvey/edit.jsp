@@ -13,13 +13,13 @@
 
 <script type="text/javascript">
 specifyStopDateChecked = function () {
-    jQuery('#stopDate').prop('disabled', !jQuery('#specifyStopDateCheckbox').is(":checked"));
+    $('#stopDate').prop('disabled', !$('#specifyStopDateCheckbox').is(":checked"));
 }
 
 submitForm = function () {
     return submitFormViaAjax('ajaxDialog', 'optOutSurveyForm');
 }
-jQuery( function () {
+$( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
 });
@@ -65,14 +65,14 @@ jQuery( function () {
 
     <div class="action-area">
         <cti:button nameKey="ok" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#ajaxDialog').dialog('close');"/>
     </div>
 </form:form>
 
 </cti:msgScope>
 
 <script type="text/javascript">
-jQuery( function () {
+$( function () {
     specifyStopDateChecked();
 });
 </script>

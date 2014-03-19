@@ -3,8 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <script type="text/javascript">
-    jQuery(function() {
-        jQuery('#searchField_1').focus();
+    $(function() {
+        $('#searchField_1').focus();
     });
 </script>
 

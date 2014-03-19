@@ -38,22 +38,22 @@
         
         function selectZone(event) {
             var span = event.target;
-            jQuery('.selectedZone').removeClass('selectedZone');
-            jQuery(span).addClass('selectedZone');
+            $('.selectedZone').removeClass('selectedZone');
+            $(span).addClass('selectedZone');
         }
         
         function ivvcAnalysisMessageRecieved(msgDivId) {
             return function(data) {
                 var msg = data.value;
                 
-                if (msg != null && msg != '' && msg != jQuery(msgDivId + " span:last").html()) {
-                    jQuery(msgDivId + " span:last").html(msg);
-                    jQuery(msgDivId + " span:first").hide();
-                    jQuery(msgDivId + " span:last").show();
-                    jQuery(msgDivId + "").effect("highlight", {"color": "#FFFF00"}, 3000);
+                if (msg != null && msg != '' && msg != $(msgDivId + " span:last").html()) {
+                    $(msgDivId + " span:last").html(msg);
+                    $(msgDivId + " span:first").hide();
+                    $(msgDivId + " span:last").show();
+                    $(msgDivId + "").effect("highlight", {"color": "#FFFF00"}, 3000);
                 } else if (msg == null || msg == '') {
-                    jQuery(msgDivId + " span:first").show();
-                    jQuery(msgDivId + " span:last").hide();
+                    $(msgDivId + " span:first").show();
+                    $(msgDivId + " span:last").hide();
                 }
             };
         }
@@ -221,7 +221,7 @@
                     </tbody>
                 </table>
                 <div class="actionArea">
-                    <cti:button nameKey="close" onclick="jQuery('#strategyDetails').dialog('close');"/>
+                    <cti:button nameKey="close" onclick="$('#strategyDetails').dialog('close');"/>
                     <c:if test="${hasEditingRole}">
                         <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
                             <cti:param name="type" value="5"/>

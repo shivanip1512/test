@@ -24,15 +24,15 @@
 function typeChanged(event) {
     var selectElem = event.currentTarget;
     if (selectElem.selectedIndex != -1) {
-        var textElems = jQuery("#"+ selectElem.id.replace('definitionId', 'text').replace("[", "\\[").replace("]", "\\]").replace(".", "\\."));
-        if (!textElems.val() || jQuery(selectElem).find("option:contains("+ textElems.val() +")").length) {
+        var textElems = $("#"+ selectElem.id.replace('definitionId', 'text').replace("[", "\\[").replace("]", "\\]").replace(".", "\\."));
+        if (!textElems.val() || $(selectElem).find("option:contains("+ textElems.val() +")").length) {
             textElems.val(selectElem.options[selectElem.selectedIndex].text);
         }
     }
 }
 
-jQuery(document).ready(function() {
-    jQuery(document).on('change', 'select[name^=entries]', typeChanged);
+$(document).ready(function() {
+    $(document).on('change', 'select[name^=entries]', typeChanged);
 });
 </script>
 

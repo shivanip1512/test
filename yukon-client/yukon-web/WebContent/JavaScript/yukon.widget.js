@@ -16,12 +16,12 @@ function YukonWidget(shortName, parameters) {
            params = this.getWidgetParameters(),
            _self = this;
 
-        jQuery.ajax({
+        $.ajax({
             url : url,
             data : params
         }).done (function (data, status, xhr) {
             _self.onSuccess(xhr);
-            jQuery(document.getElementById(_self.container)).html(data);
+            $(document.getElementById(_self.container)).html(data);
         });
     };
 
@@ -53,13 +53,13 @@ function YukonWidget(shortName, parameters) {
     this.periodicRefresh = function (opts, context) {
         var timeoutId = 0,
             doRefresh = function () {
-                jQuery.ajax({
+                $.ajax({
                     url : opts.url,
                     type : 'GET',
                     data : opts.params
                 }).done(function (data, status, xhr) {
                     if ('undefined' !== typeof data && null !== data) {
-                        jQuery('#' + opts.container).html(data);
+                        $('#' + opts.container).html(data);
                     }
                     context.parameters = yukon.ui.util.getHeaderJSON(xhr);
                     context.linkInfo = {};
@@ -90,12 +90,12 @@ function YukonWidget(shortName, parameters) {
             params = this.getWidgetParameters(),
             _self = this;
 
-        jQuery.ajax({
+        $.ajax({
             url : url,
             data : params
         }).done( function (data, status, xhr) {
             _self.onSuccess(xhr);
-            jQuery(document.getElementById(_self.container)).html(data);
+            $(document.getElementById(_self.container)).html(data);
         });
     };
 
@@ -105,8 +105,8 @@ function YukonWidget(shortName, parameters) {
             _self = this,
             localSuccess = function (xhr) {
                 if (args.disableInputs == null || args.disableInputs == true) {
-                    jQuery('#' + container + ' input').prop('disabled', false);
-                    jQuery('#' + container + ' button').prop('disabled', false);
+                    $('#' + container + ' input').prop('disabled', false);
+                    $('#' + container + ' button').prop('disabled', false);
                 }
                 _self.onSuccess(xhr);
             },
@@ -114,20 +114,20 @@ function YukonWidget(shortName, parameters) {
             url;
             
         if (args.disableInputs == null || args.disableInputs == true) {
-            jQuery('#' + 'container' + ' input').prop('disabled', true);
-            jQuery('#' + 'container' + ' button').prop('disabled', true);
+            $('#' + 'container' + ' input').prop('disabled', true);
+            $('#' + 'container' + ' button').prop('disabled', true);
         }
 
-        oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
+        oldParams = $.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
 
         url = yukon.url('/widget/' + this.shortName + '/' + args.command);
 
-        jQuery.ajax({
+        $.ajax({
             url : url,
             data : oldParams
         }).done(function (data, status, xhr) {
             localSuccess(xhr);
-            jQuery(document.getElementById(_self.container)).html(data);
+            $(document.getElementById(_self.container)).html(data);
         });
     };
 
@@ -137,17 +137,17 @@ function YukonWidget(shortName, parameters) {
      */
     this.doActionUpdate = function (args) {
         
-        var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters),
+        var oldParams = $.extend(true, this.getWidgetParameters(), this.linkInfo[args.key], args.extraParameters),
             url = yukon.url('/widget/' + this.shortName + '/' + args.command),
             buttonId = args.key; // key happeneds to be the button's id as well so lets just use it.
 
-        jQuery.ajax({
+        $.ajax({
             url : url,
             data : oldParams
         }).done(function (data) {
-            jQuery(document.getElementById(args.containerID)).html(data);
+            $(document.getElementById(args.containerID)).html(data);
         }).always(function() {
-            var button = jQuery('#' + buttonId);
+            var button = $('#' + buttonId);
             if (button.length > 0) { // if the cotainer included the button, it won't be there anymore
                 yukon.ui.unbusy(button);
             }
@@ -169,7 +169,7 @@ function YukonWidget(shortName, parameters) {
         if (typeof container === 'undefined' || container === '') {
             containerToUse = this.container;
         }
-        oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
+        oldParams = $.extend(true, this.getWidgetParameters(), newParams);
 
         url = yukon.url('/widget/' + this.shortName + '/' + cmd);
         return new this.periodicRefresh({'container' : containerToUse, 'url' : url, 'params' : oldParams, 'frequency' : period}, this);
@@ -179,7 +179,7 @@ function YukonWidget(shortName, parameters) {
      * @returns {Hash}
      */
     this.getWidgetParameters = function () {
-        var container = jQuery('#' + this.container)[0],
+        var container = $('#' + this.container)[0],
             theseParameters = {},
             widgetInputs,
             i,
@@ -192,10 +192,10 @@ function YukonWidget(shortName, parameters) {
             el = widgetInputs[i];
             if (el.name) {
                 if (el.type != 'radio') {
-                    theseParameters[el.name] = jQuery(el).val();
+                    theseParameters[el.name] = $(el).val();
                 } else {
                     if (el.checked) {
-                        theseParameters[el.name] = jQuery(el).val();
+                        theseParameters[el.name] = $(el).val();
                     }
                 }
             }
@@ -204,18 +204,18 @@ function YukonWidget(shortName, parameters) {
         for (i = 0; i < widgetInputs.length; i += 1) {
             el = widgetInputs[i];
             if (el.name) {
-                theseParameters[el.name] = jQuery(el).val();
+                theseParameters[el.name] = $(el).val();
             }
         }
         widgetInputs = container.getElementsByTagName('textarea');
         for (i = 0; i < widgetInputs.length; i += 1) {
             el = widgetInputs[i];
             if (el.name) {
-                theseParameters[el.name] = jQuery(el).val();
+                theseParameters[el.name] = $(el).val();
             }
         }
 
-        mergedParameters = jQuery.extend(true, this.parameters, theseParameters);
+        mergedParameters = $.extend(true, this.parameters, theseParameters);
         return mergedParameters;
     };
     

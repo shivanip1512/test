@@ -42,11 +42,11 @@
         return function(data) {
             var creCount = data.value;
             if (creCount > 0) {
-                jQuery('#noLastRunSpan').hide();
-                jQuery('#hasLastRunSpan').show();
+                $('#noLastRunSpan').hide();
+                $('#hasLastRunSpan').show();
             } else {
-                jQuery('#noLastRunSpan').show();
-                jQuery('#hasLastRunSpan').hide();
+                $('#noLastRunSpan').show();
+                $('#hasLastRunSpan').hide();
             }
         };
     }

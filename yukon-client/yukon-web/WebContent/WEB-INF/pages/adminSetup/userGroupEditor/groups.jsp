@@ -10,7 +10,7 @@
 
     <script type="text/javascript">
         function addRoleGroups() {
-        	jQuery('#addGroupsForm').submit();
+        	$('#addGroupsForm').submit();
         }
     </script>
     

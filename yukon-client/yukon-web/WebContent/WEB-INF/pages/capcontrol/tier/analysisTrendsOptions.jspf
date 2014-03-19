@@ -5,18 +5,18 @@
 
 <script type="text/javascript">
 function showTrends(title, url) {
-    jQuery('#analysisTrendsOptions').dialog('close');
+    $('#analysisTrendsOptions').dialog('close');
     
-    var selectedItems = jQuery('table.analysisCheckboxes input:checkbox:checked');
+    var selectedItems = $('table.analysisCheckboxes input:checkbox:checked');
     var targets = new Array();
-    jQuery.each(selectedItems, function (i, item) {
-        targets.push(jQuery(item).val());
+    $.each(selectedItems, function (i, item) {
+        targets.push($(item).val());
     });
     
     url += '&targets=' + encodeURIComponent(targets.join(','));
     
-    jQuery("#trend-popup").load(url, function() {
-        jQuery("#trend-popup").dialog({'title': title, width: 600, height: 580});
+    $("#trend-popup").load(url, function() {
+        $("#trend-popup").dialog({'title': title, width: 600, height: 580});
     });
 }
 </script>
@@ -64,15 +64,15 @@ function showTrends(title, url) {
 
 <script type='text/javascript'>
 function updateButtons() {
-    if (jQuery('#analysisTrendsOptions input:checkbox:checked').length == 0) {
-        jQuery('#analysisTrendsOptions .action-area button').attr("disabled", "disabled");
+    if ($('#analysisTrendsOptions input:checkbox:checked').length == 0) {
+        $('#analysisTrendsOptions .action-area button').attr("disabled", "disabled");
     } else {
-        jQuery('#analysisTrendsOptions .action-area button').removeAttr("disabled");
+        $('#analysisTrendsOptions .action-area button').removeAttr("disabled");
     }
 }
 
-jQuery(function() {
+$(function() {
     updateButtons();
-    jQuery('#analysisTrendsOptions input:checkbox').click(updateButtons);
+    $('#analysisTrendsOptions input:checkbox').click(updateButtons);
 });
 </script>

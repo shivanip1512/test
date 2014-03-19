@@ -21,40 +21,40 @@
 </c:if>
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(document).on('click', '#rf-read-now', function(event) {
+$(function() {
+    $(document).on('click', '#rf-read-now', function(event) {
         var url = '<cti:url value="/stars/operator/hardware/${readPath}/readNow"/>';
         
-        jQuery.ajax({
+        $.ajax({
             url: url,
             method: 'get',
             data: {'deviceId': '${deviceId}'}
         }).done(function(data) {
-            jQuery('#rf-command-status').html(data.message);
-            jQuery('#rf-command-status').show();
+            $('#rf-command-status').html(data.message);
+            $('#rf-command-status').show();
             if (data.success ==  true) {
-                jQuery('#rf-command-status').addClass('success').removeClass('error');
+                $('#rf-command-status').addClass('success').removeClass('error');
                 setTimeout(function() {
-                    jQuery('#rf-command-status').fadeOut('slow', function() {
-                        jQuery('#rf-command-status').hide();
+                    $('#rf-command-status').fadeOut('slow', function() {
+                        $('#rf-command-status').hide();
                     });
                 }, 5000);
             } else {
-                 jQuery('#rf-command-status').removeClass('success').addClass('error');
+                 $('#rf-command-status').removeClass('success').addClass('error');
             }
         }).always(function(data) {
-            yukon.ui.unbusy(jQuery("#rf-read-now"));
+            yukon.ui.unbusy($("#rf-read-now"));
         });
     });
 });
 updateSub = function (data) {
     if (data.value == -1) {
-        jQuery('.f-non-readable-value').show();
-        jQuery('.f-readable-value').hide();
+        $('.f-non-readable-value').show();
+        $('.f-readable-value').hide();
     } else {
-        jQuery('.f-readable-value').html(data.value);
-        jQuery('.f-readable-value').show();
-        jQuery('.f-non-readable-value').hide();
+        $('.f-readable-value').html(data.value);
+        $('.f-readable-value').show();
+        $('.f-non-readable-value').hide();
     }
 } 
 </script>
@@ -136,12 +136,12 @@ updateSub = function (data) {
                     <c:if test="${fn:length(enrollments) > 0}">
                         <c:if test="${configurable}">
                             <cti:msg2 key=".config.description" var="configTitle"/>
-                            <cti:button type="submit" nameKey="config" onclick="jQuery('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
+                            <cti:button type="submit" nameKey="config" onclick="$('#actionInput').val('config');" title="${configTitle}" classes="action primary"/>
                             <cti:msg2 key=".saveToBatch.description" var="saveToBatchTitle"/>
-                            <cti:button type="submit" nameKey="saveToBatch" onclick="jQuery('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
+                            <cti:button type="submit" nameKey="saveToBatch" onclick="$('#actionInput').val('saveToBatch');" title="${saveToBatchTitle}"/>
                         </c:if>
                         <cti:msg2 key=".saveConfigOnly.description" var="saveConfigOnlyTitle"/>
-                        <cti:button type="submit" nameKey="saveConfigOnly" onclick="jQuery('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
+                        <cti:button type="submit" nameKey="saveConfigOnly" onclick="$('#actionInput').val('saveConfigOnly');" title="${saveConfigOnlyTitle}"/>
                     </c:if>
                 </cti:checkRolesAndProperties>
                 <cti:url var="cancelUrl" value="/stars/operator/hardware/list">

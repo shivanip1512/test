@@ -11,33 +11,33 @@
 
     <script type="text/javascript">
         function importFinished() {
-            var prescan = (jQuery("#prescan").val() === 'true');
-            jQuery('#cancelButton').prop('disabled', true);
+            var prescan = ($("#prescan").val() === 'true');
+            $('#cancelButton').prop('disabled', true);
 
             var params = {'resultId': '${resultId}'};
-            jQuery.ajax({
+            $.ajax({
                 dataType: "json",
                 url: yukon.url('/stars/operator/account/importResult'),
                 data: params
             }).done(function(passed) {
                 if(passed === false) {
-                    jQuery('#errorsLink').show();
-                    jQuery('#importButton')
+                    $('#errorsLink').show();
+                    $('#importButton')
                         .prop('disabled', true)
                         .hide();
                 } else if(prescan === true) {
-                    jQuery('#importButton').prop('disabled', false);
+                    $('#importButton').prop('disabled', false);
                 }
             });
         }
 
         function showErrorsTable() {
             var params = {'resultId': '${resultId}'};
-            jQuery.ajax({
+            $.ajax({
                 url: yukon.url('/stars/operator/account/importErrors'),
                 data: params
             }).done(function(data, status, xhrobj) {
-                jQuery('#importErrorsDiv').html(data).show();
+                $('#importErrorsDiv').html(data).show();
             });
         }
     </script>

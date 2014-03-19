@@ -42,7 +42,7 @@
         </c:otherwise>
     </c:choose>
     <script>
-        jQuery(document.getElementById("${buttonId}")).click(function() {
+        $(document.getElementById("${buttonId}")).click(function() {
             var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
             var confirmed = true;
             if (confirmText.strip() !== '') {

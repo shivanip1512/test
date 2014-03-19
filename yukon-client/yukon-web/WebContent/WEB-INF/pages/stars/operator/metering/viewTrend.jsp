@@ -38,9 +38,9 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
     <script type="text/javascript">
 
         // hack our spring url into trending_options.jspf
-        jQuery(function() {
-            jQuery('#trendingOptionMFormRedirect').val('${thisUrl}');
-            jQuery('#trendingOptionMFormReferrer').val('${thisUrl}');
+        $(function() {
+            $('#trendingOptionMFormRedirect').val('${thisUrl}');
+            $('#trendingOptionMFormReferrer').val('${thisUrl}');
         });
         
     </script>

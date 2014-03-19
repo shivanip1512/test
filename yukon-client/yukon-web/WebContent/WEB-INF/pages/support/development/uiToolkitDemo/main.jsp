@@ -70,20 +70,20 @@ background-color: -moz-linear-gradient(#aaa, #fff);
 </style>
 
 <script>
-jQuery(function() {
+$(function() {
     // unblock page (and elements) on escape key
-    jQuery(document).keyup(function(e) {
+    $(document).keyup(function(e) {
         if (e.which == 27) { // esc
             yukon.ui.unblockPage();
         
-            jQuery(".f-block-this").each(function() {
-                yukon.ui.elementGlass.hide(jQuery(this));
+            $(".f-block-this").each(function() {
+                yukon.ui.elementGlass.hide($(this));
             });
         }
     });
     
-    jQuery("button.blockElement").click(function(e){
-		var elem = jQuery(e.target).closest(".f-block-this");
+    $("button.blockElement").click(function(e){
+		var elem = $(e.target).closest(".f-block-this");
 		if(elem) {
 		    yukon.ui.elementGlass.show(elem);
 		}
@@ -361,7 +361,7 @@ button
 &lt;cti:button type="submit" name="button1" label="standard" classes="f-blocker"/&gt;
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
                         <br /> <br /> <pre class="code">
-jQuery('#myCloseButton').on('click', function () {
+$('#myCloseButton').on('click', function () {
     yukon.ui.unblockPage();
 });
         </pre></td>
@@ -380,15 +380,15 @@ jQuery('#myCloseButton').on('click', function () {
                         block and unblock and element. <br /> <br />In this example, we have a
                         click handler on the <em>Block Element</em> button. The <br />function for
                         the handler looks like this: <br /> <br /> <pre class="code">
-jQuery("button.blockElement").click( function() {
+$("button.blockElement").click( function() {
     ...
-    var elem = jQuery(this).closest('.f-block-this');
+    var elem = $(this).closest('.f-block-this');
     yukon.ui.elementGlass.show(elem);
     ...
 });
         </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
-    var elem = jQuery('.f-block-this');
+    var elem = $('.f-block-this');
     yukon.ui.elementGlass.hide(elem);
 ...
         </pre>

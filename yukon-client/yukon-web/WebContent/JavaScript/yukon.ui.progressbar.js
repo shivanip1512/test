@@ -78,7 +78,7 @@ yukon.ui.progressbar = (function () {
         return length;
     },
     getProgressBarContainer = function (pbarId) {
-        return jQuery('#progressContainer_' + pbarId);
+        return $('#progressContainer_' + pbarId);
     },
     barMod;
     // 'trys' used to hide initial errors when updater run before page is fully loaded
@@ -122,7 +122,7 @@ yukon.ui.progressbar = (function () {
         updateProgressStatus : function (pDescId) {
             return function (data) {
                 var statusText = data.statusText;
-                jQuery('#progressStatus_' + pDescId).html(statusText);
+                $('#progressStatus_' + pDescId).html(statusText);
             };
         },
         toggleElementsWhenTrue : function (elementsToToggle, show) {
@@ -131,9 +131,9 @@ yukon.ui.progressbar = (function () {
                 if (value === 'true') {
                     elementsToToggle.forEach( function (el, index, arr) {
                         if (show) {
-                            jQuery('#' + el).show();
+                            $('#' + el).show();
                         } else {
-                            jQuery('#' + el).hide();
+                            $('#' + el).hide();
                         }
                     });
                 }

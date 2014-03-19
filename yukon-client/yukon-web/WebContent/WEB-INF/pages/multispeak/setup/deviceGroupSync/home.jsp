@@ -29,11 +29,11 @@
         function toggleSyncNowControls() {
             return function(data) {
                 if (data.value === 'true') {
-                    jQuery('#deviceGroupSyncTypeSelect').prop('disabled', true);
-                    jQuery('#startButton').prop('disabled', true);
+                    $('#deviceGroupSyncTypeSelect').prop('disabled', true);
+                    $('#startButton').prop('disabled', true);
                 } else {
-                    jQuery('#deviceGroupSyncTypeSelect').prop('disabled', false);
-                    jQuery('#startButton').prop('disabled', false);
+                    $('#deviceGroupSyncTypeSelect').prop('disabled', false);
+                    $('#startButton').prop('disabled', false);
                 }
             };
         }

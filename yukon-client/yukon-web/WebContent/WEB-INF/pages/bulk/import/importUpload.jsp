@@ -7,24 +7,24 @@
 <cti:standardPage module="tools" page="bulk.importUpload">
 
 <script>
-jQuery(function(){
+$(function(){
     updateImportTypeSelection();
-    jQuery("#importTypeSelector").change(function(){
+    $("#importTypeSelector").change(function(){
         updateImportTypeSelection();
     });
 });
 
 function updateImportTypeSelection() {
-    var itemSelected = jQuery("#importTypeSelector").val();
+    var itemSelected = $("#importTypeSelector").val();
     //hide all rows
-    jQuery("[class^='bulkImportType_']").hide();
+    $("[class^='bulkImportType_']").hide();
     //show rows for the selected interface
-    jQuery(".bulkImportType_" + itemSelected).show();
+    $(".bulkImportType_" + itemSelected).show();
     
     //hide all sample files
-    jQuery("[class^='sample_import_files_']").hide();
+    $("[class^='sample_import_files_']").hide();
     //show sample files for the selected interface
-    jQuery(".sample_import_files_" + itemSelected).show();
+    $(".sample_import_files_" + itemSelected).show();
 }
 </script>
     

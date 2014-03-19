@@ -58,7 +58,7 @@ yukon.ui.util = (function () {
             options = selectElement.options;
             
             //clone the select element - for ie fix 
-            copy = jQuery.makeArray(options);
+            copy = $.makeArray(options);
             //empty the whole select so that ie doesn't complain unable to insert
             while (selectElement.options.length > 0) { 
                 selectElement.remove(0);
@@ -120,10 +120,10 @@ yukon.ui.util = (function () {
             newOpt = document.createElement("option");
 
             // get first option group - there will always be at least one [prototype function]
-            firstOptGroup = jQuery(selectObj).find("optgroup")[0];
+            firstOptGroup = $(selectObj).find("optgroup")[0];
 
             // get first option in first group
-            firstGroupOptions = jQuery(firstOptGroup).find("option");
+            firstGroupOptions = $(firstOptGroup).find("option");
 
             // either stick new opt in before the opt that is currently first in the first option group [DOM function] 
             // or, if there are no current opts, just append it to that first group
@@ -148,19 +148,19 @@ yukon.ui.util = (function () {
         cancelCommands : function (resultId, url, ccid, cancelingText, finishedText) {
 
             // save button text for restore on error
-            var orgCancelButtonText = jQuery('#cancelButton' + ccid).val(),
+            var orgCancelButtonText = $('#cancelButton' + ccid).val(),
                 args;
 
             // swap to wait img, disable button
-            jQuery('#waitImg' + ccid).show();
-            jQuery('#cancelButton' + ccid).prop('disabled', true);
-            jQuery('#cancelButton' + ccid).val(cancelingText);
+            $('#waitImg' + ccid).show();
+            $('#cancelButton' + ccid).prop('disabled', true);
+            $('#cancelButton' + ccid).val(cancelingText);
 
             // run cancel    
             var args = {};
             args.resultId = resultId;
             // setup callbacks
-            jQuery.ajax({
+            $.ajax({
                 type: "POST",
                 url: url,
                 data: args
@@ -171,19 +171,19 @@ yukon.ui.util = (function () {
                     return;
                 } else {
                     mod.showCancelResult(ccid, finishedText);
-                    jQuery('#cancelButton' + ccid).hide();
+                    $('#cancelButton' + ccid).hide();
                 }
             }).fail( function (jqXHR, textStatus, errorThrown) {
                 mod.showCancelResult(ccid, textStatus);//transport.responseText);
-                jQuery('#cancelButton' + ccid).val(orgCancelButtonText);
-                jQuery('#cancelButton' + ccid).prop('disabled', false);
+                $('#cancelButton' + ccid).val(orgCancelButtonText);
+                $('#cancelButton' + ccid).prop('disabled', false);
             });
         },
         showCancelResult : function (ccid, msg) {
 
-            jQuery('#waitImg' + ccid).hide();
-            jQuery('#cancelArea' + ccid).html(msg);
-            jQuery('#cancelArea' + ccid).show();
+            $('#waitImg' + ccid).hide();
+            $('#cancelArea' + ccid).html(msg);
+            $('#cancelArea' + ccid).show();
         },
         // pass table css selectors
         // columns in each table will be made to have the same width as the widest element in that column across all tables
@@ -192,15 +192,15 @@ yukon.ui.util = (function () {
             var tableSelectors = Array.prototype.slice.call(arguments, 0),
                 tablesToAlign,
                 columnSizes;
-            jQuery( function () {
+            $( function () {
                 columnSizes = [];
-                tablesToAlign = jQuery(tableSelectors).map( function (ind, tab) {
-                    return jQuery(tab)[0];
+                tablesToAlign = $(tableSelectors).map( function (ind, tab) {
+                    return $(tab)[0];
                 });
                 tablesToAlign.each( function (ind, table) {
-                    var rowsToAlign = jQuery(table).find('tr');
+                    var rowsToAlign = $(table).find('tr');
                     rowsToAlign.each( function (idx, tr) {
-                        var cells = jQuery(tr).find('td'),
+                        var cells = $(tr).find('td'),
                             cell,
                             index;
                         for (index = 0; index < cells.length - 1; index += 1) {
@@ -212,9 +212,9 @@ yukon.ui.util = (function () {
                     });
                 });
                 tablesToAlign.each( function (ind, table) {
-                    var rowsToAlign = jQuery(table).find('tr');
+                    var rowsToAlign = $(table).find('tr');
                     rowsToAlign.each( function(idx, tr) {
-                        var cells = jQuery(tr).find('td'),
+                        var cells = $(tr).find('td'),
                             cell,
                             index = 0;
                         for (index = 0; index < cells.length - 1; index += 1) {
@@ -260,8 +260,8 @@ yukon.ui.util = (function () {
             //assumes data is of type Javascript object
             return function(data) {
                 var showId = document.getElementById(spanId + data.state);
-                jQuery(document.getElementById(spanId)).children().hide();
-                jQuery(showId).show();
+                $(document.getElementById(spanId)).children().hide();
+                $(showId).show();
             };
         },
         
@@ -280,7 +280,7 @@ yukon.ui.util = (function () {
             if (mod.loadComplete) {
                 func();
             } else {
-                jQuery(function() {
+                $(function() {
                     func();
                 });
             }
@@ -289,7 +289,7 @@ yukon.ui.util = (function () {
     return mod;
 })();
 
-jQuery(function() {
+$(function() {
     yukon.ui.util.loadComplete = true;
 });
 
@@ -299,14 +299,14 @@ jQuery(function() {
  * @param duration  [float] how long the effect should last in seconds
  */
 function flashYellow(element, duration) {
-    jQuery(element).flashYellow(duration);
+    $(element).flashYellow(duration);
 }
 
 /** Section containers with show/hide behavior */
-jQuery(function() {
-    jQuery(document).on('click', '.toggle-title', function (event) {
-        jQuery(event.currentTarget).closest('.titled-container').each(function(index, elem){
-            jQuery(elem).toggleClass("collapsed");
+$(function() {
+    $(document).on('click', '.toggle-title', function (event) {
+        $(event.currentTarget).closest('.titled-container').each(function(index, elem){
+            $(elem).toggleClass("collapsed");
        });
     });
 });

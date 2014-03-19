@@ -8,8 +8,8 @@
 <cti:msgScope paths="yukon.web.modules.capcontrol.menu">
 
 <script type="text/javascript">
-jQuery("#reasonSelect").change(function(event) {
-	jQuery('#coReason').val(this.options[this.selectedIndex].value);
+$("#reasonSelect").change(function(event) {
+	$('#coReason').val(this.options[this.selectedIndex].value);
 });
 </script>
 
@@ -53,7 +53,7 @@ jQuery("#reasonSelect").change(function(event) {
 		</div>
 		<div class="action-area">
 			<cti:button nameKey="execute"
-				onclick="doChangeOpState(${bankId}, jQuery('#newOpState').val(), jQuery('#coReason').val(), 'true')" />
+				onclick="doChangeOpState(${bankId}, $('#newOpState').val(), $('#coReason').val(), 'true')" />
 		</div>
 	</div>
 </div>

@@ -10,14 +10,14 @@
 <cti:msgScope paths="modules.dev.uiDemos">
 
 <script type="text/javascript">
-jQuery(document).ready(function() {
-    jQuery('#confirmDeleteDlg').bind('yukonConfirmDialogOK', function() {
-        jQuery('#confirmDeleteDlg').dialog('close');
+$(document).ready(function() {
+    $('#confirmDeleteDlg').bind('yukonConfirmDialogOK', function() {
+        $('#confirmDeleteDlg').dialog('close');
         alert('You seem to be certain you want to delete it.');
     });
 
-    jQuery('#inlineDialog3').bind('yukonOkPressed', function() {
-        jQuery('#inlineDialog3').dialog('close');
+    $('#inlineDialog3').bind('yukonOkPressed', function() {
+        $('#inlineDialog3').dialog('close');
         alert('You pressed OK.');
     });
 });
@@ -57,7 +57,7 @@ jQuery(document).ready(function() {
 <d:inline id="inlineDialog5" okEvent="none" nameKey="inlineDialog5" on="#sampleInlineBtn5"
                 options="{width: 550, 'buttons': [{text: '${button1}', click: function() { alert('Sup, Im button 1!'); }, 'class': 'inline_dialog_button_1' },
                                                   {text: '${button2}', click: function() { alert('Sup, Im button 2!'); } },
-                                                  {text: '${cancelText}', click: function() { jQuery(this).dialog('close'); } }]}">
+                                                  {text: '${cancelText}', click: function() { $(this).dialog('close'); } }]}">
 	<p>Options used in this dialog:</p>
 	<ul>
 		<li>-width</li>

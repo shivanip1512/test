@@ -15,140 +15,140 @@
     var errorDetectMsg = '<cti:msg2 key=".errorDetect" javaScriptEscape="true"/>';
     var errorReadMsg = '<cti:msg2 key=".errorRead" javaScriptEscape="true"/>';
     function sendDetect () {
-        var params = {'phase': jQuery('#phase').val()};
+        var params = {'phase': $('#phase').val()};
 
-        jQuery('#sendDetectButton').val(sendingMsg);
-        jQuery('#sendDetectButton').prop({'disabled': true});
-        jQuery('#actionResultDiv').hide();
-        jQuery('#spinner').show();
+        $('#sendDetectButton').val(sendingMsg);
+        $('#sendDetectButton').prop({'disabled': true});
+        $('#actionResultDiv').hide();
+        $('#spinner').show();
 
-        jQuery.ajax({
+        $.ajax({
             url: '/amr/phaseDetect/startTest',
             data: params,
             type: 'POST',
             dataType: 'json'
         }).done( function (data, textStatus, jqXHR) {
             if (data.errorOccurred) {
-                jQuery('#spinner').hide();
-                jQuery('#actionResultDiv').html(errorDetectMsg);
-                jQuery('#actionResultDiv').show();
-                jQuery('#sendDetectButton').val(sendMsg);
-                jQuery('#sendDetectButton').prop({'disabled': false});
+                $('#spinner').hide();
+                $('#actionResultDiv').html(errorDetectMsg);
+                $('#actionResultDiv').show();
+                $('#sendDetectButton').val(sendMsg);
+                $('#sendDetectButton').prop({'disabled': false});
             } else {
-                jQuery('#sendDetectButton').val(sendMsg);
-                jQuery('#' + data.phase).show();
-                jQuery('#spinner').hide();
+                $('#sendDetectButton').val(sendMsg);
+                $('#' + data.phase).show();
+                $('#spinner').hide();
                 startTimers();
             }
         }).fail( function (jqXHR, textStatus) {
-            jQuery('#spinner').hide();
-            jQuery('#actionResultDiv').html(errorDetectMsg);
-            jQuery('#actionResultDiv').show();
-            jQuery('#sendDetectButton').val(sendMsg);
-            jQuery('#sendDetectButton').prop({'disabled': false});
+            $('#spinner').hide();
+            $('#actionResultDiv').html(errorDetectMsg);
+            $('#actionResultDiv').show();
+            $('#sendDetectButton').val(sendMsg);
+            $('#sendDetectButton').prop({'disabled': false});
         });
     }
 
     function startTimers () {
-        jQuery('#intervalTimerNote').show();
-        jQuery('#intervalTimerFont').css('color', 'red');
-        jQuery('#detectTimerNote').show();
-        jQuery('#detectTimerFont').css('color', 'red');
+        $('#intervalTimerNote').show();
+        $('#intervalTimerFont').css('color', 'red');
+        $('#detectTimerNote').show();
+        $('#detectTimerFont').css('color', 'red');
         setTimeout(updateTimers, 1000);
     }
 
     function updateTimers () {
-        var intervalTimer = jQuery('#intervalTimerSpan').html(),
-            detectTimer = jQuery('#detectTimerSpan').html(),
+        var intervalTimer = $('#intervalTimerSpan').html(),
+            detectTimer = $('#detectTimerSpan').html(),
             timeoutSet = false;
         if (intervalTimer > 0) {
             intervalTimer = intervalTimer - 1;
-            jQuery('#intervalTimerSpan').html(intervalTimer);
+            $('#intervalTimerSpan').html(intervalTimer);
             setTimeout(updateTimers, 1000);
             timeoutSet = true;
         }
         if (detectTimer > 0) {
             detectTimer = detectTimer - 1;
-            jQuery('#detectTimerSpan').html(detectTimer);
+            $('#detectTimerSpan').html(detectTimer);
             if (!timeoutSet) {
                 setTimeout(updateTimers, 1000);
             }
         } else {
-            jQuery('#sendDetectButton').hide();
-            jQuery('#readButton').prop({'disabled': false});
-            jQuery('#readButton').show();
+            $('#sendDetectButton').hide();
+            $('#readButton').prop({'disabled': false});
+            $('#readButton').show();
         }
     }
 
     function reset () {
-        jQuery('#sendDetectButton').val(sendMsg);
-        jQuery('#sendDetectButton').prop({'disabled': false});
-        jQuery('#sendDetectButton').show();
-        jQuery('#resetButton').hide();
-        jQuery('#actionResultDiv').hide();
-        jQuery('#intervalTimerNote').hide();
-        jQuery('#detectTimerNote').hide();
-        jQuery('#intervalTimerSpan').html('${data.intervalLength}');
-        jQuery('#intervalTimerFont').css('color', 'black');
-        jQuery('#detectTimerSpan').html('${data.intervalLength * data.numIntervals}');
-        jQuery('#detectTimerFont').css('color', 'black');
+        $('#sendDetectButton').val(sendMsg);
+        $('#sendDetectButton').prop({'disabled': false});
+        $('#sendDetectButton').show();
+        $('#resetButton').hide();
+        $('#actionResultDiv').hide();
+        $('#intervalTimerNote').hide();
+        $('#detectTimerNote').hide();
+        $('#intervalTimerSpan').html('${data.intervalLength}');
+        $('#intervalTimerFont').css('color', 'black');
+        $('#detectTimerSpan').html('${data.intervalLength * data.numIntervals}');
+        $('#detectTimerFont').css('color', 'black');
     }
 
     function sendRead () {
-        var params = {'phase': jQuery('#phase').val()};
-        jQuery('#actionResultDiv').show();
-        jQuery.ajax({
+        var params = {'phase': $('#phase').val()};
+        $('#actionResultDiv').show();
+        $.ajax({
             url: '/amr/phaseDetect/readPhase',
             type: 'POST',
             data: params
         }).done( function (data, textStatus, jqXHR) {
             var json = yukon.ui.util.getHeaderJSON(jqXHR);
             if (json.success) {
-                jQuery('#read' + json.phase).show();
-                jQuery('#readButton').val(readingMsg);
-                jQuery('#readButton').prop({'disabled': true});
-                jQuery('#actionResultDiv').html(data);
+                $('#read' + json.phase).show();
+                $('#readButton').val(readingMsg);
+                $('#readButton').prop({'disabled': true});
+                $('#actionResultDiv').html(data);
                 if (json.complete) {
-                    jQuery('#complete').val('true');
+                    $('#complete').val('true');
                 }
             } else {
-                jQuery('#actionResultDiv').show();
-                jQuery('#actionResultDiv').html(errorReadMsg);
+                $('#actionResultDiv').show();
+                $('#actionResultDiv').html(errorReadMsg);
             }
         }).fail( function (jqXHR, textStatus) {
-            jQuery('#actionResultDiv').html(errorReadMsg);
-            jQuery('#actionResultDiv').show();
+            $('#actionResultDiv').html(errorReadMsg);
+            $('#actionResultDiv').show();
         });
     }
 
     function sendClearCommand () {
-        jQuery('#spinner').show();
-        jQuery('#actionResultDiv').html('');
-        jQuery.ajax({
+        $('#spinner').show();
+        $('#actionResultDiv').html('');
+        $.ajax({
             url: '/amr/phaseDetect/sendClearFromTestPage',
             type: 'GET'
         }).done( function (data, textStatus, jqXHR) {
             var json = yukon.ui.util.getHeaderJSON(jqXHR);
-            jQuery('#spinner').hide();
-            jQuery('#actionResultDiv').show();
+            $('#spinner').hide();
+            $('#actionResultDiv').show();
             if (json.success) {
-                jQuery('#clearButton').hide();
-                jQuery('#resetButton').show();
+                $('#clearButton').hide();
+                $('#resetButton').show();
             }
         }).fail( function (jqXHR, textStatus) {
-            jQuery('#spinner').hide();
-            jQuery('#actionResultDiv').show();
+            $('#spinner').hide();
+            $('#actionResultDiv').show();
         });
     }
 
     function readFinished () {
-        jQuery('#cancelReadButton').prop({'disabled': true});
-        jQuery('#readButton').val('${read}');
-        jQuery('#readButton').hide();
-        jQuery('#clearButton').prop({'disabled': false});
-        jQuery('#clearButton').show();
-        if (jQuery('#complete').val() == 'true') {
-            jQuery('#resultsButton').prop({'disabled': false});
+        $('#cancelReadButton').prop({'disabled': true});
+        $('#readButton').val('${read}');
+        $('#readButton').hide();
+        $('#clearButton').prop({'disabled': false});
+        $('#clearButton').show();
+        if ($('#complete').val() == 'true') {
+            $('#resultsButton').prop({'disabled': false});
         }
     }
     </script>

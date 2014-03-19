@@ -10,11 +10,11 @@
 
 <script type="text/javascript">
 
-jQuery(document).on('click', 'button.loginButton',function() {
+$(document).on('click', 'button.loginButton',function() {
 
-        var parentLoginId = jQuery(this).attr('name');
-        jQuery('#loginAsUserId').val(parentLoginId); 
-        jQuery('#parentLoginForm').submit();
+        var parentLoginId = $(this).attr('name');
+        $('#loginAsUserId').val(parentLoginId); 
+        $('#parentLoginForm').submit();
 
 });
 

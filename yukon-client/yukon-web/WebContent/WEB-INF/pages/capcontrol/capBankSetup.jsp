@@ -25,25 +25,25 @@
 
         <script type="text/javascript">
             function closeOrphanedCBCPopup () {
-                jQuery('#orphaned-cbcs').dialog('close');
+                $('#orphaned-cbcs').dialog('close');
             }
         
             function showOrphanedCBCPopup () {
-                jQuery.ajax({
+                $.ajax({
                     url: '${orphanURL}',
                     type: 'POST'
                 }).done( function (data, textStatus, jqXHR) {
-                    var popup = jQuery('#orphaned-cbcs');
+                    var popup = $('#orphaned-cbcs');
                     popup.html(data);
                     popup.dialog({width: 600});
                 });
             }
         
             function setCBC (deviceName, pointId, pointName) {
-                var device = jQuery('#cbcDevice');
+                var device = $('#cbcDevice');
                 device.html(deviceName);
-                jQuery('#ctlPoint').html(pointName);
-                jQuery('#cbc_point').val(pointId);
+                $('#ctlPoint').html(pointName);
+                $('#cbc_point').val(pointId);
             }
         </script>
 

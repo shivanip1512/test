@@ -4,9 +4,9 @@ yukon.namespace('yukon.dataAnalysis');
 yukon.dataAnalysis = (function() {
     var mod = {
         changeStatus : function (msg) {
-            var data = jQuery.parseJSON(msg.value),
+            var data = $.parseJSON(msg.value),
                 status = data.status.trim(),
-                row = jQuery('[data-analysis=' + data.analysisId + ']'),
+                row = $('[data-analysis=' + data.analysisId + ']'),
                 viewButton = row.find('.f-results-button'),
                 statusDiv = row.find('.f-analysis-status');
             

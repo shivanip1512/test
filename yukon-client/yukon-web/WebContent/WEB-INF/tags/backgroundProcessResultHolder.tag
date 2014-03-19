@@ -13,8 +13,8 @@
 
 <script type="text/javascript">
     function refreshErrors (id) {
-        if (jQuery('#' + id).is(':visible')) {
-            jQuery('#' + id).load('/bulk/processingExceptionErrorsRefresh',{'resultsId' : '${resultsId}'});
+        if ($('#' + id).is(':visible')) {
+            $('#' + id).load('/bulk/processingExceptionErrorsRefresh',{'resultsId' : '${resultsId}'});
         }
     }
     function submitForm(id) {
@@ -83,7 +83,7 @@
     </ul>
     <%-- FAILURE DETAILS LINK --%>
     <c:if test="${callbackResult.failureReasonsListSupported}">
-        <a href="javascript:void(0);" onclick="jQuery('#processingErrorsDiv${resultsId}').toggle();refreshErrors('processingErrorsDiv${resultsId}');">
+        <a href="javascript:void(0);" onclick="$('#processingErrorsDiv${resultsId}').toggle();refreshErrors('processingErrorsDiv${resultsId}');">
             <cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" />
         </a>
         

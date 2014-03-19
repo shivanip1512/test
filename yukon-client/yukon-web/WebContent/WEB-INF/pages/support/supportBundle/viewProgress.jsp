@@ -4,31 +4,31 @@
 
 <cti:standardPage module="support" page="supportBundle">
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
     checkUpdate();
 
-    jQuery("#ftpUploadBtn").click(function() {
-        var chosenBundle = jQuery("input[name=fileName]", "#uploadForm").val();
+    $("#ftpUploadBtn").click(function() {
+        var chosenBundle = $("input[name=fileName]", "#uploadForm").val();
         openFtpPopup(chosenBundle);
     });
 });
 
 function openFtpPopup(fileName){
-    jQuery.ajax({
+    $.ajax({
         url: "/support/infoOnBundle",
         data: {fileName: fileName}
     }).done(function(results) {
-        var form = jQuery("#ftpPopupForm");
-        jQuery("#uploadFileName").text(results.fileName);
-        jQuery("#uploadFileSize").text(results.fileSize);
-        jQuery("#uploadFileDate").text(results.fileDate);
-        jQuery("input[name=fileName]", "#ftpPopupForm").val(fileName);
-        jQuery("#ftpUploadPopup").dialog({
+        var form = $("#ftpPopupForm");
+        $("#uploadFileName").text(results.fileName);
+        $("#uploadFileSize").text(results.fileSize);
+        $("#uploadFileDate").text(results.fileDate);
+        $("input[name=fileName]", "#ftpPopupForm").val(fileName);
+        $("#ftpUploadPopup").dialog({
             buttons: {
                 cancel: {
                     text: "<cti:msg2 key=".cancel" />",
                     click: function() {
-                        jQuery(this).dialog("close");
+                        $(this).dialog("close");
                     }
                 },
                 upload: {
@@ -44,17 +44,17 @@ function openFtpPopup(fileName){
 }
 
 function refreshContent(){
-    jQuery("#mainDiv").load("/support/getBundleProgress");
+    $("#mainDiv").load("/support/getBundleProgress");
 }
 
 function checkUpdate(){
-    jQuery.getJSON("/support/bundleInProgress").done(function(json) {
+    $.getJSON("/support/bundleInProgress").done(function(json) {
         refreshContent();
         if(json.inProgress) {
             setTimeout(checkUpdate,1000);
         } else{
-            jQuery("input[name=fileName]", "#uploadForm").val(json.fileName);
-            jQuery("#uploadForm :button").removeAttr("disabled");
+            $("input[name=fileName]", "#uploadForm").val(json.fileName);
+            $("#uploadForm :button").removeAttr("disabled");
         }
     });
 }

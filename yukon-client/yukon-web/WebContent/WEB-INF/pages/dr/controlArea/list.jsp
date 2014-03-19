@@ -233,7 +233,7 @@
 
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-            jQuery('#filterPopup').show();
+            $('#filterPopup').show();
         </script>
     </c:if>
     <dt:pickerIncludes/>

@@ -7,7 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <script type="text/javascript">
-    jQuery(function() {
+    $(function() {
         yukon.favorites.initSubscribe();
     });
 </script>

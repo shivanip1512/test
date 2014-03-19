@@ -7,9 +7,9 @@ yukon.dr.estimatedLoad = (function() {
     mod = {
             
             displayProgramValue : function (msg) {
-                var data = jQuery.parseJSON(msg.value);
+                var data = $.parseJSON(msg.value);
                 var status = data.status;
-                var row = jQuery('[data-pao=' + data.paoId +']');
+                var row = $('[data-pao=' + data.paoId +']');
                 
                 if (status == 'error') {
                     row.attr("title", data.tooltip);
@@ -33,9 +33,9 @@ yukon.dr.estimatedLoad = (function() {
             },
     
             displaySummaryValue : function (msg) {
-                var data = msg.value == undefined ? jQuery.parseJSON(msg.identifier) : jQuery.parseJSON(msg.value);
+                var data = msg.value == undefined ? $.parseJSON(msg.identifier) : $.parseJSON(msg.value);
                 var status = data.status;
-                var row = jQuery('[data-pao=' + data.paoId +']');
+                var row = $('[data-pao=' + data.paoId +']');
                 
                 row.find('.f-connected-load').html(data.connected);
                 row.find('.f-diversified-load').html(data.diversified);

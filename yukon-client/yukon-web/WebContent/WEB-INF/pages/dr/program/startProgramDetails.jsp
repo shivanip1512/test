@@ -28,18 +28,18 @@ submitForm = function () {
 }
 
 startNowChecked = function () {
-    jQuery('#startDate').prop('disabled', jQuery('#startNowCheckbox').prop('checked'));
+    $('#startDate').prop('disabled', $('#startNowCheckbox').prop('checked'));
 }
 
 scheduleStopChecked = function () {
-    jQuery('#stopDate').prop('disabled', !jQuery('#scheduleStopCheckbox').prop('checked'));
+    $('#stopDate').prop('disabled', !$('#scheduleStopCheckbox').prop('checked'));
 }
 
 gearChanged = function () {
     if (targetCycleGears[document.getElementById('gearNumber').value]) {
-        jQuery('#addAdjustmentsArea').show();
+        $('#addAdjustmentsArea').show();
     } else {
-        jQuery('#addAdjustmentsArea').hide();
+        $('#addAdjustmentsArea').hide();
         document.getElementById('addAdjustmentsCheckbox').checked = false;
         updateSubmitButtons();
     }
@@ -55,14 +55,14 @@ updateSubmitButtons = function () {
     }
 
     if (document.getElementById('addAdjustmentsCheckbox').checked || !autoObservingConstraints) {
-        jQuery('#okButton').hide();
-        jQuery('#nextButton').show();
+        $('#okButton').hide();
+        $('#nextButton').show();
 	} else {
-	    jQuery('#okButton').show();
-	    jQuery('#nextButton').hide();
+	    $('#okButton').show();
+	    $('#nextButton').hide();
 	}
 }
-jQuery( function () {
+$( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
 })
@@ -176,7 +176,7 @@ jQuery( function () {
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
             <script type="text/javascript">updateSubmitButtons();</script>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

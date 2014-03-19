@@ -10,29 +10,29 @@
 
     <script>
         function addUser(selectedItems, picker) {
-            jQuery('#userId').value = selectedItems[0][picker.idFieldName];
-            jQuery('#operatorLoginAddForm').submit();
+            $('#userId').value = selectedItems[0][picker.idFieldName];
+            $('#operatorLoginAddForm').submit();
         }
     
-        jQuery(document).on('click', '.f-remove', function() {                
-             var userId = jQuery(this).attr("userId");
-             var ecId = jQuery(this).attr("ecId");
+        $(document).on('click', '.f-remove', function() {                
+             var userId = $(this).attr("userId");
+             var ecId = $(this).attr("ecId");
              var data = {};
              data.userId = userId;
              data.ecId = ecId;
-             jQuery.post('/adminSetup/energyCompany/operatorLogin/remove', data).done(function(data) {  
-                 jQuery("#"+userId).hide();
+             $.post('/adminSetup/energyCompany/operatorLogin/remove', data).done(function(data) {  
+                 $("#"+userId).hide();
            });
         });
         
-        jQuery(function() {
-            jQuery("a.toggle_status").click(function(event) {
+        $(function() {
+            $("a.toggle_status").click(function(event) {
                 event.preventDefault();// We don't want the anchor href to submit a GET request
-                var anchor = jQuery(event.currentTarget);
+                var anchor = $(event.currentTarget);
                 var icon = anchor.find('.icon');
                 var originalClasses = icon.attr('class');
                 icon.addClass("icon-spinner");
-                jQuery.ajax({
+                $.ajax({
                     type: "POST",
                     url: anchor.attr("href"),
                     datatype: "json",

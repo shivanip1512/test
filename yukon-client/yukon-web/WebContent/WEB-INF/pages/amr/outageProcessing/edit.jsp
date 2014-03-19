@@ -10,31 +10,31 @@
     
     <script type="text/javascript">
     
-        jQuery(function() {
+        $(function() {
             toggleReadFrequencyOptions();
         });
     
         function toggleReadFrequencyOptions() {
             if (${outageMonitorId} == 0) {
-                if (jQuery('#scheduleGroupCommand').is(':checked')) {
-                    jQuery('#scheduleNameTr').show();
-                    jQuery('#readFrequencyTr').show();
+                if ($('#scheduleGroupCommand').is(':checked')) {
+                    $('#scheduleNameTr').show();
+                    $('#readFrequencyTr').show();
                 } else {
-                    jQuery('#scheduleNameTr').hide();
-                    jQuery('#readFrequencyTr').hide();
+                    $('#scheduleNameTr').hide();
+                    $('#readFrequencyTr').hide();
                 }
             }
         }
 
         function deleteOutageMonitor() {
-            jQuery("button[data-disable-group=actionButtons]").each( function(){
+            $("button[data-disable-group=actionButtons]").each( function(){
                 this.disabled = true;
             });
-            jQuery('#configDeleteForm').submit();
+            $('#configDeleteForm').submit();
         }
 
         function rewriteOutageGroupName(textEl) {
-            jQuery('#outageGroupNameDiv').innerHTML = '${outageGroupBase}' + textEl.value;
+            $('#outageGroupNameDiv').innerHTML = '${outageGroupBase}' + textEl.value;
         }
         
     </script>
@@ -191,7 +191,7 @@
                 <c:if test="${outageMonitor.evaluatorStatus eq 'ENABLED'}">
                     <c:set var="toggleText" value="disable"/>
                 </c:if>
-                <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
+                <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                 <cti:button id="deleteButton" nameKey="delete" onclick="deleteOutageMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
                 <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                 <cti:url var="backUrl" value="/amr/outageProcessing/process/process">

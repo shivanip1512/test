@@ -19,7 +19,7 @@
 	    <input type="hidden" name="startTime" value="${controlAreaTimeWindowDto.startTime}"/>
 	    <input type="hidden" name="stopTime" value="${controlAreaTimeWindowDto.stopTime}"/>
 	    <div class="action-area">
-	        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+	        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
 	        <cti:button nameKey="ok" classes="primary action" type="submit"/>
 	    </div>
 	</form>

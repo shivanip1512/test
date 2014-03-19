@@ -12,15 +12,15 @@
 <script type="text/javascript">
 function rateChanged() {
     // There is Java code doing this also in SA305.java.
-    var newRate = jQuery('#rate').val(),
+    var newRate = $('#rate').val(),
         rateMember = '',
         rateFamily = '';
     if (!isNaN(newRate) && newRate > 0) {
         rateMember = newRate % 16;
         rateFamily = Math.floor(newRate / 16);
     }
-    jQuery('#rateMember').html(rateMember);
-    jQuery('#rateFamily').html(rateFamily);
+    $('#rateMember').html(rateMember);
+    $('#rateFamily').html(rateFamily);
 }
 </script>
 

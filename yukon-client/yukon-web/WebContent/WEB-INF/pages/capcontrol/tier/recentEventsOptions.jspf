@@ -1,8 +1,8 @@
 <script type="text/javascript">
-jQuery(document).on('click', '#recentEventsView', function (event) {
-    jQuery('#recentEventsOptions').dialog('close');
-    var values = jQuery.map(jQuery('table.recentEventsCheckboxes input[type=checkbox]:checked'), function (elem, index) {
-        return jQuery(elem).val();
+$(document).on('click', '#recentEventsView', function (event) {
+    $('#recentEventsOptions').dialog('close');
+    var values = $.map($('table.recentEventsCheckboxes input[type=checkbox]:checked'), function (elem, index) {
+        return $(elem).val();
     });
     window.location.href = '/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(','));
 });

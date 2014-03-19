@@ -6,8 +6,8 @@
 
 <cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(document).bind('categorySubmitted', closeAjaxDialogAndRefresh); 
+$(function() {
+    $(document).bind('categorySubmitted', closeAjaxDialogAndRefresh); 
 });
 </script>
 

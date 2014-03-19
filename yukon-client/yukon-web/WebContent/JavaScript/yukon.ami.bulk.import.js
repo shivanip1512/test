@@ -1,14 +1,14 @@
 function show (layerName) {
-    jQuery('#' + layerName)[0].style.display = '';
+    $('#' + layerName)[0].style.display = '';
 }
 function hide (layerName) {
-    jQuery('#' + layerName)[0].style.display = 'none';
+    $('#' + layerName)[0].style.display = 'none';
 }
 function showStyle (tablink) {
-    jQuery('#' + tablink)[0].style.fontWeight = 'bold;';
+    $('#' + tablink)[0].style.fontWeight = 'bold;';
 }
 function hideStyle (tablink) {
-    jQuery('#' + tablink)[0].style.fontWeight = 'normal;';
+    $('#' + tablink)[0].style.fontWeight = 'normal;';
 }
 
 var old_tab = "failed";
@@ -67,7 +67,7 @@ function setupRefreshStuff(url, refreshPeriod) {
         alert("Unable to refresh results:\n" + transport.responseText);
     },
     updateResults = function () {
-        jQuery.ajax({
+        $.ajax({
             url: url,
             type: 'POST',
             data: {}
@@ -85,34 +85,34 @@ function setupRefreshStuff(url, refreshPeriod) {
             failedComm_table;
 
         // SET COUNTS
-        jQuery('#importDataCount').html(json.importDataCount);
-        jQuery('#failureCount').html(json.failureCount);
-        jQuery('#pendingCommsCount').html(json.pendingCommsCount);
-        jQuery('#failedCommsCount').html(json.failedCommsCount);
+        $('#importDataCount').html(json.importDataCount);
+        $('#failureCount').html(json.failureCount);
+        $('#pendingCommsCount').html(json.pendingCommsCount);
+        $('#failedCommsCount').html(json.failedCommsCount);
 
         // SET IMPORT TIMES
-        jQuery('#lastImportAttempt').html(json.lastImportAttempt);
-        jQuery('#nextImportAttempt').html(json.nextImportAttempt);
+        $('#lastImportAttempt').html(json.lastImportAttempt);
+        $('#nextImportAttempt').html(json.nextImportAttempt);
 
         // GET TABLE OBJS AND COUNT ROWS
-        failed_table = jQuery('#failed_table')[0];
-        pendingComm_table = jQuery('#pendingComm_table')[0];
-        failedComm_table = jQuery('#failedComm_table')[0];
+        failed_table = $('#failed_table')[0];
+        pendingComm_table = $('#pendingComm_table')[0];
+        failedComm_table = $('#failedComm_table')[0];
 
         // FANCY HIGHLIGHTING
-        if (json.importDataCount !== parseInt(jQuery('#prevImportDataCount').val()), 10) {
-            flashYellow(jQuery('#importDataCount')[0], 2);
+        if (json.importDataCount !== parseInt($('#prevImportDataCount').val()), 10) {
+            flashYellow($('#importDataCount')[0], 2);
         }
-        jQuery('#prevImportDataCount').val(json.importDataCount);
+        $('#prevImportDataCount').val(json.importDataCount);
         
         if (json.failureCount > failed_table.rows.length - 1) {
-            flashYellow(jQuery('#failureCount')[0], 2);
+            flashYellow($('#failureCount')[0], 2);
         }
         if (json.pendingCommsCount > pendingComm_table.rows.length - 1) {
-            flashYellow(jQuery('#pendingCommsCount')[0], 2);
+            flashYellow($('#pendingCommsCount')[0], 2);
         }
         if (json.failedCommsCount > failedComm_table.rows.length - 1) {
-            flashYellow(jQuery('#failedCommsCount')[0], 2);
+            flashYellow($('#failedCommsCount')[0], 2);
         }
 
         // rebuild failures table

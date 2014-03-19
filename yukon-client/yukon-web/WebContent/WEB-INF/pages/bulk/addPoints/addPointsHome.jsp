@@ -9,7 +9,7 @@
 <cti:includeScript link="/JavaScript/yukon.bulk.point.js"/>
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
   var sharedPoints = ${sharedPoints};
   doToggleShowSharedPoints(sharedPoints);
 });
@@ -131,8 +131,8 @@ jQuery(function() {
 <c:if test="${not empty preselectedPointIdentifiers}">
 <script type="text/javascript">
 <c:forEach var="pointTypeOffset" items="${preselectedPointIdentifiers}">
-    jQuery("[name$='${pointTypeOffset}']").attr("checked","checked");
-    flashYellow(jQuery("[name$='${pointTypeOffset}']").closest('td'));
+    $("[name$='${pointTypeOffset}']").attr("checked","checked");
+    flashYellow($("[name$='${pointTypeOffset}']").closest('td'));
 </c:forEach>
 </script>
 </c:if>

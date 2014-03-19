@@ -14,7 +14,7 @@
 
     <div class="action-area">
         <cti:button nameKey="ok" onclick="submitFormViaAjax('ajaxDialog', 'confirmForm')" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#ajaxDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#ajaxDialog').dialog('close');"/>
     </div>
 </form>
 

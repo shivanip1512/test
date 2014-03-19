@@ -21,25 +21,25 @@ yukon.ami.peakDayProfile = (function () {
                 url,
                 divSel = '#' + divId;
         
-            jQuery(divSel + '_startButton').prop('disabled', true);
+            $(divSel + '_startButton').prop('disabled', true);
         
             initiateComplete = function (transport, json) {
                 alert(json['returnMsg']);
-                jQuery(divSel + '_startButton').prop('disabled', false);
+                $(divSel + '_startButton').prop('disabled', false);
             };
         
             args = {};
-            args.deviceId = jQuery(divSel + '_deviceId').val();
-            args.email = jQuery(divSel + '_email').val();
-            args.peakDate = jQuery(divSel + '_selectedPeakDate').val();
-            args.startDate = jQuery(divSel + '_startDate').val();
-            args.stopDate = jQuery(divSel + '_stopDate').val();
-            args.beforeDays = jQuery(divSel + '_beforeDays').val();
-            args.afterDays = jQuery(divSel + '_afterDays').val();
+            args.deviceId = $(divSel + '_deviceId').val();
+            args.email = $(divSel + '_email').val();
+            args.peakDate = $(divSel + '_selectedPeakDate').val();
+            args.startDate = $(divSel + '_startDate').val();
+            args.stopDate = $(divSel + '_stopDate').val();
+            args.beforeDays = $(divSel + '_beforeDays').val();
+            args.afterDays = $(divSel + '_afterDays').val();
             args.profileRequestOrigin = profileRequestOrigin;
         
             url = '/meter/highBill/initiateLoadProfile';
-            jQuery.ajax({
+            $.ajax({
                 url: url,
                 type: 'POST',
                 data: args
@@ -60,14 +60,14 @@ yukon.ami.peakDayProfile = (function () {
                 afterDaysItemsCount,
                 i,
                 peakDaySelectElement,
-                idsAndDates = jQuery('[data-ids-and-dates]').data('idsAndDates');
+                idsAndDates = $('[data-ids-and-dates]').data('idsAndDates');
 
-            preAvailableDaysAfterPeak = jQuery('[data-pre-days]').data('preDays').preDaysAfterPeak;
+            preAvailableDaysAfterPeak = $('[data-pre-days]').data('preDays').preDaysAfterPeak;
 
-            postAvailableDaysAfterPeak = jQuery('[data-post-days]').data('postDays').postDaysAfterPeak;
+            postAvailableDaysAfterPeak = $('[data-post-days]').data('postDays').postDaysAfterPeak;
 
             // remove after days options so they can be reset
-            afterDaysSelectElement = jQuery('#' + idsAndDates.afterDaysId)[0];
+            afterDaysSelectElement = $('#' + idsAndDates.afterDaysId)[0];
             afterDaysItemsCount = afterDaysSelectElement.options.length;
             for (i = afterDaysItemsCount - 1; i >= 0; i -= 1) {
                 afterDaysSelectElement.remove(i);
@@ -75,17 +75,17 @@ yukon.ami.peakDayProfile = (function () {
 
             // set start stop date for selected peak date
             // reset days after drop down options
-            peakDaySelectElement = jQuery('#' + idsAndDates.peakDateId)[0];
+            peakDaySelectElement = $('#' + idsAndDates.peakDateId)[0];
 
             if (peakDaySelectElement.selectedIndex === 0) {
-                jQuery('#' + idsAndDates.startDateId).val(idsAndDates.preStartDate);
-                jQuery('#' + idsAndDates.stopDateId).val(idsAndDates.preStopDate);
+                $('#' + idsAndDates.startDateId).val(idsAndDates.preStartDate);
+                $('#' + idsAndDates.stopDateId).val(idsAndDates.preStopDate);
 
                 _setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, preAvailableDaysAfterPeak);
             }
             else {
-                jQuery('#' + idsAndDates.startDateId).val(idsAndDates.postStartDate);
-                jQuery('#' + idsAndDates.stopDateId).val(idsAndDates.postStopDate);
+                $('#' + idsAndDates.startDateId).val(idsAndDates.postStartDate);
+                $('#' + idsAndDates.stopDateId).val(idsAndDates.postStopDate);
 
                 _setAvailableValuesForDaysAfterSelectElement(afterDaysSelectElement, postAvailableDaysAfterPeak);
             }

@@ -9,10 +9,10 @@
 <style>.validation-value{text-align: right;margin-right: 5px !important;}</style>
 <script type="text/javascript">
     function deleteValidationMonitor() {
-        jQuery("button[data-disable-group=actionButtons]").each( function(){
+        $("button[data-disable-group=actionButtons]").each( function(){
             this.disabled = true;
         });
-        jQuery('#configDeleteForm').submit();
+        $('#configDeleteForm').submit();
     };
 </script>
 
@@ -123,7 +123,7 @@
                     <c:if test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
                         <c:set var="toggleText" value="disable"/>
                     </c:if>
-                     <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
+                     <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                    
                     <cti:button id="deleteButton" nameKey="delete" onclick="deleteValidationMonitor();" busy="true" data-disable-group="actionButtons" classes="delete"/>
                     <d:confirm on="#deleteButton" nameKey="confirmDelete"/>

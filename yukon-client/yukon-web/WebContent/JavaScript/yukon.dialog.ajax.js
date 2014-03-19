@@ -1,16 +1,16 @@
 // Methods to help in dealing with AJAX dialog boxes and wizards.
 
 function closeAjaxDialogAndRefresh() {
-    jQuery('#ajaxDialog').dialog('close');
+    $('#ajaxDialog').dialog('close');
     window.location = window.location;
 }
 
-jQuery(document).on('yukonDialogSubmit', function(event) {
-    jQuery(event.target).find('form').submit();
+$(document).on('yukonDialogSubmit', function(event) {
+    $(event.target).find('form').submit();
 });
 
-jQuery(document).on('ajaxDialogSubmit', function(event) {
-    var target = jQuery(event.target);
+$(document).on('ajaxDialogSubmit', function(event) {
+    var target = $(event.target);
     var dialogId = target.attr('id');
     var formId = target.find('form').attr('id');
     

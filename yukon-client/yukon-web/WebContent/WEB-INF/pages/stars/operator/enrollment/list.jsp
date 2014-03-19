@@ -117,11 +117,11 @@ var programIdsAlreadyEnrolled = [];
         function addEnrollment(devices) {
             var action = window.location.protocol + '//' +
                 window.location.host +
-                jQuery('#addEnrollmentForm').attr('action'),
+                $('#addEnrollmentForm').attr('action'),
                 jqserialized,
                 serializedObj = {},
                 ind;
-            jqserialized = jQuery('#addEnrollmentForm').serializeArray();
+            jqserialized = $('#addEnrollmentForm').serializeArray();
             // emulate the prototype serialize(true) functionality
             for(ind = 0; ind < jqserialized.length; ind += 1) {
                 serializedObj[jqserialized[ind].name] = jqserialized[ind].value;

@@ -10,34 +10,34 @@
     <tags:setFormEditMode mode="${mode}"/>
 
     <script type="text/javascript">
-        jQuery(function() {
-            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
+        $(function() {
+            var curStateSel = $('select[name="workOrderBase.currentStateId"]'),
                 initialState;
             if ( curStateSel.length > 0 ) {
                 initialState = curStateSel.val();
-                jQuery(curStateSel).on('change', function (ev) {
+                $(curStateSel).on('change', function (ev) {
                     var newState = curStateSel.val(),
                         enabled = initialState !== newState;
                     // check if the element even exists
-                    if (0 !== jQuery('#eventDate').length) {
-                        jQuery('#eventDate').prop('disabled', !enabled);
+                    if (0 !== $('#eventDate').length) {
+                        $('#eventDate').prop('disabled', !enabled);
                     }
                 });
             }
         });
 
-        jQuery('#workOrderConfirmCancel', function() {
-            jQuery('#confirmDeleteWorkOrderDialog').dialog('close');
+        $('#workOrderConfirmCancel', function() {
+            $('#confirmDeleteWorkOrderDialog').dialog('close');
         });
 
         var assignedServiceCompanyChanged = function() {
-            var curStateSel = jQuery('select[name="workOrderBase.currentStateId"]'),
+            var curStateSel = $('select[name="workOrderBase.currentStateId"]'),
                 curStateSelVal = curStateSel.val();
             if (curStateSelVal != "${assignedEntryId}") {
                 curStateSel.val("${assignedEntryId}");
-                jQuery('#currentStateChangedDialog').dialog('open');
+                $('#currentStateChangedDialog').dialog('open');
             }
-            jQuery('#eventDate').prop('disabled', false);
+            $('#eventDate').prop('disabled', false);
         }
 
         var submitWorkOrder = function () {
@@ -104,7 +104,7 @@
                         <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
                             <cti:msg2 key=".currentStateChanged"/>
                             <div class="action-area">
-                                <cti:button nameKey="ok" onclick="jQuery('#currentStateChangedDialog').dialog('close');" classes="primary action"/>
+                                <cti:button nameKey="ok" onclick="$('#currentStateChangedDialog').dialog('close');" classes="primary action"/>
                             </div>
                         </i:simplePopup>
                         

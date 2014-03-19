@@ -14,16 +14,16 @@ yukon.ami.billing = (function() {
         },
 
         _is_valid_billing_group = function() {
-            var formatId = jQuery('#MForm [name=fileFormat] :selected').val();
-            var itronTypeId = jQuery('#in_formatType_itronEvent').val();
-            var bgVal = jQuery('#billGroup').val();
+            var formatId = $('#MForm [name=fileFormat] :selected').val();
+            var itronTypeId = $('#in_formatType_itronEvent').val();
+            var bgVal = $('#billGroup').val();
             var anyBillingGroup = bgVal != null && bgVal != undefined && bgVal.length > 0;
     
             var hasError = !anyBillingGroup && formatId != itronTypeId;
-            var err = jQuery('#txt_selectGroup');
+            var err = $('#txt_selectGroup');
             if (hasError) {
                 err.remove();
-                jQuery('#row_billing_group .value').append(err);
+                $('#row_billing_group .value').append(err);
                 err.show();
                 return false;
             }
@@ -37,14 +37,14 @@ yukon.ami.billing = (function() {
         },
 
         _is_valid_demand_days = function() {
-        	var demandDaysPrevious = jQuery('input[name=demandDays]').val();        	
+        	var demandDaysPrevious = $('input[name=demandDays]').val();        	
             // Check if demand days is positive Integer
             var isPositiveInteger =  /^\d+$/.test(demandDaysPrevious);          
-            var errDemandDaysPrevious = jQuery('#txt_invalidDemandDaysPrevious');
+            var errDemandDaysPrevious = $('#txt_invalidDemandDaysPrevious');
             var MAX_PREVIOUS_DAYS = _get_max_previous_days();
             if (!isPositiveInteger || demandDaysPrevious  > MAX_PREVIOUS_DAYS ) {
             	 errDemandDaysPrevious.remove();             	 
-                 jQuery('#row-demand-days-previous .value').append(errDemandDaysPrevious);
+                 $('#row-demand-days-previous .value').append(errDemandDaysPrevious);
                  errDemandDaysPrevious.show();
                  return false;
             }            
@@ -53,14 +53,14 @@ yukon.ami.billing = (function() {
         },
 
         _is_valid_energy_days = function() {
-        	var energyDaysPrevious = jQuery('input[name=energyDays]').val();
+        	var energyDaysPrevious = $('input[name=energyDays]').val();
             // Check if energy days is positive Integer        	
             var isPositiveInteger =  /^\d+$/.test(energyDaysPrevious);   
-            var errEnergyDaysPrevious = jQuery('#txt_invalidEnergyDaysPrevious');
+            var errEnergyDaysPrevious = $('#txt_invalidEnergyDaysPrevious');
             var MAX_PREVIOUS_DAYS =_get_max_previous_days();
             if (!isPositiveInteger || energyDaysPrevious > MAX_PREVIOUS_DAYS ) {
             	errEnergyDaysPrevious.remove();
-             	jQuery('#row-energy-days-previous .value').append(errEnergyDaysPrevious);
+             	$('#row-energy-days-previous .value').append(errEnergyDaysPrevious);
              	errEnergyDaysPrevious.show();
                 return false;
             }            
@@ -80,10 +80,10 @@ yukon.ami.billing = (function() {
                 return false;
             }
     
-            jQuery.ajax({
+            $.ajax({
                 url: url,
                 type: method,
-                data: jQuery('#MForm').serialize()
+                data: $('#MForm').serialize()
             }).done( function(html) {
                 _populate_generation_schedule_form(html);
             });
@@ -91,15 +91,15 @@ yukon.ami.billing = (function() {
         },
 
         _populate_generation_schedule_form = function(new_html) {
-            var settingsPane = jQuery('#billing_generation_settings');
-            var maybeNewPane = jQuery('#billing_generation_schedule');
+            var settingsPane = $('#billing_generation_settings');
+            var maybeNewPane = $('#billing_generation_schedule');
             if (settingsPane.length < 1) {
                 alert('PROGRAMMING PROBLEM: missing div#billing_generation_settings');
             }
             if (maybeNewPane.length > 0) { // Exists
                 maybeNewPane.html(new_html);
             } else { // Must create it
-                maybeNewPane = jQuery('<div id="billing_generation_schedule" class="dn clearfix stacked">\n'+ new_html +'\n</div>');
+                maybeNewPane = $('<div id="billing_generation_schedule" class="dn clearfix stacked">\n'+ new_html +'\n</div>');
                 maybeNewPane.insertAfter(settingsPane);
             }
             yukon.tag.scheduledFileExportInputs.initializeFields();
@@ -109,13 +109,13 @@ yukon.ami.billing = (function() {
         },
 
         _do_refresh_schedules_jobs_list = function(send_data, after_function) {
-            jQuery.ajax({
+            $.ajax({
                 url: _url_list_schedule_jobs,
                 type: 'get',
                 data: send_data
             }).done( function(html) {
-                jQuery('#billing_tab_container').tabs('option','active',2); // THIRD tab
-                jQuery('#billing_schedules_jobs').html(html);
+                $('#billing_tab_container').tabs('option','active',2); // THIRD tab
+                $('#billing_schedules_jobs').html(html);
                 if (after_function != null && after_function != undefined) {
                     after_function();
                 }
@@ -129,14 +129,14 @@ yukon.ami.billing = (function() {
         },
 
         _delete_schedule_job = function(jQueryBtn, params) {
-            jQuery.ajax({
+            $.ajax({
                 url: _url_delete_scheduled_job,
                 type: 'post',
                 data: params
             }).done( function(results) {
                 if (results.success) {
                     _do_refresh_schedules_jobs_list(
-                        _get_pagination_state(jQuery('#billing_schedules_jobs')), function() {
+                        _get_pagination_state($('#billing_schedules_jobs')), function() {
                     });
                 } else { // ?
                     alert('An error prevented deleting this job: \n\t'+ results.error);
@@ -145,13 +145,13 @@ yukon.ami.billing = (function() {
         },
 
         _show_edit_schedule_job = function(jQueryBtn, params) {
-            jQuery.ajax({
+            $.ajax({
                 url: _url_scheduled_billing_form,
                 type: 'get',
                 data: params
             }).done( function(html) {
                 _populate_generation_schedule_form(html);
-                jQuery('#billing_tab_container').tabs('option','active',0); // FIRST tab
+                $('#billing_tab_container').tabs('option','active',0); // FIRST tab
             });
         },
 
@@ -159,16 +159,16 @@ yukon.ami.billing = (function() {
         // TAB #2
         _get_format_ajax_page = function(event, url) {
             _STOP_EVENT(event);
-            var currFormat = jQuery('#availableFormat :selected');
+            var currFormat = $('#availableFormat :selected');
             var currFormatId = currFormat.val();
     
-            jQuery.ajax({
+            $.ajax({
                 url: url,
                 type: 'get',
                 data: {'availableFormat': currFormatId}
             }).done( function(html) {
                 _populate_setup_form(html);
-                jQuery('#billing_setup_content').html(html);
+                $('#billing_setup_content').html(html);
             }).fail( function(msg) {
                 alert('FAILED: '+ msg);
             });
@@ -179,17 +179,17 @@ yukon.ami.billing = (function() {
             _STOP_EVENT(event);
             var the_data = {};
             if (action == 'delete') {
-                var currFormat = jQuery('#availableFormat :selected');
+                var currFormat = $('#availableFormat :selected');
                 var currFormatId = currFormat.val();
                 the_data = {'availableFormat': currFormatId};
             } else if (action == 'save') {
-                the_data = jQuery('#billingFormatForm').serialize();
+                the_data = $('#billingFormatForm').serialize();
             } else {
                 alert('Unknown action: \"' + event + '\"');
                 return false;
             }
 
-            jQuery.ajax({
+            $.ajax({
                 url: url,
                 type: 'post',
                 data: the_data
@@ -206,12 +206,12 @@ yukon.ami.billing = (function() {
         },
 
         _do_refresh_billing_setup_list = function(send_data, after_function) {
-            jQuery.ajax({
+            $.ajax({
                 url: _url_format_setup,
                 type: 'get',
                 data: send_data
             }).done( function(html) {
-                var overviewPane = jQuery('#billing_setup_overview');
+                var overviewPane = $('#billing_setup_overview');
                 overviewPane.html(html);
                 mod.reset_setup_tab();
                 if (after_function != null && after_function != undefined) {
@@ -221,15 +221,15 @@ yukon.ami.billing = (function() {
         },
 
         _populate_setup_form = function(new_html) {
-            var overviewPane = jQuery('#billing_setup_overview');
-            var formPane = jQuery('#billing_setup_form');
+            var overviewPane = $('#billing_setup_overview');
+            var formPane = $('#billing_setup_form');
             if (overviewPane.length < 1) {
                 alert('PROGRAMMING PROBLEM = missing div#billing_setup_overview');
             }
             if (formPane.length > 0) { // Exists
                 formPane.html(new_html);
             } else { // Must create it
-                formPane = jQuery('<div id="billing_setup_form" class="dn">\n'+ new_html +'\n</div>');
+                formPane = $('<div id="billing_setup_form" class="dn">\n'+ new_html +'\n</div>');
                 formPane.insertAfter(overviewPane);
             }
             overviewPane.hide();
@@ -259,15 +259,15 @@ yukon.ami.billing = (function() {
                 return;
             }
 
-            var doc = jQuery(document);
+            var doc = $(document);
 
-            doc.on('click', '#MForm [name=generate]', function(){ jQuery('#MForm').submit();});
+            doc.on('click', '#MForm [name=generate]', function(){ $('#MForm').submit();});
             doc.on('click', '#MForm [name=schedule]', mod.show_scheduled_billing_form);
             doc.on('submit', '#MForm', mod.do_generate_billing_file);
 
             doc.on('submit', '#scheduleForm', mod.do_schedule_billing_file_export);
             doc.on('click', '#billing_generation_schedule .f-cancel', mod.reset_generation_tab);
-            jQuery('#billing_tab_container').tabs({
+            $('#billing_tab_container').tabs({
                 activate: mod.on_tab_change });
 
             doc.on('click', '#tab_schedules a', mod.update_schedules_job_list);
@@ -351,12 +351,12 @@ yukon.ami.billing = (function() {
             if (event != null && event != undefined) {
                 _STOP_EVENT(event);
             }
-            var settingsPane = jQuery('#billing_generation_settings');
-            var schedParams = jQuery('#billing_generation_schedule');
+            var settingsPane = $('#billing_generation_settings');
+            var schedParams = $('#billing_generation_schedule');
             schedParams.hide();
             settingsPane.hide();
             settingsPane.find('[name=fileFormat]').val('4'); // = CTI-CSV
-            settingsPane.find('[name=endDate]').val(jQuery.datepicker.formatDate('mm/dd/yy', new Date()));
+            settingsPane.find('[name=endDate]').val($.datepicker.formatDate('mm/dd/yy', new Date()));
             settingsPane.find('[name=demandDays]').val('30');
             settingsPane.find('[name=energyDays]').val('7');
             settingsPane.find('[name=removeMultiplier]').removeAttr('checked');
@@ -392,8 +392,8 @@ yukon.ami.billing = (function() {
             if (event != null && event != undefined) {
                 _STOP_EVENT(event);
             }
-            var overviewPane = jQuery('#billing_setup_overview');
-            var formPane = jQuery('#billing_setup_form');
+            var overviewPane = $('#billing_setup_overview');
+            var formPane = $('#billing_setup_form');
             overviewPane.show();
             formPane.hide();
             // TODO FIXME: What other fields to add here?
@@ -403,9 +403,9 @@ yukon.ami.billing = (function() {
 
         do_schedule_billing_file_export: function(event) {
             _STOP_EVENT(event);
-            var form = jQuery('#scheduleForm');
+            var form = $('#scheduleForm');
 
-            jQuery.ajax({
+            $.ajax({
                 url: _url_schedule_export,
                 type: 'post',
                 data: form.serialize()
@@ -440,7 +440,7 @@ yukon.ami.billing = (function() {
                         field.addClass('error');
                     }
                     var row = field.closest('td');
-                    var errTd = jQuery('<div class="error">'+ err.message +'</div>');
+                    var errTd = $('<div class="error">'+ err.message +'</div>');
                     errTd.appendTo(row);
                 }
             });
@@ -449,14 +449,14 @@ yukon.ami.billing = (function() {
 
         update_schedules_job_list: function(event) {
             _STOP_EVENT(event);
-            var href = jQuery(event.currentTarget).attr('href');
+            var href = $(event.currentTarget).attr('href');
             var at = href.indexOf('?') + 1;
             _do_refresh_schedules_jobs_list(href.substr(at), null);
         },
 
         // no-op for Remove button: SEE scheduledFileExportJob.tag
         do_schedules_job_list_button : function(event) {
-            var btn = jQuery(event.currentTarget);
+            var btn = $(event.currentTarget);
             var href = btn.attr('data-url');
             if (href == null) { // history: navigate to the list
                 return true;
@@ -476,32 +476,32 @@ yukon.ami.billing = (function() {
         },
 
         unfreeze_billing_setup : function(event){ //used to enable or disable buttons
-            var selectedFormat = jQuery('#availableFormat :selected');
+            var selectedFormat = $('#availableFormat :selected');
             if (selectedFormat.length == 1 ) {
-                jQuery('#btnCopyFormat').removeAttr('disabled'); //able to copy any format
+                $('#btnCopyFormat').removeAttr('disabled'); //able to copy any format
 
                 if (selectedFormat.attr('isSystem') == 'true'){
-                    jQuery('#btnEditFormat').attr('disabled','disabled'); //disable edit and delete if it is system format
-                    jQuery('#btnDeleteFormat').attr('disabled','disabled');
+                    $('#btnEditFormat').attr('disabled','disabled'); //disable edit and delete if it is system format
+                    $('#btnDeleteFormat').attr('disabled','disabled');
                 } else{
-                    jQuery('#btnEditFormat').removeAttr('disabled'); //enable
-                    jQuery('#btnDeleteFormat').removeAttr('disabled');
+                    $('#btnEditFormat').removeAttr('disabled'); //enable
+                    $('#btnDeleteFormat').removeAttr('disabled');
                 }
             } else{
-                jQuery('#btnEditFormat').attr('disabled','disabled'); //disable
-                jQuery('#btnCopyFormat').attr('disabled','disabled');
-                jQuery('#btnDeleteFormat').attr('disabled','disabled');
+                $('#btnEditFormat').attr('disabled','disabled'); //disable
+                $('#btnCopyFormat').attr('disabled','disabled');
+                $('#btnDeleteFormat').attr('disabled','disabled');
             }
         },
 
         // @ #billing_setup_overview
         show_billing_setup_form : function(event) {
             _STOP_EVENT(event);
-            var btn = jQuery(event.currentTarget);
+            var btn = $(event.currentTarget);
             var action = btn.attr('name');
-            var formatId = jQuery('#formatForm availableFormat :selected').val();
+            var formatId = $('#formatForm availableFormat :selected').val();
 
-            jQuery.ajax({
+            $.ajax({
                 url: _url_base_setup+'_'+ action +'.html',
                 type: 'get',
                 data: {'availableFormat': formatId}
@@ -514,13 +514,13 @@ yukon.ami.billing = (function() {
         // @ #billing_setup_overview
         delete_billing_format : function(event) {
             _STOP_EVENT(event);
-            var formatId = jQuery('#formatForm availableFormat :selected').val();
+            var formatId = $('#formatForm availableFormat :selected').val();
             if (formatId == null || formatId == undefined) { // skip it
                 _do_refresh_billing_setup_list(null, null);
                 return false;
             }
 
-            jQuery.ajax({
+            $.ajax({
                 url: _url_format_delete,
                 type: 'post',
                 data: {'availableFormat': formatId}
@@ -539,6 +539,6 @@ yukon.ami.billing = (function() {
     return mod;
 })();
 
-jQuery(function() {
+$(function() {
     yukon.ami.billing.init();
 });

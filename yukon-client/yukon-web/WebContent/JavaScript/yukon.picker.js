@@ -90,7 +90,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         var allSelected = this.allLinks.length > 0;
         this.allLinks.forEach(function (hitRow, index, arr) {
-            if (! jQuery(hitRow.link.parentNode.parentNode).hasClass('highlighted')) {
+            if (! $(hitRow.link.parentNode.parentNode).hasClass('highlighted')) {
                 allSelected = false;
             }
         });
@@ -113,15 +113,15 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             if (this.destinationFieldId) {
                 fieldName = this.idFieldName;
                 destinationFieldElem = document.getElementById(this.destinationFieldId);
-                jQuery(destinationFieldElem).val(
-                    jQuery.map(this.selectedItems, function (val, index) {
+                $(destinationFieldElem).val(
+                    $.map(this.selectedItems, function (val, index) {
                         return val[fieldName];
                     }).join(',')
                 );
             } else {
                 pickerThis = this;
                 this.inputAreaDiv.innerHTML = '';
-                jQuery.each(this.selectedItems, function (key, selectedItem) {
+                $.each(this.selectedItems, function (key, selectedItem) {
                     var inputElement = document.createElement('input');
                     inputElement.type = 'hidden';
                     inputElement.value = selectedItem[pickerThis.idFieldName];
@@ -133,7 +133,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             if (updateOutsideFields.call(this, false)) {
                 if (!this.containerDiv) {
                     dialogElem = document.getElementById(this.pickerId);
-                    jQuery(dialogElem).dialog('close');
+                    $(dialogElem).dialog('close');
                 }
             }
         }
@@ -155,9 +155,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
 
         parentRow = link.parentNode.parentNode;
-        if (jQuery(parentRow).hasClass('highlighted')) {
+        if ($(parentRow).hasClass('highlighted')) {
             // unselect
-            jQuery(parentRow).removeClass('highlighted');
+            $(parentRow).removeClass('highlighted');
             removeFromSelectedItems.call(this, hit);
             if (this.selectAllCheckBox != null && 'undefined' !== typeof this.selectAllCheckBox) {
                 this.selectAllCheckBox.checked = false;
@@ -168,13 +168,13 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                 // not multi-select mode; unselect all others
                 rows = parentRow.parentNode.childNodes;
                 for (index = 0; index < rows.length; index++) {
-                    jQuery(rows[index]).removeClass('highlighted');
+                    $(rows[index]).removeClass('highlighted');
                 }
                 this.selectedItems = [hit];
-                jQuery(parentRow).addClass('highlighted');
+                $(parentRow).addClass('highlighted');
             } else {
                 this.selectedItems.push(hit);
-                jQuery(parentRow).addClass('highlighted');
+                $(parentRow).addClass('highlighted');
                 updateSelectAllCheckbox.call(this);
             }
         }
@@ -201,12 +201,12 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             outputColumns = [],
             processRowForRender = function (rowElement, rowObject) {
                 if (pickerThis.excludeIds.indexOf(rowObject[pickerThis.idFieldName]) !== -1) {
-                    jQuery(rowElement).addClass('disabled');
-                    jQuery(rowElement).attr('title', Picker.alreadySelectedHoverMessage);
+                    $(rowElement).addClass('disabled');
+                    $(rowElement).attr('title', Picker.alreadySelectedHoverMessage);
                 } else {
                     pickerThis.selectedItems.forEach(function (item, index, arr){
                         if (rowObject[pickerThis.idFieldName] === item[pickerThis.idFieldName]) {
-                            jQuery(rowElement).addClass('highlighted');
+                            $(rowElement).addClass('highlighted');
                         }
                     });
                 }
@@ -259,21 +259,21 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         if (json && json.hits.startIndex > 0) {
             this.previousIndex = json.hits.previousStartIndex;
-            jQuery('.previous-link.f-enabled-action', jQuery(pickerDiv)).show();
-            jQuery('.previous-link.f-disabled-action', jQuery(pickerDiv)).hide();
+            $('.previous-link.f-enabled-action', $(pickerDiv)).show();
+            $('.previous-link.f-disabled-action', $(pickerDiv)).hide();
         } else {
-            jQuery('.previous-link.f-enabled-action', jQuery(pickerDiv)).hide();
-            jQuery('.previous-link.f-disabled-action', jQuery(pickerDiv)).show();
+            $('.previous-link.f-enabled-action', $(pickerDiv)).hide();
+            $('.previous-link.f-disabled-action', $(pickerDiv)).show();
         }
         if (json && json.hits.endIndex < json.hits.hitCount) {
             this.nextIndex = json.hits.endIndex;
-            jQuery('.next-link.f-enabled-action', jQuery(pickerDiv)).show();
-            jQuery('.next-link.f-disabled-action', jQuery(pickerDiv)).hide();
+            $('.next-link.f-enabled-action', $(pickerDiv)).show();
+            $('.next-link.f-disabled-action', $(pickerDiv)).hide();
         } else {
-            jQuery('.next-link.f-enabled-action', jQuery(pickerDiv)).hide();
-            jQuery('.next-link.f-disabled-action', jQuery(pickerDiv)).show();
+            $('.next-link.f-enabled-action', $(pickerDiv)).hide();
+            $('.next-link.f-disabled-action', $(pickerDiv)).show();
         }
-        jQuery('.page-num-text', jQuery(pickerDiv))[0].innerHTML = json ? json.pages : '';
+        $('.page-num-text', $(pickerDiv))[0].innerHTML = json ? json.pages : '';
     },
 
     /**
@@ -377,7 +377,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         if (null === onFailure) {
             onFailure = yukon.doBind(ajaxError, this);
         }
-        jQuery.ajax({
+        $.ajax({
             dataType: "json",
             url: yukon.url('/picker/v2/search'),
             data: parameters
@@ -413,16 +413,16 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         if (this.selectionProperty) {
             if (hit === null) {
                 this.selectionLabel.innerHTML = this.noneSelectedText;
-                jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
+                $(this.selectionLabel).addClass('noSelectionPickerLabel');
             } else {
-                labelMsg = jQuery('<div>').text(hit[this.selectionProperty].toString()).html();
+                labelMsg = $('<div>').text(hit[this.selectionProperty].toString()).html();
                 if (this.selectedItems.length > 1) {
                     labelMsg +=  ' ' + this.selectedAndMsg + ' ' +
                         (this.selectedItems.length - 1) + ' ' +
                         this.selectedMoreMsg;
                 }
                 this.selectionLabel.innerHTML = labelMsg;
-                jQuery(this.selectionLabel).removeClass('noSelectionPickerLabel');
+                $(this.selectionLabel).removeClass('noSelectionPickerLabel');
             }
         }
 
@@ -472,7 +472,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             if (null === onFailure) {
                 onFailure = yukon.doBind(ajaxError, this);
             }
-            jQuery.ajax({
+            $.ajax({
                 type: 'POST',
                 url: yukon.url('/picker/v2/idSearch'),
                 traditional: true, // see jQuery docs for discussion of this option
@@ -492,7 +492,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
     cancel = function () {
         this.selectedItems = this.lastSelectedItems;
         if (!this.containerDiv) {
-            jQuery(document.getElementById(this.pickerId)).dialog('close');
+            $(document.getElementById(this.pickerId)).dialog('close');
         }
         if (this.cancelAction) {
             this.cancelAction(this);
@@ -517,7 +517,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                 buttons = [{'text' : that.cancelText, 'click' : function () {cancel.call(that);}},
                            {'text' : that.okText, 'click' : function () {okPressed.call(that);}, 'class': 'primary action'}];
                 if (!that.inline) {
-                    jQuery(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto'});
+                    $(document.getElementById(that.pickerId)).dialog({buttons : buttons, width : 600, height : 'auto'});
                 }
             }
         });
@@ -586,7 +586,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
 
         onCompleteBind = yukon.doBind(onPrimeComplete, this, showPicker, initialIds, skipFocus);
-        jQuery(pickerDialogDivContainer).load(yukon.url('/picker/v2/build'), parameters, onCompleteBind);
+        $(pickerDialogDivContainer).load(yukon.url('/picker/v2/build'), parameters, onCompleteBind);
 
     },
 
@@ -702,10 +702,10 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             // hitRow IS an element, so we don't need any jQuery sugar around it
             var parentRow = hitRow.link.parentNode.parentNode;
             if (pickerThis.selectAllCheckBox.checked) {
-                jQuery(parentRow).addClass('highlighted');
+                $(parentRow).addClass('highlighted');
                 pickerThis.selectedItems.push(hitRow.hit);
             } else {
-                jQuery(parentRow).removeClass('highlighted');
+                $(parentRow).removeClass('highlighted');
                 removeFromSelectedItems.call(pickerThis, hitRow.hit);
             }
         });
@@ -761,20 +761,20 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         this.clearEntireSelectionLink.parentNode.hide();
         this.entireSelectionCleared.show();
         this.allLinks.forEach(function (hitRow, index, arr) {
-            jQuery(hitRow.link.parentNode.parentNode).removeClass('highlighted');
+            $(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
         this.selectAllCheckBox.checked = false;
     };
 
     yukon.protoPicker.prototype.clearSelected = function () {
         if (this.destinationFieldId) {
-            jQuery(document.getElementById(this.destinationFieldId)).val('');
+            $(document.getElementById(this.destinationFieldId)).val('');
         } else {
             this.inputAreaDiv.innerHTML = '';
         }
         if (this.selectionProperty) {
             this.selectionLabel.innerHTML = this.originalSelectionLabel;
-            jQuery(this.selectionLabel).addClass('noSelectionPickerLabel');
+            $(this.selectionLabel).addClass('noSelectionPickerLabel');
         }
     };
 
@@ -785,8 +785,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
      */
     yukon.protoPicker.prototype.getSelected = function () { // called from zoneWizardDetails.js
         var retVal = this.destinationFieldId
-            ? jQuery(document.getElementById(this.destinationFieldId)).val().split(',')
-            : jQuery.map(jQuery(':input', this.inputAreaDiv), function (val, index) {
+            ? $(document.getElementById(this.destinationFieldId)).val().split(',')
+            : $.map($(':input', this.inputAreaDiv), function (val, index) {
                 return val.value;
             });
         return this.multiSelectMode ? retVal : retVal[0];
@@ -815,17 +815,17 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         }
         if (this.selectionProperty) {
-            this.selectionLabel = jQuery('span', jQuery(document.getElementById('picker_' + this.pickerId + '_label')))[0];
+            this.selectionLabel = $('span', $(document.getElementById('picker_' + this.pickerId + '_label')))[0];
             this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
 
         if (this.destinationFieldId) {
             destFieldSelector = this.destinationFieldId;
-            if (jQuery(document.getElementById(destFieldSelector)).val()) {
-                initialIds = jQuery(document.getElementById(destFieldSelector)).val().split(',');
+            if ($(document.getElementById(destFieldSelector)).val()) {
+                initialIds = $(document.getElementById(destFieldSelector)).val().split(',');
             }
         } else {
-            initialIds = jQuery.map(jQuery(':input', this.inputAreaDiv), function (val, index) {
+            initialIds = $.map($(':input', this.inputAreaDiv), function (val, index) {
                 return val.value;
             });
         }
@@ -857,12 +857,12 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         });
 
         resultTable = yukon.tables.createHtmlTableFromJson(this.selectedItems, outputColumns);
-        jQuery(resultTable).addClass('compact-results-table');
-        jQuery(resultTable).addClass('pickerResultTable');
-        jQuery(resultTable).addClass('row-highlighting');
+        $(resultTable).addClass('compact-results-table');
+        $(resultTable).addClass('pickerResultTable');
+        $(resultTable).addClass('row-highlighting');
         this.selectedItemsDisplayArea.innerHTML = '';
         this.selectedItemsDisplayArea.appendChild(resultTable);
-        jQuery(this.selectedItemsPopup).dialog({minWidth: 400});
+        $(this.selectedItemsPopup).dialog({minWidth: 400});
     };
 
     // the following data members must be globally accessible due to existing
@@ -894,7 +894,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
     initialize.call(this, okText, cancelText, noneSelectedText, pickerType, destinationFieldName, pickerId, extraDestinationFields, containerDiv);
 
     // circumvent default processing of ctrl-left-click and shift-left-click events
-    jQuery(document).on('click', '#' + this.pickerId, function (ev) {
+    $(document).on('click', '#' + this.pickerId, function (ev) {
         if (ev.ctrlKey || ev.shiftKey) {
             ev.preventDefault();
         }

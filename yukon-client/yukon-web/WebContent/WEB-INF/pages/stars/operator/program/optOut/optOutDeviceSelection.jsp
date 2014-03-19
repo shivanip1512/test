@@ -14,15 +14,15 @@ function createJSON () {
         index = 0,
         inputElement;
 
-    jQuery('input').each(function (index, input) {
+    $('input').each(function (index, input) {
         var name,
             inventoryId,
             checked;
         if (input) {
-            name = jQuery(input).attr('name');
+            name = $(input).attr('name');
             if (name == 'inventoryId') {
-                inventoryId = jQuery(input).val();
-                checked = jQuery('#check_' + inventoryId).prop('checked');
+                inventoryId = $(input).val();
+                checked = $('#check_' + inventoryId).prop('checked');
                 if (checked) {
                     array[index++] = inventoryId;
                 }    
@@ -38,7 +38,7 @@ function createJSON () {
     inputElement.name = 'jsonInventoryIds';
     inputElement.value = JSON.stringify(array);
     
-    jQuery('form')[0].appendChild(inputElement);
+    $('form')[0].appendChild(inputElement);
 }
 </script>    
 

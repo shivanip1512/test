@@ -49,7 +49,7 @@
         }
     }
 
-    jQuery(function(){
+    $(function(){
         //dataJson
         <c:choose>
             <c:when test="${not empty pageScope.dataJson}">
@@ -121,7 +121,7 @@
             args[key] = callbacks[key];
         }
         </c:if>
-        jQuery('#${id}').dynatree(args);
+        $('#${id}').dynatree(args);
     });
 </script>
 

@@ -33,7 +33,7 @@
                             </div> </span> <span id="<c:out value="${index.indexName}" />buildIndex"><a href="javascript:indexManager_buildIndex('<c:out value="${index.indexName}"/>')">Build Index</a></span>
                     </td>
                     <c:if test="${index.building}">
-                        <script>jQuery(function() {indexManager_getProgress('<c:out value="${index.indexName}" />');});</script>
+                        <script>$(function() {indexManager_getProgress('<c:out value="${index.indexName}" />');});</script>
                     </c:if>
                 </tr>
             </c:forEach>

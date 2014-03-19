@@ -47,42 +47,42 @@
 
 <script type="text/javascript">
     function showAddSwitchPopup() {
-        jQuery('#addSwitchPopup').show();
+        $('#addSwitchPopup').show();
     }
 
     function checkSerialNumber() {
-        jQuery('#serialNumberUnavailable').show();
+        $('#serialNumberUnavailable').show();
     }
 
     function showInvCheckingPopup(type) {
         if(type === 'switch') {
-            jQuery('#addSwitchType').val(jQuery('#switchTypeToAdd').val());
+            $('#addSwitchType').val($('#switchTypeToAdd').val());
             showSimplePopup('inventoryCheckingSwitchPopup');
         } else if (type === 'gateway') {
-            jQuery('#addGatewayType').val(jQuery('#gatewayTypeToAdd').val());
+            $('#addGatewayType').val($('#gatewayTypeToAdd').val());
             showSimplePopup('inventoryCheckingGatewayPopup');
         } else {
-            jQuery('#addTstatType').val(jQuery('#tstatTypeToAdd').val());
+            $('#addTstatType').val($('#tstatTypeToAdd').val());
             showSimplePopup('inventoryCheckingThermostatPopup');
         }
     }
 
     function addMeter() {
-        var form = jQuery('#addMeterForm');
+        var form = $('#addMeterForm');
         form.submit();
         return true;
     }
 
     function changeOut(oldId, isMeter) {
-        jQuery('#oldInventoryId').val(oldId);
+        $('#oldInventoryId').val(oldId);
 
         if(isMeter) {
-            jQuery('#isMeter').val('true');
+            $('#isMeter').val('true');
         } else {
-            jQuery('#isMeter').val('false');
+            $('#isMeter').val('false');
         }
 
-        var form = jQuery('#changeOutForm');
+        var form = $('#changeOutForm');
         form.submit();
         return true;
     }

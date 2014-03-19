@@ -9,7 +9,7 @@
     var params = [];
     
     function loadCommanderCommand (event) {
-        var selectElement = jQuery(event.currentTarget),
+        var selectElement = $(event.currentTarget),
             originalCmd = selectElement.val();
         // init params for this command
         params = [];
@@ -25,32 +25,32 @@
     // replacements will stop when no more parameters exist
     function processCommanderReplacement (paramIdx, originalCmd, cmd, cmdField) {
         var param = params[paramIdx],
-            windowHeight = jQuery(window).height(),
+            windowHeight = $(window).height(),
             position = {my: 'top', at: 'top+' + windowHeight/5 },
             displayParam;
         if (typeof param !== 'undefined') {
             displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
-            jQuery("#commanderPrompterConfirm label>span").text(displayParam);
-            jQuery("#commanderPrompterConfirm").dialog({
+            $("#commanderPrompterConfirm label>span").text(displayParam);
+            $("#commanderPrompterConfirm").dialog({
                 resizable: false,
                 modal: true,
-                title: jQuery("#commanderPrompterConfirm").data('title'),
+                title: $("#commanderPrompterConfirm").data('title'),
                 position : position,
                 buttons: {
                     "<cti:msg key="yukon.web.components.dialog.ok"/>": function () {
-                        jQuery( this ).dialog( "close" );
-                        replacement = jQuery( this ).find("input:text").val();
+                        $( this ).dialog( "close" );
+                        replacement = $( this ).find("input:text").val();
                         cmd = cmd.replace(param, replacement);
-                        jQuery(document.getElementById(cmdField)).val(cmd);
+                        $(document.getElementById(cmdField)).val(cmd);
                         // try next replacements
                         processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
                     },
                     "<cti:msg key="yukon.web.components.dialog.cancel"/>": function () {
-                        jQuery( this ).find("input:text").val("");
-                        jQuery( this ).dialog( "close" );
+                        $( this ).find("input:text").val("");
+                        $( this ).dialog( "close" );
                         //the EXT version of this tried to populate an undefined field.  Pretty sure this
                         //is what was meant, but I leave the following in as this makes more sense to me.
-                        //jQuery(document.getElementById(cmdField)).val(originalCmd);
+                        //$(document.getElementById(cmdField)).val(originalCmd);
                     }
                 }
             });
@@ -58,7 +58,7 @@
         else {
             // no parameter on first attempt, set command value as-is
             if (paramIdx === 0) {
-                jQuery('#' + cmdField).val(originalCmd);
+                $('#' + cmdField).val(originalCmd);
             }
         }
     }
@@ -123,8 +123,8 @@
         return cmd;
     }
     
-jQuery(function(){
-    jQuery(document).on('change', 'select.f-loadCommanderCommand', loadCommanderCommand);
+$(function(){
+    $(document).on('change', 'select.f-loadCommanderCommand', loadCommanderCommand);
 });
 </script>
 

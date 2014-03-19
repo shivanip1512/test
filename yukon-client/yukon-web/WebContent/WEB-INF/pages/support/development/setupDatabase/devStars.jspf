@@ -81,15 +81,15 @@
     </form:form>
 
     <script>
-    jQuery(function() {
-        jQuery("input#f-check_all_hardware:checkbox").checkAll("input.f-check_single_hardware:checkbox");
-        jQuery('.f-ec_select').on('change', function() {
-            if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
-                jQuery('.newEnergyCompanyRow').show(800, function() {
-                    jQuery('.newEnergyCompanyInput').focus();
+    $(function() {
+        $("input#f-check_all_hardware:checkbox").checkAll("input.f-check_single_hardware:checkbox");
+        $('.f-ec_select').on('change', function() {
+            if ($('#createNewEnergyCompanyOpt').is(':selected')) {
+                $('.newEnergyCompanyRow').show(800, function() {
+                    $('.newEnergyCompanyInput').focus();
                 });
             } else {
-                jQuery('.newEnergyCompanyRow').hide(500);
+                $('.newEnergyCompanyRow').hide(500);
             }
         });
     });

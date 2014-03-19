@@ -33,14 +33,14 @@
 <cti:url var="baseUrl" value="/capcontrol/schedule/scheduleAssignments" />
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery(document).on('click', 'button.runSchedule', function(event){
-        var row = jQuery(event.currentTarget).closest('tr');
+$(function() {
+    $(document).on('click', 'button.runSchedule', function(event){
+        var row = $(event.currentTarget).closest('tr');
         var scheduleName = row.children('td[name=schedName]').html();
         var deviceName = row.children('td[name=deviceName]').html();
         var eventId = row[0].id.split('_')[1];
         
-        jQuery.getJSON(yukon.url('/capcontrol/schedule/startSchedule'), {
+        $.getJSON(yukon.url('/capcontrol/schedule/startSchedule'), {
             'eventId': eventId, 
             'deviceName': deviceName
         }).done(function(json) {
@@ -54,14 +54,14 @@ jQuery(function() {
     });
 });
 
-jQuery(function() {
-    jQuery(document).on('click', 'button.stopSchedule', function(event){
-        var row = jQuery(event.currentTarget).closest('tr');
+$(function() {
+    $(document).on('click', 'button.stopSchedule', function(event){
+        var row = $(event.currentTarget).closest('tr');
         
         var deviceName = row.children('td[name=deviceName]').html();
-        var deviceId = jQuery(event.currentTarget).attr('name');
+        var deviceId = $(event.currentTarget).attr('name');
         
-        jQuery.getJSON(yukon.url('/capcontrol/schedule/stopSchedule'), {
+        $.getJSON(yukon.url('/capcontrol/schedule/stopSchedule'), {
             'deviceId': deviceId, 
             'deviceName': deviceName
         }).done(function(json) {
@@ -76,7 +76,7 @@ jQuery(function() {
 });
 
 function setOvUv(eventId, ovuv) {
-    jQuery.getJSON(yukon.url('/capcontrol/schedule/setOvUv'), {
+    $.getJSON(yukon.url('/capcontrol/schedule/setOvUv'), {
         'eventId': eventId, 
         'ovuv': ovuv
     }).done(function(json) {

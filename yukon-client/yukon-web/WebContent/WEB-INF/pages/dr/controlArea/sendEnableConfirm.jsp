@@ -19,7 +19,7 @@
         <input type="hidden" name="isEnabled" value="${isEnabled}"/>
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" type="submit"/>
-            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         </div>
     </form>
 </cti:msgScope>

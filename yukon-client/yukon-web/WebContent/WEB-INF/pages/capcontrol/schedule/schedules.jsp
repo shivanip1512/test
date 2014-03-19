@@ -21,11 +21,11 @@
 
 <script type="text/javascript">
 
-jQuery(function () {
-    jQuery('.removeSchedule').click(function () {
-        var confirmDeleteMsg = jQuery(this).next('span.confirmDelete').html();
+$(function () {
+    $('.removeSchedule').click(function () {
+        var confirmDeleteMsg = $(this).next('span.confirmDelete').html();
         if (confirm(confirmDeleteMsg)) {
-            var scheduleId = jQuery(this).siblings('[id^=scheduleId_]').val();
+            var scheduleId = $(this).siblings('[id^=scheduleId_]').val();
             document.getElementById("scheduleForm_" + scheduleId).submit();
         }
     });

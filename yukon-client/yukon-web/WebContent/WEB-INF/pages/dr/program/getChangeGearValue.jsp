@@ -20,7 +20,7 @@
         
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary action" onclick="submitFormViaAjax('drDialog', 'sendEnableForm');"/>
-            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         </div>
     </form>
 </c:if>
@@ -29,7 +29,7 @@
     <p><cti:msg2 key=".notEnoughGears" argument="${program.name}"/></p>
 
     <div class="action-area">
-        <cti:button nameKey="ok" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="ok" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </c:if>
 </cti:msgScope>

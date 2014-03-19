@@ -15,8 +15,8 @@
 
 	    var enabled,
 	        email,
-	        controlNotificationObj = jQuery('#oddsForControlNotification'),
-	        controlEmailObj = jQuery("[name='oddsForControlEmail']");
+	        controlNotificationObj = $('#oddsForControlNotification'),
+	        controlEmailObj = $("[name='oddsForControlEmail']");
 	    if (0 !== controlNotificationObj.length) {
 	        enabled = controlNotificationObj.val();
 	    }

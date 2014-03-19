@@ -48,17 +48,17 @@
 
 
 <script type="text/javascript">
-jQuery(document).ready(function() {
-    var dialogDiv = jQuery('#${id}');
+$(document).ready(function() {
+    var dialogDiv = $('#${id}');
     var buttons = [];
     <c:if test="${okEvent != 'none'}">
         var okButton = {'text' : '${okBtnMsg}', 'click': function() { dialogDiv.trigger('${okEvent}'); }, 'class': 'primary'};
-        var cancelButton = {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }};
+        var cancelButton = {'text' : '${cancelBtnMsg}', 'click' : function() { $(this).dialog('close'); }};
         buttons.push(cancelButton);
         buttons.push(okButton);
     </c:if>
     <c:if test="${okEvent == 'none'}">
-        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() { $(this).dialog('close'); }});
     </c:if>
     var dialogOpts = {
             'title' : '${titleMsg}',
@@ -68,7 +68,7 @@ jQuery(document).ready(function() {
             'modal' : true,
             'buttons' : buttons };
     <c:if test="${!empty pageScope.options}">
-        jQuery.extend(dialogOpts, ${options});
+        $.extend(dialogOpts, ${options});
     </c:if>
     dialogDiv.dialog(dialogOpts);
     yukon.ui.unblockPage();

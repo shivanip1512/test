@@ -71,18 +71,18 @@
             <script type="text/javascript">
                 var picker = [];
                 var rowNumber = 0;
-                jQuery(function () {
+                $(function () {
                     // delegated event listeners for Select Point and No Point links
-                    jQuery('.regulatorPointTable').on('click', '[id^="pickerLink"]', function (event) {
-                        var rowNum = jQuery(event.currentTarget).data('rowNum');
+                    $('.regulatorPointTable').on('click', '[id^="pickerLink"]', function (event) {
+                        var rowNum = $(event.currentTarget).data('rowNum');
                         picker[rowNum].show.call(picker[rowNum]);
                     });
-                    jQuery('.regulatorPointTable').on('click', '[id^="clearPoint"]', function (event) {
-                        var rowNum = jQuery(event.currentTarget).data('rowNum');
+                    $('.regulatorPointTable').on('click', '[id^="clearPoint"]', function (event) {
+                        var rowNum = $(event.currentTarget).data('rowNum');
                         // workaround for jQuery, which can't use [, ], : and other characters as selectors
-                        jQuery(jQuery('[id^="paoName"]')[rowNum]).html('(none)');
-                        jQuery(jQuery('[id^="pointName"]')[rowNum]).html('(none)');
-                        jQuery(jQuery('[id^="pointId"]')[rowNum]).val(-1);
+                        $($('[id^="paoName"]')[rowNum]).html('(none)');
+                        $($('[id^="pointName"]')[rowNum]).html('(none)');
+                        $($('[id^="pointId"]')[rowNum]).val(-1);
                     });
                 });
             </script>
@@ -134,7 +134,7 @@
                             picker[rowNumber].immediateSelectMode = true;
                             picker[rowNumber].init.call(picker[rowNumber]);
                             // stash rowNumber for delegate event handler
-                            jQuery(jQuery('[id^="pickerLink"]')[rowNumber]).data('rowNum', rowNumber);
+                            $($('[id^="pickerLink"]')[rowNumber]).data('rowNum', rowNumber);
                         </script>
                     </f:verbatim>
                 </h:column>
@@ -147,7 +147,7 @@
                     <x:commandLink id="clearPoint" forceId="true" onclick="javascript:return;" value="No Point" rendered="#{capControlForm.editingAuthorized}"/>
                     <f:verbatim>
                         <script type="text/javascript">
-                            jQuery(jQuery('[id^="clearPoint"]')[rowNumber]).data('rowNum', rowNumber);
+                            $($('[id^="clearPoint"]')[rowNumber]).data('rowNum', rowNumber);
                             rowNumber += 1;
                         </script>
                     </f:verbatim>

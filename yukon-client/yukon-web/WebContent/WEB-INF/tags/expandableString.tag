@@ -24,9 +24,9 @@
             ${value}
         </span>
         <script>
-            jQuery('.${cleanName}_link').click(function() {
-                jQuery('#${cleanName}_shrunk_span').toggle();
-                jQuery('#${cleanName}_full_span').toggle();
+            $('.${cleanName}_link').click(function() {
+                $('#${cleanName}_shrunk_span').toggle();
+                $('#${cleanName}_full_span').toggle();
                 return false;
             });
         </script>

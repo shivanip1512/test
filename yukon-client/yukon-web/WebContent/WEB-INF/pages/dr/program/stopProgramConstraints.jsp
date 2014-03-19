@@ -9,7 +9,7 @@
 <script type="text/javascript">
 overrideConstraintsChecked = function() {
     <%-- never called if there are no violations so we don't have to check that --%>
-    jQuery('#okButton').prop('disabled', !jQuery('#overrideConstraints').prop('checked'));
+    $('#okButton').prop('disabled', !$('#overrideConstraints').prop('checked'));
 }
 </script>
 
@@ -66,7 +66,7 @@ overrideConstraintsChecked = function() {
         </c:if>
         <cti:url var="backUrl" value="/dr/program/stop/details"/>
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'stopProgramForm', '${backUrl}')"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

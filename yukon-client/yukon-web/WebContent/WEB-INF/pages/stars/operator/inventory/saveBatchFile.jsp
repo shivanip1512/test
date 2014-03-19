@@ -9,26 +9,26 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/inventory.css"/>
     
     <script type="text/javascript">
-        jQuery(document).ready(function() {
-        	jQuery(document).on('change', '#routes input:radio', function(e){
-        		var currentTarget = jQuery(this);
+        $(document).ready(function() {
+        	$(document).on('change', '#routes input:radio', function(e){
+        		var currentTarget = $(this);
         		
         		currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio], select, textarea, button').attr('disabled', 'disabled');
         		currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
         	});
-        	jQuery("#routes input:radio:checked").trigger("change");
+        	$("#routes input:radio:checked").trigger("change");
         	
         	var singleHwConfigType = ${uniformHardwareConfigType};
             if(!singleHwConfigType) {
-                jQuery('#groups').addClass('disabled').find(':input').attr('disabled', 'disabled');
+                $('#groups').addClass('disabled').find(':input').attr('disabled', 'disabled');
             } else {
-            	jQuery(document).on('change', '#groups input:radio', function(e){
-                    var currentTarget = jQuery(this);
+            	$(document).on('change', '#groups input:radio', function(e){
+                    var currentTarget = $(this);
                     
                     currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio],select,textarea,button').attr('disabled', 'disabled');
                     currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
                 });
-        	    jQuery('#groups input:radio:checked').trigger('change');
+        	    $('#groups input:radio:checked').trigger('change');
             }
         });
     </script>

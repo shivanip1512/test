@@ -12,7 +12,7 @@
         function showCmdCanceldMsg() {
             return function(data) {
                 if (data.isCanceled === 'true') {
-                    jQuery('#cmdCanceldMsg').show();
+                    $('#cmdCanceldMsg').show();
                 }
             };
         }
@@ -20,7 +20,7 @@
         function refreshResults(kind, theDiv) {
             if (theDiv.is(':visible')) {
                 var url = '/group/commander/' + kind;
-                jQuery(theDiv).load(url, {'resultKey': '${result.key}'});
+                $(theDiv).load(url, {'resultKey': '${result.key}'});
             }
         }
     </script>
@@ -99,7 +99,7 @@
             
             <%-- success list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="jQuery('#successResultsDiv${result.key}').toggle();refreshResults('successList', jQuery('#successResultsDiv${result.key}'));" class="small">View Results</a>
+            <a href="javascript:void(0);" onclick="$('#successResultsDiv${result.key}').toggle();refreshResults('successList', $('#successResultsDiv${result.key}'));" class="small">View Results</a>
             <div id="successResultsDiv${result.key}" style="display:none;"></div>
             
         </div>
@@ -125,7 +125,7 @@
             
             <%-- errors list --%>
             <div style="height:8px;"></div>
-            <a href="javascript:void(0);" onclick="jQuery('#errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', jQuery('#errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
+            <a href="javascript:void(0);" onclick="$('#errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', $('#errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
             <div id="errorsResultsDiv${result.key}" style="display:none;"></div>
             
         </div> 

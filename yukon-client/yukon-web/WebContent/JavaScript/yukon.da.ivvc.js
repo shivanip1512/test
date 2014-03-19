@@ -17,27 +17,27 @@ yukon.da.ivvc = (function () {
             var params = {
                 'zoneId': _zoneId,
                 'subBusId': _subBusId,
-                'mostRecent': jQuery('#mostRecentDateTime').val()
+                'mostRecent': $('#mostRecentDateTime').val()
             };
-            jQuery.ajax({
+            $.ajax({
                 url: 'recentEvents',
                 method: 'GET',
                 data: params
             }).done(function (data, textStatus, jqXHR) {
                 var ii,
-                    table = jQuery('#recentEventsTable'),
+                    table = $('#recentEventsTable'),
                     body = table.find('tbody'),
                     timeStamp = Object.keys(data)[0],
                     events = data[timeStamp],
                     newRow,
                     event,
-                    templateRow = jQuery(jQuery('#templateRowContainer').find('tr')[0]);
+                    templateRow = $($('#templateRowContainer').find('tr')[0]);
 
                 for (ii = events.length - 1; ii >= 0; ii -= 1) {
                     table.siblings('.empty-list').hide();
                     table.show();
                     newRow = templateRow.clone();
-                    newRow = jQuery(newRow);
+                    newRow = $(newRow);
                     event = events[ii];
                     newRow.find('.deviceName').text(event.deviceName);
                     newRow.find('.description').text(event.description);
@@ -46,10 +46,10 @@ yukon.da.ivvc = (function () {
                     flashYellow(newRow);
                 }
 
-                jQuery('#mostRecentDateTime').val(timeStamp);
+                $('#mostRecentDateTime').val(timeStamp);
 
                 // Keep table size <= 20 rows
-                jQuery('#recentEventsTable tbody tr:gt(20)').each(function (index, tr) {
+                $('#recentEventsTable tbody tr:gt(20)').each(function (index, tr) {
                     tr.remove();
                 });
                 setTimeout(_updateRecentEvents, _timeOut);
@@ -65,15 +65,15 @@ yukon.da.ivvc = (function () {
                 _zoneId = +params.zoneId;
                 _subBusId = +params.subBusId;
 
-                jQuery('.f-zone-editor').click(function () {
-                    var link = jQuery(this),
+                $('.f-zone-editor').click(function () {
+                    var link = $(this),
                         url = link.closest('[data-editor-url]').attr('data-editor-url'),
                         title = link.closest('[data-editor-title]').attr('data-editor-title');
                     openSimpleDialog('zoneWizardPopup', url, title, null, 'get');
                 });
 
-                jQuery(document).on('click', 'button.commandButton', function (event) {
-                    var button = jQuery(event.target).closest('button'),
+                $(document).on('click', 'button.commandButton', function (event) {
+                    var button = $(event.target).closest('button'),
                         cmdId = button.nextAll('input.cmdId')[0].value,
                         paoId = button.nextAll('input.paoId')[0].value;
                     doItemCommand(paoId, cmdId, event);
@@ -82,19 +82,19 @@ yukon.da.ivvc = (function () {
                 setTimeout(_updateRecentEvents, _timeOut);
 
                 if (controlRole) {
-                    jQuery('tr[id^="tr_cap"]').each(function (index, row) {
-                        var bankId = jQuery(row)[0].id.split('_')[2],
+                    $('tr[id^="tr_cap"]').each(function (index, row) {
+                        var bankId = $(row)[0].id.split('_')[2],
                             bankName,
                             bankState;
                         // Add menus
-                        bankName = jQuery(row).find('button[id^="bankName"]')[0];
-                        jQuery(bankName).click(function (event) {
+                        bankName = $(row).find('button[id^="bankName"]')[0];
+                        $(bankName).click(function (event) {
                             localCapControl.getCommandMenu(bankId, event);
                             return false;
                         });
 
-                        bankState = jQuery(row).find('a[id^="capbankState"]');
-                        jQuery(bankState).click(function (event) {
+                        bankState = $(row).find('a[id^="capbankState"]');
+                        $(bankState).click(function (event) {
                             localCapControl.getMenuFromURL('/capcontrol/menu/capBankState?id=' + encodeURIComponent(bankId), event);
                             return false;
                         });
@@ -105,14 +105,14 @@ yukon.da.ivvc = (function () {
             setRedBulletForPoint : function (pointId) {
                 return function (data) {
 
-                    var redBulletSpans = jQuery('.redBullet_' + pointId),
+                    var redBulletSpans = $('.redBullet_' + pointId),
                         quality = data.quality;
 
                     redBulletSpans.each(function (index, redBulletSpan) {
                         if (quality !== 'Normal') {
-                            jQuery(redBulletSpan).show();
+                            $(redBulletSpan).show();
                         } else {
-                            jQuery(redBulletSpan).hide();
+                            $(redBulletSpan).hide();
                         }
                     });
                 };

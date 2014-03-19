@@ -38,7 +38,7 @@
 
 <c:set var="containerDivArg" value="null"/>
 <c:if test="${!empty  pageScope.containerDiv}">
-    <c:set var="containerDivArg" value="jQuery('#${pageScope.containerDiv}')"/>
+    <c:set var="containerDivArg" value="$('#${pageScope.containerDiv}')"/>
 </c:if>
 
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
@@ -53,7 +53,7 @@
     // jQuery dialogs get moved to the end of the body. When pickers are ajaxed
     // in and replaced, the dialogs might still be left over. Here we will remove any
     // still hanging around.
-    jQuery(document.getElementById('${id}')).remove();
+    $(document.getElementById('${id}')).remove();
     try {
         try {
             ${id} = new Picker('${okText}', '${cancelText}', '${noneSelectedText}', '${type}', '${pageScope.destinationFieldName}', '${id}', '${pageScope.extraDestinationFields}', ${containerDivArg});

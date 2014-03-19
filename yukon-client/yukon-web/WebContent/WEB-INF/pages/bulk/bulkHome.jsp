@@ -227,7 +227,7 @@ function submitForm(id) {
   document.getElementById(id).submit();
 }
 function hideShowErrorList(id) {
-  var elem = jQuery('#' + id);
+  var elem = $('#' + id);
   if (elem.is(':visible')) {
     elem.hide();
   } else {

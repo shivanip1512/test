@@ -67,7 +67,7 @@
 </c:if>
 
 <script type="text/javascript">
-jQuery( function () {
+$( function () {
     yukon.dr.iconChooser.init('${pageScope.id}', '${pageScope.baseDir}',
         {
             <c:forEach var="icon" varStatus="status" items="${pageScope.icons}">

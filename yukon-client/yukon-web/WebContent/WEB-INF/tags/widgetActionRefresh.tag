@@ -44,10 +44,10 @@
         </c:otherwise>
     </c:choose>
     <script type="text/javascript">
-        jQuery('#' + '${buttonId}').on('click', function () {
+        $('#' + '${buttonId}').on('click', function () {
             var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
                 confirmed = true;
-            if (confirmText !== null && jQuery.trim(confirmText) !== '') {
+            if (confirmText !== null && $.trim(confirmText) !== '') {
                 confirmed = window.confirm(confirmText);
             }
             if (confirmed) {

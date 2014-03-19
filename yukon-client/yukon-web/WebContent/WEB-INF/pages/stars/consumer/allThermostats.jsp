@@ -13,9 +13,9 @@
 <script>
 
     //INIT
-    jQuery(function(){
-        jQuery(document).on('change', '.f-thermostatSelectionChanged', thermostatSelectionChanged);
-        thermostatSelect(jQuery("input[data-thermostat-type]:checked")[0]);
+    $(function(){
+        $(document).on('change', '.f-thermostatSelectionChanged', thermostatSelectionChanged);
+        thermostatSelect($("input[data-thermostat-type]:checked")[0]);
     });
     
     function thermostatSelectionChanged(event){
@@ -23,22 +23,22 @@
     };
     
     function thermostatSelect(elem){
-        var target = jQuery(elem);
-        var checkedElements = jQuery("input[data-thermostat-type]:checked");
+        var target = $(elem);
+        var checkedElements = $("input[data-thermostat-type]:checked");
         
         if(checkedElements.length){
-            jQuery('input[data-thermostat-type][data-thermostat-type!="'+ target.attr("data-thermostat-type") +'"]').attr("disabled", true);
-            jQuery("input:submit").removeAttr("disabled");
+            $('input[data-thermostat-type][data-thermostat-type!="'+ target.attr("data-thermostat-type") +'"]').attr("disabled", true);
+            $("input:submit").removeAttr("disabled");
         }else{
-            jQuery("input[data-thermostat-type]").removeAttr("disabled");
-            jQuery("input:submit").attr("disabled", true);
+            $("input[data-thermostat-type]").removeAttr("disabled");
+            $("input:submit").attr("disabled", true);
         }
         
         var currentIds = [];
-        jQuery(checkedElements).each(function(){
+        $(checkedElements).each(function(){
             currentIds.push(this.value);
         });
-        jQuery('#thermostatIds').val(currentIds.join());
+        $('#thermostatIds').val(currentIds.join());
     };
 </script>
 

@@ -7,7 +7,7 @@
 <script>
     // Reinit the datepickers. Required after an action is take on the Meter Profile
     // page and the contents, including the date pickers, are ajaxed in.
-    jQuery(function () {
+    $(function () {
         if ('undefined' !== typeof yukon.ui.dateTimePickers) {
             yukon.ui.dateTimePickers.init();
         }
@@ -29,10 +29,10 @@
         
         function toggleChanPopup(popupDivName) {
             
-            jQuery('#' + popupDivName).toggle(200);
+            $('#' + popupDivName).toggle(200);
             
             // stop the ajax so it doesn't reload the popup as we're using it
-            if (jQuery('#' + popupDivName).is(':visible')) {
+            if ($('#' + popupDivName).is(':visible')) {
                 // init these datepickers each time the popup is made visible
                 yukon.ui.dateTimePickers.init('#' + popupDivName);
                 scanningUpdater.stop();
@@ -43,8 +43,8 @@
         }
         
         function doToggleScanning(channelNum, newToggleVal) {
-            jQuery('#' + 'channelNum').val(channelNum);
-            jQuery('#' + 'newToggleVal').val(newToggleVal);
+            $('#' + 'channelNum').val(channelNum);
+            $('#' + 'newToggleVal').val(newToggleVal);
             ${widgetParameters.jsWidget}.doDirectActionRefresh("toggleProfiling");
         }
     </script>

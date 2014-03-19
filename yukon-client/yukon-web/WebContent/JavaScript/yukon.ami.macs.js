@@ -4,7 +4,7 @@ yukon.namespace('yukon.ami.macs');
 
 yukon.ami.macs = (function () {
     var _autoUpdatePageContent = function () {
-        var tableContainer = jQuery('[data-reloadable]'),
+        var tableContainer = $('[data-reloadable]'),
             reloadUrl = tableContainer.attr('data-url');
         tableContainer.load(reloadUrl, function () {
             setTimeout(_autoUpdatePageContent, 5000);
@@ -13,7 +13,7 @@ yukon.ami.macs = (function () {
     },
         mod = {
             init: function () {
-                var tableContainer = jQuery('[data-reloadable]');
+                var tableContainer = $('[data-reloadable]');
                 if (tableContainer.length === 1) {
                     _autoUpdatePageContent();
                 }
@@ -22,6 +22,6 @@ yukon.ami.macs = (function () {
     return mod;
 }());
 
-jQuery(function () {
+$(function () {
     yukon.ami.macs.init();
 });

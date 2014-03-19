@@ -47,21 +47,21 @@
             }
 
             // show indicator, disable select
-            jQuery('#viewHideDetailsReportButtonIndicator').show();
+            $('#viewHideDetailsReportButtonIndicator').show();
 
             // request report
-            jQuery.ajax({
+            $.ajax({
                 type : 'POST',
                 url : url,
                 data : paramObj
             }).done( function (data, textStatus, jqXHR) {
-                jQuery('#detailsReportDiv').html(data);
-                jQuery('#viewHideDetailsReportButtonIndicator').hide();
-                jQuery('#detailsReportDiv').show();
+                $('#detailsReportDiv').html(data);
+                $('#viewHideDetailsReportButtonIndicator').hide();
+                $('#detailsReportDiv').show();
             }).fail( function (jqXHR, textStatus) {
-                jQuery('#viewHideDetailsReportButtonIndicator').hide();
-                jQuery('#detailsReportDiv').show();
-                jQuery('#detailsReportDiv').html("Error getting report: " + textStatus);
+                $('#viewHideDetailsReportButtonIndicator').hide();
+                $('#detailsReportDiv').show();
+                $('#detailsReportDiv').html("Error getting report: " + textStatus);
             });
         }
 
@@ -69,13 +69,13 @@
           //assumes data is of type Hash
             return function(data) {
                 var isComplete = data.isComplete;
-                if (0 !== jQuery('#creProgressBarDiv').length && 0 !== jQuery('#creStopTimeDiv').length) { 
+                if (0 !== $('#creProgressBarDiv').length && 0 !== $('#creStopTimeDiv').length) { 
                     if (isComplete == 'true') {
-                        jQuery('#creProgressBarDiv').hide();
-                        jQuery('#creStopTimeDiv').show();
+                        $('#creProgressBarDiv').hide();
+                        $('#creStopTimeDiv').show();
                     } else if (isComplete == 'false') {
-                        jQuery('#creProgressBarDiv').show();
-                        jQuery('#creStopTimeDiv').hide();
+                        $('#creProgressBarDiv').show();
+                        $('#creStopTimeDiv').hide();
                     }
 
                 }

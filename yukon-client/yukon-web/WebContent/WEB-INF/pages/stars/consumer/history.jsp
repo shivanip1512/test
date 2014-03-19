@@ -18,7 +18,7 @@
 <cti:includeScript link="${timeFormatter}"/>
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
     //for rendering the display safe temperatures in the correct unit for the customer    
     yukon.ThermostatManualEditor.renderOtherTemperatures('${temperatureUnit}');
 });

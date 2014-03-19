@@ -5,22 +5,22 @@ yukon.namespace('yukon.ami.validation');
 yukon.ami.validation = (function () {
         var _resetElementSelected = function (action, deleteEl, acceptEl) {
             if (action === 'DELETE') {
-                jQuery(deleteEl).removeClass('on');
+                $(deleteEl).removeClass('on');
             } else if (action === 'ACCEPT') {
-                jQuery(acceptEl).removeClass('on');
+                $(acceptEl).removeClass('on');
             } else {
-                jQuery(ignoreEl).removeClass('on');
+                $(ignoreEl).removeClass('on');
             }
             
         },
         _toggleElementSelected = function (action, deleteEl, acceptEl, ignoreEl) {
             if (action === 'DELETE') {
-                jQuery(deleteEl).addClass('on');
-                jQuery(acceptEl).removeClass('on');
+                $(deleteEl).addClass('on');
+                $(acceptEl).removeClass('on');
             }
             if (action === 'ACCEPT') {
-                jQuery(deleteEl).removeClass('on');
-                jQuery(acceptEl).addClass('on');
+                $(deleteEl).removeClass('on');
+                $(acceptEl).addClass('on');
             }
         },
         _getActionValues = function (el) {
@@ -29,68 +29,68 @@ yukon.ami.validation = (function () {
                 changeId = idParts[2];
             return {
                 action : action,
-                deleteEl : jQuery('#ACTION_DELETE_' + changeId),
-                acceptEl : jQuery('#ACTION_ACCEPT_' + changeId),
-                valueEl : jQuery('#ACTION_' + changeId)[0]
+                deleteEl : $('#ACTION_DELETE_' + changeId),
+                acceptEl : $('#ACTION_ACCEPT_' + changeId),
+                valueEl : $('#ACTION_' + changeId)[0]
             };
         };
     
-    jQuery(function () {
-        jQuery('#review-form [id="display-type-checkbox"]').click(function(e) {
+    $(function () {
+        $('#review-form [id="display-type-checkbox"]').click(function(e) {
             var reviewTableUrl = yukon.url('/amr/veeReview/reviewTable');
-            jQuery.post(reviewTableUrl, jQuery('#review-form').serialize()).done(function(result) {
-                jQuery('#reviewTable').html(result);
-                yukon.ui.unbusy(jQuery('#saveButton'));
+            $.post(reviewTableUrl, $('#review-form').serialize()).done(function(result) {
+                $('#reviewTable').html(result);
+                yukon.ui.unbusy($('#saveButton'));
             });
         });
         //save/remove actioned items
-        jQuery('#review-form').on('click','[id="saveButton"]', function(e) {
+        $('#review-form').on('click','[id="saveButton"]', function(e) {
             var urlParams ='?itemsPerPage=';
-            if (jQuery('.paging-area .selectedItem').text().length > 0) {
-                urlParams += jQuery('.paging-area .selectedItem').text();
+            if ($('.paging-area .selectedItem').text().length > 0) {
+                urlParams += $('.paging-area .selectedItem').text();
             } else {
                 urlParams = '';
             }
             var saveUrl = yukon.url('/amr/veeReview/save');
-            jQuery.post(saveUrl + urlParams, jQuery('#review-form').serialize()).done(function(result) {
-                jQuery('#reviewTable').html(result);
-                yukon.ui.unbusy(jQuery('#saveButton'));
-                jQuery('#accept-all').removeClass('on');
-                jQuery('#delete-all').removeClass('on');
+            $.post(saveUrl + urlParams, $('#review-form').serialize()).done(function(result) {
+                $('#reviewTable').html(result);
+                yukon.ui.unbusy($('#saveButton'));
+                $('#accept-all').removeClass('on');
+                $('#delete-all').removeClass('on');
             });
             return false;
         });
         //check/uncheck all
-        jQuery('#review-form').on('click', '#accept-all, #delete-all', function(e) { 
+        $('#review-form').on('click', '#accept-all, #delete-all', function(e) { 
             var checkAll = false;
             var buttonClicked = e.currentTarget;
             var attributeSelector = '[id*="DELETE"]';
             if (buttonClicked.id === 'accept-all') {
                 attributeSelector = '[id*="ACCEPT"]';
-                if(jQuery('#accept-all').hasClass('on')) {
-                    jQuery('#accept-all').removeClass('on');
+                if($('#accept-all').hasClass('on')) {
+                    $('#accept-all').removeClass('on');
                 } else {
                     checkAll = true;
-                    jQuery('#accept-all').addClass('on');
-                    jQuery('#delete-all').removeClass('on');
+                    $('#accept-all').addClass('on');
+                    $('#delete-all').removeClass('on');
                 }
             } else {
-                if (jQuery('#delete-all').hasClass('on')) {
-                    jQuery('#delete-all').removeClass('on');
+                if ($('#delete-all').hasClass('on')) {
+                    $('#delete-all').removeClass('on');
                 } else {
                     checkAll = true;
-                    jQuery('#delete-all').addClass('on');
-                    jQuery('#accept-all').removeClass('on');
+                    $('#delete-all').addClass('on');
+                    $('#accept-all').removeClass('on');
                 }
             }
 
-            jQuery(attributeSelector).each(function (index, buttonElement) {
+            $(attributeSelector).each(function (index, buttonElement) {
                 if (checkAll === true) {
-                    if (jQuery(buttonElement).hasClass('on') === false) {
+                    if ($(buttonElement).hasClass('on') === false) {
                         buttonElement.click();
                     }
                 } else {
-                    if(jQuery(buttonElement).hasClass('on') === true) {
+                    if($(buttonElement).hasClass('on') === true) {
                         buttonElement.click();
                     }
                 }
@@ -98,7 +98,7 @@ yukon.ami.validation = (function () {
             });
         });
         
-        jQuery('#review-form').on('click','[id*="ACTION"]', function(e) {
+        $('#review-form').on('click','[id*="ACTION"]', function(e) {
             var elementClicked = e.currentTarget,
                 h = _getActionValues(elementClicked),
                 action = h.action,

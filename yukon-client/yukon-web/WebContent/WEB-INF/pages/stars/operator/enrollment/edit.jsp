@@ -15,40 +15,40 @@
     updateOKButton = function () {
         var index;
         for (index = 0; index < inventoryIds.length; index++) {
-            if (jQuery('#enrolledCB' + inventoryIds[index]).is(":checked")) {
-                jQuery('#okBtn').prop('disabled', false);
+            if ($('#enrolledCB' + inventoryIds[index]).is(":checked")) {
+                $('#okBtn').prop('disabled', false);
                 return;
             }
         }
-        jQuery('#okBtn').prop ('disabled', true);
+        $('#okBtn').prop ('disabled', true);
     };
     enrollmentChanged = function (inventoryId) {
-        var isEnrolled = jQuery('#enrolledCB' + inventoryId).is(":checked");
+        var isEnrolled = $('#enrolledCB' + inventoryId).is(":checked");
         if (isEnrolled) {
-            jQuery('#relaySelect' + inventoryId).prop('disabled', false);
-            if (0 < jQuery('#okBtn').length) {
-                jQuery('#okBtn').prop('disabled', false);
+            $('#relaySelect' + inventoryId).prop('disabled', false);
+            if (0 < $('#okBtn').length) {
+                $('#okBtn').prop('disabled', false);
             }
         } else {
-            jQuery('#relaySelect' + inventoryId).prop('disabled', true);
+            $('#relaySelect' + inventoryId).prop('disabled', true);
             updateOKButton();
         }
     };
-    jQuery(function () {
+    $(function () {
         var index,
             inventoryId,
-            idsArr = jQuery('input[name$="inventoryId"]').map(function(index, el) {
-                return jQuery(el).val();
+            idsArr = $('input[name$="inventoryId"]').map(function(index, el) {
+                return $(el).val();
             });
         for (index = 0; index < idsArr.length; index++) {
             inventoryId = idsArr[index];
-            if (jQuery('#enrolledCB' + inventoryId).is(":checked")) {
-                jQuery('#relaySelect' + inventoryId).prop('disabled', false);
+            if ($('#enrolledCB' + inventoryId).is(":checked")) {
+                $('#relaySelect' + inventoryId).prop('disabled', false);
             } else {
-                jQuery('#relaySelect' + inventoryId).prop('disabled', true);
+                $('#relaySelect' + inventoryId).prop('disabled', true);
             }
         }
-        jQuery('#okBtn').prop('disabled', !jQuery('#okBtn').prop('disabled'));
+        $('#okBtn').prop('disabled', !$('#okBtn').prop('disabled'));
     });
 </script>
 
@@ -124,7 +124,7 @@
 
     <div class="action-area">
         <cti:button id="okBtn" nameKey="ok" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#peDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#peDialog').dialog('close');"/>
     </div>
 
 </form:form>

@@ -11,13 +11,13 @@
 <cti:includeScript link="/JavaScript/yukon.bulk.point.js"/>
 <script type="text/javascript">
 
-jQuery(function(){
+$(function(){
   var sharedPoints = ${sharedPoints};
   doToggleShowSharedPoints(sharedPoints);
 });
 
 function fieldToModifyChanged() {
-  jQuery('#fieldSpecificOptions').load('/bulk/updatePoints/getSpecificOptions');
+  $('#fieldSpecificOptions').load('/bulk/updatePoints/getSpecificOptions');
 }
 </script>
 

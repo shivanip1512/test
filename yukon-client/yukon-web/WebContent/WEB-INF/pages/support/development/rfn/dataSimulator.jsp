@@ -6,23 +6,23 @@
 <cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
 
 <script type="text/javascript">
-jQuery(function() {
-    jQuery('#start').click(function(event) {
-        var data = { 'lcr6200serialFrom': jQuery("input[name='Lcr6200serialFrom']").val(),
-                'lcr6200serialTo': jQuery("input[name='Lcr6200serialTo']").val(),
-                'lcr6600serialFrom': jQuery("input[name='Lcr6600serialFrom']").val(),
-                'lcr6600serialTo': jQuery("input[name='Lcr6600serialTo']").val(),
-                'messageId': jQuery("input[name='messageId']").val(),
-                'messageIdTimestamp': jQuery("input[name='messageIdTimestamp']").val()};
-        jQuery.ajax({
+$(function() {
+    $('#start').click(function(event) {
+        var data = { 'lcr6200serialFrom': $("input[name='Lcr6200serialFrom']").val(),
+                'lcr6200serialTo': $("input[name='Lcr6200serialTo']").val(),
+                'lcr6600serialFrom': $("input[name='Lcr6600serialFrom']").val(),
+                'lcr6600serialTo': $("input[name='Lcr6600serialTo']").val(),
+                'messageId': $("input[name='messageId']").val(),
+                'messageIdTimestamp': $("input[name='messageIdTimestamp']").val()};
+        $.ajax({
             url: '/support/development/rfn/startDataSimulator',
             type: 'GET',
             data: data 
         });
     });
     
-    jQuery('#stop').click(function(event) {
-        jQuery.ajax({
+    $('#stop').click(function(event) {
+        $.ajax({
             url: '/support/development/rfn/stopDataSimulator',
             type: 'GET'
         });

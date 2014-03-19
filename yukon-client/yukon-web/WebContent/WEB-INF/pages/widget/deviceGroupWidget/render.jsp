@@ -5,24 +5,24 @@
 
 <script type="text/javascript">
     
-    jQuery(document).ready(function() {
+    $(document).ready(function() {
         
         var dlg = document.getElementById('editGroupTreeDialog');
         if (!dlg) {
-            jQuery('body').append('<div id="editGroupTreeDialog"></div>');
+            $('body').append('<div id="editGroupTreeDialog"></div>');
         }
 
         var successMsg = '${successMsg}';
         if (successMsg != null && successMsg.length > 0 ) {
-            jQuery('.success').show();
+            $('.success').show();
             setTimeout(function() {
-                jQuery('.success').fadeOut('slow', function() {
-                    jQuery('.success').hide();
+                $('.success').fadeOut('slow', function() {
+                    $('.success').hide();
                 });
             }, 5000);
          }
-        jQuery('#deviceGroupWidgetTree').on('yukon.ui.widget.DeviceGroupWidget.save', function() {
-            var groupIds = jQuery('#groupIds').val();
+        $('#deviceGroupWidgetTree').on('yukon.ui.widget.DeviceGroupWidget.save', function() {
+            var groupIds = $('#groupIds').val();
             ${widgetParameters.jsWidget}.setParameter('groupIds', groupIds);
             yukon.ui.elementGlass.show('#currentGroups');
             ${widgetParameters.jsWidget}.doDirectActionRefresh('update');

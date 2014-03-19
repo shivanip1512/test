@@ -11,9 +11,9 @@
 <script type="text/javascript">
     zoneTypeChange = function(zoneType) {
         if (zoneType == 'SINGLE_PHASE') {
-            jQuery('#phaseSelector').removeClass('dn');
+            $('#phaseSelector').removeClass('dn');
         } else {
-            jQuery('#phaseSelector').addClass('dn');
+            $('#phaseSelector').addClass('dn');
         }
     };
     backToParentSelect = function() {

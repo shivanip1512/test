@@ -17,20 +17,20 @@
                 countWithLinkName = '#' + 'countWithLink_' + '${id}',
                 countWithoutLinkName = '#' + 'countWithoutLink_' + '${id}';
 
-            if (jQuery(countWithLinkName).length !== 0 && jQuery(countWithoutLinkName).length !== 0) { // function is called before these may exists, avoid js error
+            if ($(countWithLinkName).length !== 0 && $(countWithoutLinkName).length !== 0) { // function is called before these may exists, avoid js error
 
                 if (deviceCount > 0) {
-                    jQuery(countWithLinkName).show();
-                    jQuery(countWithoutLinkName).hide();
+                    $(countWithLinkName).show();
+                    $(countWithoutLinkName).hide();
                 } else {
-                	jQuery(countWithLinkName).hide();
-                	jQuery(countWithoutLinkName).show();
+                	$(countWithLinkName).hide();
+                	$(countWithoutLinkName).show();
                 }
             }
         };
     }
     function processDevices_${id}() {
-    	jQuery('#processDevices_${id}').submit();
+    	$('#processDevices_${id}').submit();
     }
 
 </script>

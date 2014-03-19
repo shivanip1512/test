@@ -155,7 +155,7 @@ singleOverrideChecked = function(boxChecked) {
         <c:if test="${!constraintsViolated || overrideAllowed}">
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         <cti:url var="backUrl" value="/dr/program/start/multipleDetails">
             <cti:param name="fromBack" value="true"/>
         </cti:url>

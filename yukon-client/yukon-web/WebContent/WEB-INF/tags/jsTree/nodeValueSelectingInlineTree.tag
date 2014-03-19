@@ -34,17 +34,17 @@
     function refreshMultiNodeElements() {
     
         // remove all
-        var sel = jQuery(document.getElementById("${fieldId}")).html("");
+        var sel = $(document.getElementById("${fieldId}")).html("");
         
         // add selected
-        var selected = jQuery("#${id}").dynatree("getSelectedNodes");
+        var selected = $("#${id}").dynatree("getSelectedNodes");
         
         for(var i=0; i<selected.length; i++){
             var newOpt = document.createElement('option');
             newOpt.value = selected[i].data.metadata['${nodeValueName}'];
             newOpt.text = selected[i].data.metadata['${nodeValueName}'];
             newOpt.selected = true;
-            jQuery(document.getElementById("${fieldId}")).append(newOpt);
+            $(document.getElementById("${fieldId}")).append(newOpt);
         }
     }
 
@@ -59,7 +59,7 @@
         }
         else {
             // save group name
-            jQuery(document.getElementById("${fieldId}")).val(nodeValue);
+            $(document.getElementById("${fieldId}")).val(nodeValue);
         }
     }
 </script>

@@ -43,7 +43,7 @@
 <c:choose>
     <c:when test="${not empty reloadInterval}">
         <script>
-           jQuery(function() {
+           $(function() {
                yukon.flot.reloadChartOnInterval({chartId: '${chartId}',
                                                  dataUrl: '${chartUrl}',
                                                  reloadInterval: ${reloadInterval} * 1000});
@@ -52,9 +52,9 @@
     </c:when>
     <c:otherwise>
         <script>
-            jQuery(function() {
+            $(function() {
                 var chartId = '${chartId}';
-                jQuery.ajax({
+                $.ajax({
                     url: '${chartUrl}',
                     dataType : 'json',
                     success: function(data) {

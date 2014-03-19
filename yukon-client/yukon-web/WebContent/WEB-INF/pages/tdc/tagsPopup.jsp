@@ -60,7 +60,7 @@
         </div>
         <div class="action-area">
             <cti:button id="save"  nameKey="save" classes="primary action f-tags-save"/>
-            <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
+            <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
           </form:form>
 </cti:msgScope>

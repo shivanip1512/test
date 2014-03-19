@@ -124,7 +124,7 @@
     </div>
     <script>
         if (!Prototype.Browser.IE) {
-        jQuery('#browserWarning').show();
+        $('#browserWarning').show();
     }
     </script>
     <script language="JavaScript">

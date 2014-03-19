@@ -42,22 +42,22 @@
 	</div>
 	
 	<script>
-	jQuery(function(){
-		jQuery(document).on('click', '.f-removeNotification', function(event){
-			jQuery(this).closest(".notification").remove();
+	$(function(){
+		$(document).on('click', '.f-removeNotification', function(event){
+			$(this).closest(".notification").remove();
 			updateIndicies();
 		});
 		
-		jQuery(document).on('click', '.f-addNotification', function(event){
-			jQuery("#notifications").append(jQuery("#notification_template > div").clone());
+		$(document).on('click', '.f-addNotification', function(event){
+			$("#notifications").append($("#notification_template > div").clone());
 			updateIndicies();
 		});
 	});
 	
 	updateIndicies = function(){
-		jQuery("#notifications > div").each(function(idx, elem){
-			jQuery(":input", elem).each(function(inputIndex, input){
-				jQuery(input).attr('name', jQuery(input).attr('name').gsub(/\d+/, idx));
+		$("#notifications > div").each(function(idx, elem){
+			$(":input", elem).each(function(inputIndex, input){
+				$(input).attr('name', $(input).attr('name').gsub(/\d+/, idx));
 			});
 		});
 	}

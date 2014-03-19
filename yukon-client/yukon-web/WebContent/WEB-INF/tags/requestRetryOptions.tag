@@ -13,7 +13,7 @@
 <cti:msg var="nonQueuedRetryCountText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.nonQueuedRetryCount"/>
 <cti:msg var="maxTotalRunTimeHoursText" key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.maxTotalRunTimeHours"/>
 
-<input type="checkbox" name="retryCheckbox" onclick="jQuery('#retryOptionsDiv_${uniqueId}').toggle();"
+<input type="checkbox" name="retryCheckbox" onclick="$('#retryOptionsDiv_${uniqueId}').toggle();"
         <c:if test="${retryCheckbox}">checked</c:if>> ${retryCheckboxText}
 
 <div id="retryOptionsDiv_${uniqueId}"

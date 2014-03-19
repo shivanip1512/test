@@ -1,20 +1,20 @@
-jQuery(document).on('click', 'li.menuOption.command', function(event) {
+$(document).on('click', 'li.menuOption.command', function(event) {
    yukon.da.hideMenu();
     var doCommand = true;
-    var menuOption = jQuery(event.currentTarget).closest("li");
+    var menuOption = $(event.currentTarget).closest("li");
     var ul = menuOption.parent("ul");
     if (ul.find("input[name='warnOnCommands']").val() === 'true') {
         doCommand = confirm(menuOption.find('span.confirmMessage').html());
     }
     
     if (doCommand) {
-        doItemCommand(ul.find("input[name='paoId']").val(), jQuery(event.currentTarget).val(), event);
+        doItemCommand(ul.find("input[name='paoId']").val(), $(event.currentTarget).val(), event);
     }
 });
 
-jQuery(document).on('click', 'li.menuOption.stateChange', function(event) {
+$(document).on('click', 'li.menuOption.stateChange', function(event) {
     yukon.da.hideMenu();
-    doChangeState(jQuery(event.currentTarget).closest("ul").find("input[name='paoId']").val(), jQuery(event.currentTarget).val());
+    doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
 });
 
 function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
@@ -22,15 +22,15 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
     if (reason) parameters.reason =  reason;
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
-    jQuery.ajax({
+    $.ajax({
         url: '/capcontrol/command/itemCommand',
         type: "POST",
         data: parameters,
         dataType: "html"
     }).done( function(data){
-        jQuery("#menuPopup").html(data);
+        $("#menuPopup").html(data);
 
-        if (jQuery("#menuPopup #isFinished").val() === "true") {
+        if ($("#menuPopup #isFinished").val() === "true") {
             yukon.da.showMessage(data);
         } else {
             yukon.da.showMenuPopup({});
@@ -39,7 +39,7 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
 }
 
 function doSystemCommand(commandId) {
-    jQuery.ajax({
+    $.ajax({
         url: '/capcontrol/command/system',
         type: 'POST',
         data: {'commandId' : commandId}
@@ -49,7 +49,7 @@ function doSystemCommand(commandId) {
 }
 
 function doChangeState(itemId, stateId) {
-    jQuery.ajax({
+    $.ajax({
         url: '/capcontrol/command/manualStateChange',
         type: 'POST',
         data: {'paoId' : itemId, 'rawStateId' : stateId}
@@ -60,7 +60,7 @@ function doChangeState(itemId, stateId) {
 
 function doResetBankOpCount(itemId, newOpCount) {
     yukon.da.hideMenu();
-    jQuery.ajax({
+    $.ajax({
         url: '/capcontrol/command/resetBankOpCount',
         type: 'POST',
         data: {'bankId' : itemId, 'newOpCount' : newOpCount}
@@ -74,7 +74,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
     parameters = {'bankId': bankId, 'opState': stateId, 'reason': reason};
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
-    jQuery.ajax({
+    $.ajax({
         url: '/capcontrol/command/changeOpState',
         type: 'POST',
         data: parameters
@@ -84,7 +84,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
 }
 
 function addCommandMenuBehavior(selector) {
-    jQuery(document).on('click', selector, function (event) {
-        yukon.da.getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
+    $(document).on('click', selector, function (event) {
+        yukon.da.getCommandMenu($(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
 }

@@ -30,7 +30,7 @@
     
         <script type="text/javascript">
     
-            jQuery(function() {
+            $(function() {
     
                 // commercial setup
                 // when in VIEW mode, don't show commercial values unless the account is commercial
@@ -49,10 +49,10 @@
                     }
                 }
                 
-                jQuery(document).on('e_updatePassword', '#passwordDialog', updatePassword);
-                jQuery(document).on('click', 'a.f-resetPasswordDialog', resetPasswordDialog);
-                jQuery(document).on('click', '.f-prepPasswordFields', prepPasswordFields);
-                jQuery(document).on('click', '.f-generatePassword', generatePassword);
+                $(document).on('e_updatePassword', '#passwordDialog', updatePassword);
+                $(document).on('click', 'a.f-resetPasswordDialog', resetPasswordDialog);
+                $(document).on('click', '.f-prepPasswordFields', prepPasswordFields);
+                $(document).on('click', '.f-generatePassword', generatePassword);
             });
     
             function toggleCommercialInputs(isCommercial) {
@@ -64,7 +64,7 @@
             // this game is just to make the user feel warm and fuzzy
             function toggleBillingAddress() {
                 //same as above?
-                if (jQuery('#usePrimaryAddressForBillingCheckBox').is(':checked')) {
+                if ($('#usePrimaryAddressForBillingCheckBox').is(':checked')) {
                     saveBillingToTempFields();
                     document.getElementById('accountDto.billingAddress.locationAddress1').value = document.getElementById('accountDto.streetAddress.locationAddress1').value;
                     document.getElementById('accountDto.billingAddress.locationAddress2').value = document.getElementById('accountDto.streetAddress.locationAddress2').value;
@@ -91,36 +91,36 @@
             }
     
             function setBillingFieldsDisabled(disabled) {
-                jQuery('input[id^="accountDto.billingAddress."]').each(function() {
+                $('input[id^="accountDto.billingAddress."]').each(function() {
                     this.disabled = disabled;
                 });
             }
     
             function generatePassword() {
-                var dataHash = {userGroupName : jQuery('#loginBackingBean.userGroupName').val()};
-                var userId = jQuery('#userId');
+                var dataHash = {userGroupName : $('#loginBackingBean.userGroupName').val()};
+                var userId = $('#userId');
                 if (0 !== userId.length && parseInt(userId.val(),10) !== 0) {
                     dataHash[ 'userId'] = userId.val();
                 }
                 
-                new jQuery.ajax({
+                new $.ajax({
                     url: '${generatedPasswordUrl}',
                     data: dataHash
                 }).done(function(data) {
-                    jQuery(".password_editor_field").each(function(){
+                    $(".password_editor_field").each(function(){
                         this.value = data;
                     });
                    // Check and show the password fields
-                   jQuery('#showPasswordCheckbox').attr('checked', true);
+                   $('#showPasswordCheckbox').attr('checked', true);
                    showPassword();
                });
     
             }
     
             function showPassword() {
-                var type = jQuery("#showPasswordCheckbox:checked").length ? 'text' : 'password'; 
-                jQuery(".password_editor_field:password").each(function(){
-                    var input = jQuery(this);
+                var type = $("#showPasswordCheckbox:checked").length ? 'text' : 'password'; 
+                $(".password_editor_field:password").each(function(){
+                    var input = $(this);
                     if(type === 'text'){
                         input.hide();
                         input.siblings("input:text").show().val(input.val());
@@ -133,41 +133,41 @@
             }
             
             function updatePassword(event){
-                jQuery("#passwordDialog").removeMessage();
-                jQuery("#passwordDialog .error").removeClass('error');
+                $("#passwordDialog").removeMessage();
+                $("#passwordDialog .error").removeClass('error');
                 
                 prepPasswordFields();
                 
-                 if(jQuery("#password1").val() !== jQuery("#password2").val()){
-                    jQuery("#passwordDialog").addMessage({
+                 if($("#password1").val() !== $("#password2").val()){
+                    $("#passwordDialog").addMessage({
                         message: '<cti:msg2 key=".loginInfoError.passwordNoMatch" javaScriptEscape="true"/>', 
                         messageClass: 'error'});
-                    jQuery("#password1, #password2").addClass('error');
+                    $("#password1, #password2").addClass('error');
                 }else{
-                    jQuery("#updatePasswordForm").ajaxSubmit({
+                    $("#updatePasswordForm").ajaxSubmit({
                         dataType:  'json',
                         success:    function(data){
                             //reset the dialog and clear the errors
-                            jQuery("#passwordDialog").dialog('close');
+                            $("#passwordDialog").dialog('close');
                             yukon.ui.flashSuccess(data.flash);
                         },
                         error:      function(xhr){
-                            var data = jQuery.parseJSON(xhr.responseText);
+                            var data = $.parseJSON(xhr.responseText);
                             data = data.fieldErrors;
-                            jQuery("#password1, #password2").addClass('error');
+                            $("#password1, #password2").addClass('error');
                             if(data.password1 === data.password2){
                                 delete data.password2;
                             }
-                            jQuery("#passwordDialog").addMessage({message: data, messageClass: 'error'});
+                            $("#passwordDialog").addMessage({message: data, messageClass: 'error'});
                     }});
                 }
             }
             
             function prepPasswordFields(){
               //if we are showing the plain-text fields, copy them over to the password fields
-                if(jQuery("#showPasswordCheckbox:checked").length > 0){
-                    jQuery(".password_editor_field:password").each(function(){
-                        var input = jQuery(this);
+                if($("#showPasswordCheckbox:checked").length > 0){
+                    $(".password_editor_field:password").each(function(){
+                        var input = $(this);
                         //ugly, but works because we have a 1:1 mapping on the fields
                         input.val(input.siblings("input:text").val());
                     });
@@ -175,7 +175,7 @@
             }
             
             function resetPasswordDialog(){
-                var dialog = jQuery("#passwordDialog");
+                var dialog = $("#passwordDialog");
                 dialog.find("input:text, input:password").val("");
                 dialog.removeMessage();
                 dialog.find(".error").removeClass('error');
@@ -319,7 +319,7 @@
                                 </cti:checkRolesAndProperties>
                                 
                                 <%-- The corresponding dialog (which contains a form) is at the end of the page.
-                                this was done to avoid the confusion of an apparent nested form.  jQuery UI
+                                this was done to avoid the confusion of an apparent nested form.  $ UI
                                 (as of 1.8.16) will remove the specified element from the DOM create a new element
                                 that represents the dialog at the end of the DOM and put the specified element inside
                                 thus avoiding a nested form, but we are not guaranteed this to be true in the future.  --%>

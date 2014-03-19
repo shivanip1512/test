@@ -12,7 +12,7 @@
             inputId += input;
             // There are colons in these selectors, which do not work in jQuery, so just use native js to get the element
             inputElem = document.getElementById(inputId);
-            jQuery(inputElem).val(optionsArray[selectedId].value);
+            $(inputElem).val(optionsArray[selectedId].value);
         }
     </script>
 </f:verbatim>

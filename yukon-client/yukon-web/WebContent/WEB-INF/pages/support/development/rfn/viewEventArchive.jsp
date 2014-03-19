@@ -8,9 +8,9 @@
 <cti:standardPage module="dev" page="rfnTest">
 
     <script>
-        jQuery(document).ready(function() {
-            jQuery('.f-sendEventArchive').click(function() {
-                jQuery('#eventForm').submit();
+        $(document).ready(function() {
+            $('.f-sendEventArchive').click(function() {
+                $('#eventForm').submit();
             });
         });
     </script>

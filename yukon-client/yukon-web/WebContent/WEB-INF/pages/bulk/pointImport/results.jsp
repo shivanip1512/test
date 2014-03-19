@@ -10,7 +10,7 @@
 </cti:url>
 <cti:includeScript link="/JavaScript/yukon.import.logger.js"/>
 <script>
-    jQuery(document).ready( function () {
+    $(document).ready( function () {
         initiateLogUpdate("${updateUrl}", 1);
     });
 </script>

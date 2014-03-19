@@ -72,8 +72,8 @@
 </div>
 
 <script type="text/javascript">
-    jQuery(function() {
-        jQuery('#tabs').tabs({show: {height: 'toggle', duration: 200}});
+    $(function() {
+        $('#tabs').tabs({show: {height: 'toggle', duration: 200}});
 
             var ajaxSubmitOptions = {
                 beforeSubmit:  beforeSubmit,        // pre-submit callback 
@@ -83,11 +83,11 @@
             }; 
 
             // bind form using 'ajaxForm'
-            jQuery('#setupRolePropertiesForm').ajaxForm(ajaxSubmitOptions); 
-            jQuery('#setupAMRForm').ajaxForm(ajaxSubmitOptions); 
-            jQuery('#setupCapControlForm').ajaxForm(ajaxSubmitOptions); 
-            jQuery('#setupStarsForm').ajaxForm(ajaxSubmitOptions);
-            jQuery('#setupEventLogForm').ajaxForm(ajaxSubmitOptions); 
+            $('#setupRolePropertiesForm').ajaxForm(ajaxSubmitOptions); 
+            $('#setupAMRForm').ajaxForm(ajaxSubmitOptions); 
+            $('#setupCapControlForm').ajaxForm(ajaxSubmitOptions); 
+            $('#setupStarsForm').ajaxForm(ajaxSubmitOptions);
+            $('#setupEventLogForm').ajaxForm(ajaxSubmitOptions); 
              
             function beforeSubmit(formData, jqForm, options) {
                 setWidgetAvailability(jqForm.closest(".devWidget"), false);
@@ -100,19 +100,19 @@
                 //setWidgetAvailability(jqForm.closest(".devWidget"), true);
                 jqForm.closest(".devWidget").replaceWith(responseText);
                 var formId = jqForm.attr("id");
-                jQuery("#"+formId).ajaxForm(ajaxSubmitOptions);
+                $("#"+formId).ajaxForm(ajaxSubmitOptions);
             }
 
             function ajaxError(response, status, error) {
                 // need to attatch this to only the box which it relates to.
-                //jQuery(".widgetMessage").html("Error: Setup did not finish " + response.responseText);
+                //$(".widgetMessage").html("Error: Setup did not finish " + response.responseText);
             }
             
             function setWidgetAvailability(widget, isAvailable, progress) {
                 if (isAvailable) {
                     widget.find(":input").not(".f-disabled").removeAttr("disabled");
                     widget.find(".widgetMessage").html("").removeClass("resultMessage");
-                    jQuery('a[href$="#'+widget.attr("id")+'Tab"]').removeAttr("style");
+                    $('a[href$="#'+widget.attr("id")+'Tab"]').removeAttr("style");
                 } else {
                     widget.find(".user-message").remove();
                     widget.find(":input").attr("disabled","disabled");
@@ -123,28 +123,28 @@
                     } else {
                         widget.find(".widgetMessage").html("Setup is currently running...").addClass("resultMessage");
                     }
-                    slowFlash(jQuery('a[href$="#'+widget.attr("id")+'Tab"]'));
-                    //jQuery('a[href$="#'+widget.attr("id")+'Tab"]').css("background-color","#FFCCCC");
+                    slowFlash($('a[href$="#'+widget.attr("id")+'Tab"]'));
+                    //$('a[href$="#'+widget.attr("id")+'Tab"]').css("background-color","#FFCCCC");
                 }
             }
             
             function slowFlash(selector){
-                jQuery(selector).animate({"background-color":"#FFCCCC"}, 1000, function(){
-                    jQuery(selector).animate({"background-color":"#FFFFFF"}, 1000);
+                $(selector).animate({"background-color":"#FFCCCC"}, 1000, function(){
+                    $(selector).animate({"background-color":"#FFFFFF"}, 1000);
                 });
             }
             
             // Main UI Loop
             function checkAvailability() {
-                jQuery.ajax({
+                $.ajax({
                   url: "checkAvailability",
                   dataType: "json"
                 }).done(function (data) {
-                    setWidgetAvailability(jQuery("#roleProperties"),data.roleProperties);
-                    setWidgetAvailability(jQuery("#capControl"),data.capControl, data.capControlProgress);
-                    setWidgetAvailability(jQuery("#amr"),data.amr);
-                    setWidgetAvailability(jQuery("#stars"),data.stars,data.starsProgress);
-                    setWidgetAvailability(jQuery("#eventLog"),data.eventLog, data.eventLogProgress);
+                    setWidgetAvailability($("#roleProperties"),data.roleProperties);
+                    setWidgetAvailability($("#capControl"),data.capControl, data.capControlProgress);
+                    setWidgetAvailability($("#amr"),data.amr);
+                    setWidgetAvailability($("#stars"),data.stars,data.starsProgress);
+                    setWidgetAvailability($("#eventLog"),data.eventLog, data.eventLogProgress);
                 });
               }
             checkAvailability();

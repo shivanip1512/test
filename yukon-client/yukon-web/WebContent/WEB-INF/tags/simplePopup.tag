@@ -16,7 +16,7 @@
     <jsp:doBody/>
 </div>
 <script type="text/javascript">
-var windowHeight = jQuery(window).height(),
+var windowHeight = $(window).height(),
 position = {my: 'top', at: 'top+' + windowHeight/5 },
 defaults = { width: 'auto', 
              autoOpen: false,
@@ -25,7 +25,7 @@ defaults = { width: 'auto',
 };
 
 <c:if test="${not empty pageScope.options}">
-jQuery.extend(defaults, ${options});
+$.extend(defaults, ${options});
 </c:if>
 
 <c:if test="${not empty pageScope.showImmediately and showImmediately == true}">
@@ -35,12 +35,12 @@ defaults.autoOpen = true;
 <c:if test="${not empty pageScope.onClose}">
 defaults.close = function(event, ui) {${onClose}};
 </c:if>
-jQuery('#${id}').dialog(defaults);
+$('#${id}').dialog(defaults);
 
 <c:if test="${not empty pageScope.on}">
-jQuery(function() {
-    jQuery('${pageScope.on}').click(function(event) {
-        jQuery('#${id}').dialog('open');
+$(function() {
+    $('${pageScope.on}').click(function(event) {
+        $('#${id}').dialog('open');
     });
 });
 </c:if>

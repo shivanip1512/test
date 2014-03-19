@@ -59,27 +59,27 @@ yukon.flot = (function () {
             data = mod.charts[chartId].methods.getFilteredGraphData(chartId);
             
             /* make a copy of data b/c setupGraph messes with it */
-            data = jQuery.extend(true, [], data);
+            data = $.extend(true, [], data);
             _setupGraph(chartId, data);
             
             graph_options = mod.charts[chartId].options;
             if (typeof params !== 'undefined' && typeof params.type !== 'undefined') {
-                graph_options = jQuery.extend(true, {}, graph_options, _defaults.options_type_map[params.type]); 
+                graph_options = $.extend(true, {}, graph_options, _defaults.options_type_map[params.type]); 
             }
             if (typeof params !== 'undefined' && typeof params.options !== 'undefined') {
-                graph_options = jQuery.extend(true, {}, graph_options, params.options);
+                graph_options = $.extend(true, {}, graph_options, params.options);
             }
 
             /* if the graph is being updated via ajax we want to use the same zoom level */
             if (mod.charts[chartId].ranges_xaxis_from) {
-                graph_options = jQuery.extend(true, {}, graph_options, {
+                graph_options = $.extend(true, {}, graph_options, {
                     xaxis: { min: mod.charts[chartId].ranges_xaxis_from, max: mod.charts[chartId].ranges_xaxis_to }
                 });
             }
 
-            chartElement = jQuery(document.getElementById(chartId));
+            chartElement = $(document.getElementById(chartId));
             chartElement.empty();
-            chart = jQuery.plot(chartElement, data, graph_options);
+            chart = $.plot(chartElement, data, graph_options);
             mod.charts[chartId].chart = chart;
             
             /* after plot hook */
@@ -103,7 +103,7 @@ yukon.flot = (function () {
             if (typeof params.dataUrl === 'undefined') throw "no dataUrl specified";
         },
         _getDefaultMergedOptions = function(type, options) {
-            return jQuery.extend(true, {}, _defaults.options_type_map[type], options);
+            return $.extend(true, {}, _defaults.options_type_map[type], options);
         },
         _setupGraph = function(chartId, data) {
             var labels = {},
@@ -162,16 +162,16 @@ yukon.flot = (function () {
             mod.charts[chartId].data = data;
         },
         _getChartIdFromElement = function(elem) {
-            return jQuery(elem).closest(_selector_chart_container).find(_selector_chart).attr("id");
+            return $(elem).closest(_selector_chart_container).find(_selector_chart).attr("id");
         },
         _showTooltip = function(x, y, contents) {
             var pos = {top: y + 11, left: x + 11};
-            if (jQuery(_selector_tooltip).length > 0) {
-                jQuery(_selector_tooltip).css(pos);
+            if ($(_selector_tooltip).length > 0) {
+                $(_selector_tooltip).css(pos);
                 return;
             }
             // substr here to remove the leading period
-            jQuery("<div class='" +
+            $("<div class='" +
                     _selector_tooltip.substr(1, _selector_tooltip.length) + "'>" +
                     contents + "</div>").css(pos).appendTo("body").fadeIn(200);
         },
@@ -186,7 +186,7 @@ yukon.flot = (function () {
         /* --------------- */
         _plot_selected = function(event, ranges) {
             var chartId;
-            jQuery(_selector_show_all).show();
+            $(_selector_show_all).show();
             chartId = this.id;
             mod.charts[chartId].ranges_xaxis_from = ranges.xaxis.from; 
             mod.charts[chartId].ranges_xaxis_to = ranges.xaxis.to; 
@@ -198,7 +198,7 @@ yukon.flot = (function () {
         },
         _plot_unselected = function(event) {
             var chartId;
-            jQuery(this).closest(_selector_chart_container).find(_selector_show_all).hide();
+            $(this).closest(_selector_chart_container).find(_selector_show_all).hide();
             chartId = this.id;
             mod.charts[chartId].ranges_xaxis_from = null; 
             mod.charts[chartId].ranges_xaxis_to = null;
@@ -206,7 +206,7 @@ yukon.flot = (function () {
         },
         _show_all_clicked = function() {
             var chartId;
-            jQuery(this).hide();
+            $(this).hide();
             chartId = _getChartIdFromElement(this);
             mod.charts[chartId].ranges_xaxis_from = null; 
             mod.charts[chartId].ranges_xaxis_to = null;
@@ -243,13 +243,13 @@ yukon.flot = (function () {
                 }
                 if (remove_prev) {
                     /* remove the tool tip element */
-                    jQuery(_selector_tooltip).remove();
+                    $(_selector_tooltip).remove();
                 }
                 chartId = _getChartIdFromElement(this);
                 _showTooltip(pos.pageX, pos.pageY, mod.charts[chartId].tooltipMap[tt_key]);
             }
             else {
-                jQuery(_selector_tooltip).remove();
+                $(_selector_tooltip).remove();
                 _previousHoverPoint = [];
             }
         },
@@ -267,7 +267,7 @@ yukon.flot = (function () {
                 plotGraph: _plotGraph,
                 getFilteredGraphData: _getFilteredGraphData
             };
-            _defaults.bar_options = jQuery.extend(true, {}, {
+            _defaults.bar_options = $.extend(true, {}, {
                 series : {
                     color: "rgb(63, 105, 149)",
                     bars: {
@@ -284,7 +284,7 @@ yukon.flot = (function () {
                     }
                 }
             }, _defaults.base_options);
-            _defaults.line_options = jQuery.extend(true, {}, {
+            _defaults.line_options = $.extend(true, {}, {
                 series : {
                     fillColor: "rgb(99,143,189)",
                     color: "rgb(63, 105, 149)",
@@ -300,7 +300,7 @@ yukon.flot = (function () {
                     }
                 }
             }, _defaults.base_options);
-            _defaults.pie_options = jQuery.extend(true, {}, {
+            _defaults.pie_options = $.extend(true, {}, {
                 series: {
                     pie: { 
                         show: true
@@ -313,12 +313,12 @@ yukon.flot = (function () {
                 pie: _defaults.pie_options
             };
 
-            jQuery(document).on("plothover", _selector_chart, _plot_hover);
+            $(document).on("plothover", _selector_chart, _plot_hover);
             // TODO: the plot thickens: the _plot_click method is nowhere to be found!
-            //jQuery(document).on("plotclick", _selector_chart, _plot_click);
-            jQuery(document).on("plotselected", _selector_chart, _plot_selected);
-            jQuery(document).on("plotunselected", _selector_chart, _plot_unselected);
-            jQuery(document).on("click", _selector_show_all, _show_all_clicked);
+            //$(document).on("plotclick", _selector_chart, _plot_click);
+            $(document).on("plotselected", _selector_chart, _plot_selected);
+            $(document).on("plotunselected", _selector_chart, _plot_unselected);
+            $(document).on("click", _selector_show_all, _show_all_clicked);
 
             _initialized = true;
         },
@@ -347,7 +347,7 @@ yukon.flot = (function () {
             /* initialization */
             mod.charts[chartId] = {};
             mod.charts[chartId].options = _getDefaultMergedOptions(type, options);
-            mod.charts[chartId].methods = jQuery.extend(true, {}, _defaults.methods, methods);
+            mod.charts[chartId].methods = $.extend(true, {}, _defaults.methods, methods);
             mod.charts[chartId].data_with_meta = data;
         },
 
@@ -401,7 +401,7 @@ yukon.flot = (function () {
         reloadFlotChart: function(params) {
             /* validation */
             _validateReloadParams(params);
-            jQuery.ajax({
+            $.ajax({
                 url: params.dataUrl,
                 success: function(data) {
                     /* if the chart hasn't been added yet, add it */
@@ -424,6 +424,6 @@ yukon.flot = (function () {
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     yukon.flot._init();
 });

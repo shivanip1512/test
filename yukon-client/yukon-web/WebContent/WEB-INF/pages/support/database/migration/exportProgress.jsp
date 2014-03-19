@@ -26,17 +26,17 @@
     
     <script type="text/javascript">
 
-        jQuery(function() {
+        $(function() {
 
             <c:if test="${not migrationStatus.complete}">
-                jQuery('#downloadButton').disable();
+                $('#downloadButton').disable();
             </c:if>
 
         });
 
         function enableMigrationExportDownloadButton() {
             try {
-                jQuery('#downloadButton').enable();
+                $('#downloadButton').enable();
 
                 // may not be rendered yet
             } catch(e){}
@@ -73,7 +73,7 @@
             <input type="hidden" name="fileKey" value="${migrationStatus.id}">
         </form>
         
-        <cti:button id="downloadButton" label="${downloadButton}" onclick="jQuery('#downloadExportFileForm').submit();"/>
+        <cti:button id="downloadButton" label="${downloadButton}" onclick="$('#downloadExportFileForm').submit();"/>
 
    </tags:boxContainer>
     

@@ -12,22 +12,22 @@
 var supportsPasswordSet = ${cti:jsonString(supportsPasswordSet)};
 var originalAuthCategory = '${user.authCategory}';
 
-jQuery(function() {
-    jQuery('#cancelChangePassword').click(function(event) {
-        jQuery('#changePasswordPopup').dialog('close');
+$(function() {
+    $('#cancelChangePassword').click(function(event) {
+        $('#changePasswordPopup').dialog('close');
     });
     
-    jQuery('#authCategory').change(function() {
-        var newAuthCategory = jQuery('#authCategory').val();
+    $('#authCategory').change(function() {
+        var newAuthCategory = $('#authCategory').val();
         if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {
-            jQuery('#changeAuthPassword, #changeAuthConfirmPassword').show();
+            $('#changeAuthPassword, #changeAuthConfirmPassword').show();
         } else {
-            jQuery('#changeAuthPassword, #changeAuthConfirmPassword').hide();
+            $('#changeAuthPassword, #changeAuthConfirmPassword').hide();
         }
     });
     
     <c:if test="${not empty hasPasswordError and hasPasswordError}">
-         jQuery('#changeAuthPassword, #changeAuthConfirmPassword').show();
+         $('#changeAuthPassword, #changeAuthConfirmPassword').show();
     </c:if>
 });
 </script>

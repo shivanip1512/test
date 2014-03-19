@@ -13,7 +13,7 @@ function formatXml(unformattedXml) {
     var reg = /(>)(<)(\/*)/g;
     unformattedXml = unformattedXml.replace(reg, '$1\n$2$3');
     var pad = 0;
-    jQuery.each(unformattedXml.split('\n'), function(index, node) {
+    $.each(unformattedXml.split('\n'), function(index, node) {
         var indent = 0;
         if (node.match( /.+<\/\w[^>]*>$/ )) {
             indent = 0;
@@ -38,13 +38,13 @@ function formatXml(unformattedXml) {
     return formatted;
 }
 
-jQuery(function() {
-    jQuery('#resetUsername').click(function() {
-        jQuery('input[name=username]').val('${username}');
+$(function() {
+    $('#resetUsername').click(function() {
+        $('input[name=username]').val('${username}');
     });
 
-    var uriSelect = jQuery('#uriSelect');
-    var uriInput = jQuery('#uriInput');
+    var uriSelect = $('#uriSelect');
+    var uriInput = $('#uriInput');
     uriSelect.change(function() {
         if (uriSelect.val() == 'other') {
             uriInput.show();
@@ -55,38 +55,38 @@ jQuery(function() {
         }
     });
 
-    var sampleFileSelect = jQuery('#sampleFileSelect');
+    var sampleFileSelect = $('#sampleFileSelect');
     sampleFileSelect.change(function() {
-        jQuery.ajax({
+        $.ajax({
             'url' : '${sampleXmlUrl}',
             'dataType' : 'json',
             'data' : {'sampleId' : sampleFileSelect.val()},
             'success' : function(sampleXml) {
-                jQuery('#xmlRequest').val(sampleXml)
+                $('#xmlRequest').val(sampleXml)
             }
         });
     });
 
-    jQuery('#requestForm').ajaxForm({
+    $('#requestForm').ajaxForm({
         'dataType' : 'json',
         'method' : 'POST',
         'beforeSerialize' : function() {
-            jQuery('#uriHidden').val((uriSelect.val() == 'other' ? uriInput : uriSelect).val());
+            $('#uriHidden').val((uriSelect.val() == 'other' ? uriInput : uriSelect).val());
         },
         'success' : function(responseXml) {
             yukon.ui.unblockPage();
-            var dest = jQuery('#eimResponseDiv').empty();
-            if (jQuery('#formatResponse')[0].checked) {
-                dest.append(jQuery('<pre/>', {'text' : formatXml(responseXml)}));
+            var dest = $('#eimResponseDiv').empty();
+            if ($('#formatResponse')[0].checked) {
+                dest.append($('<pre/>', {'text' : formatXml(responseXml)}));
             } else {
                 dest.text(responseXml)
             }
-            jQuery('#xmlRequest').focus();
+            $('#xmlRequest').focus();
         }
     });
 
-    jQuery('#selectAll').click(function() {
-        jQuery('#eimResponseDiv').selectText();
+    $('#selectAll').click(function() {
+        $('#eimResponseDiv').selectText();
     });
 });
 </script>

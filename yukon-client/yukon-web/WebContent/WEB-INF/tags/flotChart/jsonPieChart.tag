@@ -17,7 +17,7 @@
 </div>
 
 <script>
-jQuery(function() {
+$(function() {
     var chartId = '${chartId}';
     var data = ${cti:jsonString(data)};
     yukon.flot.addChart({

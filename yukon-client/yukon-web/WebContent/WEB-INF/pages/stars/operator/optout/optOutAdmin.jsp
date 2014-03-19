@@ -19,14 +19,14 @@
                 for (var index = 0; index < ids.length; index++) {
                     selectedNames.push(ids[index].displayName);
                 }
-                jQuery('#'+spanId).html(selectedNames.join(','));
+                $('#'+spanId).html(selectedNames.join(','));
                 
                 systemOptOutInfoRequest();
             }
         }
 
         function systemOptOutInfoRequest() {
-            var assignedProgramIds = jQuery('#systemProgramPaoIds').val();
+            var assignedProgramIds = $('#systemProgramPaoIds').val();
 
             var programIdArrayJson;
             if (assignedProgramIds.length == 0) {
@@ -36,17 +36,17 @@
                 programIdArrayJson = JSON.stringify(assignedProgramIds.split(','));
             }
 
-            jQuery.ajax({
+            $.ajax({
                 contentType: 'application/json',
                 dataType: 'json',
                 url: '<cti:url value="/stars/operator/optOut/systemOptOuts"/>',
                 data: programIdArrayJson,
                 type: 'post'
             }).done(function(json, status, xhrobj) {
-                jQuery('.totalAccounts .value').html(json.totalNumberOfAccounts);
-                jQuery('.todaysOptOuts .value').html(json.currentOptOuts);
-                jQuery('.futureOptOuts .value').html(json.scheduledOptOuts);
-                jQuery('.alternateEnrollments .value').html(json.alternateEnrollments);
+                $('.totalAccounts .value').html(json.totalNumberOfAccounts);
+                $('.todaysOptOuts .value').html(json.currentOptOuts);
+                $('.futureOptOuts .value').html(json.scheduledOptOuts);
+                $('.alternateEnrollments .value').html(json.alternateEnrollments);
             });
         }
 

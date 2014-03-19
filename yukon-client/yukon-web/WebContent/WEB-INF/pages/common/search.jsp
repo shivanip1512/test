@@ -7,12 +7,12 @@
 <cti:standardPage module="tools" page="search">
 
     <script type="text/javascript">
-        jQuery(function() {
+        $(function() {
             // Manually wire the submit button as it currently does... nothing.
-            jQuery(document).on('click', '#manualSearchButton',
+            $(document).on('click', '#manualSearchButton',
             function(event) {
                 event.stopPropagation();
-                jQuery("#formSiteSearch").submit();
+                $("#formSiteSearch").submit();
             });
 
         });

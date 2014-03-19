@@ -32,7 +32,7 @@ function clearFilter() {
     window.location = '${clearFilterUrl}';
 }
 
-jQuery(document).on('click', '#showAllButton', clearFilter);
+$(document).on('click', '#showAllButton', clearFilter);
 </script>
 
 <i:simplePopup id="filterDialog" titleKey=".filters">

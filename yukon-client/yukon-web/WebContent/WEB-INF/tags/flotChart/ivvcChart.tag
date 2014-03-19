@@ -11,10 +11,10 @@
 </div>
 
 <script>
-jQuery(function() {
+$(function() {
     var chartId = '${chartId}',
         jsonDataAndOptions = ${cti:jsonString(jsonDataAndOptions)},
-        choiceContainer = jQuery(".graph_phases");
+        choiceContainer = $(".graph_phases");
 
     yukon.flot.addChart({
         chartId: chartId,
@@ -41,8 +41,8 @@ jQuery(function() {
     function getCheckedPhases() {
         var phases = {};
         choiceContainer.find("input").each(function () {
-            var phaseKey = jQuery(this).attr("name");
-            var is_checked = jQuery(this).is(":checked");
+            var phaseKey = $(this).attr("name");
+            var is_checked = $(this).is(":checked");
             phases[phaseKey] = is_checked;
         });
         return phases;
@@ -61,13 +61,13 @@ jQuery(function() {
             };
         }
     }
-    jQuery.each(phaseMap, function(key, val) {
-        jQuery('<style type="text/css">.graph_phases input.phase' + key + '{ outline-color: ' + val.color + '}</style>').appendTo('head');
+    $.each(phaseMap, function(key, val) {
+        $('<style type="text/css">.graph_phases input.phase' + key + '{ outline-color: ' + val.color + '}</style>').appendTo('head');
         choiceContainer.append('<label><input type="checkbox" class="phase' + key + '" name="' + key + '" checked="checked" id="id' + key + '">' +
                                val.text + '</label>');
     });
     
-    jQuery(".graph_phases input").click(function () {
+    $(".graph_phases input").click(function () {
         yukon.flot.charts[chartId].methods.plotGraph(chartId);
     });
     

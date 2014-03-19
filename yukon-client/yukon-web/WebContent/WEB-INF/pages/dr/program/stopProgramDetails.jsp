@@ -20,29 +20,29 @@ submitForm = function() {
 
 updateComponentAvailability = function() {
     // reset date value to now if checkbox checked, since it may have been changed
-    if (true === jQuery('#stopNowCheckbox').prop('checked')) {
-        jQuery('#stopDate').val(yukon.ui.initialNowVal);
+    if (true === $('#stopNowCheckbox').prop('checked')) {
+        $('#stopDate').val(yukon.ui.initialNowVal);
     }
-    jQuery('#stopDate').prop('disabled', jQuery('#stopNowCheckbox').prop('checked'));
+    $('#stopDate').prop('disabled', $('#stopNowCheckbox').prop('checked'));
     <c:if test="${stopGearAllowed}">
     document.getElementById('useStopGearCheckbox').disabled = document.getElementById('stopNowCheckbox').checked;
 
         if (!document.getElementById('stopNowCheckbox').checked && document.getElementById('useStopGearCheckbox').checked) {
             document.getElementById('gearNumber').disabled = false;
-            jQuery('#okButton').hide();
-            jQuery('#nextButton').show();
+            $('#okButton').hide();
+            $('#nextButton').show();
         } else {
             document.getElementById('gearNumber').disabled = true;
-            jQuery('#okButton').show();
-            jQuery('#nextButton').hide();
+            $('#okButton').show();
+            $('#nextButton').hide();
         }
     </c:if>
 }
-jQuery( function () {
+$( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
     // save off initial value of date in case we must reinstate later
-    yukon.ui.initialNowVal = jQuery('#stopDate').val();
+    yukon.ui.initialNowVal = $('#stopDate').val();
 });
 </script>
 
@@ -114,12 +114,12 @@ jQuery( function () {
             <cti:button id="nextButton" nameKey="next" classes="primary action" type="submit"/>
             <script type="text/javascript">updateComponentAvailability();</script>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 
 <script type="text/javascript">
-jQuery( function () {
+$( function () {
     updateComponentAvailability();
 });
 </script>

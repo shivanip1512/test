@@ -23,7 +23,7 @@
     <tags:simpleDialog id="zoneWizardPopup" title=""/>
 
 <script type="text/javascript">
-    jQuery( function() {
+    $( function() {
         yukon.da.ivvc.init( {timeout : '${updaterDelay}',
                                controlRole : '${hasControlRole}',
                                subBusId : '${subBusId}',

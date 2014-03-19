@@ -31,8 +31,8 @@
 
 <script type="text/javascript">
 function addFormatId(selector) {
-    var formatIdLink = jQuery(selector);
-    var formatIdFragment = "?selectedFormatId="+jQuery('#formatId').val();
+    var formatIdLink = $(selector);
+    var formatIdFragment = "?selectedFormatId="+$('#formatId').val();
     var href = formatIdLink.attr('data-href');
     formatIdLink.attr('data-href', href + formatIdFragment);
 };
@@ -43,31 +43,31 @@ function addFormatIds() {
 };
 
 function showAttributeRow() {
-    if (jQuery('#archivedValuesExportFormatType').val() == 'DYNAMIC_ATTRIBUTE') {
-        jQuery('#attributeRow').show();
+    if ($('#archivedValuesExportFormatType').val() == 'DYNAMIC_ATTRIBUTE') {
+        $('#attributeRow').show();
     } else {
-        jQuery('#attributeRow').hide();
+        $('#attributeRow').hide();
     }
 }
 
 function runOkPressed() {
-    jQuery('#runDialog').dialog('close');
-    jQuery('#runInputsDiv').clone().appendTo(jQuery('#exporterForm'));
+    $('#runDialog').dialog('close');
+    $('#runInputsDiv').clone().appendTo($('#exporterForm'));
     submitForm('generateReport');
-    jQuery('#exporterForm #runInputsDiv').remove();
+    $('#exporterForm #runInputsDiv').remove();
 };
 
 function scheduleOkPressed() {
-    jQuery('#scheduleDialog').dialog('close');
-    jQuery('#scheduleInputsDiv').clone().appendTo(jQuery('#exporterForm'));
+    $('#scheduleDialog').dialog('close');
+    $('#scheduleInputsDiv').clone().appendTo($('#exporterForm'));
     submitForm('scheduleReport');
-    jQuery('#exporterForm #scheduleInputsDiv').remove();
+    $('#exporterForm #scheduleInputsDiv').remove();
 };
 
 function createOkCancelDialog(dialogIdentifier, titleMsg, okFunction) {
     var buttons = [];
     buttons.push({'text' : '${okBtnMsg}', 'class' : 'primary', 'click' : okFunction });
-    buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+    buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { $(this).dialog('close'); }});
     var dialogOpts = {
               'title' : titleMsg,
               'position' : 'center',
@@ -75,18 +75,18 @@ function createOkCancelDialog(dialogIdentifier, titleMsg, okFunction) {
               'height' : 'auto',
               'modal' : true,
               'buttons' : buttons };
-    if(jQuery('#archivedValuesExportFormatType').val() == 'FIXED_ATTRIBUTE' && titleMsg == '${scheduleTitle}') {
+    if($('#archivedValuesExportFormatType').val() == 'FIXED_ATTRIBUTE' && titleMsg == '${scheduleTitle}') {
         //format=fixed and scheduling, no further user feedback required
         //DataRangeType.END_DATE is the only option
-        jQuery(dialogIdentifier).dialog(dialogOpts);
+        $(dialogIdentifier).dialog(dialogOpts);
         okFunction();
     } else {
-        jQuery(dialogIdentifier).dialog(dialogOpts);
+        $(dialogIdentifier).dialog(dialogOpts);
     }
 }
 
 function submitForm(action) {
-    var exporterForm = jQuery('#exporterForm');
+    var exporterForm = $('#exporterForm');
     exporterForm.attr('action', action);
     exporterForm[0].submit();
 };
@@ -99,21 +99,21 @@ function toggleForm(dialogId, archivedValuesExporterFormat, dataRangeTypes, fixe
         var dataRangeTypeInput = dataRangeTypeDiv + ' [name $= \'DataRange.dataRangeType\'] ';
 
         if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' &&
-            jQuery.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
-            jQuery(dataRangeTypeDiv).show();
-            jQuery(dataRangeTypeInput).click();
+            $.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
+            $(dataRangeTypeDiv).show();
+            $(dataRangeTypeInput).click();
         } else if (archivedValuesExporterFormat == 'DYNAMIC_ATTRIBUTE' &&
-                jQuery.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
-            jQuery(dataRangeTypeDiv).show();
-            jQuery(dataRangeTypeInput).click();
+                $.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
+            $(dataRangeTypeDiv).show();
+            $(dataRangeTypeInput).click();
             
         } else {
-            jQuery(dataRangeTypeDiv).hide();
+            $(dataRangeTypeDiv).hide();
         }
     }
 }
 
-jQuery(function() {
+$(function() {
     var dataRangeTypes = ${dataRangeTypes};
     var fixedRunDataRangeTypes = ${fixedRunDataRangeTypes};
     var dynamicRunDataRangeTypes = ${dynamicRunDataRangeTypes};
@@ -123,34 +123,34 @@ jQuery(function() {
     showAttributeRow();
     addFormatIds();
     
-    toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
-    toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
+    toggleForm('#runDialog', $('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
+    toggleForm('#scheduleDialog', $('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
     
-    jQuery('#runButton').click(function(event) { 
+    $('#runButton').click(function(event) { 
         createOkCancelDialog('#runDialog', '${runTitle}', function() { runOkPressed(); });
     });
     
-    jQuery('#scheduleButton').click(function(event) { 
+    $('#scheduleButton').click(function(event) { 
         createOkCancelDialog('#scheduleDialog', '${scheduleTitle}', function() { scheduleOkPressed(); });
     });
     
-    jQuery('#b-create').click(function(event) {
+    $('#b-create').click(function(event) {
         var buttons = [{'text' : '<cti:msg2 key="yukon.web.components.button.create.label"/>','class' : 'primary', 
             'click' : function() {window.location.href='create?formatType=' + 
-                    jQuery('input[name=newFormatType]:checked').val();}},
-                       {'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close');}}];
+                    $('input[name=newFormatType]:checked').val();}},
+                       {'text' : '${cancelBtnMsg}', 'click' : function() { $(this).dialog('close');}}];
         var dialogOpts = {'buttons' : buttons, 'width' : 500, 'height' : 'auto'};
-        jQuery("#create-format-dialog").dialog(dialogOpts);
+        $("#create-format-dialog").dialog(dialogOpts);
     });
     
-    jQuery('.selectDevices').click(function(event) {
+    $('.selectDevices').click(function(event) {
         submitForm('selectDevices');
     });
     
-    jQuery('#formatId').change(function(event) {
+    $('#formatId').change(function(event) {
         addFormatIds();
-        toggleForm('#runDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
-        toggleForm('#scheduleDialog', jQuery('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
+        toggleForm('#runDialog', $('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedRunDataRangeTypes, dynamicRunDataRangeTypes);
+        toggleForm('#scheduleDialog', $('#archivedValuesExportFormatType').val(), dataRangeTypes, fixedScheduleDataRangeTypes, dynamicScheduleDataRangeTypes);
         showAttributeRow();
         submitForm('view');
     });

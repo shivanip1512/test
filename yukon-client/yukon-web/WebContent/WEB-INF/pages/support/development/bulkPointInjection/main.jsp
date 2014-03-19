@@ -8,8 +8,8 @@
 <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
 
 <script type="text/javascript">
-jQuery(document).on('click', '.bulkInject', function(event) {
-    jQuery('#populateDbForm').submit();
+$(document).on('click', '.bulkInject', function(event) {
+    $('#populateDbForm').submit();
 });
 </script>
 

@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
     function addUserGroups() {
-    	jQuery('#addUserGroupsForm').submit();
+    	$('#addUserGroupsForm').submit();
     }
 </script>
     

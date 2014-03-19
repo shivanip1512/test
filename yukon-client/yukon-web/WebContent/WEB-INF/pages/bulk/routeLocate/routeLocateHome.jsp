@@ -74,7 +74,7 @@
                             <td class="tar">
                                 <c:set var="successFormName" value="processingExceptionForm${b.resultId}"/>
                                 
-                                <a href="javascript:jQuery('#${successFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
+                                <a href="javascript:$('#${successFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/LOCATED_COUNT"/></a> 
                                 <tags:selectedDevicesPopup deviceCollection="${b.successDeviceCollection}"/>
                                 
                                 <form id="${successFormName}" method="post" action="/bulk/collectionActions">
@@ -90,7 +90,7 @@
                                     
                                 <c:set var="notFoundCollectionActionFormName" value="notFoundCollectionActionFormName${b.resultId}"/>
                             
-                                <a href="javascript:jQuery('#${notFoundCollectionActionFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/NOT_FOUND_COUNT"/></a> 
+                                <a href="javascript:$('#${notFoundCollectionActionFormName}').submit();" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${b.resultId}/NOT_FOUND_COUNT"/></a> 
                                 
                                 <tags:selectedDevicesPopup deviceCollection="${b.failureDeviceCollection}"/>
                                 

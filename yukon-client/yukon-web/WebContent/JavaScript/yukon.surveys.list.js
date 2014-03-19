@@ -11,14 +11,14 @@ yukon.namespace('yukon.surveys.list');
 yukon.surveys.list = (function () {
     mod = {
         init: function () {
-            jQuery('#addSurveyBtn').click(function () {
-                jQuery('#ajaxDialog').load('editDetails', function () {
-                    jQuery('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+            $('#addSurveyBtn').click(function () {
+                $('#ajaxDialog').load('editDetails', function () {
+                    $('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
                 });
             });
 
-            jQuery(document).on('yukonDetailsUpdated', function (event, newUrl) {
-                jQuery('#ajaxDialog').dialog('close');
+            $(document).on('yukonDetailsUpdated', function (event, newUrl) {
+                $('#ajaxDialog').dialog('close');
                 window.location = newUrl;
             });
         }
@@ -26,6 +26,6 @@ yukon.surveys.list = (function () {
     return mod;
 }());
 
-jQuery(function () {
+$(function () {
     yukon.surveys.list.init();
 });

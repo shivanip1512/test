@@ -30,11 +30,11 @@
 
         var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}',
             confirmed = true;
-        if (confirmText !== null && jQuery.trim(confirmText) !== '') {
+        if (confirmText !== null && $.trim(confirmText) !== '') {
             confirmed = window.confirm(confirmText);
         }
         // generate mouseleave event so tipsy tooltip lib knows to close tooltip
-        jQuery('#' + 'linkImg_' + '${buttonId}').trigger('mouseleave');
+        $('#' + 'linkImg_' + '${buttonId}').trigger('mouseleave');
         if (confirmed) {
             ${widgetParameters.jsWidget}.doActionRefresh({
                 command:     '${method}', 

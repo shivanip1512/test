@@ -16,53 +16,53 @@ function initiateCannonDataUpdate(url, delayMs) {
 
         responseStruc = transport;
         // looks like stuff is working, hide error div
-        jQuery('#data-updater-error').hide();
+        $('#data-updater-error').hide();
         failureCount = 0;
         
         // find all of the updateable elements
-        updateElems = jQuery('[data-updater]');
-        jQuery.each (updateElems, function(key, val) {
+        updateElems = $('[data-updater]');
+        $.each (updateElems, function(key, val) {
             var newData,
-                attVal = jQuery(val).attr('data-updater');
+                attVal = $(val).attr('data-updater');
             if ('undefined' === typeof attVal || 'undefined' === typeof responseStruc.data) {
                 return;
             }
             newData = responseStruc.data[attVal];
             if ('undefined' !== typeof newData) {
-                if (jQuery(val).html() !== newData) {
+                if ($(val).html() !== newData) {
                     // escape html: creates a div in isolation, sets its text
                     // to whatever's in newData, then effectively escapes it 
                     // via the html function
-                    newData = jQuery('<div>').text(newData).html();
-                    jQuery(val).html(newData);
+                    newData = $('<div>').text(newData).html();
+                    $(val).html(newData);
                     someValueHasUpdated = true;
                     if (!disableHighlight) {
-                        jQuery(val).flashYellow(3.5);
+                        $(val).flashYellow(3.5);
                     }
                 }
             }
         });
 
         // update the classes
-        updateClassElems = jQuery('[data-class-updater]');
-        jQuery.each (updateClassElems, function(key, val) {
-            var id = jQuery(val).attr('data-class-updater'),
+        updateClassElems = $('[data-class-updater]');
+        $.each (updateClassElems, function(key, val) {
+            var id = $(val).attr('data-class-updater'),
                 newData,
                 className;
             if ('undefined' === typeof id || 'undefined' === typeof responseStruc.data) {
                 return;
             }
             newData = responseStruc.data[id];
-            className = jQuery(val).attr('class');
+            className = $(val).attr('class');
             if ('undefined' !== typeof newData && className !== newData) {
-                jQuery(val).attr('class', newData);
+                $(val).attr('class', newData);
             }
         });
 
         // update the colors
-        updateColorElems = jQuery('[data-color-updater]');
-        jQuery.each (updateColorElems, function(key, val) {
-            var id = jQuery(val).attr('data-color-updater'),
+        updateColorElems = $('[data-color-updater]');
+        $.each (updateColorElems, function(key, val) {
+            var id = $(val).attr('data-color-updater'),
                 newData,
                 format, // what are typical/legal values for this?
                 backgroundColor,
@@ -96,9 +96,9 @@ function initiateCannonDataUpdate(url, delayMs) {
             }
             newData = responseStruc.data[id];
             newData = 'undefined' === typeof newData ? newData : newData.toLowerCase();
-            format = jQuery(val).attr('data-format');
-            backgroundColor = jQuery(val).css('background-color');
-            color = jQuery(val).css('color');
+            format = $(val).attr('data-format');
+            backgroundColor = $(val).css('background-color');
+            color = $(val).css('color');
             current_value = format == 'background' ? backgroundColor : color;
             // IE represents rgba(0,0,0,0) as transparent, so translate to rgb format here
             // to satisfy rgb2hex, which expects the rgb format
@@ -108,11 +108,11 @@ function initiateCannonDataUpdate(url, delayMs) {
             if ('undefined' !== typeof newData && newData !== rgb2hex(current_value)) {
                 // data was sent and is different than current
                 if (format === 'background') {
-                    jQuery(val).css({'background-color': newData});
-                    jQuery(val).children().css({'background-color': newData});
+                    $(val).css({'background-color': newData});
+                    $(val).children().css({'background-color': newData});
                 } else {
-                    jQuery(val).css({'color': newData});
-                    jQuery(val).children().css({'color': newData});
+                    $(val).css({'color': newData});
+                    $(val).children().css({'color': newData});
                 }
             }
         });
@@ -132,7 +132,7 @@ function initiateCannonDataUpdate(url, delayMs) {
                 (it.callback)();
                 return;
             }
-            jQuery.each (idMap, function(key, val) {
+            $.each (idMap, function(key, val) {
                 var newData;
                 if ('undefined' !== typeof responseStruc.data) {
                     newData = responseStruc.data[idMap[key]];
@@ -159,11 +159,11 @@ function initiateCannonDataUpdate(url, delayMs) {
     var failureCallback = function() {
         // something bad happened, show user that updates are off
         failureCount++;
-        jQuery('#data-updater-error-count').html(failureCount);
+        $('#data-updater-error-count').html(failureCount);
         if(failureCount > 1) {
             // wait for 2 errors before we show error message
             // to avoid flashing error message on page transitions.
-            jQuery('#data-updater-error').show();
+            $('#data-updater-error').show();
         }
 
         // schedule another update in case the server comes back, but slow it down a bit
@@ -174,7 +174,7 @@ function initiateCannonDataUpdate(url, delayMs) {
     };
     
     var warnStaleData = function() {
-        jQuery('#updatedWarning').dialog('open');
+        $('#updatedWarning').dialog('open');
     };
     
     function doUpdate() {
@@ -191,21 +191,21 @@ function initiateCannonDataUpdate(url, delayMs) {
             ],
             getUpdater = function(updateName) {
                 var fullName = 'data' + updateName + 'updater',
-                    updateElems = jQuery('[' + fullName + ']'),
-                    updateData = jQuery.makeArray(updateElems).map(function(al) {
-                        return jQuery(al).attr(fullName);
+                    updateElems = $('[' + fullName + ']'),
+                    updateData = $.makeArray(updateElems).map(function(al) {
+                        return $(al).attr(fullName);
                     });
                 return updateData;
             },
             json_reqData;
 
-        jQuery.each (updaters, function(index, updateStr) {
+        $.each (updaters, function(index, updateStr) {
             var addedData = getUpdater(updateStr);
             reqData.requestTokens = reqData.requestTokens.concat(addedData);
         });
         cannonDataUpdateRegistrations.forEach(function(it, index, ar) {
             var idMap = it.identifierMap;
-            jQuery.each (idMap, function(key, val) {
+            $.each (idMap, function(key, val) {
                 reqData.requestTokens = reqData.requestTokens.concat(val);
             });
         });
@@ -219,7 +219,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             return;
         }
         json_reqData = JSON.stringify(reqData);
-        jQuery.ajax({
+        $.ajax({
             url: url,
             type: 'POST',
             data: json_reqData,

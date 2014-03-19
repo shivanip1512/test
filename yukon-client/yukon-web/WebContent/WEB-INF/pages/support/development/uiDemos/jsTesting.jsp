@@ -11,7 +11,7 @@
         assumes you can run your server on your local machine.
     </p>
     <script>
-        jQuery(function () {
+        $(function () {
             // YUK-12513 Click Jacking Vulnerability - Frame Breaking
             // if logged in to http://pspl-sw-night.eatoneaseng.net:8080/, you should see the
             // home page in the iframe.
@@ -21,7 +21,7 @@
             // 14:56:44.474] Load denied by X-Frame-Options: http://10.106.38.173:8080/login.jsp?REDIRECTED_FROM=%2F does not permit cross-origin framing.
             //var iframeUrl = 'http://10.106.42.52:8080/';
             var iframeUrl = 'http://localhost:8080/';
-            jQuery('#clickjack').attr('src', iframeUrl);
+            $('#clickjack').attr('src', iframeUrl);
         });
     </script> 
     <div>
@@ -39,7 +39,7 @@
 //
 /*
 var fakeYukon = fakeYukon || {};
-jQuery( function () {
+$( function () {
         yukon.modules = {};
         yukon.modules.dom = function (box) {
             box.getElement = function () { console.log('getElement called'); };
@@ -133,7 +133,7 @@ jQuery( function () {
         console.log('anotherSandbox dump:');
         console.dir(anotherSandbox);
         console.log('merging mybox and anotherSandbox into a separate object...');
-        var superObject = jQuery.extend({}, mybox, anotherSandbox);
+        var superObject = $.extend({}, mybox, anotherSandbox);
         console.log('done! dumping');
         console.dir(superObject);
         superObject.attachEvent();
@@ -144,10 +144,10 @@ jQuery( function () {
 </script>
 <script type="text/javascript">
 /* serious, and unsuccessful, hacking
-jQuery(document).tooltip({
+$(document).tooltip({
   items: '*',
   content: function() {
-    var element = jQuery(this), tip, toolTipped;
+    var element = $(this), tip, toolTipped;
     toolTipped = element.closest('.f-has-tooltip');
     if ( toolTipped.length ) {
       tip = toolTipped.nextAll('.f-tooltip').first();
@@ -155,18 +155,18 @@ jQuery(document).tooltip({
       return tip.html();
     } else {
       var title = element.attr('title') || '',
-          closest = jQuery(element.closest('[title]')[0]);
+          closest = $(element.closest('[title]')[0]);
       if (title === '' && closest.length > 0) {
         console.log('doing closest: length=' + closest.length + ' title="' + closest.attr('title') + '"');
         console.dir(closest);
-        title = jQuery(element.closest('[title]')[0]).attr('title');
+        title = $(element.closest('[title]')[0]).attr('title');
       } else {
         console.log('title="' + title + '" did not do closest');
         console.dir(element.closest('[title]'));
       }
       console.log("returning something else, title: " + title);
-      console.log('"' + jQuery('<a>').text(title).html() + '"');
-        return jQuery('<a>').text(title).html();
+      console.log('"' + $('<a>').text(title).html() + '"');
+        return $('<a>').text(title).html();
     }
   }
 });
@@ -175,7 +175,7 @@ jQuery(document).tooltip({
 
 <script type="text/javascript">
 /* the following can't work, since there is no server-side picker code set up for it
-jQuery(function() {
+$(function() {
     try {
         console.log("javascript object creation test begin");
         // globally-accessible functions

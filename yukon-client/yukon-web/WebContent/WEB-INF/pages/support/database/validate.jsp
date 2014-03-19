@@ -11,12 +11,12 @@
         </c:when>
         <c:otherwise>
             <script>
-                jQuery(function () {
-                    jQuery.ajax({
+                $(function () {
+                    $.ajax({
                         type: 'post',
                         url: '/support/database/validate/results'
                     }).done(function (data, textStatus, jqXHR) {
-                        jQuery('#compareResults').html(jqXHR.responseText);
+                        $('#compareResults').html(jqXHR.responseText);
                     });
                 });
             </script>

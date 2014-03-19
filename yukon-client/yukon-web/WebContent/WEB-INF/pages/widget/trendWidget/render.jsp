@@ -6,9 +6,9 @@
 <%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 
 <script type="text/javascript"> 
-jQuery(function () {
-    jQuery("#trendWidget").find(".icon-help").click(function() {
-        jQuery("#trendWidgetWhatsThisText")
+$(function () {
+    $("#trendWidget").find(".icon-help").click(function() {
+        $("#trendWidgetWhatsThisText")
             .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
     });
     // init for a specific DOM element and its children

@@ -1,11 +1,11 @@
 cronExpFreqChange = function (id, sel) {
     var selectedFreqVal = sel.options[sel.selectedIndex].value,
-        cronTime = jQuery('#' + id + '_cronExpTimeDiv'),
-        cronDaily = jQuery('#' + id + '_cronExpDailyDiv'),
-        cronWeekly = jQuery('#' + id + '_cronExpWeeklyDiv'),
-        cronMonthly = jQuery('#' + id + '_cronExpMonthlyDiv'),
-        cronOneTime = jQuery('#' + id + '_cronExpOneTimeDiv'),
-        cronCustom = jQuery('#' + id + '_cronExpCustomDiv'),
+        cronTime = $('#' + id + '_cronExpTimeDiv'),
+        cronDaily = $('#' + id + '_cronExpDailyDiv'),
+        cronWeekly = $('#' + id + '_cronExpWeeklyDiv'),
+        cronMonthly = $('#' + id + '_cronExpMonthlyDiv'),
+        cronOneTime = $('#' + id + '_cronExpOneTimeDiv'),
+        cronCustom = $('#' + id + '_cronExpCustomDiv'),
         cronFuncs = [cronTime, cronDaily, cronWeekly, cronMonthly, cronOneTime, cronCustom],
         plan = [],
         cfi;

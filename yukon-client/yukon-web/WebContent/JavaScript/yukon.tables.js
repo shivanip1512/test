@@ -79,7 +79,7 @@ yukon.tables = (function () {
         
                         if (linkFunc !== null) {
                             link.setAttribute("href", "javascript:void(0)");
-                            jQuery(link).on('click', linkFunc);
+                            $(link).on('click', linkFunc);
                         }
                     }
         

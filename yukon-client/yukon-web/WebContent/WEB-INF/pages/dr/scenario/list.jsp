@@ -103,7 +103,7 @@ function clearFilter() {
 
     <c:if test="${hasFilterErrors}">
         <script type="text/javascript">
-            jQuery("#filterPopup").dialog("open");
+            $("#filterPopup").dialog("open");
         </script>
     </c:if>
     <dt:pickerIncludes/>

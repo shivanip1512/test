@@ -50,7 +50,7 @@
     
     <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
         on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'f-blocker2', click: function() { loadPublicKey(true);}},
-                                        {text: 'Cancel', click: function() { jQuery(this).dialog('close'); } }]}">
+                                        {text: 'Cancel', click: function() { $(this).dialog('close'); } }]}">
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>
         <div id="publicKeyText">
@@ -198,28 +198,28 @@
     </div>
     
     <script type="text/javascript">
-    jQuery(function(){
+    $(function(){
         
         if ("${showDialog}" == "addKey") {
-            jQuery('#addNewKeyBtn').trigger(jQuery.Event("click")); // Opens up addKey Dialog
+            $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
         } else if ("${showDialog}" == "importKey") {
-            jQuery('#importKeyFileBtn').trigger(jQuery.Event("click")); // Opens up importKey Dialog
+            $('#importKeyFileBtn').trigger($.Event("click")); // Opens up importKey Dialog
         }
     });
     
     function submitForm(formId) {
-        jQuery(".ui-dialog").css("display","none");
+        $(".ui-dialog").css("display","none");
         yukon.ui.blockPage();
-        jQuery("#"+formId).submit();
+        $("#"+formId).submit();
     }
     
-    jQuery("#viewPublicKeyBtn").click(function() {
+    $("#viewPublicKeyBtn").click(function() {
         loadPublicKey(false);
     });
     
     function loadPublicKey(generateNewKey) {
         yukon.ui.blockPage();
-        jQuery.ajax({ 
+        $.ajax({ 
             url: "getPublicKey", 
             type: "POST",
             data: { "generateNewKey": generateNewKey},
@@ -228,34 +228,34 @@
         }).done(function(publicKeyObj) {
             if(!publicKeyObj.doesExist) {
                 // No public Key exists
-                jQuery("#publicKeyText").hide();
-                jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.noKeyExists'/>").show('fade',{},200);
+                $("#publicKeyText").hide();
+                $("#publicKeyStatus").html("<i:inline key='.publicKey.noKeyExists'/>").show('fade',{},200);
             } else if (publicKeyObj.isExpired) {
                 // A key exists but it's expired
-                jQuery("#publicKeyText").hide();
-                jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.keyExpired'/>").show('fade',{},200);
+                $("#publicKeyText").hide();
+                $("#publicKeyStatus").html("<i:inline key='.publicKey.keyExpired'/>").show('fade',{},200);
             } else {
                 // A valid key is found
-                jQuery("#publicKeyStatus").html("<i:inline key='.security.expires'/>"+publicKeyObj.expiration);
-                jQuery("#publicKeyTextArea").val(publicKeyObj.publicKey);
-                jQuery("#publicKeyText").show('fade',{},200);
+                $("#publicKeyStatus").html("<i:inline key='.security.expires'/>"+publicKeyObj.expiration);
+                $("#publicKeyTextArea").val(publicKeyObj.publicKey);
+                $("#publicKeyText").show('fade',{},200);
             }
             yukon.ui.unblockPage();
         }).fail(function() {
-            jQuery("#publicKeyText").hide();
-            jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.keyGenerationFailed'/>").show('fade',{},200);
+            $("#publicKeyText").hide();
+            $("#publicKeyStatus").html("<i:inline key='.publicKey.keyGenerationFailed'/>").show('fade',{},200);
             yukon.ui.unblockPage();
         });
     }
     
-    jQuery(document).bind('addKeyFormSubmit', function(event) {
+    $(document).bind('addKeyFormSubmit', function(event) {
         yukon.ui.blockPage();
-        jQuery('#encryptionKey').submit();
+        $('#encryptionKey').submit();
     });
     
-    jQuery(document).bind('importKeyFileFormSubmit', function(event) {
+    $(document).bind('importKeyFileFormSubmit', function(event) {
         yukon.ui.blockPage();
-        jQuery('#fileImportBindingBean').submit();
+        $('#fileImportBindingBean').submit();
     });
     
     </script>

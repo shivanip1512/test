@@ -12,23 +12,23 @@
 
     <script type="text/javascript">
     function ajaxSubmitForm(rowIndex, action, dialogSelector) {
-        jQuery("#exporterForm input[name=rowIndex]").val(rowIndex);
-        jQuery('#exporterForm').ajaxSubmit({'target' : dialogSelector, 'url' : action});
+        $("#exporterForm input[name=rowIndex]").val(rowIndex);
+        $('#exporterForm').ajaxSubmit({'target' : dialogSelector, 'url' : action});
     }
     
     function submitForm(index, action) {
         if (index != -2) {
-            jQuery("#exporterForm input[name=rowIndex]").val(index);
+            $("#exporterForm input[name=rowIndex]").val(index);
         }
 
-        var exporterForm = jQuery('#exporterForm');
+        var exporterForm = $('#exporterForm');
         exporterForm.attr('action', action);
         exporterForm[0].submit();
     }
     
     function toggleFieldAndUpdateValue(element, event){
-        var selection = jQuery(element.attr("data-selection")).val();
-        var fieldToDisplay = jQuery(element.attr("data-field-to-display"));
+        var selection = $(element.attr("data-selection")).val();
+        var fieldToDisplay = $(element.attr("data-field-to-display"));
         var skipDisable = element.attr("data-skip-disable");
         
         if (!skipDisable) {
@@ -44,7 +44,7 @@
             }
             fieldToDisplay.focus();
             fieldToDisplay.show().removeAttr("disabled");
-            jQuery("input[name=exportField\\.pattern]").each(function(index, element){
+            $("input[name=exportField\\.pattern]").each(function(index, element){
                 if (element != fieldToDisplay[0]) {
                     element.value="";
                 }
@@ -58,8 +58,8 @@
     };
 
     function toggleField(element){
-        var selection = jQuery(element.attr("data-selection")).val();
-        var fieldToDisplay = jQuery(element.attr("data-field-to-display"));
+        var selection = $(element.attr("data-selection")).val();
+        var fieldToDisplay = $(element.attr("data-field-to-display"));
         var skipDisable = element.attr("data-skip-disable");
         
         if(!skipDisable){
@@ -79,20 +79,20 @@
     }
     
     function changeFieldSelect(event){
-        var selectedIndex = jQuery("#fieldSelect")[0].selectedIndex;
-        var selectedOption = jQuery(jQuery("#fieldSelect")[0].options[selectedIndex]);
+        var selectedIndex = $("#fieldSelect")[0].selectedIndex;
+        var selectedOption = $($("#fieldSelect")[0].options[selectedIndex]);
         var value = selectedOption.attr("data-fieldType");
         if(value == "ATTRIBUTE"){
-            jQuery("#exportField\\.attributeField").show();
-            jQuery("#exportField\\.attributeField").removeAttr("disabled");
-            var secondValue = jQuery("#exportField\\.attributeField").val();
+            $("#exportField\\.attributeField").show();
+            $("#exportField\\.attributeField").removeAttr("disabled");
+            var secondValue = $("#exportField\\.attributeField").val();
             
             if(event && event.currentTarget.id == "exportField.attributeField"){
                 switch(secondValue){
                 case 'TIMESTAMP':
                 case 'VALUE':
-                    jQuery("#patternSelect, #timestampPatternSelect").each(function(index, element){
-                        element = jQuery(element);
+                    $("#patternSelect, #timestampPatternSelect").each(function(index, element){
+                        element = $(element);
                         element.val(null);
                     });
                     break;
@@ -103,22 +103,22 @@
             
             renderFields("." + value + "_" + secondValue);
         }else{
-            jQuery("#exportField\\.attributeField").hide();
-            jQuery("#exportField\\.attributeField").attr("disabled", "disabled");
+            $("#exportField\\.attributeField").hide();
+            $("#exportField\\.attributeField").attr("disabled", "disabled");
             renderFields("." + value);
         }
     };
     
     function renderFields(query , element){
-        jQuery(".section-container", element).show();
+        $(".section-container", element).show();
         
-        jQuery(".f-renderFields tr").hide();
-        jQuery(".f-renderFields tr").find("input,select,textarea").attr('disabled', 'disabled');
-        jQuery(".f-renderFields " + query).show();
-        jQuery(".f-renderFields " + query).find("input,select,textarea").removeAttr('disabled');
+        $(".f-renderFields tr").hide();
+        $(".f-renderFields tr").find("input,select,textarea").attr('disabled', 'disabled');
+        $(".f-renderFields " + query).show();
+        $(".f-renderFields " + query).find("input,select,textarea").removeAttr('disabled');
         
-        jQuery(".section-container", element).each(function(index, sectionContainer){
-            var container = jQuery(sectionContainer);
+        $(".section-container", element).each(function(index, sectionContainer){
+            var container = $(sectionContainer);
             if(container.find("tr:visible").length == 0){
                 container.hide();
             }
@@ -132,26 +132,26 @@
       changeFieldSelect(event);
       
       //Define Layout
-      toggleFieldAndUpdateValue(jQuery("#unsupportedFieldSelect"), event);
-      toggleFieldAndUpdateValue(jQuery("#padCharSelect"), event);
-      toggleField(jQuery("#padSideSelect"));
+      toggleFieldAndUpdateValue($("#unsupportedFieldSelect"), event);
+      toggleFieldAndUpdateValue($("#padCharSelect"), event);
+      toggleField($("#padSideSelect"));
       
-      toggleFieldAndUpdateValue(jQuery("#patternSelect"), event);
-      toggleFieldAndUpdateValue(jQuery("#timestampPatternSelect"), event);
+      toggleFieldAndUpdateValue($("#patternSelect"), event);
+      toggleFieldAndUpdateValue($("#timestampPatternSelect"), event);
    };
   
    function populateFieldDialog(data){
       for(key in data) {
-          jQuery("exportField\\."+key).val(data[key]);
+          $("exportField\\."+key).val(data[key]);
       }
    };
 
     function renderContainer(){
-        toggleFieldAndUpdateValue(jQuery("#delimiterSelect"));
+        toggleFieldAndUpdateValue($("#delimiterSelect"));
     }
     
     var initialized = false;
-    jQuery(function() {
+    $(function() {
         <c:if test="${showAttributePopup}">
             <cti:msgScope paths=".${backingBean.pageNameKey},components.dialog.${backingBean.pageNameKey},components.dialog">
                 <cti:msg2 var="titleMsg" key=".title"/>
@@ -160,9 +160,9 @@
             </cti:msgScope>
             var buttons = [];
             var okButton = {'text' : '${okBtnMsg}', 'class': 'primary'};
-            okButton.click = function() { jQuery('#attributeDialog').trigger('editAttributeOkPressed'); };
+            okButton.click = function() { $('#attributeDialog').trigger('editAttributeOkPressed'); };
             buttons.push(okButton);
-            buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+            buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { $(this).dialog('close'); }});
             
             var dialogOpts = {
                       'title' : '${titleMsg}',
@@ -171,7 +171,7 @@
                       'height' : 'auto',
                       'modal' : true,
                       'buttons' : buttons };
-            jQuery('#attributeDialog').dialog(dialogOpts);
+            $('#attributeDialog').dialog(dialogOpts);
         </c:if>
         <c:if test="${showFieldPopup}">
             <cti:msgScope paths=".${backingBean.pageNameKey},components.dialog.${backingBean.pageNameKey},components.dialog">
@@ -181,9 +181,9 @@
              </cti:msgScope>
              var buttons = [];
              var okButton = {'text' : '${okBtnMsg}', 'class': 'primary'};
-             okButton.click = function() { jQuery('#fieldDialog').trigger('editFieldOkPressed'); };
+             okButton.click = function() { $('#fieldDialog').trigger('editFieldOkPressed'); };
              buttons.push(okButton);
-             buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { jQuery(this).dialog('close'); }});
+             buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() { $(this).dialog('close'); }});
              var dialogOpts = {
                   'title' : '${titleMsg}',
                   'position' : 'center',
@@ -191,78 +191,78 @@
                   'height' : 'auto',
                   'modal' : true,
                   'buttons' : buttons };
-             var fieldDialogDiv = jQuery('#fieldDialog');
+             var fieldDialogDiv = $('#fieldDialog');
              fieldDialogDiv.dialog(dialogOpts);
         </c:if>
         renderContainer();
-        jQuery(document).on('change', '#fieldDialog select', renderPopup);
-        jQuery(document).on('change', '#delimiterSelect', renderContainer);
+        $(document).on('change', '#fieldDialog select', renderPopup);
+        $(document).on('change', '#delimiterSelect', renderContainer);
         
         initialized = true;
-        jQuery('#addAttributeBtn').click(function() {
+        $('#addAttributeBtn').click(function() {
             ajaxSubmitForm(-1, 'ajaxEditAttribute', '#attributeDialog');
         });
-        jQuery('#addFieldBtn').click(function() {
+        $('#addFieldBtn').click(function() {
             ajaxSubmitForm(-1, 'ajaxEditField', '#fieldDialog');
         });
-        jQuery('.editAttributeBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.editAttributeBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             ajaxSubmitForm(rowIndex, 'ajaxEditAttribute', '#attributeDialog');
         });
-        jQuery('.editFieldBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.editFieldBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             ajaxSubmitForm(rowIndex, 'ajaxEditField', '#fieldDialog');
         });
-        jQuery('.removeAttributeBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.removeAttributeBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'removeAttribute');
         });
-        jQuery('.removeFieldBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.removeFieldBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'removeField');
         });
-        jQuery('.downFieldBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.downFieldBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'moveFieldDown');
         });
-        jQuery('.upFieldBtn').click(function(event) {
-            var rowIndex = jQuery(event.currentTarget).closest('tr').attr('data-row-index');
+        $('.upFieldBtn').click(function(event) {
+            var rowIndex = $(event.currentTarget).closest('tr').attr('data-row-index');
             submitForm(rowIndex, 'moveFieldUp');
         });
         function editAttributeOkPressed() {
-            jQuery('#attributeDialog').dialog('close');
-            jQuery('#dialogFormElements').hide().remove().appendTo(jQuery('#exporterForm'));
+            $('#attributeDialog').dialog('close');
+            $('#dialogFormElements').hide().remove().appendTo($('#exporterForm'));
             submitForm(-2, 'addAttribute');
         }
-        jQuery('#attributeDialog').bind('editAttributeOkPressed', editAttributeOkPressed);
+        $('#attributeDialog').bind('editAttributeOkPressed', editAttributeOkPressed);
 
-        jQuery("#attributeDialog").keydown(function (event) {
+        $("#attributeDialog").keydown(function (event) {
             if (13 === event.which) {
                 editAttributeOkPressed();
             }
         });
 
         function editFieldOkPressed() {
-            jQuery('#fieldDialog').dialog('close');
-            jQuery('#dialogFieldFormElements').hide().remove().appendTo(jQuery('#exporterForm'));
+            $('#fieldDialog').dialog('close');
+            $('#dialogFieldFormElements').hide().remove().appendTo($('#exporterForm'));
             submitForm(-2, 'addField');
         }
-        jQuery('#fieldDialog').bind('editFieldOkPressed', editFieldOkPressed);
+        $('#fieldDialog').bind('editFieldOkPressed', editFieldOkPressed);
 
-        jQuery('.submitToName').click(function(event) {
-            var exporterForm = jQuery('#exporterForm');
-            exporterForm.attr('action', jQuery(event.currentTarget).attr('name'));
+        $('.submitToName').click(function(event) {
+            var exporterForm = $('#exporterForm');
+            exporterForm.attr('action', $(event.currentTarget).attr('name'));
             exporterForm[0].submit();
         });
-        jQuery('#saveBtn').click(function(event) {
+        $('#saveBtn').click(function(event) {
             submitForm(-1, 'saveFormat');
         });
-        jQuery(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
+        $(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', function(event) {
             event.preventDefault();
             yukon.dialogConfirm.cancel();
             submitForm(-1, 'deleteFormat');
         });
-        jQuery('.f-initialFocus').focus();
+        $('.f-initialFocus').focus();
     });
 </script>
 

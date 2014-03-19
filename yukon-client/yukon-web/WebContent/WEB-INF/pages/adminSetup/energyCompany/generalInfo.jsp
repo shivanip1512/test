@@ -20,7 +20,7 @@ function addCustomerUserGroups() {
     document.getElementById('customerUserGroupsForm').submit();
 }
 
-jQuery(function() {
+$(function() {
     operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
     customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
 });

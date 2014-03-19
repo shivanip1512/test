@@ -17,7 +17,7 @@
             args.resultId = resultId;
             args.deviceRouteLocationId = deviceRouteLocationId;
             
-            jQuery('#' + divId).load(url, args);
+            $('#' + divId).load(url, args);
         }
     
     </script>

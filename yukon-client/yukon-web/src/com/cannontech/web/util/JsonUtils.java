@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
         }).done(function(results) {
             form.find('input').removeClass("error"); // remove all previous errors
             if (results.success) {
-                jQuery("#dlg_change_password").dialog('close'); // This is run from a dialog, so close it if successful
+                $("#dlg_change_password").dialog('close'); // This is run from a dialog, so close it if successful
             } else {
                 var err_string = '<ol class="errors">'; // start an errors list
                 for(var ii=0; ii < results.errors.length; ii++) { // Go through each error returned
@@ -44,7 +44,7 @@ import com.google.common.collect.Maps;
                     err_string += '<li><i class="icon icon-cross"></i>'+ err.message +'</li>'; // get the message
                     form.find('input[name="'+ err.field +'"]').addClass("error"); // make the field's input red
                 }
-                var err_list = jQuery(".password_errors");
+                var err_list = $(".password_errors");
                 err_list.html(err_string +'</ol>'); // set the list
                 err_list.show();
             }

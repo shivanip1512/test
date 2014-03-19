@@ -9,6 +9,6 @@
 <cti:msgScope paths="modules.tools.tdc">
     <flot:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${endDateMillis}" interval="${interval}" converterType="${converterType}" graphType="${graphType}" ymin="0"/>
     <div class="action-area">
-        <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
+        <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
     </div>
 </cti:msgScope>

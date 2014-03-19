@@ -9,7 +9,7 @@ yukon.namespace('yukon.curtailment');
 yukon.curtailment = (function () {
     var mod,
         _doCalcLoadReduction = function () {
-            var custTableCells = jQuery('#customerTableDiv tbody > tr'),
+            var custTableCells = $('#customerTableDiv tbody > tr'),
                 i,
                 curLoadA,
                 fslA,
@@ -19,32 +19,32 @@ yukon.curtailment = (function () {
                 loadReduction;
 
             for (i = 0; i < custTableCells.length; i += 1) {
-                curLoadA = jQuery(custTableCells[i]).find('.curLoad span');
-                fslA = jQuery(custTableCells[i]).find('.fsl span');
-                loadReductCellA = jQuery(custTableCells[i]).find('.loadReduct');
+                curLoadA = $(custTableCells[i]).find('.curLoad span');
+                fslA = $(custTableCells[i]).find('.fsl span');
+                loadReductCellA = $(custTableCells[i]).find('.loadReduct');
                 if (curLoadA.length > 0 && fslA.length > 0) {
-                    curLoadAval = parseInt(jQuery(curLoadA[0]).html().replace(/,/g,""), 10);
-                    fslAval = parseInt(jQuery(fslA[0]).html().replace(/,/g,""), 10);
+                    curLoadAval = parseInt($(curLoadA[0]).html().replace(/,/g,""), 10);
+                    fslAval = parseInt($(fslA[0]).html().replace(/,/g,""), 10);
                     loadReduction = curLoadAval - fslAval;
                     if (loadReduction !== loadReduction) {
                         // meaning loadReduction is NaN, which happens when either curLoadA[0] or fslA[0] are set to ellipses
                         loadReduction = 'n/a';
                     }
-                    jQuery(loadReductCellA[0]).html(loadReduction);
+                    $(loadReductCellA[0]).html(loadReduction);
                 } else {
-                    jQuery(loadReductCellA[0]).html('n/a');
+                    $(loadReductCellA[0]).html('n/a');
                 }
             }
         },
 
         _doFormatLoadValues = function () {
-            var custTableCells = jQuery('#customerTableDiv tbody > tr'),
+            var custTableCells = $('#customerTableDiv tbody > tr'),
                 i,
                 loadReductCellA;
         
             for (i = 0; i < custTableCells.length; i += 1) {
-                loadReductCellA = jQuery(custTableCells[i]).find('.loadReduct');
-                jQuery(loadReductCellA[0]).html(_commaFormat(jQuery(loadReductCellA[0]).html()));
+                loadReductCellA = $(custTableCells[i]).find('.loadReduct');
+                $(loadReductCellA[0]).html(_commaFormat($(loadReductCellA[0]).html()));
             }
         },
 
@@ -87,7 +87,7 @@ yukon.curtailment = (function () {
     mod = {
         doCalcSelectedLoad: function () {
             _doCalcLoadReduction();
-            var custTableCells = jQuery('#customerTableDiv tbody > tr'),
+            var custTableCells = $('#customerTableDiv tbody > tr'),
                 loadReduct = 0,
                 i,
                 checkedCells,
@@ -97,17 +97,17 @@ yukon.curtailment = (function () {
                 loadReductSummaryA;
         
             for (i = 0; i < tableCellsLength; i += 1) {
-                checkedCells = jQuery(custTableCells[i]).find('input[type=checkbox]');
-                if (jQuery(checkedCells[0]).is(':checked')) {
+                checkedCells = $(custTableCells[i]).find('input[type=checkbox]');
+                if ($(checkedCells[0]).is(':checked')) {
                     loadReductA = custTableCells.find('.loadReduct');
-                    loadReduct += parseFloat(jQuery(loadReductA[0]).html());
+                    loadReduct += parseFloat($(loadReductA[0]).html());
                 }
             }
         
-            summary = jQuery('#customerTableDiv tfoot > tr');
+            summary = $('#customerTableDiv tfoot > tr');
             if (summary.length > 0) {
-                loadReductSummaryA = jQuery(summary).find('.loadReductFoot');
-                jQuery(loadReductSummaryA[0]).html(_commaFormat(loadReduct));
+                loadReductSummaryA = $(summary).find('.loadReductFoot');
+                $(loadReductSummaryA[0]).html(_commaFormat(loadReduct));
             }
             _doFormatLoadValues();
         }

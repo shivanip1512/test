@@ -50,7 +50,7 @@
         </c:forEach>
 
         <div class="action-area">
-            <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+            <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
             <cti:button nameKey="ok" classes="primary action" type="submit"/>
         </div>
     </form:form>

@@ -16,7 +16,7 @@
         <cti:flashScopeMessages/>
         
         <script type="text/javascript">
-        jQuery(function(){
+        $(function(){
             yukon.ThermostatManualEditor.init({
                 thermostat: {
                     HEAT: {

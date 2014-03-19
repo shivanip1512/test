@@ -139,7 +139,7 @@ yukon.modules.base = function (box) {
     
     // JavaScript side of JsonTag.java
     box.fromJson = function(selector) {
-        return JSON.parse(jQuery(selector).text());
+        return JSON.parse($(selector).text());
     };
 };
 
@@ -218,13 +218,13 @@ yukon.modules.ui = function (mod) {
     };
     
     mod.exclusiveSelect = function (item) {
-        item = jQuery(item);
+        item = $(item);
         item.siblings().removeClass('selected');
         item.addClass('selected');
     };
 
     mod.busy = function (item) {
-        var btn = jQuery(item),
+        var btn = $(item),
           label,
           busyText,
           originalText;
@@ -248,7 +248,7 @@ yukon.modules.ui = function (mod) {
     };
 
     mod.unbusy = function (item) {
-        var btn = jQuery(item),
+        var btn = $(item),
         label,
         originalText;
 
@@ -271,11 +271,11 @@ yukon.modules.ui = function (mod) {
     mod.autoWire = function () {
         var html;
         
-        jQuery (function () {
+        $ (function () {
             
             /** Add placeholdr functionality if needed */
             if (!Modernizr.input.placeholder) {
-                jQuery('input, textarea').placeholder();
+                $('input, textarea').placeholder();
             }
             
             /** Add fancy tooltip support (tipsy)
@@ -292,21 +292,21 @@ yukon.modules.ui = function (mod) {
                 resetTipsyInner = function () {
                     // voodoo so inner div has full height of its container
                     setTimeout ( function () {
-                        jQuery('.tipsy-inner').addClass('clearfix');
+                        $('.tipsy-inner').addClass('clearfix');
                     }, 100);
                 };
             // some pages do not include the tipsy libary
-            if ('undefined' === typeof jQuery.fn.tipsy) {
+            if ('undefined' === typeof $.fn.tipsy) {
                 return;
             }
-            jQuery(tooltipTargets).each(function (index, element) {
-                jQuery(element).tipsy({
+            $(tooltipTargets).each(function (index, element) {
+                $(element).tipsy({
                     html: true,
                     // some tooltips actually are around 175 px in height
-                    gravity: jQuery.fn.tipsy.autoBounds(175, 'nw'),
+                    gravity: $.fn.tipsy.autoBounds(175, 'nw'),
                     opacity: 1.0,
                     title: function () {
-                        var elem = jQuery(this),
+                        var elem = $(this),
                             tip,
                             toolTipped = elem.closest(".f-has-tooltip");
                         if ( 0 < toolTipped.length ) {
@@ -324,19 +324,19 @@ yukon.modules.ui = function (mod) {
         });
 
         /** Initialize our keyboard table traversal (j/k keys) */
-        jQuery(".compact-results-table.f-traversable").traverse('tr', {
+        $(".compact-results-table.f-traversable").traverse('tr', {
             table_row_helper: true
         });
         
         /** ajaxPage TODO Convert these to the use the one below and delete it */
-        jQuery(document).on('click', '.f-ajaxPage', function (e) {
-            jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
+        $(document).on('click', '.f-ajaxPage', function (e) {
+            $(this.getAttribute("data-selector")).load(this.getAttribute("href"));
             return false;
         });
         
         /** Reload or page a container */
-        jQuery(document).on('click', '[data-reload]', function(event) {
-            var elem = jQuery(event.currentTarget),
+        $(document).on('click', '[data-reload]', function(event) {
+            var elem = $(event.currentTarget),
             url = elem.data('reload'),
             target = elem.closest('[data-reloadable]'),
             completeEvent = target.data('loadable');
@@ -355,25 +355,25 @@ yukon.modules.ui = function (mod) {
         });
 
         /** Elements that navigate on click */
-        jQuery(document).on('click', '[data-href]', function (event){window.location = jQuery(this).attr("data-href");});
+        $(document).on('click', '[data-href]', function (event){window.location = $(this).attr("data-href");});
         
         /** Page blockers */
-        jQuery(document).on('click', '.f-blocker', mod.block);
-        jQuery(document).on('resize', '#modal-glass', mod.blockPage);
+        $(document).on('click', '.f-blocker', mod.block);
+        $(document).on('resize', '#modal-glass', mod.blockPage);
         
         /** Clear page blocker */
-        jQuery(document).on('click', '.f-clearBlocker', mod.unblockPage);
+        $(document).on('click', '.f-clearBlocker', mod.unblockPage);
     
         /** Disable a form element after clicked */
-        jQuery(document).on('click', '.f-disable-after-click', function () {
-            var button = jQuery(this),
+        $(document).on('click', '.f-disable-after-click', function () {
+            var button = $(this),
                 group,
                 form;
             if (button.is(":input")) {
                 this.disabled = true;
                 group = button.attr('data-disable-group');
                 if (group != '') {
-                    jQuery("[data-disable-group='" + group + "']").each( function (idx) {
+                    $("[data-disable-group='" + group + "']").each( function (idx) {
                         this.disabled = true;
                     });
                 }
@@ -385,7 +385,7 @@ yukon.modules.ui = function (mod) {
                 
                 //if this is a submit button, trigger the submit event on the form
                 if (button.is(":submit")) {
-                    form = jQuery(this.form);
+                    form = $(this.form);
                     
                     //insert the name and or value of the button into the form action
                     if (typeof button.attr("name") != "undefined" && button.attr("name").length != 0) {
@@ -398,9 +398,9 @@ yukon.modules.ui = function (mod) {
         });
     
         /** Prevent forms from submitting via enter key */
-        jQuery(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
+        $(document).on('keydown', 'form.f-preventSubmitViaEnterKey', function (e) {
             //allow override submission elements
-            if (jQuery(e.target).hasClass("f-allowSubmitViaEnterKey")) {
+            if ($(e.target).hasClass("f-allowSubmitViaEnterKey")) {
                 return true;
             }
             if (e.keyCode == 13) {
@@ -409,37 +409,37 @@ yukon.modules.ui = function (mod) {
         });
     
         /** Close 'Apps' popup */
-        jQuery('.f-closeYukonApplicationDialog').click(function () {
-            jQuery('#yukonApplicationDialog').dialog('close');
+        $('.f-closeYukonApplicationDialog').click(function () {
+            $('#yukonApplicationDialog').dialog('close');
             });
 
         /** Close a dialog */
-        jQuery(document).on('click', '.f-close', function (event) {
-            jQuery(this).closest('.ui-dialog-content').dialog('close');
+        $(document).on('click', '.f-close', function (event) {
+            $(this).closest('.ui-dialog-content').dialog('close');
         });
 
         /** Format phone numbers initially and on input blur */
-        jQuery('input.f-formatPhone').each( function (idx, elem) {
+        $('input.f-formatPhone').each( function (idx, elem) {
             mod.formatPhone(elem);
         });
-        jQuery(document).on('blur', 'input.f-formatPhone', function (event) {
+        $(document).on('blur', 'input.f-formatPhone', function (event) {
             mod.formatPhone(event.target);
         });
 
         /** Disable or enable all form controls */
-        jQuery('input.f-toggle:checkbox').each(function (idx, elem) {
-            jQuery(elem).on('change', function (e) {
+        $('input.f-toggle:checkbox').each(function (idx, elem) {
+            $(elem).on('change', function (e) {
                 mod.toggleInputs(e.target);
             });
-            jQuery(elem).on('click', function (e) {
+            $(elem).on('click', function (e) {
                 mod.toggleInputs(e.target);
             });
             mod.toggleInputs(elem);
         });
 
         /** Select all ? */
-        jQuery("input.f-selectAll").each(function (index, input) {
-            jQuery(input).on('focus', function (elem) {
+        $("input.f-selectAll").each(function (index, input) {
+            $(input).on('focus', function (elem) {
                 elem.target.select();
             });
         });
@@ -448,36 +448,36 @@ yukon.modules.ui = function (mod) {
         mod._autofocus();
 
         /** Init page 'Actions' button */
-        html = jQuery('#f-page-actions')[0];
+        html = $('#f-page-actions')[0];
         if (typeof html !== 'undefined') {
-            jQuery('#f-page-actions').remove();
-            var menu = jQuery('#b-page-actions .dropdown-menu');
+            $('#f-page-actions').remove();
+            var menu = $('#b-page-actions .dropdown-menu');
             menu.html(html.innerHTML);
             if (menu.find('.icon').length === menu.find('.icon-blank').length) {
                 menu.addClass('no-icons');
             }
-            jQuery('#b-page-actions').show();
+            $('#b-page-actions').show();
         }
 
         /** Init page buttons */
-        html = jQuery('#f-page-buttons')[0];
+        html = $('#f-page-buttons')[0];
         if (typeof html !== 'undefined') {
-            jQuery('#f-page-buttons').remove();
-            jQuery('.page-actions').append(html.innerHTML);
+            $('#f-page-buttons').remove();
+            $('.page-actions').append(html.innerHTML);
         }
         
         /** Add additional options to page 'Actions' button */
-        jQuery('.f-page-additional-actions').each(function(index, elem) {
-            jQuery('#b-page-actions .dropdown-menu').append(elem.innerHTML);
-            jQuery(elem).remove();
+        $('.f-page-additional-actions').each(function(index, elem) {
+            $('#b-page-actions .dropdown-menu').append(elem.innerHTML);
+            $(elem).remove();
         });
         
-        jQuery('.tabbed-container.f-init').tabs().show();
+        $('.tabbed-container.f-init').tabs().show();
     };
 
     mod._AUTOFOCUS_TRIES = 0;
     mod._autofocus = function () {
-        var focusElement = jQuery("[autofocus], .f-focus:first")[0];
+        var focusElement = $("[autofocus], .f-focus:first")[0];
         
         if (focusElement) {
             try { //Play nice with IE
@@ -500,16 +500,16 @@ yukon.modules.ui = function (mod) {
 
     /** Applies the "f-focus" class to the first input/textarea element having a class of "error" */
     mod._setFocusFirstError = function () {
-        var error_field = jQuery("input.error, textarea.error").first();
+        var error_field = $("input.error, textarea.error").first();
         if (error_field.length === 1) {
-            jQuery(".f-focus").removeClass("f-focus");
+            $(".f-focus").removeClass("f-focus");
             error_field.addClass("f-focus");
         }
     };
 
     /** Block out the closest valid container, or the page */
     mod.block = function (event) {
-       var blockElement = jQuery(event.target).closest(".f-block-this")[0];
+       var blockElement = $(event.target).closest(".f-block-this")[0];
        if (blockElement) {
            mod.elementGlass.show(blockElement);
        } else {
@@ -519,7 +519,7 @@ yukon.modules.ui = function (mod) {
 
     /** Unblock the closest valid container, or the page */
     mod.unblock = function (event) {
-        var blockElement = jQuery(event.target).closest(".f-block-this")[0];
+        var blockElement = $(event.target).closest(".f-block-this")[0];
         if (blockElement) {
             mod.elementGlass.hide(blockElement);
         } else {
@@ -539,12 +539,12 @@ yukon.modules.ui = function (mod) {
 
     /** Add a success 'flash scope' message */
     mod.flashSuccess = function (markup) {
-        jQuery(".main-container").addMessage({message: markup, messageClass: "success"});
+        $(".main-container").addMessage({message: markup, messageClass: "success"});
     };
 
     /** Add an error 'flash scope' message */
     mod.flashError = function (markup) {
-        jQuery(".main-container").addMessage({message: markup, messageClass: "error"});
+        $(".main-container").addMessage({message: markup, messageClass: "error"});
     };
 
     /** Format a phone number input */
@@ -572,7 +572,7 @@ yukon.modules.ui = function (mod) {
     mod.toggleInputs = function (input) {
         // find matching inputs. Note: jQuery next gets the immediately following
         // sibling, so we have to use nextAll here.
-        var container = jQuery(jQuery(input).nextAll("div.f-toggle")[0]),
+        var container = $($(input).nextAll("div.f-toggle")[0]),
             enable = input.checked,
             inputList = ['input', 'select', 'textarea', 'button'],
             inputInd;
@@ -583,7 +583,7 @@ yukon.modules.ui = function (mod) {
         }
         for (inputInd = 0; inputInd < inputList.length; inputInd += 1) {
             container.find(inputList[inputInd]).each(function (idx, elem) {
-                jQuery(elem).prop('disabled', !enable);
+                $(elem).prop('disabled', !enable);
             });
         }
     };
@@ -647,24 +647,24 @@ yukon.modules.ui = function (mod) {
         _initialized: false,
 
         init: function () {
-            jQuery(".f-wizard").each(function (idx, elem) {
-                jQuery(elem).find(".f-next").each(function (index, nextButton) {
-                    jQuery(nextButton).on('click', function (event) {
-                        mod.wizard.nextPage(jQuery(event.target).closest(".f-page"));
+            $(".f-wizard").each(function (idx, elem) {
+                $(elem).find(".f-next").each(function (index, nextButton) {
+                    $(nextButton).on('click', function (event) {
+                        mod.wizard.nextPage($(event.target).closest(".f-page"));
                     });
                 });
 
-                jQuery(elem).find(".f-prev").each(function (index, prevButton) {
-                    jQuery(prevButton).on('click', function (event) {
-                        mod.wizard.prevPage(jQuery(event.target).closest(".f-page"));
+                $(elem).find(".f-prev").each(function (index, prevButton) {
+                    $(prevButton).on('click', function (event) {
+                        mod.wizard.prevPage($(event.target).closest(".f-page"));
                     });
                 });
 
-                jQuery(elem).find(".f-page").each(function (index, elem) {
+                $(elem).find(".f-page").each(function (index, elem) {
                     if (idx > 0) {
-                        jQuery(elem).hide();
+                        $(elem).hide();
                     } else {
-                        jQuery(elem).show();
+                        $(elem).show();
                     }
                 });
             });
@@ -674,12 +674,12 @@ yukon.modules.ui = function (mod) {
 
         nextPage : function (page) {
             var nextPage;
-            page = jQuery(page);
+            page = $(page);
             if (typeof page !== 'undefined') {
                 nextPage = page.nextAll(".f-page")[0];
                 if (typeof nextPage !== 'undefined') {
                     page.hide();
-                    jQuery(nextPage).show();
+                    $(nextPage).show();
                 }
             }
         },
@@ -689,8 +689,8 @@ yukon.modules.ui = function (mod) {
             if (typeof page !== 'undefined') {
                 prevPage = page.prevAll(".f-page")[0];
                 if (typeof prevPage !== 'undefined') {
-                    jQuery(page).hide();
-                    jQuery(prevPage).show();
+                    $(page).hide();
+                    $(prevPage).show();
                 }
             }
         },
@@ -705,13 +705,13 @@ yukon.modules.ui = function (mod) {
          * 
          */
         reset : function (wizard) {
-            wizard = jQuery(wizard);
+            wizard = $(wizard);
             if (wizard.hasClass("f-wizard")) {
-                jQuery(".f-page", wizard).hide();
-                jQuery(".f-page:first", wizard).show();
+                $(".f-page", wizard).hide();
+                $(".f-page:first", wizard).show();
             } else {
-                jQuery(".f-wizard .f-page").hide();
-                jQuery(".f-wizard .f-page:first").show();
+                $(".f-wizard .f-page").hide();
+                $(".f-wizard .f-page:first").show();
             }
         }
     };
@@ -719,12 +719,12 @@ yukon.modules.ui = function (mod) {
     /** Object to glass out an element, used by #block and #unblock */
     mod.elementGlass = {
         show: function (element) {
-            var element = jQuery(element),
+            var element = $(element),
                 glass;
             if (element[0]) {
                 glass = element.find(".glass");
                 if (!glass[0]) {
-                    element.prepend(jQuery("<div>").addClass("glass"));
+                    element.prepend($("<div>").addClass("glass"));
                     glass = element.find(".glass");
                 }
                 return mod.elementGlass.redraw(glass);
@@ -734,7 +734,7 @@ yukon.modules.ui = function (mod) {
         },
 
         hide: function (element) {
-            jQuery(element).find('.glass:first').fadeOut(200, function () {jQuery(this).remove();});
+            $(element).find('.glass:first').fadeOut(200, function () {$(this).remove();});
         },
 
         redraw: function (glass) {
@@ -744,28 +744,28 @@ yukon.modules.ui = function (mod) {
         },
 
         resize: function (event) {
-            mod.elementGlass.redraw(jQuery(event.currentTarget));
+            mod.elementGlass.redraw($(event.currentTarget));
         }
     };
 
     /** Object to glass out the page, used by #block and #unblock */
     mod.pageGlass = {
         show : function (args) {
-            var defaults = jQuery.extend({color:'#000', alpha: 0.25}, args),
-                glass = jQuery("#modal-glass");
+            var defaults = $.extend({color:'#000', alpha: 0.25}, args),
+                glass = $("#modal-glass");
             
             if (glass == null) {
-                glass = jQuery('<div>').attr("id", "modal-glass").append(
-                            jQuery('<div>').addClass('tint').append(
-                                jQuery('<div>').addClass('loading')));
-                jQuery('body').prepend(glass);
+                glass = $('<div>').attr("id", "modal-glass").append(
+                            $('<div>').addClass('tint').append(
+                                $('<div>').addClass('loading')));
+                $('body').prepend(glass);
             }
             glass.find('.tint').css('opacity', defaults.alpha).css('background-color', defaults.color);
             glass.fadeIn(200);
         },
 
         hide : function () {
-            jQuery("#modal-glass").fadeOut(200);
+            $("#modal-glass").fadeOut(200);
         }
     };
 
@@ -781,10 +781,10 @@ yukon.modules.ui = function (mod) {
      */
     mod.removeWithUndo = function(jElem, actionDo, actionUndo) {
         var elemType = jElem.prop('tagName'),
-            undoneElements = jQuery('#undone-elements'),
+            undoneElements = $('#undone-elements'),
             removedText = jElem.closest('[data-removed-text]').attr('data-removed-text'),
             undoText = jElem.closest('[data-undo-text]').attr('data-undo-text'),
-            undoLink = jQuery('<a class="fr" href="javascript:void(0)">' + undoText + '</a>'),
+            undoLink = $('<a class="fr" href="javascript:void(0)">' + undoText + '</a>'),
             undo,
             undoTd;
 
@@ -793,12 +793,12 @@ yukon.modules.ui = function (mod) {
         }
 
         if (undoneElements.length === 0) {
-            undoneElements = jQuery('<div id="undone-elements"></div>');
+            undoneElements = $('<div id="undone-elements"></div>');
             undoneElements.hide();
         }
 
-        undo = jQuery('<' + elemType + ' class="undo-row"></' + elemType + '>').hide();
-        undo.append(jQuery('<span>' + removedText + '</span>'));
+        undo = $('<' + elemType + ' class="undo-row"></' + elemType + '>').hide();
+        undo.append($('<span>' + removedText + '</span>'));
         undo.append(undoLink);
 
         actionDo();
@@ -815,7 +815,7 @@ yukon.modules.ui = function (mod) {
         if (elemType === 'td colspan=100') {
             undoTd= undo;
             undoTd.show();
-            undo = jQuery('<tr></tr>').hide();
+            undo = $('<tr></tr>').hide();
             undo.append(undoTd);
         }
 
@@ -827,12 +827,12 @@ yukon.modules.ui = function (mod) {
     };
 
     mod.initSitewideSearchAutocomplete = function() {
-        var theInput = jQuery( ".yukon-search-form .search-field" );
+        var theInput = $( ".yukon-search-form .search-field" );
         theInput.autocomplete({
             delay: 100, // Delay 100ms after keyUp before sending request
             minLength: 2, // user must type 2 characters before any search is done
             source: function(request, response) {
-                jQuery.ajax({
+                $.ajax({
                     type: 'get',
                     url: yukon.url('/search/autocomplete.json'),
                     dataType: "json",
@@ -840,7 +840,7 @@ yukon.modules.ui = function (mod) {
                         q: request.term
                     }
                 }).done(function(data) {
-                    response(jQuery.map(data, function(item) {
+                    response($.map(data, function(item) {
                         return {
                             label: item,
                             value: item
@@ -853,10 +853,10 @@ yukon.modules.ui = function (mod) {
                 theInput.parents(".yukon-search-form").submit();
             },
             open: function() {
-                jQuery( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+                $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
             },
             close: function() {
-                jQuery( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+                $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
             }
         });
     };
@@ -864,7 +864,7 @@ yukon.modules.ui = function (mod) {
 
 /** Merge created sandbox module with existing yukon barebones module */
 Sandbox('base', function (basemod) {
-    jQuery.extend(yukon, basemod);
+    $.extend(yukon, basemod);
 });
 
 Sandbox('ui', function (uimod) {
@@ -872,7 +872,7 @@ Sandbox('ui', function (uimod) {
 });
 
 /** Add some helpful functionality to jQuery */
-jQuery.fn.selectText = function () {
+$.fn.selectText = function () {
     var text = this[0],
         range,
         selection;
@@ -889,17 +889,17 @@ jQuery.fn.selectText = function () {
     }
 };
 
-jQuery.fn.toggleDisabled = function () {
+$.fn.toggleDisabled = function () {
     return this.each(function () {
-        if (jQuery(this).is(":input")) {
+        if ($(this).is(":input")) {
             this.disabled = !this.disabled;
         }
     });
 };
 
-jQuery.fn.flashColor = function (args) {
+$.fn.flashColor = function (args) {
     return this.each(function () {
-        var _self = jQuery(this),
+        var _self = $(this),
             prevColor = _self.data('previous_color') ? _self.data('previous_color') : _self.css('background-color');
         _self.data('previous_color', prevColor);
 
@@ -913,21 +913,21 @@ jQuery.fn.flashColor = function (args) {
     });
 };
 
-jQuery.fn.flashYellow = function (duration) {
+$.fn.flashYellow = function (duration) {
     return this.each(function () {
         if (typeof(duration) != 'number') {
             duration = 0.8;
         }
-        jQuery(this).flashColor({color: "#FF0", duration: duration*1000});
+        $(this).flashColor({color: "#FF0", duration: duration*1000});
     });
 };
 
 /** Initialize the lib */
-jQuery(document).ready(function () {
+$(document).ready(function () {
     yukon.ui.init();
     yukon.ui.initSitewideSearchAutocomplete();
 
     //turn off ajax caching application-wide by default
-    jQuery.ajaxSetup({cache: false});
+    $.ajaxSetup({cache: false});
 });
 

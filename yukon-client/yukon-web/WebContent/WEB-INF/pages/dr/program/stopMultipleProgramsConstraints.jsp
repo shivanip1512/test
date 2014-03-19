@@ -9,12 +9,12 @@
 
 <script type="text/javascript">
 
-jQuery(function () {
+$(function () {
 
     overideAllChecked = function() {
-        var allChecked = jQuery("#overrideAllConstraints").is(":checked");
+        var allChecked = $("#overrideAllConstraints").is(":checked");
         for (var index = 0; index < ${numProgramsToStop}; index++) {
-            var checkbox = jQuery("#programStopInfoOverride" + index);
+            var checkbox = $("#programStopInfoOverride" + index);
             if (checkbox.length) {// implies *not* zero
                 if (allChecked) {
                     checkbox.attr("checked","checked");
@@ -29,7 +29,7 @@ jQuery(function () {
     updateAllOverridesChecked = function() {
         var allChecked = true;
         for (var index = 0; index < ${numProgramsToStop}; index++) {
-            var checkbox = jQuery("#programStopInfoOverride" + index);
+            var checkbox = $("#programStopInfoOverride" + index);
             if (checkbox.length) {// implies *not* zero
                 allChecked = (allChecked && checkbox.is(":checked"));
                 if (!allChecked) break;
@@ -37,11 +37,11 @@ jQuery(function () {
         }
 
         if (allChecked) {
-            jQuery("#okButton").removeAttr("disabled");
-            jQuery("#overrideAllConstraints").attr("checked","checked");
+            $("#okButton").removeAttr("disabled");
+            $("#overrideAllConstraints").attr("checked","checked");
         } else {
-            jQuery("#okButton").attr("disabled","disabled");
-            jQuery("#overrideAllConstraints").removeAttr("checked");
+            $("#okButton").attr("disabled","disabled");
+            $("#overrideAllConstraints").removeAttr("checked");
         }
         
     }
@@ -50,8 +50,8 @@ jQuery(function () {
         updateAllOverridesChecked();
     }
     
-    jQuery("#overrideAllConstraints").click(overideAllChecked);
-    jQuery(".f-singleOverrideChecked").click(singleOverrideChecked);
+    $("#overrideAllConstraints").click(overideAllChecked);
+    $(".f-singleOverrideChecked").click(singleOverrideChecked);
     updateAllOverridesChecked();
 });
 </script>
@@ -159,7 +159,7 @@ jQuery(function () {
         <c:if test="${!constraintsViolated || overrideAllowed}">
             <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         <cti:url var="backUrl" value="/dr/program/stop/multipleDetails"/>
         <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'stopMultipleProgramsForm', '${backUrl}')"/>
     </div>

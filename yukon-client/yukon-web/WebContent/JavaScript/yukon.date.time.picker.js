@@ -18,10 +18,10 @@ yukon.modules.dateTimePickers = function (box) {
         },
 
         _onBeforeShow = function(input){
-            jQuery('#ui-datepicker-div').addClass(jQuery(input).attr('data-class'));
+            $('#ui-datepicker-div').addClass($(input).attr('data-class'));
             
             //only show the picker if the input is enabled
-            return !jQuery(input).attr("disabled");
+            return !$(input).attr("disabled");
         },
 
         _getPickerArgs = function(self){
@@ -43,7 +43,7 @@ yukon.modules.dateTimePickers = function (box) {
 
         /**
          * Gets the step hour for the datetimepicker and timepicker plugins. Defaults to 1.
-         * @param {Object} self The jQuery object of the input field
+         * @param {Object} self The $ object of the input field
          * @param {String} self.attr('data-step-hour') The step hour value
          */
         _getStepHour = function(self){
@@ -52,7 +52,7 @@ yukon.modules.dateTimePickers = function (box) {
 
         /**
          * Gets the step minute for the datetimepicker and timepicker plugins. Defaults to 1.
-         * @param {Object} self The jQuery object of the input field
+         * @param {Object} self The $ object of the input field
          * @param {String} self.attr('data-step-minute') The step minute value
          */
         _getStepMinute = function(self){
@@ -61,7 +61,7 @@ yukon.modules.dateTimePickers = function (box) {
 
         /**
          * Gets the timeSteps for the dateTimeEntry (keyboard & mouse manipulation) plugin. Both hour and minute default to 1.
-         * @param {Object} self The jQuery object of the input field
+         * @param {Object} self The $ object of the input field
          * @param {String} self.attr('data-step-hour') The step hour value
          * @param {String} self.attr('data-step-minute') The step minute value
          */
@@ -104,7 +104,7 @@ yukon.modules.dateTimePickers = function (box) {
 
         // called from widgetActionRefreshImage.tag with no args
         if (0 === nargs) {
-            jQuery.extend(datetimepickerArgs, cachedcfgDtArgs);
+            $.extend(datetimepickerArgs, cachedcfgDtArgs);
             timepickerArgs = cachedcfgTpArgs;
         } else {
             // called either from yukon.date.time.picker.js.jsp with 2 args
@@ -115,15 +115,15 @@ yukon.modules.dateTimePickers = function (box) {
                 cachedcfgDtArgs = cfgDtArgs;
                 cachedcfgTpArgs = cfgTpArgs;
             }
-            jQuery.extend(datetimepickerArgs, cfgDtArgs);
+            $.extend(datetimepickerArgs, cfgDtArgs);
         }
         if (_initialized && 2 === nargs) {
             return;
         }
         // Date
         outer_self = this;
-        jQuery(ancestor + "input.f-datePicker").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-datePicker").each(function(){
+            var self = $(this);
             self.datetimeEntry({
                 datetimeFormat: self.attr('data-date-time-format'),
                 spinnerImage: '',
@@ -133,41 +133,41 @@ yukon.modules.dateTimePickers = function (box) {
             
             if(self.hasClass('f-dateStart')){
                 self.change(function(){
-                    jQuery(this).closest('.f-dateRange').find('.f-dateEnd').datetimeEntry('change', 'minDatetime', jQuery(this).datetimeEntry('getDatetime'));
+                    $(this).closest('.f-dateRange').find('.f-dateEnd').datetimeEntry('change', 'minDatetime', $(this).datetimeEntry('getDatetime'));
                 });
             }
             if(self.hasClass('f-dateEnd')){
                 self.change(function(){
-                    jQuery(this).closest('.f-dateRange').find('.f-dateStart').datetimeEntry('change', 'maxDatetime', jQuery(this).datetimeEntry('getDatetime'));
+                    $(this).closest('.f-dateRange').find('.f-dateStart').datetimeEntry('change', 'maxDatetime', $(this).datetimeEntry('getDatetime'));
                 });
             }
             
         }).removeClass('f-datePicker').closest('.datetimeEntry_wrap').addClass('date'); //this class is used to set a fixed width based on the type of input we are creating
-        jQuery(ancestor + "input.f-datePickerUI").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-datePickerUI").each(function(){
+            var self = $(this);
             var args = _getPickerArgs(self);
             
             if(self.hasClass('f-dateStart')){
                 args.onSelect = function(selectedDate) {
-                    jQuery(this).closest('.f-dateRange').find('.f-dateEnd').datepicker( "option", "minDate", selectedDate );
+                    $(this).closest('.f-dateRange').find('.f-dateEnd').datepicker( "option", "minDate", selectedDate );
                 };
             }
             if(self.hasClass('f-dateEnd')){
                 args.onSelect = function(selectedDate) {
-                    jQuery(this).closest('.f-dateRange').find('.f-dateStart').datepicker( "option", "maxDate", selectedDate );
+                    $(this).closest('.f-dateRange').find('.f-dateStart').datepicker( "option", "maxDate", selectedDate );
                 };
             }
             
             //copy the defaults
             var defaultArgs = {};
-            jQuery.extend(defaultArgs, datetimepickerArgs);
-            self.datepicker(jQuery.extend(defaultArgs, args));
+            $.extend(defaultArgs, datetimepickerArgs);
+            self.datepicker($.extend(defaultArgs, args));
             _insertTimezone(self);
         }).removeClass('f-datePickerUI');
 
         // Date + Time
-        jQuery(ancestor + "input.f-dateTimePicker").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-dateTimePicker").each(function(){
+            var self = $(this);
             self.datetimeEntry({
                 datetimeFormat: self.attr('data-date-time-format'),
                 maxDatetime: self.attr('data-max-date'),
@@ -176,31 +176,31 @@ yukon.modules.dateTimePickers = function (box) {
                 spinnerImage: ''
             });
         }).removeClass('f-dateTimePicker').closest('.datetimeEntry_wrap').addClass('dateTime'); //this class is used to set a fixed width based on the type of input we are creating
-        jQuery(ancestor + "input.f-dateTimePickerUI").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-dateTimePickerUI").each(function(){
+            var self = $(this);
             //copy the defaults
             var defaultArgs = {};
-            jQuery.extend(defaultArgs, datetimepickerArgs);
-            self.datetimepicker(jQuery.extend(defaultArgs, _getPickerArgs(self)));
+            $.extend(defaultArgs, datetimepickerArgs);
+            self.datetimepicker($.extend(defaultArgs, _getPickerArgs(self)));
             _insertTimezone(self);
         }).removeClass('f-dateTimePickerUI');
 
         // Time
-        jQuery(ancestor + "input.f-timePicker").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-timePicker").each(function(){
+            var self = $(this);
             self.datetimeEntry({
                 datetimeFormat: self.attr('data-date-time-format'),
                 timeSteps: _getTimeSteps(self),
                 spinnerImage: ''
             });
         }).removeClass('f-timePicker').closest('.datetimeEntry_wrap').addClass('time'); //this class is used to set a fixed width based on the type of input we are creating
-        jQuery(ancestor + "input.f-timePickerUI").each(function(){
-            var self = jQuery(this);
+        $(ancestor + "input.f-timePickerUI").each(function(){
+            var self = $(this);
             //copy the defaults
             var defaultArgs = {};
-            jQuery.extend(defaultArgs, datetimepickerArgs);
-            jQuery.extend(defaultArgs, timepickerArgs);
-            self.timepicker(jQuery.extend(defaultArgs, _getPickerArgs(self)));
+            $.extend(defaultArgs, datetimepickerArgs);
+            $.extend(defaultArgs, timepickerArgs);
+            self.timepicker($.extend(defaultArgs, _getPickerArgs(self)));
             _insertTimezone(self);
         }).removeClass('f-timePickerUI');
         _initialized = true;

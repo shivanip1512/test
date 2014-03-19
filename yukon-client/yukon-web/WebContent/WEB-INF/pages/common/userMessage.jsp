@@ -3,5 +3,5 @@
 <p><cti:msg key="${userMessage}"/></p>
 
 <div class="action-area">
-    <cti:button nameKey="ok" onclick="jQuery('#${popupId}').dialog('close');"/>
+    <cti:button nameKey="ok" onclick="$('#${popupId}').dialog('close');"/>
 </div>

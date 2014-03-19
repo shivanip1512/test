@@ -40,7 +40,7 @@
     }
 }
 
-jQuery(function() {
+$(function() {
     var availableRateCheckBoxTds = $$(".availableRateCheckBoxTd");
 
     for (var i = 0; i < availableRateCheckBoxTds.length; i++) {

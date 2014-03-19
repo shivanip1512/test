@@ -16,21 +16,21 @@
 
 <script type="text/javascript">
 function submitSelectionForm(items) {
-    jQuery('#selectByInventoryPickerForm').submit();
+    $('#selectByInventoryPickerForm').submit();
     return true;
 }
 function addMeter() {
-    jQuery('#addMeterForm').submit();
+    $('#addMeterForm').submit();
     return true;
 }
-jQuery('.f-create-hardware').click(function(event) {
-    jQuery('#add-hardware-dialog').dialog();
+$('.f-create-hardware').click(function(event) {
+    $('#add-hardware-dialog').dialog();
 });
 
 function showFileUpload() {
-	var buttons = [{text: '${cancelText}', click: function() {jQuery('#fileUploadPopup input[type=file]').val('');jQuery(this).dialog("close");}},
-	               {text: '${uploadText}', click: function() {jQuery('#fileUploadPopup form').submit();}, 'class': 'primary action'}];
-    jQuery('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
+	var buttons = [{text: '${cancelText}', click: function() {$('#fileUploadPopup input[type=file]').val('');$(this).dialog("close");}},
+	               {text: '${uploadText}', click: function() {$('#fileUploadPopup form').submit();}, 'class': 'primary action'}];
+    $('#fileUploadPopup').dialog({width:500, 'buttons': buttons});
 }
 </script>
 

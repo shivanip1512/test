@@ -12,9 +12,9 @@ var loadOutageTable = function() {
         'containerID' : 'outageLog'
     });
 }
-jQuery(document).ready(loadOutageTable());
+$(document).ready(loadOutageTable());
 
-jQuery(document).on('click', '#refreshLogs', loadOutageTable);
+$(document).on('click', '#refreshLogs', loadOutageTable);
 </script>
 
 <tags:nameValueContainer2>

@@ -1,7 +1,7 @@
 
 function updateStateColorGenerator(id) {
     return function (data) {
-        var anchorTag = jQuery('#' + id)[0],
+        var anchorTag = $('#' + id)[0],
             state = data.value,
             color = '#fff';
         if (-1 !== state.indexOf('Pending')) {
@@ -18,8 +18,8 @@ function updateStateColorGenerator(id) {
 
 function updateWarningImage(id) {
     return function (data) {
-        var alertSpan = jQuery('#' + id + '_alert'),
-            okSpan = jQuery('#' + id + '_ok'),
+        var alertSpan = $('#' + id + '_alert'),
+            okSpan = $('#' + id + '_ok'),
             isWarning = 'false' === data.value ? false : true;
         if (isWarning) {
             okSpan.hide();
@@ -33,8 +33,8 @@ function updateWarningImage(id) {
 
 function updateDualBusImage(id) {
     return function (data) {
-        var primarySpan = jQuery('#' + id + '_primary'),
-            alternateSpan = jQuery('#' + id + '_alternate'),
+        var primarySpan = $('#' + id + '_primary'),
+            alternateSpan = $('#' + id + '_alternate'),
             icon;
 
         icon = data.value;
@@ -53,8 +53,8 @@ function updateDualBusImage(id) {
 
 function updateCapBankWarningImage(id) {
     return function (data) {
-        var yellowSpan = jQuery('#' + id + '_yellow'),
-            greenSpan = jQuery('#' + id + '_green'),
+        var yellowSpan = $('#' + id + '_yellow'),
+            greenSpan = $('#' + id + '_green'),
             icon = data.value;
 
         if (icon == 'Green') {
@@ -69,9 +69,9 @@ function updateCapBankWarningImage(id) {
 
 function updateRegulatorModeIndicator(id) {
     return function (data) {
-        var yellowLocalSpan = jQuery('#' + id + '_local_warning'),
-            greenLocalSpan = jQuery('#' + id + '_local_normal'),
-            greenNormalSpan = jQuery('#' + id + '_normal'),
+        var yellowLocalSpan = $('#' + id + '_local_warning'),
+            greenLocalSpan = $('#' + id + '_local_normal'),
+            greenNormalSpan = $('#' + id + '_normal'),
             icon;
 
         icon = data.value;
@@ -93,7 +93,7 @@ function updateRegulatorModeIndicator(id) {
 
 function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
 
-    var tapContainer = jQuery('#' + 'tapContainer_' + zoneId),
+    var tapContainer = $('#' + 'tapContainer_' + zoneId),
         divPhaseA = tapContainer.find('.phaseA')[0],
         divPhaseB = tapContainer.find('.phaseB')[0],
         divPhaseC = tapContainer.find('.phaseC')[0];
@@ -159,7 +159,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function setMode (mode, div) {
-        div = jQuery(div).find('.lastOpRight');
+        div = $(div).find('.lastOpRight');
         if (mode === 'NormalLocal') {
             setModeNormalLocal(div);
         } else if (mode === 'WarningLocal') {
@@ -170,7 +170,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function setTapIcon (tapIcon, mode, div, tapTooltip) {
-        div = jQuery(div).find('.lastOpLeft');
+        div = $(div).find('.lastOpLeft');
         if (tapIcon === 'RAISE_TAP') {
             if (mode === 'WarningLocal') {
                 showTapRaiseWarning(div, tapTooltip);
@@ -245,7 +245,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 
     function hideAll() {
-        var jtap = jQuery(tapContainer, '.lastOpLeft span, .lastOpRight span');
+        var jtap = $(tapContainer, '.lastOpLeft span, .lastOpRight span');
         jtap.hide();
     }
 }
@@ -254,9 +254,9 @@ function updateVerificationImage(spanId) {
     return function (data) {
         var isVerification = 'false' === data.value ? false : true;
         if (isVerification) {
-            jQuery('#' + spanId).show();
+            $('#' + spanId).show();
         } else {
-            jQuery('#' + spanId).hide();
+            $('#' + spanId).hide();
         }
     };
 }

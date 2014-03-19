@@ -38,17 +38,17 @@
 function refreshResults(kind, container) {
     if (container.is(':visible')) {
         var url = '/group/groupMeterRead/' + kind;
-        jQuery(container).load(url, {'resultKey': '${resultWrapper.result.key}'});
+        $(container).load(url, {'resultKey': '${resultWrapper.result.key}'});
     }
 }
-jQuery(function() {
-    jQuery('.f-view-success').click(function(e) {
-        var container = jQuery('#successResultsDiv${resultKey}');
+$(function() {
+    $('.f-view-success').click(function(e) {
+        var container = $('#successResultsDiv${resultKey}');
         container.toggle();
         refreshResults('successList', container);
     });
-    jQuery('.f-view-failed').click(function(e) {
-        var container = jQuery('#errorsResultsDiv${resultKey}');
+    $('.f-view-failed').click(function(e) {
+        var container = $('#errorsResultsDiv${resultKey}');
         container.toggle();
         refreshResults('errorsList', container);
     });

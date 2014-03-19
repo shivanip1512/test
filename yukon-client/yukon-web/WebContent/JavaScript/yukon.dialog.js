@@ -29,18 +29,18 @@
 function openSimpleDialog(dialogId, url, title, parameters, method, options) {
     
     if (arguments.length > 2 && title) {
-        options = jQuery.extend(options, {title: title});
+        options = $.extend(options, {title: title});
     }
     
     method = (typeof method == "undefined") ? "post" : method;
     
-    jQuery.ajax({
+    $.ajax({
         type: method,
         url: url,
         data: parameters
     })
     .done(function(data) {
-        var dialog = jQuery("#" + dialogId);
+        var dialog = $("#" + dialogId);
         if (data.action) {
             if (data.action == "close") {
                 dialog.dialog("close");
@@ -81,14 +81,14 @@ function submitFormViaAjax(dialogId, formId, url, title, method, options) {
     var done = function (data, textStatus, jqXHR) {
         if (data.action) {
             if (data.action == "close") {
-                jQuery("#" + dialogId).dialog("close");
+                $("#" + dialogId).dialog("close");
             } else if (data.action == "reload") {
                 window.location = window.location;
             } else {
                 throw new Error("Action not supported: " + data.action);
             }
         } else {
-            var dialog = jQuery("#" + dialogId);
+            var dialog = $("#" + dialogId);
             dialog.html(data);
             dialog.dialog();
             if (arguments.length > 2 && title) {
@@ -107,7 +107,7 @@ function submitFormViaAjax(dialogId, formId, url, title, method, options) {
         options.url = url;
     }
     
-    jQuery("#" + formId).ajaxSubmit(options);
+    $("#" + formId).ajaxSubmit(options);
     
     // !!! Important !!! 
     // always return false to prevent standard browser submit and page navigation 
@@ -127,7 +127,7 @@ function submitFormViaAjax(dialogId, formId, url, title, method, options) {
 function simpleAJAXRequest(url, data) {
     yukon.ui.blockPage();
     
-    jQuery.get(url,data)
+    $.get(url,data)
     .done(function(json, textStatus, jqXHR) {
         yukon.ui.unblockPage();
         if (json.action === 'reload') {
@@ -149,7 +149,7 @@ function simpleAJAXRequest(url, data) {
  *            The id of the element in the dialog to give focus to.
  */
 function showSimplePopup(popupId, initialFocus) {
-    jQuery("#" + popupId).dialog("open");
+    $("#" + popupId).dialog("open");
     if (initialFocus) {
         document.getElementById(initialFocus).focus();
     }

@@ -6,10 +6,10 @@ function toggleShowSharedPoints(el) {
 
 function doToggleShowSharedPoints(on) {
     if (on) {
-        jQuery('#sharedPointsDiv').show();
-        jQuery('#allPointsDiv').hide();
+        $('#sharedPointsDiv').show();
+        $('#allPointsDiv').hide();
     } else {
-        jQuery('#sharedPointsDiv').hide();
-        jQuery('#allPointsDiv').show();
+        $('#sharedPointsDiv').hide();
+        $('#allPointsDiv').show();
     }
 }

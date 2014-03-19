@@ -38,13 +38,13 @@
 <script type="text/javascript">
 window['open_${id}'] = function () {
     
-    var dialog = jQuery('#${id}'),
+    var dialog = $('#${id}'),
         buttons = [],
         okEvent = '${okEvent}',
         on = '${pageScope.on}';
     
     if (okEvent === 'none') {
-        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() {jQuery(this).dialog('close');}});
+        buttons.push({'text' : '${closeBtnMsg}', 'click' : function() {$(this).dialog('close');}});
     } else {
         var okButton = {'text' : '${okBtnMsg}', 'class': 'primary action'};
         
@@ -52,7 +52,7 @@ window['open_${id}'] = function () {
             dialog.data('on', '${pageScope.on}');
         }
         
-        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() {jQuery(this).dialog('close');}});
+        buttons.push({'text' : '${cancelBtnMsg}', 'click' : function() {$(this).dialog('close');}});
         
         if (okEvent === 'submit') {
             okButton.click = function() {
@@ -75,13 +75,13 @@ window['open_${id}'] = function () {
             'buttons': buttons};
     
     <c:if test="${not empty pageScope.options}">
-        jQuery.extend(defaults, ${options});
+        $.extend(defaults, ${options});
     </c:if>
     dialog.dialog(defaults);
 };
 if ('${pageScope.on}' != '') {
-    jQuery(function() {
-        jQuery(document).on('click', '${on}', function() {
+    $(function() {
+        $(document).on('click', '${on}', function() {
             window['open_${id}']();
         });
     });

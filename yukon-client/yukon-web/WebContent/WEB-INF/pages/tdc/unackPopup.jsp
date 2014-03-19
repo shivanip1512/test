@@ -19,6 +19,6 @@
     </table>
     <div class="action-area">
         <cti:button nameKey="alarm.acknowledgeAll" pointId="${alarms.get(0).pointId}" classes="f-ack-alarms-for-point"/>
-        <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');"/>
+        <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');"/>
     </div>
 </cti:msgScope>

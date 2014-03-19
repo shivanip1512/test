@@ -21,8 +21,8 @@
 
     <script type="text/javascript">
         function removeRule(row) {
-            jQuery('#removeRule').val(row);
-            jQuery('#selectionForm').submit();
+            $('#removeRule').val(row);
+            $('#selectionForm').submit();
         }
     </script>
     

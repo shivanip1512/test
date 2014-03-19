@@ -15,7 +15,7 @@
         <form action="/capcontrol/search/recentEvents" id="daysFilterForm">
             <i:inline key=".filterByDate"/>:
             <input type="hidden" name="value" value="${paoIdString}">
-            <select id="rcDateFilter" name="dayCnt" onchange="jQuery('#daysFilterForm').submit()">
+            <select id="rcDateFilter" name="dayCnt" onchange="$('#daysFilterForm').submit()">
                 <c:forEach var="i" begin="1" end="7">
                     <option value="${i}" <c:if test="${i == dayCnt}">selected</c:if>><cti:msg2 key=".days" argument="${i}"/></option>
                 </c:forEach>

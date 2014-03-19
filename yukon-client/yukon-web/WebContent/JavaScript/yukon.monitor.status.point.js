@@ -27,9 +27,9 @@ yukon.StatusPointMonitor = (function () {
          * adjusts input states for each row.
          */
         reindexAll: function() {
-            var rows = jQuery('#processors-table tbody tr');
+            var rows = $('#processors-table tbody tr');
             rows.each(function(index, elem) {
-                mod.reindex(jQuery(elem), index);
+                mod.reindex($(elem), index);
             });
         }
     };
@@ -37,12 +37,12 @@ yukon.StatusPointMonitor = (function () {
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     
     /** ADD RULE */
-    jQuery('.f-add').click(function(event) {
+    $('.f-add').click(function(event) {
         
-        var row = jQuery('.f-template-row').clone();
+        var row = $('.f-template-row').clone();
         
         row.removeClass('f-template-row');
         row.appendTo('#processors-table tbody');
@@ -51,8 +51,8 @@ jQuery(function() {
     });
     
     /** REMOVE RULE */
-    jQuery(document).on('click','.f-remove', function(event) {
-        jQuery(this).closest('tr').remove();
+    $(document).on('click','.f-remove', function(event) {
+        $(this).closest('tr').remove();
         yukon.StatusPointMonitor.reindexAll();
     });
     

@@ -1,6 +1,6 @@
-jQuery(function() {
-    jQuery(document).on('click', '.f-showSelectedDevices, .f-showSelectedInventory', function(event) {
-        var args = jQuery(event.currentTarget).attr("data-function-arguments");
+$(function() {
+    $(document).on('click', '.f-showSelectedDevices, .f-showSelectedInventory', function(event) {
+        var args = $(event.currentTarget).attr("data-function-arguments");
         eval('args = ' + args);
         showSelectedDevices(this, args.id, args.url);
     });
@@ -8,8 +8,8 @@ jQuery(function() {
 
 function showSelectedDevices(imgEl, divId, url) {
       
-    var icon = jQuery(imgEl).find('.icon-magnifier'),
-        popup = jQuery('#' + divId);
+    var icon = $(imgEl).find('.icon-magnifier'),
+        popup = $('#' + divId);
       
     icon.toggleClass("icon-spinner icon-magnifier");
     popup.load(url, function() {

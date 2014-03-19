@@ -3,10 +3,10 @@ yukon.namespace('yukon.tag.scheduledFileExportInputs');
 yukon.tag.scheduledFileExportInputs = (function () {
     var 
     _toggleField = function(checkBoxId, changeItemId) {
-        if (jQuery(checkBoxId).is(":checked")) {
-            jQuery(changeItemId).removeAttr("disabled").closest("tr").show(250);
+        if ($(checkBoxId).is(":checked")) {
+            $(changeItemId).removeAttr("disabled").closest("tr").show(250);
         } else {
-            jQuery(changeItemId).attr("disabled","disabled").closest("tr").hide();
+            $(changeItemId).attr("disabled","disabled").closest("tr").hide();
         }
     },
 
@@ -23,22 +23,22 @@ yukon.tag.scheduledFileExportInputs = (function () {
     },
 
     _nameChanged = function() {
-        if (jQuery("#sameAsSchedName").is(":checked")) {
-            jQuery("#exportFileName").val(jQuery("#scheduleName").val());
+        if ($("#sameAsSchedName").is(":checked")) {
+            $("#exportFileName").val($("#scheduleName").val());
         }
     },
 
     _lastDisplayName = false,
     _sameAsNameClicked = function() {
-         if (jQuery("#sameAsSchedName").is(":checked")) {
-             _lastDisplayName = jQuery("#exportFileName").val();
-             jQuery("#exportFileName").val(jQuery("#scheduleName").val());
-             jQuery("#exportFileName").attr("disabled","disabled");
+         if ($("#sameAsSchedName").is(":checked")) {
+             _lastDisplayName = $("#exportFileName").val();
+             $("#exportFileName").val($("#scheduleName").val());
+             $("#exportFileName").attr("disabled","disabled");
          } else {
             if (_lastDisplayName) {
-                 jQuery("#exportFileName").val(_lastDisplayName);
+                 $("#exportFileName").val(_lastDisplayName);
              }
-             jQuery("#exportFileName").removeAttr("disabled");
+             $("#exportFileName").removeAttr("disabled");
          }
      },
 
@@ -55,12 +55,12 @@ yukon.tag.scheduledFileExportInputs = (function () {
         },
 
          init: function() {
-             jQuery(document).on('click', "#appendDateToFileName", _toggleTimestampPatternField);
-             jQuery(document).on('click', "#overrideFileExtension", _toggleFileExtensionField);
-             jQuery(document).on('click', "#includeExportCopy", _toggleExportPathField);
-             jQuery(document).on('keyup', "#scheduleName", _nameChanged);
-             jQuery(document).on('change', "#scheduleName", _nameChanged);
-             jQuery(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
+             $(document).on('click', "#appendDateToFileName", _toggleTimestampPatternField);
+             $(document).on('click', "#overrideFileExtension", _toggleFileExtensionField);
+             $(document).on('click', "#includeExportCopy", _toggleExportPathField);
+             $(document).on('keyup', "#scheduleName", _nameChanged);
+             $(document).on('change', "#scheduleName", _nameChanged);
+             $(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
              
              _intializeAllFields();
              }
@@ -69,6 +69,6 @@ yukon.tag.scheduledFileExportInputs = (function () {
     return mod;
 }());
 
-jQuery(function () {
+$(function () {
     yukon.tag.scheduledFileExportInputs.init();
 });

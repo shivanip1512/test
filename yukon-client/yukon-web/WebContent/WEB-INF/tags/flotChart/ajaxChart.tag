@@ -17,9 +17,9 @@
 </div>
 
 <script>
-jQuery(function() {
+$(function() {
     var chartId = '${chartId}';
-    jQuery.ajax({
+    $.ajax({
         url: '${url}',
         dataType : 'json'
     }).done(function(data) {

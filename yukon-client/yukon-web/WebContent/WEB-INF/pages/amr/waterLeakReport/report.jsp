@@ -30,7 +30,7 @@
     <cti:msg2 var="cancelButtonTitle" key=".filterShortcutClose"/>
     
     <d:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f-open_filter_dialog"
-        options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
+        options="{width: 550, 'buttons': [{text: '${cancelButton}', click: function() { $(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'leakFilterCancelButton' },
                                           {text: '${resetButton}', click: function() { yukon.ami.waterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
                                           {text: '${filterButton}', click: function() { yukon.ami.waterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton primary action'}]}">
         <form:form id="filterForm" action="report" method="get" commandName="backingBean">
@@ -74,7 +74,7 @@
         <c:set var="popupTitleArgs" value="\"${fn:escapeXml(fileExportData.scheduleName)}\""/>
     </c:if>
     <d:inline id="leakScheduleDialog" okEvent="none" nameKey="leakScheduleDialog" arguments="${popupTitleArgs}" on=".f-open_schedule_dialog"
-        options="{width: 650, 'buttons': [{text: '${cancelButton}', click: function() {jQuery(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}, 
+        options="{width: 650, 'buttons': [{text: '${cancelButton}', click: function() {$(this).dialog('close');}, title: '${cancelButtonTitle}', 'class': 'leakScheduleCancelButton'}, 
                                           {text: '${empty jobId ? scheduleButton : updateButton}', click: function() {yukon.ami.waterLeakReport.schedule_submit();}, title: '${empty jobId ? scheduleButtonTitle : updateButtonTitle}', 'class': 'leakScheduleSubmitButton primary action'}]}">
         
         <form:form id="scheduleForm" action="schedule" method="get" commandName="fileExportData">

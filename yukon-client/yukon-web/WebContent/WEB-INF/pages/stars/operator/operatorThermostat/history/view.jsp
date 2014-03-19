@@ -10,7 +10,7 @@
 <cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
     
 <script type="text/javascript">
-jQuery(function(){
+$(function(){
     yukon.ThermostatManualEditor.init({
         thermostat: {
             HEAT: {

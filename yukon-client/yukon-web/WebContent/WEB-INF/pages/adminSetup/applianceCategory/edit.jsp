@@ -62,7 +62,7 @@ submitForm = function() {
     return true;
 };
 
-jQuery(function() {
+$(function() {
     sameAsNameClicked();
 });
 </script>

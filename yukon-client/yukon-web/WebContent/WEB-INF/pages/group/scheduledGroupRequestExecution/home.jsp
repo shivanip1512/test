@@ -110,7 +110,7 @@
                     
                 <div class="page-action-area">    
                     <cti:displayForPageEditModes modes="CREATE">
-                        <cti:button onclick="jQuery('#scheduledGroupRequestExecutionForm_attr').submit();" 
+                        <cti:button onclick="$('#scheduledGroupRequestExecutionForm_attr').submit();" 
                             label="${scheduleButtonText}" 
                             busy="true"
                             classes="primary action"/>
@@ -118,22 +118,22 @@
                     
                     <cti:displayForPageEditModes modes="EDIT">
                         
-                        <cti:button onclick="jQuery('#scheduledGroupRequestExecutionForm_attr').submit();" 
+                        <cti:button onclick="$('#scheduledGroupRequestExecutionForm_attr').submit();" 
                             label="${updateButtonText}" 
                             busy="true"
                             classes="primary action"/>
                         <c:if test="${status ne 'RUNNING'}">
                             <c:choose>
                                 <c:when test="${disabled}">
-                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
+                                    <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
+                                    <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
                                 </c:otherwise>
                             </c:choose>
                         </c:if>
                         
-                        <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
+                        <cti:button onclick="$('#disabledAndDeleteJobForm').submit();" 
                             label="${disableAndDeleteJobButtonText}" 
                             busy="true" 
                             classes="delete"/>
@@ -200,15 +200,15 @@
                             <c:if test="${status ne 'RUNNING'}">
                             <c:choose>
                                 <c:when test="${disabled}">
-                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
+                                    <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <cti:button onclick="jQuery('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
+                                    <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${disableJobButtonText}" busy="true"/>
                                 </c:otherwise>
                             </c:choose>
                             </c:if>
                             
-                            <cti:button onclick="jQuery('#disabledAndDeleteJobForm').submit();" 
+                            <cti:button onclick="$('#disabledAndDeleteJobForm').submit();" 
                                 label="${disableAndDeleteJobButtonText}" 
                                 busy="true"
                                 classes="delete"/>

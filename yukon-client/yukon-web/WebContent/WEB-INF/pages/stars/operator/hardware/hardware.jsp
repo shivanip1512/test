@@ -12,33 +12,33 @@
 
 
 <script type="text/javascript">
-jQuery(function(){
+$(function(){
 
-    jQuery(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
+    $(document).on('click', '#refresh, button[name=commissionSubmit], button[name=decommissionSubmit]', function(event) {
         var url = '/stars/operator/hardware/zb/',
             button = event.currentTarget;
         if (button.id === 'refresh') {
             url += 'refresh';
         } else if (button.name === 'commissionSubmit') {
             url += 'commission';
-            jQuery('#confirmCommissionPopup').dialog('close');
+            $('#confirmCommissionPopup').dialog('close');
         } else if (button.name === 'decommissionSubmit') {
             url += 'decommission';
         }
 
         yukon.ui.block(event);
 
-        jQuery.ajax({
+        $.ajax({
             type: 'GET',
             url: url,
             data: {'deviceId': '${hardware.deviceId}'}
         }).done( function (data, textStatus, jqXHR) {
-            jQuery('#zbCommandStatus').html(data.message);
-            jQuery('#zbCommandStatus').show();
+            $('#zbCommandStatus').html(data.message);
+            $('#zbCommandStatus').show();
             if (data.success ===  true) {
-                jQuery('#zbCommandStatus').addClass('success').removeClass('error');
+                $('#zbCommandStatus').addClass('success').removeClass('error');
             } else {
-                jQuery('#zbCommandStatus').removeClass('success').addClass('error');
+                $('#zbCommandStatus').removeClass('success').addClass('error');
             }
             yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
@@ -46,7 +46,7 @@ jQuery(function(){
         });
     });
 
-    jQuery(document).on('click', 'button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
+    $(document).on('click', 'button[name^=assignedDevicesCommissionSubmit_], button[name^=assignedDevicesDecommissionSubmit_]', function(event) {
         var url = '/stars/operator/hardware/zb/',
             button = event.currentTarget,
             name,
@@ -56,24 +56,24 @@ jQuery(function(){
         deviceId = button.name.split('_')[1];
         if (name === 'assignedDevicesCommissionSubmit') {
             url += 'commission';
-            jQuery('#confirmCommissionPopup_' + deviceId).dialog('close');
+            $('#confirmCommissionPopup_' + deviceId).dialog('close');
         } else if (name === 'assignedDevicesDecommissionSubmit') {
             url += 'decommission';
         }
 
         yukon.ui.block(event);
 
-        jQuery.ajax({
+        $.ajax({
             type: 'GET',
             url: url,
             data: {'deviceId': deviceId}
         }).done( function (data, textStatus, jqXHR) {
-            jQuery('#zbAssignedStatus').html(data.message);
-            jQuery('#zbAssignedStatus').show();
+            $('#zbAssignedStatus').html(data.message);
+            $('#zbAssignedStatus').show();
             if (data.success ===  true) {
-                jQuery('#zbAssignedStatus').addClass('success').removeClass('error');
+                $('#zbAssignedStatus').addClass('success').removeClass('error');
             } else {
-                jQuery('#zbAssignedStatus').removeClass('success').addClass('error');
+                $('#zbAssignedStatus').removeClass('success').addClass('error');
             }
             yukon.ui.unblock(event);
         }).fail( function (jqXHR, textStatus, errorThrown) {
@@ -82,7 +82,7 @@ jQuery(function(){
     });
 
     <cti:displayForPageEditModes modes="VIEW">
-    jQuery(document).on('click', '#sendTextMsg', function(event) {
+    $(document).on('click', '#sendTextMsg', function(event) {
         var params = {'accountId' : ${accountId}, 
                       'inventoryId' : ${inventoryId}, 
                       'gatewayId' : ${hardware.deviceId}};
@@ -92,25 +92,25 @@ jQuery(function(){
 });
 
 function showDeletePopup() {
-    jQuery('#deleteHardwarePopup').dialog('open');
+    $('#deleteHardwarePopup').dialog('open');
 }
 
 function hideDeletePopup() {
-    jQuery('#deleteHardwarePopup').dialog('close');
+    $('#deleteHardwarePopup').dialog('close');
 }
 
 function changeOut(oldId, isMeter) {
     var form;
 
-    jQuery('#oldInventoryId').val(oldId);
+    $('#oldInventoryId').val(oldId);
 
     if (isMeter) {
-        jQuery('#isMeter').val('true');
+        $('#isMeter').val('true');
     } else {
-        jQuery('#isMeter').val('false');
+        $('#isMeter').val('false');
     }
     
-    form = jQuery('#changeOutForm');
+    form = $('#changeOutForm');
     form.submit();
     return true;
 }
@@ -122,12 +122,12 @@ function getCommissionConfirmationCallback() {
         if (${!hardware.hardwareType.gateway}) {
             if (commissionedValue === 'Decommissioned') {
                 //decommissioned
-                jQuery('#decommissionedConfirmMsg').show();
-                jQuery('#commissionedConfirmMsg').hide();
+                $('#decommissionedConfirmMsg').show();
+                $('#commissionedConfirmMsg').hide();
             } else {
                 //commissioned - either connected or disconnected
-                jQuery('#decommissionedConfirmMsg').hide();
-                jQuery('#commissionedConfirmMsg').show();
+                $('#decommissionedConfirmMsg').hide();
+                $('#commissionedConfirmMsg').show();
             }
         }
     };
@@ -139,12 +139,12 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
         if (commissionedValue === 'Decommissioned') {
             //decommissioned
-            jQuery('#decommissionedConfirmMsg_' + deviceId).show();
-            jQuery('#commissionedConfirmMsg_' + deviceId).hide();
+            $('#decommissionedConfirmMsg_' + deviceId).show();
+            $('#commissionedConfirmMsg_' + deviceId).hide();
         } else {
             //commissioned - either connected or disconnected
-            jQuery('#decommissionedConfirmMsg_' + deviceId).hide();
-            jQuery('#commissionedConfirmMsg_' + deviceId).show();
+            $('#decommissionedConfirmMsg_' + deviceId).hide();
+            $('#commissionedConfirmMsg_' + deviceId).show();
         }
     };
 }
@@ -396,7 +396,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                             <p>
                                             <div class="action-area">
                                                 <cti:button nameKey="ok" name="commissionSubmit" type="submit" classes="primary action"/>
-                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup').dialog('close')" />
+                                                <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup').dialog('close')" />
                                             </div>
                                         </i:simplePopup>
                                     </cti:msgScope>
@@ -455,7 +455,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                             <p>
                                                             <div class="action-area">
                                                                 <cti:button name="assignedDevicesCommissionSubmit_${device.deviceId}" nameKey="ok" type="submit" classes="primary action"/>
-                                                                <cti:button nameKey="cancel" onclick="jQuery('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
+                                                                <cti:button nameKey="cancel" onclick="$('#confirmCommissionPopup_${device.deviceId}').dialog('close')" />
                                                             </div>
                                                         </i:simplePopup>
                                                     </cti:msgScope>

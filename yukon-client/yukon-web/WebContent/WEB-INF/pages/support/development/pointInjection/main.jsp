@@ -6,11 +6,11 @@
 
 <script type="text/javascript">
 
-jQuery(function() {
+$(function() {
     var tempArray;
     if (localStorage.pointInjectionIds) {
         tempArray = JSON.parse(localStorage.pointInjectionIds);
-        jQuery(tempArray).each( function (index, rowEntry) {
+        $(tempArray).each( function (index, rowEntry) {
             addRow(rowEntry);
         });
     }
@@ -31,9 +31,9 @@ function addRowHandler(selectedPointInfo) {
 }
 
 function addRow(newRowData) {
-    var newRow = jQuery('#dummyRow')[0].cloneNode(true);
-    jQuery('#pointTableBody')[0].appendChild(newRow);
-    jQuery.ajax({
+    var newRow = $('#dummyRow')[0].cloneNode(true);
+    $('#pointTableBody')[0].appendChild(newRow);
+    $.ajax({
         type: 'POST',
         url: 'addRow',
         data: {'pointId': newRowData.pointId, 'forceArchive': newRowData.forceArchive}
@@ -41,8 +41,8 @@ function addRow(newRowData) {
         var dummyHolder = document.createElement('div'),
             replacementRow;
         dummyHolder.innerHTML = data;
-        replacementRow = jQuery(jQuery(dummyHolder)[0]).find('tr')[0];
-        jQuery('#pointTableBody')[0].replaceChild(replacementRow, newRow);
+        replacementRow = $($(dummyHolder)[0]).find('tr')[0];
+        $('#pointTableBody')[0].replaceChild(replacementRow, newRow);
    });
 }
 
@@ -58,8 +58,8 @@ function forceArchiveChecked(box, pointId) {
     localStorage.pointInjectionIds = JSON.stringify(tempArray);
 }
 
-jQuery(document).on('click', '.removeRow', function(event) {
-    var theRow = jQuery(event.target).closest('tr'),
+$(document).on('click', '.removeRow', function(event) {
+    var theRow = $(event.target).closest('tr'),
         pointId,
         forceArchive,
         rowToRemove,
@@ -87,17 +87,17 @@ jQuery(document).on('click', '.removeRow', function(event) {
     localStorage.pointInjectionIds = JSON.stringify(tempArray);
 });
 
-jQuery(document).on('click', '.sendData', function(event) {
-    var theRow = jQuery(event.target).closest('tr').find(':input'),
+$(document).on('click', '.sendData', function(event) {
+    var theRow = $(event.target).closest('tr').find(':input'),
         parameters = theRow.serializeArray(),
         newparams = {};
     if (0 === parameters.length) {
         return;
     }
-    jQuery(parameters).each( function (key, val) {
+    $(parameters).each( function (key, val) {
         newparams[val.name] = val.value;
     });
-    jQuery.ajax({
+    $.ajax({
         type: "POST",
         url: "sendData",
         data: newparams,
@@ -106,26 +106,26 @@ jQuery(document).on('click', '.sendData', function(event) {
     });
 });
 
-jQuery(document).on('click', '#clearAllRows', function() {
-    var rows = jQuery('#pointTableBody > tr').remove();
+$(document).on('click', '#clearAllRows', function() {
+    var rows = $('#pointTableBody > tr').remove();
     localStorage.removeItem('pointInjectionIds');
 });
-jQuery(document).on('click', '.valuePlus', function(event) {
-    var theCell = jQuery(event.target).closest('td'),
+$(document).on('click', '.valuePlus', function(event) {
+    var theCell = $(event.target).closest('td'),
         input = theCell.find('input'),
         value = input.val();
     value++;
     input.val(value.toFixed(4));
 });
-jQuery(document).on('click', '.valueMinus', function(event) {
-    var theCell = jQuery(event.target).closest('td'),
+$(document).on('click', '.valueMinus', function(event) {
+    var theCell = $(event.target).closest('td'),
         input = theCell.find('input'),
         value = input.val();
     value--;
     input.val(value.toFixed(4));
 });
-jQuery(document).on('click', '.dateTimeClear', function(event) {
-    jQuery(event.target).prev().val('');
+$(document).on('click', '.dateTimeClear', function(event) {
+    $(event.target).prev().val('');
 });
 </script>
 

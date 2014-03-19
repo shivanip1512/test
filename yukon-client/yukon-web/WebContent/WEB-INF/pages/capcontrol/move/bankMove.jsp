@@ -10,20 +10,20 @@
 
 <script type="text/javascript"> 
 updateFeederBankInfo = function () {
-    var params = {'feederId': jQuery("#selectedFeeder").val()};
-    jQuery.ajax({
+    var params = {'feederId': $("#selectedFeeder").val()};
+    $.ajax({
         url: yukon.url('/capcontrol/move/feederBankInfo'),
         method: 'post',
         data: params,
         success: function(data) {
-            jQuery('#controlOrders').html(data);
+            $('#controlOrders').html(data);
         }
     });
 }
 
 selectFeeder = function (fid) {
-    jQuery("#selectedFeeder").val(fid);
-    jQuery("#newFeederId").val(fid);
+    $("#selectedFeeder").val(fid);
+    $("#newFeederId").val(fid);
     updateFeederBankInfo();
 }
 

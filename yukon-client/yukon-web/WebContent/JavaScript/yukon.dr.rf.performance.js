@@ -20,29 +20,29 @@ yukon.dr.rf.performance = (function () {
             /** 
              * Handle click for success, failed, and unknown popups.
              * The unknown popup is slightly different and has a pie chart */
-            jQuery(document).on('click', '.f-success, .f-failed, .f-unknown', function(event) {
+            $(document).on('click', '.f-success, .f-failed, .f-unknown', function(event) {
                 
-                var popup = jQuery('#devices-popup'),
+                var popup = $('#devices-popup'),
                     url = yukon.url('/dr/rf/details'),
                     hasChart = false;
                 
                 /* Build url */
-                if (jQuery(this).hasClass('f-success')) {
+                if ($(this).hasClass('f-success')) {
                     url += '/success/';
-                } else if (jQuery(this).hasClass('f-failed')){
+                } else if ($(this).hasClass('f-failed')){
                     url += '/failed/';
                 } else {
                     url += '/unknown/';
                     hasChart = true;
                 }
-                url += jQuery(this).closest('[data-test]').data('test');
+                url += $(this).closest('[data-test]').data('test');
                 url += "?itemsPerPage=" + 10;
                 /* Load popup */
                 popup.load(url, function (resp, status, xhr) {
                     popup.dialog({width: 700, title: popup.find('.f-title').val()});
                     // generate pie chart
                     if (hasChart) {
-                        jQuery.plot('.f-pie-chart', JSON.parse(xhr.getResponseHeader('X-JSON')), {
+                        $.plot('.f-pie-chart', JSON.parse(xhr.getResponseHeader('X-JSON')), {
                             series: {
                                 pie: {
                                     show: true
@@ -60,4 +60,4 @@ yukon.dr.rf.performance = (function () {
     return mod;
 }());
 
-jQuery(function () {yukon.dr.rf.performance.init();});
+$(function () {yukon.dr.rf.performance.init();});

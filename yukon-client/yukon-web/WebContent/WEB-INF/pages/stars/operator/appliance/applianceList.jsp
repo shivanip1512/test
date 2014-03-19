@@ -26,7 +26,7 @@
                     </tags:nameValueContainer2>
                     <div class="action-area">
                         <cti:button nameKey="ok" type="submit" classes="action primary"/>
-                        <cti:button nameKey="cancel" onclick="jQuery('#createAppliancePopup').dialog('close');"/>
+                        <cti:button nameKey="cancel" onclick="$('#createAppliancePopup').dialog('close');"/>
                     </div>
                 </form>
             </i:simplePopup>

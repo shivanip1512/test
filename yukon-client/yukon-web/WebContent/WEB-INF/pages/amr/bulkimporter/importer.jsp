@@ -11,7 +11,7 @@
 
 <script type="text/javascript">
     setupRefreshStuff("${refreshUrl}", "${refreshRate}");
-    jQuery(function() {
+    $(function() {
         show_next('failed');
     });
 </script>

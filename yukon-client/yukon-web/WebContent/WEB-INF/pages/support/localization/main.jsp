@@ -11,8 +11,8 @@
     <cti:includeScript link="JQUERY_COOKIE" />
 
     <script type="text/javascript">
-        jQuery(function() {
-            jQuery('#tabs').tabs();
+        $(function() {
+            $('#tabs').tabs();
         });
     </script>
 

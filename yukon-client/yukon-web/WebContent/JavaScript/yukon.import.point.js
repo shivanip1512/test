@@ -1,18 +1,18 @@
-jQuery(function(){
-    var calculationDiv = jQuery('#calculationFile');
-    var importSelect = jQuery('#importTypeSelect');
+$(function(){
+    var calculationDiv = $('#calculationFile');
+    var importSelect = $('#importTypeSelect');
     calculationDiv.hide();
     
     importSelect.change(function() {
         var selectedValue = importSelect.val();
         if(selectedValue === 'CALC_ANALOG' || selectedValue === 'CALC_STATUS') {
-            jQuery('#calculationInstructions').show();
+            $('#calculationInstructions').show();
             calculationDiv.fadeIn(1000);
         } else {
             calculationDiv.fadeOut();
-            jQuery('#calculationInstructions').hide();
+            $('#calculationInstructions').hide();
         }
-        jQuery('.instructions').hide();
-        jQuery('#' + selectedValue + '_instructions').show();
+        $('.instructions').hide();
+        $('#' + selectedValue + '_instructions').show();
     });
 });

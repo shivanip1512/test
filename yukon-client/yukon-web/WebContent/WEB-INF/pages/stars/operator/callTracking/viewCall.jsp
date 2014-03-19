@@ -59,7 +59,7 @@
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="callId" value="${callReport.callId}"/>
                 </cti:url>
-                <cti:button nameKey="delete" classes="delete" onclick="jQuery('#delete-call').submit();"/>
+                <cti:button nameKey="delete" classes="delete" onclick="$('#delete-call').submit();"/>
             </cti:displayForPageEditModes>
         
             <cti:displayForPageEditModes modes="CREATE">

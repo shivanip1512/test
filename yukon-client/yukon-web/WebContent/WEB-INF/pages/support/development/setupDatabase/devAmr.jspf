@@ -44,8 +44,8 @@
    </form:form>
 
     <script type="text/javascript">
-    jQuery(function() {
-        jQuery("input#f-check_all_meters:checkbox").checkAll("input.f-check_single_meter:checkbox");
+    $(function() {
+        $("input#f-check_all_meters:checkbox").checkAll("input.f-check_single_meter:checkbox");
     });
     </script>
 </div>

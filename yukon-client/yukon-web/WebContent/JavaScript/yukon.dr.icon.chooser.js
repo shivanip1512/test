@@ -5,50 +5,50 @@ yukon.namespace('yukon.dr.iconChooser');
 yukon.dr.iconChooser = (function () {
     var mod,
         _iconFilenames = function (id, fileNames) {
-            jQuery('#' + id + 'IconInput').data(id + 'data', fileNames);
+            $('#' + id + 'IconInput').data(id + 'data', fileNames);
         },
         _initSelected = function (id, selected) {
             var iconInput,
                 iconInputVal;
-            iconInput = jQuery('#' + id + 'IconInput');
+            iconInput = $('#' + id + 'IconInput');
             if (selected === 'OTHER') {
                 iconInput.prop('disabled', false);
                 iconInputVal = iconInput.val();
-                jQuery('#' + id + 'IconPreviewImg').attr('src', jQuery('#' + id + 'IconInput').data(id + 'baseDir') + iconInputVal);
-                jQuery('#' + id + 'HiddenIconInput').val(iconInputVal);
-                jQuery('#' + id + 'IconPreviewImg').show();
+                $('#' + id + 'IconPreviewImg').attr('src', $('#' + id + 'IconInput').data(id + 'baseDir') + iconInputVal);
+                $('#' + id + 'HiddenIconInput').val(iconInputVal);
+                $('#' + id + 'IconPreviewImg').show();
                 iconInput.focus();
             } else {
                 iconInput.prop('disabled', true);
                 if (selected === 'NONE') {
-                    jQuery('#' + id + 'IconPreviewImg').hide();
-                    jQuery('#' + id + 'HiddenIconInput').val('');
+                    $('#' + id + 'IconPreviewImg').hide();
+                    $('#' + id + 'HiddenIconInput').val('');
                 } else {
                     iconInput.val(iconInput.data(id + 'data')[selected]);
-                    jQuery('#' + id + 'IconPreviewImg').attr('src',
+                    $('#' + id + 'IconPreviewImg').attr('src',
                         iconInput.data(id + 'baseDir') +
                         iconInput.data(id + 'data')[selected]);
-                    jQuery('#' + id + 'IconPreviewImg').show();
-                    jQuery('#' + id + 'HiddenIconInput').val(iconInput.data(id + 'data')[selected]);
+                    $('#' + id + 'IconPreviewImg').show();
+                    $('#' + id + 'HiddenIconInput').val(iconInput.data(id + 'data')[selected]);
                 }
             }
         },
         _initEventListeners = function (id) {
-            jQuery('#' + id + 'IconInput').on('keyup blur', function (event) {
+            $('#' + id + 'IconInput').on('keyup blur', function (event) {
                 mod.iconInputChanged(id);
             });
-            jQuery('#' + id + 'IconSelect').on('change', function (event) {
-                var selected = jQuery('#' + id + 'IconSelect').val();
+            $('#' + id + 'IconSelect').on('change', function (event) {
+                var selected = $('#' + id + 'IconSelect').val();
                 _initSelected(id, selected);
             });
-            jQuery('#' + id + 'IconPreviewImg')
+            $('#' + id + 'IconPreviewImg')
                 .load(function() {return _afterImageLoad(id, true);})
                 .error(function() {return _afterImageLoad(id, false);});
         },
         _afterImageLoad = function(id, didLoad) {
-            var isCustomImage = jQuery('#' + id + 'IconSelect').val() === 'OTHER',
-                iconInputField  = jQuery('#' + id + 'IconInput'),
-                imagePreview= jQuery('#' + id + 'IconPreviewImg');
+            var isCustomImage = $('#' + id + 'IconSelect').val() === 'OTHER',
+                iconInputField  = $('#' + id + 'IconInput'),
+                imagePreview= $('#' + id + 'IconPreviewImg');
 
             iconInputField.removeClass('success error');
             if (didLoad) {
@@ -65,25 +65,25 @@ yukon.dr.iconChooser = (function () {
         };
     mod = {
         init : function (id, baseDir, fileNames) {
-            var elemObj = jQuery('#' + id + 'IconInput');
+            var elemObj = $('#' + id + 'IconInput');
             elemObj.data('timeout', false);
             elemObj.data(id + 'baseDir', baseDir);
             _iconFilenames(id, fileNames);
-            elemObj.val(jQuery('#' + id + 'HiddenIconInput').val());
+            elemObj.val($('#' + id + 'HiddenIconInput').val());
             _initEventListeners(id);
-            _initSelected(id, jQuery('#' + id + 'IconSelect').val());
+            _initSelected(id, $('#' + id + 'IconSelect').val());
         },
         iconInputChanged : function (id) {
-            var iconInput = jQuery('#' + id + 'IconInput'),
+            var iconInput = $('#' + id + 'IconInput'),
                 baseDir = iconInput.data(id + 'baseDir'),
                 srcString = baseDir + iconInput.val(),
                 updatePreview = function () {
                     iconInput.data('timeout', false);
-                    jQuery('#' + id + 'HiddenIconInput').val(iconInput.val());
-                    jQuery('#' + id + 'IconPreviewImg').attr('src', baseDir + iconInput.val());
+                    $('#' + id + 'HiddenIconInput').val(iconInput.val());
+                    $('#' + id + 'IconPreviewImg').attr('src', baseDir + iconInput.val());
                 },
                 quietDelay,
-                previewImgSrcAttr = jQuery('#' + id + 'IconPreviewImg').attr('src'),
+                previewImgSrcAttr = $('#' + id + 'IconPreviewImg').attr('src'),
                 lenPreviewImgSrc,
                 lenSrcString,
                 position;

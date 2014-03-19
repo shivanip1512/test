@@ -150,7 +150,7 @@
 
 <script>
 
-jQuery (function () {
+$ (function () {
     makeFirstSelectedFilterValueVisible();
 });
 function loadTarget (form) {
@@ -173,28 +173,28 @@ function enableDates (value) {
         dateElem;
 
     // do the following after the DOM is loaded
-    jQuery ( function() {
-        jQuery.each( dateFieldNames, function (key, dateField) {
-            dateElem = jQuery('#' + dateField);
+    $ ( function() {
+        $.each( dateFieldNames, function (key, dateField) {
+            dateElem = $('#' + dateField);
             if (dateElem.length > 0) {
                 dateElem.prop('disabled', !value);
             }
         });
         if (false === value) {
-            jQuery('.datetimeEntry_wrap').hide();
+            $('.datetimeEntry_wrap').hide();
         }
     });
 }
 
 function checkDates () {
-    var startDate = jQuery('#startCal').datetimepicker('getDate'),
-        stopDate = jQuery('#stopCal').datetimepicker('getDate');
+    var startDate = $('#startCal').datetimepicker('getDate'),
+        stopDate = $('#stopCal').datetimepicker('getDate');
     // start must be less than stop or call the whole deal off
     if (startDate.getTime() < stopDate.getTime()) {
         loadTarget(document.reportForm);
     } else {
         alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
-        jQuery('#startCal').focus();
+        $('#startCal').focus();
         return false;
     }
 }

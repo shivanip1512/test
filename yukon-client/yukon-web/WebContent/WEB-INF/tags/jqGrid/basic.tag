@@ -34,7 +34,7 @@
 </c:if>
 
 <script type="text/javascript">
-    jQuery(document).ready(function(){
+    $(document).ready(function(){
         jqGridHelper.createGrid({
 			pager: '#${gridId}_pager',
             id: "${gridId}",

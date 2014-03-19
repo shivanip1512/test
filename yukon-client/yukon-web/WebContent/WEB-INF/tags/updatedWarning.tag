@@ -9,6 +9,6 @@
     </div>
     <div class="action-area">
         <cti:button nameKey="refresh" classes="primary action" onclick="window.location.reload();"/>
-        <cti:button nameKey="ignore" onclick="jQuery('#updatedWarning').dialog('close');"/>
+        <cti:button nameKey="ignore" onclick="$('#updatedWarning').dialog('close');"/>
     </div>
 </tags:simplePopup>

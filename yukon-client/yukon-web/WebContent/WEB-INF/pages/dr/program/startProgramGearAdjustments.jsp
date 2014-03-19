@@ -92,7 +92,7 @@
             </c:if>    
             <cti:button nameKey="back" onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
         </c:if>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
         <c:if test="${backingBean.autoObserveConstraints}">
             <cti:button nameKey="ok" id="okButton" classes="primary action" type="submit"/>
         </c:if>

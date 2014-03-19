@@ -28,14 +28,14 @@
 <script type="text/javascript">
 function validateGroupIsSelected(btn, alertText) {
     
-    if (jQuery('#groupName').val() === '') {
+    if ($('#groupName').val() === '') {
         alert(alertText);
         return false;
     }
     
-    jQuery('#submitGroupCommanderButton').prop('disabled', true);
-    jQuery('#waitImg').show();
-    jQuery('#groupCommanderForm').submit();
+    $('#submitGroupCommanderButton').prop('disabled', true);
+    $('#waitImg').show();
+    $('#groupCommanderForm').submit();
 }
 </script>
 

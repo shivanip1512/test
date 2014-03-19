@@ -45,7 +45,7 @@ public class SearchRenderer {
             // search types?
             if (formData.getTypeOptions() != null) {
                 attrs = new Attributes();
-                attrs.put("onchange", "jQuery('.search-field').val('')");
+                attrs.put("onchange", "$('.search-field').val('')");
                 attrs.put("name", formData.getTypeName());
                 Element select = new Element(Tag.valueOf("select"), "", attrs);
                 

@@ -10,22 +10,22 @@
             var rawValue = data.rawValue;
             // connected states
             if (rawValue == 0 || rawValue == 2) {
-                jQuery('#connectSpan').show();
-                jQuery('#disconnectSpan').hide();
+                $('#connectSpan').show();
+                $('#disconnectSpan').hide();
             }
             else {
-                jQuery('#connectSpan').hide();
-                jQuery('#disconnectSpan').show();
+                $('#connectSpan').hide();
+                $('#disconnectSpan').show();
             }
         };
     }
 
-    jQuery(function() {
-        jQuery('.f-showDisconnectInfo').click(function(event) {
+    $(function() {
+        $('.f-showDisconnectInfo').click(function(event) {
             var params = {'deviceId': ${device.deviceId},
                           'shortName': '${shortName}'};
-            jQuery('#disconnectInfo').load('/widget/disconnectMeterWidget/helpInfo', params, function() {
-                jQuery('#disconnectInfo').dialog({width: 600});
+            $('#disconnectInfo').load('/widget/disconnectMeterWidget/helpInfo', params, function() {
+                $('#disconnectInfo').dialog({width: 600});
             });
         });
     });

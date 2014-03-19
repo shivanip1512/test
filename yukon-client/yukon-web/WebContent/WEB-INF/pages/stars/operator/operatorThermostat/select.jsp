@@ -29,13 +29,13 @@
             var this_thermostatId = this_cb.id.split('-')[1],
                 this_thermostatType = this_cb.id.split('-')[2],
                 // thermostatIds value -> currentIds array
-                currentIds = jQuery('#thermostatIds').val(),
+                currentIds = $('#thermostatIds').val(),
                 convertToArray = function(thing) {
                     var arr = [],
                         buildArr = function(index, element) {
                             arr.push(element);
                         };
-                    jQuery.each(thing, buildArr);
+                    $.each(thing, buildArr);
                     return arr;
                 },
                 isInIds = function (thermostatId) {
@@ -61,11 +61,11 @@
             }
 
             // currentIds array -> thermostatIds value
-            jQuery('#thermostatIds').val(currentIds.join());
+            $('#thermostatIds').val(currentIds.join());
 
             // loop over all thermostat checkboxes
-            var thermos = jQuery('input[id*="THERMOSTATCHECKBOX"]');
-            jQuery.each(thermos, function(ind, cb) {
+            var thermos = $('input[id*="THERMOSTATCHECKBOX"]');
+            $.each(thermos, function(ind, cb) {
                 var cb_thermostatType;
                 cb_thermostatType = cb.id.split('-')[2];
                 // when checking, disable all others that are not of this type
@@ -78,15 +78,15 @@
             });
         }
     
-    jQuery( function () {
-        var thermos = jQuery('input[id*="THERMOSTATCHECKBOX"]');
+    $( function () {
+        var thermos = $('input[id*="THERMOSTATCHECKBOX"]');
         // if we check a box, press schedule, then return to this page, clear all checkboxes
         // Chrome "remembers" previous selections, IE and Firefox do not
-        jQuery.each(thermos, function (index, cb) {
+        $.each(thermos, function (index, cb) {
             cb.checked = false;
             cb.disabled = false;
         })
-        jQuery('#thermostatIds').val('');
+        $('#thermostatIds').val('');
     });
     </script>
 

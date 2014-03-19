@@ -19,73 +19,73 @@ yukon.dr.dashboard = (function () {
             
         init: function() {
             
-            var _initialCommandTime = jQuery('#rf-performance-command-time').val(),
-                _initialEmailTime = jQuery('#rf-performance-email-time').val(),
-                _initialEmail = jQuery('#rf-performance-email').val();
+            var _initialCommandTime = $('#rf-performance-command-time').val(),
+                _initialEmailTime = $('#rf-performance-email-time').val(),
+                _initialEmail = $('#rf-performance-email').val();
             
             /** Setup the command time slider */
-            jQuery(".f-broadcast-config .f-time-slider").slider({
+            $(".f-broadcast-config .f-time-slider").slider({
                 max: 24 * 60 - 15,
                 min: 0,
                 value: _initialCommandTime,
                 step: 15,
                 slide: function(event, ui) {
                     var currentTime = timeFormatter.formatTime(ui.value, 0);
-                    jQuery(_commandTimeSelector).html(currentTime);
-                    jQuery('#rf-performance-command-time').val(ui.value);
+                    $(_commandTimeSelector).html(currentTime);
+                    $('#rf-performance-command-time').val(ui.value);
                 },
                 change: function(event, ui) {
                     var currentTime = timeFormatter.formatTime(ui.value, 0);
-                    jQuery(_commandTimeSelector).html(currentTime);
-                    jQuery('#rf-performance-command-time').val(ui.value);
+                    $(_commandTimeSelector).html(currentTime);
+                    $('#rf-performance-command-time').val(ui.value);
                 }
             });
             
             /** Setup the email time slider */
-            jQuery(".f-broadcast-config .f-email-time-slider").slider({
+            $(".f-broadcast-config .f-email-time-slider").slider({
                 max: 24 * 60 - 15,
                 min: 0,
                 value: _initialEmailTime,
                 step: 15,
                 slide: function(event, ui) {
                     var currentTime = timeFormatter.formatTime(ui.value, 0);
-                    jQuery(_emailTimeSelector).html(currentTime);
-                    jQuery('#rf-performance-email-time').val(ui.value);
+                    $(_emailTimeSelector).html(currentTime);
+                    $('#rf-performance-email-time').val(ui.value);
                 },
                 change: function(event, ui) {
                     var currentTime = timeFormatter.formatTime(ui.value, 0);
-                    jQuery(_emailTimeSelector).html(currentTime);
-                    jQuery('#rf-performance-email-time').val(ui.value);
+                    $(_emailTimeSelector).html(currentTime);
+                    $('#rf-performance-email-time').val(ui.value);
                 }
             });
             
             /** Setup the time label */
-            jQuery(_commandTimeSelector).html(timeFormatter.formatTime(_initialCommandTime, 0));
-            jQuery(_emailTimeSelector).html(timeFormatter.formatTime(_initialEmailTime, 0));
+            $(_commandTimeSelector).html(timeFormatter.formatTime(_initialCommandTime, 0));
+            $(_emailTimeSelector).html(timeFormatter.formatTime(_initialEmailTime, 0));
             
             /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
-            jQuery(document).on('click', '.f-broadcast-config .toggle-on-off .button', function() {
-                jQuery('.f-broadcast-config .toggle-on-off .button').toggleClass('on');
-                jQuery('.f-notif-group').toggle('fade');
-                jQuery('.f-email-schedule').toggle('fade');
-                if (jQuery('.f-broadcast-config .toggle-on-off .yes').hasClass('on')) {
-                    jQuery('#rf-performance-email').val('true');
+            $(document).on('click', '.f-broadcast-config .toggle-on-off .button', function() {
+                $('.f-broadcast-config .toggle-on-off .button').toggleClass('on');
+                $('.f-notif-group').toggle('fade');
+                $('.f-email-schedule').toggle('fade');
+                if ($('.f-broadcast-config .toggle-on-off .yes').hasClass('on')) {
+                    $('#rf-performance-email').val('true');
                 } else {
-                    jQuery('#rf-performance-email').val('false');
+                    $('#rf-performance-email').val('false');
                 }
                 
             });
             
             if (_initialEmail === 'true') {
-                jQuery('.f-broadcast-config .toggle-on-off .yes').addClass('on');
-                jQuery('.f-broadcast-config .toggle-on-off .no').removeClass('on');
-                jQuery('.f-notif-group').show();
-                jQuery('.f-email-schedule').show();
+                $('.f-broadcast-config .toggle-on-off .yes').addClass('on');
+                $('.f-broadcast-config .toggle-on-off .no').removeClass('on');
+                $('.f-notif-group').show();
+                $('.f-email-schedule').show();
             } else {
-                jQuery('.f-broadcast-config .toggle-on-off .no').addClass('on');
-                jQuery('.f-broadcast-config .toggle-on-off .yes').removeClass('on');
-                jQuery('.f-notif-group').hide();
-                jQuery('.f-email-schedule').hide();
+                $('.f-broadcast-config .toggle-on-off .no').addClass('on');
+                $('.f-broadcast-config .toggle-on-off .yes').removeClass('on');
+                $('.f-notif-group').hide();
+                $('.f-email-schedule').hide();
             }
             
         }
@@ -94,4 +94,4 @@ yukon.dr.dashboard = (function () {
     return mod;
 }());
 
-jQuery(function () {yukon.dr.dashboard.init();});
+$(function () {yukon.dr.dashboard.init();});

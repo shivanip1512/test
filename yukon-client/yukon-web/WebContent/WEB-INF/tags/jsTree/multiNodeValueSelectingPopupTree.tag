@@ -37,7 +37,7 @@
     // set the hidden var with our selected node values concatenated
     // then trigger the submit event
     function setNodeValues_${id}() {
-        var selectedNodes = jQuery('#${id}').dynatree('getSelectedNodes');
+        var selectedNodes = $('#${id}').dynatree('getSelectedNodes');
         var nodeValues = [];
         
         for (var i=0; i < selectedNodes.length; i++) {
@@ -49,22 +49,22 @@
             return false;
         }
         
-        jQuery('#${fieldId}').val(nodeValues.join(','));
+        $('#${fieldId}').val(nodeValues.join(','));
         closeWindow_${id}();
         <c:if test="${not empty pageScope.submitEvent}">
-            jQuery('#${id}').trigger('${submitEvent}');
+            $('#${id}').trigger('${submitEvent}');
         </c:if>
     }
     
     // the close button handler function
     // remove any selected node values from the nodeValues list before closing
     function clearAllNodeValues_${id}() {
-        jQuery(document.getElementById('${fieldId}')).val('');
+        $(document.getElementById('${fieldId}')).val('');
         closeWindow_${id}();
     }
     
     function closeWindow_${id}() {
-        jQuery('#window_${id}').dialog('close');
+        $('#window_${id}').dialog('close');
     }
 </script>
 

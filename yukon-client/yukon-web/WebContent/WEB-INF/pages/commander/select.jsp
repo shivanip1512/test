@@ -65,13 +65,13 @@
 <%-- END Secondary Menu --%>
 
     <script>
-        jQuery(function() {
-            jQuery('.f-show-all').click(function () {
+        $(function() {
+            $('.f-show-all').click(function () {
                 <c:forEach var="filter" items="${filters}">
-                  jQuery('#${filter.name}').val('');
+                  $('#${filter.name}').val('');
                 </c:forEach>
                 
-                jQuery('#filterForm')[0].submit();
+                $('#filterForm')[0].submit();
             });
         });
     </script>

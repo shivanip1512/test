@@ -13,17 +13,17 @@
     <script type="text/javascript">
     
         function forwardToMeterHome(row, id) {
-            jQuery('#deviceTable').removeClass('activeResultsTable');
+            $('#deviceTable').removeClass('activeResultsTable');
             window.location = "${meterHomeUrl}?deviceId=" + id;
         }
     
         function clearFilter() {
     
             <c:forEach var="filter" items="${filterByList}">
-              jQuery('#${filter.name}').val('');
+              $('#${filter.name}').val('');
             </c:forEach>
             
-            jQuery('#filterForm')[0].submit();
+            $('#filterForm')[0].submit();
         }
         
     </script>

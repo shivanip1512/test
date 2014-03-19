@@ -17,7 +17,7 @@ margin: 0px;
 
 <c:if test="${hasCapbankControl}">
     <script type="text/javascript">
-        jQuery(function() {
+        $(function() {
             yukon.da.initBankTier();
         });
     </script>

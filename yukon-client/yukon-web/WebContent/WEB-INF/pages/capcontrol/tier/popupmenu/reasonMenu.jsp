@@ -7,12 +7,12 @@
 <cti:msgScope paths="modules.capcontrol.comments">
 
 <script type="text/javascript">
-jQuery("#executeCommand").click(function(event) {
+$("#executeCommand").click(function(event) {
     yukon.da.hideMenu();
-    doItemCommand('${paoId}', '${commandId}', event, jQuery('#commentTextArea').val(), 'true');
+    doItemCommand('${paoId}', '${commandId}', event, $('#commentTextArea').val(), 'true');
 });
-jQuery("#reasonSelect").change(function(event) {
-    jQuery('#commentTextArea').val(this.options[this.selectedIndex].value);
+$("#reasonSelect").change(function(event) {
+    $('#commentTextArea').val(this.options[this.selectedIndex].value);
 });
 </script>
 

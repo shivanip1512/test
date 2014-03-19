@@ -71,7 +71,7 @@ function inlinePickerSelectionMade(selectedItems) {
             selectedItems[0][itemIdProperty] + '.');
 }
 
-jQuery(document).ready(function() {
+$(document).ready(function() {
     inlinePicker.show.call(inlinePicker, true);
 });
 </script>
@@ -83,7 +83,7 @@ This page should be tested at 1024x768.
 <br><br>
 
 <form id="pickerSelectForm" action="main">
-    <select name="pickerType" onchange="jQuery('#pickerSelectForm').submit()">
+    <select name="pickerType" onchange="$('#pickerSelectForm').submit()">
         <option value="pointPicker"<c:if test="${pickerType == 'pointPicker'}"> selected</c:if>>Point Picker</option>
         <option value="paoPicker"<c:if test="${pickerType == 'paoPicker'}"> selected</c:if>>PAO Picker (Lucene)</option>
         <option value="assignedProgramPicker"<c:if test="${pickerType == 'assignedProgramPicker'}"> selected</c:if>>Assigned Program Picker (Database)</option>

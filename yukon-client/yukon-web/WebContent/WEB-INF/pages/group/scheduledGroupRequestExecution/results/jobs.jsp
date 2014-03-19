@@ -12,9 +12,9 @@
 <cti:includeScript link="/JavaScript/yukon.jobs.js"/>
 
 <script type="text/javascript">
-jQuery(document).ready(function() {
+$(document).ready(function() {
     if (${hasFilterErrors}) {
-        jQuery('#filterPopup').show();
+        $('#filterPopup').show();
     }
 });
 </script>

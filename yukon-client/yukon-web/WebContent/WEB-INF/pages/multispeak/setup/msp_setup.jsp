@@ -28,7 +28,7 @@
     <script type="text/javascript">
         function confirmDelete(){
             if (confirm("Are you sure you want to delete this interface?")) {
-                jQuery('#delete-form').submit();
+                $('#delete-form').submit();
             }
         }
         
@@ -265,7 +265,7 @@
             <c:if test="${!isCreateNew}">
                 <cti:button nameKey="delete" classes="delete" onclick="confirmDelete()"/>
             </c:if>
-            <cti:button nameKey="create" busy="true" onclick="jQuery('#create-form').submit();"/>
+            <cti:button nameKey="create" busy="true" onclick="$('#create-form').submit();"/>
         </div>
     </form>
         

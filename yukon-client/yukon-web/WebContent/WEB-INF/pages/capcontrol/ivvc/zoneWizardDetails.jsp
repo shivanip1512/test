@@ -63,7 +63,7 @@
     };
     
     cancelZoneWizard = function() {
-        jQuery("#zoneWizardPopup").dialog("close");
+        $("#zoneWizardPopup").dialog("close");
     };
     
     backToTypeSelect = function() {

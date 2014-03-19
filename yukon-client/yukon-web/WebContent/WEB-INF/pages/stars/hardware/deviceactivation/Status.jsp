@@ -8,11 +8,11 @@
 <cti:includeScript link="${jqueryPath}" force="true"/>
 <script language="JavaScript">
 
-    jQuery(function () {
+    $(function () {
         var counter = 4,
             updateDisplay = function () {
                 if (counter > 0) {
-                    jQuery("#reloaddiv").html('Reload in ' + counter--);
+                    $("#reloaddiv").html('Reload in ' + counter--);
                 }
             };
         setInterval(updateDisplay, 1000);

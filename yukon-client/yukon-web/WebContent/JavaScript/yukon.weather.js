@@ -6,46 +6,46 @@ yukon.weather = (function() {
     _initialized = false, 
 
    _searchWeatherStationsAgainBtnClick = function() {
-        jQuery("#weatherLocationSearchResults").fadeOut(50, function() {
-            jQuery("#weatherLocationSearch").fadeIn(50);
+        $("#weatherLocationSearchResults").fadeOut(50, function() {
+            $("#weatherLocationSearch").fadeIn(50);
         });
     },
 
     _newWeatherLocationBtnClick = function() {
-        jQuery("#weatherLocationSearch").show();
-        jQuery("#weatherLocationSearchResults").hide();
-        var title = jQuery("#weatherStationSearchTitle").html();
-        jQuery("#weatherStationDialog").dialog({minWidth:500, title:title, modal:true});
+        $("#weatherLocationSearch").show();
+        $("#weatherLocationSearchResults").hide();
+        var title = $("#weatherStationSearchTitle").html();
+        $("#weatherStationDialog").dialog({minWidth:500, title:title, modal:true});
     },
 
     _searchWeatherStationsBtnClick = function() {
-        jQuery("#findCloseStationsForm").ajaxSubmit({success: function(data) {
-            jQuery("#weatherStationDialog").fadeOut(50, function () {
-                jQuery(this).html(data).fadeIn(50);
-                yukon.ui.elementGlass.hide(jQuery("#weatherStationDialog"));
+        $("#findCloseStationsForm").ajaxSubmit({success: function(data) {
+            $("#weatherStationDialog").fadeOut(50, function () {
+                $(this).html(data).fadeIn(50);
+                yukon.ui.elementGlass.hide($("#weatherStationDialog"));
             });
         }});
     },
 
     _saveWeatherStationBtnClick = function() {
-        jQuery("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
-            jQuery("#weatherStationDialog").fadeOut(50, function () {
-                jQuery(this).html(data);
-                if (jQuery("#dialogState").val() == 'done') {
-                    jQuery("#weatherStationDialog").dialog('close');
+        $("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
+            $("#weatherStationDialog").fadeOut(50, function () {
+                $(this).html(data);
+                if ($("#dialogState").val() == 'done') {
+                    $("#weatherStationDialog").dialog('close');
                     _reloadWeatherStations();
                 } else {
-                    jQuery(this).fadeIn(50);
+                    $(this).fadeIn(50);
                 }
             });
         }});
     },
 
     _reloadWeatherStations = function() {
-        jQuery("#weatherLocationsLoading").fadeIn(150);
-        jQuery("#weatherLocations").load("weatherLocationsTable", function() {
-            jQuery("#weatherLocationsLoading").hide();
-            jQuery("#weatherLocations").hide().fadeIn(150);
+        $("#weatherLocationsLoading").fadeIn(150);
+        $("#weatherLocations").load("weatherLocationsTable", function() {
+            $("#weatherLocationsLoading").hide();
+            $("#weatherLocations").hide().fadeIn(150);
         });
     },
 
@@ -55,13 +55,13 @@ yukon.weather = (function() {
                 return;
             }
 
-            jQuery("#weatherStationDialog")
+            $("#weatherStationDialog")
                 .on("click","#searchWeatherStationsAgain", _searchWeatherStationsAgainBtnClick)
                 .on("click","#searchWeatherStations", _searchWeatherStationsBtnClick)
                 .on("click","#saveWeatherStationBtn", _saveWeatherStationBtnClick);
-            jQuery("#newWeatherLocationBtn")
+            $("#newWeatherLocationBtn")
                 .click(_newWeatherLocationBtnClick);
-            jQuery(document).on("submit", "#saveWeatherLocationForm", function (){return false;});
+            $(document).on("submit", "#saveWeatherLocationForm", function (){return false;});
 
             _reloadWeatherStations();
 
@@ -73,12 +73,12 @@ yukon.weather = (function() {
             var paoId = metaDataObj.paoId;
 
             if (metaDataObj.dispatchError) {
-                jQuery("#dispatchError").show();
-                jQuery(".f-drFormula-temperature-field").removeClass("error").addClass("disabled");
-                jQuery(".f-drFormula-humidity-field").removeClass("error").addClass("disabled");
-                jQuery(".f-drFormula-timestamp-field").removeClass("error").addClass("disabled");
+                $("#dispatchError").show();
+                $(".f-drFormula-temperature-field").removeClass("error").addClass("disabled");
+                $(".f-drFormula-humidity-field").removeClass("error").addClass("disabled");
+                $(".f-drFormula-timestamp-field").removeClass("error").addClass("disabled");
             } else {
-                jQuery("#dispatchError").hide();
+                $("#dispatchError").hide();
             }
 
             if (metaDataObj.invalidPaoError) {
@@ -87,27 +87,27 @@ yukon.weather = (function() {
             }
 
             if (metaDataObj.humidity !== 'valid') {
-                jQuery("#humidityField_"+paoId).addClass("disabled");
+                $("#humidityField_"+paoId).addClass("disabled");
             } else {
-                jQuery("#humidityField_"+paoId).removeClass("disabled");
+                $("#humidityField_"+paoId).removeClass("disabled");
             }
 
             if (metaDataObj.temperature !== 'valid') {
-                jQuery("#temperatureField_"+paoId).addClass("disabled");
+                $("#temperatureField_"+paoId).addClass("disabled");
             } else {
-                jQuery("#temperatureField_"+paoId).removeClass("disabled");
+                $("#temperatureField_"+paoId).removeClass("disabled");
             }
 
             if (metaDataObj.timestamp !== 'valid') {
-                jQuery("#timestampField_"+paoId).addClass("error").removeClass("disabled");
+                $("#timestampField_"+paoId).addClass("error").removeClass("disabled");
             } else {
-                jQuery("#timestampField_"+paoId).removeClass("error disabled");
+                $("#timestampField_"+paoId).removeClass("error disabled");
             }
         }
     };
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     yukon.weather.init();
 });

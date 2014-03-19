@@ -7,9 +7,9 @@
 <cti:includeScript link="/JavaScript/yukon.ui.passwords.js" force="true" />
 
 <script>
-jQuery(function(){
+$(function(){
     yukon.ui.passwords.init({minLength: ${passwordPolicy.minPasswordLength}});
-    jQuery(".password_manager input.new").trigger('keyup');
+    $(".password_manager input.new").trigger('keyup');
 });
 </script>
 <style type="text/css">

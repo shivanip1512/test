@@ -182,7 +182,7 @@
         
         <div class="action-area">
             <cti:button nameKey="ok" type="submit" classes="f-blocker"/> 
-            <cti:button nameKey="cancel" id="confirmCancel" onclick="jQuery('#confirmPopup_${event.eventId}').dialog('close')"/>
+            <cti:button nameKey="cancel" id="confirmCancel" onclick="$('#confirmPopup_${event.eventId}').dialog('close')"/>
         </div>
     </form>
 </i:simplePopup>

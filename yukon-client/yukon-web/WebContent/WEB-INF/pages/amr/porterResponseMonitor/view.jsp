@@ -8,15 +8,15 @@
 <cti:standardPage module="amr" page="porterResponseMonitor.${mode}">
 
 <script type="text/javascript">
-jQuery(function () {
-    var totalGroupCountSpan = jQuery('#totalGroupCount');
-    var supportedDevicesMsgSpan = jQuery('#supportedDevicesMsg');
+$(function () {
+    var totalGroupCountSpan = $('#totalGroupCount');
+    var supportedDevicesMsgSpan = $('#supportedDevicesMsg');
 
     totalGroupCountSpan.addClass('icon icon-spinner');
     supportedDevicesMsgSpan.addClass('icon icon-spinner');
-    jQuery('#supportedDevicesHelpIcon').hide();
+    $('#supportedDevicesHelpIcon').hide();
 
-    jQuery.get('counts', {'monitorId': '${monitorDto.monitorId}'}).done(function(json) {
+    $.get('counts', {'monitorId': '${monitorDto.monitorId}'}).done(function(json) {
         var totalGroupCount = json.totalGroupCount;
         var supportedDevicesMsg = json.supportedDevicesMessage;
         var missingPointCount = json.missingPointCount;
@@ -28,13 +28,13 @@ jQuery(function () {
           supportedDevicesMsgSpan.show();
         
           if (${showAddRemovePoints}) {
-              jQuery('#addPointsSpan').show();
+              $('#addPointsSpan').show();
           }
         }
         
         totalGroupCountSpan.removeClass('icon icon-spinner');
         supportedDevicesMsgSpan.removeClass('icon icon-spinner');
-        jQuery('#supportedDevicesHelpIcon').show();
+        $('#supportedDevicesHelpIcon').show();
     });
     
 });

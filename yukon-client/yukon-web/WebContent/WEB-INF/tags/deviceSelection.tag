@@ -25,27 +25,27 @@
 <cti:msg2 key=".cancel" var="cancel"/>
 
 <script type="text/javascript">
-jQuery(function(){
-    jQuery("#selectDevicesButton").click(function(e) {selectDevicesPicker.show.call(selectDevicesPicker);});
+$(function(){
+    $("#selectDevicesButton").click(function(e) {selectDevicesPicker.show.call(selectDevicesPicker);});
 
-    jQuery("#addByAddressForm button").click(function(e) {
-        jQuery(e.currentTarget).attr("disabled","disabled");
+    $("#addByAddressForm button").click(function(e) {
+        $(e.currentTarget).attr("disabled","disabled");
           
         var errors = validateAddressRange();
         if (errors.length === 0) {
             //submit the form
-            jQuery(e.currentTarget).closest("form")[0].submit();
+            $(e.currentTarget).closest("form")[0].submit();
             return true;
         } else {
             //show the error
-            jQuery(errors.join(",")).show().addClass("error");
-            jQuery(e.currentTarget).removeAttr("disabled");
+            $(errors.join(",")).show().addClass("error");
+            $(e.currentTarget).removeAttr("disabled");
             return false;
         }
     });
 
-    jQuery("#addByAddressForm input:text").keyup(function(e) {
-        jQuery(e.currentTarget).val(jQuery(e.currentTarget).val().replace(/\D/g, ''));
+    $("#addByAddressForm input:text").keyup(function(e) {
+        $(e.currentTarget).val($(e.currentTarget).val().replace(/\D/g, ''));
     });
 });
 
@@ -103,28 +103,28 @@ function toggleByAddrPopup(id) {
     clearErrors();
     clearAddrFields();
     togglePopup(id);
-    if (jQuery('#' + id).is(':visible')) { 
-        jQuery('#' + id + '_startRange').focus();
+    if ($('#' + id).is(':visible')) { 
+        $('#' + id + '_startRange').focus();
     }
 }
 
 function clearAddrFields(id) {
     clearErrors();
-    jQuery('#' + id + '_startRange').val('');
-    jQuery('#' + id + '_endRange').val('');
+    $('#' + id + '_startRange').val('');
+    $('#' + id + '_endRange').val('');
 }
 
 function toggleByFileUploadPopup(id) {
     togglePopup(id);
-    if (jQuery('#' + id).is(':visible')) {
-        jQuery('#' + id + '_uploadType')[0].options[0].selected = true;
+    if ($('#' + id).is(':visible')) {
+        $('#' + id + '_uploadType')[0].options[0].selected = true;
         updateFileNote(id);
-        jQuery('#' + id + '_uploadType').focus();
+        $('#' + id + '_uploadType').focus();
     }
 }
 
 function togglePopup(id) {
-    var popupElem = jQuery('#' + id);
+    var popupElem = $('#' + id);
     if (popupElem.is(':visible')) {
         popupElem.dialog('close');
     } else {
@@ -133,14 +133,14 @@ function togglePopup(id) {
 }
 
 function clearErrors() {
-    jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange, .startTooHigh, .endTooHigh").removeClass('error');
-    jQuery(".rangeMsg").hide();
+    $(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange, .startTooHigh, .endTooHigh").removeClass('error');
+    $(".rangeMsg").hide();
 }
 
 function validateAddressRange() {
     clearErrors();
-    var start = parseInt(jQuery("#${byAddrPopupId}_startRange").val());
-    var end = parseInt(jQuery("#${byAddrPopupId}_endRange").val());
+    var start = parseInt($("#${byAddrPopupId}_startRange").val());
+    var end = parseInt($("#${byAddrPopupId}_endRange").val());
     var errors = [];
     var MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
     

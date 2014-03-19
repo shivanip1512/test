@@ -13,113 +13,113 @@
     var errorDetectMsg = '<cti:msg2 key=".errorDetect" javaScriptEscape="true"/>';
 
     function sendDetect () {
-        var params = {'phase': jQuery('#phase').val()};
+        var params = {'phase': $('#phase').val()};
 
-        jQuery('#sendDetectButton').val(sendMsg);
-        jQuery('#sendDetectButton').prop({'disabled': true});
-        jQuery('#actionResultDiv').hide();
-        jQuery('#spinner').show();
+        $('#sendDetectButton').val(sendMsg);
+        $('#sendDetectButton').prop({'disabled': true});
+        $('#actionResultDiv').hide();
+        $('#spinner').show();
 
-        jQuery.ajax({
+        $.ajax({
             url: '/amr/phaseDetect/startTest',
             data: params,
             type: 'POST',
             dataType: 'json'
         }).done( function (data, textStatus, jqXHR) {
-           jQuery('#complete').val(data.complete);
+           $('#complete').val(data.complete);
            if (data.errorOccurred == 'true') {
-                jQuery('#spinner').hide();
-                jQuery('#actionResultDiv').html(errorDetectMsg);
-                jQuery('#actionResultDiv').show();
-                jQuery('#sendDetectButton').val(sendMsg);
-                jQuery('#sendDetectButton').prop({'disabled': false});
+                $('#spinner').hide();
+                $('#actionResultDiv').html(errorDetectMsg);
+                $('#actionResultDiv').show();
+                $('#sendDetectButton').val(sendMsg);
+                $('#sendDetectButton').prop({'disabled': false});
             } else {
-                jQuery('#sendDetectButton').val(sendMsg);
-                jQuery('#' + data.phase).show();
-                jQuery('#spinner').hide();
+                $('#sendDetectButton').val(sendMsg);
+                $('#' + data.phase).show();
+                $('#spinner').hide();
                 startTimers();
             }
         }).fail(function (jqXHR, textStatus) {
-            jQuery('#spinner').hide();
-            jQuery('#actionResultDiv').html(errorDetectMsg);
-            jQuery('#actionResultDiv').show();
-            jQuery('#sendDetectButton').val(sendMsg);
-            jQuery('#sendDetectButton').prop({'disabled': false});
+            $('#spinner').hide();
+            $('#actionResultDiv').html(errorDetectMsg);
+            $('#actionResultDiv').show();
+            $('#sendDetectButton').val(sendMsg);
+            $('#sendDetectButton').prop({'disabled': false});
         });
 
     }
 
     function startTimers() {
-        jQuery('#intervalTimerNote').show();
-        jQuery('#intervalTimerFont').css('color', 'red');
-        jQuery('#detectTimerNote').show();
-        jQuery('#detectTimerFont').css('color', 'red');
+        $('#intervalTimerNote').show();
+        $('#intervalTimerFont').css('color', 'red');
+        $('#detectTimerNote').show();
+        $('#detectTimerFont').css('color', 'red');
         setTimeout(updateTimers, 1000);
     }
 
     function updateTimers() {
-        var intervalTimer = jQuery('#intervalTimerSpan').html(),
-            detectTimer = jQuery('#detectTimerSpan').html(),
+        var intervalTimer = $('#intervalTimerSpan').html(),
+            detectTimer = $('#detectTimerSpan').html(),
             timeoutSet = false;
         if (intervalTimer > 0) {
             intervalTimer = intervalTimer - 1;
-            jQuery('#intervalTimerSpan').html(intervalTimer);
+            $('#intervalTimerSpan').html(intervalTimer);
             setTimeout(updateTimers, 1000);
             timeoutSet = true;
         }
         if (detectTimer > 0) {
             detectTimer = detectTimer - 1;
-            jQuery('#detectTimerSpan').html(detectTimer);
+            $('#detectTimerSpan').html(detectTimer);
             if (!timeoutSet) {
                 setTimeout(updateTimers, 1000);
             }
         } else {
-            if (jQuery('#complete').val() == 'true') {
-                jQuery('#sendDetectButton').hide();
-                jQuery('#readButton').show();
+            if ($('#complete').val() == 'true') {
+                $('#sendDetectButton').hide();
+                $('#readButton').show();
             } else {
-                jQuery('#sendDetectButton').hide();
-                jQuery('#resetButton').show();
+                $('#sendDetectButton').hide();
+                $('#resetButton').show();
             }
         }
     }
 
     function reset() {
-        jQuery('#sendDetectButton').val(sendMsg);
-        jQuery('#sendDetectButton').prop({'disabled': false});
-        jQuery('#sendDetectButton').show();
-        jQuery('#resetButton').hide();
-        jQuery('#actionResultDiv').hide();
-        jQuery('#intervalTimerNote').hide();
-        jQuery('#detectTimerNote').hide();
-        jQuery('#intervalTimerSpan').html('${data.intervalLength}');
-        jQuery('#intervalTimerFont').css('color', '#555');
-        jQuery('#detectTimerSpan').html('${data.intervalLength * data.numIntervals}');
-        jQuery('#detectTimerFont').css('color', '#555');
+        $('#sendDetectButton').val(sendMsg);
+        $('#sendDetectButton').prop({'disabled': false});
+        $('#sendDetectButton').show();
+        $('#resetButton').hide();
+        $('#actionResultDiv').hide();
+        $('#intervalTimerNote').hide();
+        $('#detectTimerNote').hide();
+        $('#intervalTimerSpan').html('${data.intervalLength}');
+        $('#intervalTimerFont').css('color', '#555');
+        $('#detectTimerSpan').html('${data.intervalLength * data.numIntervals}');
+        $('#detectTimerFont').css('color', '#555');
     }
 
     function sendRead() {
-        jQuery('#actionResultDiv').show();
-        jQuery.ajax({
+        $('#actionResultDiv').show();
+        $.ajax({
             url: '/amr/phaseDetect/readPhase',
             type: 'POST'
         }).done(function (data, textStatus, jqXHR) {
             var json = yukon.ui.util.getHeaderJSON(jqXHR);
             if (json.success) {
-                jQuery('#readButton').val(readingMsg);
-                jQuery('#readButton').prop({'disabled': true});
-                jQuery('#actionResultDiv').html(data);
+                $('#readButton').val(readingMsg);
+                $('#readButton').prop({'disabled': true});
+                $('#actionResultDiv').html(data);
             } else {
-                jQuery('#actionResultDiv').html(errorReadMsg);
+                $('#actionResultDiv').html(errorReadMsg);
             }
         }).fail(function (jqXHR, textStatus) {
-            jQuery('#actionResultDiv').html(errorReadMsg);
+            $('#actionResultDiv').html(errorReadMsg);
         });
     }
 
     function readFinished() {
-        jQuery('#cancelReadButton').prop({'disabled': true});
-        jQuery('#resultsButton').prop({'disabled': false});
+        $('#cancelReadButton').prop({'disabled': true});
+        $('#resultsButton').prop({'disabled': false});
     }
 </script>
 

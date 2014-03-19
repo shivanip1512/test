@@ -11,14 +11,14 @@
             var isCanceled = data.isCanceled;
 
             if (isComplete == 'true') {
-                jQuery('#setViewRoutesButton').removeAttr("disabled");
-                jQuery('#cancelLocateDiv').hide();
+                $('#setViewRoutesButton').removeAttr("disabled");
+                $('#cancelLocateDiv').hide();
             }
 
             if (isCanceled == 'true') {
-                jQuery('#setViewRoutesButton').removeAttr("disabled");
-                jQuery('#cancelLocateDiv').hide();
-                jQuery('#commandsCanceledDiv').show();
+                $('#setViewRoutesButton').removeAttr("disabled");
+                $('#cancelLocateDiv').hide();
+                $('#commandsCanceledDiv').show();
             }
         };
     }

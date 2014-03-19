@@ -11,15 +11,15 @@ yukon.da = (function () {
 
     var lock_buttons = function(el_id) {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
-            jQuery(document.getElementById(el_id)).click(function() {
-                jQuery('input.stdButton').each(function() {
+            $(document.getElementById(el_id)).click(function() {
+                $('input.stdButton').each(function() {
                     // jsf puts colons in id names, but colons are invalid in id names so we must clean this up here
                     var sanitizeSelector = function (dirtyId) {
                         return dirtyId.replace(':', '\\\:');
                     },
                     elseCallBack = function() {
                         el_id = sanitizeSelector (el_id);
-                        jQuery('[id=' + el_id + ']')[0].disabled=true;
+                        $('[id=' + el_id + ']')[0].disabled=true;
                     };
 
                     if (this.id !== el_id) {
@@ -32,23 +32,23 @@ yukon.da = (function () {
         },
 
         _hideAlertMessage = function() {
-            jQuery('#alertMessageContainer').hide('fade', {}, 3000);
+            $('#alertMessageContainer').hide('fade', {}, 3000);
         },
 
         mod = {
 
         init : function() {
-            jQuery(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
+            $(document).on('click', 'div.dynamicTableWrapper .pointAddItem', function(event) {
                 pointPicker.show.call(pointPicker);
             });
-            jQuery(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
+            $(document).on('click', 'div.dynamicTableWrapper .bankAddItem', function(event) {
                 bankPicker.show.call(bankPicker);
             });
 
             /* bank move */
-            jQuery(document).on('click', 'li.toggle', function(e) {
+            $(document).on('click', 'li.toggle', function(e) {
                 if (e.target === e.currentTarget) {
-                    var li = jQuery(this);
+                    var li = $(this);
                     var subMenu = li.find('ul:first');
                     if (subMenu[0]) {
                         subMenu.toggle();
@@ -60,8 +60,8 @@ yukon.da = (function () {
             });
 
             /* creation menu popup */
-            jQuery('.f-cc-create').click(function() {
-                var content = jQuery('#contentPopup');
+            $('.f-cc-create').click(function() {
+                var content = $('#contentPopup');
                 content.load(yukon.url('/capcontrol/menu/create'), function() {
                     var title = content.find('input.title').val();
                     content.dialog({title: title});
@@ -71,9 +71,9 @@ yukon.da = (function () {
 
         initBankTier: function() {
             
-            var banks = jQuery('[data-bank-id]');
+            var banks = $('[data-bank-id]');
             banks.each( function(index, item){
-                var row = jQuery(item),
+                var row = $(item),
                     bankId = row.attr('data-bank-id'),
                     cbcId = row.attr('data-cbc-id'),
                     moveBankTitle = row.attr('data-move-bank-title'),
@@ -118,19 +118,19 @@ yukon.da = (function () {
         },
 
         initSubstation: function() {
-            var feederFilter = jQuery('.f-feeder-filter').eq(0),
-                busFilter = jQuery('.f-bus-filter').eq(0);
+            var feederFilter = $('.f-feeder-filter').eq(0),
+                busFilter = $('.f-bus-filter').eq(0);
 
 
             busFilter.change( function(event) {
-                var rows = jQuery("#subBusTable [data-bus-id]"),
+                var rows = $("#subBusTable [data-bus-id]"),
                     busIds = new Array(),
                     sel = busFilter.find(':selected'),
                     busId = + sel.val();
                 
                 if (busId === 0) {
                     rows.each(function (index, item) {
-                        var row = jQuery(item),
+                        var row = $(item),
                             rowId = + row.attr('data-bus-id');
                         busIds.push(rowId);
                     });
@@ -141,14 +141,14 @@ yukon.da = (function () {
             });
 
             feederFilter.change( function(event) {
-                var rows = jQuery("#fdrTable [data-feeder-id]"),
+                var rows = $("#fdrTable [data-feeder-id]"),
                     feederIds = new Array(),
                     sel = feederFilter.find(':selected'),
                     feederId = + sel.val();
 
                 if (feederId === 0) {
                     rows.each(function (index, item) {
-                        var row = jQuery(item),
+                        var row = $(item),
                             rowId = + row.attr('data-feeder-id');
                         feederIds.push(rowId);
                     });
@@ -160,13 +160,13 @@ yukon.da = (function () {
         },
 
         applyBusFilter : function(busIds) {
-            var busRows = jQuery('#subBusTable [data-bus-id]'),
-                feederRows = jQuery("#fdrTable [data-parent-id]"),
-                feederFilters = jQuery('#feederFilter [value]'),
+            var busRows = $('#subBusTable [data-bus-id]'),
+                feederRows = $("#fdrTable [data-parent-id]"),
+                feederFilters = $('#feederFilter [value]'),
                 feederIds = new Array();
 
             busRows.each( function (index, item) {
-                var row = jQuery(item),
+                var row = $(item),
                     busId = + row.attr('data-bus-id');
 
                 if (busIds.indexOf(busId) !== -1) {
@@ -177,7 +177,7 @@ yukon.da = (function () {
             });
 
             feederRows.each(function (index, item) {
-                var row = jQuery(item),
+                var row = $(item),
                     busId = + row.attr('data-parent-id'),
                     feederId = + row.attr('data-feeder-id');
 
@@ -186,9 +186,9 @@ yukon.da = (function () {
                 }
             });
 
-            jQuery('#feederFilter').find( '[value=0]').attr('selected', true);
+            $('#feederFilter').find( '[value=0]').attr('selected', true);
             feederFilters.each( function(index, item) {
-                var option = jQuery(item),
+                var option = $(item),
                     optionId = + option.val();
 
                 if (feederIds.indexOf(optionId) !== -1 || optionId === 0) {
@@ -202,11 +202,11 @@ yukon.da = (function () {
         },
 
         applyFeederFilter : function (feederIds) {
-            var feederRows = jQuery("#fdrTable [data-feeder-id]"),
-                bankRows = jQuery('#capBankTable [data-parent-id]');
+            var feederRows = $("#fdrTable [data-feeder-id]"),
+                bankRows = $('#capBankTable [data-parent-id]');
 
             feederRows.each(function (index, item) {
-                var row = jQuery(item);
+                var row = $(item);
                     feederId = + row.attr('data-feeder-id');
 
                 if (feederIds.indexOf(feederId) !== -1) {
@@ -217,7 +217,7 @@ yukon.da = (function () {
             });
 
             bankRows.each(function (index, item) {
-                var row = jQuery(item),
+                var row = $(item),
                     feederId = + row.attr('data-parent-id');
 
                 if (feederIds.indexOf(feederId) !== -1) {
@@ -235,16 +235,16 @@ yukon.da = (function () {
         checkPageExpire : function() {
             var paoIds = [];
 
-            jQuery('[data-pao-id]').each(function() {
-                paoIds.push(jQuery(this).attr('data-pao-id'));
+            $('[data-pao-id]').each(function() {
+                paoIds.push($(this).attr('data-pao-id'));
             });
 
-            jQuery.ajax({
+            $.ajax({
                 url: yukon.url('/capcontrol/pageExpire'),
                 data: {'paoIds': paoIds}
             }).success(function(data) {
                 if (data.expired) {
-                    jQuery('#updatedWarning').dialog('open');
+                    $('#updatedWarning').dialog('open');
                 } else {
                     setTimeout(mod.checkPageExpire, 15000);
                 }
@@ -252,13 +252,13 @@ yukon.da = (function () {
         },
 
         hideContentPopup : function() {
-            jQuery('#contentPopup').dialog('close');
+            $('#contentPopup').dialog('close');
         },
 
         getMenuFromURL : function (url, event, params) {
 
-            jQuery.ajax(url).done( function(data) {
-                jQuery('#menuPopup').html(data);
+            $.ajax(url).done( function(data) {
+                $('#menuPopup').html(data);
                 mod.showMenuPopup(params);
             });
         },
@@ -268,11 +268,11 @@ yukon.da = (function () {
         },
 
         checkAll: function(allCheckBox, selector) {
-            jQuery(selector).prop('checked', allCheckBox.checked);
+            $(selector).prop('checked', allCheckBox.checked);
         },
 
         hideMenu : function () {
-            jQuery('#menuPopup').dialog('close');
+            $('#menuPopup').dialog('close');
         },
 
         showDialog : function(title, url, options, selector) {
@@ -281,31 +281,31 @@ yukon.da = (function () {
                                'height'   : 'auto'
                   },
                 selector = selector || '<div></div>',
-                dialog = jQuery(selector);
+                dialog = $(selector);
 
-            jQuery.extend( dialogArgs, options);
+            $.extend( dialogArgs, options);
             dialog.load(url).dialog(dialogArgs);
         },
 
         showMenuPopup : function (params) {
             var dialogArgs = {
-                'title': jQuery('#menuPopup #dialogTitle').val(),
+                'title': $('#menuPopup #dialogTitle').val(),
                 'width': 'auto',
                 'height': 'auto',
                 'resizable': false
             };
 
-            jQuery.extend(dialogArgs, params);
-            jQuery('#menuPopup').dialog(dialogArgs);
+            $.extend(dialogArgs, params);
+            $('#menuPopup').dialog(dialogArgs);
         },
 
         checkAll : function(allCheckBox, selector) {
-            jQuery(selector).prop('checked', allCheckBox.checked);
+            $(selector).prop('checked', allCheckBox.checked);
         },
 
         addLockButtonForButtonGroup : function (groupId, secs) {
-            jQuery(document).ready(function() {
-                var buttons = jQuery('#' + groupId + ' input'),
+            $(document).ready(function() {
+                var buttons = $('#' + groupId + ' input'),
                 i;
 
                 for (i=0; i<buttons.length; i++) {
@@ -315,7 +315,7 @@ yukon.da = (function () {
         },
 
         lockButtonsPerSubmit : function (groupId) {
-            jQuery('#' + groupId + ' input').each(function() {
+            $('#' + groupId + ' input').each(function() {
                 this.disabled = true;
             });
         },
@@ -329,7 +329,7 @@ yukon.da = (function () {
         },
 
         showAlertMessage : function(message, success) {
-            var contents = jQuery('#alertMessageContents');
+            var contents = $('#alertMessageContents');
 
             if (success) {
                 contents.addClass('success').removeClass('error');
@@ -337,13 +337,13 @@ yukon.da = (function () {
                 contents.removeClass('success').addClass('error');
             }
             contents.html(message);
-            jQuery('#alertMessageContainer').show();
+            $('#alertMessageContainer').show();
             setTimeout (_hideAlertMessage, success ? 3000 : 8000);
         },
 
         showMessage : function(message) {
-            jQuery('#alertMessageContents').html(message);
-            jQuery('#alertMessageContainer').show();
+            $('#alertMessageContents').html(message);
+            $('#alertMessageContainer').show();
             setTimeout (_hideAlertMessage, 3000);
         }
     };
@@ -351,6 +351,6 @@ yukon.da = (function () {
     return mod;
 }());
 
-jQuery(function() {
+$(function() {
     yukon.da.init();
 });

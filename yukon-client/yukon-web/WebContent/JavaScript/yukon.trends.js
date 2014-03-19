@@ -12,11 +12,11 @@ yukon.trends = (function() {
         
         init: function (trendId) {
             yukon.ui.elementGlass.show('[data-trend]');
-            jQuery.getJSON(yukon.url('/trends/' + trendId + '/data'), function(trend) {
+            $.getJSON(yukon.url('/trends/' + trendId + '/data'), function(trend) {
                 
-                var labels = JSON.parse(decodeURIComponent(jQuery('#label-json').html()));
+                var labels = JSON.parse(decodeURIComponent($('#label-json').html()));
                 // Create the chart
-                jQuery('[data-trend]').highcharts('StockChart', {
+                $('[data-trend]').highcharts('StockChart', {
                     
                     chart: {
                         height: 600,
@@ -93,31 +93,31 @@ yukon.trends = (function() {
                 });
             });
             
-            jQuery('.trend-list').scrollTo(jQuery('.trend-list li.selected'));
-            jQuery(document).on('click', '.f-print', function(e) {
-                var chart = jQuery('[data-trend]').highcharts();
+            $('.trend-list').scrollTo($('.trend-list li.selected'));
+            $(document).on('click', '.f-print', function(e) {
+                var chart = $('[data-trend]').highcharts();
                 chart.print();
             });
-            jQuery(document).on('click', '.f-dl-png', function(e) {
-                var chart = jQuery('[data-trend]').highcharts();
+            $(document).on('click', '.f-dl-png', function(e) {
+                var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/png'});
             });
-            jQuery(document).on('click', '.f-dl-jpg', function(e) {
-                var chart = jQuery('[data-trend]').highcharts();
+            $(document).on('click', '.f-dl-jpg', function(e) {
+                var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/jpeg'});
             });
-            jQuery(document).on('click', '.f-dl-pdf', function(e) {
-                var chart = jQuery('[data-trend]').highcharts();
+            $(document).on('click', '.f-dl-pdf', function(e) {
+                var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'application/pdf'});
             });
-            jQuery(document).on('click', '.f-dl-svg', function(e) {
-                var chart = jQuery('[data-trend]').highcharts();
+            $(document).on('click', '.f-dl-svg', function(e) {
+                var chart = $('[data-trend]').highcharts();
                 chart.exportChart({type: 'image/svg+xml'});
             });
-            jQuery(document).on('click', '.f-dl-csv', function(e) {
-                var chart = jQuery('[data-trend]').highcharts(),
+            $(document).on('click', '.f-dl-csv', function(e) {
+                var chart = $('[data-trend]').highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
-                    trendId = jQuery(this).closest('li').data('trendId');
+                    trendId = $(this).closest('li').data('trendId');
                 
                 window.location = yukon.url('/trends/' + trendId + '/csv?' + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
             });
@@ -127,4 +127,4 @@ yukon.trends = (function() {
     return mod;
 }());
 
-jQuery(function () {yukon.trends.init(jQuery('[data-trend]').data('trend'));});
+$(function () {yukon.trends.init($('[data-trend]').data('trend'));});

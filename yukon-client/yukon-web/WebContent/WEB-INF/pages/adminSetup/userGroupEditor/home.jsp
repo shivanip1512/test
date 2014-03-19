@@ -15,20 +15,20 @@
     <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl"/>
 
     <script type="text/javascript">
-        jQuery(function() {
+        $(function() {
             window['userPicker'].show.call(window['userPicker']);
             window['userGroupPicker'].show.call(window['userGroupPicker']);
             window['roleGroupPicker'].show.call(window['roleGroupPicker']);
-            jQuery('#tabs').tabs();
+            $('#tabs').tabs();
         });
         function editUser () {
-            window.location.href = '${userUrl}?userId=' + jQuery('#userId').val();
+            window.location.href = '${userUrl}?userId=' + $('#userId').val();
         }
         function editUserGroup () {
-            window.location.href = '${userGroupUrl}?userGroupId=' + jQuery('#userGroupId').val();
+            window.location.href = '${userGroupUrl}?userGroupId=' + $('#userGroupId').val();
         }
         function editRoleGroup () {
-            window.location.href = '${roleGroupUrl}?roleGroupId=' + jQuery('#roleGroupId').val();
+            window.location.href = '${roleGroupUrl}?roleGroupId=' + $('#roleGroupId').val();
         }
     </script>
 

@@ -6,21 +6,21 @@
 <cti:standardPage module="dev" page="rfnTest">
 
 <script type="text/javascript">
-jQuery(function() {
-   jQuery('#startupNotif').click(function(event) {
-       jQuery.ajax({
+$(function() {
+   $('#startupNotif').click(function(event) {
+       $.ajax({
            url: '/support/development/rfn/resendStartup',
            type: "POST"
        });
    });
-   jQuery('#calcStressTest').click(function(event) {
-       jQuery.ajax({
+   $('#calcStressTest').click(function(event) {
+       $.ajax({
            url: '/support/development/rfn/calcStressTest',
            type: "POST"
        });
    });
-   jQuery('#clearCache').click(function(event) {
-       jQuery.ajax({
+   $('#clearCache').click(function(event) {
+       $.ajax({
            url: '/support/development/rfn/clearCache',
            type: "POST"
        });

@@ -66,7 +66,7 @@ yukon.ami.meterEventsReport = (function () {
         }
 
         var treeChildren = [{title: _modelData.allTitle, isFolder: true, expand: true, children: treeChildrenGroups}];
-        jQuery("#eventTree").dynatree({
+        $("#eventTree").dynatree({
             checkbox: true,
             selectMode: 3,
             children: treeChildren
@@ -77,10 +77,10 @@ yukon.ami.meterEventsReport = (function () {
 
     function _updateEventTypes() {
         var numSelected = 0;
-        jQuery("#eventTypeInputs").empty();
-        jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
+        $("#eventTypeInputs").empty();
+        $("#eventTree").dynatree("getSelectedNodes").each(function(node) {
             if (_ignoreTitle(node.data.title) === false) {
-                jQuery('<input>').attr({
+                $('<input>').attr({
                     type: 'hidden',
                     name: 'attributes',
                     value: node.data.attribute
@@ -88,53 +88,53 @@ yukon.ami.meterEventsReport = (function () {
                 numSelected++;
             }
         });
-        jQuery('#numEventTypes').html(numSelected);
-        jQuery('#filterPopupEventTypes').dialog('close');
+        $('#numEventTypes').html(numSelected);
+        $('#filterPopupEventTypes').dialog('close');
     }
     
     function _submitSchedule() {
-        var formSerialized = jQuery("#filterForm").serialize();
-        formSerialized += "&" + jQuery("#scheduleForm").serialize();
-        jQuery.post("saveScheduledMeterEventJob?" + formSerialized, function (data) {
-            var response = jQuery(data),
+        var formSerialized = $("#filterForm").serialize();
+        formSerialized += "&" + $("#scheduleForm").serialize();
+        $.post("saveScheduledMeterEventJob?" + formSerialized, function (data) {
+            var response = $(data),
                 scheduleModelData = yukon.fromJson(response.filter("#scheduleModelData"));
             if (scheduleModelData.success) {
-                jQuery("#scheduleDialog").dialog('close');
+                $("#scheduleDialog").dialog('close');
                 _reloadScheduledJobsTable(response.filter("#flashScopeMsg"));
             } else {
-                jQuery("#scheduleDialog").html(response);
+                $("#scheduleDialog").html(response);
                 yukon.tag.scheduledFileExportInputs.initializeFields();
             }
         });
     }
 
     function _reloadScheduledJobsTable(flashScope) {
-        jQuery("#scheduledJobsTable").load("scheduledJobsTable", function () {
-            jQuery("#scheduledJobsTableFlashScope").hide().html(flashScope).fadeIn(150);
+        $("#scheduledJobsTable").load("scheduledJobsTable", function () {
+            $("#scheduledJobsTableFlashScope").hide().html(flashScope).fadeIn(150);
         });
     }
 
     function _deleteJob(jobId) {
         var data = {jobId : jobId};
 
-        jQuery.post("delete", data, 'json').done(function (data) {
-            var flashScopeEl = jQuery("<div>").attr('class','user-message success').text(data.successMsg);
+        $.post("delete", data, 'json').done(function (data) {
+            var flashScopeEl = $("<div>").attr('class','user-message success').text(data.successMsg);
             _reloadScheduledJobsTable(flashScopeEl);
-            jQuery("#scheduledJobsTableFlashScope").html(flashScopeEl);
+            $("#scheduledJobsTableFlashScope").html(flashScopeEl);
         });
     }
     
     function _createScheduleReportDialog(title) {
-        jQuery("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'position' : 'center', 'height' : 'auto',
+        $("#scheduleDialog").dialog({'title' : title, 'modal' : true, 'position' : 'center', 'height' : 'auto',
             'width' : 'auto'});
     }
     
     function _updateMeterEventsTable() {
-        var formSerialized = jQuery("#filterForm").serialize(),
-        formUrl = jQuery("#filterForm").attr('action');
-        jQuery.post(formUrl, formSerialized, function (data) {
-            jQuery("#meterEventsTable").html(data);
-            yukon.ui.unbusy(jQuery("#updateMeterEventsBtn"));
+        var formSerialized = $("#filterForm").serialize(),
+        formUrl = $("#filterForm").attr('action');
+        $.post(formUrl, formSerialized, function (data) {
+            $("#meterEventsTable").html(data);
+            yukon.ui.unbusy($("#updateMeterEventsBtn"));
         });
     }
 
@@ -146,59 +146,59 @@ yukon.ami.meterEventsReport = (function () {
 
         init: function() {
             _modelData = yukon.fromJson("#modelData");
-            jQuery("#updateMeterEventsBtn").click(_updateMeterEventsTable);
+            $("#updateMeterEventsBtn").click(_updateMeterEventsTable);
 
-            jQuery("#scheduleMeterEventsBtn").click(function() {
-                var formSerialized = jQuery("#filterForm").serialize();
-                jQuery.post("scheduledMeterEventsDialog", formSerialized, function (data) {
-                    jQuery("#scheduleDialog").html(data);
+            $("#scheduleMeterEventsBtn").click(function() {
+                var formSerialized = $("#filterForm").serialize();
+                $.post("scheduledMeterEventsDialog", formSerialized, function (data) {
+                    $("#scheduleDialog").html(data);
                     yukon.tag.scheduledFileExportInputs.initializeFields();
                 });
-                if (jQuery("scheduleDialog").hasClass("ui-dialog-content")) {
-                    jQuery("#scheduleDialog").dialog('destroy');
+                if ($("scheduleDialog").hasClass("ui-dialog-content")) {
+                    $("#scheduleDialog").dialog('destroy');
                 }
                 _createScheduleReportDialog(_modelData.newSchedulePopupTitle);
             });
 
-            jQuery("#eventTypesFilterOkBtn").click(function () {
+            $("#eventTypesFilterOkBtn").click(function () {
                 _updateEventTypes();
                 _updateMeterEventsTable();
             });
 
-            jQuery("#exportCsvBtn").click(function () {
+            $("#exportCsvBtn").click(function () {
                 var _meterEventsTableModel = yukon.fromJson("#meterEventsTableModelData"),
-                    downloadForm = jQuery("#downloadFormContents").empty();
-                jQuery("#filterForm").find(":input[name]").each(function() {
-                    var self = jQuery(this);
-                    downloadForm.append(jQuery("<input>")
+                    downloadForm = $("#downloadFormContents").empty();
+                $("#filterForm").find(":input[name]").each(function() {
+                    var self = $(this);
+                    downloadForm.append($("<input>")
                                 .attr("name", self.attr("name"))
                                 .attr("type", self.attr("type"))
                                 .val(self.val()));
                 });
-                downloadForm.append(jQuery("<input>").attr("name", "sort").val(_meterEventsTableModel.sort));
-                downloadForm.append(jQuery("<input>").attr("name", "descending").val(_meterEventsTableModel.descending));
-                jQuery("#downloadForm").submit();
+                downloadForm.append($("<input>").attr("name", "sort").val(_meterEventsTableModel.sort));
+                downloadForm.append($("<input>").attr("name", "descending").val(_meterEventsTableModel.descending));
+                $("#downloadForm").submit();
             });
 
-            jQuery(document).on('click', '#scheduledJobDialogSchedule', _submitSchedule);
+            $(document).on('click', '#scheduledJobDialogSchedule', _submitSchedule);
 
-            jQuery(document).on('click', '#scheduledJobDialogCancel', function() {
-                jQuery('#scheduleDialog').dialog('close');
+            $(document).on('click', '#scheduledJobDialogCancel', function() {
+                $('#scheduleDialog').dialog('close');
             });
 
-            jQuery(document).on('click', '.f-delete-schedule-item', function (event) {
+            $(document).on('click', '.f-delete-schedule-item', function (event) {
                 event.preventDefault();
-                var jobId = jQuery(this).closest("[data-job-id]").data("job-id");
-                jQuery("#scheduledJobsConfirmDeleteDialog").dialog({'title' : _modelData.confirmScheduleDeletion,
+                var jobId = $(this).closest("[data-job-id]").data("job-id");
+                $("#scheduledJobsConfirmDeleteDialog").dialog({'title' : _modelData.confirmScheduleDeletion,
                     'modal': true, 'position' : 'center', 'height' : 'auto', 'width' : 'auto',
                     'buttons': 
                         [{
                              text: _modelData.cancelBtnLbl, 
-                             click: function() {jQuery(this).dialog('close');}
+                             click: function() {$(this).dialog('close');}
                         }, {
                              text: _modelData.okBtnLbl, 
                              click: function() {
-                                 jQuery(this).dialog('close');
+                                 $(this).dialog('close');
                                  _deleteJob(jobId);
                              },
                              'class': 'primary action'
@@ -217,6 +217,6 @@ yukon.ami.meterEventsReport = (function () {
     return mod;
 }());
 
-jQuery(function () {
+$(function () {
     yukon.ami.meterEventsReport.init();
 });

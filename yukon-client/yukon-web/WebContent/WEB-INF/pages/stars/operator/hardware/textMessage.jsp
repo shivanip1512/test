@@ -12,7 +12,7 @@
 submitForm = function() {
     return submitFormViaAjax('textMsgDialog', 'myform');
 }
-jQuery( function () {
+$( function () {
     // init dateTime fields dynamically brought onto page after initial page load
     yukon.ui.initDateTimePickers();
 });
@@ -45,7 +45,7 @@ jQuery( function () {
     </tags:nameValueContainer2>
     <div class="action-area">
         <cti:button nameKey="send" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#textMsgDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#textMsgDialog').dialog('close');"/>
     </div>
 </form:form>
 

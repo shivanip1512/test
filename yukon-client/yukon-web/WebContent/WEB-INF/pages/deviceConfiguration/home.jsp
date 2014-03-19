@@ -9,20 +9,20 @@
 
 <script type="text/javascript">
 
-jQuery(function() {
-    jQuery('.f-deviceGroupBtn').click(function() {
-        var args = jQuery(this).attr("data-function-arguments");
+$(function() {
+    $('.f-deviceGroupBtn').click(function() {
+        var args = $(this).attr("data-function-arguments");
         eval('args = ' + args);
         showSelectedDevices(args.id, args.url);
     });
 });
 
 function showSelectedDevices(divId, url) {
-    jQuery.ajax({
+    $.ajax({
         url: url,
         success: function(transport) {
-            jQuery(document.getElementById(divId)).html(transport);
-            jQuery(document.getElementById(divId)).dialog({width: "auto", height: 500});
+            $(document.getElementById(divId)).html(transport);
+            $(document.getElementById(divId)).dialog({width: "auto", height: 500});
         }
     });
 }

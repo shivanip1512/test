@@ -509,7 +509,7 @@ public class ServletUtils {
             throw new RuntimeException("error getting writer from response", ioe);
         }
         writer.println("<script type=\"text/javascript\">");
-        writer.print("jQuery(document).trigger('");
+        writer.print("$(document).trigger('");
         writer.print(eventName);
         writer.print("'");
         if (payload != null) {

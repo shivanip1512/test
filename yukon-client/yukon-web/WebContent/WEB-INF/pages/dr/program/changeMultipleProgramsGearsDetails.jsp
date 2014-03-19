@@ -7,21 +7,21 @@
 <cti:msgScope paths="modules.dr.program.changeMultipleGears">
 
 <script type="text/javascript">
-jQuery(function() {
+$(function() {
    
     submitForm = function() {
         return submitFormViaAjax('drDialog', 'changeGearForm', '<cti:url value="/dr/program/changeMultipleGears"/>');
     }
     
     singleProgramChecked = function(event) {
-        if (jQuery(event.target).is(':checked')) {
-            jQuery(event.target).parent().next().find(".f-useStopGearCheckedTarget").removeAttr("disabled");
+        if ($(event.target).is(':checked')) {
+            $(event.target).parent().next().find(".f-useStopGearCheckedTarget").removeAttr("disabled");
         } else {
-            jQuery(event.target).parent().next().find(".f-useStopGearCheckedTarget").attr("disabled","disabled");
+            $(event.target).parent().next().find(".f-useStopGearCheckedTarget").attr("disabled","disabled");
         }
     }
     
-    jQuery(".f-singleProgramChecked").click(singleProgramChecked); 
+    $(".f-singleProgramChecked").click(singleProgramChecked); 
 
 });
 </script>
@@ -101,7 +101,7 @@ jQuery(function() {
 
     <div class="action-area">
         <cti:button id="okButton" nameKey="ok" classes="primary action" type="submit"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form:form>
 </cti:msgScope>

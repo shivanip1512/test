@@ -18,8 +18,8 @@
     }
     
     function getReport (getReportUrl, redirectUrl) {
-        var reportBtn = jQuery('#b-get-report'),
-            meterErrors = jQuery('#meterReadErrors'),
+        var reportBtn = $('#b-get-report'),
+            meterErrors = $('#meterReadErrors'),
             getReportStartDate = document.getElementsByName('getReportStartDate')[0].value,
             getReportStopDate = document.getElementsByName('getReportStopDate')[0].value,
             paramObj;
@@ -31,7 +31,7 @@
             'getReportStopDate': getReportStopDate
         };
         // make ajax request to run a profile report
-        jQuery.ajax({
+        $.ajax({
             url: getReportUrl,
             data: paramObj,
             type: 'POST'
@@ -52,7 +52,7 @@
             yukon.ui.unbusy(reportBtn);
         });
     }
-jQuery(document).on('click', '#b-get-report', function(event) {
+$(document).on('click', '#b-get-report', function(event) {
     getReport('${getReportUrl}', '${hbcRedirectUrl}');
 });
 </script>

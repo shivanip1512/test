@@ -27,14 +27,14 @@ yukon.modules.dialogConfirm = function (mod) {
         /*---------------------*/
         _init = function () {
             if (!_initialized) {
-                jQuery('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="confirm-message"></span></div>');
+                $('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="confirm-message"></span></div>');
                 _initialized = true;
             }
         },
 
         _show_window = function (event) {
             //cache the jQuery object
-            var element = jQuery(this),
+            var element = $(this),
                 //fetch the data from element
                 args = element.data("args"),
                 buttons = [],
@@ -85,7 +85,7 @@ yukon.modules.dialogConfirm = function (mod) {
                         value = element.val(),
                         name = element.attr('name');
                     if (!(typeof (value) == "undefined") && !(typeof (name) == "undefined")) {
-                        jQuery(form).prepend('<input type="hidden" name="' + name + '" value="' + value + '">');
+                        $(form).prepend('<input type="hidden" name="' + name + '" value="' + value + '">');
                     }
                     form.submit();
                 };
@@ -93,19 +93,19 @@ yukon.modules.dialogConfirm = function (mod) {
             //is the intent to submit a specific form on ok?
             else if (element.attr("data-form")) {
                 actionButton.click = function () {
-                    jQuery(element.attr("data-form"))[0].submit();
+                    $(element.attr("data-form"))[0].submit();
                 };
             }
 
             //inject the message into the dialog
-            jQuery("#yukon_dialog_confirm .confirm-message").html(args.strings.message);
+            $("#yukon_dialog_confirm .confirm-message").html(args.strings.message);
             //show the dialog
-            _current_dialog = jQuery('#yukon_dialog_confirm').dialog(jQuery.extend(defaults, args));
+            _current_dialog = $('#yukon_dialog_confirm').dialog($.extend(defaults, args));
             
             // kindof a hack to get buttons disabled when the action is slow
             if (args.disable_group) {
-                jQuery('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function (idx, button) {
-                    var b = jQuery(button);
+                $('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function (idx, button) {
+                    var b = $(button);
                     b.addClass('f-disable-after-click');
                     b.attr('data-disable-group', args.disable_group);
                     
@@ -167,11 +167,11 @@ yukon.modules.dialogConfirm = function (mod) {
                     'cancel': 'UNDEFINED CANCEL TEXT'}
             };
 
-        jQuery.extend(defaults, args);
+        $.extend(defaults, args);
 
         if (defaults.on) {
             //store the data on the element
-            var element = jQuery(defaults.on);
+            var element = $(defaults.on);
             element.data('args', defaults);
 
             //remove the href redirect for buttons as applied in yukon.js for buttons with 
@@ -188,7 +188,7 @@ yukon.modules.dialogConfirm = function (mod) {
             }
 
             //register the event handler
-            jQuery(document).on(defaults.eventType, defaults.on, _show_window);
+            $(document).on(defaults.eventType, defaults.on, _show_window);
             return true;
         }
         return false;

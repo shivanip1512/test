@@ -10,7 +10,7 @@
 <cti:includeScript link="/JavaScript/yukon.bulk.point.js"/>
     
 <script type="text/javascript">
-jQuery(function(){
+$(function(){
   var sharedPoints = ${sharedPoints};
   doToggleShowSharedPoints(sharedPoints);
 });

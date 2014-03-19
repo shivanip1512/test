@@ -74,13 +74,13 @@
     </c:forEach>
 
 <script>
-    jQuery(function() {
-        jQuery("#${cti:escapeJavaScript(show)}Btn").replaceWith(jQuery("#${cti:escapeJavaScript(show)}Btn").html()); // Remove surrounding anchor tag
-        jQuery("#${cti:escapeJavaScript(sortBy)}Btn").replaceWith(jQuery("#${cti:escapeJavaScript(sortBy)}Btn").html()); // Remove surrounding anchor tag
+    $(function() {
+        $("#${cti:escapeJavaScript(show)}Btn").replaceWith($("#${cti:escapeJavaScript(show)}Btn").html()); // Remove surrounding anchor tag
+        $("#${cti:escapeJavaScript(sortBy)}Btn").replaceWith($("#${cti:escapeJavaScript(sortBy)}Btn").html()); // Remove surrounding anchor tag
 
-          jQuery(document).bind("customDateRangeSubmit", function(event) {
+          $(document).bind("customDateRangeSubmit", function(event) {
              yukon.ui.blockPage();
-             jQuery("#customDateForm").submit();
+             $("#customDateForm").submit();
         });
     });
 </script>

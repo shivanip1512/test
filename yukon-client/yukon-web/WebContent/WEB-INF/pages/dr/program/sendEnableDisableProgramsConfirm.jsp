@@ -7,22 +7,22 @@
 <cti:msgScope paths="modules.dr.program">
 
 <script>
-jQuery(function() {
-    jQuery('#disableAllCheckbox').click(function(){
-        var disable = jQuery(this).is(':checked');
-        jQuery('.disableProgramCheckbox').prop("checked", disable);
+$(function() {
+    $('#disableAllCheckbox').click(function(){
+        var disable = $(this).is(':checked');
+        $('.disableProgramCheckbox').prop("checked", disable);
     });
     
-    jQuery('.disableProgramCheckbox').click(function(event) {
+    $('.disableProgramCheckbox').click(function(event) {
         var allChecked = event.currentTarget.checked;
         if (event.currentTarget.checked) {
-            jQuery('.disableProgramCheckbox').each(function(index, checkbox) {
+            $('.disableProgramCheckbox').each(function(index, checkbox) {
                 if (!checkbox.checked) {
                     allChecked = false;
                 }
             });
         }
-        jQuery('#disableAllCheckbox')[0].checked = allChecked;
+        $('#disableAllCheckbox')[0].checked = allChecked;
     });
 });
 </script>
@@ -91,7 +91,7 @@ jQuery(function() {
     
     <div class="action-area">
         <cti:button nameKey="ok" classes="primary action" type="submit"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#drDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#drDialog').dialog('close');"/>
     </div>
 </form>
 

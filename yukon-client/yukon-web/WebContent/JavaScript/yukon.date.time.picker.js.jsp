@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-jQuery(function(){
+$(function(){
     var cfgLocalization = {
             clearText: "<cti:msg key="yukon.common.js.dateTimePicker.clearText"/>",
             clearStatus: "<cti:msg key="yukon.common.js.dateTimePicker.clearStatus"/>",

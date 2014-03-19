@@ -10,9 +10,9 @@
 <cti:standardPage module="adminSetup" page="config.category">
 
 <script>
-jQuery(function() {
-    jQuery(".f-addCommentBtn").click(function() {
-        jQuery(this).hide().siblings(".f-commentsShowHide").show(200).focus();
+$(function() {
+    $(".f-addCommentBtn").click(function() {
+        $(this).hide().siblings(".f-commentsShowHide").show(200).focus();
     });
 });
 </script>

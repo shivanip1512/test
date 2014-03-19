@@ -52,18 +52,18 @@
                 <c:when test="${pageScope.endAction == 'hide'}">
                     <c:if test="${empty pageScope.submitName}">
                         <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok" type="submit"
-                            onclick="jQuery('#${uniqueId}').dialog('close')" />
+                            onclick="$('#${uniqueId}').dialog('close')" />
                     </c:if>
                     <c:if test="${!empty pageScope.submitName}">
                         <c:if test="${empty pageScope.href}">
                             <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" type="submit" 
-                                onclick="jQuery('#${uniqueId}').dialog('close')"/>
+                                onclick="$('#${uniqueId}').dialog('close')"/>
                         </c:if>
                         <c:if test="${!empty pageScope.href}">
                             <cti:button classes="primary action ${pageScope.styleClass}" nameKey="ok"
                                 name="${pageScope.submitName}" href="${pageScope.href}"
-                                onclick="jQuery('#${uniqueId}').dialog('close')"/>
+                                onclick="$('#${uniqueId}').dialog('close')"/>
                         </c:if>
                     </c:if>
                 </c:when>
@@ -84,7 +84,7 @@
                     </c:if>
                 </c:when>
             </c:choose>
-            <cti:button nameKey="cancel" onclick="jQuery('#${uniqueId}').dialog('close')" />
+            <cti:button nameKey="cancel" onclick="$('#${uniqueId}').dialog('close')" />
         </div>
     </i:simplePopup>
 </cti:msgScope>

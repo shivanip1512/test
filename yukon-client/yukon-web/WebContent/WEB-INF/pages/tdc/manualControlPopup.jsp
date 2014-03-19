@@ -27,7 +27,7 @@
         </tags:nameValueContainer2>
         <div class="action-area">
             <cti:button nameKey="ok" classes="primary f-manualControl-send"/>
-            <cti:button nameKey="close" onclick="jQuery('#tdc-popup').dialog('close');" />
+            <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
     </form:form>
 </cti:msgScope>

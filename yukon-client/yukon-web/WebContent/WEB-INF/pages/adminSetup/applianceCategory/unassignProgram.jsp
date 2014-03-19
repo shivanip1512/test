@@ -22,7 +22,7 @@
 
     <div class="action-area">
         <cti:button type="submit" nameKey="ok" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="jQuery('#acDialog').dialog('close');"/>
+        <cti:button nameKey="cancel" onclick="$('#acDialog').dialog('close');"/>
     </div>
 </form>
 

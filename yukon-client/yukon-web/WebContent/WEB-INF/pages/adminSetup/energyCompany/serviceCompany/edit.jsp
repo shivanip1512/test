@@ -15,7 +15,7 @@
             var canEditDesignationCodes = ${canEditDesignationCodes eq true};
 
             function addDesignationCode() {
-                var designationCode =  jQuery('#newDesignationCode').val();
+                var designationCode =  $('#newDesignationCode').val();
 
                 var str = [];
                 str.push('<div class="f-designation-code f-removable-designation-code">');
@@ -26,77 +26,77 @@
                 str.push('<input type="hidden" value="${serviceCompany.companyId}" name="designationCodes[].serviceCompanyId"/>');
                 str.push('</div>');
 
-                jQuery('#designationCodes').append(str.join(''));
-                jQuery('#newDesignationCode').val('');
+                $('#designationCodes').append(str.join(''));
+                $('#newDesignationCode').val('');
                 adjustIndexes();
             }
 
             // adjust indexes to be sequential for java List
             function adjustIndexes() {
-                jQuery('#designationCodes').children(".f-designation-code").each(function (index) {
-                    jQuery(this).find(":input").each(function() {
-                        var name = jQuery(this).attr("name").replace(/\[.*?\]/, "["+index+"]");
-                        jQuery(this).attr("name", name);
+                $('#designationCodes').children(".f-designation-code").each(function (index) {
+                    $(this).find(":input").each(function() {
+                        var name = $(this).attr("name").replace(/\[.*?\]/, "["+index+"]");
+                        $(this).attr("name", name);
                     });
                 });
             }
 
-            jQuery(function() {
+            $(function() {
                 if (canEditDesignationCodes) {
-                    jQuery('#addDesignationCodeButton').on('click', function (event) {
+                    $('#addDesignationCodeButton').on('click', function (event) {
                         event.stopPropagation();
                         addDesignationCode();
-                        jQuery('#addDesignationCodeButton').prop('disabled', true);
+                        $('#addDesignationCodeButton').prop('disabled', true);
                     });
 
-                    jQuery('#newDesignationCode').on('keyup', function (e) {
+                    $('#newDesignationCode').on('keyup', function (e) {
                         e.stopPropagation();
                         if (this.value.length === 0) {
-                            jQuery('#addDesignationCodeButton').prop('disabled', true);
+                            $('#addDesignationCodeButton').prop('disabled', true);
                         } else {
                             if (e.keyCode === 13) {
                                 addDesignationCode();
-                                jQuery('#addDesignationCodeButton').prop('disabled', true);
+                                $('#addDesignationCodeButton').prop('disabled', true);
                             } else {
-                                jQuery('#addDesignationCodeButton').prop('disabled', false);
+                                $('#addDesignationCodeButton').prop('disabled', false);
                             }
                         }
                         return false;
                     });
 
-                    jQuery('#newDesignationCode').on('keydown', preventSubmitForEnter);
+                    $('#newDesignationCode').on('keydown', preventSubmitForEnter);
                 }
 
-                jQuery('#findDesignationCode').on('keyup', function () {
+                $('#findDesignationCode').on('keyup', function () {
                     //search list for this zip
                     var zipCodeToFind = this.value;
                     var found = false;
                     
                     if (zipCodeToFind.length > 0) {
-                        jQuery('#designationCodes').children('.f-designation-code')
+                        $('#designationCodes').children('.f-designation-code')
                             .find('.f-designation-code-value').each(function () {
                                 var thisCode = this.value;
                                 if(0 === thisCode.indexOf(zipCodeToFind, 0)) {
                                     found = true;
-                                    jQuery(this).parents('.f-designation-code')
+                                    $(this).parents('.f-designation-code')
                                         .addClass('success fwb')
                                         .removeClass('disabled');
                                 } else {
-                                    jQuery(this).parents('.f-designation-code')
+                                    $(this).parents('.f-designation-code')
                                         .addClass('disabled')
                                         .removeClass('success fwb');
                                 }
                             });
 
                         if (found) {
-                            jQuery('#findDesignationCode').addClass('success').removeClass('error');
+                            $('#findDesignationCode').addClass('success').removeClass('error');
                         } else {
-                            jQuery('#findDesignationCode').addClass('error').removeClass('success');
+                            $('#findDesignationCode').addClass('error').removeClass('success');
                         }
 
                     } else {
-                        jQuery('#findDesignationCode').removeClass('error success');
-                        jQuery('.f-designation-code').removeClass('disabled error success fwb');
+                        $('#findDesignationCode').removeClass('error success');
+                        $('.f-designation-code').removeClass('disabled error success fwb');
                     }
                      });
 
@@ -107,9 +107,9 @@
                     }
                 };
 
-                jQuery('#findDesignationCode').on('keydown', preventSubmitForEnter);
-                jQuery('#serviceCompanyForm').on('click', '.f-remove-designation-code', function() {
-                    jQuery(this).parent('.f-removable-designation-code').slideUp(150)
+                $('#findDesignationCode').on('keydown', preventSubmitForEnter);
+                $('#serviceCompanyForm').on('click', '.f-remove-designation-code', function() {
+                    $(this).parent('.f-removable-designation-code').slideUp(150)
                         .promise().done(function () {
                             this.remove();
                             adjustIndexes();

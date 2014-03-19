@@ -5,39 +5,39 @@
  * 
  * @requires jQuery 1.8.3+
  */
-jQuery(function() {
+$(function() {
     
     /** Handle clicks on menu triggers */
-    jQuery(document).on('click', '.dropdown-trigger', function(e) {
+    $(document).on('click', '.dropdown-trigger', function(e) {
         
-        jQuery('.dropdown-trigger').removeClass('menu-open');
+        $('.dropdown-trigger').removeClass('menu-open');
         
-        var target = jQuery(this),
+        var target = $(this),
             menu = target.find('.dropdown-menu');
         
         /** Get menu, do the body prepending at this point since the menu may
          * have been ajaxed in. */
         if (menu[0]) { // The menu hasn't been moved to the body yet
             target.data({'menu': menu});
-            jQuery('body').prepend(menu); // prepend will move, not clone
+            $('body').prepend(menu); // prepend will move, not clone
         } else { // The menu has been opened once already
             menu = target.data('menu');
         }
 
         if (menu.is(':visible')) {
-            jQuery('ul.dropdown-menu').hide();
+            $('ul.dropdown-menu').hide();
             /*
              * We want to propagate the click event if it was on a link.
              * The target may have been an icon inside that link, 
              * so  we can't just check if the target has an href.
              */
-            if ( jQuery(e.target).closest('[href]').length !== 0 ) {
+            if ( $(e.target).closest('[href]').length !== 0 ) {
                 return true;
             }
             return false;
         }
 
-        jQuery('ul.dropdown-menu').hide();
+        $('ul.dropdown-menu').hide();
         if (target.closest('.dropdown-trigger').hasClass('ajax-menu')) {
             ajaxMenuOpen(target, e);
             return false;
@@ -52,14 +52,14 @@ jQuery(function() {
      */
     function positionDropdownMenu(menu, container) {
         
-        var left = jQuery(window).scrollLeft(),
+        var left = $(window).scrollLeft(),
             offset = container.offset(),
             width = menu.width();
         
         container.addClass('menu-open');
 
         menu.removeAttr('style');
-        menu.css({top: offset.top + container.height() + 2, right: (jQuery(window).width() - offset.left - container.width())});
+        menu.css({top: offset.top + container.height() + 2, right: ($(window).width() - offset.left - container.width())});
 
         menu.toggle();
 
@@ -81,9 +81,9 @@ jQuery(function() {
             target.find('.icon-cog').removeClass('icon-cog').addClass('icon-spinner');
             params = {};
             target.closest('.dropdown-trigger').prev('.params').find('input').each(function() {
-                params[jQuery(this).attr('name')] = jQuery(this).val();
+                params[$(this).attr('name')] = $(this).val();
             });
-            jQuery.ajax({
+            $.ajax({
                 url: yukon.url('/contextualMenu/list'),
                 type: 'GET',
                 data: params
@@ -109,32 +109,32 @@ jQuery(function() {
     }
     
     /** Close all menus on click except when clicking a criteria menu option */
-    jQuery(document).click(function(e) {
-        if (jQuery(e.target).closest('.criteria-menu').length === 0) {
+    $(document).click(function(e) {
+        if ($(e.target).closest('.criteria-menu').length === 0) {
             /* click was not inside a criteria menu, hide all menus. */
-            jQuery('ul.dropdown-menu').hide();
-            jQuery('.dropdown-trigger').removeClass('menu-open');
+            $('ul.dropdown-menu').hide();
+            $('.dropdown-trigger').removeClass('menu-open');
         }
     });
     
     /** Close all menus when esc key is hit */
-    jQuery(document).keyup(function(e) {
+    $(document).keyup(function(e) {
         if (e.which == 27) { // esc
-            jQuery('ul.dropdown-menu').hide();
-            jQuery('.dropdown-trigger').removeClass('menu-open');
+            $('ul.dropdown-menu').hide();
+            $('.dropdown-trigger').removeClass('menu-open');
         }
     });
     
     /** Show menu in tables on right click */
-    jQuery(document).on('contextmenu', '.has-actions tr', function(event) {
+    $(document).on('contextmenu', '.has-actions tr', function(event) {
         event.preventDefault();
-        jQuery(this).find('.dropdown-trigger').trigger('click');
+        $(this).find('.dropdown-trigger').trigger('click');
     });
     
     /** Handle option selections for criteria buttons */
-    jQuery(document).on('click', '.criteria-menu .criteria-option', function(e) {
+    $(document).on('click', '.criteria-menu .criteria-option', function(e) {
         
-        var option = jQuery(e.target),
+        var option = $(e.target),
             menu = option.closest('.criteria-menu');
         
         updateCriteriaButton(menu);
@@ -156,7 +156,7 @@ jQuery(function() {
             button.find('.criteria-value').text(button.data('noneText'));
         } else {
             checkedOptions.each(function (idx, item) {
-                buttonText += jQuery(item.parentElement).text();
+                buttonText += $(item.parentElement).text();
                 if (idx != checkedOptions.length - 1) {
                     buttonText += ', '; 
                 }
@@ -166,8 +166,8 @@ jQuery(function() {
     }
     
     /** Update criteria buttons on page load */
-    jQuery('.dropdown-trigger').each(function(idx, container) {
-        var container = jQuery(container),
+    $('.dropdown-trigger').each(function(idx, container) {
+        var container = $(container),
             menu = container.find('.dropdown-menu');
         
         if (menu.is('.criteria-menu')) {

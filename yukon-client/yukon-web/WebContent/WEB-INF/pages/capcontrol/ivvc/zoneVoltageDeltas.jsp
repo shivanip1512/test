@@ -10,59 +10,59 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css" />
 
 	<script>
-		jQuery(document).ready(function() {
-		    jQuery(document).on('click', '.viewDelta', function(e) {
-				var currentTarget = jQuery(e.currentTarget); 
+		$(document).ready(function() {
+		    $(document).on('click', '.viewDelta', function(e) {
+				var currentTarget = $(e.currentTarget); 
 				currentTarget.hide();
 				currentTarget.next().show();
 				currentTarget.next().find("input").focus();
 				enableButtons();
 			});
 
-		    jQuery(document).on('keydown', '.editDelta input', function(e) {
+		    $(document).on('keydown', '.editDelta input', function(e) {
 				if (e.which == 27) {
 					/* Escape Key */
 					cancelEdit(e);
 				}
 			});
 		    
-		    jQuery(document).on('disable-buttons', function() {
+		    $(document).on('disable-buttons', function() {
 		        disableButtons();
 		    });
 			
-			jQuery(document).on('click', 'input[type="checkbox"].editableStaticDelta', function(e) {
-				jQuery(e.currentTarget).toggleClass("staticChanged");
-				jQuery(e.currentTarget).parent("label").toggleClass("staticChangedLabel");
+			$(document).on('click', 'input[type="checkbox"].editableStaticDelta', function(e) {
+				$(e.currentTarget).toggleClass("staticChanged");
+				$(e.currentTarget).parent("label").toggleClass("staticChangedLabel");
 
-				if (jQuery(".editDelta:visible").length == 0 &&
-					jQuery("input.staticChanged").length == 0) {
+				if ($(".editDelta:visible").length == 0 &&
+					$("input.staticChanged").length == 0) {
 				    disableButtons();
 				} else {
 				    enableButtons();
 				}
 			});
 
-			jQuery(document).on('click', '.cancelEdit', cancelEdit);
+			$(document).on('click', '.cancelEdit', cancelEdit);
 
-			jQuery(document).on('click','#deltaReset', function(e) {
-				jQuery(".editDelta").hide();
-				jQuery(".viewDelta").show();
+			$(document).on('click','#deltaReset', function(e) {
+				$(".editDelta").hide();
+				$(".viewDelta").show();
 				
-				jQuery("input[type='checkbox']").removeClass("staticChanged");
-				jQuery("label").removeClass("staticChangedLabel");
+				$("input[type='checkbox']").removeClass("staticChanged");
+				$("label").removeClass("staticChangedLabel");
 			});
 
-			jQuery(document).on('click','#deltaSubmitBtn', function() {
-				if (jQuery(".editDelta:visible").length == 0 &&
-						jQuery("input.staticChanged").length == 0) {
+			$(document).on('click','#deltaSubmitBtn', function() {
+				if ($(".editDelta:visible").length == 0 &&
+						$("input.staticChanged").length == 0) {
 				    disableButtons();
 					return;
 				}
 	
 				var inputs = [];
 				var index = 0;
-				jQuery("form#deltaForm tr").each(function() {
-					var tr = jQuery(this);
+				$("form#deltaForm tr").each(function() {
+					var tr = $(this);
 					var staticChanged = tr.find("input.staticChanged");
 					var editDeltaInput = tr.find(".editDelta:visible input");
 	
@@ -83,27 +83,27 @@
 				});
 				
 				if (inputs.length > 0) {
-					jQuery('form#deltaForm').append(inputs.join(''));
+					$('form#deltaForm').append(inputs.join(''));
 					yukon.ui.blockPage();
-					jQuery('form#deltaForm').submit();
+					$('form#deltaForm').submit();
 				}
 			});
 		});
 		
 		function cancelEdit(e) {
-			jQuery(e.currentTarget).closest("td").find(".editDelta").hide();
-			jQuery(e.currentTarget).closest("td").find(".viewDelta").show();
-			if (jQuery(".editDelta:visible").length == 0 &&
-				jQuery("input.staticChanged").length == 0) {
+			$(e.currentTarget).closest("td").find(".editDelta").hide();
+			$(e.currentTarget).closest("td").find(".viewDelta").show();
+			if ($(".editDelta:visible").length == 0 &&
+				$("input.staticChanged").length == 0) {
 			    disableButtons();
 			}
 		}
 		
 		function disableButtons(){
-		    jQuery("#deltaFormButtons").find('button').prop('disabled', true);
+		    $("#deltaFormButtons").find('button').prop('disabled', true);
 		}
 		function enableButtons(){
-		    jQuery("#deltaFormButtons").find('button').prop('disabled', false);
+		    $("#deltaFormButtons").find('button').prop('disabled', false);
 		}
 	</script>
 

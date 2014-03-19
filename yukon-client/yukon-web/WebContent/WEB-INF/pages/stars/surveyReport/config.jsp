@@ -22,50 +22,50 @@ var answerMessagesById = {};
 
 
 function reportTypeChanged() {
-    if (jQuery('#reportTypeSelect').val() === 'detail') {
-        jQuery('#accountNumberRow').show();
-        jQuery('#deviceSerialNumberRow').show();
+    if ($('#reportTypeSelect').val() === 'detail') {
+        $('#accountNumberRow').show();
+        $('#deviceSerialNumberRow').show();
     } else {
-        jQuery('#accountNumberRow').hide();
-        jQuery('#deviceSerialNumberRow').hide();
+        $('#accountNumberRow').hide();
+        $('#deviceSerialNumberRow').hide();
     }
 }
 
 var questionsById = ${cti:jsonString(questionsById)};
 
 function selectAllChanged() {
-    var checkboxes = jQuery('#answerList input'),
-        checked = jQuery('#selectAll').prop("checked"),
+    var checkboxes = $('#answerList input'),
+        checked = $('#selectAll').prop("checked"),
         index;
     for (index = 0; index < checkboxes.length; index++) {
-        if (jQuery(checkboxes[index]).attr('id') !== 'selectAll') {
-            jQuery(checkboxes[index]).prop('checked', checked);
+        if ($(checkboxes[index]).attr('id') !== 'selectAll') {
+            $(checkboxes[index]).prop('checked', checked);
         }
     }
 }
 
 function answerCheckboxChanged() {
     var selectAllChecked = true,
-        checkboxes = jQuery('#answerList input'),
+        checkboxes = $('#answerList input'),
         index;
     for (index = 0; index < checkboxes.length; index++) {
-        if (jQuery(checkboxes[index]).attr('id') !== 'selectAll') {
-            if (!jQuery(checkboxes[index]).prop("checked")) {
+        if ($(checkboxes[index]).attr('id') !== 'selectAll') {
+            if (!$(checkboxes[index]).prop("checked")) {
                 selectAllChecked = false;
                 break;
             }
         }
     }
-    jQuery('#selectAll').prop("checked", selectAllChecked);
+    $('#selectAll').prop("checked", selectAllChecked);
 }
 
 function questionChanged() {
-    var answerList = jQuery('#answerList');
+    var answerList = $('#answerList');
     answerList.remove('.generated');
-    var questionId = jQuery('#questionSelect').val();
+    var questionId = $('#questionSelect').val();
     var question = questionsById[questionId];
     if (question.questionType === 'DROP_DOWN') {
-        var includeOtherAnswersItem = jQuery('#includeOtherAnswersItem');
+        var includeOtherAnswersItem = $('#includeOtherAnswersItem');
         for (var index = 0; index < question.answers.length; index++) {
             var listItem = document.createElement('li');
             listItem.className = 'generated';
@@ -83,25 +83,25 @@ function questionChanged() {
             includeOtherAnswersItem.hide();
         }
         if (question.answerRequired) {
-            jQuery('#includeUnansweredItem').hide();
+            $('#includeUnansweredItem').hide();
         } else {
-            jQuery('#includeUnansweredItem').show();
+            $('#includeUnansweredItem').show();
         }
-        jQuery('#answersRow').show();
+        $('#answersRow').show();
     } else {
-        jQuery('#answersRow').hide();
+        $('#answersRow').hide();
     }
     answerCheckboxChanged();
     // show all answers by default
-    jQuery('#selectAll').prop("checked", true);
+    $('#selectAll').prop("checked", true);
     selectAllChanged();
 }
 
 function programsChosen(programs) {
     if (programs && programs.length) {
-        jQuery('#noProgramsSelected').hide();
+        $('#noProgramsSelected').hide();
     } else {
-        jQuery('#noProgramsSelected').show();
+        $('#noProgramsSelected').show();
     }
     return true;
 }
@@ -111,27 +111,27 @@ function updateFieldsFromBackingBean() {
         index;
 
     //deselect everything
-    jQuery("#answerList input:checkbox").each(
+    $("#answerList input:checkbox").each(
         function(idx, el) {
-            jQuery(el).prop("checked", false);
+            $(el).prop("checked", false);
     });
     
     initialAnswers = ${cti:jsonString(reportConfig.answerId)};
     for (index = 0; index < initialAnswers.length; index++) {
-        jQuery('#answerId_' + initialAnswers[index]).prop("checked", true);
+        $('#answerId_' + initialAnswers[index]).prop("checked", true);
     }
 
     if(${cti:jsonString(reportConfig.includeUnanswered)}) {
-        jQuery('#includeUnanswered').prop("checked", true);
+        $('#includeUnanswered').prop("checked", true);
     }
     
     if(${cti:jsonString(reportConfig.includeOtherAnswers)}) {
-        jQuery('#includeOtherAnswers').prop("checked", true);
+        $('#includeOtherAnswers').prop("checked", true);
     }
 
     //if no report type exists, select all
     if(!${cti:jsonString(reportConfig.reportType)}) {
-        jQuery('#selectAll').prop("checked", true);
+        $('#selectAll').prop("checked", true);
         selectAllChanged();
     } else {
         answerCheckboxChanged();
@@ -219,7 +219,7 @@ function updateFieldsFromBackingBean() {
 
 <script type="text/javascript">
 
-  jQuery(function() {
+  $(function() {
     questionChanged();
     reportTypeChanged();
     updateFieldsFromBackingBean();

@@ -15,17 +15,17 @@ yukon.modules.FieldHelper = function (mod) {
     mod.init = function () {
         if (!_initialized) {
             //setup select elements
-            jQuery('.focusableFieldHolder select').bind('change', this.focusSelect);
-            jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus active', this.focusSelect);
-            jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur mouseleave', this.blurSelect);
-            jQuery('.focusableFieldHolder select, .focusableFieldHolder a, .focusableFieldHolder input').bind('mouseenter', this.showTooltip);
+            $('.focusableFieldHolder select').bind('change', this.focusSelect);
+            $('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus active', this.focusSelect);
+            $('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur mouseleave', this.blurSelect);
+            $('.focusableFieldHolder select, .focusableFieldHolder a, .focusableFieldHolder input').bind('mouseenter', this.showTooltip);
 
             //setup input elements
-            jQuery('.focusableFieldHolder input').bind('blur change mouseleave', this.blurInput);
-            jQuery('.focusableFieldHolder input').bind('focus', this.focusInput);
+            $('.focusableFieldHolder input').bind('blur change mouseleave', this.blurInput);
+            $('.focusableFieldHolder input').bind('focus', this.focusInput);
 
             //trigger a blur event on each element -> performs an initial render
-            jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
+            $('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
             _initialized = true;
         }
     };
@@ -34,9 +34,9 @@ yukon.modules.FieldHelper = function (mod) {
         var inputField,
             defaultField;
         clearTimeout(_timeout);
-        inputField = jQuery(event.currentTarget);
+        inputField = $(event.currentTarget);
         defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
-        jQuery('#descriptionPopup').hide();
+        $('#descriptionPopup').hide();
         if (!defaultField.length) {
             return;
         }
@@ -52,9 +52,9 @@ yukon.modules.FieldHelper = function (mod) {
         var inputField,
             defaultField;
         clearTimeout(_timeout);
-        inputField = jQuery(event.currentTarget);
+        inputField = $(event.currentTarget);
         defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
-        jQuery('#descriptionPopup').hide();
+        $('#descriptionPopup').hide();
         if (!defaultField.length) {
             return;
         }
@@ -69,7 +69,7 @@ yukon.modules.FieldHelper = function (mod) {
         var inputField,
             defaultField;
         mod.showPointingPopup(event);
-        inputField = jQuery(event.currentTarget);
+        inputField = $(event.currentTarget);
         defaultField = inputField.closest('span.focusableFieldHolder').next('input[type=hidden]');
         inputField.removeClass('usingNonDefaultValue');
         if (!defaultField.length) {
@@ -88,11 +88,11 @@ yukon.modules.FieldHelper = function (mod) {
     //just show a popup and remove the class name
     mod.focusSelect = function (event) {
         mod.showPointingPopup(event);
-        jQuery(event.currentTarget).removeClass('usingNonDefaultValue');
+        $(event.currentTarget).removeClass('usingNonDefaultValue');
     };
 
     mod.showPointingPopup = function (event) {
-        var popup = jQuery("#descriptionPopup"),
+        var popup = $("#descriptionPopup"),
             popupString,
             target,
             popupLeft,
@@ -108,22 +108,22 @@ yukon.modules.FieldHelper = function (mod) {
                 popupString.push('<div class="pointing-popup-content" id="descriptionPopup_content">');
                 popupString.push('</div>');
             popupString.push('</div>');
-            jQuery('body').append(popupString.join(''));
+            $('body').append(popupString.join(''));
         }
-        target = jQuery(event.target);
+        target = $(event.target);
         popupLeft = target.offset().left + target.width() + 12;
         left = popupLeft + 'px';
         top = (target.offset().top -2) + 'px';
 
-        jQuery('#descriptionPopup').css({left:left, top:top});
+        $('#descriptionPopup').css({left:left, top:top});
 
         fieldDesc = target.closest('.focusableFieldHolder').nextAll('span.focused-field-description');
-        jQuery('#descriptionPopup_content').html(fieldDesc.html());
-        jQuery('#descriptionPopup').show();
+        $('#descriptionPopup_content').html(fieldDesc.html());
+        $('#descriptionPopup').show();
     };
 };
 
-jQuery(document).ready(function() {
+$(document).ready(function() {
     yukon.namespace('yukon.modules.FieldHelper');
     try {
         Sandbox('FieldHelper', function (mod) {

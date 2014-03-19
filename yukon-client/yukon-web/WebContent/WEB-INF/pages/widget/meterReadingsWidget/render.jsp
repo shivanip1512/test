@@ -59,7 +59,7 @@ function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
     var fullIdentifier = allIdentifierValues.fullIdentifier;
 
     // adjust the drop down (won't add duplicates)
-    yukon.ui.util.yukonGeneral_addOptionToTopOfSelect(jQuery(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
+    yukon.ui.util.yukonGeneral_addOptionToTopOfSelect($(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
 
     // update difference
     ${widgetParameters.widgetId}_updateDifference();
@@ -78,17 +78,17 @@ function ${widgetParameters.widgetId}_updateDifference() {
     if (currentUsage == null) {
         return false;
     }
-    var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
+    var previousVal = $(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
     var totalUsage = currentUsage - previousVal;
-    var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
+    var elem = $(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
     var previousTotalUsage = elem.data("totalUsage"); 
     elem.data("totalUsage", totalUsage);
     elem.html(totalUsage.toFixed(3));
     //only makes sense to draw attention to the updated value if it actually changed
-    if(previousVal && !jQuery(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
-        jQuery(elem).flashYellow(3.5);
+    if(previousVal && !$(elem).hasClass('untouched') && totalUsage != previousTotalUsage){
+        $(elem).flashYellow(3.5);
     }
-    jQuery(elem).removeClass('untouched');
+    $(elem).removeClass('untouched');
 }
 </script>
 

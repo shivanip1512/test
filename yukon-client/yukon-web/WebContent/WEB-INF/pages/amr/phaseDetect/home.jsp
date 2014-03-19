@@ -10,22 +10,22 @@
 
     <script type="text/javascript">
         function selectThisSub() {
-            var selection = jQuery('#substations').val(),
+            var selection = $('#substations').val(),
                 params = {'substationId': selection};
-            jQuery('#selectedSub').val(selection);
-            jQuery.ajax({
+            $('#selectedSub').val(selection);
+            $.ajax({
                 url: '${routesUrl}',
                 type: 'GET',
                 data: params
             }).done( function (data, textStatus, jqXHR) {
-                jQuery('#routesDiv').html(data);
+                $('#routesDiv').html(data);
                 checkRoutes();
             });
         }
 
         function checkRoutes () {
-            var button = jQuery('#nextButton'),
-                checkBoxes = jQuery('input[id^="read_route_"]'),
+            var button = $('#nextButton'),
+                checkBoxes = $('input[id^="read_route_"]'),
                 checkedCount = 0,
                 numOfRoutes,
                 i,
@@ -37,29 +37,29 @@
                 /* Check to see if they have any selected */
                 for (i = 0; i < checkBoxes.length; i += 1) {
                     checkBox = checkBoxes[i];
-                    if (jQuery(checkBox).prop('checked')) {
+                    if ($(checkBox).prop('checked')) {
                         checkedCount += 1;
                     }
                 }
                 if (checkedCount < 1) {
                     button.prop({'disabled': true});
-                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
-                    jQuery('#noRouteSelectedErrorDiv').show();
+                    $('#subWithNoRoutesSelectedErrorDiv').hide();
+                    $('#noRouteSelectedErrorDiv').show();
                 } else {
-                    jQuery('#noRouteSelectedErrorDiv').hide();
-                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
+                    $('#noRouteSelectedErrorDiv').hide();
+                    $('#subWithNoRoutesSelectedErrorDiv').hide();
                     button.prop({'disabled': false});
                 }
             } else {
                 /* If they have a sub selected show error msg */
                 button.prop({'disabled': true});
-                selection = jQuery('#substations').val(); 
+                selection = $('#substations').val(); 
                 if (selection == '-1') {
-                    jQuery('#noRouteSelectedErrorDiv').hide();
-                    jQuery('#subWithNoRoutesSelectedErrorDiv').hide();
+                    $('#noRouteSelectedErrorDiv').hide();
+                    $('#subWithNoRoutesSelectedErrorDiv').hide();
                 } else {
-                    jQuery('#noRouteSelectedErrorDiv').hide();
-                    jQuery('#subWithNoRoutesSelectedErrorDiv').show();
+                    $('#noRouteSelectedErrorDiv').hide();
+                    $('#subWithNoRoutesSelectedErrorDiv').show();
                 }
             }
         }

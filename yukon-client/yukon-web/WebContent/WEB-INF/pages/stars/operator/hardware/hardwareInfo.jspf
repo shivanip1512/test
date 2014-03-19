@@ -9,27 +9,27 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 
 <script type="text/javascript">
-jQuery(document).on('click', '#newButton', function(event) {
+$(document).on('click', '#newButton', function(event) {
     var deviceNameInput;
-    jQuery('#twoWayPickerContainer').hide();
-    jQuery('#newTwoWayDeviceContainer').show();
-    deviceNameInput = jQuery('#twoWayDeviceName');
+    $('#twoWayPickerContainer').hide();
+    $('#newTwoWayDeviceContainer').show();
+    deviceNameInput = $('#twoWayDeviceName');
     deviceNameInput.val('');
     deviceNameInput.focus();
-    jQuery('#creatingNewTwoWayDevice').val(true);
+    $('#creatingNewTwoWayDevice').val(true);
 });
 
-jQuery(document).on('click', '#chooseButton', function(event) {
-    jQuery('#twoWayPickerContainer').show();
-    jQuery('#newTwoWayDeviceContainer').hide();
-    jQuery('#creatingNewTwoWayDevice').val(false);
+$(document).on('click', '#chooseButton', function(event) {
+    $('#twoWayPickerContainer').show();
+    $('#newTwoWayDeviceContainer').hide();
+    $('#creatingNewTwoWayDevice').val(false);
 });
 
 function updateServiceCompanyInfo() {
     var url = '/stars/operator/hardware/serviceCompanyInfo';
     var serviceCompanyId = 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            jQuery('#serviceCompanyId').val();
+            $('#serviceCompanyId').val();
         </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
@@ -38,18 +38,18 @@ function updateServiceCompanyInfo() {
         
     if (serviceCompanyId > 0) {
         var params = {'serviceCompanyId' : serviceCompanyId};
-        jQuery.ajax({
+        $.ajax({
             url: url,
             data: params
         }).done(function(data, status, xhrobj) {
-            jQuery('#serviceCompanyContainer').html(data).show();
+            $('#serviceCompanyContainer').html(data).show();
         });
     } else {
-        jQuery('#serviceCompanyContainer').html('');
+        $('#serviceCompanyContainer').html('');
     }
 }
 
-jQuery(function() { updateServiceCompanyInfo();});
+$(function() { updateServiceCompanyInfo();});
 </script>
         
 <form:form id="updateForm" commandName="hardware" action="${action}">

@@ -19,13 +19,13 @@
 			    noStatsDivName = '#' + 'noStatsDiv_' + '${id}';
 
 			// function is called before these may exists, avoid js error
-			if (jQuery(statsDivName).length !== 0 && jQuery(noStatsDivName).length !== 0) {
+			if ($(statsDivName).length !== 0 && $(noStatsDivName).length !== 0) {
 				if (requestCount > 0) {
-					jQuery(statsDivName).show();
-					jQuery(noStatsDivName).hide();
+					$(statsDivName).show();
+					$(noStatsDivName).hide();
 				} else {
-					jQuery(statsDivName).hide();
-					jQuery(noStatsDivName).show();
+					$(statsDivName).hide();
+					$(noStatsDivName).show();
 				}
 			}
         };

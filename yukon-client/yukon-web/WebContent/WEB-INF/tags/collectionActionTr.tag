@@ -15,7 +15,7 @@
         <form method="get" action="${action}" id="${thisId}">
             <input type="hidden" name="${pageScope.inputName}" value="${pageScope.inputValue}" />
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            <a href="javascript:jQuery('#${thisId}').submit();" class="wsnw">${fn:escapeXml(buttonValue)}</a>
+            <a href="javascript:$('#${thisId}').submit();" class="wsnw">${fn:escapeXml(buttonValue)}</a>
         </form>
     </td>
     <td style="vertical-align: top;padding-right: 1px;padding-bottom: 10px;">${description}</td>

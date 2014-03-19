@@ -33,7 +33,7 @@
     function recordNameValue_${id}(node) {
         // save group name
         var nodeValue = node.data.metadata["${nodeValueName}"];
-        jQuery(document.getElementById("${fieldId}")).val(nodeValue);
+        $(document.getElementById("${fieldId}")).val(nodeValue);
         selectedNodeId_${id} = node;
     }
     
@@ -42,19 +42,19 @@
             alert('${pageScope.noSelectionAlertText}');
             return false;
         }
-        saveValue_${id} = jQuery(document.getElementById('${fieldId}')).val();
+        saveValue_${id} = $(document.getElementById('${fieldId}')).val();
         closeWindow_${id}();
         ${pageScope.submitCallback}
     }
     
     function cancelNodeSelection_${id}() {
         selectedNodeId_${id} = null;
-        jQuery(document.getElementById("${fieldId}")).val(saveValue_${id});
+        $(document.getElementById("${fieldId}")).val(saveValue_${id});
         closeWindow_${id}();
     }
     
     function closeWindow_${id}() {
-        jQuery(document.getElementById("window_${id}")).dialog("close");
+        $(document.getElementById("window_${id}")).dialog("close");
     }
 
 </script>

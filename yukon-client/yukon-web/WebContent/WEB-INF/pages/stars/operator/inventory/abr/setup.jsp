@@ -10,19 +10,19 @@
 <cti:standardPage module="operator" page="abr.setup">
 
 <script type="text/javascript">
-jQuery(document).on('click', 'a.failedItems', function() {
-    jQuery.ajax({
+$(document).on('click', 'a.failedItems', function() {
+    $.ajax({
         url: 'viewFailed',
         data: {"taskId": '${task.taskId}'},
         success: function(data) {
-            jQuery('#failedContainer').html(data);
+            $('#failedContainer').html(data);
         }
     });
 });
 
 function taskFinished() {
-    jQuery('#cancelTaskBtn').hide();
-    jQuery('#homeLink').show();
+    $('#cancelTaskBtn').hide();
+    $('#homeLink').show();
 }
 </script>
 

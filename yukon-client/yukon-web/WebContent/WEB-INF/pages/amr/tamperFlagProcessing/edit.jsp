@@ -12,14 +12,14 @@
 <script type="text/javascript">
 
     function deleteTamperFlagMonitor() {
-        jQuery("button[data-disable-group=actionButtons]").each( function(){
+        $("button[data-disable-group=actionButtons]").each( function(){
             this.disabled = true;
         });
-        jQuery('#monitorDeleteForm').submit();
+        $('#monitorDeleteForm').submit();
     }
 
     function rewriteTamperFlagGroupName(textEl) {
-        jQuery('#tamperFlagGroupNameDiv').text('${tamperFlagGroupBase}' + textEl.value);
+        $('#tamperFlagGroupNameDiv').text('${tamperFlagGroupBase}' + textEl.value);
     }
     
 </script>
@@ -101,7 +101,7 @@
                         <c:if test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
                             <c:set var="toggleText" value="disable"/>
                         </c:if>
-                        <cti:button nameKey="${toggleText}" onclick="jQuery('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
+                        <cti:button nameKey="${toggleText}" onclick="$('#toggleEnabledForm').submit();" busy="true" data-disable-group="actionButtons"/>
                         <cti:button id="deleteButton" nameKey="delete" onclick="deleteTamperFlagMonitor(${tamperFlagMonitorId});" busy="true" data-disable-group="actionButtons" classes="delete"/>
                         <d:confirm on="#deleteButton" nameKey="confirmDelete"/>
                         <cti:url var="backUrl" value="/amr/tamperFlagProcessing/process/process">
