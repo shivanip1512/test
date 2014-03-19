@@ -11,21 +11,27 @@
         <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
             <cti:checkRolesAndProperties value="BULK_IMPORT_OPERATION">
                 <div class="stacked clear">
-                    <a href="/bulk/import/upload" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton"/></a>
+                    <a href="<cti:url value="/bulk/import/upload"/>" class="described">
+                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton"/>
+                    </a>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkImportButton.description"/>
                 </div>
             </cti:checkRolesAndProperties>
             
             <cti:checkRolesAndProperties value="BULK_UPDATE_OPERATION">
                 <div class="stacked clear">
-                    <a href="/bulk/update/upload" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton"/></a>
+                    <a href="<cti:url value="/bulk/update/upload"/>" class="described">
+                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton"/>
+                    </a>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkUpdateButton.description"/>
                 </div>
             </cti:checkRolesAndProperties>
             
             <cti:checkRolesAndProperties value="ADD_REMOVE_POINTS">
                 <div class="stacked clear">
-                    <a href="/bulk/pointImport/upload" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton"/></a>
+                    <a href="<cti:url value="/bulk/pointImport/upload"/>" class="described">
+                        <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton"/>
+                    </a>
                     <i:inline key="yukon.common.device.bulk.bulkHome.bulkPointImportButton.description"/>
                 </div>
             </cti:checkRolesAndProperties>
@@ -33,28 +39,36 @@
             
         <cti:checkRolesAndProperties value="FDR_TRANSLATION_MANAGER">
             <div class="stacked clear">
-                <a href="/bulk/fdrTranslationManager/home" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton"/></a>
+                <a href="<cti:url value="/bulk/fdrTranslationManager/home"/>" class="described">
+                    <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton"/>
+                </a>
                 <i:inline key="yukon.common.device.bulk.bulkHome.manageFDRTranslationsButton.description"/>
             </div>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="IMPORTER_ENABLED">
             <div class="stacked clear">
-                <a href="/amr/bulkimporter/home" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.legacyImporter"/></a>
+                <a href="<cti:url value="/amr/bulkimporter/home"/>" class="described">
+                    <i:inline key="yukon.common.device.bulk.bulkHome.legacyImporter"/>
+                </a>
                 <i:inline key="yukon.common.device.bulk.bulkHome.legacyImporter.description"/>
             </div>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="CAP_CONTROL_IMPORTER">
             <div class="stacked clear">
-                <a href="/capcontrol/import/view" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.voltVarImporter"/></a>
+                <a href="<cti:url value="/capcontrol/import/view"/>" class="described">
+                    <i:inline key="yukon.common.device.bulk.bulkHome.voltVarImporter"/>
+                </a>
                 <i:inline key="yukon.common.device.bulk.bulkHome.voltVarImporter.description"/>
             </div>
         </cti:checkRolesAndProperties>
         
         <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
             <div class="stacked clear">
-                <a href="/stars/operator/account/accountImport" class="described"><i:inline key="yukon.common.device.bulk.bulkHome.assetsImporter"/></a>
+                <a href="<cti:url value="/stars/operator/account/accountImport"/>" class="described">
+                    <i:inline key="yukon.common.device.bulk.bulkHome.assetsImporter"/>
+                </a>
                 <i:inline key="yukon.common.device.bulk.bulkHome.assetsImporter.description"/>
             </div>
         </cti:checkRolesAndProperties>

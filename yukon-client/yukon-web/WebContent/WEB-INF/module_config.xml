@@ -961,6 +961,7 @@
                                 </pages>
                             </page>
                             <page name="survey.list" type="BASIC" contributeToMenu="true">
+                                <requireRoleProperty value="OPERATOR_SURVEY_EDIT"/>
                                 <link>/stars/survey/list?ecId=${ecId}</link>
                                 <pages>
                                     <page name="survey.edit" type="DETAIL">

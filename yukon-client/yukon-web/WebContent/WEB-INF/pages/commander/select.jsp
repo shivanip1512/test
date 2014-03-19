@@ -76,10 +76,10 @@
         });
     </script>
     
-    <cti:url var="baseUrl" value="/commander/select"/>
+    <c:set var="baseUrl" value="/commander/select"/>
     
     <tags:boxContainer2 nameKey="deviceSearch">
-        <form id="filterForm" action="${baseUrl}">
+        <form id="filterForm" action="<cti:url value="${baseUrl}"/>">
             <input type="hidden" name="startIndex" value="${deviceSearchResults.startIndex}"> 
             <input type="hidden" name="itemsPerPage" value="${deviceSearchResults.count}">
             <input type="hidden" name="orderBy" value="${orderBy}">

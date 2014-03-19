@@ -131,7 +131,7 @@ public class MeterController extends MultiActionController {
             
             String urlForPaoDetailPage = paoDetailUrlHelper.getUrlForPaoDetailPage(meter);
             if (!StringUtils.isBlank(urlForPaoDetailPage)) {
-                mav.setView(new RedirectView(urlForPaoDetailPage));
+                mav.setView(new RedirectView(request.getContextPath() + urlForPaoDetailPage));
                 return mav;
             }
         }

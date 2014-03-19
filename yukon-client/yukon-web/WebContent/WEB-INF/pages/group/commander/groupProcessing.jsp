@@ -86,7 +86,9 @@ function validateGroupIsSelected(btn, alertText) {
             id="submitGroupCommanderButton" 
             onclick="return validateGroupIsSelected(this, '${cti:escapeJavaScript(noGroupSelectedAlertText)}');"/>
         <img id="waitImg" src="${waitImgUrl}" style="display:none;">
-        <a href="/group/commander/resultList" class="fr"><i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/></a>
+        <a href="<cti:url value="/group/commander/resultList"/>" class="fr">
+            <i:inline key="yukon.web.deviceGroups.commander.recentResultsLabel"/>
+        </a>
     </div>
     
     </form>

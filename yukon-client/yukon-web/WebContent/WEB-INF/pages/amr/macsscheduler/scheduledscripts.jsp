@@ -1,7 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<cti:url var="url" value="/macsscheduler/schedules/innerView"/>
+<c:set var="url" value="/macsscheduler/schedules/innerView"/>
 
 <cti:standardPage module="tools" page="scripts">
     <cti:includeScript link="/JavaScript/yukon.ami.macs.js" />

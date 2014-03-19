@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -94,13 +93,8 @@ public class TierController {
     }
         
     @RequestMapping("substations")
-    public String substations(HttpServletRequest request, 
-                              HttpSession session, 
-                              ModelMap model,
-                              LiteYukonUser user, 
-                              @RequestParam("bc_areaId") int areaId,
-                              Boolean isSpecialArea) {
-        
+    public String substations(HttpServletRequest request, ModelMap model, LiteYukonUser user,
+            @RequestParam("bc_areaId") int areaId, Boolean isSpecialArea) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
         if (isSpecialArea == null) {
@@ -168,15 +162,8 @@ public class TierController {
     }
     
     @RequestMapping("feeders")
-    public String feeders(HttpServletRequest request, 
-                          FlashScope flashScope,
-                          HttpSession session,
-                          ModelMap model,
-                          YukonUserContext userContext,
-                          LiteYukonUser user, 
-                          int substationId, 
-                          Boolean isSpecialArea) {
-        
+    public String feeders(HttpServletRequest request, FlashScope flashScope, ModelMap model,
+            YukonUserContext userContext, LiteYukonUser user, int substationId, Boolean isSpecialArea) {
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubStation cachedSubstation = cache.getSubstation(substationId);
         Substation substation = substationDao.findSubstationById(substationId);
@@ -248,11 +235,15 @@ public class TierController {
                 }
                 StreamableCapObject area = cache.getArea(parentAreaId);
 
-                String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(area.getCcId(), userContext);
-                String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(subbus.getSubBus().getCcId(), userContext);
+                String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
+                    area.getCcId(), userContext);
+                String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
+                    subbus.getSubBus().getCcId(), userContext);
                 areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
                 subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
-                WebMessageSourceResolvable noStrategyMessage = new WebMessageSourceResolvable("yukon.web.modules.capcontrol.substation.noStrategyAssigned", areaLinkHtml, subBusLinkHtml);
+                WebMessageSourceResolvable noStrategyMessage =
+                        new WebMessageSourceResolvable("yukon.web.modules.capcontrol.substation.noStrategyAssigned",
+                            areaLinkHtml, subBusLinkHtml);
                 flashScope.setError(noStrategyMessage);
             }
         }

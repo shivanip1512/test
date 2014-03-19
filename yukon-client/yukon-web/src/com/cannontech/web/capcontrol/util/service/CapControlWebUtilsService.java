@@ -2,6 +2,8 @@ package com.cannontech.web.capcontrol.util.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -42,5 +44,5 @@ public interface CapControlWebUtilsService {
 
     List<NavigableCapBank> getSimpleCapBanks(Feeder feeder);
 
-    String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext);
+    String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId, YukonUserContext userContext);
 }

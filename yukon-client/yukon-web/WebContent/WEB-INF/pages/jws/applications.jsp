@@ -8,7 +8,7 @@
 
 <div class="stacked f-closeYukonApplicationDialog">
     <c:set var="installJreLink">
-        <a class="f-closeYukonApplicationDialog" href="<cti:url value="${jreUrl}"/>" target="_blank">
+        <a class="f-closeYukonApplicationDialog" href="${jreUrl}" target="_blank">
             <i:inline key=".applications.installJava"/>
         </a>
     </c:set>

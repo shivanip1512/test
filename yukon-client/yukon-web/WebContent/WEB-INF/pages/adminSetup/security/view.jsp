@@ -10,9 +10,10 @@
 
     <div class="clearfix box">
         <div class="category fl">
-            <a href="/adminSetup/config/security/view" class="icon icon-32 fl icon-32-key"></a>
+            <cti:url var="viewUrl" value="/adminSetup/config/security/view"/>
+            <a href="${viewUrl}" class="icon icon-32 fl icon-32-key"></a>
             <div class="box fl meta">
-                <div><a class="title" href="/adminSetup/config/security/view"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>
+                <div><a class="title" href="${viewUrl}"><i:inline key="yukon.common.setting.subcategory.SECURITY"/></a></div>
                 <div class="detail"><i:inline key="yukon.common.setting.subcategory.SECURITY.description"/></div>
             </div>
         </div>
@@ -74,9 +75,9 @@
                     <tfoot></tfoot>
                     <tbody>
                         <c:forEach var="route" items="${encryptedRoutes}">
-                            <c:set var="actionUrl" value="add" />
+                            <cti:url var="actionUrl" value="add"/>
                             <c:if test="${route.encrypted}">
-                                <c:set var="actionUrl" value="remove" />
+                                <cti:url var="actionUrl" value="remove"/>
                             </c:if>
                             <tr>
                                 <td>${fn:escapeXml(route.paoName)}</td>

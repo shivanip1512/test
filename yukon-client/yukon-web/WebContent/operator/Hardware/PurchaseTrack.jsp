@@ -3,9 +3,11 @@
 <%-- These are no longer linked to but they can't be deleted until 1/1/2015 --%>
 <%-- ---------------------------------------------------------------------- --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <jsp:useBean id="purchaseBean" class="com.cannontech.stars.web.bean.PurchaseBean" scope="session"/>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -292,12 +294,12 @@
         					loadPlan(form);
         				</c:when>
                         <c:otherwise>
-                            location.href='/dashboard';
+                            location.href='<cti:url value="/dashboard"/>';
                         </c:otherwise>
                     </c:choose>
                 </c:when>
 			    <c:otherwise>
-				    location.href='/dashboard';
+				    location.href='<cti:url value="/dashboard"/>';
 			    </c:otherwise>
             </c:choose>
 		}

@@ -882,7 +882,7 @@
     <!-- Legacy Bulk Importer -->
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.pageName">Bulk Importer</entry>
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.header"><![CDATA[
-        <span class="fwb">Warning:&nbsp;</span><a href="/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.
+        <span class="fwb">Warning:&nbsp;</span><a href="{0}">Bulk Operations</a> is the preferred method of importing or updating meters.
     ]]></entry>
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.header">Actions</entry>
     <entry key="yukon.web.modules.tools.bulk.bulkImporter.actions.loadDataFromFileLabel">Load Data From File</entry>

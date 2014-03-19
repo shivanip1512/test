@@ -524,22 +524,28 @@
     <c:if test="${not isSubscribedWidget}">
         <cm:dropdown key="components.button.create.label" icon="icon-plus-green" type="button" triggerClasses="fr" menuClasses="no-icons">
             <cti:checkRolesAndProperties value="DEVICE_DATA_MONITORING">
-                <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="/amr/deviceDataMonitor/createPage" />
+	            <cti:url var="url" value="/amr/deviceDataMonitor/createPage"/>
+                <cm:dropdownOption key="widgetClasses.DeviceDataMonitorsWidget.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="OUTAGE_PROCESSING">
-                <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="/amr/outageProcessing/monitorEditor/edit" />
+                <cti:url var="url" value="/amr/outageProcessing/monitorEditor/edit"/>
+                <cm:dropdownOption key="widgets.outageMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="TAMPER_FLAG_PROCESSING">
-                <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="/amr/tamperFlagProcessing/edit" />
+                <cti:url var="url" value="/amr/tamperFlagProcessing/edit"/>
+                <cm:dropdownOption key="widgets.tamperFlagMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="STATUS_POINT_MONITORING">
-                <cm:dropdownOption key="widgets.statusPointMonitorsWidget.tableHeader.name" href="/amr/statusPointMonitoring/creationPage" />
+                <cti:url var="url" value="/amr/statusPointMonitoring/creationPage"/>
+                <cm:dropdownOption key="widgets.statusPointMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="PORTER_RESPONSE_MONITORING">
-                <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="/amr/porterResponseMonitor/createPage" />
+                <cti:url var="url" value="/amr/porterResponseMonitor/createPage"/>
+                <cm:dropdownOption key="widgets.porterResponseMonitorsWidget.name" href="${url}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="VALIDATION_ENGINE">
-                <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="/amr/vee/monitor/edit" />
+                <cti:url var="url" value="/amr/vee/monitor/edit"/>
+                <cm:dropdownOption key="widgets.validationMonitorsWidget.tableHeader.name" href="${url}"/>
             </cti:checkRolesAndProperties>
         </cm:dropdown>
     </c:if>

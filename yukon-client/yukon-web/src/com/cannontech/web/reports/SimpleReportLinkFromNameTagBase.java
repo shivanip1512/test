@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -22,7 +21,6 @@ import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport implements DynamicAttributes{
-    
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     private SimpleReportService simpleReportService;
     
@@ -30,10 +28,9 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
     
     protected JspWriter out;
     protected PageContext context;
-    protected HttpServletRequest httpRequest;
-    
+
     /**
-     * Method to override to provide specifc output of simple report url.
+     * Method to override to provide specific output of simple report URL.
      * Overrides SimpleTagSupport method.
      */
     @Override
@@ -44,10 +41,8 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
      * Context is not available before the doTag() method is invoked.
      */
     protected void setContext() {
-    	
     	out = getJspContext().getOut();
     	context = (PageContext)getJspContext();
-        httpRequest = (HttpServletRequest)context.getRequest();
     }
     
     /**
@@ -94,7 +89,7 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
     }
 
     /**
-     * Build a safe simple report url given a map of query parameters.
+     * Build a safe simple report URL given a map of query parameters.
      * 
      * @param viewType
      * @param propertiesMap
@@ -103,14 +98,12 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
      * @throws IOException
      */
     protected String buildUrl(String viewType, Map<String, String> propertiesMap, Boolean htmlOutput) throws IOException{
-        
         // build safe URL query string
         String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, htmlOutput);
         
         // complete URL
         String url = "/reports/simple/" + viewType + "?" + queryString;
-        url = ServletUtil.createSafeUrl(httpRequest, url);
-        
+
         return url;
     }
     
@@ -125,8 +118,8 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport im
         this.simpleReportService = simpleReportService;
     }
     
+    @Override
     public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
         identifierAttributes.put(localName, value);
     }
-
 }

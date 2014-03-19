@@ -16,7 +16,8 @@
     });
 </script>
 
-<div class="warning stacked"><i:inline key=".header"/></div>
+<cti:url var="bulkHomeUrl" value="/bulk/bulkHome"/>
+<div class="warning stacked"><i:inline key=".header" arguments="${bulkHomeUrl}"/></div>
 
 <form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
     <cti:csrfToken/>

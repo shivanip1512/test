@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -251,14 +253,15 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     }
     
     @Override
-    public String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext) {
-        String name = getPaoNameWithId(ccId, userContext);
-        String html = getLinkHtml("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
-                                + "&amp;itemid=" + ccId, name, new HashMap<String, String>());
+    public String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId, YukonUserContext userContext) {
+        String name = getPaoNameWithId(ccId);
+        String url = request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
+                + "&amp;itemid=" + ccId;
+        String html = getLinkHtml(url, name, new HashMap<String, String>());
         return html;
     }
     
-    private String getPaoNameWithId(int paoId, YukonUserContext userContext) throws NotFoundException {
+    private String getPaoNameWithId(int paoId) throws NotFoundException {
         YukonPao yukonPao = paoDao.getYukonPao(paoId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
         return displayablePao.getName();

@@ -215,7 +215,7 @@ public class JwsController {
 
         setJnlpProperty("user", user.getUsername(), resourcesElem);
         setJnlpProperty("server.base", CtiUtilities.getYukonBase(), resourcesElem);
-        setJnlpProperty("host", ServletUtil.getHostURL(request).toString(), resourcesElem);
+        setJnlpProperty("host", ServletUtil.getHostURL(request).toString() + request.getContextPath(), resourcesElem);
         setJnlpProperty("rememberMe", globalSettingDao.getString(GlobalSettingType.CLIENT_APPLICATIONS_REMEMBER_ME),
             resourcesElem);
         setJnlpProperty("version", VersionTools.getYUKON_VERSION(), resourcesElem);

@@ -57,7 +57,7 @@
                 <%-- READ BUTTON --%>
                 <div class="page-action-area stacked">
                     <cti:button type="submit" nameKey="read" busy="true" classes="primary action"/>
-                    <a href="/group/groupMeterRead/resultsList" class="fr">${recentResultLinkLabel}</a>
+                    <a href="<cti:url value="/group/groupMeterRead/resultsList"/>" class="fr">${recentResultLinkLabel}</a>
                 </div>
             </div>
             

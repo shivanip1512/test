@@ -4,39 +4,39 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<c:set var="showTabs" value='${pageName == "orphanedSubs" || pageName == "orphanedBuses" || pageName == "orphanedFeeders" || pageName == "orphanedBanks" || pageName == "orphanedCbcs" || pageName == "orphanedRegulators"}' />
+<c:set var="showTabs" value='${pageName == "orphanedSubs" || pageName == "orphanedBuses" || pageName == "orphanedFeeders" || pageName == "orphanedBanks" || pageName == "orphanedCbcs" || pageName == "orphanedRegulators"}'/>
 
 <cti:standardPage module="capcontrol" page="search.${pageName}">
 <c:if test="${showTabs}">
 <cti:linkTabbedContainer mode="section">
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedSubs.tab.title"
                  initiallySelected='${pageName == "orphanedSubs"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__" />
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedBuses.tab.title"
                  initiallySelected='${pageName == "orphanedBuses"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__" />
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedFeeders.tab.title"
                  initiallySelected='${pageName == "orphanedFeeders"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__" />
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedBanks.tab.title"
                  initiallySelected='${pageName == "orphanedBanks"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__" />
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedCbcs.tab.title"
                  initiallySelected='${pageName == "orphanedCbcs"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__" />
+        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedRegulators.tab.title"
                  initiallySelected='${pageName == "orphanedRegulators"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__" />
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__"/>
     </cti:linkTab>
 </cti:linkTabbedContainer>
 </c:if>
@@ -49,8 +49,8 @@
     
     <form id="parentForm" action="feeders.jsp" method="post">
         <cti:csrfToken/>
-        <input type="hidden" name="${lastAreaKey}" />
-        <input type="hidden" name="${lastSubKey}" />
+        <input type="hidden" name="${lastAreaKey}"/>
+        <input type="hidden" name="${lastSubKey}"/>
         <cti:list var="arguments">
                     <cti:item value="${label}"/>
                     <cti:item value="${resultsFound}"/>
@@ -63,7 +63,7 @@
             <c:choose>
             
                 <c:when test="${searchResult.hitCount == 0}">
-                    <cti:msg key="yukon.web.modules.dr.searchResults.noResults" />
+                    <cti:msg key="yukon.web.modules.dr.searchResults.noResults"/>
                 </c:when>
             
                 <c:otherwise>
@@ -85,14 +85,22 @@
                                         <c:choose>
                                             <c:when test="${row.paobject}">
                                                 <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                    <a href="/editor/cbcBase.jsf?type=2&itemid=${row.itemId}" class="tierIconLink">
+                                                    <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
+                                                        <cti:param name="type" value="2"/>
+                                                        <cti:param name="itemid" value="${row.itemId}"/>
+                                                    </cti:url>
+                                                    <a href="${resultUrl}" class="tierIconLink">
                                                         ${fn:escapeXml(row.name)}
                                                     </a>
                                                 </cti:checkRolesAndProperties>
                                             </c:when>
                                             <c:otherwise>
                                                 <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                    <a href="/editor/pointBase.jsf?parentId=${row.parentId}&itemid=${row.itemId}" class="tierIconLink">
+                                                    <cti:url var="resultUrl" value="/editor/pointBase.jsf">
+                                                        <cti:param name="parentId" value="${row.parentId}"/>
+                                                        <cti:param name="itemid=" value=""/>
+                                                    </cti:url>
+                                                    <a href="${resultUrl}" class="tierIconLink">
                                                         ${fn:escapeXml(row.name)}
                                                     </a>
                                                 </cti:checkRolesAndProperties>
