@@ -164,7 +164,6 @@ org_apache_myfaces_PopupCalendar.prototype._showPopupPostProcess = function(over
             iframe = document.createElement("iframe");
             iframe.setAttribute("id", overDiv.id + "_IFRAME'");
             iframe.setAttribute("src", "javascript:false;");
-            Element.setStyle(iframe, "visibility:hidden; position: absolute; top:0px;left:0px;");
             jQuery(iframe).css({'visibility': 'hidden', 'position': 'absolute', 'top': '0px', 'left': '0px'});
             
             //we can append it lazily since we are late here anyway and everything is rendered
@@ -525,7 +524,7 @@ org_apache_myfaces_PopupCalendar.prototype._appendNavToCaption = function(direct
     imgLeft.setAttribute("src", this.initData.imgDir + direction + "1.gif");
     imgLeft.setAttribute("width","10px");
     imgLeft.setAttribute("height","11px");
-    Element.setStyle(imgLeft, "border:0px;");
+    jQuery(imgLeft).css('border', '0px');
 
     var spanLeft = document.createElement("span");
 
@@ -1251,7 +1250,7 @@ org_apache_myfaces_PopupCalendar.prototype._constructCalendar = function()
 
         dividerImg = document.createElement("img");
         dividerImg.setAttribute("src", this.initData.imgDir + "divider.gif");
-        Element.setStyle(dividerImg, "width:1px;");
+        jQuery(dividerImg).css('width', '1px');
         dividerCell.appendChild(dividerImg);
     }
 

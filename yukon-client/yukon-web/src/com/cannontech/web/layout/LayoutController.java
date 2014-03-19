@@ -102,7 +102,6 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_SPECTRUM.getPath());
 
         //add the other standard libs
-        builder.add(JsLibrary.PROTOTYPE.getPath());
     	builder.add(JsLibrary.YUKON.getPath());
     	builder.add(JsLibrary.YUKON_ALERTS.getPath());
     	builder.add(JsLibrary.YUKON_CONFIRM.getPath());
@@ -113,7 +112,6 @@ public class LayoutController {
         builder.add("/JavaScript/yukon.dialog.js");
         builder.add("/JavaScript/yukon.analytics.js");
         builder.add(JsLibrary.YUKON_FAVORITES.getPath());
-        
         
         layoutScriptFiles = builder.build();
     }

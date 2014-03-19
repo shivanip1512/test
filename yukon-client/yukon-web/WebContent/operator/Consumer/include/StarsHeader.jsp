@@ -57,8 +57,6 @@
 <jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteAccountInfo"/>
 <jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/>
 
-<cti:includeScript link="PROTOTYPE" force="true"/>
- 
 <%
      final StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
       final DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);

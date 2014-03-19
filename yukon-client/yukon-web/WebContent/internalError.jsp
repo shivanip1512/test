@@ -102,7 +102,6 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
 </c:choose>
 
 <c:if test="${showStack}">
-    <cti:includeScript link="PROTOTYPE" force="true"/>
     <script type="text/javascript">
     function showStack( chkBox ) {
         var elem = document.getElementById('stackTrace');
