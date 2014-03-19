@@ -12,8 +12,7 @@
     <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.foundOnRoute">Found On Route</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableHeader.update">Update</entry>
     
-    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.updateButtonText.label">Set Found Route</entry>
-    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.noRouteFound">Not Found</entry>
+    <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.updateButtonText.label">Set Found Route</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.currentRoute">Current Route:</entry>
     <entry key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.hasNoRoute">No Route Set</entry>
     

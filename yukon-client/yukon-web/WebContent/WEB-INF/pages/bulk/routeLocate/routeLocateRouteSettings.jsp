@@ -25,8 +25,6 @@
     <cti:msg var="boxTitle" key="yukon.web.modules.tools.bulk.routeLocateSettings.boxTitle"/>
         
     <%-- misc table text --%>
-    <cti:msg var="updateButtonText" key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.updateButtonText" />
-    <cti:msg var="noRouteFound" key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.noRouteFound" />
     <cti:msg var="currentRoute" key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.currentRoute" />
     <cti:msg var="hasNoRoute" key="yukon.web.modules.tools.bulk.routeLocateSettings.tableText.hasNoRoute" />
     
