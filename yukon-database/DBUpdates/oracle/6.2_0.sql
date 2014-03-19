@@ -259,6 +259,14 @@ SET UOMName = 'AmpsA2H'
 WHERE UOMID = 42;
 /* End YUK-13065 */
 
+/* Start YUK-13105 */
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId = -70004;
+ 
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId = -70004;
+/* End YUK-13105 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

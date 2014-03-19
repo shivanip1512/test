@@ -174,7 +174,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
                 setRoleProperty(group, YukonRoleProperty.CAP_CONTROL_ACCESS,true);
                 setRoleProperty(group, YukonRoleProperty.HIDE_REPORTS, false);
                 setRoleProperty(group, YukonRoleProperty.HIDE_GRAPHS, false);
-                setRoleProperty(group, YukonRoleProperty.HIDE_ONELINE, false);
                 setRoleProperty(group, YukonRoleProperty.CBC_ALLOW_OVUV,true);
                 setRoleProperty(group, YukonRoleProperty.CBC_DATABASE_EDIT,true);
                 setRoleProperty(group, YukonRoleProperty.SHOW_FLIP_COMMAND,true);

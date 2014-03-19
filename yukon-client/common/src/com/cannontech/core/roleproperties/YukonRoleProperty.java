@@ -157,7 +157,6 @@ public enum YukonRoleProperty {
     CAP_CONTROL_ACCESS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId(), booleanType()),
     HIDE_REPORTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 2, booleanType()),
     HIDE_GRAPHS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 3, booleanType()),
-    HIDE_ONELINE(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 4, booleanType()),
     CAP_CONTROL_INTERFACE(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 5, stringType()),
     CBC_CREATION_NAME(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 6, stringType()),
     PFACTOR_DECIMAL_PLACES(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 7, integerType()),

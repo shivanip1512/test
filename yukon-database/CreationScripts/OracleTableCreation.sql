@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/18/2014 3:50:21 PM                         */
+/* Created on:     3/19/2014 4:47:40 PM                         */
 /*==============================================================*/
 
 
@@ -9284,7 +9284,6 @@ INSERT INTO YukonRoleProperty VALUES(-40300,-400,'Auto Thermostat Mode Enabled',
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
 insert into YukonRoleProperty values(-70002,-700,'Hide Reports','false','Sets the visibility of reports.');
 insert into YukonRoleProperty values(-70003,-700,'Hide Graphs','false','Sets the visibility of graphs.');
-insert into YukonRoleProperty values(-70004,-700,'Hide One-Lines','false','Sets the visibility of one-line displays.');
 insert into YukonRoleProperty values(-70005,-700,'cap_control_interface','amfm','Optional interface to the AMFM mapping system');
 insert into YukonRoleProperty values(-70006,-700,'cbc_creation_name','CBC <PAOName>','What text will be added onto CBC names when they are created');
 insert into YukonRoleProperty values(-70007,-700,'pfactor_decimal_places','1','How many decimal places to show for real values for PowerFactor');
