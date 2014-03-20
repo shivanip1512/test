@@ -1139,7 +1139,11 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         for (final Cookie cookie : cookies) {
             cookie.setMaxAge(0);
             cookie.setValue("");
-            cookie.setPath("/" + request.getContextPath());
+            String contextPath = request.getContextPath();
+            if ("".equals(contextPath)) {
+                contextPath = "/";
+            }
+            cookie.setPath(contextPath);
             response.addCookie(cookie);
         }
     }
