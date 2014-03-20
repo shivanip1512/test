@@ -30,8 +30,11 @@ try {
         pageContext.setAttribute("yukonDetails", VersionTools.getYukonDetails());
         
     }
+    pageContext.setAttribute("loggedIn", true);
 
-} catch (NotLoggedInException ignore) {}    
+} catch (NotLoggedInException ignore) {
+    pageContext.setAttribute("loggedIn", false);
+}    
 pageContext.setAttribute("showStack", showStack);
 
 
@@ -66,7 +69,12 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
 <title>Yukon Error Page</title>
 <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/normalize.css"/>" type="text/css">
 <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/styles/yukon.css"/>" type="text/css">
-<cti:css key="yukon.web.error.errorStyles"/>
+<c:if test="${loggedIn}">
+    <cti:css key="yukon.web.error.errorStyles"/>
+</c:if>
+<c:if test="${!loggedIn}">
+    <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/errorStyles.css"/>" type="text/css">
+</c:if>
 
 </head>
 
