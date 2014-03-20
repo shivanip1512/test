@@ -56,23 +56,23 @@ try {
     <c:set var="logoHtml">
         <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW.gif"/>">
     </c:set>
-	<c:choose>
-	    <c:when test="${code == '404'}">
-	        <c:set var="errorMessage" value="404 - page not found"/>
-	    </c:when>
-	    <c:when test="${code == '403'}">
-	        <c:set var="errorMessage" value="403 - forbidden"/>
-	    </c:when>
-	    <c:when test="${code == '401'}">
-	        <c:set var="errorMessage" value="401 - unauthorized"/>
-	    </c:when>
-	    <c:when test="${code == '400'}">
-	        <c:set var="errorMessage" value="400 - bad request"/>
-	    </c:when>
-	    <c:otherwise>
-	        ${code}
-	    </c:otherwise>
-	</c:choose>
+    <c:choose>
+        <c:when test="${code == '404'}">
+            <c:set var="errorMessage" value="404 - page not found"/>
+        </c:when>
+        <c:when test="${code == '403'}">
+            <c:set var="errorMessage" value="403 - forbidden"/>
+        </c:when>
+        <c:when test="${code == '401'}">
+            <c:set var="errorMessage" value="401 - unauthorized"/>
+        </c:when>
+        <c:when test="${code == '400'}">
+            <c:set var="errorMessage" value="400 - bad request"/>
+        </c:when>
+        <c:otherwise>
+            ${code}
+        </c:otherwise>
+    </c:choose>
 </c:if>
 
 </head>
