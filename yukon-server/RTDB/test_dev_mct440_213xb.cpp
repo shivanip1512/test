@@ -188,7 +188,14 @@ namespace test_tools {
 }
 }
 
-BOOST_AUTO_TEST_SUITE( test_dev_mct440_213xb )
+struct resetGlobals_helper
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct440_213xb, resetGlobals_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
+
 
 BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
 {
@@ -2218,8 +2225,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
         results.begin(),  results.end());
 }
 
-BOOST_AUTO_TEST_SUITE_END()
-
 BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 {
     INMESS                         InMessage;
@@ -2235,6 +2240,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
     {
         test_Mct440_213xB test_dev;
+
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
 
         unsigned char test_data[13] = {50, 51, 52, 53, 54, 0xf0, 0x00, 60, 61, 62, 63, 64, 0xff};
 
@@ -2267,6 +2274,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
     {
         test_Mct440_213xB test_dev;
+
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
 
         unsigned char test_data[13] = {50, 51, 52, 53, 0x00, 60, 61, 62, 63, 0xff};
 
@@ -2301,6 +2310,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
     {
         test_Mct440_213xB test_dev;
+
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
 
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
@@ -2341,6 +2352,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     {
         test_Mct440_213xB test_dev;
 
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -2380,6 +2393,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
     {
         test_Mct440_213xB test_dev;
 
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
+
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, daySchedule3);
@@ -2418,6 +2433,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetConfigTOU)
 
     {
         test_Mct440_213xB test_dev;
+
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPao for this scope
 
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, daySchedule1);
         test_dev.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, daySchedule2);
@@ -3154,7 +3171,7 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusDisconnect)
 }
 
 
-struct executePutConfig_helper
+struct executePutConfig_helper : resetGlobals_helper
 {
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
@@ -3192,7 +3209,7 @@ struct executePutConfig_helper
     }
 };
 
-BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
+BOOST_FIXTURE_TEST_SUITE(test_executeConfigs, executePutConfig_helper)
 
     BOOST_AUTO_TEST_CASE(test_executePutConfigTOU)
     {
@@ -4505,11 +4522,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, executePutConfig_helper)
             BOOST_CHECK_EQUAL_COLLECTIONS( expectMoreRcv.begin() , expectMoreRcv.end() ,
                                            expectMoreExp.begin() , expectMoreExp.end() );
         }
-        
+
         // add phaseloss config
         test_cfg.insertValue( MCTStrings::PhaseLossThreshold, "50" );
         test_cfg.insertValue( MCTStrings::PhaseLossDuration,  "123" );
-        
+
         {
             ////// 6 valid configuration //////
 
@@ -4788,5 +4805,8 @@ BOOST_AUTO_TEST_CASE(test_decodeGetStatusEventLog)
 
         retList.pop_front();
     }
-
 }
+
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
+BOOST_AUTO_TEST_SUITE_END()
+

@@ -43,6 +43,7 @@
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "mgr_point.h"
+#include "mgr_dyn_paoinfo.h"
 
 #include "port_thread_udp.h"
 #include "port_thread_tcp.h"
@@ -110,7 +111,7 @@ extern INT RunningInConsole;              // From portmain.cpp
 
 // Some Global Manager types to allow us some RTDB stuff.
 CtiPortManager     PortManager(PortThreadFactory);
-CtiDeviceManager   DeviceManager(Application_Porter);
+CtiDeviceManager   DeviceManager;
 CtiPointManager    PorterPointManager;
 CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
@@ -717,6 +718,8 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     SetThreadName(-1, "PortrMain");
 
+    Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Porter);
+
     /* check for various flags */
     if(argc > 1)
     {
@@ -949,7 +952,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         if( last_flush + 60 <= ::time(0) )
         {
             last_flush = ::time(0);
-            DeviceManager.writeDynamicPaoInfo();
+            Cti::DynamicPaoInfoManager::writeInfo();
             PorterPointManager.processExpired();
         }
 
@@ -970,7 +973,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     PorterCleanUp(0);
     _CrtSetAllocHook(pfnOldCrtAllocHook);
 
-    DeviceManager.writeDynamicPaoInfo();
+    Cti::DynamicPaoInfoManager::writeInfo();
 
     return 0;
 }

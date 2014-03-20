@@ -12,8 +12,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -25,58 +23,32 @@ INCLPATHS+= \
 ;$(PIL)\include \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
-;$(MSG)\include \
-;$(RW)
+;$(MSG)\include
 
 
+DYNPAOINFO_OBJS=\
+id_dynpaoinfo.obj \
+mgr_dyn_paoinfo.obj
 
-YUKONPNTDLLOBJS=\
-dev_base_lite.obj \
-mgr_point.obj \
-points.obj \
-pt_base.obj \
-pt_dyn_dispatch.obj \
-pt_numeric.obj \
-pt_status.obj \
-pttrigger.obj \
-
-
-PNTDBLIBS=\
+DYNPAOINFO_LIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\ctiprot.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib \
-
-
+$(COMPILEBASE)\lib\ctidbsrc.lib
 
 CTIPROGS=\
-ctipntdb.dll
-
+dynpaoinfo.dll
 
 PROGS_VERSION=\
 $(CTIPROGS)
 
 
-RTDB_PNT_FULLBUILD = $[Filename,$(OBJ),RtdbPntFullBuild,target]
-
-
 ALL:            $(CTIPROGS)
 
 
-$(RTDB_PNT_FULLBUILD) :
-	@touch $@
-	@echo:
-	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_PNTDB -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(YUKONPNTDLLOBJS)]
-
-
-
-ctipntdb.dll:   $(RTDB_PNT_FULLBUILD) $(YUKONPNTDLLOBJS) Makefile $(OBJ)\ctipntdb.res
-                @build -nologo -f $(_InputFile) id
+dynpaoinfo.dll:   $(DYNPAOINFO_OBJS) Makefile $(OBJ)\dynpaoinfo.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONPNTDLLOBJS) id_pntdll.obj -link $(RWLIBS) $(BOOST_LIBS) $(PNTDBLIBS) $(LINKFLAGS) ctipntdb.res
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DYNPAOINFO_OBJS) -link $(RWLIBS) $(BOOST_LIBS) $(DYNPAOINFO_LIBS) $(LINKFLAGS) dynpaoinfo.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -94,7 +66,7 @@ copy:
 
 
 deps:
-                scandeps -Output makepntdb.mak *.cpp
+                scandeps -Output makedynpaoinfo.mak *.cpp
 
 
 clean:
@@ -111,12 +83,6 @@ $(BIN)\*.dll \
 $(BIN)\*.exe
 
 
-# The lines below accomplish the ID'ing of the project!
-id:
-            @build -nologo -f $(_InputFile) id_pntdll.obj
-
-id_pntdll.obj:    id_pntdll.cpp include\id_pntdll.h
-
 
 ########################### Conversions ##############################
 
@@ -125,11 +91,10 @@ id_pntdll.obj:    id_pntdll.cpp include\id_pntdll.h
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_PNTDB -Fo$(OBJ)\ -c $<
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_DYNPAOINFO -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################
-
 
 #UPDATE#
 cmd_device.obj:	precompiled.h cmd_device.h dev_single.h dsm2.h \

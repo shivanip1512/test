@@ -204,7 +204,13 @@ namespace test_tools {
 }
 }
 
-BOOST_AUTO_TEST_SUITE( test_dev_mct410 )
+struct resetGlobals_helper
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct410, resetGlobals_helper)
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
 
 BOOST_AUTO_TEST_CASE(test_isSupported_Mct410Feature_DisconnectCollar)
 {
@@ -441,7 +447,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 }
 
 
-struct executeRequest_helper
+struct executeRequest_helper : resetGlobals_helper
 {
     test_Mct410IconDevice mct410;
 
@@ -2997,6 +3003,8 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_decodeDisconnectConfig)
 
             test_Mct410IconDevice mct410;
 
+            Cti::Test::Override_DynamicPaoInfoManager scopedOverride;
+
             mct410.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, tc.sspec_revision);
 
             if( tc.config_byte )
@@ -4343,4 +4351,6 @@ BOOST_AUTO_TEST_CASE(test_makeDynamicDemand)
     BOOST_CHECK_EQUAL(Cti::Devices::Mct410Device::Utility::makeDynamicDemand(409501.0), -1);
 }
 
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
+

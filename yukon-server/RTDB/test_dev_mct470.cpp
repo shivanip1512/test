@@ -51,7 +51,13 @@ namespace test_tools {
 }
 }
 
-BOOST_AUTO_TEST_SUITE( test_dev_mct470 )
+struct resetGlobals_helper
+{
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_dev_mct470, resetGlobals_helper )
+//{  Brace matching for BOOST_FIXTURE_TEST_SUITE
 
 BOOST_AUTO_TEST_CASE(test_isSupported_Mct4xxFeature_LoadProfilePeakReport)
 {
@@ -617,7 +623,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo_MCT_LoadProfileChanne
 }
 
 
-struct beginExecuteRequest_helper
+struct beginExecuteRequest_helper : resetGlobals_helper
 {
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
@@ -641,7 +647,7 @@ struct beginExecuteRequest_helper
 };
 
 
-struct beginExecuteRequest_noConfig_helper
+struct beginExecuteRequest_noConfig_helper : resetGlobals_helper
 {
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
@@ -3726,5 +3732,6 @@ BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
        expected.begin(), expected.end());
 }
 
+//}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 

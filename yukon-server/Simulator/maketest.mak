@@ -137,47 +137,47 @@ bchbehavior.obj:	precompiled.h BchBehavior.h PlcBehavior.h types.h \
 		CtiPCPtrQueue.h
 ccu710.obj:	precompiled.h Ccu710.h PlcTransmitter.h CommInterface.h \
 		ctinexus.h cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h BehaviorCollection.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		netports.h socket_helper.h numstr.h BehaviorCollection.h \
+		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h CtiPCPtrQueue.h \
 		CommsBehavior.h portlogger.h emetconwords.h Simulator.h \
 		PlcInfrastructure.h Mct410.h DeviceMemoryManager.h \
 		MctBehavior.h ScopedLogger.h smartmap.h boostutil.h dllbase.h \
-		dsm2.h dsm2err.h words.h optional.h readers_writer_lock.h \
-		critical_section.h PlcBehavior.h
+		dsm2.h dsm2err.h words.h optional.h macro_offset.h \
+		readers_writer_lock.h critical_section.h PlcBehavior.h
 ccu711.obj:	precompiled.h ccu711.h ccu710.h PlcTransmitter.h \
 		CommInterface.h ctinexus.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h BehaviorCollection.h \
-		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		CtiPCPtrQueue.h CommsBehavior.h portlogger.h emetconwords.h \
-		CcuIDLC.h boostutil.h cti_asmc.h color.h ctidate.h \
-		simulator.h PlcInfrastructure.h Mct410.h \
+		ctidbgmem.h dlldefs.h netports.h socket_helper.h numstr.h \
+		BehaviorCollection.h SimulatorLogger.h logger.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h CtiPCPtrQueue.h CommsBehavior.h portlogger.h \
+		emetconwords.h CcuIDLC.h boostutil.h cti_asmc.h color.h \
+		ctidate.h simulator.h PlcInfrastructure.h Mct410.h \
 		DeviceMemoryManager.h MctBehavior.h ScopedLogger.h smartmap.h \
-		dllbase.h dsm2.h dsm2err.h words.h optional.h \
+		dllbase.h dsm2.h dsm2err.h words.h optional.h macro_offset.h \
 		readers_writer_lock.h critical_section.h PlcBehavior.h
 ccu721.obj:	precompiled.h Ccu721.h CcuIDLC.h PlcTransmitter.h \
 		CommInterface.h ctinexus.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h dlldefs.h netports.h BehaviorCollection.h \
-		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
-		CtiPCPtrQueue.h CommsBehavior.h portlogger.h EmetconWords.h \
-		ctidate.h simulator.h PlcInfrastructure.h Mct410.h \
-		DeviceMemoryManager.h MctBehavior.h ScopedLogger.h smartmap.h \
-		boostutil.h dllbase.h dsm2.h dsm2err.h words.h optional.h \
-		readers_writer_lock.h critical_section.h PlcBehavior.h \
-		cti_asmc.h
+		ctidbgmem.h dlldefs.h netports.h socket_helper.h numstr.h \
+		BehaviorCollection.h SimulatorLogger.h logger.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h CtiPCPtrQueue.h CommsBehavior.h portlogger.h \
+		EmetconWords.h ctidate.h simulator.h PlcInfrastructure.h \
+		Mct410.h DeviceMemoryManager.h MctBehavior.h ScopedLogger.h \
+		smartmap.h boostutil.h dllbase.h dsm2.h dsm2err.h words.h \
+		optional.h macro_offset.h readers_writer_lock.h \
+		critical_section.h PlcBehavior.h cti_asmc.h
 ccuidlc.obj:	precompiled.h CcuIDLC.h PlcTransmitter.h CommInterface.h \
 		ctinexus.h cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h BehaviorCollection.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		netports.h socket_helper.h numstr.h BehaviorCollection.h \
+		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h CtiPCPtrQueue.h \
 		CommsBehavior.h portlogger.h
 ccusimsvc.obj:	precompiled.h ctitime.h dlldefs.h ccusimsvc.h \
 		cservice.h ctibase.h ctinexus.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h netports.h dllbase.h dsm2.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
-		words.h optional.h
+		ctidbgmem.h netports.h socket_helper.h numstr.h dllbase.h \
+		dsm2.h mutex.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h dsm2err.h words.h optional.h macro_offset.h
 ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		PlcInfrastructure.h Mct410.h EmetconWords.h ctitime.h \
 		dlldefs.h SimulatorLogger.h logger.h thread.h mutex.h guard.h \
@@ -185,18 +185,19 @@ ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		CtiPCPtrQueue.h DeviceMemoryManager.h BehaviorCollection.h \
 		MctBehavior.h ScopedLogger.h smartmap.h boostutil.h dllbase.h \
 		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h \
-		words.h optional.h readers_writer_lock.h critical_section.h \
-		PlcBehavior.h Ccu711.h ccu710.h PlcTransmitter.h \
-		CommInterface.h ctinexus.h CommsBehavior.h portlogger.h \
-		CcuIDLC.h Ccu721.h ctidate.h DelayBehavior.h BchBehavior.h \
-		cparms.h rwutil.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h
+		words.h optional.h macro_offset.h readers_writer_lock.h \
+		critical_section.h PlcBehavior.h Ccu711.h ccu710.h \
+		PlcTransmitter.h CommInterface.h ctinexus.h socket_helper.h \
+		CommsBehavior.h portlogger.h CcuIDLC.h Ccu721.h ctidate.h \
+		DelayBehavior.h BchBehavior.h cparms.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h configkey.h configval.h
 comminterface.obj:	precompiled.h CommInterface.h ctinexus.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		BehaviorCollection.h SimulatorLogger.h logger.h thread.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h CtiPCPtrQueue.h CommsBehavior.h
+		socket_helper.h numstr.h BehaviorCollection.h \
+		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h CtiPCPtrQueue.h \
+		CommsBehavior.h
 delaybehavior.obj:	precompiled.h DelayBehavior.h CommsBehavior.h \
 		types.h SimulatorLogger.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -221,9 +222,10 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		MctBehavior.h ScopedLogger.h cparms.h rwutil.h yukon.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h dsm2err.h words.h optional.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h FrozenReadParityBehavior.h \
-		FrozenPeakTimestampBehavior.h RandomConsumptionBehavior.h
+		macro_offset.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h configkey.h configval.h \
+		FrozenReadParityBehavior.h FrozenPeakTimestampBehavior.h \
+		RandomConsumptionBehavior.h
 plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \
 		EmetconWords.h types.h ctitime.h dlldefs.h SimulatorLogger.h \
 		logger.h thread.h mutex.h guard.h utility.h queues.h \
@@ -231,13 +233,13 @@ plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \
 		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
 		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h readers_writer_lock.h critical_section.h \
-		PlcBehavior.h
+		optional.h macro_offset.h readers_writer_lock.h \
+		critical_section.h PlcBehavior.h
 plctransmitter.obj:	precompiled.h PlcTransmitter.h CommInterface.h \
 		ctinexus.h cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h BehaviorCollection.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		netports.h socket_helper.h numstr.h BehaviorCollection.h \
+		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h CtiPCPtrQueue.h \
 		CommsBehavior.h portlogger.h
 portlogger.obj:	precompiled.h PortLogger.h SimulatorLogger.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
@@ -259,8 +261,8 @@ simulator.obj:	precompiled.h Simulator.h PlcInfrastructure.h Mct410.h \
 		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
 		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h readers_writer_lock.h critical_section.h \
-		PlcBehavior.h
+		optional.h macro_offset.h readers_writer_lock.h \
+		critical_section.h PlcBehavior.h
 simulatorlogger.obj:	precompiled.h SimulatorLogger.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -268,10 +270,11 @@ simulatorlogger.obj:	precompiled.h SimulatorLogger.h logger.h \
 simulatorutils.obj:	precompiled.h SimulatorUtils.h types.h
 simulator_main.obj:	precompiled.h ctitime.h dlldefs.h ccusimsvc.h \
 		cservice.h CServiceConfig.h ctibase.h ctinexus.h cticonnect.h \
-		yukon.h types.h ctidbgmem.h netports.h dllbase.h dsm2.h \
-		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
-		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		yukon.h types.h ctidbgmem.h netports.h socket_helper.h \
+		numstr.h dllbase.h dsm2.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h dsm2err.h words.h optional.h \
+		macro_offset.h logger.h thread.h CtiPCPtrQueue.h \
+		connection_base.h
 test_bch_behavior.obj:	BehaviorCollection.h SimulatorLogger.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -287,9 +290,10 @@ test_ccusim.obj:	EmetconWords.h types.h SimulatorUtils.h \
 		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
 		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h readers_writer_lock.h critical_section.h \
-		PlcBehavior.h Simulator.h Ccu710.h PlcTransmitter.h \
-		CommInterface.h ctinexus.h CommsBehavior.h portlogger.h
+		optional.h macro_offset.h readers_writer_lock.h \
+		critical_section.h PlcBehavior.h Simulator.h Ccu710.h \
+		PlcTransmitter.h CommInterface.h ctinexus.h socket_helper.h \
+		CommsBehavior.h portlogger.h
 test_delay_behavior.obj:	DelayBehavior.h CommsBehavior.h types.h \
 		SimulatorLogger.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \

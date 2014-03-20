@@ -20,6 +20,7 @@ struct test_state_rfn420centron
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
     Cti::Devices::RfnDevice::RfnCommandList rfnRequests;
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
 

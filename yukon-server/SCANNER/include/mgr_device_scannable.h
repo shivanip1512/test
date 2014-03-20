@@ -23,11 +23,6 @@ protected:
 
 public:
 
-    ScannableDeviceManager(CtiApplication_t app_id) :
-        CtiDeviceManager(app_id)
-    {
-    }
-
     virtual void refreshAllDevices();
 };
 

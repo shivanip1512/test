@@ -6,33 +6,6 @@
 BOOST_AUTO_TEST_SUITE( test_tbl_dyn_paoinfo )
 
 
-BOOST_AUTO_TEST_CASE(test_getowner)
-{
-    CtiTableDynamicPaoInfo info;
-
-    info.setOwner(Application_CalcLogic);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "");
-
-    info.setOwner(Application_CapControl);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "");
-
-    info.setOwner(Application_Dispatch);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "dispatch");
-
-    info.setOwner(Application_Invalid);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "");
-
-    info.setOwner(Application_LoadManagement);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "");
-
-    info.setOwner(Application_Porter);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "porter");
-
-    info.setOwner(Application_Scanner);
-    BOOST_CHECK_EQUAL(info.getOwnerString(), "scanner");
-}
-
-
 BOOST_AUTO_TEST_CASE(test_getKeyString)
 {
     struct test_case
@@ -335,9 +308,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
     {
         expected.push_back(tc.keyAsString);
 
-        CtiTableDynamicPaoInfo paoinfo(-1, tc.key);
-
-        results.push_back(paoinfo.getKeyString());
+        results.push_back(CtiTableDynamicPaoInfo::getKeyString(tc.key));
     }
 
     BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(), results.begin(), results.end());

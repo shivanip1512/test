@@ -4,6 +4,7 @@ include $(COMPILEBASE)\rwglobal.inc
 
 all:
             @build -nologo -f $(PRECOMPILED)\makepch.mak
+            @build -nologo -f makedynpaoinfo.mak
             @build -nologo -f makepntdb.mak
             @build -nologo -f makedevdb.mak
             @build -nologo -f makeprtdb.mak
@@ -14,6 +15,7 @@ all:
 
 copy:
             @build -nologo -f $(PRECOMPILED)\makepch.mak $@
+            @build -nologo -f makedynpaoinfo.mak $@
             @build -nologo -f makepntdb.mak $@
             @build -nologo -f makedevdb.mak $@
             @build -nologo -f makeprtdb.mak $@
@@ -23,6 +25,7 @@ copy:
             @build -nologo -f makeexe.mak $@
 
 deps:
+            @build -nologo -f makedynpaoinfo.mak $@
             @build -nologo -f makepntdb.mak $@
             @build -nologo -f makedevdb.mak $@
             @build -nologo -f makeprtdb.mak $@

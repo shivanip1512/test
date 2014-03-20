@@ -33,6 +33,19 @@ boost::optional<MappedType> bimapFind( MapViewType mapView, KeyType key )
     return itr->second;
 }
 
+template <class Map>
+boost::optional<typename Map::mapped_type &> mapFindRef( Map &m, const typename Map::key_type &key )
+{
+    Map::iterator itr = m.find(key);
+
+    if( itr == m.end() )
+    {
+        return boost::none;
+    }
+
+    return itr->second;
+}
+
 namespace Logging {
 namespace Vector {
 namespace Hex {

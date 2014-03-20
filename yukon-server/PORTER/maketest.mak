@@ -107,12 +107,13 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h thread.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
 		critical_section.h porter.h dsm2.h cticonnect.h yukon.h \
 		ctidbgmem.h netports.h dsm2err.h words.h optional.h \
-		devicetypes.h string_utility.h portdecl.h rte_base.h \
-		boostutil.h dbmemobject.h cmdparse.h ctitokenizer.h \
-		parsevalue.h ctibase.h ctinexus.h dllbase.h message.h \
-		collectable.h tbl_pao_lite.h row_reader.h tbl_rtcomm.h \
-		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
+		macro_offset.h devicetypes.h string_utility.h portdecl.h \
+		rte_base.h boostutil.h dbmemobject.h cmdparse.h \
+		ctitokenizer.h parsevalue.h ctibase.h ctinexus.h \
+		socket_helper.h dllbase.h message.h collectable.h \
+		tbl_pao_lite.h row_reader.h tbl_rtcomm.h dbaccess.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		msg_signal.h tbl_static_paoinfo.h pointdefs.h \
 		database_connection.h rwutil.h database_reader.h boost_time.h \
 		encryption.h port_base.h dev_base.h dev_exclusion.h \
 		tbl_paoexclusion.h tbl_base.h tbl_scanrate.h \

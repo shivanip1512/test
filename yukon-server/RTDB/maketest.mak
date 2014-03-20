@@ -47,6 +47,7 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
 $(COMPILEBASE)\lib\ctiprtdb.lib \
+$(COMPILEBASE)\lib\dynpaoinfo.lib \
 $(XERCES_LIBS) \
 $(OPENSSL_LIBS) \
 
@@ -817,7 +818,7 @@ dev_base.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		readers_writer_lock.h critical_section.h mgr_point.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
 		porter.h devicetypes.h database_writer.h row_writer.h \
-		database_util.h mgr_config.h
+		database_util.h mgr_config.h mgr_dyn_paoinfo.h
 dev_base_lite.obj:	precompiled.h dev_base_lite.h dbaccess.h dllbase.h \
 		dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
@@ -2556,8 +2557,8 @@ dev_rfn420centron.obj:	precompiled.h dev_rfn420centron.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
 		xfer.h cmd_rfn_LoadProfile.h ctidate.h cmd_rfn_DemandFreeze.h \
 		cmd_rfn_TouConfiguration.h cmd_rfn_OvUvConfiguration.h \
-		cmd_rfn_CentronLcdConfiguration.h config_data_rfn.h \
-		config_exceptions.h std_helper.h
+		cmd_rfn_RemoteDisconnect.h cmd_rfn_CentronLcdConfiguration.h \
+		config_data_rfn.h config_exceptions.h std_helper.h
 dev_rfn420focus.obj:	precompiled.h config_exceptions.h \
 		config_data_rfn.h yukon.h types.h ctidbgmem.h dllbase.h \
 		dsm2.h cticonnect.h dlldefs.h netports.h mutex.h guard.h \
@@ -2581,18 +2582,18 @@ dev_rfn420focus.obj:	precompiled.h config_exceptions.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
 		xfer.h cmd_rfn_LoadProfile.h ctidate.h cmd_rfn_DemandFreeze.h \
 		cmd_rfn_TouConfiguration.h cmd_rfn_OvUvConfiguration.h \
-		cmd_rfn_FocusLcdConfiguration.h
+		cmd_rfn_RemoteDisconnect.h cmd_rfn_FocusLcdConfiguration.h
 dev_rfncommercial.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		config_data_rfn.h yukon.h ctidbgmem.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h dsm2err.h words.h \
 		optional.h macro_offset.h config_device.h hashkey.h \
-		hash_functions.h config_exceptions.h \
-		dev_rfnCommercial.h dev_rfn.h rfn_identifier.h logger.h \
-		thread.h CtiPCPtrQueue.h cmd_rfn.h cmd_device.h dev_single.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		hash_functions.h config_exceptions.h dev_rfnCommercial.h \
+		dev_rfn.h rfn_identifier.h logger.h thread.h CtiPCPtrQueue.h \
+		cmd_rfn.h cmd_device.h dev_single.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
 		boost_time.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
 		socket_helper.h message.h collectable.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
@@ -2611,12 +2612,12 @@ dev_rfnresidential.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		config_data_rfn.h yukon.h ctidbgmem.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h dsm2err.h words.h \
 		optional.h macro_offset.h config_device.h hashkey.h \
-		hash_functions.h config_exceptions.h \
-		dev_rfnResidential.h dev_rfn.h rfn_identifier.h logger.h \
-		thread.h CtiPCPtrQueue.h cmd_rfn.h cmd_device.h dev_single.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		hash_functions.h config_exceptions.h dev_rfnResidential.h \
+		dev_rfn.h rfn_identifier.h logger.h thread.h CtiPCPtrQueue.h \
+		cmd_rfn.h cmd_device.h dev_single.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
 		boost_time.h rte_base.h dbmemobject.h ctibase.h ctinexus.h \
 		socket_helper.h message.h collectable.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
@@ -2629,7 +2630,8 @@ dev_rfnresidential.obj:	precompiled.h std_helper.h utility.h ctitime.h \
 		configval.h readers_writer_lock.h critical_section.h \
 		connection_base.h xfer.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
-		cmd_rfn_OvUvConfiguration.h devicetypes.h
+		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
+		devicetypes.h
 dev_rtc.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -3033,6 +3035,8 @@ eventlog_mct440_213xb.obj:	precompiled.h numstr.h dlldefs.h \
 		eventlog_mct440_213xb.h
 id_devdll.obj:	precompiled.h id_devdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
+id_dynpaoinfo.obj:	precompiled.h id_dynpaoinfo.h utility.h ctitime.h \
+		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h
 id_pntdll.obj:	precompiled.h id_pntdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h
 id_prtdll.obj:	precompiled.h id_prtdll.h utility.h ctitime.h dlldefs.h \
@@ -3043,15 +3047,6 @@ memtest.obj:	precompiled.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		dsm2err.h words.h optional.h macro_offset.h
-mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		macro_offset.h config_device.h hashkey.h hash_functions.h \
-		devicetypes.h dbaccess.h database_connection.h \
-		database_reader.h row_reader.h DeviceConfigLookup.h \
-		pointtypes.h PointAttribute.h debug_timer.h logger.h thread.h \
-		CtiPCPtrQueue.h
 mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		hash_functions.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h string_utility.h dllbase.h dsm2.h \
@@ -3068,7 +3063,8 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		encryption.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		pt_base.h tbl_pt_base.h slctdev.h smartmap.h \
 		readers_writer_lock.h critical_section.h debug_timer.h \
-		cparms.h configkey.h configval.h dev_macro.h dev_grp.h \
+		cparms.h configkey.h configval.h database_util.h \
+		database_writer.h row_writer.h dev_macro.h dev_grp.h \
 		msg_lmcontrolhistory.h msg_pcrequest.h msg_pdata.h \
 		msg_multi.h pt_status.h tbl_pt_status.h \
 		tbl_pt_status_control.h tbl_pt_control.h pt_analog.h \
@@ -3120,6 +3116,15 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		cmd_lcr3102_ThreePart.h cmd_lcr3102.h \
 		cmd_lcr3102_DemandResponseSummary.h \
 		cmd_lcr3102_hourlyDataLog.h tbl_dyn_lcrComms.h
+mgr_dyn_paoinfo.obj:	precompiled.h mgr_dyn_paoinfo.h dlldefs.h \
+		tbl_dyn_paoinfo.h dbmemobject.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
+		ctidbgmem.h netports.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h macro_offset.h row_reader.h readers_writer_lock.h \
+		critical_section.h database_reader.h database_util.h logger.h \
+		thread.h CtiPCPtrQueue.h database_writer.h row_writer.h \
+		std_helper.h boostutil.h
 mgr_holiday.obj:	precompiled.h ctidbgmem.h mgr_holiday.h ctidate.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -3187,7 +3192,7 @@ mgr_route.obj:	precompiled.h mgr_route.h repeaterrole.h dlldefs.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h connection_base.h \
 		xfer.h tbl_dialup.h tbl_direct.h rte_expresscom.h rte_macro.h \
-		tbl_rtmacro.h
+		tbl_rtmacro.h database_util.h database_writer.h row_writer.h
 mgr_season.obj:	precompiled.h ctidbgmem.h mgr_season.h ctidate.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -3664,13 +3669,13 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		dev_rfn.h rfn_identifier.h cmd_rfn.h dev_rfn420centron.h \
 		dev_rfnResidential.h cmd_rfn_LoadProfile.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
-		cmd_rfn_OvUvConfiguration.h cmd_rfn_CentronLcdConfiguration.h \
-		dev_rfn420focus.h cmd_rfn_FocusLcdConfiguration.h \
-		dev_rfnCommercial.h dev_rtc.h tbl_dv_rtc.h dev_sixnet.h \
-		prot_sixnet.h rte_macro.h tbl_rtmacro.h rte_ccu.h rte_xcu.h \
-		smartmap.h tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
-		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
-		slctdev.h std_helper.h
+		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
+		cmd_rfn_CentronLcdConfiguration.h dev_rfn420focus.h \
+		cmd_rfn_FocusLcdConfiguration.h dev_rfnCommercial.h dev_rtc.h \
+		tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
+		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h tbl_rtcarrier.h \
+		tbl_rtrepeater.h rte_versacom.h tbl_rtversacom.h master.h \
+		rte_expresscom.h dev_fmu.h rtdb.h slctdev.h std_helper.h
 test_cmd_device.obj:	cmd_device.h dev_single.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -3968,6 +3973,27 @@ test_cmd_rfn_ovuvconfiguration.obj:	ctidate.h dlldefs.h logger.h \
 		configval.h readers_writer_lock.h critical_section.h \
 		connection_base.h xfer.h boost_test_helpers.h \
 		millisecond_timer.h
+test_cmd_rfn_remotedisconnect.obj:	ctidate.h dlldefs.h logger.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		cmd_rfn_RemoteDisconnect.h cmd_rfn.h cmd_device.h \
+		dev_single.h dsm2.h cticonnect.h yukon.h ctidbgmem.h \
+		netports.h dsm2err.h words.h optional.h macro_offset.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h \
+		database_reader.h boost_time.h config_device.h hashkey.h \
+		hash_functions.h rte_base.h dbmemobject.h ctibase.h \
+		ctinexus.h socket_helper.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h readers_writer_lock.h critical_section.h \
+		connection_base.h xfer.h
 test_cmd_rfn_touconfiguration.obj:	ctidate.h dlldefs.h logger.h \
 		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
@@ -4335,8 +4361,9 @@ test_dev_mct410.obj:	dev_mct410.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		rte_xcu.h smartmap.h tbl_rtcarrier.h tbl_rtrepeater.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h mgr_config.h \
-		boost_test_helpers.h millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_config.h mgr_dyn_paoinfo.h boost_test_helpers.h \
+		millisecond_timer.h
 test_dev_mct420.obj:	dev_mct420.h dev_mct410.h dev_mct4xx.h dev_mct.h \
 		dev_carrier.h dev_dlcbase.h dev_single.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
@@ -4493,8 +4520,13 @@ test_dev_mct440_213xb.obj:	dev_mct440_213xb.h dev_mct420.h \
 		cmd_mct410_disconnectConfiguration.h devicetypes.h \
 		pt_analog.h tbl_pt_analog.h tbl_pt_control.h pt_accum.h \
 		tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h tbl_pt_status_control.h mgr_config.h \
-		boost_test_helpers.h millisecond_timer.h
+		tbl_pt_status.h tbl_pt_status_control.h rtdb_test_helpers.h \
+		mgr_config.h mgr_dyn_paoinfo.h boost_test_helpers.h \
+		millisecond_timer.h dev_ccu.h dev_idlc.h dev_remote.h \
+		tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h trx_info.h \
+		porter.h trx_711.h dev_ccu_queue_interface.h \
+		device_queue_interface.h rte_ccu.h rte_xcu.h smartmap.h \
+		tbl_rtcarrier.h tbl_rtrepeater.h connection_client.h
 test_dev_mct470.obj:	dev_mct470.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
@@ -4519,7 +4551,7 @@ test_dev_mct470.obj:	dev_mct470.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h config_data_mct.h ctidate.h devicetypes.h \
-		mgr_config.h
+		rtdb_test_helpers.h mgr_config.h mgr_dyn_paoinfo.h
 test_dev_mct4xx.obj:	dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h dev_single.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
@@ -4612,9 +4644,10 @@ test_dev_rfn420centron.obj:	dev_rfn420centron.h dev_rfnResidential.h \
 		configval.h readers_writer_lock.h critical_section.h \
 		connection_base.h xfer.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
-		cmd_rfn_OvUvConfiguration.h cmd_rfn_CentronLcdConfiguration.h \
-		config_data_rfn.h mgr_config.h devicetypes.h \
-		boost_test_helpers.h millisecond_timer.h
+		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
+		cmd_rfn_CentronLcdConfiguration.h config_data_rfn.h \
+		rtdb_test_helpers.h mgr_config.h devicetypes.h \
+		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
 test_dev_rfnresidential.obj:	dev_rfnResidential.h dev_rfn.h \
 		rfn_identifier.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
@@ -4637,8 +4670,9 @@ test_dev_rfnresidential.obj:	dev_rfnResidential.h dev_rfn.h \
 		readers_writer_lock.h critical_section.h connection_base.h \
 		xfer.h cmd_rfn_LoadProfile.h ctidate.h cmd_rfn_DemandFreeze.h \
 		cmd_rfn_TouConfiguration.h cmd_rfn_OvUvConfiguration.h \
-		config_data_rfn.h mgr_config.h devicetypes.h \
-		boost_test_helpers.h millisecond_timer.h
+		cmd_rfn_RemoteDisconnect.h config_data_rfn.h \
+		rtdb_test_helpers.h mgr_config.h devicetypes.h \
+		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
 test_dev_rtm.obj:	dev_rtm.h dev_ied.h types.h os2_2w32.h dlldefs.h \
 		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h numstr.h \

@@ -29,20 +29,6 @@
 #define RESTORE_DURATION -1
 
 
-//  used by dev_manager and tbl_dyn_paoinfo
-enum CtiApplication_t
-{
-    Application_Dispatch = 100,  //  just so if we ever run into a case where it's initialized to 0,
-    Application_Porter,          //    there'll be no confusion - it'll be recognized as invalid
-    Application_Scanner,
-    Application_CapControl,
-    Application_LoadManagement,
-    Application_CalcLogic,
-
-    Application_Invalid  =  -1
-};
-
-
 enum CtiPaoCategory_t
 {
     PAO_CATEGORY_DEVICE = 0,

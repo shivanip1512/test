@@ -126,8 +126,8 @@ test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		CtiPCPtrQueue.h pointstore.h hashkey.h hash_functions.h \
 		rtdb.h string_utility.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		ctidbgmem.h netports.h dsm2err.h words.h optional.h \
-		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
-		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
+		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h row_reader.h
 #ENDUPDATE#
 

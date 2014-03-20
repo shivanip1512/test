@@ -484,8 +484,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
     return p;
 }
 
-CtiDeviceManager::CtiDeviceManager(CtiApplication_t app_id) :
-_app_id(app_id),
+CtiDeviceManager::CtiDeviceManager() :
 _dberrorcode(0)
 {
 }
@@ -1640,83 +1639,6 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 }
 
 
-void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
-{
-    CtiDeviceSPtr device;
-    long tmp_paobjectid, tmp_entryid;
-
-    CtiTableDynamicPaoInfo dynamic_paoinfo;
-
-    {
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Dynamic PAO Info" << endl;
-        }
-
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
-
-        string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement(_app_id);
-
-        if( !sql.empty() )
-        {
-            if(!paoids.empty())
-            {
-                sql += " AND " + Cti::Database::createIdSqlClause(paoids, "DPI", "paobjectid");
-            }
-            rdr.setCommandText(sql);
-            rdr.execute();
-        }
-        else
-        {
-            return;
-        }
-
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
-        }
-
-        if(rdr.isValid())
-        {
-            while( rdr() )
-            {
-                dynamic_paoinfo.DecodeDatabaseReader(rdr);
-
-                rdr["paobjectid"] >> tmp_paobjectid;
-                rdr["entryid"]    >> tmp_entryid;
-
-                device = getDeviceByID(tmp_paobjectid);
-
-                if( device )
-                {
-                    device->setDynamicInfo(dynamic_paoinfo);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no parent found for dynamic PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading Dynamic PAO Info from database. " <<  endl;
-        }
-
-        if(DebugLevel & 0x00020000)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
-        }
-    }
-}
-
 void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
 {
     CtiDeviceSPtr device;
@@ -1823,121 +1745,8 @@ void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, in
     }
 
     {
-        Timing::DebugTimer timer("loading dynamic device data");
-        refreshDynamicPaoInfo(paoids);
-    }
-
-    {
         Timing::DebugTimer timer("loading static device data");
         refreshStaticPaoInfo(paoids);
-    }
-}
-
-
-void CtiDeviceManager::writeDynamicPaoInfo( void )
-{
-    static const char *sql = "select max(entryid) from dynamicpaoinfo";
-    static long max_entryid;
-
-    vector<CtiTableDynamicPaoInfo *> dirty_info;
-
-    Cti::Database::DatabaseConnection   conn;
-
-    if ( ! conn.isValid() )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-        return;
-    }
-
-    spiterator dev_itr = begin(),
-               dev_end = end();
-
-    for( ; dev_itr != dev_end; dev_itr++ )
-    {
-        //  passed by reference
-        dev_itr->second->getDirtyInfo(dirty_info, _app_id);
-    }
-
-    if( !dirty_info.empty() )
-    {
-        try
-        {
-            bool status;
-
-            Cti::Database::DatabaseReader       rdr(conn, sql);
-            rdr.execute();
-
-            if(rdr() && rdr.isValid())
-            {
-                rdr >> max_entryid;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint: invalid reader, unable to select max_entryid, attempting to use " << max_entryid << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            //  just in case two applications are writing at once - if we make this an atomic
-            //    operation, the select-maxid-before-write will be safe
-            conn.beginTransaction();
-
-            vector<CtiTableDynamicPaoInfo *>::iterator itr;
-            for( itr = dirty_info.begin(); itr != dirty_info.end(); itr++ )
-            {
-                (*itr)->setOwner(_app_id);
-
-                status = (*itr)->Update(conn);
-
-                //  update didn't work, so we have to assign a new entry ID
-                //    this is clunky - entry ID is useless, since we key on Owner, PAO, and Key anyway
-                if( ! status )
-                {
-                    (*itr)->setEntryID(max_entryid + 1);
-
-                    status = (*itr)->Insert(conn);
-
-                    if( status )
-                    {
-                        max_entryid++;  //  increments the reference
-                    }
-                }
-
-                if( ! status )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - error inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    (*itr)->dump();
-                }
-
-                //  TODO:  if the insert fails, this needs to keep the records around so it can write them in the future
-                delete *itr;
-            }
-
-            bool commitSuccess = conn.commitTransaction();
-
-            /*
-            if( commitSuccess )
-            {
-                //  clear it out if it was successfully inserted
-                for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
-                {
-                    delete *itr;
-                }
-            }
-            */
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
     }
 }
 

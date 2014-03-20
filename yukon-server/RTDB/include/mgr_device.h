@@ -29,8 +29,6 @@ private:
 
     int _dberrorcode;
 
-    CtiApplication_t _app_id;
-
     coll_type        _smartMap;
     coll_type        _exclusionMap;         // This is a map of the devices which HAVE exclusions.
     coll_type        _portExclusions;       // This is a map of the devices the port has added - when a DB reload occurs, it clears
@@ -64,7 +62,6 @@ private:
     void refreshMacroSubdevices(Cti::Database::id_set &paoids);
     void refreshMCTConfigs     (Cti::Database::id_set &paoids);
     void refreshMCT400Configs  (Cti::Database::id_set &paoids);
-    void refreshDynamicPaoInfo (Cti::Database::id_set &paoids);
     void refreshStaticPaoInfo  (Cti::Database::id_set &paoids);
     bool refreshPointGroups    (Cti::Database::id_set &paoids);
 
@@ -84,7 +81,7 @@ protected:
 
 public:
 
-    CtiDeviceManager(CtiApplication_t app_id);
+    CtiDeviceManager();
     virtual ~CtiDeviceManager();
 
     coll_type::lock_t &getLock();
@@ -110,7 +107,6 @@ public:
     void refreshDeviceByID(LONG paoID, std::string category, std::string devicetype);
     void refreshGroupHierarchy(LONG paoID = 0);
     bool refreshPointGroups(void);
-    void writeDynamicPaoInfo(void);
 
     void deleteList(void);
 

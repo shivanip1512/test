@@ -17,6 +17,7 @@
 #include "database_writer.h"
 #include "database_util.h"
 #include "mgr_config.h"
+#include "mgr_dyn_paoinfo.h"
 
 using namespace std;
 
@@ -464,66 +465,12 @@ void CtiDeviceBase::purgeStaticPaoInfo()
 
 void CtiDeviceBase::purgeDynamicPaoInfo()
 {
-    set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.begin();
-
-    if(itr == _paoInfo.end()) // Nothing to purge, let's get out of here!
-        return;
-
-    const string owner = itr->getOwnerString();
-
-    // Purge the dynamic info from memory.
-    _paoInfo.clear();
-
-    if( owner.empty() )
-    {
-        return;
-    }
-
-    // Purge the dynamic info from the database.
-    static const string sqlPurge = "DELETE "
-                                   "FROM dynamicpaoinfo "
-                                   "WHERE paobjectid = ? AND owner = ?";
-
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
-
-    deleter << getID()
-            << owner;
-
-    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Cti::DynamicPaoInfoManager::purgeInfo(getID());
 }
 
 void CtiDeviceBase::purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key)
 {
-    std::set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.find(CtiTableDynamicPaoInfo(getID(), key));
-
-    if(itr == _paoInfo.end()) // Nothing to purge, let's get out of here!
-        return;
-
-    const string owner   = itr->getOwnerString();
-    const string keyname = itr->getKeyString();
-
-    // Purge the dynamic info from memory.
-    _paoInfo.erase(itr);
-
-    if( owner.empty() || keyname.empty() )
-    {
-        return;
-    }
-
-    // Purge the dynamic info from the database.
-    static const string sqlPurge = "DELETE "
-                                   "FROM dynamicpaoinfo "
-                                   "WHERE paobjectid = ? AND infokey = ? AND owner = ?";
-
-    Cti::Database::DatabaseConnection   connection;
-    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
-
-    deleter << getID()
-            << keyname
-            << owner;
-
-    Cti::Database::executeCommand( deleter, __FILE__, __LINE__ );
+    Cti::DynamicPaoInfoManager::purgeInfo(getID(), key);
 }
 
 string CtiDeviceBase::getSQLCoreStatement() const
@@ -866,10 +813,9 @@ bool CtiDeviceBase::isTAP() const
 }
 
 
-//  this dynamic stuff might need to move to tbl_pao - it is dynamicpaoinfo, after all
 bool CtiDeviceBase::hasDynamicInfo(PaoInfoKeys k) const
 {
-    return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
+    return Cti::DynamicPaoInfoManager::hasInfo(getID(), k);
 }
 
 bool CtiDeviceBase::hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
@@ -891,26 +837,6 @@ bool CtiDeviceBase::setStaticInfo(const CtiTableStaticPaoInfo &info)
     else
     {
         _staticPaoInfo.insert(info);
-        new_record = true;
-    }
-
-    return new_record;
-}
-
-bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
-{
-    bool new_record = false;
-    std::set<CtiTableDynamicPaoInfo>::iterator itr;
-
-    itr = _paoInfo.find(info);
-
-    if( itr != _paoInfo.end() )
-    {
-        *itr = info;
-    }
-    else
-    {
-        _paoInfo.insert(info);
         new_record = true;
     }
 
@@ -962,120 +888,44 @@ long CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
 
 
 
-//  helper function for overloads
-template <class T>
-bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::PaoInfoKeys k, const T &value)
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const string &value)
 {
-    std::pair<std::set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
-    bool record_added = false;
-
-    set_result = s.insert(CtiTableDynamicPaoInfo(paoid, k));
-
-    set_result.first->setValue(value);
-
-    return set_result.second;
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const int &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned int &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const long &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned long &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const double &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, value);
+}
+void CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const CtiTime &value)
+{
+    Cti::DynamicPaoInfoManager::setInfo(getID(), k, (unsigned long) value.seconds());
 }
 
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const string &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const int &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned int &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const long &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const unsigned long &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const double &value)
-{
-    return setInfo(_paoInfo, getID(), k, value);
-}
-bool CtiDeviceBase::setDynamicInfo(PaoInfoKeys k, const CtiTime &value)
-{
-    return setInfo(_paoInfo, getID(), k, (unsigned long) value.seconds());
-}
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        string &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,          long &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k, unsigned long &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        double &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,  unsigned int &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) const    {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k, destination);  }
 
-//  helper function for overloads
-template <class T>
-bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::PaoInfoKeys k, T &destination)
-{
-    bool success = false;
-
-    std::set<CtiTableDynamicPaoInfo>::const_iterator itr;
-
-    if( (itr = s.find(CtiTableDynamicPaoInfo(paoid, k))) != s.end() )
-    {
-        itr->getValue(destination);
-        success = true;
-    }
-
-    return success;
-}
-
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        string &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,           int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,  unsigned int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
-bool CtiDeviceBase::getDynamicInfo(PaoInfoKeys k,       CtiTime &destination) const
-{
-    ctitime_t t;
-
-    bool retval = getInfo(_paoInfo, getID(), k, (unsigned long&)t);
-
-    destination = t;
-
-    return retval;
-}
-
-long CtiDeviceBase::getDynamicInfo(PaoInfoKeys k) const
-{
-    long l = std::numeric_limits<long>::min();
-
-    getInfo(_paoInfo, getID(), k, l);
-
-    return l;
-}
-
-bool CtiDeviceBase::getDirtyInfo(std::vector<CtiTableDynamicPaoInfo *> &dirty_info, CtiApplication_t app_id)
-{
-    bool retval = false;
-
-    if( !_paoInfo.empty() )
-    {
-        std::set<CtiTableDynamicPaoInfo>::iterator itr, itr_end = _paoInfo.end();
-
-        for( itr = _paoInfo.begin(); itr != itr_end; itr++ )
-        {
-            if( itr->getOwnerID() == Application_Invalid )
-            {
-                itr->setOwner(app_id);
-            }
-
-            if( itr->isDirty() )
-            {
-                dirty_info.push_back(CTIDBG_new CtiTableDynamicPaoInfo(*itr));
-                itr->setDirty(false);
-
-                retval = true;
-            }
-        }
-    }
-
-    return retval;
-}
-
+long CtiDeviceBase::getDynamicInfo(PaoInfoKeys k) const  {  return Cti::DynamicPaoInfoManager::getInfo(getID(), k);  }
 
 void CtiDeviceBase::setExpectedFreeze(int freeze)
 {

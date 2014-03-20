@@ -22,6 +22,7 @@ struct test_state_rfnResidential
     RfnDevice::ReturnMsgList     returnMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
+    Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
 
@@ -488,6 +489,8 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
         // Test Put Config Install
         //
 
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPaoInfo for this scope
+
         test_RfnResidentialDevice dut;
 
         {
@@ -691,6 +694,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
         //
         // Test Get Config Install
         //
+        Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;  //  Reset the DynamicPaoInfo for this scope
 
         test_RfnResidentialDevice dut;
 
@@ -2147,7 +2151,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
     cfg.insertValue( RfnStrings::DisconnectMode, "CYCLING" );
     cfg.insertValue( RfnStrings::ConnectMinutes, "100" );
     cfg.insertValue( RfnStrings::DisconnectMinutes, "60" );
-        
+
     {
         ////// 1 valid configuration //////
 

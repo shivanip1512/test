@@ -17,6 +17,7 @@
 #include "mgr_device_scannable.h"
 #include "mgr_point.h"
 #include "mgr_config.h"
+#include "mgr_dyn_paoinfo.h"
 #include "dev_base.h"
 #include "dev_single.h"
 #include "dev_mct.h"  //  for DLC loadprofile scans
@@ -77,7 +78,7 @@ void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
-Cti::ScannableDeviceManager ScannerDeviceManager(Application_Scanner);
+Cti::ScannableDeviceManager ScannerDeviceManager;
 CtiPointManager             ScannerPointManager;
 
 extern BOOL ScannerQuit;
@@ -337,6 +338,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     identifyProject(CompileInfo);
     setConsoleTitle(CompileInfo);
+
+    Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
 
     /* Give us a tiny attitude */
     CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
@@ -1485,7 +1488,7 @@ void DatabaseHandlerThread(void *Arg)
             }
 
             RecordDynamicData();
-            ScannerDeviceManager.writeDynamicPaoInfo();
+            Cti::DynamicPaoInfoManager::writeInfo();
 
             if(TimeNow >= RefreshTime)
             {
@@ -1503,7 +1506,7 @@ void DatabaseHandlerThread(void *Arg)
     } /* End of for */
 
     RecordDynamicData();
-    ScannerDeviceManager.writeDynamicPaoInfo();
+    Cti::DynamicPaoInfoManager::writeInfo();
 }
 
 INT MakePorterRequests(list< OUTMESS* > &outList)

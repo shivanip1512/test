@@ -117,6 +117,13 @@
    #define IM_EX_CONFIG      __declspec(dllimport)
 #endif
 
+#ifdef _DLL_DYNPAOINFO                // The dynpaoinfo.dll
+   #define IM_EX_DYNPAOINFO   __declspec(dllexport)
+#else
+   #define IM_EX_DYNPAOINFO   __declspec(dllimport)
+#endif
+
+
 #ifdef _DLL_FDRBASE
    #define IM_EX_FDRBASE       __declspec(dllexport)
 #else

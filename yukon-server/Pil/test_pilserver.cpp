@@ -14,7 +14,6 @@ struct test_DeviceManager : CtiDeviceManager
     CtiDeviceSPtr dev;
 
     test_DeviceManager() :
-        CtiDeviceManager(Application_Porter),
         dev(new CtiDeviceBase())
     {
         dev->setID(42);

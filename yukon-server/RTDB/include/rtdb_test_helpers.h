@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mgr_config.h"
+#include "mgr_dyn_paoinfo.h"
 
 namespace Cti {
 namespace Test {
@@ -48,6 +49,33 @@ public:
     ~Override_ConfigManager()
     {
         gConfigManager = _oldConfigManager;
+    }
+};
+
+struct test_DynamicPaoInfoManager : DynamicPaoInfoManager
+{
+    virtual void loadInfo(const Database::id_set &paoIds)
+    {
+        loadedPaos.insert(paoIds.begin(), paoIds.end());
+    }
+};
+
+class Override_DynamicPaoInfoManager
+{
+    std::auto_ptr<DynamicPaoInfoManager> _oldDynamicPaoInfoManager;
+
+public:
+
+    Override_DynamicPaoInfoManager()
+    {
+        _oldDynamicPaoInfoManager = gDynamicPaoInfoManager;
+
+        gDynamicPaoInfoManager.reset(new test_DynamicPaoInfoManager);
+    }
+
+    ~Override_DynamicPaoInfoManager()
+    {
+        gDynamicPaoInfoManager = _oldDynamicPaoInfoManager;
     }
 };
 

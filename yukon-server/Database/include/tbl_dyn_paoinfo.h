@@ -8,7 +8,7 @@
 #include <string>
 #include <map>
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo
 {
 public:
 
@@ -338,44 +338,40 @@ public:
 
 protected:
 
-    typedef std::map<CtiApplication_t, const std::string> owner_map_t;
-    typedef std::map<PaoInfoKeys,      const std::string> key_map_t;
-
-    static const owner_map_t _owner_map;
-    static const key_map_t   _key_map;
-
-    long _entry_id;
     long _pao_id;
-    CtiApplication_t _owner_id;
-
     PaoInfoKeys _key;
     std::string _value;
+    bool _fromDb;
 
 public:
 
-    typedef CtiMemDBObject Inherited;
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, int value);
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned int value);
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, long value);
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, unsigned long value);
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, double value);
+    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k, std::string value);
+    CtiTableDynamicPaoInfo(Cti::RowReader& rdr);  //  throws BadKeyException
 
-    CtiTableDynamicPaoInfo();
-    CtiTableDynamicPaoInfo(long paoid, PaoInfoKeys k);  //  owner doesn't matter until the new row gets written to the DB
+    struct BadKeyException
+    {
+        BadKeyException(std::string key) : badkey(key) {};
 
-    bool operator<(const CtiTableDynamicPaoInfo &rhs) const;  //  this is for the set in dev_base
+        const std::string badkey;
+    };
 
-    static std::string getTableName();
+    bool Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner);
+    bool Update(Cti::Database::DatabaseConnection &conn, const std::string &owner);
 
-    bool Insert(Cti::Database::DatabaseConnection &conn);
-    bool Update(Cti::Database::DatabaseConnection &conn);
+    static std::string getSQLCoreStatement();
 
-    static std::string getSQLCoreStatement(CtiApplication_t _app_id);
-
-    void DecodeDatabaseReader(Cti::RowReader& rdr);
+    bool isFromDb() const;
+    void setFromDb();
 
     long                getPaoID()       const;
-    long                getEntryID()     const;
-    CtiApplication_t    getOwnerID()     const;
-    std::string         getOwnerString() const;
     PaoInfoKeys         getKey()         const;
-    std::string         getKeyString()   const;
     std::string         getValue()       const;
+    static std::string  getKeyString(const PaoInfoKeys key);
 
     void getValue(int           &destination) const;
     void getValue(long          &destination) const;
@@ -384,19 +380,6 @@ public:
     void getValue(std::string   &destination) const;
     void getValue(unsigned int  &destination) const;
 
-    void setEntryID(long entry_id);
-    void setOwner(CtiApplication_t o);
-    void setKey(PaoInfoKeys k);
-
-    //  we actually want to limit the input conversions into setValue, because we
-    //    need to be able to convert them from string form in the getValue functions
-    void setValue(int i);
-    void setValue(unsigned int i);
-    void setValue(long l);
-    void setValue(unsigned long l);
-    void setValue(double d);
-    void setValue(const std::string &s);
-
-    virtual void dump();
+    void dump();
 };
 
