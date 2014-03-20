@@ -185,7 +185,7 @@
                                                 <c:choose>
                                                     <c:when test="${pointId > 0}">
                                                         <span class="redBullet_${pointId}">
-                                                            <cti:icon icon="icon-bullet-red" nameKey="questionable"/>
+                                                            <cti:icon icon="icon-bullet-red" classes="thin fn M0" nameKey="questionable"/>
                                                         </span>
                                                         <cti:pointValue pointId="${pointId}" format="VALUE"/>
                                                         <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${pointId})" 
@@ -230,7 +230,7 @@
                                                 <c:choose>
                                                     <c:when test="${point.pointId > 0}">
                                                         <span class="redBullet_${point.pointId}">
-                                                            <cti:icon icon="icon-bullet-red" title="Questionable Quality"/>
+                                                            <cti:icon icon="icon-bullet-red" classes="thin fn M0" nameKey="questionable"/>
                                                         </span>
                                                         <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
                                                     </c:when>
@@ -283,7 +283,7 @@
                                            <c:choose>
                                                <c:when test="${point.pointId > 0}">
                                                     <span class="redBullet_${point.pointId}">
-                                                        <cti:icon icon="icon-bullet-red"/>
+                                                        <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
                                                     </span>
                                                     <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
                                                     <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${point.pointId})" 

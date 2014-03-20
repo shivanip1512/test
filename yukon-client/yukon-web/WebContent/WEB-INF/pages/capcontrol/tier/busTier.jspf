@@ -37,7 +37,7 @@
         </thead>
 
         <c:forEach var="viewableSubBus" items="${subBusList}">
-            <!-- Setup Variables -->
+            <%-- Setup Variables --%>
             <c:set var="subbusId" value="${viewableSubBus.subBus.ccId}"/>
             <cti:url value="/capcontrol/ivvc/bus/detail" var="ivvcLink" htmlEscape="true">
                 <cti:param name="subBusId" value="${subbusId}"/>
@@ -53,10 +53,12 @@
                 <cti:param name="specialArea" value="${isSpecialArea}"/>
             </cti:url>
             <tr id="tr_sub_${subbusId}" data-pao-id="${subbusId}" data-bus-id="${subbusId}">
-                <%-- Name --%>
+                <%-- Icons --%>
                 <td>
                     <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
+                    <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
                 </td>
+                <%-- Name --%>
                 <td id="anc_${subbusId}"  class="wsnw">
                     <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                         <cti:param name="type" value="2"/>
@@ -70,7 +72,6 @@
                     <a href="${dualBusLink}" class="tierIconLink">
                         <capTags:dualBusImg paoId="${subbusId}" type="SUBBUS"/>
                     </a>
-                    <capTags:verificationImg paoId="${subbusId}" type="SUBBUS"/>
                 </td>
 
                 <%-- State --%>
@@ -134,7 +135,7 @@
                     <span class="${hasTooltip}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                         </cti:classUpdater>
                         <i:inline key=".statSeparator"/> 
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
@@ -156,12 +157,12 @@
                     <span id="kwVolts_${subbusId}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                         </cti:classUpdater>
                         <i:inline key=".statSeparator"/> 
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="VOLTS"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                         </cti:classUpdater>
                     </span>
                 </td>

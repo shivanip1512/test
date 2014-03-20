@@ -159,7 +159,7 @@
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="VOLTS"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/VOLT_QUALITY">
-                                <cti:icon icon="icon-bullet-red"/>
+                                <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
                             </cti:classUpdater>
                         </td>
                     </tr>
@@ -168,7 +168,7 @@
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KVAR_LOAD"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/KVAR_LOAD_QUALITY">
-                                <cti:icon icon="icon-bullet-red"/>
+                                <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
                             </cti:classUpdater>
                         </td>
                     </tr>
@@ -177,7 +177,7 @@
                         <td>
                             <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="KW"/>
                             <cti:classUpdater type="SUBBUS" identifier="${subBusId}/WATT_QUALITY">
-                                <cti:icon icon="icon-bullet-red"/>
+                                <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
                             </cti:classUpdater>
                         </td>
                     </tr>

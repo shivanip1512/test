@@ -40,10 +40,11 @@
             <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
 
             <tr data-feeder-id="${feederId}" data-parent-id="${parentId}" data-pao-id="${feederId}">
-                <%-- Name --%>
+                <%-- Icons --%>
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
                 </td>
+                <%-- Name --%>
                 <td class="wsnw">
                     <c:set var="warning" value=""/>
                     <c:if test="${viewfeeder.movedFeeder}">
@@ -129,7 +130,7 @@
                             <span class="f-has-tooltip">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
-                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                                 </cti:classUpdater>    
                                 <i:inline key=".statSeparator"/> 
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
@@ -139,7 +140,7 @@
                             <span>
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
-                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                                    <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                                  </cti:classUpdater>
                                 <i:inline key=".statSeparator"/>  
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
@@ -163,12 +164,12 @@
                     <span id="kwVolts_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KW"/> 
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/WATT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                         </cti:classUpdater>
                         <i:inline key=".statSeparator"/> 
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="VOLTS"/>
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/VOLT_QUALITY">
-                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red"/>
+                            <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
                         </cti:classUpdater>
                     </span>
                 </td>

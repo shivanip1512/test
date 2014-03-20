@@ -10,7 +10,6 @@
 
 <c:if test="${not alertBox}">
     <span id="warning_${paoId}_ok" style="display: none;">
-        <cti:icon classes="row-icon" icon="icon-blank"/>
     </span>
 
     <span class="f-tooltip" id="warningPopup_${paoId}" style="display: none;">

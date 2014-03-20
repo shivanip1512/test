@@ -12,6 +12,8 @@
     width: 16px;
 }
 .icon.disabled, .icon[disabled] {background-image: url(../Icons/icons-disabled.png);}
+/* This is for bullet icons. They should have there background-position-x adjusted to center the icon */
+.icon.thin {width: 8px}
 
 .icon-32 {background-image: url(../Icons/icons-32.png);line-height: 32px;height: 32px;width: 32px;max-width: 32px;}
 .icon-32.disabled, .icon-32[disabled] {background-image: url(../Icons/icons-32-disabled.png);}
@@ -179,6 +181,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-bullet-pink{background-position: -400px -48px}
 .icon-bullet-purple{background-position: -416px -48px}
 .icon-bullet-red{background-position: -432px -48px}
+.icon-bullet-red.thin{background-position-x: -437px}
 .icon-bullet-star{background-position: -448px -48px}
 .icon-bullet-toggle-minus{background-position: -464px -48px}
 .icon-bullet-toggle-plus{background-position: -480px -48px}

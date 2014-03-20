@@ -250,13 +250,15 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
     }
 }
 
-function updateVerificationImage(spanId) {
+function updateVerificationImage(paoId) {
     return function (data) {
-        var isVerification = 'false' === data.value ? false : true;
+        var isVerification = 'false' === data.value ? false : true,
+            icon = $('[data-verification][data-pao-id=' + paoId + ']');
+            
         if (isVerification) {
-            $('#' + spanId).show();
+            icon.show();
         } else {
-            $('#' + spanId).hide();
+            icon.hide();
         }
     };
 }

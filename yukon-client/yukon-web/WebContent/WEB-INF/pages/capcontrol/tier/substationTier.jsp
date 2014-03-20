@@ -71,7 +71,7 @@
                 <div class="column-12-12 clearfix">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="name-collapse">
-                            <tags:nameValue2 nameKey=".name">
+                            <tags:nameValue2 nameKey=".name" valueClass="wbba">
                                 <span>${fn:escapeXml(bc_areaName)}</span>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".geoName">

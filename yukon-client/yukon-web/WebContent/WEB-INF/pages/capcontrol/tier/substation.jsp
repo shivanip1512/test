@@ -82,13 +82,13 @@ $(function() {
             <div class="column-12-12 clearfix">
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="name-collapse">
-                        <tags:nameValue2 nameKey=".name">
+                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
                             <span>${fn:escapeXml(substation.name)}</span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName">
-                            <span><spring:escapeBody>${substation.description}</spring:escapeBody></span>
+                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
+                            <span>${fn:escapeXml(substation.description)}</span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".area">
+                        <tags:nameValue2 nameKey=".area" valueClass="wbba">
                             <span>
                                 <c:choose>
                                     <c:when test="${areaId > 0}">
@@ -116,7 +116,7 @@ $(function() {
                         <tags:nameValue2 nameKey=".mapLocationId">
                             <span>${substation.mapLocationId}</span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".specialArea">
+                        <tags:nameValue2 nameKey=".specialArea" valueClass="wbba">
                             <span>
                                 <c:choose>
                                     <c:when test="${specialAreaId > 0}">
