@@ -54,7 +54,8 @@
                     </cti:url>
                     <cti:button nameKey="edit" href="${editUrl}" icon="icon-pencil"/>
                 </cti:checkRolesAndProperties>
-                <cti:button nameKey="back" href="/deviceConfiguration/home"/>
+                <cti:url var="backUrl" value="/deviceConfiguration/home"/>
+                <cti:button nameKey="back" href="${backUrl}"/>
             </div>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT">
