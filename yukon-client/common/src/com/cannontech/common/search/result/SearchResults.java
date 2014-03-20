@@ -41,6 +41,11 @@ public class SearchResults<T> {
         return indexBasedForWholeList((currentPage - 1) * itemsPerPage, itemsPerPage, itemList);
     }
 
+    /**
+     * Build a SearchResult containing a specific "page" of items, based on the specified parameters.
+     * This method takes a list of _all_ results and will set the result list to the appropriate
+     * sublist for the specified page.
+     */
     public static <T> SearchResults<T> pageBasedForWholeList(PagingParameters pagingParameters, List<T> itemList) {
         return indexBasedForWholeList(pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), itemList);
     }
