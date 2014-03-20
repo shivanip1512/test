@@ -24,7 +24,6 @@ try {
     
     String suppressStackStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
     showStack = !BooleanUtils.toBoolean(suppressStackStr);
-    showStack = true;
     if (showStack) {
         pageContext.setAttribute("yukonVersion", VersionTools.getYUKON_VERSION());
         pageContext.setAttribute("yukonDetails", VersionTools.getYukonDetails());
@@ -76,78 +75,98 @@ pageContext.setAttribute("stackTrace", ServletUtil.printNiceHtmlStackTrace(throw
     <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/errorStyles.css"/>" type="text/css">
 </c:if>
 
+
+<c:if test="${loggedIn}">
+    <c:set var="logoHtml"><cti:logo key="yukon.web.error.logo"/></c:set>
+    <cti:msg var="genericMainMessage" key="yukon.web.error.genericMainMessage"/>
+    <cti:msg var="genericErrorMessage" key="yukon.web.error.genericSubMessage"/>
+    
+
+</c:if>
+
+<c:if test="${!loggedIn}">
+    <c:set var="logoHtml">
+        <img class="logoImage" src="<cti:url value="/WebConfig/yukon/YukonBW.gif"/>">
+    </c:set>
+    <c:set var="genericMainMessage" value="An error occurred while processing your request."/>
+    <c:set var="genericErrorMessage" value="Try to execute your request again."/>
+</c:if>
+
 </head>
 
 <body>
 <div id="error">
-<div id="errorImg">
-    <cti:link key="yukon.web.error.logoLink" href="/" escapeBody="false">
-        <cti:logo key="yukon.web.error.logo" />
-    </cti:link>
-</div>
-<c:choose>
-    <c:when test="${not empty friendlyExceptionMessage}">
-        <br/>
-        <div id="errorFriendly">
-            <cti:msg key="yukon.web.error.detailedFriendlyMessage" argument="${friendlyExceptionMessage}" />
-        </div>
-        <br/>
-    </c:when>
-    <c:otherwise>
-        <div id="errorMain"><cti:msg key="yukon.web.error.genericMainMessage" /></div>
-    </c:otherwise>
-</c:choose>
-
-<c:choose>
-    <c:when test="${empty errorKey}">
-        <div id="errorSub"><cti:msg key="yukon.web.error.genericSubMessage"/></div>
-    </c:when>
-    <c:otherwise>
-        <div id="errorSub">
-            <cti:msg key="yukon.web.error.genericSubMessageWithKey" argument="${errorKey}"/>
-        </div>
-    </c:otherwise>
-</c:choose>
-
-<c:if test="${showStack}">
-    <script type="text/javascript">
-    function showStack( chkBox ) {
-        var elem = document.getElementById('stackTrace');
-        elem.style.display = 'block';
-        document.getElementById('showMore').style.display = 'none';
-    
-    }
-    </script>
-    <div id="errorDetail">
-        <div id="showMore">
-            <a href="javascript:showStack()">Detailed information</a>
-        </div>
-        <div style="display: none" id="stackTrace">
-             <p>
-                <strong>Yukon Version:</strong> ${yukonVersion}
-             </p>
-             <p>
-                <strong>Yukon Version Details:</strong> ${yukonVersion}
-             </p>
-             <p>
-                <strong>Status code:</strong> ${statusCode}
-            </p>
-            <p>
-                <strong>Message</strong>: <span id="rootErrorMessage">${fn:escapeXml(message)} </span>
-            </p>
-            <p>
-                <strong>Error type</strong>: ${errorType}
-            </p>
-            <p>
-                <strong>Request URI</strong>: ${requestURI}
-            </p>
-            <p>
-                ${stackTrace}
-            </p>
-        </div>
+    <div id="errorImg">
+        <a href="<cti:url value="/"/>">${logoHtml}</a>
     </div>
-</c:if>
+
+    <c:choose>
+        <c:when test="${not empty friendlyExceptionMessage}">
+            <br/>
+            <div id="errorFriendly">
+                <cti:msg key="yukon.web.error.detailedFriendlyMessage" argument="${friendlyExceptionMessage}" />
+            </div>
+            <br/>
+        </c:when>
+        <c:otherwise>
+             <div id="errorMain">
+                ${genericMainMessage}
+            </div>
+        </c:otherwise>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="${empty errorKey}">
+            <div id="errorSub">
+                ${genericErrorMessage}
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div id="errorSub">
+                <cti:msg key="yukon.web.error.genericSubMessageWithKey" argument="${errorKey}"/>
+            </div>
+        </c:otherwise>
+    </c:choose>
     
+    <c:if test="${showStack}">
+        <script type="text/javascript">
+        function showStack( chkBox ) {
+            var elem = document.getElementById('stackTrace');
+            elem.style.display = 'block';
+            document.getElementById('showMore').style.display = 'none';
+        
+        }
+        </script>
+        <div id="errorDetail">
+            <div id="showMore">
+                <a href="javascript:showStack()">Detailed information</a>
+            </div>
+            <div style="display: none" id="stackTrace">
+                 <p>
+                    <strong>Yukon Version:</strong> ${yukonVersion}
+                 </p>
+                 <p>
+                    <strong>Yukon Version Details:</strong> ${yukonVersion}
+                 </p>
+                 <p>
+                    <strong>Status code:</strong> ${statusCode}
+                </p>
+                <p>
+                    <strong>Message</strong>: <span id="rootErrorMessage">${fn:escapeXml(message)} </span>
+                </p>
+                <p>
+                    <strong>Error type</strong>: ${errorType}
+                </p>
+                <p>
+                    <strong>Request URI</strong>: ${requestURI}
+                </p>
+                <p>
+                    ${stackTrace}
+                </p>
+            </div>
+        </div>
+    </c:if>
+</div>
 </body>
 
 </html>

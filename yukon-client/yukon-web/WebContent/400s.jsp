@@ -79,16 +79,16 @@ try {
 
 <body>
 <div id="error">
-<div id="errorImg">
-    <a href="<cti:url value="/"/>">${logoHtml}</a>
+    <div id="errorImg">
+        <a href="<cti:url value="/"/>">${logoHtml}</a>
+    </div>
+    <div id="errorMain">
+        ${genericMainMessage}
+    </div>
+    <div id="errorMain">
+        ${errorMessage}
+    </div>
 </div>
-<div id="errorMain">
-    ${genericMainMessage}
-</div>
-<div id="errorMain">
-    ${errorMessage}
-</div>
-
 </body>
 
 </html>
