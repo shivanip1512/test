@@ -19,8 +19,7 @@
             // such as the following should appear in the debugger console:
             // Refused to display 'http://10.106.38.173:8080/login.jsp?REDIRECTED_FROM=%2F' in a frame because it set 'X-Frame-Options' to 'SAMEORIGIN'.
             // 14:56:44.474] Load denied by X-Frame-Options: http://10.106.38.173:8080/login.jsp?REDIRECTED_FROM=%2F does not permit cross-origin framing.
-            //var iframeUrl = 'http://10.106.42.52:8080/';
-            var iframeUrl = 'http://localhost:8080/';
+            var iframeUrl = 'http://localhost:8080/yukon/';
             $('#clickjack').attr('src', iframeUrl);
         });
     </script> 

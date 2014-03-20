@@ -1,9 +1,13 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="uiDemos">
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
-    <cti:includeScript link="JQUERY_COOKIE" />
+
+    <dt:pickerIncludes/>
+    <cti:includeScript link="/resources/js/lib/google-code-prettify/prettify.js"/>
+    <cti:includeCss link="/resources/js/lib/google-code-prettify/prettify.css"/>
+    <cti:includeScript link="JQUERY_COOKIE"/>
 
     <div class="column-4-20">
         <div class="column one side-nav">
@@ -30,10 +34,14 @@
 $(function () {
     $('#dev-sections a').click(function(e) {
         var url = $(this).data('url');
-        $('#dev-content').load(url);
+        $('#dev-content').load(url, function() {
+            prettyPrint();
+            yukon.ui.initDateTimePickers();
+        });
         $('#dev-sections li').removeClass('selected');
         $(this).closest('li').addClass('selected');
     });
+    prettyPrint();
 });
 </script>
 </cti:standardPage>

@@ -7,6 +7,27 @@
 <cti:standardPage module="dev" page="webServices.eimTest">
 <cti:url var="sampleXmlUrl" value="sampleXml"/>
 
+<style>
+#xmlRequest {
+    margin-top: 5px;
+    display: block;
+    height: 20em;
+    width: 100%;
+}
+
+#uriInput {
+    width:  25em;
+}
+
+#selectAllDiv {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: inherit;
+    padding: 0px 3px;
+}
+</style>
+
 <script type="text/javascript">
 function formatXml(unformattedXml) {
     var formatted = '';

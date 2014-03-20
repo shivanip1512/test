@@ -9,9 +9,7 @@
 
 <div class="i18nDemo">
 
-<p class="pageDescription">
-This page shows some examples of how to do internationalization in Yukon.
-</p>
+<p>This page shows some examples of how to do internationalization in Yukon.</p>
 
 <h1>Escaping</h1>
 
@@ -35,31 +33,31 @@ the entire message after arguments have been added.)
 
 <p>By default, HTML in arguments is escaped but not in the message itself.  Consider the following code:</p>
 
-<p class="exampleCode"><cti:msg2 key=".defaultEscapingExampleCode" htmlEscape="true"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".defaultEscapingExampleCode" htmlEscape="true"/></pre>
 
 <p>with the following key:</p>
 
-<p class="exampleCode"><cti:msg2 key=".defaultEscapingExampleMsg" htmlEscape="true"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".defaultEscapingExampleMsg" htmlEscape="true"/></pre>
 
 <p>and an argument of "${fn:escapeXml(thisNotThat)}", render as:</p>
 
-<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}"/></pre>
 
 <p>If we turn on HTML escaping for the whole message:</p>
 
-<p class="exampleCode"><cti:msg2 key=".fullHTMLEscapingExampleCode" htmlEscape="true"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".fullHTMLEscapingExampleCode" htmlEscape="true"/></pre>
 
 <p>we will see everything in the message escaped:</p>
 
-<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscape="true"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscape="true"/></pre>
 
 <p>If we turn off even HTML argument escaping:</p>
 
-<p class="exampleCode"><cti:msg2 key=".noHTMLEscapingExampleCode" htmlEscape="true"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".noHTMLEscapingExampleCode" htmlEscape="true"/></pre>
 
 <p>nothing in the message will be escaped (and thus any HTML in it gets used on the page):</p>
 
-<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscapeArguments="false"/></p>
+<pre class="code prettyprint"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscapeArguments="false"/></pre>
 
 <h2>JavaScript (ECMA) Escaping</h2>
 
@@ -79,13 +77,13 @@ but here you will find a summary of the most useful bits.</p>
 <p>This is the most common format you'll need.  The most useful format is (replacing
 "argumentNumber", "noItemsMessage", etc. as appropriate):</p>
 
-<p class="exampleCode">{argumentNumber,choice,0#noItemsMessage|1#oneItemMessage|&lt;multipleItemsMessage}</p>
+<pre class="code prettyprint">{argumentNumber,choice,0#noItemsMessage|1#oneItemMessage|&lt;multipleItemsMessage}</pre>
 
 <p>Note that {argumentNumber} will normally also be nested inside the multiple items message.</p>
 
 <p>Using the following i18n value:</p>
 
-<p class="exampleCode">There {0,choice,0#are no items|1#is one item|1&lt;are {0} items}.</p>
+<pre class="code prettyprint">There {0,choice,0#are no items|1#is one item|1&lt;are {0} items}.</pre>
 
 <p>you will get the following output using the arguments 0, 1, 2 and 5 respectively:</p>
 
@@ -100,7 +98,7 @@ but here you will find a summary of the most useful bits.</p>
 
 <p>The number format is useful when rounding is needed.  Using the following format:</p>
 
-<p class="exampleCode">{0,number,0.00}</p>
+<pre class="code prettyprint">{0,number,0.00}</pre>
 <ul>
     <li>1.0/3.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberOneThird}"/></li>
     <li>1.0/2.0 formats as <i:inline key=".decimalExample.2places" arguments="${numberOneHalf}"/></li>
@@ -111,7 +109,7 @@ but here you will find a summary of the most useful bits.</p>
 <p>The number format can also be useful for adding commas to make large numbers more readable.
 Using the following format:</p>
 
-<p class="exampleCode">{0,number,#,##0.0}</p>
+<pre class="code prettyprint">{0,number,#,##0.0}</pre>
 
 <p>${largeDecimal} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeDecimal}"/></p>
 <p>${largeInteger} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeInteger}"/></p>

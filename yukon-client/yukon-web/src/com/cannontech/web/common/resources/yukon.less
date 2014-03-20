@@ -458,8 +458,18 @@ input.error {background: pink;border-color: @red;}
 /* MISC */
 .clearfix:before, .clearfix:after {content: " ";display: table;}
 .clearfix:after {clear: both;}
-.code {font-color: #333; background-color: #eee; border: dashed 1px #bbb; padding: 4px 8px; overflow-x: auto; margin: 10px;}
-.code .console {border-bottom: 1px dashed #bbb;}
+.code {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+    margin: 15px 0;
+    word-break: break-word;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    line-height: 19px;
+    overflow: auto;
+    padding: 6px 10px;
+    border-radius: 3px;
+}
 .full-width {width: 100%}
 .half-width {width: 50%}
 .fade-half {opacity: 0.5;}
@@ -474,7 +484,7 @@ input.error {background: pink;border-color: @red;}
 strong, .strong-label-small, .grouped-list .group {font-weight: bold;}
 
 .notes, .strong-label-small {font-size: 12px;}
-.monospace, .code {font-family: Courier,monospace; font-size: 12px;}
+.monospace {font-family: Courier,monospace; font-size: 12px;}
 .monospace {white-space: pre;}
 .inline-tree {overflow:hidden;}
 .short-width {max-width: 200px;}

@@ -69,7 +69,7 @@
                 </tags:nameValue>
                 
                 <tags:nameValue name="Event Type">
-                    <form:select path="rfnConditionType" styleClass="rfnConditionTypes" items="${rfnConditionTypes}"/>
+                    <form:select path="rfnConditionType" items="${rfnConditionTypes}"/>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Num Events Per Meter">

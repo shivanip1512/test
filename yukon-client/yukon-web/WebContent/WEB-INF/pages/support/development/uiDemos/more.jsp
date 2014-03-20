@@ -23,10 +23,6 @@
 
 </style>
 
-<p class="pageDescription">
-
-</p>
-
 <tags:sectionContainer title="HTML 5">
     <h3>Placeholder</h3>
     <input type="text" name="search" placeholder="Placeholder Text" >

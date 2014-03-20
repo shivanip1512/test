@@ -621,7 +621,6 @@
 
   <module name="support">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/supportStyles.css" />
     <pages>
       <page name="support" type="BASIC">
         <link>/support</link>

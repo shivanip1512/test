@@ -65,10 +65,6 @@ $(document).ready(function() {
 	</ul>
 </d:inline>
 
-<p class="pageDescription">
-This page shows some examples of how to use AJAX dialogs in Yukon.
-</p>
-
 <tags:sectionContainer title="Confirmation Dialogs">
     <h3>Custom OK Handling</h3>
     <d:confirm on="#deleteBtn" nameKey="confirmDelete" argument="Thing to Delete"/>
