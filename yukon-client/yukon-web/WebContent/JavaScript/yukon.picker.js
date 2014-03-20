@@ -95,10 +95,10 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         });
         this.selectAllCheckBox.checked = allSelected;
-        this.selectAllPagesLink.parentNode.hide();
-        this.allPagesSelected.parentNode.hide();
-        this.clearEntireSelectionLink.parentNode.hide();
-        this.entireSelectionCleared.hide();
+        $(this.selectAllPagesLink.parentNode).hide();
+        $(this.allPagesSelected.parentNode).hide();
+        $(this.clearEntireSelectionLink).parentNode.hide();
+        $(this.entireSelectionCleared).hide();
     },
 
     okPressed = function () {
@@ -108,7 +108,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             dialogElem;
 
         if (!this.allowEmptySelection && this.selectedItems.length === 0) {
-            this.nothingSelectedDiv.show();
+            $(this.nothingSelectedDiv).show();
         } else {
             if (this.destinationFieldId) {
                 fieldName = this.idFieldName;
@@ -146,7 +146,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         var parentRow,
             rows,
             index;
-        this.nothingSelectedDiv.hide();
+        $(this.nothingSelectedDiv).hide();
 
         if (this.immediateSelectMode) {
             this.selectedItems = [hit];
@@ -218,8 +218,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         resultArea.appendChild(resultAreaFixed);
         this.allLinks = [];
         if (hitList && hitList.length && hitList.length > 0) {
-            this.noResultsDiv.hide();
-            this.resultsDiv.show();
+            $(this.noResultsDiv).hide();
+            $(this.resultsDiv).show();
             this.outputColumns.forEach(function (outputColumn, index, arr) {
                 var translatedColumn = {
                      'title': outputColumn.title,
@@ -239,8 +239,8 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             resultTable.className = 'compact-results-table pickerResultTable';
             resultAreaFixed.appendChild(resultTable);
         } else {
-            this.noResultsDiv.show();
-            this.resultsDiv.hide();
+            $(this.noResultsDiv).show();
+            $(this.resultsDiv).hide();
         }
 
         return resultArea;
@@ -338,9 +338,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         block.call(this);
         ss = this.ssInput.value;
         if (ss) {
-            this.showAllLink.show();
+            $(this.showAllLink).show();
         } else {
-            this.showAllLink.hide();
+            $(this.showAllLink).hide();
         }
         this.currentSearch = ss;
         if (this.memoryGroup) {
@@ -405,9 +405,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         hit = null;
         if (this.selectedItems.length > 0) {
             hit = this.selectedItems[0];
-            if (this.showSelectedLink) this.showSelectedLink.show();
+            if (this.showSelectedLink) $(this.showSelectedLink).show();
         } else {
-            if (this.showSelectedLink) this.showSelectedLink.hide();
+            if (this.showSelectedLink) $(this.showSelectedLink).hide();
         }
 
         if (this.selectionProperty) {
@@ -449,7 +449,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         var json = JSON.parse(transport.responseText);
         if (json && json.hits && json.hits.resultList) {
             this.selectedItems = json.hits.resultList;
-            if (this.showSelectedLink) this.showSelectedLink.show();
+            if (this.showSelectedLink) $(this.showSelectedLink).show();
         }
         updateOutsideFields.call(this, true);
     },
@@ -505,7 +505,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             this.ssInput.value = yukon.protoPicker.rememberedSearches[this.memoryGroup];
         }
         if (this.nothingSelectedDiv) {
-            this.nothingSelectedDiv.hide();
+            $(this.nothingSelectedDiv).hide();
         }
         if ('undefined' !== typeof skipFocus && !skipFocus) {
             this.ssInput.focus();
@@ -659,7 +659,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                     doSearch.call(pickerThis);
                 }
             };
-        this.nothingSelectedDiv.hide();
+        $(this.nothingSelectedDiv).hide();
         // Don't do the search if it hasn't changed.  This can happen if
         // the use the cursor key or alt-tab to another window and back.
         ss = this.ssInput.value;
@@ -710,17 +710,17 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         });
 
-        this.clearEntireSelectionLink.parentNode.hide();
-        this.entireSelectionCleared.hide();
-        this.allPagesSelected.parentNode.hide();
+        $(this.clearEntireSelectionLink.parentNode).hide();
+        $(this.entireSelectionCleared).hide();
+        $(this.allPagesSelected.parentNode).hide();
         // Cap "select all on every page" at 5000.
         if (this.selectAllCheckBox.checked && this.nextIndex !== -1 && this.hitCount <= 5000) {
             this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg;
-            this.selectAllPagesLink.parentNode.show();
+            $(this.selectAllPagesLink.parentNode).show();
         } else {
-            this.selectAllPagesLink.parentNode.hide();
+            $(this.selectAllPagesLink.parentNode).hide();
             if (numSelectedBefore > this.selectedItems.length && this.selectedItems.length > 0) {
-                this.clearEntireSelectionLink.parentNode.show(); 
+                $(this.clearEntireSelectionLink.parentNode).show(); 
             }
         }
 
@@ -745,9 +745,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         this.inSearch = false;
         this.ssInput.focus();
-        this.selectAllPagesLink.parentNode.hide();
+        $(this.selectAllPagesLink.parentNode).hide();
         this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
-        this.allPagesSelected.parentNode.show();
+        $(this.allPagesSelected.parentNode).show();
         this.unblock();
     };
 
@@ -757,9 +757,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
 
     yukon.protoPicker.prototype.clearEntireSelection = function () {
         this.selectedItems = [];
-        this.allPagesSelected.parentNode.hide();
-        this.clearEntireSelectionLink.parentNode.hide();
-        this.entireSelectionCleared.show();
+        $(this.allPagesSelected.parentNode).hide();
+        $(this.clearEntireSelectionLink).parentNode.hide();
+        $(this.entireSelectionCleared).show();
         this.allLinks.forEach(function (hitRow, index, arr) {
             $(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
@@ -810,7 +810,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                 showSelectedImg = document.getElementById('picker_' + this.pickerId + '_showSelectedImg');
                 if (showSelectedImg) {
                     this.showSelectedLink = showSelectedImg.parentNode;
-                    this.showSelectedLink.hide();
+                    $(this.showSelectedLink).hide();
                 }
             }
         }
