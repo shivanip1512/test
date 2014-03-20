@@ -7,11 +7,12 @@
 <%@ page import="com.cannontech.cbc.exceptions.CBCExceptionMessages"%>
 <%@ page import="javax.faces.context.FacesContext"%>
 
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="f" uri="http://java.sun.com/jsf/core" %>
+<%@ taglib prefix="h" uri="http://java.sun.com/jsf/html" %>
+<%@ taglib prefix="x" uri="http://myfaces.apache.org/tomahawk" %>
 
 <f:view>
 
@@ -75,18 +76,28 @@
                         title="Writes this item to the database"  rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                     
                     <f:verbatim>
-                        <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-                            <cti:param name="value" value="${capControlForm.itemId}"/>
-                        </cti:url>
-                        <cti:url var="copyUrl" value="/editor/copyBase.jsf">
-                            <cti:param name="itemid" value="${capControlForm.itemId}"/>
-                            <cti:param name="type" value="1"/>
-                        </cti:url>
                         <cti:msgScope paths="capcontrol.cbcBase">
-                           <cti:button nameKey="delete" href="${deleteUrl}"/>
-                           <c:if test="${capControlForm.visibleTabs['CBCController']}">
-                               <cti:button nameKey="copy" href="${copyUrl}"/>
-                           </c:if>
+                            <c:if test="${not capControlForm.visibleTabs['CBCSchedule']}">
+                                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                                    <cti:param name="value" value="${capControlForm.itemId}"/>
+                                </cti:url>
+                                <cti:button nameKey="delete" href="${deleteUrl}"/>
+                            </c:if>
+                            <c:if test="${capControlForm.visibleTabs['CBCSchedule']}">
+                                <cti:url var="deleteScheduleUrl" value="/capcontrol/schedule/deleteSchedule">
+                                    <cti:param name="scheduleId" value="${capControlForm.itemId}" />
+                                </cti:url>
+                                <cti:button id="schedule-delete-header" nameKey="delete"  href="${deleteScheduleUrl}"/>
+                                <d:confirm on="#schedule-delete-header"
+                                    nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
+                            </c:if>
+                            <c:if test="${capControlForm.visibleTabs['CBCController']}">
+                                <cti:url var="copyUrl" value="/editor/copyBase.jsf">
+                                    <cti:param name="itemid" value="${capControlForm.itemId}"/>
+                                    <cti:param name="type" value="1"/>
+                                </cti:url>
+                                <cti:button nameKey="copy" href="${copyUrl}"/>
+                            </c:if>
                         </cti:msgScope>
                     </f:verbatim>
 
@@ -194,22 +205,32 @@
                                 title="Writes this item to the database" rendered = "#{capControlForm.visibleTabs['CBCCapBank'] && capControlForm.editingAuthorized}"/>
                             
                             <f:verbatim>
-                                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-                                    <cti:param name="value" value="${capControlForm.itemId}"/>
-                                </cti:url>
-                                <cti:url var="copyUrl" value="/editor/copyBase.jsf">
-                                    <cti:param name="itemid" value="${capControlForm.itemId}"/>
-                                    <cti:param name="type" value="1"/>
-                                </cti:url>
                                 <cti:msgScope paths="capcontrol.cbcBase">
-                                   <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                   <c:if test="${not capControlForm.visibleTabs['CBCSchedule']}">
+                                       <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                                           <cti:param name="value" value="${capControlForm.itemId}"/>
+                                       </cti:url>
+                                       <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                   </c:if>
+                                   <c:if test="${capControlForm.visibleTabs['CBCSchedule']}">
+                                       <cti:url var="deleteScheduleUrl" value="/capcontrol/schedule/deleteSchedule">
+                                           <cti:param name="scheduleId" value="${capControlForm.itemId}" />
+                                       </cti:url>
+                                       <cti:button id="schedule-delete-footer" nameKey="delete"  href="${deleteScheduleUrl}"/>
+                                       <d:confirm on="#schedule-delete-footer"
+                                           nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
+                                   </c:if>
                                    <c:if test="${capControlForm.visibleTabs['CBCController']}">
+                                       <cti:url var="copyUrl" value="/editor/copyBase.jsf">
+                                           <cti:param name="itemid" value="${capControlForm.itemId}"/>
+                                           <cti:param name="type" value="1"/>
+                                       </cti:url>
                                        <cti:button nameKey="copy" href="${copyUrl}"/>
                                    </c:if>
                                 </cti:msgScope>
                             </f:verbatim>
 
-                            <x:commandButton 	id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
+                            <x:commandButton id="return_button" value="Return" action="none" styleClass="stdButton" immediate="true" 
                                 title="Returns to the last module page that was used to enter this editor" >
                                 <f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
                             </x:commandButton>

@@ -368,8 +368,8 @@ public class ScheduleController {
         return "redirect:scheduleAssignments";
     }
 	
-	@RequestMapping(value="deleteSchedule", method=RequestMethod.POST)
-    public String deleteSchedule(int scheduleId, ModelMap map, FlashScope flash) {
+	@RequestMapping(value="deleteSchedule")
+    public String deleteSchedule(int scheduleId, FlashScope flash) {
 	    List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
 	    boolean success = paoScheduleDao.delete(scheduleId);
         if (success) {
