@@ -14,7 +14,8 @@ $(function() {
 <d:ajaxPage nameKey="${nameKey}" module="tools" page="configs.config" okEvent="ajaxDialogSubmit" 
     id="categoryPopup"
     options="{ 'height' : '600', 'width' : '988' }">
-    <form:form commandName="categoryEditBean" action="/deviceConfiguration/category/saveInPlace">
+    <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
+    <form:form commandName="categoryEditBean" action="${saveInPlaceUrl}">
         <form:hidden path="categoryType"/>
         <form:hidden path="categoryId"/>
         <input type="hidden" name="configId" value="${configId}"/>

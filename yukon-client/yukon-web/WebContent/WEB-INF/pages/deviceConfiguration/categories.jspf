@@ -64,7 +64,8 @@
             
             <cti:displayForPageEditModes modes="VIEW,EDIT">
                 <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                    <form id="categoryChange_${catType}" action="/deviceConfiguration/config/swapCategory">
+                    <cti:url var="swapCategoryUrl" value="/deviceConfiguration/config/swapCategory"/>
+                    <form id="categoryChange_${catType}" action="${swapCategoryUrl}">
                         <input type="hidden" name="configId" value="${configurationCategoriesBackingBean.configId}">
                         <input type="hidden" name="newCategoryId" id="newCategoryId_${catType}">
                         <input type="hidden" name="categoryType" value="${catType}">

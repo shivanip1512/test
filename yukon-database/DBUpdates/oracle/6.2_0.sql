@@ -267,6 +267,17 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -70004;
 /* End YUK-13105 */
 
+/* Start YUK-13159 */
+INSERT INTO DeviceConfigCategoryItem
+SELECT ROW_NUMBER() OVER (ORDER BY DeviceConfigCategoryID) 
+           + (SELECT NVL(MAX(DeviceConfigCategoryItemID), 1) FROM DeviceConfigCategoryItem),
+       DeviceConfigCategoryID,
+       'enableTou',
+       'false'
+FROM DeviceConfigCategory 
+WHERE CategoryType = 'tou';
+/* End YUK-13159 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -65,7 +65,7 @@ yukon.deviceConfig = (function () {
     },
     
     _makeAjaxCall = function(method, params, button) {
-        var url = '/deviceConfiguration/category/' + method;
+        var url = yukon.url('/deviceConfiguration/category/' + method);
         $('#' + button.attr('id')).mouseleave();
         $('#categoryPopup').load(url, params, function() {
             _handleVisibleElemsAndButtons();
