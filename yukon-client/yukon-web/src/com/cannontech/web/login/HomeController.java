@@ -161,9 +161,18 @@ public class HomeController {
 
     private final static String pathWithoutContextPath(String path, HttpServletRequest request) {
         String contextPath = request.getContextPath();
+        if ("".equals(contextPath)) {
+            // Nothing to remove.
+            return path;
+        }
+
         if (path.startsWith(contextPath)) {
             return path.substring(contextPath.length());
         }
-        return path;
+
+        // We expect the context path to be at the beginning of path.  If it isn't there, we can't use this method
+        // because we don't want to inadvertently use this method to remove some legitimate bit of the path that
+        // just happens to match the context path.
+        throw new RuntimeException("Context path prefix not found in path " + path);
     }
 }
