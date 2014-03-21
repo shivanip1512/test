@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tdc/enableDisableSend"/>
-    <form:form id="enableDisableForm" commandName="backingBean" action="${saveUrl}">
+    <form:form id="enableDisableForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>
            <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>

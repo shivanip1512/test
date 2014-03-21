@@ -11,7 +11,7 @@
     <cti:flashScopeMessages/>
 
 
-    <form:form id="tagsForm" commandName="backingBean"> 
+    <form:form id="tagsForm" cssClass="f-preventSubmitViaEnterKey" commandName="backingBean"> 
         <form:hidden path="deviceId" /> 
         <form:hidden path="pointId" /> 
         <form:hidden path="rowIndex" />
