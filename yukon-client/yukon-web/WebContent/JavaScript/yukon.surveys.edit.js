@@ -32,8 +32,12 @@ yukon.surveys.edit = (function () {
             mod.addAnswer.rowIdNums = [];
 
             _questionTypeChanged();
-            $('#questionType').change(yukon.surveys.questionTypeChanged);
-            $('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
+            
+            $(document).on('change', '#questionType', _questionTypeChanged)
+            $(document).on('submit', '#inputForm', function(e) {
+                e.preventDefault();
+                $(this).ajaxSubmit({'target' : '#ajaxDialog'});
+            });
 
             if (answerKeys instanceof Array) {
                 for (ii = 0; ii < answerKeys.length; ii += 1) {
