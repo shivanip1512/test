@@ -7,6 +7,7 @@
 #include "DeviceConfigLookup.h"
 #include "debug_timer.h"
 #include "logger.h"
+#include "std_helper.h"
 
 #include <boost/tuple/tuple.hpp>
 
@@ -55,6 +56,8 @@ IM_EX_CONFIG std::auto_ptr<ConfigManager> gConfigManager(new ConfigManager);
 
 void ConfigManager::initialize()
 {
+    readers_writer_lock_t::writer_lock_guard_t guard(gConfigManager->_lock);
+
     gConfigManager->loadAllConfigs();
     gConfigManager->loadAllCategoryItems();
     gConfigManager->loadAllDeviceAssignments();
@@ -229,6 +232,8 @@ void ConfigManager::processDBUpdate( const long          ID,
 
     if ( category == "Device Config" )
     {
+        readers_writer_lock_t::writer_lock_guard_t guard(_lock);
+
         if ( objectType == "config" )
         {
             _configurations.erase( ID );
@@ -341,27 +346,46 @@ Config::DeviceConfigSPtr ConfigManager::getConfigForIdAndType( const long device
 
 Config::DeviceConfigSPtr   ConfigManager::fetchConfig( const long deviceID, const DeviceTypes deviceType )
 {
-    // lookup config ID from DeviceID
+    Config::DeviceConfigSPtr builtConfig;
+    long configID;
 
-    DeviceToConfigAssignmentMap::const_iterator configIDSearch = _deviceAssignments.find( deviceID );
-
-    if ( configIDSearch != _deviceAssignments.end() )
     {
-        const long configID = configIDSearch->second;
+        readers_writer_lock_t::reader_lock_guard_t guard(_lock);
 
-        Config::DeviceConfigSPtr   config = _cache[ configID ][ deviceType ];     // inserts null on failure
+        // lookup config ID from DeviceID
 
-        if ( ! config )
+        DeviceToConfigAssignmentMap::const_iterator configIDSearch = _deviceAssignments.find( deviceID );
+
+        if ( configIDSearch == _deviceAssignments.end() )
         {
-            config = buildConfig( configID, deviceType );
-
-            _cache[ configID ][ deviceType ] = config;
+            //  Device not assigned to a config
+            return Config::DeviceConfigSPtr();
         }
 
-        return config;
+        configID = configIDSearch->second;
+
+        //  Do a read-only search first - we only have the reader lock
+        if( const boost::optional<DeviceTypeToDeviceConfigMap &> configsPerType = mapFindRef(_cache, configID) )
+        {
+            if( const boost::optional<Config::DeviceConfigSPtr> cachedConfig = mapFind(*configsPerType, deviceType) )
+            {
+                //  Found it in our cache
+                return *cachedConfig;
+            }
+        }
+
+        //  Didn't find it - build it while protected by the reader lock (fast, parallel)
+        builtConfig = buildConfig( configID, deviceType );
     }
 
-    return Config::DeviceConfigSPtr();
+    {
+        readers_writer_lock_t::writer_lock_guard_t guard(_lock);
+
+        //  now insert it into the cache with the writer lock (slow, serialized access)
+        _cache[ configID ][ deviceType ] = builtConfig;
+    }
+
+    return builtConfig;
 }
 
 }

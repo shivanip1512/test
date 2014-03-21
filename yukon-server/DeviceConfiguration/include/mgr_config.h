@@ -3,6 +3,7 @@
 #include "dllbase.h"
 #include "config_device.h"
 #include "devicetypes.h"
+#include "readers_writer_lock.h"
 
 #include <boost/ptr_container/ptr_map.hpp>
 
@@ -16,12 +17,15 @@ private:
     typedef boost::ptr_map<long, Config::ConfigurationCategory>    CategoryMap;
     typedef std::map<long, long>                                   DeviceToConfigAssignmentMap;
 
-    typedef std::map<long, std::map<DeviceTypes, Config::DeviceConfigSPtr> >   DeviceConfigCache;
+    typedef std::map<DeviceTypes, Config::DeviceConfigSPtr>        DeviceTypeToDeviceConfigMap;
+    typedef std::map<long, DeviceTypeToDeviceConfigMap>            DeviceConfigCache;
 
     ConfigurationMap            _configurations;
     CategoryMap                 _categories;
     DeviceToConfigAssignmentMap _deviceAssignments;
     DeviceConfigCache           _cache;
+
+    readers_writer_lock_t       _lock;
 
     void loadAllConfigs();
     void loadConfig( const long configID );
