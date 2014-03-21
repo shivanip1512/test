@@ -480,17 +480,21 @@ public final class ContactDaoImpl implements ContactDao {
             contact.setContactID(contactId);
             
             sink = sql.insertInto("Contact");
+            sink.addValue("ContFirstName", SqlUtils.convertStringToDbValue(contact.getContFirstName()));
+            sink.addValue("ContLastName", SqlUtils.convertStringToDbValue(contact.getContLastName()));
+            sink.addValue("LogInId", contact.getLoginID());
+            sink.addValue("AddressId", contact.getAddressID());
+            sink.addValue("ContactId", contactId);
         } else {
             // Update if id is not -1
             dbChangeType = DbChangeType.UPDATE;
             sink = sql.update("Contact");
+            sink.addValue("ContFirstName", SqlUtils.convertStringToDbValue(contact.getContFirstName()));
+            sink.addValue("ContLastName", SqlUtils.convertStringToDbValue(contact.getContLastName()));
+            sink.addValue("LogInId", contact.getLoginID());
+            sink.addValue("AddressId", contact.getAddressID());
+            sql.append("WHERE ContactId").eq(contactId);
         }
-
-        sink.addValue("ContFirstName", SqlUtils.convertStringToDbValue(contact.getContFirstName()));
-        sink.addValue("ContLastName", SqlUtils.convertStringToDbValue(contact.getContLastName()));
-        sink.addValue("LogInId", contact.getLoginID());
-        sink.addValue("AddressId", contact.getAddressID());
-        sink.addValue("ContactId", contactId);
         yukonJdbcTemplate.update(sql);
 
         contactNotificationDao.saveNotificationsForContact(contactId,
