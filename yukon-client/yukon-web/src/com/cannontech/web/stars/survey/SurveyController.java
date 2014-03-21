@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -206,7 +207,7 @@ public class SurveyController {
     }
 
     @RequestMapping("delete")
-    public String delete(ModelMap model, int surveyId, FlashScope flashScope, YukonUserContext userContext) {
+    public String delete(int surveyId, FlashScope flashScope, YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
         if (surveyDao.usedByOptOutSurvey(surveyId) || surveyDao.hasBeenTaken(surveyId)) {
             MessageSourceResolvable errorMsg =
@@ -252,18 +253,19 @@ public class SurveyController {
             survey = verifyEditable(surveyId, userContext);
         }
 
-        return editDetails(model, survey, userContext);
+        return editDetails(model, survey);
     }
 
-    private String editDetails(ModelMap model, Survey survey, YukonUserContext userContext) {
+    private String editDetails(ModelMap model, Survey survey) {
         model.addAttribute("survey", survey);
 
         return "survey/editDetails.jsp";
     }
 
     @RequestMapping("saveDetails")
-    public String saveDetails(HttpServletResponse response, ModelMap model, @ModelAttribute Survey survey,
-            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    public String saveDetails(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+            @ModelAttribute Survey survey, BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         verifyEditable(survey, userContext);
         boolean isNew = survey.getSurveyId() == 0;
         detailsValidator.validate(survey, bindingResult);
@@ -273,7 +275,7 @@ public class SurveyController {
                 boolean wasNew = survey.getSurveyId() == 0;
                 surveyDao.saveSurvey(survey);
                 if (wasNew) {
-                    newLocation = "'/stars/survey/edit?surveyId=" + survey.getSurveyId() + "'";
+                    newLocation = "/stars/survey/edit?surveyId=" + survey.getSurveyId();
                 } else {
                     newLocation = "edit?surveyId=" + survey.getSurveyId();
                 }
@@ -284,7 +286,7 @@ public class SurveyController {
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return editDetails(model, survey, userContext);
+            return editDetails(model, survey);
         }
 
         if (!isNew) {
@@ -296,7 +298,8 @@ public class SurveyController {
             return "redirect:" + newLocation;
         }
 
-        ServletUtils.dialogFormSuccess(response, "yukonDetailsUpdated", newLocation);
+        ServletUtils.dialogFormSuccess(response, "yukonDetailsUpdated",
+            "'" + request.getContextPath() + newLocation + "'");
         return null;
     }
 
@@ -372,8 +375,7 @@ public class SurveyController {
     }
 
     @RequestMapping("moveQuestion")
-    public String moveQuestion(HttpServletResponse response, ModelMap model, int surveyQuestionId, String direction,
-            YukonUserContext userContext) {
+    public String moveQuestion(int surveyQuestionId, String direction) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         if ("up".equals(direction)) {
             surveyDao.moveQuestionUp(question);
@@ -386,8 +388,7 @@ public class SurveyController {
     }
 
     @RequestMapping("deleteQuestion")
-    public String deleteQuestion(ModelMap model, int surveyQuestionId, FlashScope flashScope,
-            YukonUserContext userContext) {
+    public String deleteQuestion(int surveyQuestionId, FlashScope flashScope, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         verifyEditable(question.getSurveyId(), userContext);
         surveyDao.deleteQuestion(surveyQuestionId);
