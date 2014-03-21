@@ -28,18 +28,16 @@ yukon.surveys.edit = (function () {
             var infoHolder = $('[data-answer-keys]'),
                 answerKeys = infoHolder.data('answerKeys'),
                 ii;
+            mod.addAnswer.nextRowIdNum = 0;
+            mod.addAnswer.rowIdNums = [];
 
             _questionTypeChanged();
             $('#questionType').change(yukon.surveys.questionTypeChanged);
             $('#inputForm').ajaxForm({'target' : '#ajaxDialog'});
 
-            if (answerKeys !== '') {
-                mod.addAnswer.nextRowIdNum = 0;
-                mod.addAnswer.rowIdNums = [];
-                if (answerKeys) {
-                    for (ii = 0; ii < answerKeys.length; ii += 1) {
-                        mod.addAnswer(answerKeys[ii]);
-                    }
+            if (answerKeys instanceof Array) {
+                for (ii = 0; ii < answerKeys.length; ii += 1) {
+                    mod.addAnswer(answerKeys[ii]);
                 }
                 $('#questionKey').focus();
                 $('#questionKey').select();

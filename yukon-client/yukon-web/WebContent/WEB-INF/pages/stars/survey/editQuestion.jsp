@@ -11,16 +11,13 @@
 <c:set var="okAction" value="none"/>
 <cti:displayForPageEditModes modes="EDIT">
     <c:set var="okAction" value="yukonDialogSubmit"/>
+    <cti:toJson var="dataAnswerKeys" object="${answerKeys}"/>
 </cti:displayForPageEditModes>
 
 <d:ajaxPage nameKey="editQuestion" module="adminSetup" page="survey.edit" okEvent="${okAction}">
 
-<cti:displayForPageEditModes modes="EDIT">
-    <c:set var="dataAnswerKeys" value="${cti:jsonString(answerKeys)}" />
-</cti:displayForPageEditModes>
-
 <cti:url var="submitUrl" value="saveQuestion"/>
-<form:form id="inputForm" commandName="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}">
+<form:form id="inputForm" commandName="question" action="${submitUrl}" data-answer-keys="${dataAnswerKeys}" htmlEscape="false">
     <form:hidden path="surveyId"/>
     <form:hidden path="surveyQuestionId"/>
     <form:hidden path="displayOrder"/>
