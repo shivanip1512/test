@@ -91,6 +91,21 @@ public class TimeUtilTest {
         assertEquals("difference in days should have been " + expectedResult, expectedResult, days);
     }
     
+    @Test
+    public void test_printNormalizedStandard() {
+        assertEquals("00:00:00.683", TimeUtil.convertSecondsToNormalizedStandard(.683));
+        assertEquals("00:00:01.000", TimeUtil.convertSecondsToNormalizedStandard(1));
+        assertEquals("00:30:00.000", TimeUtil.convertSecondsToNormalizedStandard(1800));
+        assertEquals("01:30:01.000", TimeUtil.convertSecondsToNormalizedStandard(5401));
+        assertEquals("1 day 00:00:01.000", TimeUtil.convertSecondsToNormalizedStandard(86401));
+        assertEquals("1 day 23:59:59.000", TimeUtil.convertSecondsToNormalizedStandard(172799));
+        assertEquals("2 days 00:00:01.000", TimeUtil.convertSecondsToNormalizedStandard(172801));
+        assertEquals("25 days 10:41:00.000", TimeUtil.convertSecondsToNormalizedStandard(2198460));
+        assertEquals("33 days 10:41:00.000", TimeUtil.convertSecondsToNormalizedStandard(2889660));
+        assertEquals("367 days 00:30:01.450", TimeUtil.convertSecondsToNormalizedStandard(31710601.45));
+        
+    }
+    
     private boolean isLeapYear(final Calendar cal) {
         if (cal instanceof GregorianCalendar) {
             GregorianCalendar tempCal = (GregorianCalendar) cal;

@@ -15,6 +15,10 @@ import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -188,6 +192,33 @@ public static int differenceMinutes(Date from, Date to) {
 
         return format.format(hour) + ":" + format.format(min) + ":" + format.format(Math.floor(sec))+  format2.format(seconds).toString();
     }    
+    
+    /**
+     * Convert seconds of time into dd days[s] hh:mm:ss string.
+     * @param long seconds
+     * @return String in format "dd day[s] HH:mm:ss.SSS (if 0 days, then return only "HH:mm:ss.SSS")
+     * This is not i18n'd. Matches string returned from porter.
+     */
+    public static String convertSecondsToNormalizedStandard(double seconds) {
+        
+        double millis = seconds * 1000;
+        Period period = new Period((long)millis);
+
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+        .appendWeeks()
+        .appendSuffix(" week", " weeks")
+        .appendSeparator(", ")
+        .appendDays().appendSuffix(" day ", " days ")
+        .printZeroAlways()
+        .minimumPrintedDigits(2).appendHours().appendSuffix(":")
+        .appendMinutes().appendSuffix(":")
+        .appendSecondsWithMillis()
+        .toFormatter();
+        
+        System.out.println(formatter.print(period.normalizedStandard(PeriodType.yearDayTime())));
+        
+        return formatter.print(period.normalizedStandard(PeriodType.yearDayTime()));
+    }
     
     /**
      * Method to get a date which represents numDays (+/-) from "now".toDateMidnight
