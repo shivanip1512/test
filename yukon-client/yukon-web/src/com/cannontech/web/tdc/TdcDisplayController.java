@@ -121,6 +121,9 @@ public class TdcDisplayController {
         }else{
             totalCount = displayData.size();
             //display all the data on one page
+            if(totalCount == 0){
+                totalCount = itemsPerPage;
+            }
             pagingParameters = new PagingParameters(totalCount, 1);
         }
         model.addAttribute("displayName", display.getName());
