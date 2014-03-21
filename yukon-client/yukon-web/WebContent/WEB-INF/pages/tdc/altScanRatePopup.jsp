@@ -6,7 +6,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.tools.tdc">
-    <form:form id="altScanRateForm" commandName="backingBean" action="/tdc/altScanRateSend">
+    <cti:url var="saveUrl" value="/tdc/altScanRateSend"/>
+    <form:form id="altScanRateForm" commandName="backingBean" action="${saveUrl}">
         <form:hidden path="deviceId" />
         <tags:nameValueContainer2>
         <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -24,6 +25,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDao;
@@ -87,17 +89,17 @@ public class TdcServiceImpl implements TdcService{
     };
 
     @Override
-    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone) {
+    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging) {
         List<DisplayData> retVal = null;
         switch (display.getDisplayId()) {
         case SOE_LOG_DISPLAY_NUMBER:
-            retVal = displayDataDao.getSoeLogDisplayData(timeZone);
+            retVal = displayDataDao.getSoeLogDisplayData(timeZone, paging);
             break;
         case TAG_LOG_DISPLAY_NUMBER:
-            retVal = displayDataDao.getTagLogDisplayData(timeZone);
+            retVal = displayDataDao.getTagLogDisplayData(timeZone, paging);
             break;
         case EVENT_VIEWER_DISPLAY_NUMBER:
-            retVal = displayDataDao.getEventViewerDisplayData(timeZone);
+            retVal = displayDataDao.getEventViewerDisplayData(timeZone, paging);
             break;
         case GLOBAL_ALARM_DISPLAY:
             retVal = getAlarms(true);
@@ -110,6 +112,25 @@ public class TdcServiceImpl implements TdcService{
             }
         }
         return retVal;
+    }
+    
+    @Override
+    public int getDisplayDataCount(int displayId, DateTimeZone timeZone) {
+        int count;
+        switch (displayId) {
+        case SOE_LOG_DISPLAY_NUMBER:
+            count = displayDataDao.getSoeLogDisplayDataCount(timeZone);
+            break;
+        case TAG_LOG_DISPLAY_NUMBER:
+            count = displayDataDao.getTagLogDisplayDataCount(timeZone);
+            break;
+        case EVENT_VIEWER_DISPLAY_NUMBER:
+            count = displayDataDao.getEventViewerDisplayDataCount(timeZone);
+            break;
+        default:
+            throw new NotImplementedException();
+        }
+        return count;
     }
         
     @Override
@@ -156,7 +177,7 @@ public class TdcServiceImpl implements TdcService{
     @Override
     public int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user){
         int count  = 0;
-        List<DisplayData> displayData = getDisplayData(display, null);
+        List<DisplayData> displayData = getDisplayData(display, null, null);
         for(DisplayData data :displayData){
             count += acknowledgeAlarmsForPoint(data.getPointId(), user);
         }
@@ -310,7 +331,7 @@ public class TdcServiceImpl implements TdcService{
     public int getUnackAlarmCountForDisplay(int displayId) {
         Display display = displayDao.getDisplayById(displayId);
         int count = 0;
-        List<DisplayData> displayData = getDisplayData(display, null);
+        List<DisplayData> displayData = getDisplayData(display, null, null);
         for(DisplayData data :displayData){
             // there might be more then one alarm for a point
             count += getUnackAlarmCountForPoint(data.getPointId());

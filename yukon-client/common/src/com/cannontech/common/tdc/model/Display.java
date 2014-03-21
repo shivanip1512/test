@@ -1,8 +1,10 @@
 package com.cannontech.common.tdc.model;
 
+import static com.cannontech.common.tdc.model.IDisplay.EVENT_VIEWER_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.SOE_LOG_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
+
 import java.util.List;
-
-
 import java.util.NoSuchElementException;
 
 import com.google.common.base.Predicate;
@@ -72,5 +74,10 @@ public class Display {
         } catch (NoSuchElementException e) {
             return false;
         }
+    }
+    
+    public boolean isPageable() {
+        return displayId == SOE_LOG_DISPLAY_NUMBER || displayId == TAG_LOG_DISPLAY_NUMBER
+               || displayId == EVENT_VIEWER_DISPLAY_NUMBER;
     }
 }

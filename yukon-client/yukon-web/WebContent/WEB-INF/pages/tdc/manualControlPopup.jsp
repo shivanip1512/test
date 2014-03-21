@@ -8,8 +8,8 @@
 <cti:includeScript link="/JavaScript/yukon.dialog.ajax.js"/>
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
-    
-    <form:form id="manualControlForm" commandName="backingBean" action="/tdc/manualControlSend">
+    <cti:url var="saveUrl" value="/tdc/manualControlSend"/>
+    <form:form id="manualControlForm" commandName="backingBean" action="${saveUrl}">
         <form:hidden path="deviceId" />
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>

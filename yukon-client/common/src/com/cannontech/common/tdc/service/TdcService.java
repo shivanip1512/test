@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -38,7 +39,7 @@ public interface TdcService {
     /**
      * Get display data
      */
-    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone);
+    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging);
 
     /**
      * Unacknowledged alarms for a point
@@ -102,6 +103,13 @@ public interface TdcService {
      **/
  
     boolean isManualEntryEnabled(int pointId, int pointTypeId, boolean hasPointValueColumn);
+    
+    /**
+     * Returns the row count for the displays that support paging.
+     * 
+     * @throws NotImplementedException - if the display doesn't support paging.
+     **/
+    int getDisplayDataCount(int displayId, DateTimeZone timeZone);
     
     
 }

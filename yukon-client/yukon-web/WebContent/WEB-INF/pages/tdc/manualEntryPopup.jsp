@@ -7,8 +7,8 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:flashScopeMessages/>
-
-    <form:form id="manualEntryForm" commandName="backingBean" action="/tdc/manualEntrySend">
+    <cti:url var="saveUrl" value="/tdc/manualEntrySend"/>
+    <form:form id="manualEntryForm" commandName="backingBean" action="${saveUrl}">
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.device">${fn:escapeXml(deviceName)}</tags:nameValue2>

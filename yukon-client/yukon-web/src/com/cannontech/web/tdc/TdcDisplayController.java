@@ -32,6 +32,8 @@ import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.tag.service.TagService;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.AltScanRate;
@@ -93,6 +95,8 @@ public class TdcDisplayController {
     @Autowired private PointDataRegistrationService registrationService;
     @Autowired private DateFormattingService dateFormattingService;
     
+    private static final int itemsPerPage = 10;
+    
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
@@ -105,9 +109,20 @@ public class TdcDisplayController {
 
         model.addAttribute("mode", PageEditMode.VIEW);
         Display display = displayDao.getDisplayById(displayId);
+        PagingParameters pagingParameters = null;
+        if(display.isPageable()){
+            pagingParameters = new PagingParameters(itemsPerPage, 1);
+        }
         List<DisplayData> displayData =
-            tdcService.getDisplayData(display, context.getJodaTimeZone());
-        model.addAttribute("displayData", displayData);
+            tdcService.getDisplayData(display, context.getJodaTimeZone(), pagingParameters);
+        int totalCount;
+        if(display.isPageable()){
+            totalCount = tdcService.getDisplayDataCount(displayId, context.getJodaTimeZone());
+        }else{
+            totalCount = displayData.size();
+            //display all the data on one page
+            pagingParameters = new PagingParameters(totalCount, 1);
+        }
         model.addAttribute("displayName", display.getName());
         model.addAttribute("display", display);
         model.addAttribute("backingBean", new DisplayBackingBean());
@@ -115,6 +130,27 @@ public class TdcDisplayController {
         if(display.getType() == DisplayType.CUSTOM_DISPLAYS){
             model.addAttribute("hasPointValueColumn", display.hasColumn(ColumnType.POINT_VALUE));
         }
+        SearchResults<DisplayData> result = 
+                SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
+        model.addAttribute("result", result);
+        return "display.jsp";
+    }
+    
+    @RequestMapping(value = "/{displayId}/page", method = RequestMethod.GET)
+    public String page(YukonUserContext context, ModelMap model, @PathVariable int displayId,
+                       PagingParameters pagingParameters) {
+
+        model.addAttribute("mode", PageEditMode.VIEW);
+        Display display = displayDao.getDisplayById(displayId);
+        model.addAttribute("displayName", display.getName());
+        model.addAttribute("display", display);
+        model.addAttribute("backingBean", new DisplayBackingBean());
+        List<DisplayData> displayData =
+                tdcService.getDisplayData(display, context.getJodaTimeZone(), pagingParameters);
+        model.addAttribute("colorStateBoxes", tdcService.getUnackAlarmColorStateBoxes(display, displayData));
+        int totalCount = tdcService.getDisplayDataCount(displayId, context.getJodaTimeZone());
+        SearchResults<DisplayData> result = SearchResults.pageBasedForSublist(displayData, pagingParameters, totalCount);
+        model.addAttribute("result", result);
         return "display.jsp";
     }
 
@@ -516,8 +552,17 @@ public class TdcDisplayController {
             throws IOException {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         Display display = displayDao.getDisplayById(displayId);
+        PagingParameters pagingParameters = null;
+        //Get all the data for download
+        if(display.isPageable()){
+            int totalCount = tdcService.getDisplayDataCount(displayId, context.getJodaTimeZone());
+            if(totalCount == 0){
+                totalCount = itemsPerPage;
+            }
+            pagingParameters = new PagingParameters(totalCount, 1);
+        }
         List<DisplayData> displayData =
-            tdcService.getDisplayData(display, context.getJodaTimeZone());
+            tdcService.getDisplayData(display, context.getJodaTimeZone(), pagingParameters);
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,
                                   registrationService,

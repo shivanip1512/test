@@ -44,7 +44,7 @@
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <c:forEach var="row" items="${displayData}">
+            <c:forEach var="row" items="${result.resultList}">
                 <c:choose>
                     <c:when test="${row.isBlank() && display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                         <tr class="vh">
@@ -232,5 +232,6 @@
             </c:forEach>
         </tbody>
     </table>
+    <tags:pagingResultsControls adjustPageCount="true" result="${result}" baseUrl="/tdc/${display.displayId}/page"/>
     <tags:simplePopup id="tdc-popup" title="" />
 </cti:standardPage>
