@@ -127,6 +127,18 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 
         return countMap;
     }
+    
+    @Override
+    public Integer getTotalValidationTagCounts() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM RphTag rt");
+        sql.append("WHERE rt.TagName").neq_k(RphTag.OK);
+        int c = yukonJdbcTemplate.queryForInt(sql);
+
+        return c;
+    }
 
     @Override
     public List<Long> findMatchingChangeIds(Set<RphTag> set, Set<RphTag> mask) {

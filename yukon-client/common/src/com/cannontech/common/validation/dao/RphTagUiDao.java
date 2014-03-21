@@ -13,6 +13,8 @@ public interface RphTagUiDao {
     SearchResults<ReviewPoint> getReviewPoints(PagingParameters pagingParameters, List<RphTag> tags);
 
     Map<RphTag, Integer> getAllValidationTagCounts();
+    
+    Integer getTotalValidationTagCounts();
 
     /**
      * Returns the changeIds where the set of tags associated with the changeId
