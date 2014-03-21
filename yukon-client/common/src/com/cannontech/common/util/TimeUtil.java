@@ -205,17 +205,12 @@ public static int differenceMinutes(Date from, Date to) {
         Period period = new Period((long)millis);
 
         PeriodFormatter formatter = new PeriodFormatterBuilder()
-        .appendWeeks()
-        .appendSuffix(" week", " weeks")
-        .appendSeparator(", ")
         .appendDays().appendSuffix(" day ", " days ")
         .printZeroAlways()
         .minimumPrintedDigits(2).appendHours().appendSuffix(":")
         .appendMinutes().appendSuffix(":")
         .appendSecondsWithMillis()
         .toFormatter();
-        
-        System.out.println(formatter.print(period.normalizedStandard(PeriodType.yearDayTime())));
         
         return formatter.print(period.normalizedStandard(PeriodType.yearDayTime()));
     }
