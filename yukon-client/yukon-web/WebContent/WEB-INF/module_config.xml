@@ -232,10 +232,8 @@
           <page name="configs.category.VIEW" type="DETAIL_CHILD">
             <link>/deviceConfiguration/viewCategory?categoryId=${categoryEditBean.categoryId}</link>
             <labelArgument>${categoryEditBean.categoryName}</labelArgument>
-            <pages>
-              <page name="configs.category.EDIT" type="BASIC" hideFavorite="true"/>
-            </pages>
           </page>
+          <page name="configs.category.EDIT" type="BASIC" hideFavorite="true"/>
           <page name="configs.setup" type="BASIC"/>
         </pages>
       </page>
