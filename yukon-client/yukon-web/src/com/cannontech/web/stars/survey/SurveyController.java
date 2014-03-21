@@ -55,13 +55,12 @@ import com.google.common.collect.Sets;
 public class SurveyController {
     private final static String baseKey = "yukon.web.modules.adminSetup.survey.";
     private final static Pattern validKeyPattern = Pattern.compile("^\\w*$");
-    private final static Function<Answer, String> answerKeyTransformer =
-        new Function<Answer, String>() {
-            @Override
-            public String apply(Answer from) {
-                return from.getAnswerKey();
-            }
-        };
+    private final static Function<Answer, String> answerKeyTransformer = new Function<Answer, String>() {
+        @Override
+        public String apply(Answer from) {
+            return from.getAnswerKey();
+        }
+    };
 
     @Autowired private SurveyDao surveyDao;
     @Autowired private SurveyService surveyService;
@@ -70,32 +69,22 @@ public class SurveyController {
     private Validator detailsValidator = new SimpleValidator<Survey>(Survey.class) {
         @Override
         protected void doValidation(Survey target, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surveyName",
-                                                      baseKey + "edit.valueRequired");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "surveyName",
-                                                       target.getSurveyName(), 64);
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surveyKey",
-                                                      baseKey + "edit.valueRequired");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "surveyKey",
-                                                       target.getSurveyKey(), 64);
-            YukonValidationUtils.regexCheck(errors, "surveyKey",
-                                            target.getSurveyKey(),
-                                            validKeyPattern,
-                                            baseKey + "edit.invalidChars");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surveyName", baseKey + "edit.valueRequired");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "surveyName", target.getSurveyName(), 64);
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "surveyKey", baseKey + "edit.valueRequired");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "surveyKey", target.getSurveyKey(), 64);
+            YukonValidationUtils.regexCheck(errors, "surveyKey", target.getSurveyKey(), validKeyPattern, baseKey
+                + "edit.invalidChars");
         }
     };
 
     private Validator questionValidator = new SimpleValidator<Question>(Question.class) {
         @Override
         protected void doValidation(Question target, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "questionKey",
-                                                      baseKey + "edit.valueRequired");
-            YukonValidationUtils.checkExceedsMaxLength(errors, "questionKey",
-                                                       target.getQuestionKey(), 64);
-            YukonValidationUtils.regexCheck(errors, "questionKey",
-                                            target.getQuestionKey(),
-                                            validKeyPattern,
-                                            baseKey + "edit.invalidChars");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "questionKey", baseKey + "edit.valueRequired");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "questionKey", target.getQuestionKey(), 64);
+            YukonValidationUtils.regexCheck(errors, "questionKey", target.getQuestionKey(), validKeyPattern, baseKey
+                + "edit.invalidChars");
             if (target.getQuestionType() == QuestionType.DROP_DOWN) {
                 boolean foundNotUnique = false;
                 boolean foundValueRequired = false;
@@ -135,64 +124,54 @@ public class SurveyController {
     };
 
     @RequestMapping("list")
-    public String list(ModelMap model,
-            @ModelAttribute("backingBean") ListBackingBean backingBean, Integer ecId,
+    public String list(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean, Integer ecId,
             YukonUserContext userContext) {
         if (ecId == null) {
             ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
         }
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(ecId,
-                                 backingBean.getStartIndex(),
-                                 backingBean.getItemsPerPage());
+            surveyService.findSurveys(ecId, backingBean.getStartIndex(), backingBean.getItemsPerPage());
         model.addAttribute("surveys", surveys);
         model.addAttribute("ecId", ecId);
         model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
 
         return "survey/list.jsp";
     }
-    
+
     @RequestMapping("listTable")
-    public String listTable(ModelMap model,
-            @ModelAttribute("backingBean") ListBackingBean backingBean,
+    public String listTable(ModelMap model, @ModelAttribute("backingBean") ListBackingBean backingBean,
             YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         SearchResults<Survey> surveys =
-            surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
-                                 backingBean.getStartIndex(),
-                                 backingBean.getItemsPerPage());
+            surveyService.findSurveys(energyCompany.getEnergyCompanyID(), backingBean.getStartIndex(),
+                backingBean.getItemsPerPage());
         model.addAttribute("surveys", surveys);
 
         return "survey/listTable.jsp";
     }
 
     @RequestMapping(" sampleXml")
-    public void  sampleXml(HttpServletResponse response, Integer surveyId,
-            YukonUserContext userContext) throws IOException {
+    public void sampleXml(HttpServletResponse response, Integer surveyId, YukonUserContext userContext)
+            throws IOException {
         List<Survey> surveys = Lists.newArrayList();
         if (surveyId != null && surveyId > 0) {
             Survey survey = verifyEditable(surveyId, userContext);
             surveys.add(survey);
         } else {
-            LiteEnergyCompany energyCompany =
-                energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+            LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
             SearchResults<Survey> surveyResults =
-                surveyService.findSurveys(energyCompany.getEnergyCompanyID(),
-                                          0, Integer.MAX_VALUE);
+                surveyService.findSurveys(energyCompany.getEnergyCompanyID(), 0, Integer.MAX_VALUE);
             surveys = surveyResults.getResultList();
         }
         String sampleFile = sampleXmlFile(surveys);
         InputStream is = IOUtils.toInputStream(sampleFile);
-        
-        
+
         response.setContentType("text/xml");
         response.setHeader("Content-Disposition", "attachment; filename=\"SurveySample.xml\"");
         FileCopyUtils.copy(is, response.getOutputStream());
-
     }
 
-    private String sampleXmlFile (List<Survey> surveys) {
+    private String sampleXmlFile(List<Survey> surveys) {
         StringBuilder xmlBuilder = new StringBuilder();
         xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
         xmlBuilder.append("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">\n");
@@ -209,13 +188,15 @@ public class SurveyController {
                 String questionKey = surveyKey + "." + question.getQuestionKey();
                 xmlBuilder.append("    <entry key=\"").append(questionKey).append("\">QUESTION HERE</entry>\n");
                 if (question.getQuestionType().equals(QuestionType.DROP_DOWN)) {
-                    xmlBuilder.append("    <entry key=\"").append(questionKey).append(".pleaseChoose\">Please Choose</entry>\n");
-                    for (Answer answer : question.getAnswers()){
-                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(".")
-                        .append(answer.getAnswerKey()).append("\">ANSWER_HERE</entry>\n");
+                    xmlBuilder.append("    <entry key=\"").append(questionKey).append(
+                        ".pleaseChoose\">Please Choose</entry>\n");
+                    for (Answer answer : question.getAnswers()) {
+                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(".").append(
+                            answer.getAnswerKey()).append("\">ANSWER_HERE</entry>\n");
                     }
                     if (question.isTextAnswerAllowed()) {
-                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(".other\">ANSWER_HERE</entry>\n");
+                        xmlBuilder.append("    <entry key=\"").append(questionKey).append(
+                            ".other\">ANSWER_HERE</entry>\n");
                     }
                 }
             }
@@ -225,33 +206,29 @@ public class SurveyController {
     }
 
     @RequestMapping("delete")
-    public String delete(ModelMap model, int surveyId, FlashScope flashScope,
-            YukonUserContext userContext) {
+    public String delete(ModelMap model, int surveyId, FlashScope flashScope, YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
         if (surveyDao.usedByOptOutSurvey(surveyId) || surveyDao.hasBeenTaken(surveyId)) {
             MessageSourceResolvable errorMsg =
-                    new YukonMessageSourceResolvable(baseKey + "list.surveyInUse",
-                                                     survey.getSurveyName());
+                new YukonMessageSourceResolvable(baseKey + "list.surveyInUse", survey.getSurveyName());
             flashScope.setError(errorMsg);
         } else {
             surveyDao.deleteSurvey(surveyId);
             MessageSourceResolvable confirmMsg =
-                    new YukonMessageSourceResolvable(baseKey + "list.surveyDeleted",
-                                                     survey.getSurveyName());
+                new YukonMessageSourceResolvable(baseKey + "list.surveyDeleted", survey.getSurveyName());
             flashScope.setConfirm(confirmMsg);
         }
         return "redirect:list";
     }
 
     @RequestMapping("edit")
-    public String edit(ModelMap model, int surveyId,
-            YukonUserContext userContext, FlashScope flashScope) {
+    public String edit(ModelMap model, int surveyId, YukonUserContext userContext, FlashScope flashScope) {
         Survey survey = verifyEditable(surveyId, userContext);
         List<Question> questions = surveyDao.getQuestionsBySurveyId(survey.getSurveyId());
         model.addAttribute("survey", survey);
         model.addAttribute("questions", questions);
         model.addAttribute("hasBeenTaken", surveyDao.hasBeenTaken(surveyId));
-        
+
         List<MessageSourceResolvable> messages = surveyService.getKeyErrorsForQuestions(surveyId, userContext);
         flashScope.setMessage(messages, FlashScopeMessageType.WARNING);
 
@@ -263,12 +240,10 @@ public class SurveyController {
     }
 
     @RequestMapping("editDetails")
-    public String editDetails(ModelMap model, Integer surveyId,
-            YukonUserContext userContext) {
+    public String editDetails(ModelMap model, Integer surveyId, YukonUserContext userContext) {
         Survey survey;
 
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         if (surveyId == null || surveyId == 0) {
             survey = new Survey();
             survey.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
@@ -280,17 +255,15 @@ public class SurveyController {
         return editDetails(model, survey, userContext);
     }
 
-    private String editDetails(ModelMap model, Survey survey,
-            YukonUserContext userContext) {
+    private String editDetails(ModelMap model, Survey survey, YukonUserContext userContext) {
         model.addAttribute("survey", survey);
 
         return "survey/editDetails.jsp";
     }
 
     @RequestMapping("saveDetails")
-    public String saveDetails(HttpServletResponse response, ModelMap model,
-            @ModelAttribute Survey survey, BindingResult bindingResult, YukonUserContext userContext,
-            FlashScope flashScope) {
+    public String saveDetails(HttpServletResponse response, ModelMap model, @ModelAttribute Survey survey,
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
         verifyEditable(survey, userContext);
         boolean isNew = survey.getSurveyId() == 0;
         detailsValidator.validate(survey, bindingResult);
@@ -300,19 +273,16 @@ public class SurveyController {
                 boolean wasNew = survey.getSurveyId() == 0;
                 surveyDao.saveSurvey(survey);
                 if (wasNew) {
-                    newLocation = "'/stars/survey/edit?surveyId=" +
-                        survey.getSurveyId() + "'";
+                    newLocation = "'/stars/survey/edit?surveyId=" + survey.getSurveyId() + "'";
                 } else {
                     newLocation = "edit?surveyId=" + survey.getSurveyId();
                 }
             } catch (DuplicateException duplicateException) {
-                bindingResult.rejectValue(duplicateException.getMessage(),
-                                          baseKey + "edit.duplicate");
+                bindingResult.rejectValue(duplicateException.getMessage(), baseKey + "edit.duplicate");
             }
         }
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return editDetails(model, survey, userContext);
         }
@@ -321,8 +291,7 @@ public class SurveyController {
             // Creating a new survey redirects to the survey edit page so
             // a confirmation message isn't desirable.
             MessageSourceResolvable confirmMsg =
-                new YukonMessageSourceResolvable(baseKey + "list.surveySaved",
-                                                 survey.getSurveyName());
+                new YukonMessageSourceResolvable(baseKey + "list.surveySaved", survey.getSurveyName());
             flashScope.setConfirm(confirmMsg);
             return "redirect:" + newLocation;
         }
@@ -332,8 +301,7 @@ public class SurveyController {
     }
 
     @RequestMapping("addQuestion")
-    public String addQuestion(ModelMap model, int surveyId,
-            YukonUserContext userContext) {
+    public String addQuestion(ModelMap model, int surveyId, YukonUserContext userContext) {
         Question question = new Question();
         question.setSurveyId(surveyId);
         question.setQuestionKey(surveyDao.getNextQuestionKey(surveyId));
@@ -341,21 +309,18 @@ public class SurveyController {
     }
 
     @RequestMapping("editQuestion")
-    public String editQuestion(ModelMap model,
-            int surveyQuestionId, YukonUserContext userContext) {
+    public String editQuestion(ModelMap model, int surveyQuestionId, YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         return editQuestion(model, question, userContext);
     }
 
-    private String editQuestion(ModelMap model, Question question,
-            YukonUserContext userContext) {
+    private String editQuestion(ModelMap model, Question question, YukonUserContext userContext) {
         Survey survey = verifyEditable(question.getSurveyId(), userContext);
         boolean hasBeenTaken = surveyDao.hasBeenTaken(survey.getSurveyId());
         model.addAttribute("hasBeenTaken", hasBeenTaken);
         model.addAttribute("mode", hasBeenTaken ? PageEditMode.VIEW : PageEditMode.EDIT);
         model.addAttribute("question", question);
-        List<String> answerKeys = Lists.transform(question.getAnswers(),
-                                                  answerKeyTransformer);
+        List<String> answerKeys = Lists.transform(question.getAnswers(), answerKeyTransformer);
         model.addAttribute("answerKeys", answerKeys);
         model.addAttribute("survey", survey);
 
@@ -366,9 +331,8 @@ public class SurveyController {
     }
 
     @RequestMapping("saveQuestion")
-    public String saveQuestion(HttpServletResponse response, ModelMap model,
-            @ModelAttribute Question question, BindingResult bindingResult,
-            String[] answerKeys, YukonUserContext userContext, FlashScope flashScope) {
+    public String saveQuestion(HttpServletResponse response, ModelMap model, @ModelAttribute Question question,
+            BindingResult bindingResult, String[] answerKeys, YukonUserContext userContext, FlashScope flashScope) {
         verifyEditable(question.getSurveyId(), userContext);
         if (question.getQuestionType() == QuestionType.DROP_DOWN) {
             int questionId = question.getSurveyQuestionId();
@@ -381,8 +345,7 @@ public class SurveyController {
                 }
             }
             question.setAnswers(answers);
-        }
-        else {
+        } else {
             // in case it was set before the type was change to "TEXT"
             question.setTextAnswerAllowed(false);
         }
@@ -391,20 +354,17 @@ public class SurveyController {
             try {
                 surveyDao.saveQuestion(question);
             } catch (DuplicateException duplicateException) {
-                bindingResult.rejectValue(duplicateException.getMessage(),
-                                          baseKey + "edit.duplicate");
+                bindingResult.rejectValue(duplicateException.getMessage(), baseKey + "edit.duplicate");
             }
         }
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return editQuestion(model, question, userContext);
         }
 
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey + "edit.surveyQuestionSaved",
-                                             question.getQuestionKey());
+            new YukonMessageSourceResolvable(baseKey + "edit.surveyQuestionSaved", question.getQuestionKey());
         flashScope.setConfirm(confirmMsg);
 
         ServletUtils.dialogFormSuccess(response, "yukonQuestionSaved");
@@ -412,8 +372,8 @@ public class SurveyController {
     }
 
     @RequestMapping("moveQuestion")
-    public String moveQuestion(HttpServletResponse response, ModelMap model,
-            int surveyQuestionId, String direction, YukonUserContext userContext) {
+    public String moveQuestion(HttpServletResponse response, ModelMap model, int surveyQuestionId, String direction,
+            YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         if ("up".equals(direction)) {
             surveyDao.moveQuestionUp(question);
@@ -426,28 +386,25 @@ public class SurveyController {
     }
 
     @RequestMapping("deleteQuestion")
-    public String deleteQuestion(ModelMap model, int surveyQuestionId,
-            FlashScope flashScope, YukonUserContext userContext) {
+    public String deleteQuestion(ModelMap model, int surveyQuestionId, FlashScope flashScope,
+            YukonUserContext userContext) {
         Question question = surveyDao.getQuestionById(surveyQuestionId);
         verifyEditable(question.getSurveyId(), userContext);
         surveyDao.deleteQuestion(surveyQuestionId);
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey +
-                                             "edit.surveyQuestionDeleted",
-                                             question.getQuestionKey());
+            new YukonMessageSourceResolvable(baseKey + "edit.surveyQuestionDeleted", question.getQuestionKey());
         flashScope.setConfirm(confirmMsg);
         return "redirect:edit?surveyId=" + question.getSurveyId();
     }
 
     private Survey verifyEditable(Survey survey, YukonUserContext userContext) {
-        LiteEnergyCompany energyCompany =
-            energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(userContext.getYukonUser());
         if (energyCompany.getEnergyCompanyID() != survey.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company mismatch");
         }
         return survey;
     }
-    
+
     private Survey verifyEditable(int surveyId, YukonUserContext userContext) {
         Survey survey = surveyDao.getSurveyById(surveyId);
         verifyEditable(survey, userContext);
