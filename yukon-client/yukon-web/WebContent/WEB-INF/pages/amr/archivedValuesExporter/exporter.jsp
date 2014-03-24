@@ -473,7 +473,7 @@
         
         <c:if test="${not empty backingBean.format.fields}">
             <h4><i:inline key=".preview.title"/></h4>
-            <pre><c:forEach var="previewEntry" items="${preview}">${fn:escapeXml(previewEntry)}</c:forEach></pre>
+            <pre><c:forEach var="previewEntry" varStatus="status" items="${preview}">${fn:escapeXml(previewEntry)}<c:if test="${!status.last}"><br></c:if></c:forEach></pre>
         </c:if>
         <div class="page-action-area">
             <cti:button id="saveBtn" nameKey="save" classes="f-blocker f-disable-after-click primary action"/>
