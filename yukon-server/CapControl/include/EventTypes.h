@@ -27,3 +27,13 @@ enum CtiCCEventType_t
     capControlIvvcScanOperation = 21
 };
 
+enum CtiCCEventSubtype_t
+{
+    StandardOperation       = 0,
+    StandardFlipOperation   = 1,
+    ManualOperation         = 2,
+    ManualFlipOperation     = 3,
+    ManualConfirmOperation  = 4
+};
+
+

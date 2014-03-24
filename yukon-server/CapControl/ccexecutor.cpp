@@ -2106,11 +2106,12 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                                 long stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
 
-                                ccEvents.push_back(EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(),
-                                                                    currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(),
-                                                                    currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange,
-                                                                    currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo));
-
+                                EventLogEntry logEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(),
+                                                       currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(),
+                                                       currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange,
+                                                       currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo);
+                                logEntry.setEventSubtype( ManualOperation );
+                                ccEvents.push_back( logEntry );
                             }
                             else
                             {
@@ -2474,7 +2475,14 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                                     string stateInfo = currentCapBank->getControlStatusQualityString();
                                     long stationId, areaId, spAreaId;
                                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                    ccEvents.push_back(EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo));
+
+                                    EventLogEntry logEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(),
+                                                           currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(),
+                                                           currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange,
+                                                           currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo);
+                                    logEntry.setEventSubtype( ManualOperation );
+                                    ccEvents.push_back( logEntry );
+
                                 }
                             }
                             else
@@ -3256,8 +3264,12 @@ void CtiCCCommandExecutor::Flip7010Device()
                                 string stateInfo = currentCapBank->getControlStatusQualityString();
                                 long stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                ccEvents.push_back(EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text,
-                                                                    _command->getUser(), kvarBefore, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo));
+
+                                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(),
+                                                       capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text,
+                                                       _command->getUser(), kvarBefore, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), stateInfo);
+                                eventMsg.setEventSubtype( ManualFlipOperation );
+                                ccEvents.push_back(eventMsg);
                             }
                             else
                             {
@@ -3606,10 +3618,13 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
                             currentSubstationBus->setEventSequence(seqId);
                             long stationId, areaId, spAreaId;
                             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
+
+                            EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(),
+                                                   capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
                             currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
                             eventMsg.setActionId(currentCapBank->getActionId());
                             eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                            eventMsg.setEventSubtype( ManualConfirmOperation );
                             ccEvents.push_back(eventMsg);
 
                             currentCapBank->setBeforeVarsString(" Confirm ");
@@ -3797,10 +3812,13 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                 currentSubstationBus->setEventSequence(seqId);
                 long stationId, areaId, spAreaId;
                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
+
+                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(),
+                                       capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
                 currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
                 eventMsg.setActionId(currentCapBank->getActionId());
                 eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                eventMsg.setEventSubtype( ManualConfirmOperation );
                 ccEvents.push_back(eventMsg);
 
                 currentCapBank->setBeforeVarsString(" Confirm ");
@@ -4188,10 +4206,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
                                 currentSubstationBus->setEventSequence(seqId);
                                 long stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
+
+                                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(),
+                                                       capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
                                 currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
                                 eventMsg.setActionId(currentCapBank->getActionId());
                                 eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                                eventMsg.setEventSubtype( ManualConfirmOperation );
                                 ccEvents.push_back(eventMsg);
 
                                 currentCapBank->setBeforeVarsString(" Confirm ");
@@ -4483,10 +4504,13 @@ void CtiCCCommandExecutor::ConfirmClose()
                                 currentSubstationBus->setEventSequence(seqId);
                                 long stationId, areaId, spAreaId;
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
+
+                                EventLogEntry eventMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(),
+                                                       capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser());
                                 currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
                                 eventMsg.setActionId(currentCapBank->getActionId());
                                 eventMsg.setStateInfo(currentCapBank->getControlStatusQualityString());
+                                eventMsg.setEventSubtype( ManualConfirmOperation );
                                 ccEvents.push_back(eventMsg);
 
                             }

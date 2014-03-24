@@ -3,6 +3,8 @@
 #include "ctitime.h"
 #include "pointtypes.h"  //  for SYS_PID_CAPCONTROL
 
+#include <boost/optional.hpp>
+
 #include <string>
 #include <vector>
 
@@ -37,6 +39,11 @@ struct EventLogEntry
     void setStateInfo(std::string stateInfo_)
     {  stateInfo = stateInfo_;  }
 
+    void setEventSubtype(const long eventSubtype_)
+    {
+        eventSubtype.reset( eventSubtype_ );
+    }
+
     CtiTime timeStamp;
     long pointId;
     long spAreaId;
@@ -60,6 +67,9 @@ struct EventLogEntry
     double aVar;
     double bVar;
     double cVar;
+
+    boost::optional<long> eventSubtype;
+    
 };
 
 typedef std::vector<EventLogEntry> EventLogEntries;

@@ -37,6 +37,9 @@
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 
+#include <boost/algorithm/string/join.hpp>
+#include <boost/assign/list_of.hpp>
+
 #include <string>
 
 #define HOURLY_RATE 3600
@@ -3437,19 +3440,48 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 }
 
 /*---------------------------------------------------------------------------
-    UpdateCapBankInDB
+    InsertCCEventLogInDB
 
-    Updates multiple fields in tables associated with cap banks in the
-    database.
+    Inserts EventLogEntry entries into the database.
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 {
-    static const std::string insertSql =
-        "insert into cceventlog"
-        " values ("
-        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        "?, ?, ?)";  //  23 columns
+    std::vector<std::string>  columnNames = boost::assign::list_of
+        ( "LogID" )
+        ( "PointID" )
+        ( "DateTime" )
+        ( "SubID" )
+        ( "FeederID" )
+        ( "EventType" )
+        ( "SeqID" )
+        ( "Value" )
+        ( "Text" )
+        ( "UserName" )
+        ( "KVARBefore" )
+        ( "KVARAfter" )
+        ( "KVARChange" )
+        ( "AdditionalInfo" )
+        ( "actionId" )
+        ( "CapBankStateInfo" )
+        ( "aVar" )
+        ( "bVar" )
+        ( "cVar" )
+        ( "StationID" )
+        ( "AreaID" )
+        ( "SpAreaID" )
+        ( "RegulatorId" );
+
+    if ( msg.eventSubtype )
+    {
+        columnNames.push_back( "EventSubtype" );
+    }
+
+    std::vector<std::string>  placeholders( columnNames.size(), "?" );
+
+    const std::string insertSql =
+        "INSERT INTO "
+            "CCEventLog (" + boost::algorithm::join( columnNames, ", " ) + 
+        ") VALUES (" + boost::algorithm::join( placeholders, ", " ) + ")";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseWriter dbInserter(connection, insertSql);
@@ -3479,6 +3511,12 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
         << msg.spAreaId
         << msg.regulatorId;
 
+    if ( msg.eventSubtype )
+    {
+        dbInserter
+            << *msg.eventSubtype;
+    }
+
     if( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
         string loggedSQLstring = dbInserter.asString();
@@ -3501,11 +3539,6 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 
     return true;
 }
-
-
-
-
-
 
 
 /*---------------------------------------------------------------------------
@@ -7356,8 +7389,10 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
                 "FROM "
                     "CCEventLog CEL "
                 "WHERE "
-                    "(CEL.Text LIKE 'Open Sent%' OR CEL.Text LIKE 'Close Sent%') AND "
+                    "CEL.EventType = 1 AND CEL.EventSubtype = 0 AND "
                     "CEL.DateTime > ? AND CEL.DateTime <= ?";
+
+            // Q: Why only 'Close Sent...' or 'Open Sent...' and not 'Flip Sent...'?
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
@@ -9737,11 +9772,17 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
         CtiDate lastWeek = CtiDate() -  7;
         CtiDate yesterday = CtiDate() -  1;
         {
-            static const string sql =  "SELECT CEL.pointid, CEL.datetime, CEL.spareaid, CEL.areaid, CEL.stationid, "
-                                         "CEL.subid, CEL.feederid "
-                                       "FROM cceventlog CEL "
-                                       "WHERE (CEL.text LIKE '%Close Sent,%' OR CEL.text LIKE '%Open Sent,%' OR "
-                                         "CEL.text LIKE 'Flip Sent,%') AND CEL.datetime > ?";
+            static const string sql =
+                "SELECT "
+                    "CEL.PointID, "
+                    "CEL.DateTime "
+                "FROM "
+                    "CCEventLog CEL "
+                "WHERE "
+                    "CEL.EventType = 1 AND CEL.EventSubtype IN (0, 1, 2, 4) AND "
+                    "CEL.DateTime > ?";
+
+            // Q: Why are we ignoring 'Manual Flip Sent...' but not 'Flip Sent...' while counting 'Manual Close Sent...' etc?
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
@@ -9771,15 +9812,10 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
             while ( rdr() )
             {
                 CtiTime logDateTime;
+                long pointId;
 
-                long pointId, spareaid, areaid, stationid, subid, feederid;
                 rdr["pointid"] >> pointId;
                 rdr["datetime"] >> logDateTime;
-                rdr["spareaid"] >> spareaid;
-                rdr["areaid"] >> areaid;
-                rdr["stationid"] >> stationid;
-                rdr["subid"] >> subid;
-                rdr["feederid"] >> feederid;
 
                 CtiCCCapBankPtr cap = NULL;
                 PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;
@@ -9841,10 +9877,15 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
         {
             //MONTHLY FAILS
-            static const string sql =  "SELECT CEL.pointid, CEL.datetime, CEL.spareaid, CEL.areaid, CEL.stationid, "
-                                         "CEL.subid, CEL.feederid "
-                                       "FROM cceventlog CEL "
-                                       "WHERE CEL.text LIKE 'Var:%Fail' AND CEL.datetime > ?";
+            static const string sql =
+                "SELECT "
+                    "CEL.PointID, "
+                    "CEL.DateTime "
+                "FROM "
+                    "CCEventLog CEL "
+                "WHERE "
+                    "CEL.Text LIKE 'Var:%Fail' AND "
+                    "CEL.DateTime > ?";
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection, sql);
@@ -9865,15 +9906,10 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
             while ( rdr() )
             {
                 CtiTime logDateTime;
+                long pointId;
 
-                long pointId, spareaid, areaid, stationid, subid, feederid;
                 rdr["pointid"] >> pointId;
                 rdr["datetime"] >> logDateTime;
-                rdr["spareaid"] >> spareaid;
-                rdr["areaid"] >> areaid;
-                rdr["stationid"] >> stationid;
-                rdr["subid"] >> subid;
-                rdr["feederid"] >> feederid;
 
                 CtiCCCapBankPtr cap = NULL;
                 PointIdToCapBankMultiMap::iterator capBeginIter, capEndIter;

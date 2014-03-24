@@ -315,9 +315,9 @@ public:
     void resetVerificationFlags();
 
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                                        string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
+                                                        string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                                        string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
+                                                        string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
     bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,

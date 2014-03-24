@@ -5558,7 +5558,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             }
                             currentFeeder->setEventSequence(getEventSequence());
                             string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                           phaseAValue, phaseBValue,phaseCValue);
 
                         }
@@ -5588,7 +5588,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                                 }
                                 currentFeeder->setEventSequence(getEventSequence());
                                 string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                                request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                                request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                               phaseAValue, phaseBValue,phaseCValue);
 
                             }
@@ -5622,7 +5622,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                                 }
                                 currentFeeder->setEventSequence(getEventSequence());
                                 string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                                request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                                request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                                phaseAValue, phaseBValue,phaseCValue);
 
                             }
@@ -5636,7 +5636,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             }
                             currentFeeder->setEventSequence(getEventSequence());
                             string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                            request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                            phaseAValue, phaseBValue,phaseCValue);
 
                         }
@@ -5743,7 +5743,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         }
                         currentFeeder->setEventSequence(getEventSequence());
                         string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                        request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                        request = currentFeeder->createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                            phaseAValue, phaseBValue,phaseCValue);
                     }
                     else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
@@ -5755,7 +5755,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         }
                         currentFeeder->setEventSequence(getEventSequence());
                         string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), control, controlValue, confirmValue) ;
-                        request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, confirmValue,
+                        request = currentFeeder->createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, control, confirmValue,
                                                                                            phaseAValue, phaseBValue,phaseCValue);
                     }
 

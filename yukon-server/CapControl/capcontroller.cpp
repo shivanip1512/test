@@ -4117,7 +4117,11 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     text1 += currentCapBank->getControlStatusText();
 
     string opText = currentCapBank->getControlStatusText();
-    opText += " sent, CBC Local Change";
+
+    // Yuck!
+    const bool isStandardOp = ( opText == "Open" || opText == "Close" );
+
+    opText += " Sent, CBC Local Change";
     currentCapBank->setControlStatusQuality(CC_UnSolicited);
 
     sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -4126,7 +4130,17 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
     currentCapBank->setActionId( CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
-    ccEvents.push_back( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
+
+    EventLogEntry logentry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId,
+                           currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlCommandSent,
+                           currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(),
+                           opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(),
+                           currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString());
+    if ( isStandardOp )
+    {
+        logentry.setEventSubtype( StandardOperation );
+    }
+    ccEvents.push_back( logentry );
 
     ccEvents.push_back( EventLogEntry(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), currentCapBank->getActionId(), currentCapBank->getControlStatusQualityString()));
 

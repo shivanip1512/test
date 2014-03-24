@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         CtiMultiMsg_vec pointChanges, pilMessages;
         Cti::CapControl::EventLogEntries ccEvents;
 
-        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
 
         BOOST_REQUIRE(pilRequest);
 
@@ -316,7 +316,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         CtiMultiMsg_vec pointChanges, pilMessages;
         Cti::CapControl::EventLogEntries ccEvents;
 
-        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
 
         BOOST_REQUIRE(pilRequest);
 
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         CtiMultiMsg_vec pointChanges, pilMessages;
         Cti::CapControl::EventLogEntries ccEvents;
 
-        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+        CtiRequestMsg *pilRequest = feeder->createDecreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
 
         BOOST_REQUIRE(pilRequest);
 
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(test_create_requests)
         CtiMultiMsg_vec pointChanges, pilMessages;
         Cti::CapControl::EventLogEntries ccEvents;
 
-        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0);
+        CtiRequestMsg *pilRequest = feeder->createIncreaseVarVerificationRequest(bank, pointChanges, ccEvents, "n/a", 0, 0, 0, 0, 0);
 
         BOOST_REQUIRE(pilRequest);
 
