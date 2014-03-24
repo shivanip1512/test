@@ -5,7 +5,6 @@
 #include <boost/tuple/tuple_comparison.hpp>
 
 namespace Cti {
-namespace Devices {
 
 struct RfnIdentifier
 {
@@ -34,5 +33,4 @@ inline std::ostream &operator<<(std::ostream &os, const RfnIdentifier &rfnId)
     return os << rfnId.manufacturer << "_" << rfnId.model << "_" << rfnId.serialNumber;
 }
 
-}
 }

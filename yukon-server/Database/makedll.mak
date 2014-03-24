@@ -92,6 +92,7 @@ tbl_pt_status.obj \
 tbl_pt_status_control.obj \
 tbl_pt_trigger.obj \
 tbl_pt_unit.obj \
+tbl_rfnidentifier.obj \
 tbl_route.obj \
 tbl_rtcarrier.obj \
 tbl_rtcomm.obj \
@@ -144,7 +145,7 @@ ctidbsrc.dll:   $(DATABASE_FULLBUILD) $(YUKONDLLOBJS) Makefile $(OBJ)\ctidbsrc.r
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ \
 $(YUKONDLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(DBLIBS) $(LINKFLAGS) ctidbsrc.res
-               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT) 
+               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
                -if exist ..\bin\$(@B).lib copy ..\bin\$(@B).lib $(COMPILEBASE)\lib

@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "dev_rfn.h"
+#include "tbl_rfnidentifier.h"
 
 #include "std_helper.h"
 
@@ -54,13 +55,9 @@ RfnIdentifier RfnDevice::getRfnIdentifier() const
 
 void RfnDevice::DecodeDatabaseReader(RowReader &rdr)
 {
-    RfnIdentifier rfnId;
+    using Database::Tables::RfnIdentifierTable;
 
-    rdr["SerialNumber"] >> rfnId.serialNumber;
-    rdr["Manufacturer"] >> rfnId.manufacturer;
-    rdr["Model"]        >> rfnId.model;
-
-    _rfnId = rfnId;
+    _rfnId = RfnIdentifierTable::DecodeDatabaseReader(rdr);
 
     CtiDeviceSingle::DecodeDatabaseReader(rdr);
 }
@@ -145,7 +142,7 @@ int RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, Retu
     for( ReturnMsgList::iterator itr = returnMsgs.begin(); itr != returnMsgs.end(); )
     {
         CtiReturnMsg &retMsg = *itr;
-        
+
         // Set expectMore on all CtiReturnMsgs but the last, unless there was a command sent, in which case set expectMore on all of them.
         if( ++itr != returnMsgs.end() || ! rfnRequests.empty() )
         {

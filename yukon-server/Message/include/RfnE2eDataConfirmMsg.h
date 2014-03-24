@@ -27,7 +27,7 @@ struct /*IM_EX_MSG*/ E2eDataConfirmMsg : E2eMsg  //  no methods, does not need t
 
     Protocol protocol;
     unsigned char applicationServiceId;
-    Devices::RfnIdentifier rfnIdentifier;
+    RfnIdentifier rfnIdentifier;
     ReplyType::type replyType;
 };
 

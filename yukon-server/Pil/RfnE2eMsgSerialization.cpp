@@ -88,7 +88,7 @@ MessagePtr<E2eDataRequestMsg>::type deserialize( const Thrift::RfnE2eDataRequest
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
     omsg->high_priority        = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
 
-    ::Cti::Devices::RfnIdentifier rfnId;
+    ::Cti::RfnIdentifier rfnId;
 
     rfnId.manufacturer         = imsg.rfnIdentifier.sensorManufacturer;
     rfnId.model                = imsg.rfnIdentifier.sensorModel;
@@ -135,7 +135,7 @@ MessagePtr<E2eDataConfirmMsg>::type deserialize( const Thrift::RfnE2eDataConfirm
     omsg->applicationServiceId = imsg.applicationServiceId;
     omsg->replyType            = static_cast<E2eDataConfirmMsg::ReplyType::type>( imsg.replyType );
 
-    ::Cti::Devices::RfnIdentifier rfnId;
+    ::Cti::RfnIdentifier rfnId;
 
     rfnId.manufacturer         = imsg.rfnIdentifier.sensorManufacturer;
     rfnId.model                = imsg.rfnIdentifier.sensorModel;
@@ -186,7 +186,7 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
     omsg->payload              = transformContainer<std::vector<unsigned char>>( imsg.payload );
     omsg->high_priority        = imsg.priority == Thrift::RfnE2eMessagePriority::APP_HI;
 
-    ::Cti::Devices::RfnIdentifier rfnId;
+    ::Cti::RfnIdentifier rfnId;
 
     rfnId.manufacturer         = imsg.rfnIdentifier.sensorManufacturer;
     rfnId.model                = imsg.rfnIdentifier.sensorModel;

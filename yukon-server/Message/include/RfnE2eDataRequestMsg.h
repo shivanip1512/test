@@ -15,7 +15,7 @@ struct /*IM_EX_MSG*/ E2eDataRequestMsg : E2eMsg  //  no methods, does not need t
 {
     Protocol protocol;
     unsigned char applicationServiceId;
-    Devices::RfnIdentifier rfnIdentifier;
+    RfnIdentifier rfnIdentifier;
     bool high_priority;
     boost::optional<std::string> security;
     std::vector<unsigned char> payload;

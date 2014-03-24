@@ -33,7 +33,6 @@ enum
     E2EDT_STATS_REPORTING_INTERVAL = 86400,
 };
 
-using Devices::RfnIdentifier;
 using Cti::Logging::Vector::Hex::operator<<;
 
 
@@ -735,7 +734,7 @@ RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const std::vector<unsigned char> &e2ePacket,
         const unsigned char applicationServiceId,
-        const Devices::RfnIdentifier &rfnIdentifier)
+        const RfnIdentifier &rfnIdentifier)
 {
     Messaging::Rfn::E2eDataRequestMsg msg;
 

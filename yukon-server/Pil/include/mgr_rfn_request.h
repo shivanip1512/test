@@ -14,7 +14,7 @@ namespace Pil {
 struct RfnDeviceRequest
 {
     Devices::Commands::RfnCommandSPtr command;
-    Devices::RfnIdentifier rfnIdentifier;
+    RfnIdentifier rfnIdentifier;
     long deviceId;
     unsigned long rfnRequestId;
     std::string commandString;
@@ -55,7 +55,7 @@ public:
 
 private:
 
-    typedef std::set<Devices::RfnIdentifier> RfnIdentifierSet;
+    typedef std::set<RfnIdentifier> RfnIdentifierSet;
 
     RfnIdentifierSet handleConfirms();
     RfnIdentifierSet handleIndications();
@@ -78,18 +78,18 @@ private:
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const Devices::RfnIdentifier &rfnIdentifier);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const RfnIdentifier &rfnIdentifier);
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);
 
-    void checkForNewRequest(const Devices::RfnIdentifier &rfnId);
+    void checkForNewRequest(const RfnIdentifier &rfnId);
 
     typedef boost::ptr_deque<Messaging::Rfn::E2eDataIndicationMsg> IndicationQueue;
     typedef boost::ptr_deque<Messaging::Rfn::E2eDataConfirmMsg> ConfirmQueue;
     typedef std::map<long, unsigned short> DeviceIdToE2eIdMap;
     typedef std::priority_queue<RfnDeviceRequest> RequestQueue;
-    typedef std::map<Devices::RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
+    typedef std::map<RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
 
     CtiCriticalSection   _indicationMux;
     IndicationQueue      _indications;
@@ -123,7 +123,7 @@ private:
         time_t timeout;
     };
 
-    typedef std::map<Devices::RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
+    typedef std::map<RfnIdentifier, ActiveRfnRequest> RfnIdToActiveRequest;
 
     RfnIdToActiveRequest _activeRequests;
 
