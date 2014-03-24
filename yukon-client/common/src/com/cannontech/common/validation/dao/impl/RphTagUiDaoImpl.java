@@ -129,14 +129,19 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
     }
     
     @Override
-    public Integer getTotalValidationTagCounts() {
+    public int getTotalValidationTagCounts() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM RphTag rt");
         sql.append("WHERE rt.TagName").neq_k(RphTag.OK);
+        sql.append("AND rt.ChangeId NOT IN (");
+        sql.append("    SELECT rt3.ChangeId");
+        sql.append("    FROM RphTag rt3");
+        sql.append("    WHERE rt3.TagName").eq(RphTag.OK);
+        sql.append(")");
         int c = yukonJdbcTemplate.queryForInt(sql);
-
+        
         return c;
     }
 

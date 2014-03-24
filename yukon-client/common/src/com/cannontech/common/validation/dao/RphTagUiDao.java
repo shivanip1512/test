@@ -14,7 +14,7 @@ public interface RphTagUiDao {
 
     Map<RphTag, Integer> getAllValidationTagCounts();
     
-    Integer getTotalValidationTagCounts();
+    int getTotalValidationTagCounts();
 
     /**
      * Returns the changeIds where the set of tags associated with the changeId
