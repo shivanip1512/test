@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -48,6 +50,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
@@ -77,6 +80,8 @@ public class InventoryFilterController {
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanyService ecService;
     @Autowired private FilterModelValidator filterModelValidator;
     @Autowired private InventoryOperationsFilterService inventoryOperationsFilterService;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
@@ -85,7 +90,6 @@ public class InventoryFilterController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
 
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
@@ -139,10 +143,11 @@ public class InventoryFilterController {
         Set<InventoryIdentifier> inventory = null;
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
         try {
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
+            DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
             inventory = inventoryOperationsFilterService.getInventory(filterModel.getFilterMode(), 
-                                filterModel.getFilterRules(), energyCompany.getDefaultDateTimeZone(), userContext);
+                                filterModel.getFilterRules(), energyCompanyTimeZone, userContext);
         } catch (InvalidSerialNumberRangeDataException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.filterSelection.error.invalidSerialNumbers"));
             setupFilterSelectionModelMap(modelMap, userContext);

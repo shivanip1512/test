@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.hardware.service;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +36,7 @@ import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
@@ -45,21 +44,24 @@ import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
 public class HardwareConfigService {
     private static Logger log = YukonLogManager.getLogger(HardwareConfigService.class);
 
+    @Autowired private CommandScheduleDao commandScheduleDao;
+    @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanyService ecService;
+    @Autowired private com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
+    @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
+    @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
+    @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
-    private CommandScheduleDao commandScheduleDao;
-    private InventoryConfigTaskDao inventoryConfigTaskDao;
-    private com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService;
-    private EnergyCompanyDao energyCompanyDao;
-    private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
-    private CommandRequestRouteExecutor commandRequestRouteExecutor;
-    private InventoryBaseDao inventoryBaseDao;
-    private InventoryConfigEventLogService inventoryConfigEventLogService;
-    private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
     private class EnergyCompanyRunnable implements Runnable {
         int energyCompanyId;
@@ -153,8 +155,8 @@ public class HardwareConfigService {
 
         private boolean processItems() throws InterruptedException {
             log.trace("processing a chunk of work for ecId = " + energyCompanyId);
-            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-            DateTimeZone timeZone = energyCompany.getDefaultDateTimeZone();
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompanyId);
+            DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
             boolean workProcessed = false;
             List<InventoryConfigTask> tasks = inventoryConfigTaskDao.getUnfinished(energyCompanyId);
@@ -162,7 +164,7 @@ public class HardwareConfigService {
             if (!tasks.isEmpty()) {
                 List<CommandSchedule> schedules = commandScheduleDao.getAllEnabled(energyCompanyId);
                 List<CommandSchedule> activeSchedules = Lists.newArrayList();
-                DateTime now = new DateTime(timeZone);
+                DateTime now = new DateTime(energyCompanyTimeZone);
                 for (CommandSchedule schedule : schedules) {
                     try {
                         CronExpression startTimeCron = new CronExpression(schedule.getStartTimeCronString());
@@ -235,53 +237,4 @@ public class HardwareConfigService {
         }
     }
 
-    @Autowired
-    public void setCommandScheduleDao(CommandScheduleDao commandScheduleDao) {
-        this.commandScheduleDao = commandScheduleDao;
-    }
-
-    @Autowired
-    public void setInventoryConfigTaskDao(
-            InventoryConfigTaskDao inventoryConfigTaskDao) {
-        this.inventoryConfigTaskDao = inventoryConfigTaskDao;
-    }
-
-    @Autowired
-    public void setHardwareConfigService(
-            com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService) {
-        this.hardwareConfigService = hardwareConfigService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setCommandRequestHardwareExecutor(
-            LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor) {
-        this.lmHardwareCommandRequestExecutor = lmHardwareCommandRequestExecutor;
-    }
-
-    @Autowired
-    public void setCommandRequestRouteExecutor(CommandRequestRouteExecutor commandRequestRouteExecutor) {
-        this.commandRequestRouteExecutor = commandRequestRouteExecutor;
-    }
-
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-
-    @Autowired
-    public void setInventoryConfigEventLogService(
-            InventoryConfigEventLogService inventoryConfigEventLogService) {
-        this.inventoryConfigEventLogService = inventoryConfigEventLogService;
-    }
-
-    @Autowired
-    public void setWaitableCommandCompletionCallbackFactory(
-            WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory) {
-        this.waitableCommandCompletionCallbackFactory = waitableCommandCompletionCallbackFactory;
-    }
 }

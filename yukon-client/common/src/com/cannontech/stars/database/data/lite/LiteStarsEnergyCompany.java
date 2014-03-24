@@ -9,13 +9,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTimeZone;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonDefinition;
@@ -23,7 +20,6 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
-import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
@@ -40,7 +36,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -107,7 +102,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
-    private SystemDateFormattingService systemDateFormattingService;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private YukonListDao yukonListDao;
     private YukonGroupDao yukonGroupDao;
@@ -345,30 +339,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         appCategoryMap.clear();
         initApplianceCategories();
     }
-    
-    public TimeZone getDefaultTimeZone() {
-        TimeZone timeZone;
 
-        String timeZoneStr = energyCompanySettingDao.getString(EnergyCompanySettingType.ENERGY_COMPANY_DEFAULT_TIME_ZONE, this.getEnergyCompanyId());
-        
-        if (StringUtils.isNotBlank(timeZoneStr)) {
-            try {
-                timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
-                CTILogger.debug("Energy Company Setting Default TimeZone found: " + timeZone.getDisplayName());
-            } catch (BadConfigurationException e) {
-                throw new BadConfigurationException (e.getMessage() + ". Invalid value in Energy Company Setting Default TimeZone property.");
-            }
-        } else {
-            timeZone = systemDateFormattingService.getSystemTimeZone();
-        }
-        return timeZone;
-    }
-    
-    @Override
-    public DateTimeZone getDefaultDateTimeZone() {
-        return DateTimeZone.forTimeZone(getDefaultTimeZone()); 
-    }
-    
     public String getAdminEmailAddress() {
         String adminEmail = energyCompanySettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, this.getEnergyCompanyId());
         if (adminEmail == null || adminEmail.trim().length() == 0) {
@@ -1914,11 +1885,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
         this.starsSearchDao = starsSearchDao;
     }
-    
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
-    }
-    
+
     public void setWarehouseDao(WarehouseDao warehouseDao) {
         this.warehouseDao = warehouseDao;
     }

@@ -3,10 +3,13 @@ package com.cannontech.web.stars.action.inventory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -16,6 +19,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.purchasing.Shipment;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -26,6 +30,8 @@ import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class ShipmentChangeController extends StarsInventoryActionController {
 
+    @Autowired private EnergyCompanyService ecService;
+    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
             final HttpSession session, final StarsYukonUser user, 
@@ -39,14 +45,11 @@ public class ShipmentChangeController extends StarsInventoryActionController {
          
         currentShipment.setShipmentNumber(request.getParameter("name"));
         String warehouse = request.getParameter("warehouse");
-        if(warehouse != null)
-            currentShipment.setWarehouseID(new Integer(warehouse));
-        else
-            currentShipment.setWarehouseID(new Integer(0));
-        
-        Date orderedDate = ServletUtil.parseDateStringLiberally( request.getParameter("orderingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
-        Date shipDate = ServletUtil.parseDateStringLiberally( request.getParameter("shipDate"), pBean.getEnergyCompany().getDefaultTimeZone());
-        Date receivedDate = ServletUtil.parseDateStringLiberally( request.getParameter("receivingDate"), pBean.getEnergyCompany().getDefaultTimeZone());
+        currentShipment.setWarehouseID(warehouse == null ? 0 : Integer.valueOf(warehouse));
+        TimeZone systemTimeZone = ecService.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
+        Date orderedDate = ServletUtil.parseDateStringLiberally(request.getParameter("orderingDate"), systemTimeZone);
+        Date shipDate = ServletUtil.parseDateStringLiberally(request.getParameter("shipDate"), systemTimeZone);
+        Date receivedDate = ServletUtil.parseDateStringLiberally(request.getParameter("receivingDate"), systemTimeZone);
         if (shipDate == null)
         {
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, null);
@@ -67,20 +70,23 @@ public class ShipmentChangeController extends StarsInventoryActionController {
         
         String serialStart = (request.getParameter("serialStart"));
         String serialEnd = (request.getParameter("serialEnd"));
-        if(serialStart != null)
+        if(serialStart != null) {
             currentShipment.setSerialNumberStart(serialStart);
-        if(serialEnd != null)
+        }
+        if(serialEnd != null) {
             currentShipment.setSerialNumberEnd(serialEnd);
+        }
         
         if(serialStart != null && serialEnd != null)
         {
             long snFrom = 0, snTo = 0;
             try {
                 snFrom = Long.parseLong( serialStart );
-                if (serialEnd.length() > 0)
+                if (serialEnd.length() > 0) {
                     snTo = Long.parseLong( serialEnd );
-                else
+                } else {
                     snTo = snFrom;
+                }
             }
             catch (NumberFormatException nfe) {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid number format in the Serial range");
@@ -180,9 +186,9 @@ public class ShipmentChangeController extends StarsInventoryActionController {
                     redirect = request.getContextPath() + "/operator/Hardware/ShipmentSNRangeAdd.jsp";
                 }
                     
-            }
-            else
+            } else {
                 redirect = request.getContextPath() + "/operator/Hardware/DeliverySchedule.jsp";
+            }
         }
         
         response.sendRedirect(redirect);

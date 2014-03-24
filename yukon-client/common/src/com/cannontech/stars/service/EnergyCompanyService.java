@@ -2,6 +2,7 @@ package com.cannontech.stars.service;
 
 import java.sql.SQLException;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.naming.ConfigurationException;
 
@@ -115,4 +116,6 @@ public interface EnergyCompanyService {
      * Creates an energy company operator or super user checker.
      */
     public UserChecker createCanEditEnergyCompany();
+    
+    public TimeZone getDefaultTimeZone(int ecId);
 }

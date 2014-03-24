@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.naming.ConfigurationException;
 
@@ -18,6 +19,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.events.loggers.StarsEventLogService;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CommandExecutionException;
@@ -36,6 +38,7 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlStatement;
@@ -71,7 +74,9 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -109,6 +114,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private EnergyCompanySettingDaoImpl ecSettingDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
 
     @Override
     @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
@@ -745,6 +752,26 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         for (LiteStarsEnergyCompany liteStarsEnergyCompany : children) {
             callbackWithSelfAndEachDescendant(liteStarsEnergyCompany, simpleCallback);
         }
+    }
+
+    @Override
+    public TimeZone getDefaultTimeZone(int ecId) {
+        TimeZone timeZone;
+
+        String timeZoneStr = ecSettingDao.getString(EnergyCompanySettingType.ENERGY_COMPANY_DEFAULT_TIME_ZONE, ecId);
+        
+        if (StringUtils.isNotBlank(timeZoneStr)) {
+            try {
+                timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
+                log.debug("Energy Company Setting Default TimeZone found: " + timeZone.getDisplayName());
+            } catch (BadConfigurationException e) {
+                throw new BadConfigurationException(e.getMessage() 
+                                            + ". Invalid value in Energy Company Setting Default TimeZone property.");
+            }
+        } else {
+            timeZone = systemDateFormattingService.getSystemTimeZone();
+        }
+        return timeZone;
     }
 
 }

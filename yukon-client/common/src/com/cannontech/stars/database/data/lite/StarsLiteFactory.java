@@ -52,6 +52,7 @@ import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
@@ -1363,31 +1364,38 @@ public class StarsLiteFactory {
     }
     
     public static void setStarsEnergyCompany(StarsEnergyCompany starsCompany, LiteStarsEnergyCompany liteCompany) {
-        starsCompany.setCompanyName( liteCompany.getName() );
-        starsCompany.setMainPhoneNumber( "" );
-        starsCompany.setMainFaxNumber( "" );
-        starsCompany.setEmail( "" );
-        starsCompany.setCompanyAddress( (CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class) );
-        starsCompany.setTimeZone( liteCompany.getDefaultTimeZone().getID() );
+        ContactDao contactDao = YukonSpringHook.getBean(ContactDao.class);
+        ContactNotificationDao contactNotificatinDao = YukonSpringHook.getBean(ContactNotificationDao.class);
+        EnergyCompanyService energyCompanyService = YukonSpringHook.getBean(EnergyCompanyService.class);
+
+        starsCompany.setCompanyName(liteCompany.getName());
+        starsCompany.setMainPhoneNumber("");
+        starsCompany.setMainFaxNumber("");
+        starsCompany.setEmail("");
+        starsCompany.setCompanyAddress((CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class));
+        starsCompany.setTimeZone(energyCompanyService.getDefaultTimeZone(liteCompany.getEnergyCompanyId()).getID());
         
         if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-            LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID() );
+            LiteContact liteContact = contactDao.getContact(liteCompany.getPrimaryContactID());
             
             if (liteContact != null) {
-                LiteContactNotification liteNotifPhone = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.PHONE );
-                starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone) );
+                LiteContactNotification liteNotifPhone = 
+                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.PHONE);
+                starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone));
                 
-                LiteContactNotification liteNotifFax = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.FAX );
-                starsCompany.setMainFaxNumber( StarsUtils.getNotification(liteNotifFax) );
+                LiteContactNotification liteNotifFax = 
+                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.FAX);
+                starsCompany.setMainFaxNumber(StarsUtils.getNotification(liteNotifFax));
                 
-                LiteContactNotification liteNotifEmail = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType( liteContact, ContactNotificationType.EMAIL );
-                starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
+                LiteContactNotification liteNotifEmail = 
+                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.EMAIL);
+                starsCompany.setEmail(StarsUtils.getNotification(liteNotifEmail));
                 
                 if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
-                    LiteAddress liteAddr = liteCompany.getAddress( liteContact.getAddressID() );
+                    LiteAddress liteAddr = liteCompany.getAddress(liteContact.getAddressID());
                     CompanyAddress starsAddr = new CompanyAddress();
-                    setStarsCustomerAddress( starsAddr, liteAddr );
-                    starsCompany.setCompanyAddress( starsAddr );
+                    setStarsCustomerAddress(starsAddr, liteAddr);
+                    starsCompany.setCompanyAddress(starsAddr);
                 }
             }
         }

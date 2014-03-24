@@ -1,10 +1,14 @@
 package com.cannontech.web.stars.action.inventory;
 
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -12,6 +16,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.purchasing.Invoice;
 import com.cannontech.stars.database.db.purchasing.Shipment;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.PurchaseBean;
@@ -19,6 +24,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class InvoiceChangeController extends StarsInventoryActionController {
+    @Autowired private EnergyCompanyService ecService;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -31,22 +37,16 @@ public class InvoiceChangeController extends StarsInventoryActionController {
         Invoice currentInvoice = pBean.getCurrentInvoice();
         
         currentInvoice.setInvoiceDesignation(request.getParameter("name"));
-        currentInvoice.setDateSubmitted(ServletUtil.parseDateStringLiberally( request.getParameter("dateSubmitted"), pBean.getEnergyCompany().getDefaultTimeZone()));
-        currentInvoice.setDatePaid(ServletUtil.parseDateStringLiberally( request.getParameter("datePaid"), pBean.getEnergyCompany().getDefaultTimeZone()));
-        String authorized = request.getParameter("authorized");
-        if(authorized != null)
-            currentInvoice.setAuthorized("Y");
-        else
-            currentInvoice.setAuthorized("N");
-        String hasPaid = request.getParameter("hasPaid");
-        if(hasPaid != null)
-            currentInvoice.setHasPaid("Y");
-        else
-            currentInvoice.setHasPaid("N");
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(pBean.getEnergyCompany().getEnergyCompanyId());
+        Date dateSubmitted = ServletUtil.parseDateStringLiberally(request.getParameter("dateSubmitted"), ecTimeZone);
+        currentInvoice.setDateSubmitted(dateSubmitted);
+        currentInvoice.setDatePaid(ServletUtil.parseDateStringLiberally(request.getParameter("datePaid"), ecTimeZone));
+        currentInvoice.setAuthorized(request.getParameter("authorized") == null ? "N" : "Y");
+        currentInvoice.setHasPaid(request.getParameter("hasPaid") == null ? "N" : "Y");
         currentInvoice.setAuthorizedBy(request.getParameter("authorizedBy"));
         currentInvoice.setTotalQuantity(new Integer(request.getParameter("quantity")));
         currentInvoice.setAuthorizedNumber(request.getParameter("authorizedNum"));
-                
+
         try
         {
             //new invoice

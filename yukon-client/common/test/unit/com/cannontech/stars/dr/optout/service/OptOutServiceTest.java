@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -94,7 +95,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     @Before
     public void setup() {
         optOutService = new OptOutServiceImpl();
-        optOutService.setRolePropertyDao(rolePropertyDaoMock);
+        ReflectionTestUtils.setField(optOutService, "rolePropertyDao", rolePropertyDaoMock);
     }
 
     @Test

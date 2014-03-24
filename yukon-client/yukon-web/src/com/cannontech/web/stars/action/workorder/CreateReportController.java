@@ -2,6 +2,7 @@ package com.cannontech.web.stars.action.workorder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.ReportTypes;
@@ -18,11 +20,14 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.bean.WorkOrderBean;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateReportController extends StarsWorkorderActionController {
+
+    @Autowired private EnergyCompanyService ecService;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
@@ -31,8 +36,9 @@ public class CreateReportController extends StarsWorkorderActionController {
         //A filename for downloading the report to.
         String ext = "pdf";
         String param = request.getParameter("ext");
-        if(param != null)
+        if(param != null) {
             ext = param;
+        }
         String fileName = "WorkOrders";
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         fileName += "_"+format.format(new Date()) + "." + ext;          
@@ -68,8 +74,8 @@ public class CreateReportController extends StarsWorkorderActionController {
         reportBean.setType(ReportTypes.EC_WORK_ORDER);
         reportBean.setUserID(user.getUserID());
         ((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
-
-        reportBean.getModel().setTimeZone(workOrderBean.getEnergyCompany().getDefaultTimeZone());
+        TimeZone ecTimezone = ecService.getDefaultTimeZone(workOrderBean.getEnergyCompany().getEnergyCompanyId());
+        reportBean.getModel().setTimeZone(ecTimezone);
         reportBean.getModel().setEnergyCompanyID(workOrderBean.getEnergyCompany().getEnergyCompanyId());
 
         JFreeReport report = null;

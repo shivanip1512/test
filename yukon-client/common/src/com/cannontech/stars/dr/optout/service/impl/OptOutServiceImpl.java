@@ -112,6 +112,7 @@ import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
@@ -125,40 +126,40 @@ import com.google.common.collect.Ordering;
 
 public class OptOutServiceImpl implements OptOutService {
 
-	private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
-	
-	@Autowired private LmHardwareBaseDao lmHardwareBaseDao;
-	@Autowired private AccountEventLogService accountEventLogService;
-	@Autowired private DisplayableInventoryDao displayableInventoryDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-	@Autowired private InventoryBaseDao inventoryBaseDao;
-	@Autowired private InventoryDao inventoryDao;
-	@Autowired private OptOutEventDao optOutEventDao;
-	@Autowired private OptOutAdditionalDao optOutAdditionalDao;
-	@Autowired private OptOutNotificationService optOutNotificationService;
-	@Autowired private CustomerAccountDao customerAccountDao;
-	@Autowired private StarsDatabaseCache starsDatabaseCache;
-	@Autowired private OptOutStatusService optOutStatusService;
-	@Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
-	@Autowired private LMHardwareControlInformationService lmHardwareControlInformationService;
-	@Autowired private CustomerDao customerDao;
-	@Autowired private ProgramService programService;
-	@Autowired private EnrollmentDao enrollmentDao;
-	@Autowired private StarsEventLogService starsEventLogService;
-	@Autowired private StarsSearchDao starsSearchDao;
-	@Autowired private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
-	@Autowired private SystemDateFormattingService systemDateFormattingService;
-	@Autowired private YukonUserDao yukonUserDao;
-	@Autowired private SurveyDao surveyDao;
-	@Autowired private OptOutSurveyDao optOutSurveyDao;
-	@Autowired @Qualifier("main") private Executor executor;
-	@Autowired private LmHardwareCommandService lmHardwareCommandService;
-	@Autowired private RfnExpressComMessageService rfnExpressComMessageService;
-	@Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private DisplayableInventoryDao displayableInventoryDao;
+    @Autowired private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
+    @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanyService ecService;
+    @Autowired @Qualifier("main") private Executor executor;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private LmHardwareCommandService lmHardwareCommandService;
+    @Autowired private LMHardwareControlInformationService lmHardwareControlInformationService;
+    @Autowired private OptOutSurveyDao optOutSurveyDao;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private OptOutAdditionalDao optOutAdditionalDao;
+    @Autowired private OptOutNotificationService optOutNotificationService;
+    @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
+    @Autowired private ProgramService programService;
+    @Autowired private RawExpressComCommandBuilder rawExpressComCommandBuilder;  
+    @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private SurveyDao surveyDao;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserDao yukonUserDao;
 
+    private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
     private final ObjectMapper jsonObjectMapper = new ObjectMapper();
-	private RolePropertyDao rolePropertyDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -311,9 +312,9 @@ public class OptOutServiceImpl implements OptOutService {
                 
                 StringBuffer logMsg = new StringBuffer();
 
-                LiteStarsEnergyCompany energyCompany = 
-                    starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-                DateTimeFormatter dateTimeFormatter = logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
+                TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
+                DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
+                DateTimeFormatter dateTimeFormatter = logFormatter.withZone(energyCompanyTimeZone);
                 logMsg.append("Start Date/Time:" + dateTimeFormatter.print(event.getStartDate()));
                 logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
                         event.getDurationInHours()));
@@ -684,7 +685,7 @@ public class OptOutServiceImpl implements OptOutService {
 			webpublishingProgramId = program.getProgramId();
 		}
 		
-		TimeZone systemTimeZone = energyCompany.getDefaultTimeZone();
+		TimeZone systemTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
 		Date now = new Date();
     	Date stopDate = TimeUtil.getMidnightTonight(systemTimeZone);
 		
@@ -788,7 +789,8 @@ public class OptOutServiceImpl implements OptOutService {
 	public OptOutCountHolder getCurrentOptOutCount(int inventoryId, int customerAccountId) {
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-        DateTimeZone energyCompanyTimeZone = (starsDatabaseCache.getEnergyCompany(yukonEnergyCompany)).getDefaultDateTimeZone();
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
+        DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
 		// Get the Opt Out limits for the user
 		CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
@@ -1122,10 +1124,11 @@ public class OptOutServiceImpl implements OptOutService {
 		
 	    // Get the energy company time zone to figure out how many opt outs a user has left.
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccountId);
-	    DateTimeZone energyCompanyTimeZone = (starsDatabaseCache.getEnergyCompany(yukonEnergyCompany)).getDefaultDateTimeZone();
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(yukonEnergyCompany.getEnergyCompanyId());
+        DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
 
 	    return this.getCurrentOptOutLimit(customerAccountId, energyCompanyTimeZone);
-	};
+	}
 	
 	private OptOutLimit getCurrentOptOutLimit(int customerAccountId, DateTimeZone energyCompanyTimeZone) {
 		
@@ -1375,9 +1378,4 @@ public class OptOutServiceImpl implements OptOutService {
         }
         return duration;
      }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
 }

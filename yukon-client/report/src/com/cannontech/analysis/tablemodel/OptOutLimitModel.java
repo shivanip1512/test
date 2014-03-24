@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -36,6 +38,7 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -61,6 +64,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private OptOutService optOutService = YukonSpringHook.getBean("optOutService", OptOutService.class);
     private RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
     private YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
+    private EnergyCompanyService ecService = YukonSpringHook.getBean(EnergyCompanyService.class);
     
     private Function<LMHardwareControlGroup, Integer> lmHardwareControlGroupToAccountIdFunction =
             new Function<LMHardwareControlGroup, Integer>() {
@@ -126,10 +130,12 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             }
         };
     
+    @Override
     public String getTitle() {
         return "Opt Out Limit Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
@@ -184,6 +190,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         this.userIds = userIds;
     }
     
+    @Override
     public void doLoadData() {
 
         // get all of the customers
@@ -212,12 +219,16 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             
             // Check to see if an opt out limit exists, and use that limit for any inventory in that residential login group.
             OptOutLimit residentialGroupOptOutLimit = findReportOptOutLimit(optOutEndDate,  residentialRoleGroup);
-            if (residentialGroupOptOutLimit == null) continue;
+            if (residentialGroupOptOutLimit == null) {
+                continue;
+            }
             Integer optOutLimit = residentialGroupOptOutLimit.getLimit();
             
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
+            DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
             // Setting up the time period for the report.
             OpenInterval optOutLimitInterval = 
-                    optOutService.findOptOutLimitInterval(optOutEndDate, energyCompany.getDefaultDateTimeZone(), residentialRoleGroup);
+                    optOutService.findOptOutLimitInterval(optOutEndDate, energyCompanyTimeZone, residentialRoleGroup);
             OpenInterval reportInterval = OpenInterval.createClosed(optOutLimitInterval.getStart(), optOutEndDate);
             
             // Check to see if users where selected and use them to find the report data.
@@ -445,6 +456,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         this.userContext = userContext;
     }
 
+    @Override
     public YukonUserContext getUserContext() {
         return userContext;
     }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Executor;
 
@@ -51,6 +52,7 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServletUtils;
@@ -60,9 +62,9 @@ import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -72,11 +74,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AccountImportService {
-    
-    private PrintWriter importLog;
-    
-    private Executor executor;
-    
+    private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
+
     @Autowired private AccountEventLogService accountLog;
     @Autowired private HardwareEventLogService hardwareLog;
     @Autowired private StarsCustAccountInformationDao scaiDao; 
@@ -92,8 +91,10 @@ public class AccountImportService {
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EmailService emailService;
+    @Autowired private EnergyCompanyService ecService;
     
-    private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
+    private PrintWriter importLog;
+    private Executor executor;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
@@ -180,7 +181,9 @@ public class AccountImportService {
             logFile = new File(importFailsDir, logFileName);
             
             importLog = new PrintWriter(new FileWriter(logFile), true);
-            importLog.println("Start time: " + StarsUtils.formatDate(now, lsec.getDefaultTimeZone()));
+            
+            importLog.println("Start time: " 
+                    + StarsUtils.formatDate(now, ecService.getDefaultTimeZone(lsec.getEnergyCompanyId())));
             importLog.println();
             
             // Creates a list of all the appliance categories names
@@ -964,7 +967,10 @@ public class AccountImportService {
         
         if (importLog != null) {
             importLog.println();
-            importLog.println("Stop time: " + StarsUtils.formatDate(new Date(), result.getEnergyCompany().getDefaultTimeZone()));
+            
+            importLog.println("Stop time: "
+                    + StarsUtils.formatDate(new Date(), 
+                          ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId())));
             importLog.println();
             importLog.close();
 
@@ -1009,7 +1015,9 @@ public class AccountImportService {
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
                 
                 if (!StringUtils.isBlank(hwFields[ImportFields.IDX_REMOVE_DATE])) {
-                    Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], lsec.getDefaultTimeZone());
+                    TimeZone ecTimezone = ecService.getDefaultTimeZone(result.getEnergyCompany().getEnergyCompanyId());
+                    Date removeDate = 
+                            ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], ecTimezone);
                     if (removeDate == null) {
                         removeDate = StarsUtils.starsDateFormat.parse(hwFields[ImportFields.IDX_REMOVE_DATE]);
                     }

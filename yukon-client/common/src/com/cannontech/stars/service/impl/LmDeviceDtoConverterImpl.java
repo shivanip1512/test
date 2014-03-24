@@ -3,6 +3,7 @@ package com.cannontech.stars.service.impl;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportFields;
@@ -22,6 +24,7 @@ import com.cannontech.util.ServletUtil;
 public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 
     @Autowired private YukonListDao yukonListDao;
+    @Autowired private EnergyCompanyService ecService;
     
     @Override
     public LmDeviceDto createNewDto(String accountNo, String[] hwFields, LiteStarsEnergyCompany lsec) throws ParseException {
@@ -29,7 +32,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         LmDeviceDto dto = new LmDeviceDto();
         dto.setAccountNumber(accountNo);
         
-        String label = hwFields[ImportFields.IDX_DEVICE_LABEL];    
+        String label = hwFields[ImportFields.IDX_DEVICE_LABEL];
         if(StringUtils.isNotEmpty(label)){
             dto.setDeviceLabel(label);
         }
@@ -38,8 +41,9 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         dto.setDeviceType(deviceTypeText);
         
         dto.setFieldInstallDate(new Date());
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(lsec.getEnergyCompanyId());
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_INSTALL_DATE])) {
-            Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], lsec.getDefaultTimeZone());
+            Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], ecTimeZone);
             if (installDate == null) {
                 installDate = StarsUtils.starsDateFormat.parse(hwFields[ImportFields.IDX_INSTALL_DATE]);
             }
@@ -47,7 +51,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         }
         
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_REMOVE_DATE])) {
-            Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], lsec.getDefaultTimeZone());
+            Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], ecTimeZone);
             if (removeDate == null) {
                 removeDate = StarsUtils.starsDateFormat.parse(hwFields[ImportFields.IDX_REMOVE_DATE]);
             }
@@ -90,7 +94,8 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
     }
     
     @Override
-    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, LiteStarsEnergyCompany energyCompany) throws ParseException {
+    public void updateDtoWithHwFields (LmDeviceDto dto, String[] hwFields, LiteStarsEnergyCompany energyCompany) 
+            throws ParseException {
         
         if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_DEVICE_LABEL])) {
             dto.setDeviceLabel(hwFields[ImportFields.IDX_DEVICE_LABEL]);
@@ -99,9 +104,10 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_DEVICE_TYPE])) {
             dto.setDeviceType(hwFields[ImportFields.IDX_DEVICE_TYPE]);
         }
-        
+
+        TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_INSTALL_DATE])) {
-            Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], energyCompany.getDefaultTimeZone());
+            Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], ecTimeZone);
             if (installDate == null) {
                 installDate = StarsUtils.starsDateFormat.parse(hwFields[ImportFields.IDX_INSTALL_DATE]);
             }
@@ -109,7 +115,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         }
         
         if (!StringUtils.isBlank(hwFields[ImportFields.IDX_REMOVE_DATE])) {
-            Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], energyCompany.getDefaultTimeZone());
+            Date removeDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_REMOVE_DATE], ecTimeZone);
             if (removeDate == null) {
                 removeDate = StarsUtils.starsDateFormat.parse(hwFields[ImportFields.IDX_REMOVE_DATE]);
             }

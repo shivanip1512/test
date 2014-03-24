@@ -11,7 +11,6 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.DbChangeManager;
@@ -44,7 +43,6 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
-    @Autowired private SystemDateFormattingService systemDateFormattingService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonGroupDao yukonGroupDao;
@@ -72,7 +70,6 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setEcMappingDao(ecMappingDao);
         energyCompany.setDefaultRouteService(defaultRouteService);
         energyCompany.setStarsCustAccountInformationDao(starsCustAccountInformationDao);
-        energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         energyCompany.setStarsDatabaseCache(starsDatabaseCache);
         energyCompany.setStarsSearchDao(starsSearchDao);
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);

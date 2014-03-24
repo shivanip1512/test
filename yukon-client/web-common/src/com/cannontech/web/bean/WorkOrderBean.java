@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +26,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -47,6 +49,7 @@ public class WorkOrderBean {
             YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
     private final SimpleCollectionFactory simpleCollectionFactory = 
             YukonSpringHook.getBean("simpleCollectionFactory", SimpleCollectionFactory.class);
+    private static final EnergyCompanyService ecService = YukonSpringHook.getBean(EnergyCompanyService.class);
 
     private boolean manageMembers = false;
     public static final int SORT_ORDER_ASCENDING = 0;
@@ -281,7 +284,8 @@ public class WorkOrderBean {
                 date = StarsUtils.translateDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp().getTime());
             }
 
-            String dateStr = (date != null)? StarsUtils.formatDate(date, liteStarsEC_Order.getDefaultTimeZone()) : "----";
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(liteStarsEC_Order.getEnergyCompanyId());
+            String dateStr = (date != null) ? StarsUtils.formatDate(date, ecTimeZone) : "----";
 
             htmlBuf.append("        <tr>").append(LINE_SEPARATOR);
             
