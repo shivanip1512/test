@@ -1678,7 +1678,7 @@ bool CtiFDRInterface::verifyDispatchConnection()
     return connectWithDispatch();
 }
 
-bool CtiFDRInterface::putOnInQueueHandle( CtiMessage* message )
+bool CtiFDRInterface::putOnDispatchInQueue( CtiMessage* message )
 {
     // take ownership of the message
     std::auto_ptr<CtiMessage> msg( message );

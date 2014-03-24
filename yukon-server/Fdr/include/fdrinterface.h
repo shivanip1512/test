@@ -107,7 +107,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         std::ostream& logNow();
 
         bool verifyDispatchConnection ();
-        bool putOnInQueueHandle       ( CtiMessage* );
+        bool putOnDispatchInQueue     ( CtiMessage* );
 
     protected:
 

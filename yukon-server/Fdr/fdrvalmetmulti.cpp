@@ -986,7 +986,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
         CtiCommandMsg::CtiOpArgList_t ops;
         ops.push_back(connection->getPortNumber());
         cmdMessage->setOpArgList(ops);
-        putOnInQueueHandle( cmdMessage.release() );
+        putOnDispatchInQueue( cmdMessage.release() );
 
         return NORMAL;
     }
