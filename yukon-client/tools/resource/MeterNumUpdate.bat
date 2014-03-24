@@ -2,7 +2,7 @@
 if "%1" == "" goto usage
 
 call setjavapath.bat
-java -Djava.class.path=.;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;yukonappserver.jar; com.cannontech.tools.custom.MeterNumberUpdate %1 %2
+java -classpath %YUKON_BASE%/Client/bin/tools.jar com.cannontech.tools.custom.MeterNumberUpdate %1 %2
 goto done
 
 :usage

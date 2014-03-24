@@ -1,8 +1,9 @@
 @echo off
 if "%1" == "" goto usage
 
+cd %YUKON_BASE%\client\bin
 call setjavapath.bat
-java -Djava.class.path=.;%YUKON_BASE%/server/web;tools.jar;common.jar;log4j-1.2.4.jar;yukonappserver.jar;axis.jar;commons-discovery.jar;commons-httpclient.jar;jaxrpc.jar;saaj.jar;wsdl4j.jar;jaxm-runtime.jar;jaxm-api.jar;commons-logging.jar; com.cannontech.custom.pss2ws.PriceServer %1 %2 %3 %4 %5 %6 %7
+java -classpath tools.jar;commons-logging.jar com.cannontech.custom.pss2ws.PriceServer %1 %2 %3 %4 %5 %6 %7
 goto done
 
 :usage
