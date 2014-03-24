@@ -17,7 +17,8 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="applianceInfo">
 
-                <form:form commandName="starsAppliance" action="/stars/operator/appliances/applianceUpdate">
+                <cti:url var="updateUrl" value="/stars/operator/appliances/applianceUpdate"/>
+                <form:form commandName="starsAppliance" action="${updateUrl}">
                     <tags:nameValueContainer2>
                         <input type="hidden" name="applianceId" value="${starsAppliance.applianceID}">
                         <input type="hidden" name="accountId" value="${accountId}">

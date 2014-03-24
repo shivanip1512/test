@@ -40,7 +40,8 @@
                     </div>
                     <div class="column two nogutter">
                         <div class="simple-input-image fr">
-                            <a href="javascript:void(0);"><img alt="${fn:escapeXml(pickerImage.image.imageName)}" src="/common/images/${pickerImage.image.imageID}/thumb"></a>
+                            <cti:url var="thumbImageUrl" value="/common/images/${pickerImage.image.imageID}/thumb"/>
+                            <a href="javascript:void(0);"><img alt="${fn:escapeXml(pickerImage.image.imageName)}" src="${thumbImageUrl}"></a>
                         </div>
                     </div>
                 </div>

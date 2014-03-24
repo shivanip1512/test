@@ -295,7 +295,8 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         </c:if>
                         
                         <c:if test="${showMeterDetailAction}">
-                            <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
+                            <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetail"/>
+                            <cti:url var="meterDetailUrl" value="${meterDetail}"/>
                             <li>
                                  <cti:button nameKey="meterDetail" href="${meterDetailUrl}" renderMode="labeledImage" icon="icon-control-equalizer-blue"/>
                             </li>
