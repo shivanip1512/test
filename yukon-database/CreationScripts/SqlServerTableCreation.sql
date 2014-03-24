@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/24/2014 10:21:23 AM                        */
+/* Created on:     3/24/2014 2:46:44 PM                         */
 /*==============================================================*/
 
 
@@ -10253,7 +10253,7 @@ LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SSL.SubstationId
 LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
 LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SA.AreaId 
 LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime
                  FROM DynamicPAOInfo 
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
@@ -10283,7 +10283,7 @@ LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId
 LEFT OUTER JOIN CCSubAreaAssignment SA ON SS.SubstationId = SA.SubstationBusId
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
 LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime 
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime 
                  FROM DynamicPAOInfo 
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
@@ -10327,7 +10327,7 @@ LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId 
 LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
 LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = YP.PAObjectId 
-LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime
                  FROM DynamicPAOInfo 
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
 LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
@@ -10428,7 +10428,7 @@ LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId
 LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
 JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId        
 LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId        
-LEFT JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime                        
+LEFT JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime                        
            FROM DynamicPAOInfo                         
            WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
 LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId         

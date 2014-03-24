@@ -290,6 +290,154 @@ DROP CONSTRAINT AK_DYNPAO_OWNKYUQ;
 
 ALTER TABLE DynamicPaoInfo 
 ADD CONSTRAINT PK_DynamicPaoInfo PRIMARY KEY (PAObjectID, Owner, InfoKey);
+
+DROP VIEW CCCBCInventory_View;
+DROP VIEW CCCapInventory_View;
+DROP VIEW CCInventory_View;
+DROP VIEW CCOperations_View;
+
+CREATE VIEW CCCBCInventory_View (CBCNAME, IPADDRESS, SLAVEADDRESS, CONTROLLERTYPE, OPCENTER, REGION, SUBSTATIONNAME, 
+                                 SUBBUSNAME, FEEDERNAME, CAPBANKNAME, BANKSIZE, OPERATIONMETHOD, LAT, LON,
+                           DRIVEDIRECTION, CAPBANKADDRESS, TA, CAPBANKCONFIG, COMMMEDIUM, COMMSTRENGTH,
+                           EXTERNALANTENNA, OPERATIONSCOUNTERRESETDATE, OPSCOUNTERSINCELASTRESET,
+                           OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, 
+                           UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) AS
+SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType, 
+       CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName, 
+       YP3.PAOName AS SubBusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       CB.BankSize, CB.OperationalState AS OperationMethod, CAPA.Latitude AS Lat, 
+       CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
+       YP1.Description AS CapBankAddress, CAPA.MaintenanceAreaId AS TA, CAPA.CapBankConfig,
+       CAPA.CommMedium, CAPA.CommStrength, CAPA.ExtAntenna AS ExternalAntenna, 
+       CAPA.OpCountResetDate AS OperationsCounterResetDate, 
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset, 
+       DTWC.TotalOpCount AS OperationsCounterToday, DTWC.UvOpCount AS UvOperationsCounter, 
+       DTWC.OvOpCount AS OvOperationsCounter, DTWC.OvUvCountResetDate AS UvOvCounterResetDate, 
+       DTWC.LastOvUvDateTime
+FROM (SELECT PAObjectId, PAOName 
+      FROM YukonPAObject 
+      WHERE (Type LIKE '%CBC%')) YP 
+LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP1 ON CB.DeviceId = YP1.PAObjectId 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SSL.SubstationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SA.AreaId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
+
+CREATE VIEW CCCapInventory_View AS
+SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
+       YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON, 
+       CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod, 
+       CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName, 
+       DPI.Value AS IPAddress, DA.SlaveAddress, CAPA.MaintenanceAreaId AS TA, 
+       CAPA.CapBankConfig, CAPA.CommMedium, CAPA.CommStrength
+FROM CapBank CB 
+INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubStationSubbusList SS ON SS.SubstationBusId = YP3.PAObjectId
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SS.SubstationId = SA.SubstationBusId
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime 
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId;
+
+CREATE VIEW CCInventory_View (REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, AREAID, SUBID, SUBBUSID, FDRID, CBCNAME,
+                              CBCID, CAPBANKNAME, BANKID, CAPBANKSIZE, DISPLAYORDER, CONTROLSTATUS, CONTROLSTATUSNAME,
+                        SWMFGR, SWTYPE, OPERATIONMETHOD, CONTROLLERTYPE, IPADDRESS, SLAVEADDRESS, LAT, LON,
+                        DRIVEDIRECTION, OPCENTER, TA, CLOSESEQUENCE, OPENSEQUENCE, LASTOPERATIONTIME,
+                        LASTINSPECTIONDATE, LASTMAINTENANCEDATE, MAINTENANCEREQPEND, CAPDISABLED,
+                        POTENTIALTRANSFORMER, OTHERCOMMENTS, OPTEAMCOMMENTS, POLENUMBER,
+                        OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, 
+                        OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) AS
+SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName, 
+       YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId, 
+       YP3.PAObjectId AS SubBusId, YP2.PAObjectId AS FdrId, YP.PAOName AS CBCName, 
+       YP.PAObjectId AS CBCId, YP1.PAOName AS CapBankName, YP1.PAObjectId AS BankId, 
+       CB.BankSize AS CapBankSize, FB.ControlOrder AS DisplayOrder, DCB.ControlStatus, 
+       S.Text AS ControlStatusName, CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType,
+       CB.OperationalState AS OperationMethod, CB.ControllerType, DPI.Value AS IPAddress, 
+       DA.SlaveAddress, CAPA.Latitude AS Lat, CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
+       CB.MapLocationId AS OpCenter, CAPA.MaintenanceAreaId AS TA, FB.CloseOrder AS CloseSequence, 
+       FB.TripOrder AS OpenSequence, DCB.LastStatusChangeTime AS LastOperationTime, 
+       CAPA.LastInspVisit AS LastInspectionDate, CAPA.LastMaintVisit AS LastMaintenanceDate, 
+       CAPA.MaintenanceReqPend, YP1.DisableFlag AS CapDisabled, CAPA.PotentialTransformer, 
+       CAPA.OtherComments, CAPA.OpTeamComments, CAPA.PoleNumber, 
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset, DTWC.TotalOpCount AS OperationsCounterToday, 
+       DTWC.UvOpCount AS UvOperationsCounter, DTWC.OvOpCount AS OvOperationsCounter, 
+       DTWC.OvUvCountResetDate AS UvOvCounterResetDate, DTWC.LastOvUvDateTime
+FROM (SELECT  PAObjectId, PAOName 
+      FROM YukonPAObject 
+      WHERE (Type LIKE '%CBC%')) YP 
+LEFT OUTER JOIN CapBank CB ON YP.PAObjectId = CB.ControlDeviceId 
+LEFT OUTER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
+LEFT OUTER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = YP1.PAObjectId 
+LEFT OUTER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
+LEFT OUTER JOIN State SL ON SL.StateGroupId = 3 AND DCB.TwoWayCBCState = SL.RawState
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId 
+LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = YP.PAObjectId 
+LEFT OUTER JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
+LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
+LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
+
+CREATE VIEW CCOperations_View AS
+SELECT YP3.PAObjectId AS CBCId, YP3.PAOName AS CBCName, YP.PAObjectId AS CapBankId, YP.PAOName AS CapBankName, 
+       CCOAS.PointId, CCOAS.LogId AS OpLogId, CCOAS.ActionId, CCOAS.DateTime AS OpTime, CCOAS.Text AS Operation, 
+       CCOBC.LogId AS ConfLogId, CCOBC.ActionId AS ActionId2, CCOBC.DateTime AS ConfTime, CCOBC.Text AS ConfStatus, 
+       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, YP2.PAObjectId AS SubBusId, 
+       YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, YP4.PAOName AS Region, YP4.PAObjectId AS AreaId,
+       CB.BankSize, CB.ControllerType, CCOAS.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
+       CCOBC.KvarAfter, CCOBC.KvarChange, CCOBC.KvarBefore
+FROM CCOperationsASent_View CCOAS
+JOIN CCOperationsBConfirmed_view CCOBC ON CCOBC.ActionId = CCOAS.ActionId 
+    AND CCOBC.PointId = CCOAS.PointId 
+    AND CCOAS.ActionId >= 0
+    AND CCOBC.ActionId >= 0
+JOIN Point ON Point.PointId = CCOAS.PointId        
+JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId        
+JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId        
+JOIN YukonPAObject YP1 ON YP1.PAObjectId = CCOAS.FeederId        
+JOIN YukonPAObject YP2 ON YP2.PAObjectId = CCOAS.SubId        
+JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId        
+LEFT JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId        
+LEFT JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId        
+JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId        
+LEFT JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId        
+LEFT JOIN (SELECT PAObjectId, Owner, InfoKey, Value, UpdateTime                        
+           FROM DynamicPAOInfo                         
+           WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId        
+LEFT JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = CCOAS.SubId         
+LEFT JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId        
+LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId        
+LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 /* End YUK-13174 */
 
 /**************************************************************/
