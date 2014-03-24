@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableMultimap.Builder;
 
 public enum ContactNotificationType implements DisplayableEnum, DatabaseRepresentationSource {
 
+    @Deprecated /** NONE is only here for support of default Contact/ContactNotification values and should never be used directly**/ 
+    NONE(0, ContactNotificationMethodType.PHONE),
     CALL_BACK_PHONE(10, ContactNotificationMethodType.PHONE), 
     CELL_PHONE(8, ContactNotificationMethodType.PHONE), 
     EMAIL(1, ContactNotificationMethodType.EMAIL),

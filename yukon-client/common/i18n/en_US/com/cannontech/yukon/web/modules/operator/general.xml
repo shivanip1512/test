@@ -28,6 +28,7 @@
     <entry key="yukon.web.modules.operator.accountLog.timeOfEvent">Time of Event</entry>
 	
 	<!-- ContactNotificationType enum -->
+    <entry key="yukon.web.modules.operator.contactNotificationEnum.NONE">DO NOT USE ME</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.CALL_BACK_PHONE">Call Back Phone</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.CELL_PHONE">Cell Phone</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.EMAIL">Email</entry>

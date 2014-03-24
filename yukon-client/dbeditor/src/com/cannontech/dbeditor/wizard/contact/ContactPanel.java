@@ -423,7 +423,9 @@ private javax.swing.JComboBox<ContactNotificationType> getJComboBoxNotifyType() 
 			ivjJComboBoxNotifyType.setRenderer(new DisplayableEnumCellRenderer());
 
 			for (ContactNotificationType notificationType : ContactNotificationType.values()) {
-			    ivjJComboBoxNotifyType.addItem(notificationType);
+			    if (notificationType != ContactNotificationType.NONE) {
+			        ivjJComboBoxNotifyType.addItem(notificationType);
+			    }
 			}
 
 		} catch (java.lang.Throwable ivjExc) {
