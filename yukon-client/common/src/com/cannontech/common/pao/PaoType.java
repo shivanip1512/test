@@ -572,34 +572,22 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isPort() {
         return portTypes.contains(this);
     }
-    
+
     public static boolean isDialupPort(int type) {
-        if (type == DIALOUT_POOL.getDeviceTypeId() ||
-                type == LOCAL_DIALUP.getDeviceTypeId() ||
-                type == LOCAL_DIALBACK.getDeviceTypeId() ||
-                type == TSERVER_DIALUP.getDeviceTypeId()) {
-            return true;
-        } else {
-            return false;
-        }
+        return type == DIALOUT_POOL.getDeviceTypeId() || type == LOCAL_DIALUP.getDeviceTypeId()
+            || type == LOCAL_DIALBACK.getDeviceTypeId() || type == TSERVER_DIALUP.getDeviceTypeId();
     }
-    
+
     public static boolean isDialupPort(String type) {
         int intType = getPaoTypeId(type);
         return isDialupPort(intType);
     }
-    
+
     public static boolean isTcpPortEligible(PaoType type) {
-        if (type == CBC_7020 || type == CBC_7022 || type == CBC_7023 || 
-                type == CBC_7024 || type == CBC_8020 || type == CBC_8024 || 
-                type == CBC_DNP || type == RTU_DNP || type == FAULT_CI || 
-                type == NEUTRAL_MONITOR) {
-            return true;
-        } else {
-            return false;
-        }
+        return type == CBC_7020 || type == CBC_7022 || type == CBC_7023 || type == CBC_7024 || type == CBC_8020
+            || type == CBC_8024 || type == CBC_DNP || type == RTU_DNP || type == FAULT_CI || type == NEUTRAL_MONITOR;
     }
-    
+
     public static boolean isTcpPortEligible(int type) {
         PaoType paoType = getForId(type);
         return isTcpPortEligible(paoType);
@@ -621,9 +609,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isLoadGroup() {
         return this.paoCategory == PaoCategory.DEVICE && this.paoClass == PaoClass.GROUP;
     }
-    
-    private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
-            PaoClass paoClass) {
+
+    private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
         this.paoCategory = paoCategory;
@@ -708,5 +695,4 @@ public enum PaoType implements DatabaseRepresentationSource {
         }
         return str;
     }
-    
 }
