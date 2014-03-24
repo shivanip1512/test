@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/19/2014 4:37:27 PM                         */
+/* Created on:     3/24/2014 10:21:23 AM                        */
 /*==============================================================*/
 
 
@@ -4652,18 +4652,13 @@ go
 /* Table: DynamicPAOInfo                                        */
 /*==============================================================*/
 create table DynamicPAOInfo (
-   EntryID              numeric              not null,
    PAObjectID           numeric              not null,
    Owner                varchar(64)          not null,
    InfoKey              varchar(128)         not null,
    Value                varchar(128)         not null,
    UpdateTime           datetime             not null,
-   constraint PK_DYNPAOINFO primary key (EntryID)
+   constraint PK_DynamicPaoInfo primary key (PAObjectID, Owner, InfoKey)
 )
-go
-
-alter table DynamicPAOInfo
-   add constraint AK_DYNPAO_OWNKYUQ unique (PAObjectID, Owner, InfoKey)
 go
 
 /*==============================================================*/

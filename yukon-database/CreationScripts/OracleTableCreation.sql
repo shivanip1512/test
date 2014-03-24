@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/19/2014 4:47:40 PM                         */
+/* Created on:     3/24/2014 9:36:49 AM                         */
 /*==============================================================*/
 
 
@@ -4433,17 +4433,13 @@ create table DynamicLcrCommunications  (
 /* Table: DynamicPAOInfo                                        */
 /*==============================================================*/
 create table DynamicPAOInfo  (
-   EntryID              NUMBER                          not null,
    PAObjectID           NUMBER                          not null,
    Owner                VARCHAR2(64)                    not null,
    InfoKey              VARCHAR2(128)                   not null,
    Value                VARCHAR2(128)                   not null,
    UpdateTime           DATE                            not null,
-   constraint PK_DYNPAOINFO primary key (EntryID)
+   constraint PK_DynamicPaoInfo primary key (PAObjectID, Owner, InfoKey)
 );
-
-alter table DynamicPAOInfo
-   add constraint AK_DYNPAO_OWNKYUQ unique (PAObjectID, Owner, InfoKey);
 
 /*==============================================================*/
 /* Table: DynamicPAOStatistics                                  */

@@ -278,6 +278,20 @@ FROM DeviceConfigCategory
 WHERE CategoryType = 'tou';
 /* End YUK-13159 */
 
+/* Start YUK-13174 */
+ALTER TABLE DynamicPaoInfo
+DROP CONSTRAINT PK_DYNPAOINFO;
+
+ALTER TABLE DynamicPaoInfo 
+DROP COLUMN EntryID;
+
+ALTER TABLE DynamicPaoInfo 
+DROP CONSTRAINT AK_DYNPAO_OWNKYUQ;
+
+ALTER TABLE DynamicPaoInfo 
+ADD CONSTRAINT PK_DynamicPaoInfo PRIMARY KEY (PAObjectID, Owner, InfoKey);
+/* End YUK-13174 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
