@@ -540,7 +540,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return null;
     }
     
-    public YukonListEntry getYukonListEntry(YukonSelectionListEnum listType, int yukonDefID) {
+    private YukonListEntry getYukonListEntry(YukonSelectionListEnum listType, int yukonDefID) {
         YukonSelectionList list = getYukonSelectionList(listType.getListName());
         for (int i = 0; i < list.getYukonListEntries().size(); i++) {
             YukonListEntry entry = list.getYukonListEntries().get(i);
@@ -817,11 +817,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return String.valueOf( nextCallNo++ );
     }
-    
-    public synchronized void resetNextCallNumber() {
-        nextCallNo = 0;
-    }
-    
+
     /**
      * Find the next to the largest order number with pattern "CTI#(NUMBER)", e.g. "CTI#10"
      */
@@ -853,11 +849,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return String.valueOf( nextOrderNo++ );
     }
-    
-    public synchronized void resetNextOrderNumber() {
-        nextOrderNo = 0;
-    }
-    
+
     public List<LiteAddress> getAllAddresses() {
         List<LiteAddress> addressList = addressDao.getAll();
         return addressList;
@@ -920,16 +912,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return null;
     }
-    
-    public Warehouse getWarehouse(int warehouseId) {
-        List<Warehouse> warehouses = getWarehouses();
-        for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseID() == warehouseId)
-                return warehouse;
-        }
-        return null;
-    }
-    
+
     public void clearWarehouseCache() {
         warehouses = null;
     }
@@ -947,21 +930,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         List<LiteSubstation> substations = getSubstations();
         synchronized (substations) { substations.add(substation); }
     }
-    
-    public LiteSubstation deleteSubstation(int substationID) {
-        List<LiteSubstation> substations = getSubstations();
-        synchronized (substations) {
-            for (final LiteSubstation liteSub : substations) {
-                if (liteSub.getSubstationID() == substationID) {
-                    substations.remove(liteSub);
-                    return liteSub;
-                }
-            }
-        }
-        
-        return null;
-    }
-    
+
     /**
      * This method resets the substation variable to null for the given energy company.  This will cause the
      * get methods to look up the substations from the database next time instead of using the cached value.
@@ -969,16 +938,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public synchronized void resetSubstations() {
         substations = null;
     }
-    
-    /**
-     * This method resets the routes variable to null for the given energy company.  This will cause the
-     * get methods to look up the routes from the database next time instead of using the cached value.
-     */
-    public synchronized void resetRouteIds() {
-        routeIds = null;
-    }
 
-    
     public LiteAddress getAddress(int addressID) {
         LiteAddress address = addressDao.getByAddressId(addressID); 
         return address;
