@@ -618,11 +618,11 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 try
                 {
                     CtiLockGuard<CtiMutex> lock(_listenerMux);
-
+                    
                     if( isListenerShutdown() )
                     {
-                        // go back to the beginning to service cancellation
-                        continue;
+                        // listener sockets have shutdown
+                        return;
                     }
 
                     // create sockets from the addrinfo
@@ -705,7 +705,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
 
                     const string returnAddrStr = returnAddr.toString();
 
-//                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+    //                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Connection established to " << decodeClientName(NULL) << " at " << returnAddrStr << endl;

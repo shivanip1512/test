@@ -85,7 +85,7 @@ void CtiConnectionManager::setRequestId(int rid)
     _serverRequestId = rid;
 }
 
-int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, bool cleaniftimedout, int payload_status, string payload_string )
+int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, int payload_status, string payload_string )
 {
     CtiMessage *pWrite = pMsg;  // Default to sending the original message.
 
@@ -97,7 +97,7 @@ int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, 
         pWrite = resp;
     }
 
-    return Inherited::WriteConnQue(pWrite, millitimeout, cleaniftimedout);
+    return Inherited::WriteConnQue(pWrite, millitimeout);
 }
 
 void CtiConnectionManager::writeIncomingMessageToQueue(CtiMessage *msgPtr)

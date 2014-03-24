@@ -38,9 +38,9 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiCommandMsg* createScanDeviceMessage(long paoId, std::string translationName);
 
         bool                sendPointRegistration();
-        virtual void        buildRegistrationPointList(CtiPointRegistrationMsg **aMsg);
+        CtiPointRegistrationMsg* buildRegistrationPointList();
 
-        INT                 reRegisterWithDispatch(void);
+
         std::string              getCparmValueAsString(std::string key);
 
         CtiFDRInterface &   setInterfaceName(std::string & aInterfaceName);
@@ -104,21 +104,13 @@ class IM_EX_FDRBASE CtiFDRInterface
         long getClientLinkStatusID(std::string &aClientName);
         virtual void setCurrentClientLinkStates();
 
-        BOOL connectWithDispatch(void);
-        BOOL registerWithDispatch(void);
-
-        enum {ConnectionFailed=0,
-              ConnectionOkWriteFailed,
-              ConnectionOkWriteOk};
-        int attemptSend( CtiMessage *aMessage );
-
         std::ostream& logNow();
+
+        bool verifyDispatchConnection ();
+        bool putOnInQueueHandle       ( CtiMessage* );
 
     protected:
 
-        CtiMutex            iDispatchMux;
-        CtiClientConnection *iDispatchConn;
-        CtiFDRManager       *iOutBoundPoints;
         CtiMutex            iCparmMutex;
 
         RWThreadFunction    iThreadFromDispatch;
@@ -139,6 +131,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         static const CHAR * KEY_CPARM_RELOAD_RATE_SECONDS;
 
     private:
+
         std::string           iInterfaceName;
 
         int                 iCparmReloadSeconds;
@@ -147,7 +140,6 @@ class IM_EX_FDRBASE CtiFDRInterface
         int                 iReloadRate;
 
         BOOL                iDebugMode;
-        BOOL                iDispatchOK;
         int                 iQueueFlushRate;
 
         int                 iOutboundSendRate;
@@ -173,4 +165,18 @@ class IM_EX_FDRBASE CtiFDRInterface
         int  reloadConfigs();
 
         void disconnect( void );
+
+        typedef Cti::readers_writer_lock_t Lock;
+        typedef Lock::reader_lock_guard_t  ReaderGuard;
+        typedef Lock::writer_lock_guard_t  WriterGuard;
+
+        mutable Lock iDispatchLock;
+
+        boost::scoped_ptr<CtiFDRManager>       iOutBoundPoints;
+        boost::scoped_ptr<CtiClientConnection> iDispatchConn;
+        boost::optional<int>                   iDispatchRegisterId;
+        bool                                   iDispatchConnected;
+
+        bool connectWithDispatch ();
+        bool reRegisterWithDispatch(void);
 };

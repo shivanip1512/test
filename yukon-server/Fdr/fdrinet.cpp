@@ -1,204 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-*    FILE NAME: fdrinet.cpp
-*
-*    DATE: 04/27/2001
-*
-*    PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.26 $
-*    DATE         :  $Date: 2008/10/31 15:36:33 $
-*
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Generic Interface to the Foreign System
-*
-*    DESCRIPTION: This class implements an interface that exchanges point data
-*                 with a generic system such as Inet on DSM2.  The data is both status and Analog data.
-*                                 Information is exchanged using sockets opened on a predefined socket
-*                                 number and also pre-defined messages between the systems.
-*
-*    ---------------------------------------------------
-*    History:
-      $Log: fdrinet.cpp,v $
-      Revision 1.26  2008/10/31 15:36:33  tspar
-      YUK-6649 - Yukon is throwing away point updates from RCCS
-
-      String resize call was putting in nulls when expanding the string. RW strings used a space. String compares were failing because of this.
-
-      Changed resize calls to use space as the padding.
-
-      Revision 1.25  2008/10/02 23:57:15  tspar
-      YUK-5013 Full FDR reload should not happen with every point
-
-      YUKRV-325  review changes
-
-      Revision 1.24  2008/09/23 15:14:58  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
-
-      Revision 1.23  2008/09/15 21:08:48  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Changed interfaces to handle points on an individual basis so they can be added
-      and removed by point id.
-
-      Changed the fdr point manager to use smart pointers to help make this transition possible.
-
-      Revision 1.22  2008/06/09 15:48:08  tspar
-      YUK-6032 FDR Inet Will not send data
-
-      std::transform() was used incorrectly, after attempting to convert to upper case letters it FDR Inet erased the destination name. When we send a point, we look it up by name. We could not find the connection since the name was erased.
-
-      Revision 1.21  2008/03/27 21:04:17  tspar
-      Minor bug fix for fdrinet
-
-      Revision 1.20  2008/03/20 21:27:14  tspar
-      YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
-
-      Changed all uses of the tokenizer to have a local copy of the string being tokenized.
-
-      Revision 1.19  2007/04/10 23:42:09  tspar
-      Added even more protection against bad input when tokenizing.
-
-      Doing a ++ operation on an token iterator that is already at the end will also assert.
-
-      Revision 1.18  2007/04/10 23:04:35  tspar
-      Added some more protection against bad input when tokenizing.
-
-      Revision 1.17  2006/06/07 22:34:04  tspar
-      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
-
-      Revision 1.16  2006/05/23 17:17:43  tspar
-      bug fix: boost iterator used incorrectly in loop.
-
-      Revision 1.15  2006/04/24 14:47:32  tspar
-      RWreplace: replacing a few missed or new Rogue Wave elements
-
-      Revision 1.14  2006/01/03 20:23:37  tspar
-      Moved non RW string utilities from rwutil.h to utility.h
-
-      Revision 1.13  2005/12/20 17:17:13  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.12  2005/02/10 23:23:51  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.11  2004/12/21 17:40:56  dsutton
-      Bug in the connect code when Yukon acts as the client.  INET was trying to
-      connect to port 0 instead of port 1000.  Bug was introduced when updates
-      were made to RCCS for Progress and they needed separate listen and
-      connect port numbers
-
-      Revision 1.9.2.1  2004/09/28 21:05:02  dsutton
-      Finally updated the default reload rate to 86400
-
-      Revision 1.9  2003/12/12 21:58:32  dsutton
-      Sending of status points was following Yukon values 0,1 instead of DSM2
-      values of 1,2 for open and close.   Caused things to fail for powerlink
-      application used to talking to DSM2.  Intercepted the status points now and
-      correct the value accordingly
-
-      Revision 1.6.12.2  2003/12/05 03:30:34  dsutton
-      Sending of status points was following Yukon values 0,1 instead of DSM2
-      values of 1,2 for open and close.   Caused things to fail for powerlink
-      application used to talking to DSM2.  Intercepted the status points now and
-      correct the value accordingly
-
-      Revision 1.6.12.1  2003/10/31 18:31:53  dsutton
-      Updated to allow us to send and receive accumlator points to other systems.
-      Oversite from the original implementation
-
-      Revision 1.6  2002/10/14 21:10:54  dsutton
-      In the database translation routines, if we failed to hit the database
-      we called the load routine again just to get the error code.  Whoops
-      The error code is now saved from the original call and printed as needed
-
-      Revision 1.5  2002/09/06 18:54:17  dsutton
-      The database load and list swap used to occur before we updated
-      the translation names.  I now update the entire temporary list and then
-      lock the real list and swap it.  Much faster and doesn't lock the list
-      down as long.
-
-      Revision 1.4  2002/08/06 22:02:21  dsutton
-      Programming around the error that happens if the dataset is empty when it is
-      returned from the database and shouldn't be.  If our point list had more than
-      two entries in it before, we fail the attempt and try again in 60 seconds
-
-      Revision 1.3  2002/04/16 15:58:33  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:18:55  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
-
-      Rev 2.11   05 Apr 2002 11:43:08   dsutton
-   fixed (again) a bug where if two connections went down and the second in the list came up, we never tried to attach to the first again.  I think the logic is right this time
-
-      Rev 2.10   27 Mar 2002 17:43:06   dsutton
-   fixed a bug where if two connections went away and one was restored, we never tried to restore the other.  Had to do with the order in the list of connections
-
-      Rev 2.9   12 Mar 2002 10:28:52   dsutton
-   the listener has been moved into the socketinterface base class so calls to iListener had to be changed to the getter
-
-      Rev 2.8   01 Mar 2002 13:20:14   dsutton
-   changed the client list and connection list to vectors, updated the server thread to use a listener object so shutdown is more peacefule,function to walk connection list and update link status points, memory leak in client list loading
-
-      Rev 2.7   20 Feb 2002 08:40:54   dsutton
-   moved some debug lines around and changed the level that they show under
-
-      Rev 2.6   15 Feb 2002 14:11:46   dsutton
-   changed the default queue flush rate to 1 second
-
-      Rev 2.5   15 Feb 2002 11:22:08   dsutton
-    changed the debug settings for a few of the transactions to make them more uniform throughout fdr
-
-      Rev 2.4   11 Feb 2002 15:03:24   dsutton
-   added event logs when the connection is established or failed, unknown points, invalid states, etc
-
-      Rev 2.3   14 Dec 2001 17:17:56   dsutton
-   the functions that load the lists of points noware updating point managers instead of creating separate lists of their own.  Hopefully this is easier to follow
-
-      Rev 2.2   15 Nov 2001 16:16:38   dsutton
-   code for multipliers and an queue for the messages to dispatch along with fixes to RCCS/INET interface. Lazy checkin
-
-      Rev 2.1   26 Oct 2001 15:20:20   dsutton
-   moving revision 1 to 2.x
-
-      Rev 1.5.1.0   26 Oct 2001 14:21:50   dsutton
-   client connection bug, point sendable,
-
-      Rev 1.5   23 Aug 2001 13:59:32   dsutton
-   updated to intercept control points from the yukon side. also a few changes
-   so it could be the base class of the rccs interface
-
-      Rev 1.4   20 Jul 2001 10:00:50   dsutton
-   client connection problem
-
-      Rev 1.3   04 Jun 2001 14:22:24   dsutton
-   updated logging and removed debug messages
-
-      Rev 1.2   04 Jun 2001 09:31:56   dsutton
-   lists had moved to the interface layer
-
-      Rev 1.1   30 May 2001 16:47:28   dsutton
-   moved the listener to the main class
-
-      Rev 1.0   10 May 2001 11:15:30   dsutton
-   Initial revision.
-
-      Rev 1.0   23 Apr 2001 11:17:58   dsutton
-   Initial revision.
-*
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*
-*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -1097,6 +896,8 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
 
+    boost::ptr_vector<CtiFDRSocketLayer> connectionsToDelete;
+
     try
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -1116,90 +917,112 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
             pSelf.serviceCancellation( );
             pSelf.sleep (250);
 
-            CtiLockGuard<CtiMutex> guard(iConnectionListMux);
+            //
+            // Copy all connections to delete after iConnectionListMux is released
+            //
 
-            vector<CtiFDRSocketLayer*>::iterator connectionIt = iConnectionList.begin() ;
-
-            // iterate list or until we find our entry
-            /************************
-            * we have a vector of pointers so we have to de-reference
-            * the iterator before we can access the pointer
-            *************************
-            */
-            while (connectionIt != iConnectionList.end())
             {
-                // see if we failed
-                if ((*connectionIt)->getInBoundConnectionStatus() == CtiFDRSocketConnection::Failed ||
-                    (*connectionIt)->getOutBoundConnectionStatus() == CtiFDRSocketConnection::Failed)
+                CtiLockGuard<CtiMutex> guard(iConnectionListMux);
+
+                vector<CtiFDRSocketLayer*>::iterator connectionIt = iConnectionList.begin() ;
+
+                // iterate list or until we find our entry
+                /************************
+                * we have a vector of pointers so we have to de-reference
+                * the iterator before we can access the pointer
+                *************************
+                */
+                while( connectionIt != iConnectionList.end() )
                 {
+                    // see if we failed
+                    if( (*connectionIt)->getInBoundConnectionStatus() == CtiFDRSocketConnection::Failed ||
+                        (*connectionIt)->getOutBoundConnectionStatus() == CtiFDRSocketConnection::Failed )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << (*connectionIt)->getName() << "'s link has failed" << endl;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " " << (*connectionIt)->getName() << "'s link has failed" << endl;
+                        }
+
+                        // log it before we kill it
+                        string action, desc;
+                        desc = (*connectionIt)->getName()+ "'s link has failed";
+                        logEvent (desc,action, true);
+
+                        connectionsToDelete.push_back( *connectionIt );
+
+                        connectionIt = iConnectionList.erase(connectionIt);
+
+                        break;
                     }
-
-                    // log it before we kill it
-                    string action, desc;
-                    desc = (*connectionIt)->getName() + "'s link has failed";
-                    logEvent (desc,action, true);
-
-                    CtiFDRSocketLayer::FDRConnectionType connectionType = (*connectionIt)->getConnectionType();
-
-                    delete (*connectionIt);
-                    connectionIt = iConnectionList.erase(connectionIt);
-
-                    // if its a server connection, the client will re-connect
-                    if (connectionType == CtiFDRSocketLayer::Client_Multiple)
+                    else
                     {
-                        // this signals the client thread to spit out another
-                        SetEvent (iClientConnectionSemaphore);
+                        connectionIt++;
                     }
-
-                    break;
                 }
-                else
+            }
+
+            //
+            // Delete all connections
+            //
+
+            boost::ptr_vector<CtiFDRSocketLayer>::iterator toDeleteIt = connectionsToDelete.begin();
+
+            while( toDeleteIt != connectionsToDelete.end() )
+            {
+                CtiFDRSocketLayer::FDRConnectionType connectionType = toDeleteIt->getConnectionType();
+
+                toDeleteIt = connectionsToDelete.erase( toDeleteIt );
+
+                // if its a server connection, the client will re-connect
+                if( connectionType == CtiFDRSocketLayer::Client_Multiple )
                 {
-                    connectionIt++;
+                    // this signals the client thread to spit out another
+                    SetEvent( iClientConnectionSemaphore );
                 }
             }
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch( RWCancellation &cancellationMsg )
     {
-        // destroy the connection list here
         {
             CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
-            // delete all the layers
-            for (int x=0; x < iConnectionList.size(); x++)
+            // copy all connection pointers to delete after iConnectionListMux is released
+            for each( CtiFDRSocketLayer* conn in iConnectionList )
             {
-                delete iConnectionList[x];
+                connectionsToDelete.push_back( conn );
             }
-            // erase the pointers
-            iConnectionList.erase (iConnectionList.begin(),iConnectionList.end());
-        }
-        setCurrentClientLinkStates();
 
+            iConnectionList.clear();
+        }
+
+        // destroy the connection list here
+        connectionsToDelete.clear();
+
+        setCurrentClientLinkStates();
 
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " CANCELLATION of CtiFDR_Inet::threadFunctionMonitor " << endl;
-        return;
     }
 
     // try and catch the thread death
-    catch ( ... )
+    catch(...)
     {
         {
             CtiLockGuard<CtiMutex> guard(iConnectionListMux);
 
-            // delete all the layers
-            for (int x=0; x < iConnectionList.size(); x++)
+            // copy all connection pointers to delete after iConnectionListMux is released
+            for each( CtiFDRSocketLayer* conn in iConnectionList )
             {
-                delete iConnectionList[x];
+                connectionsToDelete.push_back( conn );
             }
-            // erase the pointers
-            iConnectionList.erase (iConnectionList.begin(),iConnectionList.end());
+
+            iConnectionList.clear();
         }
+
+        // destroy the connection list here
+        connectionsToDelete.clear();
 
         setCurrentClientLinkStates();
 
@@ -1389,7 +1212,6 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
 {
     RWRunnableSelf pSelf = rwRunnable( );
     string desc, action;
-    SOCKET tmpConnection = INVALID_SOCKET;
 
     try
     {
@@ -1401,7 +1223,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
 
         // retrieve socket addrinfo for listener sockets
         Cti::AddrInfo pAddrInfo = Cti::makeTcpServerSocketAddress(NULL,CtiNumStr(getPortNumber()).toString().c_str());
-        if( !pAddrInfo )
+        if( ! pAddrInfo )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
@@ -1411,43 +1233,46 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             return;
         }
 
-        try
-        {
-            CtiLockGuard<CtiMutex> lock(_listenerMux);
-
-            if( isListenerShutdown() )
-            {
-                // listener sockets have already shutdown 
-                return;
-            }
-
-            // create sockets from the addrinfo
-            _listenerSockets.createSockets(pAddrInfo.get());
-
-            // set sockets options to allows socket to bind to an address and port already in use
-            BOOL ka = TRUE;
-            _listenerSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
-
-            // bind the socket
-            _listenerSockets.bind(pAddrInfo.get());
-
-            // set sockets in listening state
-            _listenerSockets.listen(SOMAXCONN);
-        }
-        catch( Cti::SocketException& e )
-        {
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CtiFDR_Inet::threadFunctionServerConnection : Failed to setup listener sockets: " << e.what() << endl;
-            }
-            return;
-        }
-
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
             pSelf.sleep(500);
+
+            try
+            {
+                CtiLockGuard<CtiMutex> lock(_listenerMux);
+
+                if( isListenerShutdown() )
+                {
+                    // listener sockets have already shutdown
+                    return;
+                }
+
+                if( !_listenerSockets.areSocketsValid() )
+                {
+                    // create sockets from the addrinfo
+                    _listenerSockets.createSockets(pAddrInfo.get());
+
+                    // set sockets options to allows socket to bind to an address and port already in use
+                    BOOL ka = TRUE;
+                    _listenerSockets.setOption(SOL_SOCKET, SO_REUSEADDR, (char*)&ka, sizeof(BOOL));
+
+                    // bind the socket
+                    _listenerSockets.bind(pAddrInfo.get());
+
+                    // set sockets in listening state
+                    _listenerSockets.listen(SOMAXCONN);
+                }
+            }
+            catch( Cti::SocketException& e )
+            {
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " CtiFDR_Inet::threadFunctionServerConnection : Failed to setup listener sockets: " << e.what() << endl;
+                }
+                continue;
+            }
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1457,11 +1282,11 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             Cti::SocketAddress returnAddr( Cti::SocketAddress::STORAGE_SIZE );
 
             // accept a new socket connection
-            tmpConnection = _listenerSockets.accept( returnAddr );
+            SOCKET tmpConnection = _listenerSockets.accept( returnAddr );
 
             if( tmpConnection == INVALID_SOCKET )
             {
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                if( getDebugLevel () & DETAIL_FDR_DEBUGLEVEL )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Accept call failed in FDRInet with error code: " << _listenerSockets.getLastError() << endl;

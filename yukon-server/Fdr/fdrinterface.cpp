@@ -71,18 +71,13 @@ CtiFDRInterface::CtiFDRInterface(string & interfaceType) :
     iUpdatePCTimeFlag(true),
     iDebugMode(false),
     iReloadRate(0),
-    iDispatchOK(0)
+    iDispatchConnected(false)
 {
-    iDispatchConn = NULL;
-    iOutBoundPoints = 0;
 }
-
 
 CtiFDRInterface::~CtiFDRInterface()
 {
     iDispatchQueue.clearAndDestroy();
-    delete iOutBoundPoints;
-    delete iDispatchConn;
 }
 
 CtiFDRPointList CtiFDRInterface::getSendToList () const
@@ -130,16 +125,18 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
     try
     {
         // make a list with all received points
-        CtiFDRManager *pointList = new CtiFDRManager(string (FDR_SYSTEM),
-                                                       string (FDR_INTERFACE_LINK_STATUS));
+        boost::scoped_ptr<CtiFDRManager> pointList(
+                new CtiFDRManager(
+                        string (FDR_SYSTEM),
+                        string (FDR_INTERFACE_LINK_STATUS)));
 
         // if status is ok, we were able to read the database at least
         if ( pointList->loadPointList() )
         {
             // get iterator on list
-            CtiFDRManager::spiterator myIterator = (pointList->getMap()).begin();
+            CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
 
-            for ( ; myIterator !=  (pointList->getMap()).end(); ++myIterator )
+            for ( ; myIterator !=  pointList->getMap().end(); ++myIterator )
             {
                 translationPoint = (*myIterator).second;
                 for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
@@ -189,7 +186,6 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                     }
                 }
             }   // end for interator
-            delete pointList;
         }
         else
         {
@@ -226,7 +222,7 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 BOOL CtiFDRInterface::init( void )
 {
     // only need to register outbound points
-    iOutBoundPoints = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
+    iOutBoundPoints.reset( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)) );
     iOutBoundPoints->loadPointList();
 
     if ( !reloadConfigs() )
@@ -451,18 +447,12 @@ void CtiFDRInterface::setUpdatePCTimeFlag(const BOOL aChangeFlag)
 */
 BOOL CtiFDRInterface::run( void )
 {
-    {
-        CtiLockGuard<CtiMutex> guard(iDispatchMux);
-        connectWithDispatch();
-    }
-
     // start our dispatch distibution thread
     iThreadFromDispatch.start();
     iThreadToDispatch.start();
     iThreadDbChange.start();
     iThreadReloadCparm.start();
 
-    registerWithDispatch();
     return TRUE;
 }
 
@@ -509,17 +499,23 @@ BOOL CtiFDRInterface::stop( void )
             logNow() << "Attempting to shutdown connections" << endl;
         }
 
-        // this is throwing an exception sometimes, I'm cheating since its only shutdown
-       iDispatchConn->close();
+        iThreadDbChange.join();
+        iThreadFromDispatch.join();
+        iThreadToDispatch.join();
+        iThreadReloadCparm.join();
 
-       iThreadDbChange.join();
-       iThreadFromDispatch.join();
-       iThreadToDispatch.join();
-       iThreadReloadCparm.join();
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           logNow() << "All threads have joined up" << endl;
-       }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << "All threads have joined up" << endl;
+        }
+
+        {
+            ReaderGuard guard(iDispatchLock);
+            if( iDispatchConn )
+            {
+                iDispatchConn->close();
+            }
+        }
     }
     catch (...)
     {
@@ -530,32 +526,96 @@ BOOL CtiFDRInterface::stop( void )
     return TRUE;
 }
 
-BOOL CtiFDRInterface::connectWithDispatch()
+
+bool CtiFDRInterface::connectWithDispatch()
 {
-    BOOL retVal = TRUE;
+    WriterGuard guard(iDispatchLock);
+
     try
     {
-        if (iDispatchConn == NULL)
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        {
+            return true;
+        }
+
+        if( iDispatchConn )
+        {
+            iDispatchConn.reset();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
+            }
+        }
+
+        if( ! iDispatchRegisterId  )
+        {
+            iDispatchConn.reset();
+            return false;
+        }
+
+        //
+        // create a new dispatch connection
+        //
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Attempting to connect to dispatch for " << getInterfaceName() << endl;
+        }
+
+        iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
+        iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
+        iDispatchConn->start();
+
+        if( iDispatchConn->verifyConnection() != NORMAL )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Attempting to connect to dispatch for " << getInterfaceName() << endl;
+                dout << CtiTime() << " Attempt to reconnect to dispatch for " << getInterfaceName() << " failed.  Attempting again" << endl;
             }
+            iDispatchConn.reset();
+            return false;
+        }
 
-            iDispatchConn = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
-            iDispatchConn->setName("FDR to Dispatch");
-            iDispatchConn->start();
+        //
+        // register who we are
+        //
 
-            if (iDispatchConn->verifyConnection() != NORMAL)
+        const std::string regStr("FDR" + iInterfaceName);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        if( iDispatchConn->WriteConnQue( new CtiRegistrationMsg( regStr, *iDispatchRegisterId, true)) != NORMAL )
+        {
+            iDispatchConn.reset();
+            return false;
+        }
+
+        if( iOutBoundPoints && iOutBoundPoints->entries() > 0 )
+        {
+            std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
+
+            multiMsg->insert( buildRegistrationPointList() );
+
+            if( iDispatchConn->WriteConnQue(multiMsg.release()) != NORMAL )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Attempt to reconnect to dispatch for " << getInterfaceName() << " failed.  Attempting again" << endl;
-                }
-                delete iDispatchConn;
-                iDispatchConn=NULL;
+                iDispatchConn.reset();
+                return false;
             }
         }
+
+        if( iDispatchConnected )
+        {
+            logEvent( getInterfaceName() + "'s connection to dispatch has been restarted",string());
+        }
+        else
+        {
+            iDispatchConnected = true;
+        }
+
+        return true;
     }
     catch(...)
     {
@@ -563,31 +623,9 @@ BOOL CtiFDRInterface::connectWithDispatch()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Attempt to connect to dispatch for " << getInterfaceName() << " failed by exception " << endl;
         }
-        retVal = FALSE;
-        if (iDispatchConn != NULL)
-        {
-            delete iDispatchConn;
-            iDispatchConn = NULL;
-        }
+        iDispatchConn.reset();
+        return false;
     }
-
-    return retVal;
-}
-
-BOOL CtiFDRInterface::registerWithDispatch()
-{
-    CtiMessage *    pMsg;
-    string       regStr("FDR" + iInterfaceName);
-
-    // register who we are
-    pMsg = new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE);
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    sendMessageToDispatch( pMsg );
-    sendPointRegistration();
-    return TRUE;
 }
 
 /************************************************************************
@@ -725,64 +763,48 @@ int CtiFDRInterface::readConfig( void )
 
 bool CtiFDRInterface::sendPointRegistration( void )
 {
-    CtiMultiMsg             *multiMsg;
-    CtiPointRegistrationMsg *ptRegMsg=NULL;
+    ReaderGuard guard(iDispatchLock);
 
-    if (iOutBoundPoints == 0 || iDispatchConn == NULL)
+    if( ! iOutBoundPoints || ! iDispatchConn )
     {
         // not started correctly
-        return FALSE;
+        return false;
     }
 
     try
     {
-
         if (iOutBoundPoints->entries() > 0)
         {
-            buildRegistrationPointList (&ptRegMsg);
+            std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
-            if (ptRegMsg != NULL)
-            {
-                multiMsg = new CtiMultiMsg( );
+            // debug printing
+            //            regStr  = "FDR - \"" + iinterfaceType + "\" module - " + "destination \"" + idestination + "\" - ";
+            //            regStr += CtiTime( ).asString( );
+            //         CtiLockGuard<CtiLogger> doubt_guard(dout);
+            //            dout << regStr << endl;
 
-                // debug printing
-                //            regStr  = "FDR - \"" + iinterfaceType + "\" module - " + "destination \"" + idestination + "\" - ";
-                //            regStr += CtiTime( ).asString( );
-                //         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                //            dout << regStr << endl;
+            //multiMsg->insert( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
+            multiMsg->insert( buildRegistrationPointList() );
 
-                //multiMsg->insert( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
-                multiMsg->insert( ptRegMsg );
-
-                // FIXFIXFIX : may need to had failure and delete memory
-                sendMessageToDispatch( multiMsg );
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error building point registration list for dispatch for " << getInterfaceName() << endl;
-            }
+            sendMessageToDispatch( multiMsg.release() );
         }
+        return true;
     }
-
     catch (...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
+        }
+        return false;
     }
-
-    return TRUE;
 }
 
 
-void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg)
+CtiPointRegistrationMsg* CtiFDRInterface::buildRegistrationPointList()
 {
     CtiFDRPointSPtr pFdrPoint;
-    CtiPointRegistrationMsg *testMsg;
-
-    // we have some points to send
-    *aMsg = new CtiPointRegistrationMsg( REG_TAG_MARKMOA );
-    testMsg = *aMsg;
+    std::auto_ptr<CtiPointRegistrationMsg> ptRegMsg( new CtiPointRegistrationMsg( REG_TAG_MARKMOA ));
 
     // get iterator on outbound list
     CtiFDRManager::readerLock guard(iOutBoundPoints->getLock());
@@ -793,8 +815,10 @@ void CtiFDRInterface::buildRegistrationPointList (CtiPointRegistrationMsg **aMsg
         pFdrPoint = (*myIterator).second;
 
         // add this point ID to register
-        testMsg->insert( pFdrPoint->getPointID());
+        ptRegMsg->insert( pFdrPoint->getPointID());
     }
+
+    return ptRegMsg.release();
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::disconnect(  )
@@ -820,10 +844,7 @@ void CtiFDRInterface::disconnect( void )
 */
 void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 {
-    RWRunnableSelf  pSelf = rwRunnable( );
-    CtiMessage      *incomingMsg=NULL;
-    int x,cnt=0;
-    static int cnt2=0;
+    RWRunnableSelf pSelf = rwRunnable( );
 
     try
     {
@@ -833,199 +854,149 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionReceiveFromDispatch"  << endl;
         }
 
+        {
+            WriterGuard guard(iDispatchLock);
+            iDispatchRegisterId = RWThreadId();
+            connectWithDispatch();
+        }
 
         for ( ; ; )
         {
+            std::auto_ptr<CtiMessage> incomingMsg;
 
             //  while i'm not getting anything
-            do
+            while( incomingMsg.get() )
             {
                 pSelf.serviceCancellation( );
 
-                if (iDispatchConn != NULL)
                 {
-                    // unfortunately, the connection is not always valid even if its not zero
-                    try
+                    ReaderGuard guard(iDispatchLock);
+
+                    if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
                     {
-                        if ( (iDispatchConn->verifyConnection()) == NORMAL )
-                        {
-                            incomingMsg = iDispatchConn->ReadConnQue( 1000 );
-                        }
-                        else
-                        {
-                            pSelf.serviceCancellation( );
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
-                            }
-                            // we're assuming that the send to dispatch will catch the problem
-                            {
-                                CtiLockGuard<CtiMutex> guard(iDispatchMux);
-                                delete iDispatchConn;
-                                iDispatchConn=NULL;
-
-                                pSelf.serviceCancellation( );
-                                // possible two minute gap here
-                                connectWithDispatch();
-                            }
-                            pSelf.serviceCancellation( );
-                            logEvent (string (getInterfaceName() + string ("'s connection to dispatch has been restarted")),string());
-                            registerWithDispatch();
-                        }
-                    }
-                    catch (...)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in threadFunctionReceiveFromDispatch." << endl;
-                        }
-                        {
-                            CtiLockGuard<CtiMutex> guard(iDispatchMux);
-                            delete iDispatchConn;
-                            iDispatchConn=NULL;
-
-                            if (incomingMsg != NULL)
-                            {
-                                delete incomingMsg;
-                                incomingMsg = NULL;
-                            }
-                        }
+                        incomingMsg.reset( iDispatchConn->ReadConnQue( 1000 ));
+                        continue;
                     }
                 }
-                else
-                {
-                    pSelf.serviceCancellation( );
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch is not initialized.  Attempting to reconnect" << endl;
-                    }
-                    // we're assuming that the send to dispatch will catch the problem
-                    {
-                        CtiLockGuard<CtiMutex> guard(iDispatchMux);
-                        // possible two minute gap here
-                        connectWithDispatch();
-                    }
-                    pSelf.serviceCancellation( );
-                    logEvent (string (getInterfaceName() + string ("'s connection to dispatch has been restarted")),string());
-                    registerWithDispatch();
-                }
-
-            } while ( incomingMsg == NULL );
-
+                connectWithDispatch();
+                Sleep(1000);
+            }
 
             switch (incomingMsg->isA())
             {
                 case MSG_DBCHANGE:
+                {
+                    CtiDBChangeMsg* dBChangeMsg = static_cast<CtiDBChangeMsg*>(incomingMsg.get());
+
+                    // db change message reload if type is point
+                    int pidChanged = dBChangeMsg->getId();
+                    int changeType = dBChangeMsg->getTypeOfChange();
+
+                    if ( dBChangeMsg->getDatabase() == ChangePointDb)
                     {
-                        // db change message reload if type is point
-                        int pidChanged = ((CtiDBChangeMsg*)incomingMsg)->getId();
-                        int changeType = ((CtiDBChangeMsg*)incomingMsg)->getTypeOfChange();
-
-                        if ( ((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePointDb)
+                        if (changeType == ChangeTypeDelete)
+                            processFDRPointChange(pidChanged, true);
+                        else
                         {
-                            if (changeType == ChangeTypeDelete)
-                                processFDRPointChange(pidChanged, true);
-                            else
-                            {
-                                processFDRPointChange(pidChanged, false);
-                                reRegisterWithDispatch();
-                            }
-
+                            processFDRPointChange(pidChanged, false);
+                            reRegisterWithDispatch();
                         }
-                        else if (((CtiDBChangeMsg*)incomingMsg)->getDatabase() == ChangePAODb)
-                        {
-                            // Ignoring delete device changes. If its a delete, we will error on sql anyways, they are gone
-                            // Updates get sent on point level. We only have to deal with change type add for pao's
-                            if (changeType == ChangeTypeAdd)
-                            {
-                                // get all points on device and process point change for each
-                                std::vector<int> pointIds = getPointIdsOnPao(pidChanged);
-                                for each(int pointId in pointIds)
-                                {
-                                    processFDRPointChange(pointId,false);//changeType tested to be true, so its not a delete
-                                }
-                            }
-                        }
-                        break;
 
                     }
-                case MSG_COMMAND:
+                    else if ( dBChangeMsg->getDatabase() == ChangePAODb)
                     {
-                        CtiCommandMsg* cmd = (CtiCommandMsg*)incomingMsg;
-
-                        switch (cmd->getOperation())
+                        // Ignoring delete device changes. If its a delete, we will error on sql anyways, they are gone
+                        // Updates get sent on point level. We only have to deal with change type add for pao's
+                        if (changeType == ChangeTypeAdd)
                         {
-                            case (CtiCommandMsg::Shutdown):
+                            // get all points on device and process point change for each
+                            std::vector<int> pointIds = getPointIdsOnPao(pidChanged);
+                            for each(int pointId in pointIds)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
-                                }
-                                break;
+                                processFDRPointChange(pointId,false);//changeType tested to be true, so its not a delete
                             }
-                            case (CtiCommandMsg::AreYouThere):
-                            {
-                                // echo back the same message - we are here
-                                sendMessageToDispatch(cmd->replicateMessage());
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
-                                }
-                                break;
-                            }
-                            case (CtiCommandMsg::InitiateScan):
-                            {
-                                processCommandFromDispatch(cmd);
-                                break;
-                            }
-                            default:
+                        }
+                    }
+                    break;
+
+                }
+                case MSG_COMMAND:
+                {
+                    CtiCommandMsg* cmd = static_cast<CtiCommandMsg*>(incomingMsg.get());
+
+                    switch (cmd->getOperation())
+                    {
+                        case (CtiCommandMsg::Shutdown):
+                        {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " FDR received a unknown Command message- " << endl;
-                                break;
+                                dout << CtiTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
                             }
-
+                            break;
                         }
-                    }
-
-                    break;
-
-                case MSG_MULTI:
-                    //  seperate it out into distinct CtiMessages, so the translation
-                    //  function can be a simple switch block
-                    for ( x = 0; x < ((CtiMultiMsg *)incomingMsg)->getData( ).size( ); x++ )
-                    {
-                        // for now, send on only the pointdata messages
-                        if (((CtiMessage *)((CtiMultiMsg *)incomingMsg)->getData()[x])->isA() == MSG_POINTDATA)
+                        case (CtiCommandMsg::AreYouThere):
                         {
-                            //  send the current node change to foreign system
-                            sendMessageToForeignSys((CtiMessage *)((CtiMultiMsg *)incomingMsg)->getData()[x]);
+                            // echo back the same message - we are here
+                            sendMessageToDispatch(cmd->replicateMessage());
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
+                            }
+                            break;
                         }
-                    }
-                    break;
-                case MSG_POINTDATA:
-                    {
+                        case (CtiCommandMsg::InitiateScan):
+                        {
+                            processCommandFromDispatch(cmd);
+                            break;
+                        }
+                        default:
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " received a single point data message type- " << endl;
+                            dout << CtiTime() << " FDR received a unknown Command message- " << endl;
+                            break;
                         }
-                        sendMessageToForeignSys(incomingMsg);
-                        break;
+
                     }
+                    break;
+                }
+                case MSG_MULTI:
+                {
+                    CtiMultiMsg* multiMsg = static_cast<CtiMultiMsg*>(incomingMsg.get());
+
+                    //  seperate it out into distinct CtiMessages, so the translation
+                    //  function can be a simple switch block
+                    for( int x = 0; x < multiMsg->getData().size(); x++ )
+                    {
+                        CtiMessage* dataMsg = multiMsg->getData()[x];
+
+                        // for now, send on only the pointdata messages
+                        if( dataMsg->isA() == MSG_POINTDATA )
+                        {
+                            //  send the current node change to foreign system
+                            sendMessageToForeignSys( dataMsg );
+                        }
+                    }
+                    break;
+                }
+                case MSG_POINTDATA:
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " received a single point data message type- " << endl;
+                    }
+                    sendMessageToForeignSys( incomingMsg.get() );
+                    break;
+                }
                 default:
+                {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " FDR received a unknown message type- " << incomingMsg->isA() << endl;
                     }
                     break;
-
-
+                }
             }
-            // get rid of the message we received
-            delete incomingMsg;
-            incomingMsg = NULL;
         }
     }
 
@@ -1033,7 +1004,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "threadFunctionReceiveFromDispatch shutdown" << endl;
-        return;
     }
 
     // catch whatever is left
@@ -1041,7 +1011,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Fatal Error:  receiveFromDispatchThread is dead! " << endl;
-        return;
     }
 }
 
@@ -1055,10 +1024,6 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 void CtiFDRInterface::threadFunctionSendToDispatch( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    CtiMessage      *incomingMsg=NULL;
-    int cnt,entries;
-    CtiTime checkTime;
-    bool hasEntries = true;
 
     try
     {
@@ -1068,60 +1033,42 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
             dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionSendToDispatch " << endl;
         }
 
-        // create the muli
-        checkTime = CtiTime() + getQueueFlushRate();
+        CtiTime checkTime = CtiTime() + getQueueFlushRate();
 
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
 
             // check the entry list
-            entries = iDispatchQueue.entries();
+            const int entries = iDispatchQueue.entries();
 
-            /***************************
-            * no more than 500 at a time or 5 seconds, whichever comes first
-            ****************************
-            */
-            cnt=0;
-            if (( entries >= 500) || (CtiTime() > checkTime))
+            // no more than 500 at a time or 5 seconds, whichever comes first
+            if( entries >= 500 || (entries && CtiTime() > checkTime) )
             {
+                std::auto_ptr<CtiMultiMsg> pMultiData( new CtiMultiMsg() );
 
-                // make sure we have something before trying to send
-                if (entries > 0)
+                for( int msgNbr=0; ; )
                 {
-                    CtiMultiMsg       *pMultiData = NULL;
-                    pMultiData = new CtiMultiMsg;
+                    pMultiData->getData().push_back( iDispatchQueue.getQueue() );
 
-                    for (int x=0; x < entries ;x++)
+                    // send if no more entries or there is 500
+                    if( ++msgNbr == entries || pMultiData->getData().size() == 500 )
                     {
-                        cnt++;
-                        incomingMsg = iDispatchQueue.getQueue();
-                        pMultiData->getData( ).push_back( incomingMsg );
-
-                        // if divisible by 500, send it and start again
-                        if (cnt % 500 == 0)
-                        {
 //                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
-                            }
-
-                            sendMessageToDispatch( pMultiData );
-                            cnt=0;
-                            pMultiData = new CtiMultiMsg;
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Sending batch of " << pMultiData->getData().size() << " entries to dispatch from " << getInterfaceName() << endl;
                         }
-                    }
 
-                    // reset the counter and send the last of them
-//                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Sending batch of " << cnt << " entries to dispatch from " << getInterfaceName() << endl;
-                    }
-                    cnt=0;
+                        sendMessageToDispatch( pMultiData.release() );
 
-                    sendMessageToDispatch( pMultiData );
+                        if( msgNbr == entries )
+                        {
+                            break; // exit the loop when we are done
+                        }
+
+                        pMultiData.reset( new CtiMultiMsg() );
+                    }
                 }
 
                 checkTime = CtiTime() + getQueueFlushRate();
@@ -1137,7 +1084,6 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "threadFunctionSendToDispatch shutdown" << endl;
-        return;
     }
 
     // catch whatever is left
@@ -1145,7 +1091,6 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         logNow() << "Fatal Error:  threadFunctionSendToDispatch is dead! " << endl;
-        return;
     }
 }
 
@@ -1315,27 +1260,28 @@ void CtiFDRInterface::threadFunctionReloadCparm( void )
 
 bool CtiFDRInterface::logEvent( const string &aDesc, const string &aAction, bool aSendImmediatelyFlag )
 {
-    CtiSignalMsg  *     eventLog    = NULL;
-    eventLog = new CtiSignalMsg(0,
-                                0,
-                                aDesc,
-                                aAction,
-                                GeneralLogType);
+    std::auto_ptr<CtiSignalMsg> eventLog(
+            new CtiSignalMsg(
+                    0,
+                    0,
+                    aDesc,
+                    aAction,
+                    GeneralLogType));
 
     if (aSendImmediatelyFlag)
     {
-        return (sendMessageToDispatch(eventLog));
+        return (sendMessageToDispatch(eventLog.release()));
     }
     else
     {
-        return (queueMessageToDispatch(eventLog));
+        return (queueMessageToDispatch(eventLog.release()));
     }
 }
 
 CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string translationName, double value)
 {
     // build the command message and send the control
-    CtiCommandMsg *cmdMsg = new CtiCommandMsg(CtiCommandMsg::AnalogOutput);
+    std::auto_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::AnalogOutput));
 
     cmdMsg->insert(pointId);  // point for control
     cmdMsg->insert(value);
@@ -1346,127 +1292,62 @@ CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string t
         dout << CtiTime() << " Analog Output Point " << translationName << " was sent new value: " << value;
         dout <<" from " << getInterfaceName() << " and processed for point " << pointId << endl;
     }
-    return cmdMsg;
+    return cmdMsg.release();
 }
 
 CtiCommandMsg* CtiFDRInterface::createScanDeviceMessage(long paoId, string translationName)
 {
     // build the command message and send the control
-    CtiCommandMsg *cmdMsg = new CtiCommandMsg(CtiCommandMsg::InitiateScan);
+    std::auto_ptr<CtiCommandMsg> cmdMsg( new CtiCommandMsg(CtiCommandMsg::InitiateScan));
     cmdMsg->insert( paoId );  // This is the device id to scan
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoId << endl;
     }
-    return cmdMsg;
+    return cmdMsg.release();
 }
 
 
 bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
 {
-    bool retVal=false;
-    int attemptReturned;
+    // take ownership of the message
+    std::auto_ptr<CtiMessage> msg(aMessage);
 
     {
-        // lock the semaphore out here
-        CtiLockGuard<CtiMutex> guard(iDispatchMux);
-        attemptReturned = attemptSend (aMessage);
+        ReaderGuard guard(iDispatchLock);
+
+        if( iDispatchConn && iDispatchConn->WriteConnQue(msg->replicateMessage()) == NORMAL ) // use a copy in case the send fails
+        {
+            return true;
+        }
     }
 
     // log and try again
-    if (attemptReturned == ConnectionFailed)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
-        }
-        Sleep (1000);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
+    }
 
-        {
-            CtiLockGuard<CtiMutex> guard(iDispatchMux);
-            attemptReturned = attemptSend (aMessage);
-        }
-        if (attemptReturned == ConnectionFailed)
-        {
-            {
-                // lock the semaphore out here
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
-            }
-            retVal = false;
-            delete aMessage;
-        }
-        else
-        {
-            if (attemptReturned == ConnectionOkWriteOk)
-            {
-                retVal = true;
-            }
-            else
-            {
-                retVal = false;
-            }
-        }
-    }
-    else
+    connectWithDispatch();
+
     {
-        if (attemptReturned == ConnectionOkWriteOk)
+        ReaderGuard guard(iDispatchLock);
+
+        if( iDispatchConn && iDispatchConn->WriteConnQue(msg.release()) == NORMAL )
         {
-            retVal = true;
-        }
-        else
-        {
-            retVal = false;
+            return true;
         }
     }
-    return retVal;
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
+    }
+
+    return false;
 }
-/************************************************************************
-* Function Name: CtiFDRInterface::sendMessageToDispatch( CtiMessage *)
-*
-* Description: used to send data to Dispatch
-*
-*
-*************************************************************************
-*/
-int CtiFDRInterface::attemptSend( CtiMessage *aMessage )
-{
-    int returnValue = ConnectionFailed;
-    bool retVal=false;
 
-    // unfortunately, the connection is not always valid even if its not zero
-    try
-    {
-        // make sure the connection hasn't been deleted first
-        if (iDispatchConn != NULL)
-        {
-            if ( (iDispatchConn->verifyConnection()) == NORMAL )
-            {
-                // data is eaten no matter what
-                retVal = iDispatchConn->WriteConnQue( aMessage );
-
-                if (retVal == false)
-                {
-                    returnValue = ConnectionOkWriteFailed;
-                }
-                else
-                {
-                    returnValue = ConnectionOkWriteOk;
-                }
-            }
-        }
-    }
-    catch (...)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed by exception in attemptSend()." << endl;
-        }
-    }
-
-    return returnValue;
-}
 /************************************************************************
 * Function Name: CtiFDRInterface::queueMessageToDispatch( CtiMessage *)
 *
@@ -1510,25 +1391,23 @@ bool CtiFDRInterface::queueMessageToDispatch( CtiMessage *aMessage )
 *
 *************************************************************************
 */
-INT CtiFDRInterface::reRegisterWithDispatch(  )
+bool CtiFDRInterface::reRegisterWithDispatch()
 {
-    INT retVal=NORMAL;
+    bool retVal=true;
 
-    CtiFDRManager   *tmpList = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
+    std::auto_ptr<CtiFDRManager> tmpList( new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND)));
 
     // try and reload the outbound list
-    if (tmpList->loadPointList())
+    if( tmpList->loadPointList() )
     {
+        WriterGuard guard(iDispatchLock);
+
         // destroy the old one and set it to the new one
-        delete iOutBoundPoints;
-        iOutBoundPoints = NULL;
-        iOutBoundPoints = tmpList;
+        iOutBoundPoints.reset( tmpList.release() );
     }
     else
     {
-        retVal = !NORMAL;
-        delete tmpList;
-        tmpList = NULL;
+        retVal = false;
     }
 
     sendPointRegistration();
@@ -1782,5 +1661,50 @@ void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint
  */
 std::ostream& CtiFDRInterface::logNow() {
   return dout <<  CtiTime::now()  << string(" FDR-") << getInterfaceName() << string(": ");
+}
+
+
+bool CtiFDRInterface::verifyDispatchConnection()
+{
+    {
+        ReaderGuard guard(iDispatchLock);
+
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        {
+            return true;
+        }
+    }
+
+    return connectWithDispatch();
+}
+
+bool CtiFDRInterface::putOnInQueueHandle( CtiMessage* message )
+{
+    // take ownership of the message
+    std::auto_ptr<CtiMessage> msg( message );
+
+    {
+        ReaderGuard guard(iDispatchLock);
+
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        {
+            iDispatchConn->getInQueueHandle().putQueue(msg.release());
+            return true;
+        }
+    }
+
+    connectWithDispatch();
+
+    {
+        ReaderGuard guard(iDispatchLock);
+
+        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
+        {
+            iDispatchConn->getInQueueHandle().putQueue(msg.release());
+            return true;
+        }
+    }
+
+    return false;
 }
 

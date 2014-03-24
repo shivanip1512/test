@@ -11,6 +11,9 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
     std::auto_ptr<CtiRegistrationMsg>      _regMsg;
     std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
 
+    CtiCriticalSection _abortConnMux;
+    bool               _canAbortConn;
+
     void recordRegistration      ( const CtiMessage& msg );
     void recordPointRegistration ( const CtiMessage& msg );
     void writeRegistration       ();

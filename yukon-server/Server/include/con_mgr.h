@@ -62,5 +62,5 @@ public:
    int getRequestId() const;
    void setRequestId(int rid);
 
-   int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, std::string payload_string = std::string() );
+   int WriteConnQue( CtiMessage*, unsigned millitimeout = 0, int payload_status = 0, std::string payload_string = std::string() );
 };

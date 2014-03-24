@@ -9,6 +9,31 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 using namespace Cti::Messaging::ActiveMQ;
 
+namespace { // anonymous
+
+template <typename MuxType>
+struct Barrier
+{
+    MuxType &_mux;
+    bool    &_flag;
+
+    Barrier( MuxType& mux, bool &flag )
+        :   _mux(mux),
+            _flag(flag)
+    {
+        CtiLockGuard<MuxType> lock(_mux);
+        _flag = true;
+    }
+
+    ~Barrier()
+    {
+        CtiLockGuard<MuxType> lock(_mux);
+        _flag = false;
+    }
+};
+
+} // anonymous
+
 
 volatile long CtiClientConnection::_clientConnectionCount = 0;
 
@@ -23,7 +48,8 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
                                           INT tt ) :
     CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, tt ),
     _serverQueueName( serverQueueName ),
-    _connection( new ManagedConnection( Broker::flowControlURI ))
+    _connection( new ManagedConnection( Broker::flowControlURI )),
+    _canAbortConn( false )
 {
     // create exception listener and register function and caller
     _exceptionListener.reset( new ExceptionListener<CtiClientConnection>( this, &CtiClientConnection::onException ));
@@ -55,6 +81,8 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
     logException( __FILE__, __LINE__, typeid(ex).name(), ex.getMessage() );
 }
 
+
+
 /**
  * Establish a new connection while _valid and _dontReconnect remains false.
  * uses failover with exponential backoff to connect with the broker
@@ -63,6 +91,8 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
  */
 bool CtiClientConnection::establishConnection()
 {
+    Barrier<CtiCriticalSection> insideEstablishConn(_abortConnMux, _canAbortConn);
+
     const long receiveMillis    = 1000 * 60 * 60;  // 1 hour
     const long timeToLiveMillis = 1000 * 60 * 120; // 2 hours
 
@@ -214,8 +244,13 @@ void CtiClientConnection::abortConnection()
 {
     try
     {
-        // Close the connection as well as any child session, consumer, producer
-        _connection->close();
+        CtiLockGuard<CtiCriticalSection> lock(_abortConnMux);
+
+        if( _canAbortConn )
+        {
+            // Close the connection as well as any child session, consumer, producer
+            _connection->close();
+        }
     }
     catch(...)
     {

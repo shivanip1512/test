@@ -480,21 +480,21 @@ void CtiConnection::close()
             return;
         }
 
+        // This flag tells OutThread not to attempt to reconnect....
+        _dontReconnect = true;
+
+        // if we are currently trying to establish a connection,
+        // abort the connection attempt
+        abortConnection();
+
         // 1.  We want the outQueue/OutThread to flush itself.
         //     I allow _termTime seconds for this to occur
         int sleep_nbr = 0,
             entries_nbr;
 
-        while((( entries_nbr = _outQueue.entries()) > 0 || _outMessage ) && ( _valid || !_dontReconnect ))
+        while(( entries_nbr = _outQueue.entries()) && _valid )
         {
-            if( entries_nbr )
-            {
-                logDebug( __FUNCTION__, "waiting for outbound Queue to flush " + CtiNumStr( entries_nbr ) + " entries." );
-            }
-            else
-            {
-                logDebug( __FUNCTION__, "waiting for the last message to be sent." );
-            }
+            logDebug( __FUNCTION__, "waiting for outbound Queue to flush " + CtiNumStr( entries_nbr ) + " entries." );
 
             Sleep(1000);
 
@@ -506,18 +506,7 @@ void CtiConnection::close()
 
         _outQueue.clearAndDestroy();  // Get rid of the evidence...
 
-        // This flag tells OutThread not to attempt to reconnect....
-        _dontReconnect = true;
-
         outthread.requestCancellation(1);
-
-        // if we are currently trying to establish a connection :
-        // 1.  abort the connection attempt
-        // 2.  wait for the thread to end by itself
-        if( !_bConnected )
-        {
-            abortConnection();
-        }
 
         if( outthread.join(100) == RW_THR_TIMEOUT )
         {
@@ -563,51 +552,41 @@ void CtiConnection::close()
  * Write a message to send to the connection outQueue
  * @param QEnt pointer to the CtiMessage to send
  * @param timeout timeout in millisec, if the queue is full
- * @param cleaniftimedout set to true to delete the message if there is a timeout
  * @return NORMAL if the message is queued, QUEUE_WRITE if there was a timeout
  */
-int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeout, bool cleaniftimedout )
+int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
 {
-    int status = NORMAL,
-        verify;
+    // take ownership of the message
+    auto_ptr<CtiMessage> msg( QEnt );
 
-    if( (verify = verifyConnection()) != NORMAL )
+    const int status = verifyConnection();
+    if( status != NORMAL )
     {
-        status = verify;
-
         logStatus( __FUNCTION__, "connection error (" + CtiNumStr(status) + "), message was NOT able to be queued." );
+        return status;
+    }
 
-        // autopsy( __FILE__, __LINE__ );
+    if( _outQueue.isFull() )
+    {
+        logStatus( __FUNCTION__, "queue is full. Will BLOCK." );
+    }
 
-        delete QEnt;
+    if( timeoutMillis > 0 )
+    {
+        if( !_outQueue.putQueue( msg.get(), timeoutMillis ) )
+        {
+            logStatus( __FUNCTION__, "message was NOT able to be queued within " + CtiNumStr(timeoutMillis) + " millis" );
+            return QUEUE_WRITE;
+        }
+
+        msg.release(); // message was queued, release it
     }
     else
     {
-        if( _outQueue.isFull() )
-        {
-            logStatus( __FUNCTION__, "queue is full. Will BLOCK." );
-        }
-
-        if( timeout > 0 )
-        {
-            if( !_outQueue.putQueue( QEnt, timeout ) )
-            {
-                // WAS NOT QUEUED!!!
-
-                logStatus( __FUNCTION__, "message was NOT able to be queued within " + CtiNumStr(timeout) + " millis" );
-
-                if( cleaniftimedout ) delete QEnt;
-
-                status = QUEUE_WRITE;
-            }
-        }
-        else
-        {
-            _outQueue.putQueue( QEnt );
-        }
+        _outQueue.putQueue( msg.release() ); // wait forever
     }
 
-    return status;
+    return NORMAL;
 }
 
 /**

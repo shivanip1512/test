@@ -193,80 +193,65 @@ BOOL CtiFDRSocketInterface::stop( void )
 
 int CtiFDRSocketInterface::sendAllPoints()
 {
-    CHAR *ptr=NULL;
-    int retVal=NORMAL;
-    CtiFDRPointSPtr point;
-
-    // bad bad bad
-    if (iDispatchConn == NULL)
-    {
-        Sleep (250);
-        retVal = FDR_NOT_CONNECTED_TO_DISPATCH;
-    }
-    else
+    if( ! verifyDispatchConnection() )
     {
         // just stay here until the link to dispatch becomes valid
-        if ( (iDispatchConn->verifyConnection()) != NORMAL )
+        Sleep(250);
+        return FDR_NOT_CONNECTED_TO_DISPATCH;
+    }
+
+    // check registration
+    if( ! isRegistered() )
+    {
+        Sleep (250);
+        return FDR_CLIENT_NOT_REGISTERED;
+    }
+
+    Sleep (2000);
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Uploading all requested points to " << getInterfaceName() << endl;
+    }
+
+    CtiFDRPointSPtr point;
+    CtiFDRManager* mgrPtr = getSendToList().getPointList();
+
+    CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+    CtiFDRManager::readerLock guard(mgrPtr->getLock());
+
+    CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
+    for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
+    {
+        point = (*myIterator).second;
+        if (!point->isControllable())
         {
-            Sleep (250);
-            retVal = FDR_NOT_CONNECTED_TO_DISPATCH;
-        }
-        else
-        {
-            // check registration
-            if (!isRegistered())
+            if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
             {
-                retVal = FDR_CLIENT_NOT_REGISTERED;
-                Sleep (250);
+                if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " PointId " << point->getPointID();
+                    dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                }
             }
             else
             {
-                Sleep (2000);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Uploading all requested points to " << getInterfaceName() << endl;
-                }
-
-                CtiFDRManager* mgrPtr = getSendToList().getPointList();
-
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-                CtiFDRManager::readerLock guard(mgrPtr->getLock());
-
-                CtiFDRManager::spiterator  myIterator = mgrPtr->getMap().begin();
-                for ( ; myIterator != mgrPtr->getMap().end(); ++myIterator)
-                {
-                    point = (*myIterator).second;
-                    if (!point->isControllable())
-                    {
-                        if (point->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
-                        {
-                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " PointId " << point->getPointID();
-                                dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
-                            }
-                        }
-                        else
-                        {
-                            buildAndWriteToForeignSystem(*point);
-                        }
-                    }
-                    else
-                    {
-                        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Control point Id " << point->getPointID();
-                            dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
-                        }
-                    }
-                }
-                retVal = NORMAL;
+                buildAndWriteToForeignSystem(*point);
+            }
+        }
+        else
+        {
+            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Control point Id " << point->getPointID();
+                dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
             }
         }
     }
-    return retVal;
+
+    return NORMAL;
 }
 
 bool CtiFDRSocketInterface::alwaysSendRegistrationPoints()

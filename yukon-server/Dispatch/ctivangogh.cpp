@@ -1281,7 +1281,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
                 if(sptrCM && pMulti)
-                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status, payload_string);
+                    sptrCM->WriteConnQue(pMulti, 0, payload_status, payload_string);
                 else delete
                     pMulti;
 
@@ -1321,7 +1321,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 if(sptrCM && pMulti)
                 {
-                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
+                    sptrCM->WriteConnQue(pMulti, 0, payload_status);
                 }
                 else
                     delete pMulti;

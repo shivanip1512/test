@@ -5,10 +5,12 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <string>
-#include "numstr.h"
 
-namespace Cti
-{
+#include "numstr.h"
+#include "critical_section.h"
+#include "guard.h"
+
+namespace Cti {
 
 //-----------------------------------------------------------------------------
 //  Socket exception thrown by ServerSockets
@@ -319,33 +321,43 @@ inline AddrInfo makeUdpServerSocketAddress(const char *nodename, const char *ser
 //  Server socket wrapper
 //  listen to sockets in parallel for using with different family types
 //-----------------------------------------------------------------------------
-struct ServerSockets
+class ServerSockets
 {
-private:
-    std::vector<SOCKET> _sockets;
-    int                 _lastError;
-    bool                _nonBlocking;
+    typedef std::vector<SOCKET> SocketsVec;
+    SocketsVec _sockets;
 
-public:
+    mutable CtiCriticalSection _socketsCritical;
 
-    ServerSockets()
+    int  _lastError;
+    bool _nonBlocking;
+
+    // Shutdown and close a vector sockets
+    void shutdownAndClose( SocketsVec &sockets )
     {
-        _lastError   = 0;
-        _nonBlocking = false;
-    }
-
-    // Shutdown and close all sockets
-    void shutdownAndClose()
-    {
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             if( s != INVALID_SOCKET )
             {
                 shutdown(s, SD_BOTH);
                 closesocket(s);
-                s = INVALID_SOCKET;
             }
         }
+        sockets.clear();
+    }
+
+public:
+
+    ServerSockets() :
+        _lastError(0),
+        _nonBlocking(false) // blocking by default
+    {}
+
+    // Shutdown and close all sockets
+    // Note: sockets can still be (re)created afterwards
+    void shutdownAndClose()
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+        shutdownAndClose(_sockets);
     }
 
     ~ServerSockets()
@@ -358,16 +370,25 @@ public:
         return _lastError;
     }
 
+    // Returns a copy of the current sockets
+    SocketsVec getSockets() const
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+        return _sockets; // return a copy
+    }
+
     // creates sockets from addr info
     void createSockets( PADDRINFOA p_ai )
     {
+        // shutdown all sockets handle before continuing
         shutdownAndClose();
-        _sockets.clear();
 
         if( p_ai == NULL )
         {
             throw SocketException("PADDRINFOA is NULL");
         }
+
+        SocketsVec sockets;
 
         while( p_ai != NULL )
         {
@@ -375,23 +396,29 @@ public:
             if( s_new == INVALID_SOCKET )
             {
                 _lastError = WSAGetLastError();
-                shutdownAndClose();
+                shutdownAndClose( sockets );
                 throw SocketException("socket creation failed with error code: " + CtiNumStr(_lastError));
             }
-            _sockets.push_back(s_new);
+            sockets.push_back(s_new);
             p_ai = p_ai->ai_next;
+        }
+
+        {
+            CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+            _sockets = sockets;
         }
     }
 
     // Set option on all sockets
     void setOption( int level, int optname, const char *optval, int optlen )
     {
-        if( _sockets.empty() )
+        SocketsVec sockets = getSockets(); // get a copy of the sockets
+        if( sockets.empty() )
         {
             throw SocketException("No sockets found");
         }
 
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             if( ::setsockopt(s, level, optname, optval, optlen) == SOCKET_ERROR )
             {
@@ -405,12 +432,13 @@ public:
     // Set ioMode on all sockets
     void setIOMode(long cmd, u_long *argp)
     {
-        if( _sockets.empty() )
+        SocketsVec sockets = getSockets(); // get a copy of the sockets
+        if( sockets.empty() )
         {
             throw SocketException("No sockets found");
         }
 
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             if( ::ioctlsocket(s, cmd, argp) == SOCKET_ERROR )
             {
@@ -429,12 +457,13 @@ public:
     // Binds all socket to the corresponding address info
     void bind( PADDRINFOA p_ai )
     {
-        if( _sockets.empty() )
+        SocketsVec sockets = getSockets(); // get a copy of the sockets
+        if( sockets.empty() )
         {
             throw SocketException("No sockets found");
         }
 
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             SOCKADDR* addr = NULL;
             int addrlen    = 0;
@@ -458,12 +487,13 @@ public:
     // Call listen on all sockets
     void listen( int backlog )
     {
-        if( _sockets.empty() )
+        SocketsVec sockets = getSockets(); // get a copy of the sockets
+        if( sockets.empty() )
         {
             throw SocketException("No sockets found");
         }
 
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             if( ::listen(s, backlog) == SOCKET_ERROR )
             {
@@ -477,23 +507,28 @@ public:
     // Accept first socket connection in blocking or non-blocking mode
     SOCKET accept(SOCKADDR *addr, int *addrlen)
     {
+        SocketsVec sockets = getSockets(); // get a copy of the sockets
+        if( sockets.empty() )
+        {
+            _lastError = WSAENOTSOCK;
+            return INVALID_SOCKET;
+        }
+
         SOCKET s_out = INVALID_SOCKET;
 
         if( _nonBlocking )
         {
             const int addrlen_init = (addrlen) ? *addrlen : 0;
 
-            for each( SOCKET s in _sockets )
+            for each( SOCKET s in sockets )
             {
                 if(( s_out = ::accept( s, addr, addrlen )) != INVALID_SOCKET )
                 {
                     return s_out;
                 }
 
-                const int lastError = WSAGetLastError();
-                if( lastError != WSAEWOULDBLOCK )
+                if(( _lastError = WSAGetLastError()) != WSAEWOULDBLOCK )
                 {
-                    _lastError = lastError;
                     shutdownAndClose();
                     return INVALID_SOCKET;
                 }
@@ -510,7 +545,7 @@ public:
             fd_set SockSet;
             FD_ZERO(&SockSet);
 
-            for each( SOCKET s in _sockets )
+            for each( SOCKET s in sockets )
             {
                 FD_SET(s, &SockSet);
             }
@@ -523,18 +558,17 @@ public:
                 return INVALID_SOCKET;
             }
 
-            for each( SOCKET s in _sockets )
+            for each( SOCKET s in sockets )
             {
                 if( FD_ISSET(s, &SockSet) )
                 {
-                    if(( s_out = ::accept(s, addr, addrlen )) != INVALID_SOCKET )
+                    if(( s_out = ::accept( s, addr, addrlen )) == INVALID_SOCKET )
                     {
-                        return s_out;
+                        _lastError = WSAGetLastError();
+                        shutdownAndClose();
                     }
 
-                    _lastError = WSAGetLastError();
-                    shutdownAndClose();
-                    return INVALID_SOCKET;
+                    return s_out;
                 }
             }
         }
@@ -558,7 +592,8 @@ public:
     // Return first socket corresponding to the family given in argument
     SOCKET const getFamilySocket(const int family)
     {
-        for each( SOCKET s in _sockets )
+        SocketsVec sockets = getSockets();
+        for each( SOCKET s in sockets )
         {
             SocketAddress addr( SocketAddress::STORAGE_SIZE );
             if( ::getsockname(s, &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
@@ -579,12 +614,13 @@ public:
     // Return true if sockets are all valid, false otherwise
     bool areSocketsValid() const
     {
-        if( _sockets.empty() )
+        SocketsVec sockets = getSockets();
+        if( sockets.empty() )
         {
             return false;
         }
 
-        for each( SOCKET s in _sockets )
+        for each( SOCKET s in sockets )
         {
             if( s == INVALID_SOCKET )
             {
@@ -594,13 +630,6 @@ public:
 
         return true;
     }
-
-    // Returns vector with all sockets
-    std::vector<SOCKET> const& getSockets() const
-    {
-        return _sockets;
-    }
-
 };
 
 }
