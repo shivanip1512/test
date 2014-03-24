@@ -9,11 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
@@ -24,6 +27,8 @@ import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SearchWorkOrderController extends StarsWorkorderActionController {
+    @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 

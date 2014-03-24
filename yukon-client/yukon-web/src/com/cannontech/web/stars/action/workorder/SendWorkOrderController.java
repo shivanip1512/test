@@ -19,23 +19,28 @@ import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.tools.email.EmailFileDataSource;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
-
     @Autowired private EmailService emailService;
-    
+    @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
@@ -53,8 +58,8 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         LiteServiceCompany sc = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
         String email = null;
         if (sc.getPrimaryContactID() > 0) {
-            LiteContact contact = this.contactDao.getContact( sc.getPrimaryContactID() );
-            LiteContactNotification emailNotif = this.contactNotificationDao.getFirstNotificationForContactByType( contact, ContactNotificationType.EMAIL);
+            LiteContact contact = contactDao.getContact( sc.getPrimaryContactID() );
+            LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.EMAIL);
             if (emailNotif != null) email = emailNotif.getNotification();
         }
         

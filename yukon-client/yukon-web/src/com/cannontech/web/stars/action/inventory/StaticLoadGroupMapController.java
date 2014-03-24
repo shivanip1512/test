@@ -4,9 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
@@ -18,6 +20,7 @@ import com.cannontech.web.util.task.AddSNRangeTask;
 import com.cannontech.web.util.task.AdjustStaticLoadGroupMappingsTask;
 
 public class StaticLoadGroupMapController extends StarsInventoryActionController {
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,

@@ -2,28 +2,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
-    <bean id="starsAdminActionController" class="com.cannontech.web.stars.action.StarsAdminActionController" abstract="true">
-        <property name="roleDao" ref="roleDao"/>
-        <property name="authDao" ref="authDao"/>
-        <property name="contactDao" ref="contactDao"/>
-        <property name="contactNotificationDao" ref="contactNotificationDao"/>
-        <property name="dbPersistentDao" ref="dbPersistentDao"/>
-        <property name="energyCompanyDao" ref="energyCompanyDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-        <property name="yukonListDao" ref="yukonListDao"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="loginService" ref="loginService"/>
-        <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
-        <property name="rolePropertyDao" ref="rolePropertyDao"/>
-        <property name="defaultRouteService" ref="defaultRouteService"/>
-        <property name="energyCompanyService" ref="energyCompanyService"/>
-    </bean>
-	
-	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController" 
-          parent="starsAdminActionController">
-		<property name="switchContextService" ref="switchContextService"/>
-	</bean>
-
+	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController"/>
 </beans>

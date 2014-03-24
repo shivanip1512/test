@@ -2,63 +2,33 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+    <bean id="workorderDefault" class="com.cannontech.web.stars.action.workorder.DefaultController"/>
 
-    <bean id="starsWorkOrderActionController" class="com.cannontech.web.stars.action.StarsWorkorderActionController" abstract="true">
-        <property name="roleDao" ref="roleDao"/>
-        <property name="rolePropertyDao" ref="rolePropertyDao"/>
-        <property name="authDao" ref="authDao"/>
-        <property name="contactDao" ref="contactDao"/>
-        <property name="contactNotificationDao" ref="contactNotificationDao"/>
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
-        <property name="energyCompanyDao" ref="energyCompanyDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-        <property name="yukonListDao" ref="yukonListDao"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="starsWorkOrderBaseDao" ref="starsWorkOrderBaseDao"/>
-    </bean>
+	<bean id="workorderSearchWorkOrder" class="com.cannontech.web.stars.action.workorder.SearchWorkOrderController"/>
+	
+	<bean id="workorderCreateWorkOrder" class="com.cannontech.web.stars.action.workorder.CreateWorkOrderController"/>
+	
+	<bean id="workorderSearchCustAccount" class="com.cannontech.web.stars.action.workorder.SearchCustAccountController"/>
+	
+	<bean id="workorderSendWorkOrder" class="com.cannontech.web.stars.action.workorder.SendWorkOrderController"/>
 
-    <bean id="workorderDefault" class="com.cannontech.web.stars.action.workorder.DefaultController"
-          parent="starsWorkOrderActionController"/>
+	<bean id="workorderUpdateFilters" class="com.cannontech.web.stars.action.workorder.UpdateFiltersController"/>
 
-	<bean id="workorderSearchWorkOrder" class="com.cannontech.web.stars.action.workorder.SearchWorkOrderController"
-          parent="starsWorkOrderActionController"/>
+	<bean id="workorderManipulateSelectedResults" class="com.cannontech.web.stars.action.workorder.ManipulateSelectedResultsController"/>
 	
-	<bean id="workorderCreateWorkOrder" class="com.cannontech.web.stars.action.workorder.CreateWorkOrderController"
-          parent="starsWorkOrderActionController"/>
+	<bean id="workorderManipulateResults" class="com.cannontech.web.stars.action.workorder.ManipulateResultsController"/>
 	
-	<bean id="workorderSearchCustAccount" class="com.cannontech.web.stars.action.workorder.SearchCustAccountController"
-          parent="starsWorkOrderActionController"/>
+	<bean id="workorderApplyActions" class="com.cannontech.web.stars.action.workorder.ApplyActionsController"/>
 	
-	<bean id="workorderSendWorkOrder" class="com.cannontech.web.stars.action.workorder.SendWorkOrderController"
-          parent="starsWorkOrderActionController"/>
-
-	<bean id="workorderUpdateFilters" class="com.cannontech.web.stars.action.workorder.UpdateFiltersController"
-          parent="starsWorkOrderActionController"/>
-
-	<bean id="workorderManipulateSelectedResults" class="com.cannontech.web.stars.action.workorder.ManipulateSelectedResultsController"
-          parent="starsWorkOrderActionController"/>
-	
-	<bean id="workorderManipulateResults" class="com.cannontech.web.stars.action.workorder.ManipulateResultsController"
-          parent="starsWorkOrderActionController"/>
-	
-	<bean id="workorderApplyActions" class="com.cannontech.web.stars.action.workorder.ApplyActionsController"
-          parent="starsWorkOrderActionController"/>
-	
-	<bean id="workorderViewAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController"
-          parent="starsWorkOrderActionController">
+	<bean id="workorderViewAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
 		<property name="viewAll"><value>true</value></property>
 	</bean>
 	
-	<bean id="workorderHideAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController"
-          parent="starsWorkOrderActionController">
+	<bean id="workorderHideAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
 		<property name="viewAll"><value>false</value></property>
 	</bean>
 	
-	<bean id="workorderSortWorkOrders" class="com.cannontech.web.stars.action.workorder.SortWorkOrdersController"
-          parent="starsWorkOrderActionController"/>
+	<bean id="workorderSortWorkOrders" class="com.cannontech.web.stars.action.workorder.SortWorkOrdersController"/>
 	
-	<bean id="workorderCreateReport" class="com.cannontech.web.stars.action.workorder.CreateReportController"
-          parent="starsWorkOrderActionController"/>
-	
+	<bean id="workorderCreateReport" class="com.cannontech.web.stars.action.workorder.CreateReportController"/>
 </beans>
