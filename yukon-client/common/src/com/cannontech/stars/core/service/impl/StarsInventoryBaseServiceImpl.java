@@ -254,10 +254,10 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                     RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(liteInv.getDeviceID());
                     RfnIdentifier previous = rfnDevice.getRfnIdentifier();
                     RfnIdentifier rfnIdentifier = new RfnIdentifier(lmHw.getManufacturerSerialNumber(), previous.getSensorManufacturer(), previous.getSensorModel());
-                    rfnDevice.setRfnIdentifier(rfnIdentifier);
+                    rfnDevice = new RfnDevice(rfnDevice.getPaoIdentifier(), rfnIdentifier);
                     rfnDeviceDao.updateDevice(rfnDevice);
                 }
-                
+
                 // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
                 // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
