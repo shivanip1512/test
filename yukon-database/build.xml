@@ -32,6 +32,7 @@
     
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="TempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
+        <property environment="env" />
         
     	<copy file="Custom Scripts/SQL Server/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
         <replace file="tempCreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
@@ -44,7 +45,7 @@
     	
     	<exec executable="svn">
         	<arg value="checkout" />
-            <arg value="${SVN_BASE_URL}${dbSnapshot}"/>
+            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
     		<arg value="${dbSnapshotTempDir}" />
         	<arg value="--username" />
         	<arg value="${svn.username}" />
@@ -138,7 +139,7 @@
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="tempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
-
+        <property environment="env" /> 
         <copy file="Custom Scripts/Oracle/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
         <replace file="tempCreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
 
@@ -149,7 +150,7 @@
         <echo message="Checking out database snapshot folder" />
         <exec executable="svn">
             <arg value="checkout" />
-            <arg value="${SVN_BASE_URL}${dbSnapshot}"/>
+            <arg value="${env.SVN_BASE_URL}${dbSnapshot}"/>
             <arg value="${dbSnapshotTempDir}" />
             <arg value="--username" />
             <arg value="${svn.username}" />
