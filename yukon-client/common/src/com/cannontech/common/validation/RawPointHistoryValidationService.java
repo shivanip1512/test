@@ -124,20 +124,19 @@ public class RawPointHistoryValidationService {
                 boolean didSomething;
                 long startingIdForLoggingPurposes = -1;
                 sleepingExecutions.incrementAndGet();
+
+                SqlStatementBuilder sql1 = new SqlStatementBuilder();
+                sql1.append("select max(changeId) from RawPointHistory");
+
+                long maxRphChangeId = 0;
+                try {
+                    maxRphChangeId = jdbcTemplate.queryForLong(sql1);
+                } catch (EmptyResultDataAccessException e) {
+                    // maxRphChangeId = 0;
+                }
                 do {
                     long newLast;
                     try {
-                        
-                        SqlStatementBuilder sql1 = new SqlStatementBuilder();
-                        sql1.append("select max(changeId) from RawPointHistory");
-                        
-                        long maxRphChangeId = 0;
-                        try {
-                            maxRphChangeId = jdbcTemplate.queryForLong(sql1);
-                        } catch (EmptyResultDataAccessException e) {
-                            // maxRphChangeId = 0;
-                        }
-                        
                         long lastChangeIdPersisted = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.VALIDATION_ENGINE_LAST_CHANGE_ID);
                         long lastChangeIdProcessed = lastChangeIdPersisted;
                         if (lastChangeIdPersisted < 0 || lastChangeIdPersisted > maxRphChangeId) {
