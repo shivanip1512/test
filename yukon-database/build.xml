@@ -41,9 +41,10 @@
         <echo message="${databaseName}"/>
 
         <echo message="Checking out database snapshot folder" />
+    	
     	<exec executable="svn">
         	<arg value="checkout" />
-            <arg value="${dbSnapshot}"/>
+            <arg value="${SVN_BASE_URL}${dbSnapshot}"/>
     		<arg value="${dbSnapshotTempDir}" />
         	<arg value="--username" />
         	<arg value="${svn.username}" />
@@ -148,7 +149,7 @@
         <echo message="Checking out database snapshot folder" />
         <exec executable="svn">
             <arg value="checkout" />
-            <arg value="${dbSnapshot}"/>
+            <arg value="${SVN_BASE_URL}${dbSnapshot}"/>
             <arg value="${dbSnapshotTempDir}" />
             <arg value="--username" />
             <arg value="${svn.username}" />
