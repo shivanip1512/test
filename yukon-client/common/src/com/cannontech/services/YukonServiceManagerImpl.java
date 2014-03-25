@@ -104,10 +104,13 @@ public class YukonServiceManagerImpl implements YukonServiceManager, Application
     
     @Override
     public void shutdownServiceManager() {
-        for (ConfigurableApplicationContext context : contexts) {
-            context.close();
+        log.info("Service Manager is shutting down");        
+    	for (ConfigurableApplicationContext context : contexts) {
+            context.close();            
+            log.debug("Closed Configurable Application Context: "+ context);
         }
         shutdownLatch.countDown();
+        log.info("Service Manager has been shutdown successfully");
     }
     
     @Override
