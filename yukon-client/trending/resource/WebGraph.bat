@@ -1,2 +1,0 @@
-call setjavapath.bat
-java -Djava.class.path=.;%YUKON_BASE%/server/web;jfreechart.jar;jcommon.jar;common.jar;yukonappserver.jar;jcpagelayout450K.jar;log4j-1.2.4.jar;batik.jar;junit.jar com.cannontech.graph.WebGraph
