@@ -10,7 +10,7 @@
     type="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState" %>
 <%@ attribute name="exportData" required="true" type="java.lang.Object" %>
 
-<cti:includeScript link="/JavaScript/yukon.tag.scheduledFileExportInputs.js"/>
+<cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.inputs">
     <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
