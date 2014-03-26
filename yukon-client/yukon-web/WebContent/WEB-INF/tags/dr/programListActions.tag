@@ -10,133 +10,54 @@
 <cti:msgScope paths="modules.dr">
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
-<cti:msg2 var="programUnknown" key=".programDetail.unknown"/>
-<cti:msg2 var="notRunning" key=".programDetail.notRunning"/>
-<cti:msg2 var="alreadyRunning" key=".programDetail.alreadyRunning"/>
-<cti:msg2 var="noProgramControl" key=".programDetail.noControl"/>
-<cti:msg2 var="startAction" key=".programDetail.actions.start"/>
-<cti:msg2 var="stopAction" key=".programDetail.actions.stop"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown triggerClasses="fr">
-        <tags:dynamicChoose updaterString="DR_PROGRAM/${paoId}/SHOW_ACTION" suffix="${paoId}">
 
-            <tags:dynamicChooseOption optionId="unknown">
-                <%-- All actions are disabled when the DR Program is unknown --%>
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${programUnknown}">${startAction}</cm:dropdownOption>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${programUnknown}">${stopAction}</cm:dropdownOption>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="runningEnabled">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${alreadyRunning}">${startAction}</cm:dropdownOption>
-                <li>
-                    <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${stopProgramUrl}" 
-                                           icon="icon-control-stop-blue"
-                                           labelKey=".programDetail.actions.stop"/>
-                 </li>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="scheduledEnabled">
-                <li>
-                    <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${startProgramUrl}" 
-                                           icon="icon-control-play-blue"
-                                           labelKey=".programDetail.actions.start"/>
-                </li>
-                <li>
-                    <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${stopProgramUrl}" 
-                                           icon="icon-control-stop-blue"
-                                           labelKey=".programDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="enabled">
-                <li>
-                    <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${startProgramUrl}" 
-                                           icon="icon-control-play-blue"
-                                           labelKey=".programDetail.actions.start"/>
-                </li>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${notRunning}">${stopAction}</cm:dropdownOption>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="runningDisabled">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${alreadyRunning}">${startAction}</cm:dropdownOption>
-                <li>
-                    <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${stopProgramUrl}" 
-                                           icon="icon-control-stop-blue"
-                                           labelKey=".programDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="scheduledDisabled">
-                <li>
-                    <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${startProgramUrl}" 
-                                           icon="icon-control-play-blue"
-                                           labelKey=".programDetail.actions.start"/>
-                 </li>
-                <li>
-                    <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${stopProgramUrl}" 
-                                           icon="icon-control-stop-blue"
-                                           labelKey=".programDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-
-            <tags:dynamicChooseOption optionId="disabled">
-                <li>
-                    <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                        <cti:param name="programId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                           dialogId="drDialog"
-                                           actionUrl="${startProgramUrl}"
-                                           icon="icon-control-play-blue"
-                                           labelKey=".programDetail.actions.start"/>
-                </li>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${notRunning}">${stopAction}</cm:dropdownOption>
-            </tags:dynamicChooseOption>
-
-        </tags:dynamicChoose>
+    <cm:dropdown containerCssClass="fr">
+        <div class="dn" data-start-action="disabled" data-pao-id="${paoId}">
+            <cm:dropdownOption icon="icon-control-play-blue" disabled="true">
+                <cti:msg2 key=".programDetail.actions.start"/>
+            </cm:dropdownOption>
+        </div>
+        <div data-start-action="enabled" data-pao-id="${paoId}">
+            <li>
+                <cti:url var="startProgramUrl" value="/dr/program/start/details">
+                    <cti:param name="programId" value="${paoId}"/>
+                </cti:url>
+                <tags:simpleDialogLink titleKey=".program.startProgram.title" dialogId="drDialog" 
+                    actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
+                    labelKey=".programDetail.actions.start"/>
+            </li>
+        </div>
+        <div class="dn" data-stop-action="disabled" data-pao-id="${paoId}">
+            <cm:dropdownOption icon="icon-control-stop-blue" disabled="true">
+                <cti:msg2 key=".programDetail.actions.stop"/>
+            </cm:dropdownOption>
+        </div>
+        <div data-stop-action="enabled" data-pao-id="${paoId}">
+            <li>
+                 <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
+                    <cti:param name="programId" value="${paoId}"/>
+                </cti:url>
+                <tags:simpleDialogLink titleKey=".program.stopProgram.title" dialogId="drDialog"
+                    actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
+                    labelKey=".programDetail.actions.stop"/>
+            </li>
+        </div>
     </cm:dropdown>
+    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdator.updateQuickLinks(${paoId})"
+        initialize="true" state="DR_PROGRAM/${paoId}/SHOW_ACTION"/>
 </cti:checkPaoAuthorization>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown triggerClasses="fr">
-        <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noProgramControl}">${startAction}</cm:dropdownOption>
-        <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${noProgramControl}">${stopAction}</cm:dropdownOption>
+    <cti:msg2 var="noProgramControl" key=".programDetail.noControl"/>
+    <cm:dropdown containerCssClass="fr">
+        <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noProgramControl}">
+            <cti:msg2  key=".programDetail.actions.start"/>
+        </cm:dropdownOption>
+        <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${noProgramControl}">
+            <cti:msg2  key=".programDetail.actions.stop"/>
+        </cm:dropdownOption>
     </cm:dropdown>
 </cti:checkPaoAuthorization>
 </cti:msgScope>

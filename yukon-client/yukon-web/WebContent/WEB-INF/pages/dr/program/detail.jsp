@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -10,6 +11,7 @@
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdator.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -108,295 +110,116 @@
                 </tags:sectionContainer2>
             </cti:checkRolesAndProperties>
 
-                <%-- 
-                    Program Actions section each action has a simpleDialogLink that
-                    pops open a dialog for the action.  The available actions are based
-                    on the dynamically updated SHOW_ACTION value
-                --%>
-                <!-- Page Dropdown Actions -->
-                <div id="f-page-actions" class="dn">
+            <%-- 
+                Program Actions section each action has a simpleDialogLink that
+                pops open a dialog for the action.  The available actions are based
+                on the dynamically updated SHOW_ACTION value
+            --%>
+            <!-- Page Dropdown Actions -->
+            <div id="f-page-actions" class="dn">
+                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
+                    <div data-start-action="enabled" data-pao-id="${programId}">
+                        <cti:url var="startProgramUrl" value="/dr/program/start/details">
+                                <cti:param name="programId" value="${programId}"/>
+                        </cti:url>
+                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
+                                dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
+                                labelKey=".actions.start"/>
+                        </li>
+                    </div>
+                    <div class="dn" data-start-action="disabled" data-pao-id="${programId}">
+                        <cm:dropdownOption icon="icon-control-play-blue" disabled="true">
+                            <cti:msg2 key=".actions.start"/>
+                        </cm:dropdownOption>
+                    </div>
+
+                    <div data-stop-action="enabled" data-pao-id="${programId}">
+                        <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
+                                <cti:param name="programId" value="${programId}"/>
+                        </cti:url>
+                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
+                                dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
+                                labelKey=".actions.stop"/>
+                        </li>
+                    </div>
+                    <div class="dn" data-stop-action="disabled" data-pao-id="${programId}">
+                        <cm:dropdownOption icon="icon-control-stop-blue" disabled="true">
+                            <cti:msg2 key=".actions.stop"/>
+                        </cm:dropdownOption>
+                    </div>
+
+                    <div data-change-gears-action="enabled" data-pao-id="${programId}">
+                        <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
+                            <cti:param name="programId" value="${programId}"/>
+                        </cti:url>
+                        <li>
+                            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
+                                    dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
+                                    labelKey=".actions.changeGears"/>
+                        </li>
+                    </div>
+                    <div class="dn" data-change-gears-action="disabled" data-pao-id="${programId}">
+                        <cm:dropdownOption icon="icon-cog-edit" disabled="true">
+                            <cti:msg2 key=".actions.changeGears"/>
+                        </cm:dropdownOption>
+                    </div>
+
+                    <div data-disable-action="enabled" data-pao-id="${programId}">
+                        <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
+                            <cti:param name="programId" value="${programId}"/>
+                            <cti:param name="isEnabled" value="false"/>
+                        </cti:url>
+                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
+                                dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                                labelKey=".actions.disable"/>
+                        </li>
+                    </div>
+                    <div class="dn" data-disable-action="disabled" data-pao-id="${programId}">
+                        <cm:dropdownOption icon="icon-delete" disabled="true">
+                            <cti:msg2 key=".actions.disable"/>
+                        </cm:dropdownOption>
+                    </div>
+                    <div data-enable-action data-pao-id="${programId}">
+                        <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
+                            <cti:param name="programId" value="${programId}"/>
+                            <cti:param name="isEnabled" value="true"/>
+                        </cti:url>
+                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
+                                dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+                                labelKey=".actions.enable"/>
+                        </li>
+                    </div>
+                </cti:checkPaoAuthorization>
+                <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
+                    <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
                 
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
-                        <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
-                        <tags:dynamicChoose updaterString="DR_PROGRAM/${programId}/SHOW_ACTION" suffix="${programId}">
-                        
-                            <tags:dynamicChooseOption optionId="unknown">
-                                <cti:msg var="programUnknown" key="yukon.web.modules.dr.programDetail.unknown"/>
-                                <li>
-                                    <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="clearfix" title="${programUnknown}">
-                                        <cti:icon icon="icon-delete" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
-                                    </a>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="runningEnabled">
-                                <cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
-                                <li>
-                                    <a class="clearfix" title="${alreadyRunning}">
-                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
-                                    </a>
-                                </li>
-                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                        dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
-                                        labelKey=".actions.stop"/>
-                                </li>
-                                <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
-                                        dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
-                                        labelKey=".actions.changeGears"/>
-                                </li>
-                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="false"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                        labelKey=".actions.disable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="scheduledEnabled">
-                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
-                                        labelKey=".actions.start"/>
-                                </li>
-                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                        dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
-                                        labelKey=".actions.stop"/>
-                                </li>
-                                <li>
-                                    <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
-                                    <a class="clearfix" title="${changeGearsDisabled}">
-                                        <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                                    </a>
-                                </li>
-                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="false"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                        labelKey=".actions.disable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="enabled">
-                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
-                                        labelKey=".actions.start"/>
-                                </li>
-                                <li>
-                                    <cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
-                                    <a class="clearfix" title="${notRunning}">
-                                        <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
-                                    <a class="clearfix" title="${changeGearsDisabled}">
-                                        <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                                    </a>
-                                </li>
-                                <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="false"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
-                                        labelKey=".actions.disable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="runningDisabled">
-                                <cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
-                                <li>
-                                    <a class="clearfix" title="${alreadyRunning}">
-                                        <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
-                                    </a>
-                                </li>
-
-                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                        dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
-                                        labelKey=".actions.stop"/>
-                                </li>
-
-                                <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.getChangeGearValue.title" 
-                                        dialogId="drDialog" actionUrl="${changeGearsUrl}" icon="icon-cog-edit"
-                                        labelKey=".actions.changeGears"/>
-                                </li>
-                                
-                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="true"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                        labelKey=".actions.enable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="scheduledDisabled">
-                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
-                                        labelKey=".actions.start"/>
-                                </li>
-                                
-                                <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                        dialogId="drDialog" actionUrl="${stopProgramUrl}" icon="icon-control-stop-blue"
-                                        labelKey=".actions.stop"/>
-                                </li>
-                                
-                                <li>
-                                    <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
-                                    <a class="clearfix" title="${changeGearsDisabled}">
-                                        <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                                    </a>
-                                </li>
-                                
-                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="true"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                        labelKey=".actions.enable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-
-                            <tags:dynamicChooseOption optionId="disabled">
-                                <cti:url var="startProgramUrl" value="/dr/program/start/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
-                                        dialogId="drDialog" actionUrl="${startProgramUrl}" icon="icon-control-play-blue"
-                                        labelKey=".actions.start"/>
-                                </li>
-
-                                <li>
-                                    <cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
-                                    <a class="clearfix" title="${notRunning}">
-                                        <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <cti:msg2 var="changeGearsDisabled" key=".actions.changeGears.disabled"/>
-                                    <a class="clearfix" title="${changeGearsDisabled}">
-                                        <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                        <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                                    </a>
-                                </li>
-
-                                <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
-                                    <cti:param name="programId" value="${programId}"/>
-                                    <cti:param name="isEnabled" value="true"/>
-                                </cti:url>
-                                <li>
-                                    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
-                                        dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                        labelKey=".actions.enable"/>
-                                </li>
-                            </tags:dynamicChooseOption>
-                        </tags:dynamicChoose>
-                    </cti:checkPaoAuthorization>                    
-                    <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
-                        <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
-                    
-                        <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
-                        <li>
-                            <a class="clearfix" title="${noProgramControl}">
-                                <cti:icon icon="icon-control-play-blue" classes="disabled"/>
-                                <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="clearfix" title="${noProgramControl}">
-                                <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
-                                <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="clearfix" title="${noProgramControl}">
-                                <cti:icon icon="icon-cog-edit" classes="disabled"/>
-                                <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="clearfix" title="${noProgramControl}">
-                                <cti:icon icon="icon-delete" classes="disabled"/>
-                                <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
-                            </a>
-                        </li>
-
-                    </cti:checkPaoAuthorization>
-                </div>
+                    <cti:msg var="noProgramControl" key="yukon.web.modules.dr.programDetail.noControl"/>
+                    <li>
+                        <a class="clearfix" title="${noProgramControl}">
+                            <cti:icon icon="icon-control-play-blue" classes="disabled"/>
+                            <span class="dib disabled"><cti:msg2 key=".actions.start"/></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="clearfix" title="${noProgramControl}">
+                            <cti:icon icon="icon-control-stop-blue" classes="disabled"/>
+                            <span class="dib disabled"><cti:msg2 key=".actions.stop"/></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="clearfix" title="${noProgramControl}">
+                            <cti:icon icon="icon-cog-edit" classes="disabled"/>
+                            <span class="dib disabled"><cti:msg2 key=".actions.changeGears"/></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="clearfix" title="${noProgramControl}">
+                            <cti:icon icon="icon-delete" classes="disabled"/>
+                            <span class="dib disabled"><cti:msg2 key=".actions.disable"/></span>
+                        </a>
+                    </li>
+                </cti:checkPaoAuthorization>
+            </div>
         </div>
     </div>
 
@@ -475,4 +298,6 @@
             </div>
         </div>
     </table>
+    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdator.updateDetailLinks(${programId})" 
+        initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
 </cti:standardPage>
