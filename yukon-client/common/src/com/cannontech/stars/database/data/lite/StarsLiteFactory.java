@@ -18,6 +18,7 @@ import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -25,7 +26,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
@@ -61,7 +61,9 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
 
 public class StarsLiteFactory {
-    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
+    private final static LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean(LMHardwareEventDao.class);
+    private final static AddressDao addressDao = YukonSpringHook.getBean(AddressDao.class);
+
     public static LiteBase createLite( com.cannontech.database.db.DBPersistent db ) {
         LiteBase lite = null;
         
@@ -732,7 +734,7 @@ public class StarsLiteFactory {
     public static void setContact(com.cannontech.database.data.customer.Contact contact, LiteContact liteContact, LiteStarsEnergyCompany energyCompany) {
         setContact( contact, liteContact );
         if (liteContact.getAddressID() > 0) {
-            setAddress( contact.getAddress(), energyCompany.getAddress(liteContact.getAddressID()) );
+            setAddress(contact.getAddress(), addressDao.getByAddressId(liteContact.getAddressID()));
         }
     }
     
@@ -976,12 +978,12 @@ public class StarsLiteFactory {
     }
     
     public static void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany company, LiteStarsEnergyCompany liteCompany) {
-        company.setEnergyCompanyID( liteCompany.getEnergyCompanyId() );
+        company.setEnergyCompanyId( liteCompany.getEnergyCompanyId() );
         company.setName( liteCompany.getName() );
-        company.setPrimaryContactID( new Integer(liteCompany.getPrimaryContactID()) );
-        company.setUserID(liteCompany.getUser().getUserID());
+        company.setPrimaryContactId( new Integer(liteCompany.getPrimaryContactID()) );
+        company.setUserId(liteCompany.getUser().getUserID());
     }
-    
+
     public static void setApplianceCategory(com.cannontech.stars.database.db.appliance.ApplianceCategory appCat, LiteApplianceCategory liteAppCat) {
         appCat.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
         appCat.setCategoryID( new Integer(liteAppCat.getCategoryID()) );
@@ -1010,64 +1012,7 @@ public class StarsLiteFactory {
         sub.setSubstationID( new Integer(liteSub.getSubstationID()) );
         sub.setSubstationName( liteSub.getSubstationName() );
     }
-    
-    
-    public static com.cannontech.stars.database.data.customer.CustomerAccount createCustomerAccount(LiteAccountInfo liteAccount, LiteStarsEnergyCompany energyCompany) {
-        com.cannontech.stars.database.data.customer.CustomerAccount account =
-                new com.cannontech.stars.database.data.customer.CustomerAccount();
-        
-        account.setCustomerAccount( (com.cannontech.stars.database.db.customer.CustomerAccount) createDBPersistent(liteAccount.getCustomerAccount()) );
-        
-        LiteAddress liteAddr = energyCompany.getAddress( liteAccount.getCustomerAccount().getBillingAddressID() );
-        account.setBillingAddress( (com.cannontech.database.db.customer.Address) createDBPersistent(liteAddr) );
-        
-        com.cannontech.stars.database.data.customer.AccountSite acctSite =
-                new com.cannontech.stars.database.data.customer.AccountSite();
-        acctSite.setAccountSite( (com.cannontech.stars.database.db.customer.AccountSite) createDBPersistent(liteAccount.getAccountSite()) );
-        com.cannontech.stars.database.data.customer.SiteInformation siteInfo =
-                new com.cannontech.stars.database.data.customer.SiteInformation();
-        siteInfo.setSiteInformation( (com.cannontech.stars.database.db.customer.SiteInformation) createDBPersistent(liteAccount.getSiteInformation()) );
-        acctSite.setSiteInformation( siteInfo );
-        liteAddr = energyCompany.getAddress( liteAccount.getAccountSite().getStreetAddressID() );
-        acctSite.setStreetAddress( (com.cannontech.database.db.customer.Address) createDBPersistent(liteAddr) );
-        account.setAccountSite( acctSite );
-        
-        if (liteAccount.getCustomer() instanceof LiteCICustomer && liteAccount.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
-            com.cannontech.database.data.customer.CICustomerBase ciCust =
-                    new com.cannontech.database.data.customer.CICustomerBase();
-            StarsLiteFactory.setCICustomerBase( ciCust, (LiteCICustomer)liteAccount.getCustomer() );
-            account.setCustomer( ciCust );
-        }
-        else {
-            com.cannontech.database.data.customer.Customer customer =
-                    new com.cannontech.database.data.customer.Customer();
-            StarsLiteFactory.setCustomer( customer.getCustomer(), liteAccount.getCustomer() );
-            account.setCustomer( customer );
-        }
-        
-        for (Integer inventoryId : liteAccount.getInventories()) {
-            account.getInventoryVector().add(inventoryId);
-        }
-        
-        for (LiteStarsAppliance liteApp : liteAccount.getAppliances()) {
-            account.getApplianceVector().add( new Integer(liteApp.getApplianceID()) );
-        }
-        
-        return account;
-    }
-    
-    
-    public static com.cannontech.database.db.constants.YukonListEntry createYukonListEntry(com.cannontech.common.constants.YukonListEntry cEntry) {
-        com.cannontech.database.db.constants.YukonListEntry entry = new com.cannontech.database.db.constants.YukonListEntry();
-        entry.setEntryID( new Integer(cEntry.getEntryID()) );
-        entry.setListID( new Integer(cEntry.getListID()) );
-        entry.setEntryOrder( new Integer(cEntry.getEntryOrder()) );
-        entry.setEntryText( cEntry.getEntryText() );
-        entry.setYukonDefID( new Integer(cEntry.getYukonDefID()) );
-        
-        return entry;
-    }
-    
+
     public static void setConstantYukonListEntry(
             com.cannontech.common.constants.YukonListEntry cEntry, com.cannontech.database.db.constants.YukonListEntry entry) {
         cEntry.setEntryID( entry.getEntryID().intValue() );
@@ -1076,24 +1021,7 @@ public class StarsLiteFactory {
         cEntry.setEntryText( entry.getEntryText() );
         cEntry.setYukonDefID( entry.getYukonDefID().intValue() );
     }
-    
-    public static com.cannontech.database.db.constants.YukonSelectionList 
-        createYukonSelectionList(com.cannontech.common.constants.YukonSelectionList cList) {
 
-        com.cannontech.database.db.constants.YukonSelectionList list = 
-            new com.cannontech.database.db.constants.YukonSelectionList();
-
-        list.setListID(cList.getListId());
-        list.setOrdering(cList.getOrdering().getDatabaseRepresentation().toString());
-        list.setSelectionLabel(cList.getSelectionLabel());
-        list.setWhereIsList(cList.getWhereIsList());
-        list.setListName(cList.getListName());
-        list.setUserUpdateAvailable(YNBoolean.valueOf(cList.isUserUpdateAvailable()).getDatabaseRepresentation().toString());
-        list.setEnergyCompanyId(cList.getEnergyCompanyId());
-        
-        return list;
-    }
-    
     public static void setConstantYukonSelectionList(
             com.cannontech.common.constants.YukonSelectionList cList, 
             com.cannontech.database.db.constants.YukonSelectionList list) {
@@ -1271,15 +1199,15 @@ public class StarsLiteFactory {
         starsAcctInfo.setStarsCustomerAccount( starsAccount );
         
         StreetAddress streetAddr = new StreetAddress();
-        setStarsCustomerAddress( streetAddr, energyCompany.getAddress(liteAcctSite.getStreetAddressID()) );
+        setStarsCustomerAddress(streetAddr, addressDao.getByAddressId(liteAcctSite.getStreetAddressID()));
         starsAccount.setStreetAddress( streetAddr );
         
         starsAccount.setStarsSiteInformation( createStarsSiteInformation(liteSiteInfo, energyCompany) );
                 
         BillingAddress billAddr = new BillingAddress();
-        setStarsCustomerAddress( billAddr, energyCompany.getAddress(liteAccount.getBillingAddressID()) );
+        setStarsCustomerAddress(billAddr, addressDao.getByAddressId(liteAccount.getBillingAddressID()));
         starsAccount.setBillingAddress( billAddr );
-        
+
         PrimaryContact primContact = new PrimaryContact();
         setStarsCustomerContact( primContact, liteContact );
         starsAccount.setPrimaryContact( primContact );
@@ -1390,9 +1318,9 @@ public class StarsLiteFactory {
                 LiteContactNotification liteNotifEmail = 
                         contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.EMAIL);
                 starsCompany.setEmail(StarsUtils.getNotification(liteNotifEmail));
-                
+
                 if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
-                    LiteAddress liteAddr = liteCompany.getAddress(liteContact.getAddressID());
+                    LiteAddress liteAddr = addressDao.getByAddressId(liteContact.getAddressID()); 
                     CompanyAddress starsAddr = new CompanyAddress();
                     setStarsCustomerAddress(starsAddr, liteAddr);
                     starsCompany.setCompanyAddress(starsAddr);
@@ -1411,7 +1339,7 @@ public class StarsLiteFactory {
         starsCompany.setPrimaryContact( (PrimaryContact) StarsFactory.newStarsCustomerContact(PrimaryContact.class) );
         
         if (liteCompany.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
-            LiteAddress liteAddr = energyCompany.getAddress( liteCompany.getAddressID());
+            LiteAddress liteAddr = addressDao.getByAddressId(liteCompany.getAddressID());
             CompanyAddress companyAddr = new CompanyAddress();
             setStarsCustomerAddress( companyAddr, liteAddr );
             starsCompany.setCompanyAddress( companyAddr );

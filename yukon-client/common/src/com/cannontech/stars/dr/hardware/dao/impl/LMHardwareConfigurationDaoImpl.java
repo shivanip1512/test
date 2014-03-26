@@ -19,6 +19,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -26,6 +27,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.device.Device;
@@ -46,17 +48,18 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDao {
-    
     private static Logger log = YukonLogManager.getLogger(LMHardwareConfigurationDaoImpl.class);
-    
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate; 
+
+    @Autowired private YukonJdbcTemplate jdbcTemplate; 
     @Autowired private StarsApplianceDao starsApplianceDao;
     @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
+    @Autowired private AddressDao addressDao;
+
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
     @PostConstruct
     public void init() {
-        chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
     }
     
     @Override    
@@ -90,9 +93,8 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
             return null;
         }
         // get zipCode
-        String zip = energyCompany.getAddress(liteAcct.getAccountSite()
-                                                      .getStreetAddressID())
-                                  .getZipCode();
+        LiteAddress address = addressDao.getByAddressId(liteAcct.getAccountSite().getStreetAddressID());
+        String zip = address.getZipCode();
         if (!StringUtils.isBlank(zip)) {
             zip = StringUtils.substring(zip.trim(), 0, 5);
             criteria.setZipCode(zip);
@@ -131,7 +133,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         insert.addValue("AddressingGroupId", config.getAddressingGroupId());
         insert.addValue("LoadNumber", config.getLoadNumber());
         
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         insert.addValue("AddressingGroupId", config.getAddressingGroupId());
         insert.addValue("LoadNumber", config.getLoadNumber());
         
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -156,28 +158,28 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     public void delete(int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM LMHardwareConfiguration WHERE InventoryID").eq(inventoryId);
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
     public void deleteForAppliance(int applianceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM LMHardwareConfiguration WHERE ApplianceId").eq(applianceId);
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
     public void deleteForAppliances(Collection<Integer> applianceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM LMHardwareConfiguration WHERE ApplianceId").in(applianceIds);
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 
     @Override
     public void delete(Collection<Integer> inventoryIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM LMHardwareConfiguration WHERE InventoryId").in(inventoryIds);
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -188,7 +190,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         sql.append("WHERE InventoryID").eq(inventoryId);
         
         try {
-            return yukonJdbcTemplate.query(sql, new YukonRowMapper<LMHardwareConfiguration>() {
+            return jdbcTemplate.query(sql, new YukonRowMapper<LMHardwareConfiguration>() {
                 @Override
                 public LMHardwareConfiguration mapRow(YukonResultSet rs) throws SQLException {
                     LMHardwareConfiguration config = new LMHardwareConfiguration();

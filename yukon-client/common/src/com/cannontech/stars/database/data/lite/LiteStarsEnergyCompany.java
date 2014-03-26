@@ -25,7 +25,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -36,8 +35,8 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -92,7 +91,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
-    private AddressDao addressDao;
     private PaoDao paoDao;
     private DBPersistentDao dbPersistentDao;
     private DbChangeManager dbChangeManager;
@@ -176,8 +174,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE,
         YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE
     };
-    
-    private static final IntegerRowMapper integerRowMapper = new IntegerRowMapper();
     
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
@@ -698,7 +694,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         sql.append("SELECT OperatorLoginID");
         sql.append("FROM EnergyCompanyOperatorLoginList");
         sql.append("WHERE EnergyCompanyID").eq(getEnergyCompanyId());
-        List<Integer> list = yukonJdbcTemplate.query(sql, integerRowMapper);
+        List<Integer> list = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return list;
     }
     
@@ -835,11 +831,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return String.valueOf( nextOrderNo++ );
     }
 
-    public List<LiteAddress> getAllAddresses() {
-        List<LiteAddress> addressList = addressDao.getAll();
-        return addressList;
-    }
-    
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
         Iterable<LiteApplianceCategory> allCategories = getAllApplianceCategories();
         for (LiteApplianceCategory category : allCategories) {
@@ -927,9 +918,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         substations = null;
     }
 
-    public LiteAddress getAddress(int addressID) {
-        LiteAddress address = addressDao.getByAddressId(addressID); 
-        return address;
+    private LiteAddress getAddress(int addressID) {
+//        LiteAddress address = addressDao.getByAddressId(addressID);
+        return null;//address;
+    }
+    private List<LiteAddress> getAllAddresses() {
+//        List<LiteAddress> addressList = addressDao.getAll();
+        return null;//addressList;
     }
     
     public LiteLMProgramWebPublishing getProgram(int programID) {
@@ -1855,11 +1850,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void resetEnergyCompanyInfo() {
         this.name = null;
-    }
-    
-    // DI Setters    
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
     }
     
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {

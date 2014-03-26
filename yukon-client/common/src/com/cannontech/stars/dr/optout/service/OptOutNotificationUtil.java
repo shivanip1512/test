@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.optout.service;
 import java.util.List;
 
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -10,10 +11,10 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.util.StarsUtils;
@@ -76,8 +77,8 @@ public final class OptOutNotificationUtil {
         String name = StarsUtils.formatName(cont.getContFirstName(), cont.getContLastName());
         if (name.length() > 0)
             text.append( name ).append(LINE_SEPARATOR);
-        
-        LiteAddress addr = energyCompany.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
+
+        LiteAddress addr = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
         if (addr.getLocationAddress1().trim().length() > 0) {
             text.append(addr.getLocationAddress1());
             if (addr.getLocationAddress2().trim().length() > 0)

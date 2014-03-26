@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
@@ -40,11 +41,10 @@ import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.google.common.collect.Lists;
 
 public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
-	
     private LiteStarsEnergyCompany energyCompany = null;
     private boolean fullReset = false;
     private boolean sendConfig = true;
-    String redirect;
+    private String redirect;
     private final HttpSession session;
 	
     private List<StaticLoadGroupMapping> mappingsToAdjust = null;
@@ -113,12 +113,10 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty( YukonRoleProperty.ADMIN_MANAGE_MEMBERS,  user.getYukonUser())
 				&& energyCompany.hasChildEnergyCompanies();
 		hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
-        
-        InventoryBaseDao inventoryBaseDao = 
-        	YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
-        LMHardwareControlGroupDao lmHardwareControlGroupDao = 
-            YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);        
-        
+
+        InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean(LMHardwareControlGroupDao.class);        
+
 		List<YukonEnergyCompany> energyCompanyList = Lists.newArrayList();
 		if (!searchMembers) {
 			energyCompanyList.add(energyCompany);
@@ -164,7 +162,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 
             LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
             //get zipCode
-            LiteAddress address = energyCompany.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
+            LiteAddress address = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
             String zip = address.getZipCode();
             if (zip.length() > 5) {
                 zip = zip.substring(0, 5);
@@ -228,7 +226,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 options = "GroupID:" + groupMapping.getLoadGroupID(); 
                 
                 if (sendConfig) {
-                    PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("porterExpressComCommandBuilder", PorterExpressComCommandBuilder.class);
+                    PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean(PorterExpressComCommandBuilder.class);
                     xcomCommandBuilder.fileWriteConfigCommand(company, liteHw, false, options);
     				
     				if (liteHw.getAccountID() > 0) {

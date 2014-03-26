@@ -2,7 +2,6 @@ package com.cannontech.stars.database.data.lite;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
@@ -29,27 +28,26 @@ import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 
 public class LiteStarsEnergyCompanyFactory {
-    @Autowired private AddressDao addressDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private PaoDao paoDao;
     @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     @Autowired private WarehouseDao warehouseDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private YukonGroupDao yukonGroupDao;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private YukonGroupDao groupDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private YukonListDao listDao;
 
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -64,7 +62,6 @@ public class LiteStarsEnergyCompanyFactory {
     }
     
     private void applyPropertySetters(final LiteStarsEnergyCompany energyCompany) {
-        energyCompany.setAddressDao(addressDao);
         energyCompany.setDbPersistentDao(dbPersistentDao);
         energyCompany.setDbChangeManager(dbChangeManager);
         energyCompany.setEcMappingDao(ecMappingDao);
@@ -74,15 +71,15 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setStarsSearchDao(starsSearchDao);
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setWarehouseDao(warehouseDao);
-        energyCompany.setYukonJdbcTemplate(yukonJdbcTemplate);
-        energyCompany.setYukonGroupDao(yukonGroupDao);
-        energyCompany.setYukonListDao(yukonListDao);
+        energyCompany.setYukonJdbcTemplate(jdbcTemplate);
+        energyCompany.setYukonGroupDao(groupDao);
+        energyCompany.setYukonListDao(listDao);
         energyCompany.setPaoDao(paoDao);
-        energyCompany.setEnergyCompanyDao(energyCompanyDao);
+        energyCompany.setEnergyCompanyDao(ecDao);
         energyCompany.setEnergyCompanyService(energyCompanyService);
         energyCompany.setRoleDao(roleDao);
-        energyCompany.setYukonEnergyCompanyService(yukonEnergyCompanyService);
-        energyCompany.setEnergyCompanySettingDao(energyCompanySettingDao);
+        energyCompany.setYukonEnergyCompanyService(ecService);
+        energyCompany.setEnergyCompanySettingDao(ecSettingDao);
         energyCompany.setRolePropertyDao(rolePropertyDao);
 
         energyCompany.initialize();

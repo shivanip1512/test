@@ -71,10 +71,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         NotificationInfo notificationInfo = new NotificationInfo();
         notificationInfo.customerAccount = customerAccount;
         notificationInfo.energyCompany = energyCompany;
-        notificationInfo.request = request;
+        notificationInfo.optOutRequest = request;
         notificationInfo.subject = subject;
         notificationInfo.messageBody = messageBody;
-        notificationInfo.yukonUserContext = yukonUserContext;
+        notificationInfo.userContext = yukonUserContext;
 
         sendNotification(notificationInfo);
     }
@@ -92,10 +92,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         NotificationInfo notificationInfo = new NotificationInfo();
         notificationInfo.customerAccount = customerAccount;
         notificationInfo.energyCompany = energyCompany;
-        notificationInfo.request = request;
+        notificationInfo.optOutRequest = request;
         notificationInfo.subject = subject;
         notificationInfo.messageBody = messageBody;
-        notificationInfo.yukonUserContext = yukonUserContext;
+        notificationInfo.userContext = yukonUserContext;
 
         sendNotification(notificationInfo);
     }
@@ -113,10 +113,10 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         NotificationInfo notificationInfo = new NotificationInfo();
         notificationInfo.customerAccount = customerAccount;
         notificationInfo.energyCompany = energyCompany;
-        notificationInfo.request = request;
+        notificationInfo.optOutRequest = request;
         notificationInfo.subject = subject;
         notificationInfo.messageBody = messageBody;
-        notificationInfo.yukonUserContext = yukonUserContext;
+        notificationInfo.userContext = yukonUserContext;
 
         sendNotification(notificationInfo);
     }
@@ -152,19 +152,19 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             return;
         }
 
-        EmailMessage message =
-            new EmailMessage(new InternetAddress(fromAddress), InternetAddress.parse(recipientsCsvString), subject,
-                messageBody);
+        EmailMessage message = new EmailMessage(new InternetAddress(fromAddress),
+            InternetAddress.parse(recipientsCsvString), subject, messageBody);
         emailService.sendMessage(message);
     }
 
     private String getMessageBody(NotificationInfo notificationInfo) {
-        long durationInHours = notificationInfo.request.getDurationInHours();
-        if (durationInHours <= 0)
+        long durationInHours = notificationInfo.optOutRequest.getDurationInHours();
+        if (durationInHours <= 0) {
             return null;
+        }
 
-        ReadableInstant optOutStartInstant = notificationInfo.request.getStartDate();
-        DateTime optOutDateTime = new DateTime(optOutStartInstant, notificationInfo.yukonUserContext.getJodaTimeZone());
+        ReadableInstant optOutStartInstant = notificationInfo.optOutRequest.getStartDate();
+        DateTime optOutDateTime = new DateTime(optOutStartInstant, notificationInfo.userContext.getJodaTimeZone());
 
         if (optOutStartInstant == null) {
             optOutStartInstant = new Instant();
@@ -174,17 +174,16 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         DateTime reenableDate = optOutDateTime.plus(optOutDuration);
 
         String formattedOptOutDate =
-            dateFormattingService.format(optOutStartInstant, DateFormatEnum.DATEHM, notificationInfo.yukonUserContext);
+            dateFormattingService.format(optOutStartInstant, DateFormatEnum.DATEHM, notificationInfo.userContext);
 
         String formattedReenableDate =
-            dateFormattingService.format(reenableDate, DateFormatEnum.DATEHM, notificationInfo.yukonUserContext);
+            dateFormattingService.format(reenableDate, DateFormatEnum.DATEHM, notificationInfo.userContext);
 
         LiteAccountInfo liteAcctInfo =
             starsCustAccountInformationDao.getByAccountId(notificationInfo.customerAccount.getAccountId());
 
-        List<Integer> inventoryIdList = notificationInfo.request.getInventoryIdList();
+        List<Integer> inventoryIdList = notificationInfo.optOutRequest.getInventoryIdList();
         List<LiteLmHardwareBase> hardwares = new ArrayList<LiteLmHardwareBase>();
-        ;
 
         for (Integer inventoryId : inventoryIdList) {
             hardwares.add((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId));
@@ -193,7 +192,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         String accountInfo = OptOutNotificationUtil.getAccountInformation(notificationInfo.energyCompany, liteAcctInfo);
         String programInfo =
             OptOutNotificationUtil.getProgramInformation(notificationInfo.energyCompany, liteAcctInfo, hardwares);
-        String questions = OptOutNotificationUtil.getQuestions(notificationInfo.request.getQuestions());
+        String questions = OptOutNotificationUtil.getQuestions(notificationInfo.optOutRequest.getQuestions());
 
         Map<String, Object> values = new HashMap<String, Object>();
         values.put("accountInfo", accountInfo);
@@ -209,12 +208,12 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         return messageBody;
     }
 
-    private class NotificationInfo {
+    private static class NotificationInfo {
         CustomerAccount customerAccount;
         LiteStarsEnergyCompany energyCompany;
-        OptOutRequest request;
+        OptOutRequest optOutRequest;
         String subject;
         String messageBody;
-        YukonUserContext yukonUserContext;
+        YukonUserContext userContext;
     }
 }
