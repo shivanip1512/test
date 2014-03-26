@@ -46,121 +46,122 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
     private boolean sendConfig = true;
     private String redirect;
     private final HttpSession session;
-	
+
     private List<StaticLoadGroupMapping> mappingsToAdjust = null;
     private List<LiteLmHardwareBase> hwsToAdjust = null;
-    private final List<LiteLmHardwareBase> configurationSet = new ArrayList<LiteLmHardwareBase>();
-    private final List<String> failureInfo = new ArrayList<String>();
+    private final List<LiteLmHardwareBase> configurationSet = new ArrayList<>();
+    private final List<String> failureInfo = new ArrayList<>();
     //don't need since liteHw already has the config loaded....HashMap<Integer, com.cannontech.database.db.stars.hardware.LMHardwareConfiguration> existingConfigEntries;
     private int numSuccess = 0;
     private int numFailure = 0;
     private int numToBeConfigured = 0;
-	
-	public AdjustStaticLoadGroupMappingsTask(LiteStarsEnergyCompany energyCompany, boolean fullReset, boolean sendConfig, String redirect, HttpSession session)
-	{
-		this.energyCompany = energyCompany;
-		this.fullReset = fullReset;
+
+    public AdjustStaticLoadGroupMappingsTask(LiteStarsEnergyCompany energyCompany,
+            boolean fullReset, boolean sendConfig, String redirect, HttpSession session) {
+        this.energyCompany = energyCompany;
+        this.fullReset = fullReset;
         this.sendConfig = sendConfig;
         this.redirect = redirect;
-		this.session = session;
-	}
+        this.session = session;
+    }
 
-	@Override
+    @Override
     public String getProgressMsg() {
-		if (numToBeConfigured == 0)
+        if (numToBeConfigured == 0) {
             return "Mapping task is sorting static mappings and inventory items";
-	    else if (fullReset) {
-			if (status == STATUS_FINISHED && numFailure == 0) {
-				return numSuccess + " switches have been mapped successfully to addressing groups.";
-			}
-			else
-				return numSuccess + " of " + numToBeConfigured + " switches have been mapped to addressing groups.";
-		}
-		else {
-			if (status == STATUS_FINISHED && numFailure == 0) {
-			    return numSuccess + " switches mapped to addressing groups.";
-			}
-			else
-				return numSuccess + " of " + numToBeConfigured + " switches mapped to addressing groups.";
-		}
-	}
+        } else if (fullReset) {
+            if (status == STATUS_FINISHED && numFailure == 0) {
+                return numSuccess + " switches have been mapped successfully to addressing groups.";
+            } else {
+                return numSuccess + " of " + numToBeConfigured + " switches have been mapped to addressing groups.";
+            }
+        } else {
+            if (status == STATUS_FINISHED && numFailure == 0) {
+                return numSuccess + " switches mapped to addressing groups.";
+            } else {
+                return numSuccess + " of " + numToBeConfigured + " switches mapped to addressing groups.";
+            }
+        }
+    }
 
-	@Override
+    @Override
     public void run() {
-		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-        
+        StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+
         StringBuffer logEntry = new StringBuffer();
-        if (fullReset)
+        if (fullReset) {
             logEntry.append("Full reset ");
-        else
+        } else {
             logEntry.append("Adjusting all zero entries ");
-        if (sendConfig)
+        }
+        if (sendConfig) {
             logEntry.append("and configs will be sent out if possible.");
-        else
+        } else {
             logEntry.append("but configs will NOT be attempted.");
-            
-        ActivityLogger.logEvent( user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", logEntry.toString());
-        
-		mappingsToAdjust = StaticLoadGroupMapping.getAllStaticLoadGroups();
-		if (mappingsToAdjust == null || mappingsToAdjust.size() < 1) {
-			status = STATUS_ERROR;
-			errorMsg = "There are no static load group mappings available.";
-			return;
-		}
-		
-		status = STATUS_RUNNING;
-		
-		boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty( YukonRoleProperty.ADMIN_MANAGE_MEMBERS,  user.getYukonUser())
-				&& energyCompany.hasChildEnergyCompanies();
-		hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
+        }
+
+        ActivityLogger.logEvent(user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", logEntry.toString());
+
+        mappingsToAdjust = StaticLoadGroupMapping.getAllStaticLoadGroups();
+        if (mappingsToAdjust == null || mappingsToAdjust.size() < 1) {
+            status = STATUS_ERROR;
+            errorMsg = "There are no static load group mappings available.";
+            return;
+        }
+
+        status = STATUS_RUNNING;
+
+        boolean searchMembers = YukonSpringHook.getBean(RolePropertyDao.class).checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS,  user.getYukonUser())
+                && energyCompany.hasChildEnergyCompanies();
+        hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
 
         InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
-        LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean(LMHardwareControlGroupDao.class);        
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean(LMHardwareControlGroupDao.class);
 
-		List<YukonEnergyCompany> energyCompanyList = Lists.newArrayList();
-		if (!searchMembers) {
-			energyCompanyList.add(energyCompany);
-		} else {
-			energyCompanyList.addAll(ECUtils.getAllDescendants(energyCompany));
-		} 
-		
-		if (!fullReset) {
-			// If not a full reset, we will want to only look for those with an addressing group ID of zero
-			hwsToAdjust = inventoryBaseDao.getAllLMHardwareWithoutLoadGroups(energyCompanyList);
-		} else {
-			hwsToAdjust = inventoryBaseDao.getAllLMHardware(energyCompanyList);
-		}
-		
-		numToBeConfigured = hwsToAdjust.size();
-		if (numToBeConfigured == 0) {
-			status = STATUS_ERROR;
-			errorMsg = "No inventory could be loaded.";
-			return;
-		}
-		
+        List<YukonEnergyCompany> energyCompanyList = Lists.newArrayList();
+        if (!searchMembers) {
+            energyCompanyList.add(energyCompany);
+        } else {
+            energyCompanyList.addAll(ECUtils.getAllDescendants(energyCompany));
+        }
+
+        if (!fullReset) {
+            // If not a full reset, we will want to only look for those with an addressing group ID of zero
+            hwsToAdjust = inventoryBaseDao.getAllLMHardwareWithoutLoadGroups(energyCompanyList);
+        } else {
+            hwsToAdjust = inventoryBaseDao.getAllLMHardware(energyCompanyList);
+        }
+
+        numToBeConfigured = hwsToAdjust.size();
+        if (numToBeConfigured == 0) {
+            status = STATUS_ERROR;
+            errorMsg = "No inventory could be loaded.";
+            return;
+        }
+
         String options = null;
-        
-		for (int i = 0; i < hwsToAdjust.size(); i++) {
+
+        for (int i = 0; i < hwsToAdjust.size(); i++) {
             if (isCanceled) {
                 status = STATUS_CANCELED;
                 return;
             }
-            
+
             LiteLmHardwareBase liteHw = hwsToAdjust.get(i);
-			LiteStarsEnergyCompany company = energyCompany;
-						
+            LiteStarsEnergyCompany company = energyCompany;
+
             //get the current Configuration
             LMHardwareConfiguration configDB = LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID());
-            
+
             if (configDB == null) {
-                configurationSet.add( hwsToAdjust.get(i) );
+                configurationSet.add(hwsToAdjust.get(i));
                 numFailure++;
-                failureInfo.add("An LMHardwareConfiguration entry for switch " + liteHw.getManufacturerSerialNumber() 
+                failureInfo.add("An LMHardwareConfiguration entry for switch " + liteHw.getManufacturerSerialNumber()
                                 + " could not be found.  It is likely this switch has not been added to an account.");
                 continue;
             }
-                
-            LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
+
+            LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation(liteHw.getAccountID(), true);
             //get zipCode
             LiteAddress address = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
             String zip = address.getZipCode();
@@ -184,96 +185,83 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 }
             }
             if (applianceCatID == -1) {
-                configurationSet.add( hwsToAdjust.get(i) );
+                configurationSet.add(hwsToAdjust.get(i));
                 numFailure++;
-                failureInfo.add("An appliance could not be detected for serial number " + liteHw.getManufacturerSerialNumber() 
+                failureInfo.add("An appliance could not be detected for serial number " + liteHw.getManufacturerSerialNumber()
                                 + ".  It is likely that this switch is not assigned to an account, or no appliance was created on that account.");
                 continue;
             }
-            
-            //get SwitchTypeID 
+
+            //get SwitchTypeID
             Integer devType = liteHw.getLmHardwareTypeID();
             StaticLoadGroupMapping groupMapping = StaticLoadGroupMapping.getAStaticLoadGroupMapping(applianceCatID, zip, consumptionType, devType);
             if (groupMapping == null) {
-                configurationSet.add( hwsToAdjust.get(i) );
+                configurationSet.add(hwsToAdjust.get(i));
                 numFailure++;
-                failureInfo.add("A static mapping could not be determined for serial number " + liteHw.getManufacturerSerialNumber() 
-                                + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
+                failureInfo.add("A static mapping could not be determined for serial number " + liteHw.getManufacturerSerialNumber()
+                                + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID="
                                 + consumptionType + ",SwitchTypeID=" + devType);
                 continue;
             }
-            
+
             try {
                 configDB.setAddressingGroupID(groupMapping.getLoadGroupID());
                 try {
-                    Transaction.createTransaction( Transaction.UPDATE, configDB ).execute();
-                    
-                    LMHardwareControlGroup existingEnrollment = 
+                    Transaction.createTransaction(Transaction.UPDATE, configDB).execute();
+
+                    LMHardwareControlGroup existingEnrollment =
                         lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(liteHw.getInventoryID(), programId, liteHw.getAccountID());
                     if (existingEnrollment != null) {
                         existingEnrollment.setLmGroupId(groupMapping.getLoadGroupID());
                         lmHardwareControlGroupDao.update(existingEnrollment);
                     } else {
-                        configurationSet.add( hwsToAdjust.get(i) );
+                        configurationSet.add(hwsToAdjust.get(i));
                         numFailure++;
-                        failureInfo.add("An LMHardwareControlGroup entry for switch " + liteHw.getManufacturerSerialNumber() 
+                        failureInfo.add("An LMHardwareControlGroup entry for switch " + liteHw.getManufacturerSerialNumber()
                                         + " could not be found.  It is likely this switch has not been added to an account.");
-                        continue;                        
+                        continue;
                     }
                 } catch(TransactionException e) {
                     throw new WebClientException(e.getMessage());
                 }
-                options = "GroupID:" + groupMapping.getLoadGroupID(); 
-                
+                options = "GroupID:" + groupMapping.getLoadGroupID();
+
                 if (sendConfig) {
                     PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean(PorterExpressComCommandBuilder.class);
                     xcomCommandBuilder.fileWriteConfigCommand(company, liteHw, false, options);
-    				
-    				if (liteHw.getAccountID() > 0) {
-    					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteHw.getAccountID() );
-    					if (starsAcctInfo != null) {
-    						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, company );
-    						StarsUtils.populateInventoryFields( starsAcctInfo, starsInv );
-    					}
-    				}
-    			}
-    			
-                /*
-                 * Jon Gill may wish to use the queue instead of going straight out to his batch files
-                 *else {
-    				SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
-    				cmd.setEnergyCompanyID( company.getLiteID() );
-    				cmd.setAccountID( liteHw.getAccountID() );
-    				cmd.setInventoryID( liteHw.getInventoryID() );
-    				cmd.setCommandType( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE );
-    				cmd.setInfoString( options );
-    				
-    				SwitchCommandQueue.getInstance().addCommand( cmd, false );
-    			}*/
-    			
-    			numSuccess++;
-			}
-			catch (WebClientException e) {
-				CTILogger.error( e.getMessage() , e );
-				if (errorMsg == null) errorMsg = e.getMessage();
-				configurationSet.add( hwsToAdjust.get(i) );
-				numFailure++;
-                failureInfo.add("A static mapping could not be saved for serial number " + liteHw.getManufacturerSerialNumber() 
-                                    + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID=" 
+
+                    if (liteHw.getAccountID() > 0) {
+                        StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation(liteHw.getAccountID());
+                        if (starsAcctInfo != null) {
+                            StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteHw, company);
+                            StarsUtils.populateInventoryFields(starsAcctInfo, starsInv);
+                        }
+                    }
+                }
+
+                numSuccess++;
+            } catch (WebClientException e) {
+                CTILogger.error(e.getMessage() , e);
+                if (errorMsg == null) {
+                    errorMsg = e.getMessage();
+                }
+                configurationSet.add(hwsToAdjust.get(i));
+                numFailure++;
+                failureInfo.add("A static mapping could not be saved for serial number " + liteHw.getManufacturerSerialNumber()
+                                    + ".  ApplianceCategoryID=" + applianceCatID + ", ZipCode=" + zip + ", ConsumptionTypeID="
                                     + consumptionType + ",SwitchTypeID=" + devType);
-			}
-		}
-		
-		//if (!fullReset) SwitchCommandQueue.getInstance().addCommand( null, true );
-		status = STATUS_FINISHED;
-         ActivityLogger.logEvent( user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", "Attempt succeeded." );
-        session.removeAttribute( InventoryManagerUtil.INVENTORY_SET );
-		session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Addressing Groups were reset to static mapped values for " + numSuccess + " switches");
-        
+            }
+        }
+
+        status = STATUS_FINISHED;
+         ActivityLogger.logEvent(user.getUserID(), "STATIC LOAD GROUP MAPPING ACTIVITY", "Attempt succeeded.");
+        session.removeAttribute(InventoryManagerUtil.INVENTORY_SET);
+        session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Addressing Groups were reset to static mapped values for " + numSuccess + " switches");
+
         if (numFailure > 0) {
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Addressing Groups adjustment failed for " + numFailure + " switches");
-			session.setAttribute(InventoryManagerUtil.INVENTORY_SET, configurationSet);
-			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-		}
-	}
+            session.setAttribute(InventoryManagerUtil.INVENTORY_SET, configurationSet);
+            session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+        }
+    }
 }
