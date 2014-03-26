@@ -37,195 +37,179 @@ import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 
 public class OptOutNotificationServiceImpl implements OptOutNotificationService {
+    private final static Logger logger = YukonLogManager.getLogger(OptOutNotificationServiceImpl.class);
 
-    private static final String CODE_SUBJECT = "yukon.dr.consumer.optoutnotification.subject";
-    private static final String OPT_OUT_MESSAGEBODY = "yukon.dr.consumer.optoutnotification.messageBody";
-    private static final String CANCEL_SCHEDULED_OPT_OUT_MESSAGEBODY = "yukon.dr.consumer.cancelscheduledoptoutnotification.messageBody";
-    private static final String REENABLE_MESSAGEBODY = "yukon.dr.consumer.reenableoptoutnotification.messageBody";
-    
-    private final Logger logger = YukonLogManager.getLogger(OptOutNotificationServiceImpl.class);
-    
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private final static String subjectI18nKey = "yukon.dr.consumer.optoutnotification.subject";
+    private final static String optOutMessageBodyKey = "yukon.dr.consumer.optoutnotification.messageBody";
+    private final static String cancelScheduledOptOutMessageBodyKey =
+            "yukon.dr.consumer.cancelscheduledoptoutnotification.messageBody";
+    private final static String reenableMessageBodyKey = "yukon.dr.consumer.reenableoptoutnotification.messageBody";
+
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private YukonUserContextService yukonUserContextService;
     @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private YukonUserContextService userContextService;
 
     @Override
-    public void sendOptOutNotification(final CustomerAccount customerAccount,  
-            final LiteStarsEnergyCompany energyCompany, final OptOutRequest request, 
-            final LiteYukonUser user) throws MessagingException {
-        
-    	YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
-    	
-        MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-        
-        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
-        String messageBody = messageSourceAccessor.getMessage(OPT_OUT_MESSAGEBODY);
-        
-        final Holder holder = new Holder();
-        holder.customerAccount = customerAccount;
-        holder.energyCompany = energyCompany;
-        holder.request = request;
-        holder.subject = subject;
-        holder.messageBody = messageBody;
-        holder.yukonUserContext = yukonUserContext;
-        
-        this.sendNotification(holder);
-        
+    public void sendOptOutNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+            OptOutRequest request, LiteYukonUser user) throws MessagingException {
+        YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+
+        String subject = messageSourceAccessor.getMessage(subjectI18nKey);
+        String messageBody = messageSourceAccessor.getMessage(optOutMessageBodyKey);
+
+        NotificationInfo notificationInfo = new NotificationInfo();
+        notificationInfo.customerAccount = customerAccount;
+        notificationInfo.energyCompany = energyCompany;
+        notificationInfo.request = request;
+        notificationInfo.subject = subject;
+        notificationInfo.messageBody = messageBody;
+        notificationInfo.yukonUserContext = yukonUserContext;
+
+        sendNotification(notificationInfo);
     }
-    
 
-	@Override
-	public void sendCancelScheduledNotification(
-			CustomerAccount customerAccount,
-			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
-			LiteYukonUser user) throws MessagingException {
+    @Override
+    public void sendCancelScheduledNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+            OptOutRequest request, LiteYukonUser user) throws MessagingException {
+        YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
-		YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
-		
-		MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-        
-        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
-        String messageBody = messageSourceAccessor.getMessage(CANCEL_SCHEDULED_OPT_OUT_MESSAGEBODY);
-        
-        final Holder holder = new Holder();
-        holder.customerAccount = customerAccount;
-        holder.energyCompany = energyCompany;
-        holder.request = request;
-        holder.subject = subject;
-        holder.messageBody = messageBody;
-        holder.yukonUserContext = yukonUserContext;
-        
-        this.sendNotification(holder);
-		
-	}
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
 
-	@Override
-	public void sendReenableNotification(CustomerAccount customerAccount,
-			LiteStarsEnergyCompany energyCompany, OptOutRequest request,
-			LiteYukonUser user) throws MessagingException {
+        String subject = messageSourceAccessor.getMessage(subjectI18nKey);
+        String messageBody = messageSourceAccessor.getMessage(cancelScheduledOptOutMessageBodyKey);
 
-		YukonUserContext yukonUserContext = this.getDefaultEnergyCompanyUserContext(energyCompany);
-		
-		MessageSourceAccessor messageSourceAccessor = 
-            messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-        
-        String subject = messageSourceAccessor.getMessage(CODE_SUBJECT);
-        String messageBody = messageSourceAccessor.getMessage(REENABLE_MESSAGEBODY);
-        
-        final Holder holder = new Holder();
-        holder.customerAccount = customerAccount;
-        holder.energyCompany = energyCompany;
-        holder.request = request;
-        holder.subject = subject;
-        holder.messageBody = messageBody;
-        holder.yukonUserContext = yukonUserContext;
-        
-        this.sendNotification(holder);
-		
-	}
-	
-	/**
-	 * Helper method to get a default user context for an energy company
-	 * @param energyCompany - Energy company to get context for
-	 * @return Default context
-	 */
-	private YukonUserContext getDefaultEnergyCompanyUserContext(
-			LiteStarsEnergyCompany energyCompany) {
+        NotificationInfo notificationInfo = new NotificationInfo();
+        notificationInfo.customerAccount = customerAccount;
+        notificationInfo.energyCompany = energyCompany;
+        notificationInfo.request = request;
+        notificationInfo.subject = subject;
+        notificationInfo.messageBody = messageBody;
+        notificationInfo.yukonUserContext = yukonUserContext;
 
-    	YukonUserContext userContext = 
-    		yukonUserContextService.getEnergyCompanyDefaultUserContext(energyCompany.getUser());
+        sendNotification(notificationInfo);
+    }
 
-    	return userContext;
-	}
-	
-	private void sendNotification(Holder holder) throws MessagingException {
-		
-		LiteStarsEnergyCompany energyCompany = holder.energyCompany;
-		
-		String recipientsCsvString = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTOUT_NOTIFICATION_RECIPIENTS, energyCompany.getEnergyCompanyId());
-        
+    @Override
+    public void sendReenableNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+            OptOutRequest request, LiteYukonUser user) throws MessagingException {
+        YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+
+        String subject = messageSourceAccessor.getMessage(subjectI18nKey);
+        String messageBody = messageSourceAccessor.getMessage(reenableMessageBodyKey);
+
+        NotificationInfo notificationInfo = new NotificationInfo();
+        notificationInfo.customerAccount = customerAccount;
+        notificationInfo.energyCompany = energyCompany;
+        notificationInfo.request = request;
+        notificationInfo.subject = subject;
+        notificationInfo.messageBody = messageBody;
+        notificationInfo.yukonUserContext = yukonUserContext;
+
+        sendNotification(notificationInfo);
+    }
+
+    /**
+     * Helper method to get a default user context for an energy company
+     * @param energyCompany - Energy company to get context for
+     * @return Default context
+     */
+    private YukonUserContext getDefaultEnergyCompanyUserContext(LiteStarsEnergyCompany energyCompany) {
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(energyCompany.getUser());
+
+        return userContext;
+    }
+
+    private void sendNotification(NotificationInfo notificationInfo) throws MessagingException {
+        LiteStarsEnergyCompany energyCompany = notificationInfo.energyCompany;
+
+        String recipientsCsvString =
+            ecSettingDao.getString(EnergyCompanySettingType.OPTOUT_NOTIFICATION_RECIPIENTS,
+                energyCompany.getEnergyCompanyId());
+
         if (StringUtils.isBlank(recipientsCsvString)) {
-            throw new AddressException("Property \"optout_notification_recipients\" is not set."); 
+            throw new AddressException("Property \"optout_notification_recipients\" is not set.");
         }
-        
+
         String fromAddress = energyCompany.getAdminEmailAddress();
-        String subject = holder.subject;
-        String messageBody = getMessageBody(holder);
-        
+        String subject = notificationInfo.subject;
+        String messageBody = getMessageBody(notificationInfo);
+
         if (messageBody == null) {
             logger.debug("The message body is empty, no notification message will be sent.");
             return;
         }
-        
-        EmailMessage message = 
-                new EmailMessage(new InternetAddress(fromAddress),
-                                        InternetAddress.parse(recipientsCsvString), subject, messageBody);
+
+        EmailMessage message =
+            new EmailMessage(new InternetAddress(fromAddress), InternetAddress.parse(recipientsCsvString), subject,
+                messageBody);
         emailService.sendMessage(message);
-	}
-    
-    private String getMessageBody(Holder holder) {
-        final long durationInHours = holder.request.getDurationInHours();
-        if (durationInHours <= 0) return null;
-        
-        ReadableInstant optOutStartInstant = holder.request.getStartDate();
-        DateTime optOutDateTime = 
-            new DateTime(optOutStartInstant, holder.yukonUserContext.getJodaTimeZone());
-        
+    }
+
+    private String getMessageBody(NotificationInfo notificationInfo) {
+        long durationInHours = notificationInfo.request.getDurationInHours();
+        if (durationInHours <= 0)
+            return null;
+
+        ReadableInstant optOutStartInstant = notificationInfo.request.getStartDate();
+        DateTime optOutDateTime = new DateTime(optOutStartInstant, notificationInfo.yukonUserContext.getJodaTimeZone());
+
         if (optOutStartInstant == null) {
             optOutStartInstant = new Instant();
         }
 
-        ReadableDuration optOutDuration = Duration.standardHours(durationInHours); 
+        ReadableDuration optOutDuration = Duration.standardHours(durationInHours);
         DateTime reenableDate = optOutDateTime.plus(optOutDuration);
-        
-        String formattedOptOutDate = dateFormattingService.format(optOutStartInstant, 
-                                                                  DateFormatEnum.DATEHM,
-                                                                  holder.yukonUserContext);
-        
-        String formattedReenableDate = dateFormattingService.format(reenableDate,
-                                                                    DateFormatEnum.DATEHM,
-                                                                    holder.yukonUserContext);
-        
-        LiteAccountInfo liteAcctInfo = 
-            starsCustAccountInformationDao.getByAccountId(holder.customerAccount.getAccountId());
 
-        List<Integer> inventoryIdList = holder.request.getInventoryIdList();
-        List<LiteLmHardwareBase> hardwares = new ArrayList<LiteLmHardwareBase>();;
-        
-        for (final Integer inventoryId : inventoryIdList) {
+        String formattedOptOutDate =
+            dateFormattingService.format(optOutStartInstant, DateFormatEnum.DATEHM, notificationInfo.yukonUserContext);
+
+        String formattedReenableDate =
+            dateFormattingService.format(reenableDate, DateFormatEnum.DATEHM, notificationInfo.yukonUserContext);
+
+        LiteAccountInfo liteAcctInfo =
+            starsCustAccountInformationDao.getByAccountId(notificationInfo.customerAccount.getAccountId());
+
+        List<Integer> inventoryIdList = notificationInfo.request.getInventoryIdList();
+        List<LiteLmHardwareBase> hardwares = new ArrayList<LiteLmHardwareBase>();
+        ;
+
+        for (Integer inventoryId : inventoryIdList) {
             hardwares.add((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId));
-        }    
-        
-        String accountInfo = OptOutNotificationUtil.getAccountInformation(holder.energyCompany, liteAcctInfo);
-        String programInfo = OptOutNotificationUtil.getProgramInformation(holder.energyCompany, liteAcctInfo, hardwares);
-        String questions = OptOutNotificationUtil.getQuestions(holder.request.getQuestions());
-        
-        final Map<String, Object> values = new HashMap<String, Object>();
+        }
+
+        String accountInfo = OptOutNotificationUtil.getAccountInformation(notificationInfo.energyCompany, liteAcctInfo);
+        String programInfo =
+            OptOutNotificationUtil.getProgramInformation(notificationInfo.energyCompany, liteAcctInfo, hardwares);
+        String questions = OptOutNotificationUtil.getQuestions(notificationInfo.request.getQuestions());
+
+        Map<String, Object> values = new HashMap<String, Object>();
         values.put("accountInfo", accountInfo);
         values.put("programInfo", programInfo);
         values.put("optOutDate", formattedOptOutDate);
         values.put("reenableDate", formattedReenableDate);
         values.put("questions", questions);
-        
-        final SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
-        String template = holder.messageBody;
-        
+
+        SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
+        String template = notificationInfo.messageBody;
+
         String messageBody = templateProcessor.process(template, values);
         return messageBody;
     }
-    
-    private final class Holder {
+
+    private class NotificationInfo {
         CustomerAccount customerAccount;
         LiteStarsEnergyCompany energyCompany;
         OptOutRequest request;
