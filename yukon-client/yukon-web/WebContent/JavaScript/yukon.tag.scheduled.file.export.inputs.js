@@ -4,9 +4,9 @@ yukon.tag.scheduledFileExportInputs = (function () {
     var 
     _toggleField = function(checkBoxId, changeItemId) {
         if ($(checkBoxId).is(":checked")) {
-            $(changeItemId).removeAttr("disabled").closest("tr").show(250);
+            $(changeItemId).prop("disabled", false).closest("tr").show(250);
         } else {
-            $(changeItemId).attr("disabled","disabled").closest("tr").hide();
+            $(changeItemId).prop("disabled", true).closest("tr").hide();
         }
     },
 
@@ -33,12 +33,12 @@ yukon.tag.scheduledFileExportInputs = (function () {
          if ($("#sameAsSchedName").is(":checked")) {
              _lastDisplayName = $("#exportFileName").val();
              $("#exportFileName").val($("#scheduleName").val());
-             $("#exportFileName").attr("disabled","disabled");
+             $("#exportFileName").prop("disabled", true);
          } else {
             if (_lastDisplayName) {
                  $("#exportFileName").val(_lastDisplayName);
              }
-             $("#exportFileName").removeAttr("disabled");
+             $("#exportFileName").prop("disabled", false);
          }
      },
 
