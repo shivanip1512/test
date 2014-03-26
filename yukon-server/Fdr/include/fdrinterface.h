@@ -106,9 +106,6 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         std::ostream& logNow();
 
-        bool verifyDispatchConnection ();
-        bool putOnDispatchInQueue     ( CtiMessage* );
-
     protected:
 
         CtiMutex            iCparmMutex;
@@ -129,6 +126,10 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         static const CHAR * KEY_DEBUG_LEVEL;
         static const CHAR * KEY_CPARM_RELOAD_RATE_SECONDS;
+
+        bool verifyDispatchConnection ();
+
+        CtiConnection::Que_t iDispatchInQueue;
 
     private:
 

@@ -326,7 +326,7 @@ class ServerSockets
     typedef std::vector<SOCKET> SocketsVec;
     SocketsVec _sockets;
 
-    mutable CtiCriticalSection _socketsCritical;
+    mutable CtiCriticalSection _socketsMux;
 
     int  _lastError;
     bool _nonBlocking;
@@ -356,7 +356,7 @@ public:
     // Note: sockets can still be (re)created afterwards
     void shutdownAndClose()
     {
-        CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+        CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
         shutdownAndClose(_sockets);
     }
 
@@ -373,7 +373,7 @@ public:
     // Returns a copy of the current sockets
     SocketsVec getSockets() const
     {
-        CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+        CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
         return _sockets; // return a copy
     }
 
@@ -404,7 +404,7 @@ public:
         }
 
         {
-            CtiLockGuard<CtiCriticalSection> guard(_socketsCritical);
+            CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
             _sockets = sockets;
         }
     }

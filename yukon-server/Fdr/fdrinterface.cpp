@@ -448,7 +448,17 @@ void CtiFDRInterface::setUpdatePCTimeFlag(const BOOL aChangeFlag)
 BOOL CtiFDRInterface::run( void )
 {
     // start our dispatch distibution thread
-    iThreadFromDispatch.start();
+
+    {
+        WriterGuard guard(iDispatchLock);
+
+        iThreadFromDispatch.start();
+
+        // get the dispatch registration id from the native thread id and proceed with dispatch connection
+        iDispatchRegisterId = iThreadFromDispatch.threadId();
+        connectWithDispatch();
+    }
+
     iThreadToDispatch.start();
     iThreadDbChange.start();
     iThreadReloadCparm.start();
@@ -526,7 +536,11 @@ BOOL CtiFDRInterface::stop( void )
     return TRUE;
 }
 
-
+/**
+ * Connects and register the dispatch connection.
+ *
+ * @return true if dispatch running and valid, false otherwise
+ */
 bool CtiFDRInterface::connectWithDispatch()
 {
     WriterGuard guard(iDispatchLock);
@@ -562,7 +576,7 @@ bool CtiFDRInterface::connectWithDispatch()
             dout << CtiTime() << " Attempting to connect to dispatch for " << getInterfaceName() << endl;
         }
 
-        iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
+        iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch, &iDispatchInQueue ));
         iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
         iDispatchConn->start();
 
@@ -854,18 +868,12 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
             dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionReceiveFromDispatch"  << endl;
         }
 
-        {
-            WriterGuard guard(iDispatchLock);
-            iDispatchRegisterId = RWThreadId();
-            connectWithDispatch();
-        }
-
-        for ( ; ; )
+        for( ; ; )
         {
             std::auto_ptr<CtiMessage> incomingMsg;
 
             //  while i'm not getting anything
-            while( incomingMsg.get() )
+            while( ! incomingMsg.get() )
             {
                 pSelf.serviceCancellation( );
 
@@ -1663,7 +1671,11 @@ std::ostream& CtiFDRInterface::logNow() {
   return dout <<  CtiTime::now()  << string(" FDR-") << getInterfaceName() << string(": ");
 }
 
-
+/**
+ * Verify if the dispatch connection is running
+ *
+ * @return true if dispatch running and valid, false otherwise
+ */
 bool CtiFDRInterface::verifyDispatchConnection()
 {
     {
@@ -1675,36 +1687,5 @@ bool CtiFDRInterface::verifyDispatchConnection()
         }
     }
 
-    return connectWithDispatch();
-}
-
-bool CtiFDRInterface::putOnDispatchInQueue( CtiMessage* message )
-{
-    // take ownership of the message
-    std::auto_ptr<CtiMessage> msg( message );
-
-    {
-        ReaderGuard guard(iDispatchLock);
-
-        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
-        {
-            iDispatchConn->getInQueueHandle().putQueue(msg.release());
-            return true;
-        }
-    }
-
-    connectWithDispatch();
-
-    {
-        ReaderGuard guard(iDispatchLock);
-
-        if( iDispatchConn && iDispatchConn->verifyConnection() == NORMAL )
-        {
-            iDispatchConn->getInQueueHandle().putQueue(msg.release());
-            return true;
-        }
-    }
-
     return false;
 }
-
