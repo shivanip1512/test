@@ -10,6 +10,7 @@ import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 
 /**
@@ -103,7 +104,9 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase {
                     LiteCustomer liteCust = YukonSpringHook.getBean(CustomerDao.class).getLiteCustomer(settleCust.getCustomerID().intValue());
                     Vector acctIDs = liteCust.getAccountIDs();
                     if(acctIDs != null && !acctIDs.isEmpty()) {
-                        LiteAccountInfo lscai = getLiteStarsEC().getCustAccountInformation(((Integer)acctIDs.get(0)).intValue(), true);
+                        StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+                        LiteAccountInfo lscai = 
+                                custAccountDao.getById((Integer)acctIDs.get(0), getLiteStarsEC().getEnergyCompanyId());
                         value = lscai.getCustomerAccount().getAccountNumber();
                     }
 

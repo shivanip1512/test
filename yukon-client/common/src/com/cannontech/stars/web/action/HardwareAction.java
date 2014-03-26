@@ -17,6 +17,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
@@ -171,8 +172,9 @@ public class HardwareAction {
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
-            if (e instanceof WebClientException)
+            if (e instanceof WebClientException) {
                 throw (WebClientException)e;
+            }
     
             throw new WebClientException( "Failed to remove the hardware", e );
         }
@@ -383,7 +385,8 @@ public class HardwareAction {
                 hwsToConfig.add(0, liteHw);
             }
             // refresh account info, after update program enrollment
-            liteAcctInfo = energyCompany.getCustAccountInformation(liteHw.getAccountID(), true);
+            StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+            liteAcctInfo = custAccountDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
         }
     
         StarsInventories starsInvs = new StarsInventories();

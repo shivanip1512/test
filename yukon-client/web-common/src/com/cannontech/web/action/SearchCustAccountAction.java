@@ -18,6 +18,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -176,7 +177,8 @@ public class SearchCustAccountAction implements ActionBase {
 
                 if (accountId != null) { // liteAcctInfo will only be loaded if exactly 1 account was found in
                                          // search.
-                    LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation(accountId, true);
+                    StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+                    LiteAccountInfo liteAcctInfo = custAccountDao.getById(accountId, energyCompany.getEnergyCompanyId());
 
                     session.setAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo);
 

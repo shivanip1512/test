@@ -18,6 +18,7 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
@@ -161,7 +162,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 continue;
             }
 
-            LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation(liteHw.getAccountID(), true);
+            StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+            LiteAccountInfo liteAcctInfo = custAccountDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
             //get zipCode
             LiteAddress address = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
             String zip = address.getZipCode();

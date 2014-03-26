@@ -18,6 +18,7 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
@@ -366,7 +367,8 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
                 hwsToConfig.add(0, liteHw);
             }
             // refresh account info, after update program enrollment
-            liteAcctInfo = energyCompany.getCustAccountInformation(liteHw.getAccountID(), true);
+            StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+            liteAcctInfo = custAccountDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
         }
 
         StarsInventories starsInvs = new StarsInventories();

@@ -13,6 +13,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -113,7 +114,8 @@ public class DeleteLMHardwareAction implements ActionBase {
             //else retreive account (ex. inventory deleted from inventory list)
             LiteAccountInfo liteAcctInfo = (LiteAccountInfo) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteInv.getAccountID()) {
-                liteAcctInfo = energyCompany.getCustAccountInformation(liteInv.getAccountID(), true);
+                StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+                liteAcctInfo = custAccountDao.getById(liteInv.getAccountID(), energyCompany.getEnergyCompanyId());
             }
 
             removeInventory(delHw, liteAcctInfo, energyCompany);
