@@ -12,7 +12,7 @@
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
     <c:if test="${not empty deviceCollection}">
-        <cti:includeScript link="/JavaScript/yukon.tag.scheduledFileExportInputs.js"/>
+        <cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
         <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
         <cti:includeScript link="/JavaScript/yukon.ami.meter.events.report.js"/>
         <cti:includeScript link="/JavaScript/yukon.cron.js"/>

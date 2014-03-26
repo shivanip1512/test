@@ -16,7 +16,7 @@
 <cti:includeScript link="/JavaScript/yukon.cron.js" />
 <cti:includeScript link="/JavaScript/yukon.ami.billing.dynamic.js"/>
 <cti:includeScript link="/JavaScript/yukon.ami.billing.js"/>
-<cti:includeScript link="/JavaScript/yukon.tag.scheduledFileExportInputs.js"/>
+<cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
 
 <cti:tabbedContentSelector id="billing_tab_container" mode="section">
 
