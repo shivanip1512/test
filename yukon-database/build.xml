@@ -139,7 +139,8 @@
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="tempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
-        <property environment="env" /> 
+        <property environment="env" />
+    	
         <copy file="Custom Scripts/Oracle/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
         <replace file="tempCreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
 
@@ -173,7 +174,7 @@
         <!-- Run the oracle creation scripts -->
         <echo message="Importing Creation Scripts" />
         <exec executable="sqlplus" output="db-init-lookup-identity.log">
-            <arg value="${databaseName}/${databaseName}@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=10.106.42.73)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=swdb2.cannontech.com)))"/>
+            <arg value="${databaseName}/${databaseName}@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=${dbOracleServer})(PORT=${dbOracleServerPort})))(CONNECT_DATA=(SERVICE_NAME=swdb2.cannontech.com)))"/>
             <arg value="@CreationScripts/OracleTableCreation.sql"/>
         </exec>
 
