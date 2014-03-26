@@ -40,7 +40,6 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteContact;
@@ -918,15 +917,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         substations = null;
     }
 
-    private LiteAddress getAddress(int addressID) {
-//        LiteAddress address = addressDao.getByAddressId(addressID);
-        return null;//address;
-    }
-    private List<LiteAddress> getAllAddresses() {
-//        List<LiteAddress> addressList = addressDao.getAll();
-        return null;//addressList;
-    }
-    
     public LiteLMProgramWebPublishing getProgram(int programID) {
         Iterable<LiteLMProgramWebPublishing> allPrograms = getAllPrograms();
         for (LiteLMProgramWebPublishing program : allPrograms) {
