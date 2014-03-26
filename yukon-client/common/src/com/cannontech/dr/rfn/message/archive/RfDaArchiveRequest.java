@@ -6,7 +6,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
 /**
- * JMS Queue name: yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest
+ * JMS Queue name: yukon.qr.obj.da.rfn.RfDaArchiveRequest
  */
 public class RfDaArchiveRequest implements RfnIdentifyingMessage, Serializable {
 
