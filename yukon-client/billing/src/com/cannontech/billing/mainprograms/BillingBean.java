@@ -77,17 +77,6 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 //	getBillingDefaults().writeDefaultsFile();
 }
 
-public List<String> getAvailableGroups() {
-    List<? extends DeviceGroup> allGroups = deviceGroupDao.getAllGroups();
-    List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
-        public String map(DeviceGroup from) {
-            return from.getFullName();
-        }
-    });
-    return mappingList;
-}
-
-
 private BillingFile getBillingFile()
 {
 	if(billingFile == null)
