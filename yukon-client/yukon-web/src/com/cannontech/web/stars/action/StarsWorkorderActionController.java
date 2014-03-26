@@ -6,7 +6,6 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public abstract class StarsWorkorderActionController extends AbstractBaseActionController {
@@ -20,9 +19,9 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
             HttpSession session = request.getSession(false);
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, redirect);
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, buildReferer(request));
-            redirect = request.getContextPath() + "/operator/Admin/Message.jsp";
+            redirect = "/operator/Admin/Message.jsp";
         }
-        redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+
         return redirect;
     }
     
@@ -37,14 +36,15 @@ public abstract class StarsWorkorderActionController extends AbstractBaseActionC
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, referer);
             referer = request.getContextPath() + "/operator/Admin/Message.jsp";
         }
-        referer = ServletUtil.createSafeRedirectUrl(request, referer);
         return referer;
     }
     
     private String buildRedirect(final HttpServletRequest request) throws Exception {
         String redirect = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REDIRECT);
         
-        if (redirect == null) redirect = this.getReferer(request);
+        if (redirect == null) {
+            redirect = getReferer(request);
+        }
         
         return redirect;
     }

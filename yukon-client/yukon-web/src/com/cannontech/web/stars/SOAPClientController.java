@@ -31,10 +31,13 @@ public class SOAPClientController implements Controller {
         this.switchContextService = switchContextService;
     }
     
+    @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String referer = request.getHeader( "referer" );
         String action = request.getParameter( "action" );
-        if (action == null) action = "";
+        if (action == null) {
+            action = "";
+        }
 
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -100,8 +103,12 @@ public class SOAPClientController implements Controller {
         
         if (action.equalsIgnoreCase("SendControlOdds")) {
             clientAction = new SendOddsForControlAction();
-            if (destURL == null) destURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
-            if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
+            if (destURL == null) {
+                destURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
+            }
+            if (errorURL == null) {
+                errorURL = request.getContextPath() + "/operator/Consumer/Odds.jsp";
+            }
         } else if (action.equalsIgnoreCase("CreateWorkOrder")) {
             clientAction = new CreateServiceRequestAction();
             session.setAttribute(ServletUtils.ATT_REDIRECT, destURL);
@@ -117,8 +124,12 @@ public class SOAPClientController implements Controller {
             return null;
         }
         
-        if (destURL == null) destURL = referer;
-        if (errorURL == null) errorURL = referer;
+        if (destURL == null) {
+            destURL = referer;
+        }
+        if (errorURL == null) {
+            errorURL = referer;
+        }
 
         if (clientAction != null) {
             nextURL = errorURL;
@@ -129,41 +140,43 @@ public class SOAPClientController implements Controller {
 
                 if (respMsg != null) {
                     int status = clientAction.parse(reqMsg, respMsg, session);
-                    if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null)
+                    if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null) {
                         destURL = request.getContextPath() + (String) session.getAttribute( ServletUtils.ATT_REDIRECT );
+                    }
                     
-                    if (status == 0)    // Operation succeed
+                    if (status == 0) {
                         nextURL = destURL;
-                    else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID)
+                    } else if (status == StarsConstants.FAILURE_CODE_SESSION_INVALID) {
                         nextURL = request.getContextPath() + LOGIN_URL;
-                    else {
+                    } else {
                         setErrorMsg( session, status );
                         nextURL = errorURL;
                     }
-                }
-                else
+                } else {
                     setErrorMsg( session, StarsConstants.FAILURE_CODE_RESPONSE_NULL );
+                }
             }
             else {
-                if (session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE) == null)
+                if (session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE) == null) {
                     setErrorMsg( session, StarsConstants.FAILURE_CODE_REQUEST_NULL );
+                }
             }
         }
 
-        String location = ServletUtil.createSafeRedirectUrl(request, nextURL);
-        response.sendRedirect(location);
+        response.sendRedirect(nextURL);
         return null;
     }
     
     public static void setErrorMsg(HttpSession session, int status) {
-        if (status == StarsConstants.FAILURE_CODE_RUNTIME_ERROR)
+        if (status == StarsConstants.FAILURE_CODE_RUNTIME_ERROR) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to process response message" );
-        else if (status == StarsConstants.FAILURE_CODE_REQUEST_NULL)
+        } else if (status == StarsConstants.FAILURE_CODE_REQUEST_NULL) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to build request message" );
-        else if (status == StarsConstants.FAILURE_CODE_RESPONSE_NULL)
+        } else if (status == StarsConstants.FAILURE_CODE_RESPONSE_NULL) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to receive response message" );
-        else if (status == StarsConstants.FAILURE_CODE_NODE_NOT_FOUND)
+        } else if (status == StarsConstants.FAILURE_CODE_NODE_NOT_FOUND) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation failed: invalid response message" );
+        }
     }
 
 }

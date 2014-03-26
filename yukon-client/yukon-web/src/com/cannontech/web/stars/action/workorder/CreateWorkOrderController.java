@@ -20,9 +20,8 @@ import com.cannontech.web.action.CreateServiceRequestAction;
 import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateWorkOrderController extends StarsWorkorderActionController {
-
     @Autowired private EnergyCompanyService ecService;
-    
+
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany)
@@ -59,5 +58,4 @@ public class CreateWorkOrderController extends StarsWorkorderActionController {
         session.setAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ, operation);
         response.sendRedirect(redirect);
     }
-    
 }

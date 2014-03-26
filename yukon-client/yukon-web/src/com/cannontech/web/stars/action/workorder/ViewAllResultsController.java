@@ -12,19 +12,17 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 public class ViewAllResultsController extends StarsWorkorderActionController {
     private boolean viewAll;
     
-    public void setViewAll(final boolean viewAll) {
+    public void setViewAll(boolean viewAll) {
         this.viewAll = viewAll;
     }
     
     @Override
-    public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
-            final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
-        
+    public void doAction(HttpServletRequest request, HttpServletResponse response, 
+            HttpSession session, StarsYukonUser user, LiteStarsEnergyCompany energyCompany) throws Exception {
         WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
         workOrderBean.setViewAllResults(this.viewAll);
         
-        String redirect = this.getRedirect(request);
+        String redirect = getRedirect(request);
         response.sendRedirect(redirect);
     }
-    
 }

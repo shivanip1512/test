@@ -9,17 +9,18 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
-<%@page import="com.cannontech.core.dao.ContactDao"%>
-<%@page import="com.cannontech.core.dao.ContactNotificationDao"%>
-<%@page import="com.cannontech.core.dao.YukonListDao"%>
-<%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
-<%@ page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
-<%@ page import="com.cannontech.spring.YukonSpringHook"%>
-<%@ page import="com.cannontech.stars.database.data.event.EventWorkOrder"%>
-<%@ page import="com.cannontech.stars.dr.event.model.EventBase"%>
-<%@ page import="com.cannontech.common.model.ContactNotificationType"%>
+<%@ page import="com.cannontech.core.dao.AddressDao" %>
+<%@ page import="com.cannontech.core.dao.ContactDao" %>
+<%@ page import="com.cannontech.core.dao.ContactNotificationDao" %>
+<%@ page import="com.cannontech.core.dao.YukonListDao" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao" %>
+<%@ page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.stars.database.data.event.EventWorkOrder" %>
+<%@ page import="com.cannontech.stars.dr.event.model.EventBase" %>
+<%@ page import="com.cannontech.common.model.ContactNotificationType" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
     LiteWorkOrderBase liteOrder = null;
@@ -414,8 +415,9 @@ function sendWorkOrder() {
  		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
  		LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
  		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
- 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
- 		
+ 	    AddressDao addressDao = YukonSpringHook.getBean(AddressDao.class);
+ 		LiteAddress liteAddr = addressDao.getByAddressId(liteAcctSite.getStreetAddressID());
+
  		String name = StarsUtils.formatName(liteContact.getContFirstName(), liteContact.getContLastName());
  		String homePhone = StarsUtils.getNotification(YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
  		String workPhone = StarsUtils.getNotification(YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));

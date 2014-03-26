@@ -66,7 +66,7 @@ function changeStatus(form) {
 			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager" onsubmit="return validate(this)">
                 <cti:csrfToken/>
                 <input type="hidden" name="action" value="CreateWorkOrder">
-                <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/WorkOrder/WorkOrder.jsp?OrderId=">
+                <input type="hidden" name="REDIRECT" value="/operator/WorkOrder/WorkOrder.jsp?OrderId=">
                 <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
                 <table width="610" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
