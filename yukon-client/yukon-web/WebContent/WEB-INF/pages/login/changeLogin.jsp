@@ -4,9 +4,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
-<cti:url var="actionUrl" value="/login/changelogin"/>
-<cti:url var="usernameActionUrl" value="${actionUrl}/updateusername"/>
-<cti:url var="passwordActionUrl" value="${actionUrl}/updatepassword"/>
+<cti:url var="usernameActionUrl" value="/login/changelogin/updateusername"/>
+<cti:url var="passwordActionUrl" value="/login/changelogin/updatepassword"/>
 
 <div id="changeLogin">
     <c:if test="${not empty loginChangeMsg}">

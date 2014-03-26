@@ -1,7 +1,6 @@
 package com.cannontech.web.login;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -31,7 +29,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.PasswordResetService;
 
 @Controller
@@ -47,7 +44,7 @@ public class ChangeLoginController {
     @Autowired private YukonUserDao yukonUserDao;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
-    public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+    public String view(String redirectUrl, HttpServletRequest request, ModelMap model) {
         
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
@@ -64,8 +61,8 @@ public class ChangeLoginController {
     }
     
     @RequestMapping(value = "/changelogin/updatepassword", method = RequestMethod.POST)
-    public ModelAndView updatePassword(String oldPassword, String newPassword, String confirm, String redirectUrl, HttpServletRequest request) 
-    throws Exception {
+    public String updatePassword(String oldPassword, String newPassword, String confirm, String redirectUrl,
+            HttpServletRequest request) throws Exception {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
@@ -83,24 +80,24 @@ public class ChangeLoginController {
         } catch (PasswordExpiredException e) {
             CTILogger.debug("The password for "+user.getUsername()+" is expired.", e);
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request);
-            return new ModelAndView("redirect:"+passwordResetUrl);
+            return "redirect:" + passwordResetUrl;
         }
         UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
         AuthenticationCategory authenticationCategory = userAuthenticationInfo.getAuthenticationCategory();
-        ChangeLoginMessage loginMsg = validatePassword(oldPassword, newPassword, confirm, user, authenticationCategory, isValidPassword);
+        ChangeLoginMessage loginMsg = validatePassword(newPassword, confirm, user, authenticationCategory, isValidPassword);
         
         if (loginMsg.equals(ChangeLoginMessage.LOGIN_PASSWORD_CHANGED)) {
             authenticationService.setPassword(user, newPassword);
             success = true;
         }
         
-        return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
+        return sendRedirect(redirectUrl, loginMsg, retrySeconds, success);
     }
 
     /**
      * This method validates the password and makes sure it follows the password policy if one exists.
      */
-    private ChangeLoginMessage validatePassword(String oldPassword, String newPassword, String confirmPassword, final LiteYukonUser user,
+    private ChangeLoginMessage validatePassword(String newPassword, String confirmPassword, final LiteYukonUser user,
                                                AuthenticationCategory authenticationCategory, boolean isValidPassword) {
         boolean supportsPasswordChange = authenticationService.supportsPasswordSet(authenticationCategory);
 
@@ -122,9 +119,8 @@ public class ChangeLoginController {
     }
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
-    public ModelAndView updateUsername(String username, String oldPassword, String redirectUrl, HttpServletRequest request) 
-    throws Exception {
-
+    public String updateUsername(String username, String oldPassword, String redirectUrl, HttpServletRequest request) 
+            throws Exception {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
 
@@ -156,7 +152,7 @@ public class ChangeLoginController {
             }
         }
         
-        return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
+        return sendRedirect(redirectUrl, loginMsg, retrySeconds, success);
     }
     
     private boolean isValidPassword(String username, String password) 
@@ -180,30 +176,17 @@ public class ChangeLoginController {
         HttpSession session = request.getSession(false);
         session.setAttribute(LoginController.YUKON_USER, user);
     }
-    
-    private ModelAndView sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginMessage loginMessage,
-                                long retrySeconds, boolean success) {
-        String safeRedirectUrl = ServletUtil.createSafeRedirectUrl(request, redirectUrl);
+
+    private String sendRedirect(String redirectUrl, ChangeLoginMessage loginMessage, long retrySeconds,
+            boolean success) {
         if (loginMessage != null) {
-            StringBuilder msgParams = new StringBuilder().append("?")
-                                                         .append(LOGIN_CHANGE_MESSAGE_PARAM)
-                                                         .append("=")
-                                                         .append(loginMessage.name())
-                                                         .append("&")
-                                                         .append(LOGIN_CHANGE_SUCCESS_PARAM)
-                                                         .append("=")
-                                                         .append(success);
-            
+            redirectUrl += "?" + LOGIN_CHANGE_MESSAGE_PARAM + "=" + loginMessage.name() + "&"
+                    + LOGIN_CHANGE_SUCCESS_PARAM + "=" + success;
             if (retrySeconds > 0) {
-                msgParams.append("&")
-                          .append(LoginController.AUTH_RETRY_SECONDS_PARAM)
-                          .append("=")
-                          .append(retrySeconds);
+                redirectUrl += "&" + LoginController.AUTH_RETRY_SECONDS_PARAM + "=" + retrySeconds;
             }
-            
-            safeRedirectUrl += msgParams.toString();
         }
         
-        return new ModelAndView("redirect:"+safeRedirectUrl);
+        return "redirect:" + redirectUrl;
     }
 }
