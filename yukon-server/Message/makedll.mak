@@ -69,7 +69,8 @@ msg_server_req.obj \
 msg_server_resp.obj \
 msg_signal.obj \
 msg_tag.obj \
-msg_trace.obj
+msg_trace.obj \
+rfn_asid.obj \
 
 
 SERIALIZATION_OBJS=\

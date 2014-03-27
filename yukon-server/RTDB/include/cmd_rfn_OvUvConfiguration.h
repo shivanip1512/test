@@ -57,7 +57,7 @@ public:
         UnderVoltage    = 2023
     };
 
-    virtual unsigned char getApplicationServiceId() const;
+    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
 
     virtual RfnCommandResult decodeCommand( const CtiTime now,
                                             const RfnResponsePayload & response );

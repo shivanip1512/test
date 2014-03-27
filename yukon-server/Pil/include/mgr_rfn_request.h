@@ -66,6 +66,7 @@ private:
     void             handleStatistics();
 
     typedef std::vector<unsigned char> SerializedMessage;
+    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
@@ -78,7 +79,7 @@ private:
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const unsigned char applicationServiceId, const RfnIdentifier &rfnIdentifier);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers asid, const RfnIdentifier &rfnIdentifier);
 
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);

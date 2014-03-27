@@ -2,6 +2,8 @@
 
 #include "cmd_device.h"
 
+#include "rfn_asid.h"
+
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
 
@@ -86,28 +88,9 @@ public:
     //  to be overridden by children that require a result handler
     virtual void invokeResultHandler(ResultHandler &rh) const;
 
-    virtual unsigned char getApplicationServiceId() const;
+    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
 
 protected:
-
-    struct ApplicationServiceIdentifiers
-    {
-        enum type
-        {
-            //Reserved = 0,
-            //C1218PassThrough = 1,
-            ChannelManager = 2,
-            //DlmsPassThrough = 3,
-            //MeterTimeSynchronization = 4,
-            //HanManager = 5,
-            EventManager = 6,
-            //ConfigurationManagement = 8,
-            //HubMeterCommandSet = 0x81,
-            //E2EDT = 0x09,
-            //E2EAP_SNMP = 0x0a,
-            //E2EAP_DNP3 = 0x0b,
-        };
-    };
 
     //
     // Functions called by execute() to create a request command

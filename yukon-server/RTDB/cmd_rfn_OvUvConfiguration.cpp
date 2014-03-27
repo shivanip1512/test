@@ -55,8 +55,10 @@ RfnCommand::Bytes RfnOvUvConfigurationCommand::getCommandHeader()
 
 
 // Event manager message
-unsigned char RfnOvUvConfigurationCommand::getApplicationServiceId() const
+Messaging::Rfn::ApplicationServiceIdentifiers RfnOvUvConfigurationCommand::getApplicationServiceId() const
 {
+    using Messaging::Rfn::ApplicationServiceIdentifiers;
+
     return ApplicationServiceIdentifiers::EventManager;
 }
 

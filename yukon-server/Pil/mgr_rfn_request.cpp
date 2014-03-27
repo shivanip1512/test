@@ -733,12 +733,12 @@ boost::random::mt19937 random_source;
 RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const std::vector<unsigned char> &e2ePacket,
-        const unsigned char applicationServiceId,
+        const ApplicationServiceIdentifiers asid,
         const RfnIdentifier &rfnIdentifier)
 {
     Messaging::Rfn::E2eDataRequestMsg msg;
 
-    msg.applicationServiceId = applicationServiceId;
+    msg.applicationServiceId = asid.value;
     msg.high_priority = true;
     msg.rfnIdentifier = rfnIdentifier;
     msg.protocol      = Messaging::Rfn::E2eMsg::Application;
