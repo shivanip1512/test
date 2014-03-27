@@ -58,6 +58,7 @@ cmd_rfn_FocusLcdConfiguration.obj \
 cmd_rfn_DemandFreeze.obj \
 cmd_rfn_LoadProfile.obj \
 cmd_rfn_OvUvConfiguration.obj \
+cmd_rfn_TemperatureAlarm.obj \
 cmd_rfn_TouConfiguration.obj \
 cmd_rfn_RemoteDisconnect.obj \
 dev_710.obj \

@@ -59,6 +59,7 @@ test_cmd_rfn_FocusLcdConfiguration.obj \
 test_cmd_rfn_DemandFreeze.obj \
 test_cmd_rfn_LoadProfile.obj \
 test_cmd_rfn_OvUvConfiguration.obj \
+test_cmd_rfn_TemperatureAlarm.obj \
 test_cmd_rfn_TouConfiguration.obj \
 test_cmd_rfn_RemoteDisconnect.obj \
 test_cmd_device.obj \
