@@ -15,6 +15,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.RowAndFieldMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -22,22 +23,20 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CallReportRowAndFieldMapper;
 import com.cannontech.stars.dr.account.model.CallReport;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class CallReportDaoImpl implements CallReportDao {
 
-	private static final RowAndFieldMapper<CallReport> rowAndFieldMapper;
-	private YukonJdbcTemplate yukonJdbcTemplate;
-	private NextValueHelper nextValueHelper;
-	private SimpleTableAccessTemplate<CallReport> template;
-	
-    private ECMappingDao ecMappingDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ECMappingDao ecMappingDao;
+
+    private static final RowAndFieldMapper<CallReport> rowAndFieldMapper = new CallReportRowAndFieldMapper();
+
     private ChunkingSqlTemplate chunkyJdbcTemplate;
-    
-    
-    static {
-        rowAndFieldMapper = new CallReportRowAndFieldMapper();
-    }
-    
+    private SimpleTableAccessTemplate<CallReport> template;
+
     @Override
     public CallReport getCallReportByCallId(int callId) {
     	
@@ -139,6 +138,30 @@ public class CallReportDaoImpl implements CallReportDao {
     	}
 	}
 
+    private Function<String, Long> toLongOrZero = new Function<String, Long>() {
+        @Override
+        public Long apply(String input) {
+            try {
+                return Long.parseLong(input);
+            } catch (NumberFormatException e) {
+                return 0L;
+            }
+        }
+    };
+
+    @Override
+    public long getLargestNumericCallNumber(int ecId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CallNumber");
+        sql.append("FROM CallReportBase crb, ECToCallReportMapping map");
+        sql.append("WHERE map.EnergyCompanyId").eq(ecId);
+        sql.append("AND crb.CallID = map.callReportId");
+
+        // Call number is a string and not necessarily a number
+        List<Long> callNumbers = Lists.transform(yukonJdbcTemplate.query(sql, RowMapper.STRING), toLongOrZero);
+        return callNumbers.isEmpty() ? 0L : Collections.max(callNumbers);
+    }
+    
     @PostConstruct
     public void init() throws Exception {
     	
@@ -149,19 +172,4 @@ public class CallReportDaoImpl implements CallReportDao {
     	
     	chunkyJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-    public void setECMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-		this.nextValueHelper = nextValueHelper;
-	}
 }

@@ -52,7 +52,7 @@
     <%-- create button --%>
     <cti:displayForPageEditModes modes="CREATE">
         <div class="page-action-area">
-            <form id="createCallForm" action="/stars/operator/callTracking/create" method="get">
+            <form id="createCallForm" action="<cti:url value="/stars/operator/callTracking/create"/>" method="get">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>
             </form>

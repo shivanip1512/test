@@ -12,13 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DefaultMessageCodesResolver;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -46,11 +46,13 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING)
 public class OperatorCallTrackingController {
 
-    private CallReportDao callReportDao;
-    private YukonListDao yukonListDao;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private RolePropertyDao rolePropertyDao;
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private CallReportDao callReportDao;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+
+    private final String baseKey = "yukon.web.modules.operator.viewCall.";
     
     // CALL LIST
     @RequestMapping("callList")
@@ -75,10 +77,9 @@ public class OperatorCallTrackingController {
         return "operator/callTracking/callList.jsp";
     }
 
-    // CREATE CALL
     @RequestMapping("create")
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.CREATE);
         
         CallReport callReport = new CallReport();
@@ -117,25 +118,38 @@ public class OperatorCallTrackingController {
         CallReport callReport = callReportDao.getCallReportByCallId(callId);
         model.addAttribute("callReport", callReport);
     }
-    
-    // UPDATE CALL
+
+    private synchronized String getNextCallNumberStr(int ecId, LiteYukonUser user) {
+        long maxCallNum = callReportDao.getLargestNumericCallNumber(ecId);
+
+        long nextCallNum = maxCallNum + 1;
+        if (maxCallNum == 0) {
+            String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
+            if (value != null && !value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                try {
+                    long callNumberFromRoleProperty = Long.parseLong(value);
+                    if (callNumberFromRoleProperty > nextCallNum) {
+                        nextCallNum = callNumberFromRoleProperty;
+                    }
+                } catch (NumberFormatException e) {/*don't need it*/}
+            }
+        }
+        return String.valueOf(nextCallNum++);
+    }
+
     @RequestMapping("updateCall")
-    public String updateCall(@ModelAttribute("callReport") CallReport callReport,
-                            BindingResult bindingResult,
-                            ModelMap modelMap,
-                            YukonUserContext userContext,
-                            FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment) {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
+    public String updateCall(@ModelAttribute("callReport") CallReport callReport, BindingResult bindingResult,
+            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, 
+            AccountInfoFragment accountInfoFragment) {
+
         setupCallReportModel(accountInfoFragment, modelMap, userContext, callReport.getCallId());
         
-        // autoGenerateCallNumber for new call
         if (callReport.getCallId() == null && shouldAutoGenerateCallNumber(userContext.getYukonUser())) {
-            
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-            String nextCallNumber = energyCompany.getNextCallNumber();
-            callReport.setCallNumber(nextCallNumber);
+
+            String nextCallNum = getNextCallNumberStr(accountInfoFragment.getEnergyCompanyId(), energyCompany.getUser());
+            callReport.setCallNumber(nextCallNum);
         }
 
         // validate
@@ -143,7 +157,6 @@ public class OperatorCallTrackingController {
         callReportValidator.validate(callReport, bindingResult);
         
         if (bindingResult.hasErrors()) {
-                
             // custom message for those that do not have a call number field to correct
             if (shouldAutoGenerateCallNumber(userContext.getYukonUser()) && callReportValidator.isHasDuplicateCallNumberError()) {
                 bindingResult.reject("callNumberCollision");
@@ -157,33 +170,27 @@ public class OperatorCallTrackingController {
         }
 
         // update or insert
-        if (callReport.getCallId()!= null) {
+        if (callReport.getCallId() != null) {
             callReportDao.update(callReport, accountInfoFragment.getEnergyCompanyId());
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewCall.callUpdated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "callUpdated"));
         } else {
             callReportDao.insert(callReport, accountInfoFragment.getEnergyCompanyId());
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewCall.callCreated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "callCreated"));
         }
         
         return "redirect:callList";
     }
-    
-    // DELETE CALL
+
     @RequestMapping("deleteCall")
-    public String deleteCall(int deleteCallId,
-                            ModelMap modelMap,
-                            YukonUserContext userContext,
-                            FlashScope flashScope,
-                            AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-        
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
+    public String deleteCall(int deleteCallId, ModelMap modelMap, FlashScope flashScope, 
+            AccountInfoFragment accountInfoFragment) {
         callReportDao.delete(deleteCallId);
-        
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewCall.callRemoved"));
-        
-        return "redirect:callList"; 
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "callRemoved"));
+
+        return "redirect:callList";
     }
     
     /**
@@ -191,7 +198,6 @@ public class OperatorCallTrackingController {
      * If it is, that signals to us that the call number should be auto generated.
      */
     private boolean shouldAutoGenerateCallNumber(LiteYukonUser user) {
-        
         String callNumAutoGenstr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
         Boolean callNumAutoGenBoolean = BooleanUtils.toBooleanObject(callNumAutoGenstr);
         
@@ -218,7 +224,7 @@ public class OperatorCallTrackingController {
         
         if (binder.getTarget() != null) {
             DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.operator.viewCall.");
+            msgCodesResolver.setPrefix(baseKey);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
         
@@ -244,30 +250,4 @@ public class OperatorCallTrackingController {
             return yukonListEntry.getEntryText();
         }
     }
-    
-    @Autowired
-    public void setCallReportDao(CallReportDao callReportDao) {
-        this.callReportDao = callReportDao;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
 }

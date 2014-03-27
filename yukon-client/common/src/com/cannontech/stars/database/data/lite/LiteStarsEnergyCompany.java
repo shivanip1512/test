@@ -33,8 +33,6 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlStatement;
@@ -107,7 +105,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private RoleDao roleDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private EnergyCompanySettingDao energyCompanySettingDao;
-    private RolePropertyDao rolePropertyDao;
 
     private final static long serialVersionUID = 1L;
     
@@ -185,7 +182,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = new ConcurrentHashMap<>();
     
-    private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
     private volatile int defaultRouteId = CtiUtilities.NONE_ZERO_ID;
@@ -725,55 +721,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
 
         return Collections.unmodifiableList(routeList);
-    }
-
-    /**
-     * Find the next to the largest call number with pattern "CTI#(NUMBER)", e.g. "CTI#10"
-     */
-    public synchronized String getNextCallNumber() {
-        if (nextCallNo == 0) {
-            String sql = "SELECT CallNumber FROM CallReportBase call, ECToCallReportMapping map "
-                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyId() + " AND call.CallID = map.CallReportID";
-            SqlStatement stmt = new SqlStatement(
-                    sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            
-            try {
-                stmt.execute();
-                long maxCallNo = 0;
-                
-                for (int i = 0; i < stmt.getRowCount(); i++) {
-                    try {
-                        long callNo = Long.parseLong( (String)stmt.getRow(i)[0] );
-                        if (callNo > maxCallNo) {
-                            maxCallNo = callNo;
-                        }
-                    }
-                    catch (NumberFormatException nfe) {}
-                }
-                
-                nextCallNo = maxCallNo + 1;
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-                return null;
-            }
-        }
-        
-        try {
-            String value = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_CALL_NUMBER_AUTO_GEN, user);
-            if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-                value = "";
-            }
-            if (value != null) {
-                long initCallNo = Long.parseLong(value);
-                if (nextCallNo < initCallNo) {
-                    nextCallNo = initCallNo;
-                }
-            }
-        }
-        catch (NumberFormatException e) {}
-        
-        return String.valueOf( nextCallNo++ );
     }
 
     /**
@@ -1883,9 +1830,5 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setEnergyCompanySettingDao(EnergyCompanySettingDao energyCompanySettingDao) {
         this.energyCompanySettingDao = energyCompanySettingDao;
-    }
-    
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 }

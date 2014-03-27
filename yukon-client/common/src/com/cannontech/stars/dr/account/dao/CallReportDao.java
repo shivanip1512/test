@@ -35,4 +35,8 @@ public interface CallReportDao {
      */
     public Integer findCallIdByCallNumber(String callNumber, int energyCompanyId);
 
+    /**
+     * Find the largest call number. If no numeric call numbers exist 0 is returned.
+     */
+    long getLargestNumericCallNumber(int ecId);
 }
