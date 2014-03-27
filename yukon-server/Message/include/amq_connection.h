@@ -86,7 +86,7 @@ public:
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
     template<class Msg>
     static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback);
-    static void enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback);
+    static void enqueueMessageWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, SerializedMessageCallback callback);
 
     static void registerHandler(const ActiveMQ::Queues::InboundQueue &queue, const SerializedMessageCallback callback);
 

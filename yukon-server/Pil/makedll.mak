@@ -43,7 +43,7 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctithriftmsg.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
-$(THRIFT_LIB)
+$(COMPILEBASE)\lib\rfn-e2e.lib \
 
 
 DLLOBJS=\
@@ -53,7 +53,6 @@ pil_exefct.obj \
 pilglob.obj \
 pilserver.obj \
 mgr_rfn_request.obj \
-RfnE2eMsgSerialization.obj \
 
 
 PIL_FULLBUILD = $[Filename,$(OBJ),PilFullBuild,target]

@@ -3,8 +3,8 @@
 #include "dlldefs.h"
 #include "prot_e2eDataTransfer.h"
 #include "dev_rfn.h"
-#include "RfnE2eDataConfirmMsg.h"
-#include "RfnE2eDataIndicationMsg.h"
+#include "rfn_asid.h"
+#include "rfn_e2e_messenger.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 
@@ -61,18 +61,19 @@ private:
     RfnIdentifierSet handleIndications();
     RfnIdentifierSet handleTimeouts();
     void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
-    void             sendMessages(void);
     void             postResults();
     void             handleStatistics();
 
-    typedef std::vector<unsigned char> SerializedMessage;
+    typedef Messaging::Rfn::E2eMessenger E2eMessenger;
+    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
     typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
     struct PacketInfo
     {
-        std::vector<unsigned char> serializedMessage;
+        std::vector<unsigned char> payloadSent;
+        ApplicationServiceIdentifiers asidSent;
         CtiTime  timeSent;
         unsigned retransmissionDelay;
         unsigned retransmits;
@@ -81,13 +82,13 @@ private:
 
     PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers asid, const RfnIdentifier &rfnIdentifier);
 
-    void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
-    void handleRfnE2eDataConfirmMsg(const SerializedMessage &msg);
+    void receiveConfirm(const E2eMessenger::Confirm &msg);
+    void receiveIndication(const E2eMessenger::Indication &msg);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
-    typedef boost::ptr_deque<Messaging::Rfn::E2eDataIndicationMsg> IndicationQueue;
-    typedef boost::ptr_deque<Messaging::Rfn::E2eDataConfirmMsg> ConfirmQueue;
+    typedef std::vector<E2eMessenger::Indication> IndicationQueue;
+    typedef std::vector<E2eMessenger::Confirm> ConfirmQueue;
     typedef std::map<long, unsigned short> DeviceIdToE2eIdMap;
     typedef std::priority_queue<RfnDeviceRequest> RequestQueue;
     typedef std::map<RfnIdentifier, RequestQueue> RfnIdToRequestQueue;
@@ -131,8 +132,6 @@ private:
     typedef std::map<time_t, RfnIdentifierSet> ExpirationMap;
 
     ExpirationMap _upcomingExpirations;
-
-    std::vector<SerializedMessage> _messages;
 };
 
 }

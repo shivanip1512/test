@@ -1,0 +1,81 @@
+#pragma once
+
+#include "rfn_asid.h"
+#include "rfn_identifier.h"
+
+#include "RfnE2eDataIndicationMsg.h"
+#include "RfnE2eDataConfirmMsg.h"
+#include "RfnE2eDataRequestMsg.h"
+
+#include "readers_writer_lock.h"
+
+#include "yukon.h"
+
+#include <boost/ptr_container/ptr_deque.hpp>
+#include <boost/optional.hpp>
+
+namespace Cti {
+namespace Messaging {
+namespace Rfn {
+
+class IM_EX_RFN_E2E E2eMessenger
+{
+public:
+
+    E2eMessenger();
+
+    template<class Msg>
+    struct CallbackFor
+    {
+        typedef boost::function<void (const Msg &)> Callback;
+    };
+
+    struct Message
+    {
+        RfnIdentifier rfnIdentifier;
+    };
+
+    struct PayloadMessage : Message
+    {
+        std::vector<unsigned char> payload;
+    };
+
+    struct Request : PayloadMessage
+    {
+    };
+
+    struct Indication : PayloadMessage, CallbackFor<Indication>
+    {
+    };
+
+    struct Confirm : Message, CallbackFor<Confirm>
+    {
+        boost::optional<YukonError_t> error;
+    };
+
+    static void registerHandler(const ApplicationServiceIdentifiers asid, Indication::Callback callback);
+    static void sendE2eDt    (const Request &msg, ApplicationServiceIdentifiers asid, Confirm::Callback callback);
+    static void sendE2eAp_Dnp(const Request &msg, Confirm::Callback callback);
+
+private:
+
+    typedef std::vector<unsigned char> SerializedMessage;
+
+    //  only one callback per ASID - change to multimap if you need more
+    typedef std::map<ApplicationServiceIdentifiers, Indication::Callback> IndicationCallbackPerAsid;
+
+    readers_writer_lock_t     _indicationMux;
+    IndicationCallbackPerAsid _indicationCallbacks;
+
+    void serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback);
+
+    void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
+    void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg, Confirm::Callback callback);
+};
+
+extern IM_EX_RFN_E2E std::auto_ptr<E2eMessenger> gE2eMessenger;
+
+}
+}
+}
+

@@ -5,6 +5,7 @@ all:
          @build -nologo -f $(PRECOMPILED)\makepch.mak
          @build -nologo -f makethriftlib.mak
          @build -nologo -f makedll.mak
+         @build -nologo -f makerfne2e.mak
          @build -nologo -f maketest.mak
 
 clean:
@@ -35,11 +36,13 @@ copy:
         @build -nologo -f $(PRECOMPILED)\makepch.mak $@
         @build -nologo -f makethriftlib.mak $@
         @build -nologo -f makedll.mak $@
+        @build -nologo -f makerfne2e.mak $@
         @build -nologo -f maketest.mak $@
 
 
 deps:
         @build -nologo -f makethriftlib.mak $@
         @build -nologo -f makedll.mak $@
+        @build -nologo -f makerfne2e.mak $@
         @build -nologo -f maketest.mak $@
 

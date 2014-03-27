@@ -9,10 +9,10 @@
 #include "Thrift/RfnE2eData_types.h"
 
 namespace Cti {
-namespace Pil {
+namespace Messaging {
+namespace Rfn {
 
 using namespace Messaging::Serialization;
-using namespace Messaging::Rfn;
 
 E2eMsg::Protocol mapping( Thrift::RfnE2eProtocol::type protocol )
 {
@@ -204,7 +204,7 @@ MessagePtr<E2eDataIndicationMsg>::type deserialize( const Thrift::RfnE2eDataIndi
 
 const std::string RfnMessagePrefix = "com.eaton.eas.yukon.networkmanager.e2e.rfn.";
 
-MessageFactory<E2eMsg> rfnMessageFactory(RfnMessagePrefix);
+Serialization::MessageFactory<E2eMsg> rfnMessageFactory(RfnMessagePrefix);
 
 struct RfnMessageRegistration  //  must be named so it can have a constructor
 {
@@ -219,4 +219,4 @@ struct RfnMessageRegistration  //  must be named so it can have a constructor
 
 }
 }
-
+}

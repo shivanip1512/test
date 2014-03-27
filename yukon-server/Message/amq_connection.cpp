@@ -444,14 +444,9 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(const ActiveMQ::Qu
 }
 
 
-void ActiveMQConnectionManager::enqueueMessagesWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const std::vector<SerializedMessage> &messages, SerializedMessageCallback callback)
+void ActiveMQConnectionManager::enqueueMessageWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, SerializedMessageCallback callback)
 {
-    for each( const SerializedMessage &message in messages )
-    {
-        //  acquires and releases the mux for each message - we might do better by passing in all or chunks at a time...
-        //    but the critical section should be cheap, so let's not optimize prematurely
-        gActiveMQConnection->enqueueOutgoingMessage(queue, message, callback);
-    }
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, callback);
 }
 
 

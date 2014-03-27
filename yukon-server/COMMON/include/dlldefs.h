@@ -123,6 +123,12 @@
    #define IM_EX_DYNPAOINFO   __declspec(dllimport)
 #endif
 
+#ifdef _DLL_RFN_E2E                // The rfn-e2e.dll
+   #define IM_EX_RFN_E2E   __declspec(dllexport)
+#else
+   #define IM_EX_RFN_E2E   __declspec(dllimport)
+#endif
+
 
 #ifdef _DLL_FDRBASE
    #define IM_EX_FDRBASE       __declspec(dllexport)
