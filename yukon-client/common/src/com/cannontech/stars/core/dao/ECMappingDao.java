@@ -50,11 +50,6 @@ public interface ECMappingDao {
     LiteStarsEnergyCompany getContactEC(int contactId);
 
     /**
-     * Returns an immutable list of all routeIds associated with the energy company
-     */
-    List<Integer> getRouteIdsForEnergyCompanyId(int energyCompanyId);
-
-    /**
      * Returns all the substationIds associated to the given energyCompanyId
      */
     List<Integer> getSubstationIdsForEnergyCompanyId(int energycompanyId);

@@ -37,10 +37,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao {
-    private YukonJdbcTemplate yukonJdbcTemplate;;
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+
     private ChunkingSqlTemplate chunkyJdbcTemplate;
-    
+
     @Override
     public LiteStarsEnergyCompany getCustomerAccountEC(final CustomerAccount account) {
         int accountId = account.getAccountId();
@@ -75,18 +76,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
     	
         return yukonJdbcTemplate.queryForInt(sql);
     }
-    
-    @Override
-    public List<Integer> getRouteIdsForEnergyCompanyId(int energyCompanyId) {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RouteId");
-        sql.append("FROM ECToRouteMapping");
-        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
-        
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
-    }
-    
+
     @Override
     public List<Integer> getSubstationIdsForEnergyCompanyId(int energycompanyId) {
         
@@ -518,18 +508,7 @@ public class ECMappingDaoImpl implements ECMappingDao {
 
         return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
     }
-    
-    // DI Setters
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
+
     @PostConstruct
     public void init() throws Exception {
         chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);

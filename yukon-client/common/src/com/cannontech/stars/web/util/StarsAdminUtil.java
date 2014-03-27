@@ -492,8 +492,9 @@ public class StarsAdminUtil {
         }
     }
 
-    public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId) throws TransactionException {
-        List<Integer> routeIds = energyCompany.getRouteIDs();
+    public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId) {
+        EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
+        List<Integer> routeIds = ecDao.getRouteIds(energyCompany.getEnergyCompanyId());
         if (!routeIds.contains(routeId)) {
             return;
         }
@@ -521,7 +522,7 @@ public class StarsAdminUtil {
                 }
             }
         }
-        ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
+        ECMappingDao ecMappingDao = YukonSpringHook.getBean(ECMappingDao.class);
         ecMappingDao.deleteECToRouteMapping(energyCompany.getEnergyCompanyId(), routeId);
 
         DbChangeManager dbChangeManager = YukonSpringHook.getBean(DbChangeManager.class);

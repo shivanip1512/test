@@ -185,8 +185,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = new ConcurrentHashMap<>();
     
-    private volatile List<Integer> routeIds = null;
-    
     private long nextCallNo = 0;
     private long nextOrderNo = 0;
     
@@ -323,7 +321,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      */
     public void resetAllStoredRoutes() {
         defaultRouteId = CtiUtilities.NONE_ZERO_ID;
-        routeIds = null;
     }
 
     /**
@@ -718,35 +715,18 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         Collections.sort( routeList, LiteComparators.liteStringComparator );
         return Collections.unmodifiableList(routeList);
     }
-    
+
     public List<LiteYukonPAObject> getRoutes() {
-        List<Integer> routeIDs = getRouteIDs();
+        List<Integer> routeIDs = energyCompanyDao.getRouteIds(this.getEnergyCompanyId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
         for (Integer routeId : routeIDs) {
             LiteYukonPAObject liteRoute = paoDao.getLiteYukonPAO(routeId);
             routeList.add(liteRoute);
         }
-        
+
         return Collections.unmodifiableList(routeList);
     }
-    
-    public List<Integer> getRouteIDs() {
-        // This method doesn't honor the isSingleEnergyCompany setting,
-        // maybe getRoutes and getAllRoutes should always delegate to this guy.
-        // However, that would make caching more interesting because we would have
-        // to dump the routeIds whenever the role property was changed.
-        
-        
-        // the following is thread safe as long as routeIds is volatile
-        List<Integer> tempRouteIds = routeIds;
-        if (tempRouteIds == null) {
-            tempRouteIds = ecMappingDao.getRouteIdsForEnergyCompanyId(getEnergyCompanyId());
-            routeIds = ImmutableList.copyOf(tempRouteIds);
-        }
 
-        return tempRouteIds;
-    }
-    
     /**
      * Find the next to the largest call number with pattern "CTI#(NUMBER)", e.g. "CTI#10"
      */
