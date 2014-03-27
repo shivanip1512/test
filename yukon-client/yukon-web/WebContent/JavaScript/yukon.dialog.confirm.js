@@ -15,9 +15,8 @@
  *          * closing the dialog
  */
 
-yukon.namespace('yukon.modules.dialogConfirm');
-
-yukon.modules.dialogConfirm = function (mod) {
+yukon.namespace('yukon.dialogConfirm');
+yukon.modules.dialogConfirm = function () {
     var _initialized = false,
         _current_dialog = null,
         _INDEX_OF_ACTION_BUTTON = 1, // Action button is the right of 2 buttons = [1]
@@ -134,7 +133,8 @@ yukon.modules.dialogConfirm = function (mod) {
                 }
                 _close_dialog();
             }
-        };
+        },
+        mod = {};
     /*---------------------*/
     /* 'PUBLIC' functions */
     /*---------------------*/
@@ -151,78 +151,82 @@ yukon.modules.dialogConfirm = function (mod) {
      *      strings.ok:string       - ok button string
      *      strings.cancel:string   - cancel button string
      */
-    mod.add = function (args) {
-        //initialize the dialog if needed
-        _init();
+//    mod.add = function (args) {
+    mod = {
+        add : function (args) {
 
-        //the default values are NOT i18n'd.  The intent is for the developer to resolve
-        //these strings [title, message, ok, cancel] when calling this function
-        var defaults = {
-                on: null,
-                'eventType': 'click',
-                'strings': {
-                    'title': "UNDEFINED TITLE",
-                    'message': "UNDEFINED MESSAGE",
-                    'ok': 'UNDEFINED OK TEXT',
-                    'cancel': 'UNDEFINED CANCEL TEXT'}
-            };
+            //initialize the dialog if needed
+            _init();
 
-        $.extend(defaults, args);
+            //the default values are NOT i18n'd.  The intent is for the developer to resolve
+            //these strings [title, message, ok, cancel] when calling this function
+            var defaults = {
+                    on: null,
+                    'eventType': 'click',
+                    'strings': {
+                        'title': "UNDEFINED TITLE",
+                        'message': "UNDEFINED MESSAGE",
+                        'ok': 'UNDEFINED OK TEXT',
+                        'cancel': 'UNDEFINED CANCEL TEXT'}
+                };
 
-        if (defaults.on) {
-            //store the data on the element
-            var element = $(defaults.on);
-            element.data('args', defaults);
+            $.extend(defaults, args);
 
-            //remove the href redirect for buttons as applied in yukon.js for buttons with 
-            //a data-href attribute since the binding is likely to be higher in the call
-            //stack than the binding for this function.  Simply removing the data-href attribute
-            //solves the problem as yukon.js binds that event to the document.
-            if (element.is('[data-href]')) {
-                element.data('href', element.attr('data-href'));
-                element.removeAttr('data-href');
+            if (defaults.on) {
+                //store the data on the element
+                var element = $(defaults.on);
+                element.data('args', defaults);
+
+                //remove the href redirect for buttons as applied in yukon.js for buttons with 
+                //a data-href attribute since the binding is likely to be higher in the call
+                //stack than the binding for this function.  Simply removing the data-href attribute
+                //solves the problem as yukon.js binds that event to the document.
+                if (element.is('[data-href]')) {
+                    element.data('href', element.attr('data-href'));
+                    element.removeAttr('data-href');
+                }
+                if (element.is('[onclick]')) {
+                    element.data('onclick', element.attr('onclick'));
+                    element.removeAttr('onclick');
+                }
+
+                //register the event handler
+                $(document).on(defaults.eventType, defaults.on, _show_window);
+                return true;
             }
-            if (element.is('[onclick]')) {
-                element.data('onclick', element.attr('onclick'));
-                element.removeAttr('onclick');
-            }
+            return false;
+        },
 
-            //register the event handler
-            $(document).on(defaults.eventType, defaults.on, _show_window);
-            return true;
-        }
-        return false;
-    };
+        /*
+         * Close the current dialog and perform the cancel action.  By default this 
+         * will trigger a 'yukonDialogConfirmCancel' event on the #yukon_dialog_confirm element
+         */
+        cancel : function () {
+            return _default._cancel_action;
+        },
 
-    /*
-     * Close the current dialog and perform the cancel action.  By default this 
-     * will trigger a 'yukonDialogConfirmCancel' event on the #yukon_dialog_confirm element
-     */
-    mod.cancel = function () {
-        return _default._cancel_action;
-    };
-
-    /*
-     * Return the current dialog if exists, null otherwise
-     */
-    mod.current_dialog = function () {
-       return _current_dialog; 
-    };
+        /*
+         * Return the current dialog if exists, null otherwise
+         */
+        current_dialog : function () {
+           return _current_dialog; 
+        },
         
-    /*
-     * Close the current dialog and perform the ok action.  By default this 
-     * will trigger a 'yukonDialogConfirmOk' event on the #yukon_dialog_confirm element
-     */
-    mod.ok = function () {
-        return _default._ok_action;
+        /*
+         * Close the current dialog and perform the ok action.  By default this 
+         * will trigger a 'yukonDialogConfirmOk' event on the #yukon_dialog_confirm element
+         */
+        ok : function () {
+            return _default._ok_action;
+        }
     };
+    return mod;
 };
 
 ( function () {
     try {
-        Sandbox ('dialogConfirm', function (mod) {
-            yukon.dialogConfirm = mod;
-        });
+        yukon.dialogConfirm = new yukon.modules.dialogConfirm();
     } catch(dialogex) {
+        alert('Exception in confirm dialog initialization: ' + dialogex);
     }
 })();

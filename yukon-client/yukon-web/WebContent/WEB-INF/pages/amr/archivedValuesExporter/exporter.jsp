@@ -234,7 +234,7 @@
             $('#dialogFormElements').hide().remove().appendTo($('#exporterForm'));
             submitForm(-2, 'addAttribute');
         }
-        $('#attributeDialog').bind('editAttributeOkPressed', editAttributeOkPressed);
+        $('#attributeDialog').on('editAttributeOkPressed', editAttributeOkPressed);
 
         $("#attributeDialog").keydown(function (event) {
             if (13 === event.which) {
@@ -247,7 +247,7 @@
             $('#dialogFieldFormElements').hide().remove().appendTo($('#exporterForm'));
             submitForm(-2, 'addField');
         }
-        $('#fieldDialog').bind('editFieldOkPressed', editFieldOkPressed);
+        $('#fieldDialog').on('editFieldOkPressed', editFieldOkPressed);
 
         $('.submitToName').click(function(event) {
             var exporterForm = $('#exporterForm');

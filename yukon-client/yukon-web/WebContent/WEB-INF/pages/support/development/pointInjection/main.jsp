@@ -37,7 +37,7 @@ function addRow(newRowData) {
         type: 'POST',
         url: 'addRow',
         data: {'pointId': newRowData.pointId, 'forceArchive': newRowData.forceArchive}
-    }).success(function (data) {
+    }).done(function (data, textStatus, jqXHR) {
         var dummyHolder = document.createElement('div'),
             replacementRow;
         dummyHolder.innerHTML = data;

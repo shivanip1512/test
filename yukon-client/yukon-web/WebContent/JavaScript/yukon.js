@@ -48,6 +48,31 @@ if (!Object.create) {
     })();
 }
 
+// Function.prototype.bind polyfill
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (oThis) {
+      if (typeof this !== "function") {
+        // closest thing possible to the ECMAScript 5 internal IsCallable function
+        throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+      }
+
+      var aArgs = Array.prototype.slice.call(arguments, 1), 
+          fToBind = this, 
+          fNOP = function () {},
+          fBound = function () {
+            return fToBind.apply(this instanceof fNOP && oThis
+                                   ? this
+                                   : oThis,
+                                 aArgs.concat(Array.prototype.slice.call(arguments)));
+          };
+
+      fNOP.prototype = this.prototype;
+      fBound.prototype = new fNOP();
+
+      return fBound;
+    };
+}
+
 /** Yukon Module */
 var yukon = (function (yukonMod) {
     return yukonMod;
@@ -83,60 +108,18 @@ yukon.namespace('yukon.modules.base'); // creates our base module namespace
 
 // define our base module
 yukon.modules.base = function (box) {
-    // replacement for prototype.js bind call
-    // Note: All "modern" browsers support Function.prototype.bind, IE9+, Safari
-    // 5.1.4+ (but not ipad1!).
-    // However, until prototype.js is purged entirely, its own version of bind
-    // will be invoked. This can be verified this by setting a breakpoint just
-    // before a call to bind.
-    // prototype bind: func.bind(context[, arg1, arg2, ...])
-    // Function.prototype.bind: same as prototype ECMAScript 5th edition
-    // var yukonApi = {
-    box.doBind = function (func, context) {
-        var nargs = arguments.length, args = Array.prototype.slice
-                .call(arguments), extraArgs = args.slice(2, args.length);
-        return function () {
-            var addIndex, argLength;
-            if (nargs > 2) {
-                // tack on addition arguments
-                argLength = arguments.length;
-                // to emulate the way prototype adds extra arguments, we must
-                // prepend
-                // additional arguments to whatever arguments this function is
-                // called with
-                for (addIndex = extraArgs.length - 1; addIndex >= 0; addIndex -= 1, argLength += 1) {
-                    // the following allows us to "steal" an Array method and
-                    // apply it to the passed in arguments object, which is, as
-                    // they say,
-                    // "array-like" but not an array proper
-                    // passed to this function:
-                    // func(a, b, ...)
-                    // passed to doBind:
-                    // doBind(func, context, arg1, arg2, ...)
-                    // we want the following arguments passed to func, the
-                    // callback, in the following order
-                    // func(arg1, arg2, ..., a, b, ...)
-                    [].unshift.call(arguments, extraArgs[addIndex]);
-                }
-            }
-            if ('undefined' === typeof func) {
-                throw "yukon.doBind: func undefined";
-            } else {
-                func.apply(context, arguments);
-            }
-        };
-    };
     // support for inheritance: inherit superType's prototype
     box.inheritPrototype = function (subType, superType) {
         var prototype = Object.create(superType.prototype);
         prototype.constructor = subType;
         subType.prototype = prototype;
     };
+
     // Handle app name prepending here
     box.url = function (url) {
         return YG.APP_NAME + url;
     };
-    
+
     // JavaScript side of JsonTag.java
     box.fromJson = function(selector) {
         return JSON.parse($(selector).text());
@@ -719,13 +702,13 @@ yukon.modules.ui = function (mod) {
     /** Object to glass out an element, used by #block and #unblock */
     mod.elementGlass = {
         show: function (element) {
-            var element = $(element),
+            var jqElement = $(element),
                 glass;
-            if (element[0]) {
-                glass = element.find(".glass");
+            if (jqElement[0]) {
+                glass = jqElement.find(".glass");
                 if (!glass[0]) {
-                    element.prepend($("<div>").addClass("glass"));
-                    glass = element.find(".glass");
+                    jqElement.prepend($("<div>").addClass("glass"));
+                    glass = jqElement.find(".glass");
                 }
                 return mod.elementGlass.redraw(glass);
             }
@@ -923,7 +906,7 @@ $.fn.flashYellow = function (duration) {
 };
 
 /** Initialize the lib */
-$(document).ready(function () {
+$( function () {
     yukon.ui.init();
     yukon.ui.initSitewideSearchAutocomplete();
 

@@ -78,7 +78,7 @@
         $("#${cti:escapeJavaScript(show)}Btn").replaceWith($("#${cti:escapeJavaScript(show)}Btn").html()); // Remove surrounding anchor tag
         $("#${cti:escapeJavaScript(sortBy)}Btn").replaceWith($("#${cti:escapeJavaScript(sortBy)}Btn").html()); // Remove surrounding anchor tag
 
-          $(document).bind("customDateRangeSubmit", function(event) {
+          $(document).on("customDateRangeSubmit", function(event) {
              yukon.ui.blockPage();
              $("#customDateForm").submit();
         });

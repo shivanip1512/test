@@ -97,7 +97,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         this.selectAllCheckBox.checked = allSelected;
         $(this.selectAllPagesLink.parentNode).hide();
         $(this.allPagesSelected.parentNode).hide();
-        $(this.clearEntireSelectionLink).parentNode.hide();
+        $(this.clearEntireSelectionLink.parentNode).hide();
         $(this.entireSelectionCleared).hide();
     },
 
@@ -363,7 +363,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
 
         if (!onComplete) {
-            onComplete = yukon.doBind(updateSearchResults, this);
+            onComplete = updateSearchResults.bind(this);
         }
         function doOnComplete(transport) {
             try {
@@ -375,7 +375,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         }
         if (null === onFailure) {
-            onFailure = yukon.doBind(ajaxError, this);
+            onFailure = ajaxError.bind(this);
         }
         $.ajax({
             dataType: "json",
@@ -467,10 +467,10 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
                 parameters.extraArgs = this.extraArgs;
             }
             if (null === onIdSearchCompleteFunc) {
-                onIdSearchCompleteFunc = yukon.doBind(onIdSearchComplete, this);
+                onIdSearchCompleteFunc = onIdSearchComplete.bind(this);
             }
             if (null === onFailure) {
-                onFailure = yukon.doBind(ajaxError, this);
+                onFailure = ajaxError.bind(this);
             }
             $.ajax({
                 type: 'POST',
@@ -585,7 +585,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             parameters.mode = 'inline';
         }
 
-        onCompleteBind = yukon.doBind(onPrimeComplete, this, showPicker, initialIds, skipFocus);
+        onCompleteBind = onPrimeComplete.bind(this, showPicker, initialIds, skipFocus);
         $(pickerDialogDivContainer).load(yukon.url('/picker/build'), parameters, onCompleteBind);
 
     },
@@ -752,7 +752,7 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
     };
 
     yukon.protoPicker.prototype.selectAllPages = function () {
-        doSearch.call(this, 0, -1, yukon.doBind(this.selectAllOnComplete, this));
+        doSearch.call(this, 0, -1, this.selectAllOnComplete.bind(this));
     };
 
     yukon.protoPicker.prototype.clearEntireSelection = function () {

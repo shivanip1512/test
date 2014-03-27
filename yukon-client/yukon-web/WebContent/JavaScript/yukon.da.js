@@ -242,7 +242,7 @@ yukon.da = (function () {
             $.ajax({
                 url: yukon.url('/capcontrol/pageExpire'),
                 data: {'paoIds': paoIds}
-            }).success(function(data) {
+            }).done(function (data, textStatus, jqXHR) {
                 if (data.expired) {
                     $('#updatedWarning').dialog('open');
                 } else {

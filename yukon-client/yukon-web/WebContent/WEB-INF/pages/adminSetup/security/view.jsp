@@ -248,12 +248,12 @@
         });
     }
     
-    $(document).bind('addKeyFormSubmit', function(event) {
+    $(document).on('addKeyFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#encryptionKey').submit();
     });
     
-    $(document).bind('importKeyFileFormSubmit', function(event) {
+    $(document).on('importKeyFileFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#fileImportBindingBean').submit();
     });

@@ -168,7 +168,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         parameters = $.extend({}, this.addItemParameters);
         url = 'addItem';
         thisContext = this;
-        onComplete = yukon.doBind(this.addItemSuccess, this);
+        onComplete = this.addItemSuccess.bind(this);
         if (extraArgs) {
             if (extraArgs.extraParameters) {
                 $.extend(parameters, extraArgs.extraParameters);
@@ -314,7 +314,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         if (row == visibleRows[0]) {
             disableMoveUp(visibleRows[1]);
         }
-        if (row == visibleRows.last()) {
+        if (row == $(visibleRows).last()[0]) {
             disableMoveDown(visibleRows[visibleRows.length - 2]);
         }
     };
@@ -349,7 +349,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             enableMoveUp(aroundRow);
         }
 
-        if (aroundRow === visibleRows.last()) {
+        if (aroundRow === $(visibleRows).last()[0]) {
             disableMoveDown(aroundRow);
             enableMoveDown(visibleRows[visibleRows.length - 2]);
         } else {

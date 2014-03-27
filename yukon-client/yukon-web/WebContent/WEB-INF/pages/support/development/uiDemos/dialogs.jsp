@@ -11,12 +11,12 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#confirmDeleteDlg').bind('yukonConfirmDialogOK', function() {
+    $('#confirmDeleteDlg').on('yukonConfirmDialogOK', function() {
         $('#confirmDeleteDlg').dialog('close');
         alert('You seem to be certain you want to delete it.');
     });
 
-    $('#inlineDialog3').bind('yukonOkPressed', function() {
+    $('#inlineDialog3').on('yukonOkPressed', function() {
         $('#inlineDialog3').dialog('close');
         alert('You pressed OK.');
     });

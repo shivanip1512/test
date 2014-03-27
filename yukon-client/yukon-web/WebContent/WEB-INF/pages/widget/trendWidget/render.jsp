@@ -7,12 +7,14 @@
 
 <script type="text/javascript"> 
 $(function () {
+    var dateTimePicker;
     $("#trendWidget").find(".icon-help").click(function() {
         $("#trendWidgetWhatsThisText")
             .html('<cti:msg2 javaScriptEscape="true" key="${attributeGraphType.description}"/>');
     });
+    dateTimePicker = yukon.ui.initDateTimePickers();
     // init for a specific DOM element and its children
-    yukon.ui.dateTimePickers.ancestorInit('#optionalDateFields');
+    dateTimePicker.ancestorInit('#optionalDateFields');
 });
 </script>
 

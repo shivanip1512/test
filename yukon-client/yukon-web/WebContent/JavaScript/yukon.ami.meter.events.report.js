@@ -76,18 +76,22 @@ yukon.ami.meterEventsReport = (function () {
     }
 
     function _updateEventTypes() {
-        var numSelected = 0;
+        var numSelected = 0,
+            selectedNodes;
         $("#eventTypeInputs").empty();
-        $("#eventTree").dynatree("getSelectedNodes").each(function(node) {
-            if (_ignoreTitle(node.data.title) === false) {
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'attributes',
-                    value: node.data.attribute
-                }).appendTo('#eventTypeInputs');
-                numSelected++;
-            }
-        });
+        selectedNodes = $("#eventTree").dynatree("getSelectedNodes");
+        if ('undefined' !== typeof selectedNodes) {
+            $(selectedNodes).each(function(index, node) {
+                if (_ignoreTitle(node.data.title) === false) {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'attributes',
+                        value: node.data.attribute
+                    }).appendTo('#eventTypeInputs');
+                    numSelected++;
+                }
+            });
+        }
         $('#numEventTypes').html(numSelected);
         $('#filterPopupEventTypes').dialog('close');
     }

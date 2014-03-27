@@ -34,7 +34,7 @@ $(function() {
                 }
 
                 // This part of the function updates the log contents shown on the screen
-                logLines.each(function(newLogLine) {
+                $(logLines).each(function(index, newLogLine) {
                     var newDiv = $("<div class='logLine'>" + newLogLine +"\n</div>");
                     $("#logOutput").append(newDiv);
                     //This animation sets overflow:hidden at the end. This prevents us from scrolling left-right.
