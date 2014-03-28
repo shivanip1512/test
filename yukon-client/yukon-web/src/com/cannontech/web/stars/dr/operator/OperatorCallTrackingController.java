@@ -131,7 +131,9 @@ public class OperatorCallTrackingController {
                     if (callNumberFromRoleProperty > nextCallNum) {
                         nextCallNum = callNumberFromRoleProperty;
                     }
-                } catch (NumberFormatException e) {/*don't need it*/}
+                } catch (NumberFormatException e) {
+                    // OPERATOR_CALL_NUMBER_AUTO_GEN can also be 'true', or 'false'.
+                }
             }
         }
         return String.valueOf(nextCallNum++);
