@@ -17,43 +17,43 @@
     
     <!-- TAGS -->
     <pao id="SUPPORTS_TOU_TAG" abstract="true">
-    	<tags>
-        	<tag name="TOU"/>
+        <tags>
+            <tag name="TOU"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_OUTAGE_TAG" abstract="true">
-    	<tags>
-        	<tag name="OUTAGE"/>
+        <tags>
+            <tag name="OUTAGE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_HIGH_BILL_TAG" abstract="true">
-    	<tags>
-        	<tag name="HIGH_BILL"/>
+        <tags>
+            <tag name="HIGH_BILL"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_MOVE_TAG" abstract="true">
-    	<tags>
-        	<tag name="MOVE_SUPPORTED"/>
+        <tags>
+            <tag name="MOVE_SUPPORTED"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_LOAD_PROFILE_TAG" abstract="true">
-    	<tags>
-        	<tag name="LOAD_PROFILE"/>
+        <tags>
+            <tag name="LOAD_PROFILE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_PEAK_REPORT_TAG" abstract="true">
-    	<tags>
-        	<tag name="PEAK_REPORT"/>
+        <tags>
+            <tag name="PEAK_REPORT"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_VOLTAGE_TAG" abstract="true">
-    	<tags>
-        	<tag name="VOLTAGE"/>
+        <tags>
+            <tag name="VOLTAGE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_VOLTAGE_PROFILE_TAG" abstract="true">
-    	<tags>
-        	<tag name="VOLTAGE_PROFILE"/>
+        <tags>
+            <tag name="VOLTAGE_PROFILE"/>
         </tags>
     </pao>
     <pao id="SUPPORTS_PHASE_DETECT_TAG" abstract="true">
@@ -163,8 +163,8 @@
             </attribute>
         </attributes>
         <tags>
-        	<tag name="DISCONNECT_410"/>
-        	<tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
+            <tag name="DISCONNECT_410"/>
+            <tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
             <tag name="DEVICE_CONFIGURATION"/>
         </tags>
         <configuration>
@@ -193,7 +193,7 @@
             </attribute>
         </attributes>
         <tags>
-        	<tag name="DISCONNECT_410"/>
+            <tag name="DISCONNECT_410"/>
         </tags>
     </pao>
     
@@ -333,11 +333,11 @@
 
     <!-- MCT BASE -->
     <pao id="MCT_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, SUPPORTS_COMMANDER_REQUESTS_TAG">
-    	<displayGroup>MCT</displayGroup>
-    	<changeGroup>mct</changeGroup>
+        <displayGroup>MCT</displayGroup>
+        <changeGroup>mct</changeGroup>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-4194303</value>	<!-- max 22bit (positive values only) -->
+                <value>0-4194303</value>    <!-- max 22bit (positive values only) -->
             </tag>
             <tag name="DEVICE_ICON_TYPE">
                 <value>electric_meter</value>
@@ -348,7 +348,7 @@
             <tag name="PORTER_COMMAND_REQUESTS" />
             <tag name="USES_METER_NUMBER_FOR_MSP" />
         </tags>
-	</pao>
+    </pao>
     
     <!-- MCT 470 -->
     <!-- MCT_430_VOLTAGE valid for all 470 EXCEPT Elster (Alpha) Power Plus -->
@@ -356,7 +356,7 @@
         <displayName>MCT-470</displayName>
         <points>
             <point type="PulseAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -381,7 +381,7 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="PulseAccumulator"  offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -437,7 +437,7 @@
             </point>
 
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -462,7 +462,7 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="DemandAccumulator" offset="11">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -511,7 +511,7 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="DemandAccumulator" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW-LP</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -565,7 +565,7 @@
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
-			<point type="DemandAccumulator" offset="152">
+            <point type="DemandAccumulator" offset="152">
                 <name>TOU Rate C - Peak kW (Channel 2)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -585,577 +585,21 @@
             </point>
             
             <point type="Analog" offset="1">
-            	<init>true</init>
-            	<name>Total kWh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="2">
-            	<init>true</init>
-                <name>Peak kW (Rate A kW)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="3">
-            	<init>true</init>
-                <name>Rate A kWh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="4">
-                <name>Peak kW (Rate B kW)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="5">
-                <name>Rate B kWh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="6">
-                <name>Peak kW (Rate C kW)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="7">
-                <name>Rate C kWh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="8">
-                <name>Peak kW (Rate D kW)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="9">
-                <name>Rate D kWh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="10">
-            	<init>true</init>
-                <name>Last Interval kW</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="11">
-            	<init>true</init>
-                <name>kVArh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="12">
-            	<init>true</init>
-                <name>Peak kVAr (Rate A kVAr)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="13">
-            	<init>true</init>
-                <name>Rate A kVArh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="14">
-                <name>Peak kVAr (Rate B kVAr)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="15">
-                <name>Rate B kVArh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="16">
-                <name>Peak kVAr (Rate C kVAr)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="17">
-                <name>Rate C kVArh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="18">
-                <name>Peak kVAr (Rate D kVAr)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="19">
-                <name>Rate D kVArh</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="20">
-                <name>Last Interval kVAr</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="21">
-                <name>Peak kW (IED)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="22">
-                <name>Peak kM (Coincidental)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kVar"/>
-                <decimalplaces value="4"/>
-            </point>
-			<point type="Analog" offset="31">
-                <name>Average Power Factor</name>
-                <multiplier value="0.001"/>
-                <unitofmeasure value="PF"/>
-                <decimalplaces value="4"/>
-            </point>
-			<point type="Analog" offset="39">
-            	<init>true</init>
-                <name>IED Demand Reset Count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="40">
-            	<init>true</init>
-                <name>IED Blink Count</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Counts"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="102">
-                <name>Peak kW Frozen (Rate A kW)</name>
-                <multiplier value="0.01"/>
-                <unitofmeasure value="kW"/>
-                <decimalplaces value="4"/>
-            </point>
-            <point type="Analog" offset="103">
-                <name>Rate A kWh Frozen</name>
-                <multiplier value="0.0001"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="4"/>
-            </point>
-            
-            <point type="Status" offset="2000">
-                <name>Comm Status</name>
-                <stategroup value="SystemState"/>
-            </point>
-        </points>
-  		<commands>
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        		<pointRef name="kWh (Channel 2)"/>
-        		<pointRef name="kWh (Channel 3)"/>
-        		<pointRef name="kWh (Channel 4)"/>
-        	</command>
-			<command id="READ_USAGE_FROZEN" enabled="false">
-				<name>Read Usage (Frozen)</name>
-        		<cmd text="getvalue kWh frozen"/>
-        		<pointRef name="kWh"/>
-        		<pointRef name="kWh (Channel 2)"/>
-        		<pointRef name="kWh (Channel 3)"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        		<pointRef name="kW (Channel 2)"/>
-        		<pointRef name="kW (Channel 3)"/>
-        		<pointRef name="kW (Channel 4)"/>
-        	</command>
-			<command id="READ_PEAK">
-				<name>Read Peak</name>
-        		<cmd text="getvalue peak"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="Minimum kW"/>
-        	</command>
-			<command id="READ_PEAK_CHANNEL_2">
-				<name>Read Peak (Channel 2)</name>
-        		<cmd text="getvalue peak offset 2"/>
-        		<pointRef name="Peak kW (Channel 2)"/>
-        		<pointRef name="Minimum kW (Channel 2)"/>
-        	</command>
-			<command id="READ_PEAK_CHANNEL_3">
-				<name>Read Peak (Channel 3)</name>
-        		<cmd text="getvalue peak offset 3"/>
-        		<pointRef name="Peak kW (Channel 3)"/>
-        		<pointRef name="Minimum kW (Channel 3)"/>
-        	</command>
-			<command id="READ_PEAK_CHANNEL_4Read Peak (Channel 4)">
-				<name>Read Peak (Channel 4)</name>
-        		<cmd text="getvalue peak offset 4"/>
-        		<pointRef name="Peak kW (Channel 4)"/>
-        		<pointRef name="Minimum kW (Channel 4)"/>
-        	</command>
-			<command id="READ_FROZEN_PEAK" enabled="false">
-				<name>Read Frozen Peak</name>
-        		<cmd text="getvalue peak frozen"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="Minimum kW"/>
-        	</command>
-			<command id="READ_FROZEN_PEAK_CHANNEL_2" enabled="false">
-				<name>Read Frozen Peak (Channel 2)</name>
-        		<cmd text="getvalue peak offset 2 frozen"/>
-        		<pointRef name="Peak kW (Channel 2)"/>
-        		<pointRef name="Minimum kW (Channel 2)"/>
-        	</command>
-			<command id="READ_FROZEN_PEAK_CHANNEL_3" enabled="false">
-				<name>Read Frozen Peak (Channel 3)</name>
-        		<cmd text="getvalue peak offset 3 frozen"/>
-        		<pointRef name="Peak kW (Channel 3)"/>
-        		<pointRef name="Minimum kW (Channel 3)"/>
-        	</command>
-			<command id="READ_FROZEN_PEAK_CHANNEL_4" enabled="false">
-				<name>Read Frozen Peak (Channel 4)</name>
-        		<cmd text="getvalue peak offset 4 frozen"/>
-        		<pointRef name="Peak kW (Channel 4)"/>
-        		<pointRef name="Minimum kW (Channel 4)"/>
-        	</command>
-        	
-			<command id="READ_TOU_RATE_A_CHANNEL_1">
-				<name>Read TOU Rate A Channel 1</name>
-        		<cmd text="getvalue kWh rate a"/>
-        		<pointRef name="TOU Rate A (Channel 1)"/>
-        		<pointRef name="TOU Rate A - Peak kW (Channel 1)"/>
-        	</command>
-			<command id="READ_TOU_RATE_B_CHANNEL_1">
-				<name>Read TOU Rate B Channel 1</name>
-        		<cmd text="getvalue kWh rate b"/>
-        		<pointRef name="TOU Rate B (Channel 1)"/>
-        		<pointRef name="TOU Rate B - Peak kW (Channel 1)"/>
-        	</command>
-			<command id="READ_TOU_RATE_C_CHANNEL_1">
-				<name>Read TOU Rate C Channel 1</name>
-        		<cmd text="getvalue kWh rate c"/>
-        		<pointRef name="TOU Rate C (Channel 1)"/>
-        		<pointRef name="TOU Rate C - Peak kW (Channel 1)"/>
-        	</command>
-			<command id="READ_TOU_RATE_D_CHANNEL_1">
-				<name>Read TOU Rate D Channel 1</name>
-        		<cmd text="getvalue kWh rate d"/>
-        		<pointRef name="TOU Rate D (Channel 1)"/>
-        		<pointRef name="TOU Rate D - Peak kW (Channel 1)"/>
-        	</command>
-			<command id="READ_TOU_RATE_A_CHANNEL_2">
-				<name>Read TOU Rate A Channel 2</name>
-        		<cmd text="getvalue kWh rate a channel 2"/>
-        		<pointRef name="TOU Rate A (Channel 2)"/>
-        		<pointRef name="TOU Rate A - Peak kW (Channel 2)"/>
-        	</command>
-			<command id="READ_TOU_RATE_B_CHANNEL_2">
-				<name>Read TOU Rate B Channel 2</name>
-        		<cmd text="getvalue kWh rate b channel 2"/>
-        		<pointRef name="TOU Rate B (Channel 2)"/>
-        		<pointRef name="TOU Rate B - Peak kW (Channel 2)"/>
-        	</command>
-			<command id="READ_TOU_RATE_C_CHANNEL_2">
-				<name>Read TOU Rate C Channel 2</name>
-        		<cmd text="getvalue kWh rate c channel 2"/>
-        		<pointRef name="TOU Rate C (Channel 2)"/>
-        		<pointRef name="TOU Rate C - Peak kW (Channel 2)"/>
-        	</command>
-			<command id="READ_TOU_RATE_D_CHANNEL_2">
-				<name>Read TOU Rate D Channel 2</name>
-        		<cmd text="getvalue kWh rate d channel 2"/>
-        		<pointRef name="TOU Rate D (Channel 2)"/>
-        		<pointRef name="TOU Rate D - Peak kW (Channel 2)"/>
-        	</command>        	
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Blink Count"/>
-        	</command>
-			<command id="READ_TOTAL_KWH">
-				<name>Read Total kWh</name>
-				<cmd text="getvalue ied kwht"/>
-				<pointRef name="Total kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_A_KWH_PEAK_KW">
-				<name>Read Current Rate A kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwha"/>
-				<pointRef name="Peak kW (Rate A kW)"/>
-				<pointRef name="Rate A kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_B_KWH_PEAK_KW">
-				<name>Read Current Rate B kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhb"/>
-				<pointRef name="Peak kW (Rate B kW)"/>
-				<pointRef name="Rate B kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_C_KWH_PEAK_KW">
-				<name>Read Current Rate C kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhc"/>
-				<pointRef name="Peak kW (Rate C kW)"/>
-				<pointRef name="Rate C kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_D_KWH_PEAK_KW">
-				<name>Read Current Rate D kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhd"/>
-				<pointRef name="Peak kW (Rate D kW)"/>
-				<pointRef name="Rate D kWh"/>
-			</command>
-			<command id="READ_FROZEN_RATE_A_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate A kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwha"/>
-				<pointRef name="Peak kW (Rate A kW)"/>
-				<pointRef name="Rate A kWh"/>
-			</command>
-			<command id="READ_FROZEN_RATE_B_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate B kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhb"/>
-				<pointRef name="Peak kW (Rate B kW)"/>
-				<pointRef name="Rate B kWh"/>
-			</command>
-			<command id="READ_FROZEN_RATE_C_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate C kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhc"/>
-				<pointRef name="Peak kW (Rate C kW)"/>
-				<pointRef name="Rate C kWh"/>
-			</command>
-			<command id="READ_FROZEN_RATE_D_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate D kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhd"/>
-				<pointRef name="Peak kW (Rate D kW)"/>
-				<pointRef name="Rate D kWh"/>
-			</command>
-			<command id="READ_IED_LAST_INTERVAL_DEMANDS">
-				<name>Read IED Last Interval Demands</name>
-				<cmd text="getvalue ied demand"/>
-				<pointRef name="Last Interval kW"/>
-			</command>
-			
-			<command id="READ_LP_REQUEST_STATUS">
-				<name>Read LP Request Status</name>
-        		<cmd text="getvalue lp status"/>
-        	</command>
-			<command id="CANCEL_LP_REQUEST">
-				<name>Cancel LP Request</name>
-        		<cmd text="getvalue lp cancel"/>
-        	</command>
-			<command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
-				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
-        		<cmd text="getconfig intervals"/>
-        	</command>
-            <command id="READ_IED_BLINK_COUNT">
-            	<name>Read IED Blink Count</name>
-                <cmd text="getvalue ied outage"/>
-                <pointRef name="IED Blink Count"/>
-            </command>
-        </commands>
-		<attributes>
-        	<attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-         		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_FROZEN">
-         		<basicLookup point="Peak kW Frozen (Rate A kW)" />
-        	</attribute>
-            <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
-                <basicLookup point="Peak kW Frozen (Rate A kW)"/>
-            </attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="Last Interval kW" />
-        	</attribute>
-        	<!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
-            <attribute name="PEAK_KVAR">
-                <basicLookup point="Peak kVAr (Rate A kVAr)" />
-            </attribute>
-            <attribute name="PEAK_KVAR_COIN">
-                <basicLookup point="Peak kM (Coincidental)" />
-            </attribute>
-        	<attribute name="KVAR">
-        		<basicLookup point="Last Interval kVAr" />
-        	</attribute>
-        	<!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
-        	<attribute name="KVARH">
-        		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="kW-LP" />
-        	</attribute>
-            <attribute name="PROFILE_CHANNEL_2">
-                <basicLookup point="kW-LP (Channel 2)" />
-            </attribute>
-            <attribute name="PROFILE_CHANNEL_3">
-                <basicLookup point="kW-LP (Channel 3)" />
-            </attribute>
-            <attribute name="VOLTAGE_PROFILE">
-                <basicLookup point="kW-LP (Channel 4)" />
-            </attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="IED Blink Count" />
-        	</attribute>
-        	<attribute name="USAGE_FROZEN">
-        		<basicLookup point="Rate A kWh Frozen" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_A">
-        		<basicLookup point="Rate A kWh"/>
-        	</attribute>
-        	<attribute name="USAGE_RATE_B">
-        		<basicLookup point="Rate B kWh"/>
-        	</attribute>
-        	<attribute name="USAGE_RATE_C">
-        		<basicLookup point="Rate C kWh"/>
-        	</attribute>
-        	<attribute name="USAGE_RATE_D">
-        		<basicLookup point="Rate D kWh"/>
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_A">
-        		<basicLookup point="Peak kW (Rate A kW)"/>
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_B">
-        		<basicLookup point="Peak kW (Rate B kW)"/>
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_C">
-        		<basicLookup point="Peak kW (Rate C kW)"/>
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_D">
-        		<basicLookup point="Peak kW (Rate D kW)"/>
-        	</attribute>
-        	<attribute name="PEAK_KVAR_RATE_A">
-        		<basicLookup point="Peak kVAr (Rate A kVAr)"/>
-        	</attribute>
-        	<attribute name="PEAK_KVAR_RATE_B">
-        		<basicLookup point="Peak kVAr (Rate B kVAr)"/>
-        	</attribute>
-        	<attribute name="PEAK_KVAR_RATE_C">
-        		<basicLookup point="Peak kVAr (Rate C kVAr)"/>
-        	</attribute>
-        	<attribute name="PEAK_KVAR_RATE_D">
-        		<basicLookup point="Peak kVAr (Rate D kVAr)"/>
-        	</attribute>
-        	<attribute name="KVARH_RATE_A">
-        		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_B">
-        		<basicLookup point="Rate B kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_C">
-        		<basicLookup point="Rate C kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_D">
-        		<basicLookup point="Rate D kVArh" />
-        	</attribute>
-
-            <!-- Should this just be DEMAND_RESET_COUNT?? -->
-            <attribute name="IED_DEMAND_RESET_COUNT">
-                <basicLookup point="IED Demand Reset Count"/>
-            </attribute>
-            <attribute name="COMM_STATUS">
-                <basicLookup point="Comm Status"/>
-            </attribute>
-            <attribute name="POWER_FACTOR">
-                <basicLookup point="Average Power Factor"/>
-            </attribute>
-        </attributes>
-        <tags>
-            <tag name="DLC_ADDRESS_RANGE">
-            	<value>510001-560000</value>
-            </tag>
-        </tags>
-    </pao>
-    
-    <!-- MCT 4XX POLYPHASE BASE -->
-    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true" inherits="THREE_PHASE_CURRENT">
-		<points>
-            <point type="Analog" offset="44">
-            	<init>false</init>
-                <name>Neutral Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="45">
-            	<init>false</init>
-                <name>Phase A Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="46">
-            	<init>false</init>
-                <name>Phase B Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-            <point type="Analog" offset="47">
-            	<init>false</init>
-                <name>Phase C Current</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Amps"/>
-                <decimalplaces value="3"/>
-            </point>
-        </points>
-        <commands>
-			<command id="READ_PHASE_CURRENT">
-				<name>Read Phase Current</name>
-        		<cmd text="getvalue phase current"/>
-        		<pointRef name="Neutral Current"/>
-        		<pointRef name="Phase A Current"/>
-        		<pointRef name="Phase B Current"/>
-        		<pointRef name="Phase C Current"/>
-        	</command>
-        </commands>
-        <attributes>
-            <attribute name="NEUTRAL_CURRENT">
-                <basicLookup point="Neutral Current"/>
-            </attribute>
-            <attribute name="CURRENT_PHASE_A">
-                <basicLookup point="Phase A Current"/>
-            </attribute>
-            <attribute name="CURRENT_PHASE_B">
-                <basicLookup point="Phase B Current"/>
-            </attribute>
-            <attribute name="CURRENT_PHASE_C">
-                <basicLookup point="Phase C Current"/>
-            </attribute>
-        </attributes>
-   </pao>
-   
-    <!-- MCT 430 BASE -->
-    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG, MCT_430_CONFIGURATION">
-		<points>
-            <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Total kWh</name>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW (Rate A kW)</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Rate A kWh</name>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
@@ -1198,28 +642,28 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>true</init>
+                <init>true</init>
                 <name>kVArh</name>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="13">
-            	<init>true</init>
+                <init>true</init>
                 <name>Rate A kVArh</name>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kVArh"/>
@@ -1285,15 +729,571 @@
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="4"/>
             </point>
-			<point type="Analog" offset="39">
-            	<init>true</init>
+            <point type="Analog" offset="39">
+                <init>true</init>
                 <name>IED Demand Reset Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="40">
-            	<init>true</init>
+                <init>true</init>
+                <name>IED Blink Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="102">
+                <name>Peak kW Frozen (Rate A kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="103">
+                <name>Rate A kWh Frozen</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            
+            <point type="Status" offset="2000">
+                <name>Comm Status</name>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+          <commands>
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+                <pointRef name="kWh (Channel 2)"/>
+                <pointRef name="kWh (Channel 3)"/>
+                <pointRef name="kWh (Channel 4)"/>
+            </command>
+            <command id="READ_USAGE_FROZEN" enabled="false">
+                <name>Read Usage (Frozen)</name>
+                <cmd text="getvalue kWh frozen"/>
+                <pointRef name="kWh"/>
+                <pointRef name="kWh (Channel 2)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+                <pointRef name="kW (Channel 2)"/>
+                <pointRef name="kW (Channel 3)"/>
+                <pointRef name="kW (Channel 4)"/>
+            </command>
+            <command id="READ_PEAK">
+                <name>Read Peak</name>
+                <cmd text="getvalue peak"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="Minimum kW"/>
+            </command>
+            <command id="READ_PEAK_CHANNEL_2">
+                <name>Read Peak (Channel 2)</name>
+                <cmd text="getvalue peak offset 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="Minimum kW (Channel 2)"/>
+            </command>
+            <command id="READ_PEAK_CHANNEL_3">
+                <name>Read Peak (Channel 3)</name>
+                <cmd text="getvalue peak offset 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="Minimum kW (Channel 3)"/>
+            </command>
+            <command id="READ_PEAK_CHANNEL_4Read Peak (Channel 4)">
+                <name>Read Peak (Channel 4)</name>
+                <cmd text="getvalue peak offset 4"/>
+                <pointRef name="Peak kW (Channel 4)"/>
+                <pointRef name="Minimum kW (Channel 4)"/>
+            </command>
+            <command id="READ_FROZEN_PEAK" enabled="false">
+                <name>Read Frozen Peak</name>
+                <cmd text="getvalue peak frozen"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="Minimum kW"/>
+            </command>
+            <command id="READ_FROZEN_PEAK_CHANNEL_2" enabled="false">
+                <name>Read Frozen Peak (Channel 2)</name>
+                <cmd text="getvalue peak offset 2 frozen"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="Minimum kW (Channel 2)"/>
+            </command>
+            <command id="READ_FROZEN_PEAK_CHANNEL_3" enabled="false">
+                <name>Read Frozen Peak (Channel 3)</name>
+                <cmd text="getvalue peak offset 3 frozen"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="Minimum kW (Channel 3)"/>
+            </command>
+            <command id="READ_FROZEN_PEAK_CHANNEL_4" enabled="false">
+                <name>Read Frozen Peak (Channel 4)</name>
+                <cmd text="getvalue peak offset 4 frozen"/>
+                <pointRef name="Peak kW (Channel 4)"/>
+                <pointRef name="Minimum kW (Channel 4)"/>
+            </command>
+            
+            <command id="READ_TOU_RATE_A_CHANNEL_1">
+                <name>Read TOU Rate A Channel 1</name>
+                <cmd text="getvalue kWh rate a"/>
+                <pointRef name="TOU Rate A (Channel 1)"/>
+                <pointRef name="TOU Rate A - Peak kW (Channel 1)"/>
+            </command>
+            <command id="READ_TOU_RATE_B_CHANNEL_1">
+                <name>Read TOU Rate B Channel 1</name>
+                <cmd text="getvalue kWh rate b"/>
+                <pointRef name="TOU Rate B (Channel 1)"/>
+                <pointRef name="TOU Rate B - Peak kW (Channel 1)"/>
+            </command>
+            <command id="READ_TOU_RATE_C_CHANNEL_1">
+                <name>Read TOU Rate C Channel 1</name>
+                <cmd text="getvalue kWh rate c"/>
+                <pointRef name="TOU Rate C (Channel 1)"/>
+                <pointRef name="TOU Rate C - Peak kW (Channel 1)"/>
+            </command>
+            <command id="READ_TOU_RATE_D_CHANNEL_1">
+                <name>Read TOU Rate D Channel 1</name>
+                <cmd text="getvalue kWh rate d"/>
+                <pointRef name="TOU Rate D (Channel 1)"/>
+                <pointRef name="TOU Rate D - Peak kW (Channel 1)"/>
+            </command>
+            <command id="READ_TOU_RATE_A_CHANNEL_2">
+                <name>Read TOU Rate A Channel 2</name>
+                <cmd text="getvalue kWh rate a channel 2"/>
+                <pointRef name="TOU Rate A (Channel 2)"/>
+                <pointRef name="TOU Rate A - Peak kW (Channel 2)"/>
+            </command>
+            <command id="READ_TOU_RATE_B_CHANNEL_2">
+                <name>Read TOU Rate B Channel 2</name>
+                <cmd text="getvalue kWh rate b channel 2"/>
+                <pointRef name="TOU Rate B (Channel 2)"/>
+                <pointRef name="TOU Rate B - Peak kW (Channel 2)"/>
+            </command>
+            <command id="READ_TOU_RATE_C_CHANNEL_2">
+                <name>Read TOU Rate C Channel 2</name>
+                <cmd text="getvalue kWh rate c channel 2"/>
+                <pointRef name="TOU Rate C (Channel 2)"/>
+                <pointRef name="TOU Rate C - Peak kW (Channel 2)"/>
+            </command>
+            <command id="READ_TOU_RATE_D_CHANNEL_2">
+                <name>Read TOU Rate D Channel 2</name>
+                <cmd text="getvalue kWh rate d channel 2"/>
+                <pointRef name="TOU Rate D (Channel 2)"/>
+                <pointRef name="TOU Rate D - Peak kW (Channel 2)"/>
+            </command>            
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Blink Count"/>
+            </command>
+            <command id="READ_TOTAL_KWH">
+                <name>Read Total kWh</name>
+                <cmd text="getvalue ied kwht"/>
+                <pointRef name="Total kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_A_KWH_PEAK_KW">
+                <name>Read Current Rate A kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwha"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Rate A kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_B_KWH_PEAK_KW">
+                <name>Read Current Rate B kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhb"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+                <pointRef name="Rate B kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_C_KWH_PEAK_KW">
+                <name>Read Current Rate C kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhc"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+                <pointRef name="Rate C kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_D_KWH_PEAK_KW">
+                <name>Read Current Rate D kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhd"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+                <pointRef name="Rate D kWh"/>
+            </command>
+            <command id="READ_FROZEN_RATE_A_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate A kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwha"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Rate A kWh"/>
+            </command>
+            <command id="READ_FROZEN_RATE_B_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate B kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhb"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+                <pointRef name="Rate B kWh"/>
+            </command>
+            <command id="READ_FROZEN_RATE_C_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate C kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhc"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+                <pointRef name="Rate C kWh"/>
+            </command>
+            <command id="READ_FROZEN_RATE_D_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate D kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhd"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+                <pointRef name="Rate D kWh"/>
+            </command>
+            <command id="READ_IED_LAST_INTERVAL_DEMANDS">
+                <name>Read IED Last Interval Demands</name>
+                <cmd text="getvalue ied demand"/>
+                <pointRef name="Last Interval kW"/>
+            </command>
+            
+            <command id="READ_LP_REQUEST_STATUS">
+                <name>Read LP Request Status</name>
+                <cmd text="getvalue lp status"/>
+            </command>
+            <command id="CANCEL_LP_REQUEST">
+                <name>Cancel LP Request</name>
+                <cmd text="getvalue lp cancel"/>
+            </command>
+            <command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
+                <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
+                <cmd text="getconfig intervals"/>
+            </command>
+            <command id="READ_IED_BLINK_COUNT">
+                <name>Read IED Blink Count</name>
+                <cmd text="getvalue ied outage"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
+        </commands>
+        <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                 <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_FROZEN">
+                 <basicLookup point="Peak kW Frozen (Rate A kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
+                <basicLookup point="Peak kW Frozen (Rate A kW)"/>
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Last Interval kW" />
+            </attribute>
+            <!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
+            <attribute name="PEAK_KVAR">
+                <basicLookup point="Peak kVAr (Rate A kVAr)" />
+            </attribute>
+            <attribute name="PEAK_KVAR_COIN">
+                <basicLookup point="Peak kM (Coincidental)" />
+            </attribute>
+            <attribute name="KVAR">
+                <basicLookup point="Last Interval kVAr" />
+            </attribute>
+            <!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
+            <attribute name="KVARH">
+                <basicLookup point="Rate A kVArh" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="kW-LP" />
+            </attribute>
+            <attribute name="PROFILE_CHANNEL_2">
+                <basicLookup point="kW-LP (Channel 2)" />
+            </attribute>
+            <attribute name="PROFILE_CHANNEL_3">
+                <basicLookup point="kW-LP (Channel 3)" />
+            </attribute>
+            <attribute name="VOLTAGE_PROFILE">
+                <basicLookup point="kW-LP (Channel 4)" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="IED Blink Count" />
+            </attribute>
+            <attribute name="USAGE_FROZEN">
+                <basicLookup point="Rate A kWh Frozen" />
+            </attribute>
+            <attribute name="USAGE_RATE_A">
+                <basicLookup point="Rate A kWh"/>
+            </attribute>
+            <attribute name="USAGE_RATE_B">
+                <basicLookup point="Rate B kWh"/>
+            </attribute>
+            <attribute name="USAGE_RATE_C">
+                <basicLookup point="Rate C kWh"/>
+            </attribute>
+            <attribute name="USAGE_RATE_D">
+                <basicLookup point="Rate D kWh"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_A">
+                <basicLookup point="Peak kW (Rate A kW)"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_B">
+                <basicLookup point="Peak kW (Rate B kW)"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_C">
+                <basicLookup point="Peak kW (Rate C kW)"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_D">
+                <basicLookup point="Peak kW (Rate D kW)"/>
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_A">
+                <basicLookup point="Peak kVAr (Rate A kVAr)"/>
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_B">
+                <basicLookup point="Peak kVAr (Rate B kVAr)"/>
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_C">
+                <basicLookup point="Peak kVAr (Rate C kVAr)"/>
+            </attribute>
+            <attribute name="PEAK_KVAR_RATE_D">
+                <basicLookup point="Peak kVAr (Rate D kVAr)"/>
+            </attribute>
+            <attribute name="KVARH_RATE_A">
+                <basicLookup point="Rate A kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_B">
+                <basicLookup point="Rate B kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_C">
+                <basicLookup point="Rate C kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_D">
+                <basicLookup point="Rate D kVArh" />
+            </attribute>
+
+            <!-- Should this just be DEMAND_RESET_COUNT?? -->
+            <attribute name="IED_DEMAND_RESET_COUNT">
+                <basicLookup point="IED Demand Reset Count"/>
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status"/>
+            </attribute>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Average Power Factor"/>
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DLC_ADDRESS_RANGE">
+                <value>510001-560000</value>
+            </tag>
+        </tags>
+    </pao>
+    
+    <!-- MCT 4XX POLYPHASE BASE -->
+    <pao id="MCT_4XX_POLYPHASE_BASE" abstract="true" inherits="THREE_PHASE_CURRENT">
+        <points>
+            <point type="Analog" offset="44">
+                <init>false</init>
+                <name>Neutral Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="45">
+                <init>false</init>
+                <name>Phase A Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="46">
+                <init>false</init>
+                <name>Phase B Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="47">
+                <init>false</init>
+                <name>Phase C Current</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <commands>
+            <command id="READ_PHASE_CURRENT">
+                <name>Read Phase Current</name>
+                <cmd text="getvalue phase current"/>
+                <pointRef name="Neutral Current"/>
+                <pointRef name="Phase A Current"/>
+                <pointRef name="Phase B Current"/>
+                <pointRef name="Phase C Current"/>
+            </command>
+        </commands>
+        <attributes>
+            <attribute name="NEUTRAL_CURRENT">
+                <basicLookup point="Neutral Current"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_A">
+                <basicLookup point="Phase A Current"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_B">
+                <basicLookup point="Phase B Current"/>
+            </attribute>
+            <attribute name="CURRENT_PHASE_C">
+                <basicLookup point="Phase C Current"/>
+            </attribute>
+        </attributes>
+   </pao>
+   
+    <!-- MCT 430 BASE -->
+    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG, MCT_430_CONFIGURATION">
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Total kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Peak kW (Rate A kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Rate A kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="4">
+                <name>Peak kW (Rate B kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="5">
+                <name>Rate B kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="6">
+                <name>Peak kW (Rate C kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="7">
+                <name>Rate C kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="8">
+                <name>Peak kW (Rate D kW)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="9">
+                <name>Rate D kWh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="10">
+                <init>true</init>
+                <name>Last Interval kW</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="11">
+                <init>true</init>
+                <name>kVArh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="12">
+                <init>true</init>
+                <name>Peak kVAr (Rate A kVAr)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="13">
+                <init>true</init>
+                <name>Rate A kVArh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="14">
+                <name>Peak kVAr (Rate B kVAr)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="15">
+                <name>Rate B kVArh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="16">
+                <name>Peak kVAr (Rate C kVAr)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="17">
+                <name>Rate C kVArh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="18">
+                <name>Peak kVAr (Rate D kVAr)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="19">
+                <name>Rate D kVArh</name>
+                <multiplier value="0.0001"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="20">
+                <name>Last Interval kVAr</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="21">
+                <name>Peak kW (IED)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="22">
+                <name>Peak kM (Coincidental)</name>
+                <multiplier value="0.01"/>
+                <unitofmeasure value="kVar"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="31">
+                <name>Average Power Factor</name>
+                <multiplier value="0.001"/>
+                <unitofmeasure value="PF"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="39">
+                <init>true</init>
+                <name>IED Demand Reset Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="40">
+                <init>true</init>
                 <name>IED Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -1312,7 +1312,7 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="DemandAccumulator" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW-LP</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -1337,7 +1337,7 @@
                 <decimalplaces value="4"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -1345,108 +1345,108 @@
             </point>
         </points>
         <commands>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Blink Count"/>
-        	</command>
-			<command id="READ_TOTAL_KWH">
-				<name>Read Total kWh</name>
-				<cmd text="getvalue ied kwht"/>
-				<pointRef name="Total kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_A_KWH_PEAK_KW">
-				<name>Read Current Rate A kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwha"/>
-				<pointRef name="Peak kW (Rate A kW)"/>
-				<pointRef name="Rate A kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_B_KWH_PEAK_KW">
-				<name>Read Current Rate B kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhb"/>
-				<pointRef name="Peak kW (Rate B kW)"/>
-				<pointRef name="Rate B kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_C_KWH_PEAK_KW">
-				<name>Read Current Rate C kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhc"/>
-				<pointRef name="Peak kW (Rate C kW)"/>
-				<pointRef name="Rate C kWh"/>
-			</command>
-			<command id="READ_CURRENT_RATE_D_KWH_PEAK_KW">
-				<name>Read Current Rate D kWh/Peak kW</name>
-				<cmd text="getvalue ied current kwhd"/>
-				<pointRef name="Peak kW (Rate D kW)"/>
-				<pointRef name="Rate D kWh"/>
-			</command>
-			<command id="READ_FROZEN_CURRENT_RATE_A_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate A kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwha"/>
-				<pointRef name="Peak kW (Rate A kW)"/>
-				<pointRef name="Rate A kWh"/>
-			</command>
-			<command id="READ_FROZEN_CURRENT_RATE_B_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate B kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhb"/>
-				<pointRef name="Peak kW (Rate B kW)"/>
-				<pointRef name="Rate B kWh"/>
-			</command>
-			<command id="READ_FROZEN_CURRENT_RATE_C_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate C kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhc"/>
-				<pointRef name="Peak kW (Rate C kW)"/>
-				<pointRef name="Rate C kWh"/>
-			</command>
-			<command id="READ_FROZEN_CURRENT_RATE_D_KWH_PEAK_KW" enabled="false">
-				<name>Read Frozen Rate D kWh/Peak kW</name>
-				<cmd text="getvalue ied frozen kwhd"/>
-				<pointRef name="Peak kW (Rate D kW)"/>
-				<pointRef name="Rate D kWh"/>
-			</command>
-			<command id="READ_IED_LAST_INTERVAL_DEMANDS">
-				<name>Read IED Last Interval Demands</name>
-				<cmd text="getvalue ied demand"/>
-				<pointRef name="Last Interval kW"/>
-			</command>
-			<command id="READ_LP_REQUEST_STATUS">
-				<name>Read LP Request Status</name>
-        		<cmd text="getvalue lp status"/>
-        	</command>
-			<command id="CANCEL_LP_REQUEST">
-				<name>Cancel LP Request</name>
-        		<cmd text="getvalue lp cancel"/>
-        	</command>
-			<command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
-				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
-        		<cmd text="getconfig intervals"/>
-        	</command>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Blink Count"/>
+            </command>
+            <command id="READ_TOTAL_KWH">
+                <name>Read Total kWh</name>
+                <cmd text="getvalue ied kwht"/>
+                <pointRef name="Total kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_A_KWH_PEAK_KW">
+                <name>Read Current Rate A kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwha"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Rate A kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_B_KWH_PEAK_KW">
+                <name>Read Current Rate B kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhb"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+                <pointRef name="Rate B kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_C_KWH_PEAK_KW">
+                <name>Read Current Rate C kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhc"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+                <pointRef name="Rate C kWh"/>
+            </command>
+            <command id="READ_CURRENT_RATE_D_KWH_PEAK_KW">
+                <name>Read Current Rate D kWh/Peak kW</name>
+                <cmd text="getvalue ied current kwhd"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+                <pointRef name="Rate D kWh"/>
+            </command>
+            <command id="READ_FROZEN_CURRENT_RATE_A_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate A kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwha"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Rate A kWh"/>
+            </command>
+            <command id="READ_FROZEN_CURRENT_RATE_B_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate B kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhb"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+                <pointRef name="Rate B kWh"/>
+            </command>
+            <command id="READ_FROZEN_CURRENT_RATE_C_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate C kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhc"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+                <pointRef name="Rate C kWh"/>
+            </command>
+            <command id="READ_FROZEN_CURRENT_RATE_D_KWH_PEAK_KW" enabled="false">
+                <name>Read Frozen Rate D kWh/Peak kW</name>
+                <cmd text="getvalue ied frozen kwhd"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+                <pointRef name="Rate D kWh"/>
+            </command>
+            <command id="READ_IED_LAST_INTERVAL_DEMANDS">
+                <name>Read IED Last Interval Demands</name>
+                <cmd text="getvalue ied demand"/>
+                <pointRef name="Last Interval kW"/>
+            </command>
+            <command id="READ_LP_REQUEST_STATUS">
+                <name>Read LP Request Status</name>
+                <cmd text="getvalue lp status"/>
+            </command>
+            <command id="CANCEL_LP_REQUEST">
+                <name>Cancel LP Request</name>
+                <cmd text="getvalue lp cancel"/>
+            </command>
+            <command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
+                <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
+                <cmd text="getconfig intervals"/>
+            </command>
             <command id="READ_IED_BLINK_COUNT">
-            	<name>Read IED Blink Count</name>
+                <name>Read IED Blink Count</name>
                 <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
         </commands>
         <attributes>
-        	<attribute name="USAGE">
-        		<basicLookup point="Total kWh"/>
-        	</attribute>
-        	<attribute name="USAGE_FROZEN">
-        		<basicLookup point="Rate A kWh Frozen"/>
-        	</attribute>
-        	<!--  PEAK_DEMAND is also mapped to Peak kW (Rate A) because there is no general Peak kW point -->
-        	<attribute name="PEAK_DEMAND">
-         		<basicLookup point="Peak kW (Rate A kW)"/>
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_FROZEN">
-         		<basicLookup point="Peak kW Frozen (Rate A kW)"/>
-        	</attribute>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh"/>
+            </attribute>
+            <attribute name="USAGE_FROZEN">
+                <basicLookup point="Rate A kWh Frozen"/>
+            </attribute>
+            <!--  PEAK_DEMAND is also mapped to Peak kW (Rate A) because there is no general Peak kW point -->
+            <attribute name="PEAK_DEMAND">
+                 <basicLookup point="Peak kW (Rate A kW)"/>
+            </attribute>
+            <attribute name="PEAK_DEMAND_FROZEN">
+                 <basicLookup point="Peak kW Frozen (Rate A kW)"/>
+            </attribute>
             <attribute name="PEAK_DEMAND_FROZEN_RATE_A">
                 <basicLookup point="Peak kW Frozen (Rate A kW)"/>
             </attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="Last Interval kW" />
-        	</attribute>
-        	<!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
+            <attribute name="DEMAND">
+                <basicLookup point="Last Interval kW" />
+            </attribute>
+            <!--  PEAK_KVAR is also mapped to Peak kVAr (Rate A kVAr) because there is no general Peak kVAr point -->
             <attribute name="PEAK_KVAR">
                 <basicLookup point="Peak kVAr (Rate A kVAr)" />
             </attribute>
@@ -1462,28 +1462,28 @@
             <attribute name="PEAK_KVAR_RATE_D">
                 <basicLookup point="Peak kVAr (Rate D kVAr)" />
             </attribute>            
-        	<attribute name="KVAR">
-        		<basicLookup point="Last Interval kVAr" />
-        	</attribute>
-        	<!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
-        	<attribute name="KVARH">
-        		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_A">
-        		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_B">
-        		<basicLookup point="Rate B kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_C">
-        		<basicLookup point="Rate C kVArh" />
-        	</attribute>
-        	<attribute name="KVARH_RATE_D">
-        		<basicLookup point="Rate D kVArh" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="kW-LP" />
-        	</attribute>
+            <attribute name="KVAR">
+                <basicLookup point="Last Interval kVAr" />
+            </attribute>
+            <!--  KVARH is also mapped to Rate A kVArh because there is no general kVArh point -->
+            <attribute name="KVARH">
+                <basicLookup point="Rate A kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_A">
+                <basicLookup point="Rate A kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_B">
+                <basicLookup point="Rate B kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_C">
+                <basicLookup point="Rate C kVArh" />
+            </attribute>
+            <attribute name="KVARH_RATE_D">
+                <basicLookup point="Rate D kVArh" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="kW-LP" />
+            </attribute>
             <attribute name="PROFILE_CHANNEL_2">
                 <basicLookup point="kW-LP (Channel 2)" />
             </attribute>
@@ -1493,61 +1493,61 @@
             <attribute name="VOLTAGE_PROFILE">
                 <basicLookup point="Voltage Profile" />
             </attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="IED Blink Count" />
-        	</attribute>
-			<attribute name="USAGE_RATE_A">
-        		<basicLookup point="Rate A kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_B">
-        		<basicLookup point="Rate B kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_C">
-        		<basicLookup point="Rate C kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_D">
-        		<basicLookup point="Rate D kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_A">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_B">
-        		<basicLookup point="Peak kW (Rate B kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_C">
-        		<basicLookup point="Peak kW (Rate C kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_D">
-        		<basicLookup point="Peak kW (Rate D kW)" />
-        	</attribute>
-        	<attribute name="IED_DEMAND_RESET_COUNT">
-        		<basicLookup point="IED Demand Reset Count" />
-        	</attribute>
-        	<attribute name="POWER_FACTOR">
-        		<basicLookup point="Average Power Factor" />
-        	</attribute>
-        	<attribute name="PEAK_KVAR_COIN">
-        		<basicLookup point="Peak kM (Coincidental)" />
-        	</attribute>
-        	<!--  Peak kM (Coincidental) may be kVArh instead of kVAr
-        	<attribute name="PEAK_KVARH_COIN">
-        		<basicLookup point="Peak kM (Coincidental)" />
-        	</attribute> -->
-        	
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="IED Blink Count" />
+            </attribute>
+            <attribute name="USAGE_RATE_A">
+                <basicLookup point="Rate A kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_B">
+                <basicLookup point="Rate B kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_C">
+                <basicLookup point="Rate C kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_D">
+                <basicLookup point="Rate D kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_A">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_B">
+                <basicLookup point="Peak kW (Rate B kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_C">
+                <basicLookup point="Peak kW (Rate C kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_D">
+                <basicLookup point="Peak kW (Rate D kW)" />
+            </attribute>
+            <attribute name="IED_DEMAND_RESET_COUNT">
+                <basicLookup point="IED Demand Reset Count" />
+            </attribute>
+            <attribute name="POWER_FACTOR">
+                <basicLookup point="Average Power Factor" />
+            </attribute>
+            <attribute name="PEAK_KVAR_COIN">
+                <basicLookup point="Peak kM (Coincidental)" />
+            </attribute>
+            <!--  Peak kM (Coincidental) may be kVArh instead of kVAr
+            <attribute name="PEAK_KVARH_COIN">
+                <basicLookup point="Peak kM (Coincidental)" />
+            </attribute> -->
+            
         </attributes>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>620000-620199, 
-            			620200-700000,
-            			700001-700356, 
-            			701001-799999</value>	<!-- end should possibly be 750000. Since its a lower value, not changing. -->
+                <value>620000-620199, 
+                        620200-700000,
+                        700001-700356, 
+                        701001-799999</value>    <!-- end should possibly be 750000. Since its a lower value, not changing. -->
             </tag>
         </tags>
    </pao>
    
    <pao id="MCT_430_VOLTAGE" abstract="true" inherits="THREE_PHASE_VOLTAGE">
-		<points>
-			<point type="Analog" offset="41">
+        <points>
+            <point type="Analog" offset="41">
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
@@ -1567,9 +1567,9 @@
             </point>
         </points>
         <commands>
-        	<!--  getvalue ied demand is repeated here for voltage, but the command name was different. -->
+            <!--  getvalue ied demand is repeated here for voltage, but the command name was different. -->
             <command id="READ_IED_VOLTS">
-            	<name>Read IED Volts</name>
+                <name>Read IED Volts</name>
                 <cmd text="getvalue ied demand"/>
                 <pointRef name="Voltage Phase A"/>
                 <pointRef name="Voltage Phase B"/>
@@ -1590,7 +1590,7 @@
    </pao>
    
     <!-- MCT 430s -->
-    <pao id="MCT430A" inherits="MCT_430_BASE">	<!-- Why doesn't MCT430A inherit MCT_4XX_POLYPHASE_BASE? -->
+    <pao id="MCT430A" inherits="MCT_430_BASE">    <!-- Why doesn't MCT430A inherit MCT_4XX_POLYPHASE_BASE? -->
         <displayName>MCT-430A</displayName>
     </pao>
     <pao id="MCT430A3" inherits="MCT_430_VOLTAGE, MCT_430_BASE, MCT_4XX_POLYPHASE_BASE">
@@ -1602,12 +1602,12 @@
     <pao id="MCT430SL" inherits="MCT_430_VOLTAGE, MCT_430_BASE, MCT_4XX_POLYPHASE_BASE">
         <displayName>MCT-430SL</displayName>
     </pao>
-	
-	<!-- MCT 420 BASE -->
-	<pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT, LCD_CONFIGURATION" />
     
-	<!-- MCT 420s -->
-	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
+    <!-- MCT 420 BASE -->
+    <pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT, LCD_CONFIGURATION" />
+    
+    <!-- MCT 420s -->
+    <pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
         <displayName>MCT-420fL</displayName>
     </pao>
     <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT_CONFIG">
@@ -1617,8 +1617,8 @@
         <displayName>MCT-420cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>700901-701000,
-            			1600001-2796201</value>
+                <value>700901-701000,
+                        1600001-2796201</value>
             </tag>
         </tags>
     </pao>
@@ -2323,9 +2323,9 @@
 
     <!-- MCT 410 BASE -->
     <pao id="MCT_410_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_HIGH_BILL_TAG, SUPPORTS_MOVE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PEAK_REPORT_TAG, SUPPORTS_VOLTAGE_TAG, SUPPORTS_VOLTAGE_PROFILE_TAG, SUPPORTS_PHASE_DETECT_TAG, DEMAND_FREEZE_CONFIGURATION">
-    	<points>
+        <points>
             <point type="PulseAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
@@ -2344,7 +2344,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -2376,7 +2376,7 @@
             </point>
             
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
@@ -2395,42 +2395,42 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Voltage</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="11">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="12">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW (Channel 2)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="13">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW (Channel 3)</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>            
             <point type="DemandAccumulator" offset="14">
-            	<init>true</init>
+                <init>true</init>
                 <name>Max Volts</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="15">
-            	<init>true</init>
+                <init>true</init>
                 <name>Min Volts</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
@@ -2455,7 +2455,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW-LP</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
@@ -2474,7 +2474,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="104">
-            	<init>true</init>
+                <init>true</init>
                 <name>Voltage Profile</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
@@ -2506,7 +2506,7 @@
             </point>
             
             <point type="Analog" offset="100">
-            	<init>true</init>
+                <init>true</init>
                 <name>Outages</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
@@ -2514,21 +2514,21 @@
             </point>
             
             <point type="Status" offset="9">
-            	<init>true</init>
+                <init>true</init>
                 <name>General Alarm</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="17">
-            	<init>true</init>
+                <init>true</init>
                 <name>Tamper Flag Set</name>
                 <stategroup value="TrueFalse"/>
             </point>
-			<point type="Status" offset="20">
+            <point type="Status" offset="20">
                 <name>Zero Usage (24 Hours)</name>
                 <stategroup value="TrueFalse"/>
             </point>
@@ -2537,224 +2537,224 @@
                 <stategroup value="SystemState"/>
             </point>
             <point type="Status" offset="3000">
-			    <name>Phase</name>
-			    <stategroup value="PhaseStatus"/>
-			</point>
+                <name>Phase</name>
+                <stategroup value="PhaseStatus"/>
+            </point>
         </points>
         
         <commands>
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        		<pointRef name="kWh (Channel 2)"/>
-        		<pointRef name="kWh (Channel 3)"/>
-        	</command>
-			<command id="READ_USAGE_FROZEN" enabled="false">
-				<name>Read Usage (Frozen)</name>
-        		<cmd text="getvalue kWh frozen"/>
-        		<pointRef name="kWh"/>
-        		<pointRef name="kWh (Channel 2)"/>
-        		<pointRef name="kWh (Channel 3)"/>
-        	</command>
-			<command id="READ_KW_DEMAND_VOLTAGE_BLINK_COUNT">
-				<name>Read kW Demand, Voltage, Blink Count</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        		<pointRef name="kW (Channel 2)"/>
-        		<pointRef name="kW (Channel 3)"/>
-        		<pointRef name="Voltage"/>
-        		<pointRef name="Blink Count"/>
-        	</command>
-			<command id="READ_PEAK">
-				<name>Read Peak</name>
-        		<cmd text="getvalue peak"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="kWh"/>
-        	</command>
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+                <pointRef name="kWh (Channel 2)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            <command id="READ_USAGE_FROZEN" enabled="false">
+                <name>Read Usage (Frozen)</name>
+                <cmd text="getvalue kWh frozen"/>
+                <pointRef name="kWh"/>
+                <pointRef name="kWh (Channel 2)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            <command id="READ_KW_DEMAND_VOLTAGE_BLINK_COUNT">
+                <name>Read kW Demand, Voltage, Blink Count</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+                <pointRef name="kW (Channel 2)"/>
+                <pointRef name="kW (Channel 3)"/>
+                <pointRef name="Voltage"/>
+                <pointRef name="Blink Count"/>
+            </command>
+            <command id="READ_PEAK">
+                <name>Read Peak</name>
+                <cmd text="getvalue peak"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="kWh"/>
+            </command>
             <command id="READ_PEAK_CHANNEL_2">
-            	<name>Read Peak (Channel 2)</name>
+                <name>Read Peak (Channel 2)</name>
                 <cmd text="getvalue peak channel 2"/>
                 <pointRef name="Peak kW (Channel 2)"/>
                 <pointRef name="kWh (Channel 2)"/>
             </command>
             <command id="READ_PEAK_CHANNEL_3">
-            	<name>Read Peak (Channel 3)</name>
+                <name>Read Peak (Channel 3)</name>
                 <cmd text="getvalue peak channel 3"/>
                 <pointRef name="Peak kW (Channel 3)"/>
                 <pointRef name="kWh (Channel 3)"/>
             </command>
-			<command id="READ_PEAK_FROZEN" enabled="false">
-				<name>Read Peak (Frozen)</name>
+            <command id="READ_PEAK_FROZEN" enabled="false">
+                <name>Read Peak (Frozen)</name>
                 <cmd text="getvalue peak frozen"/>
                 <pointRef name="Peak kW"/>
                 <pointRef name="kWh"/>
             </command> 
             <command id="READ_PEAK_FROZEN_CHANNEL_2" enabled="false">
-            	<name>Read Peak (Frozen Channel 2)</name>
+                <name>Read Peak (Frozen Channel 2)</name>
                 <cmd text="getvalue peak frozen channel 2"/>
                 <pointRef name="Peak kW (Channel 2)"/>
                 <pointRef name="kWh (Channel 2)"/>
             </command>
             <command id="READ_PEAK_FROZEN_CHANNEL_3" enabled="false">
-            	<name>Read Peak (Channel 3)</name>
+                <name>Read Peak (Channel 3)</name>
                 <cmd text="getvalue peak channel 3"/>
                 <pointRef name="Peak kW (Channel 3)"/>
                 <pointRef name="kWh (Channel 3)"/>
             </command>
-			<command id="READ_MIN_MAX_VOLTAGE">
-				<name>Read Min/Max Voltage</name>
-        		<cmd text="getvalue voltage"/>
-        		<pointRef name="Max Volts"/>
-        		<pointRef name="Min Volts"/>
-        	</command>
-			<command id="READ_MIN_MAX_VOLTAGE_FROZEN" enabled="false">
-				<name>Read Min/Max Voltage (Frozen)</name>
-        		<cmd text="getvalue voltage frozen"/>
-        		<pointRef name="Frozen Max Volts"/>
-        		<pointRef name="Frozen Min Volts"/>
-        	</command>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Blink Count"/>
-        	</command>
-			<command id="READ_OUTAGE_LOG_6_MOST_RECENT">
-				<name>Read Outage Log (6 most recent)</name>
-				<cmd text="getvalue outage 1"/>
-				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
-			<command id="READ_TOU_RATE_A">
-				<name>Read TOU Rate A</name>
-        		<cmd text="getvalue kWh rate a"/>
-        		<pointRef name="Rate A kWh"/>
-        		<pointRef name="Peak kW (Rate A kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_B">
-				<name>Read TOU Rate B</name>
-        		<cmd text="getvalue kWh rate b"/>
-        		<pointRef name="Rate B kWh"/>
-        		<pointRef name="Peak kW (Rate B kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_C">
-				<name>Read TOU Rate C</name>
-        		<cmd text="getvalue kWh rate c"/>
-        		<pointRef name="Rate C kWh"/>
-        		<pointRef name="Peak kW (Rate C kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_D">
-				<name>Read TOU Rate D</name>
-        		<cmd text="getvalue kWh rate d"/>
-        		<pointRef name="Rate D kWh"/>
-        		<pointRef name="Peak kW (Rate D kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_A_FROZEN" enabled="false">
-				<name>Read TOU Rate A (Frozen)</name>
-        		<cmd text="getvalue kWh rate a frozen"/>
-        		<pointRef name="Rate A kWh"/>
-        		<pointRef name="Peak kW (Rate A kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_B_FROZEN" enabled="false">
-				<name>Read TOU Rate B (Frozen)</name>
-        		<cmd text="getvalue kWh rate b frozen"/>
-        		<pointRef name="Rate B kWh"/>
-        		<pointRef name="Peak kW (Rate B kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_C_FROZEN" enabled="false">
-				<name>Read TOU Rate C (Frozen)</name>
-        		<cmd text="getvalue kWh rate c frozen"/>
-        		<pointRef name="Rate C kWh"/>
-        		<pointRef name="Peak kW (Rate C kW)"/>
-        	</command>
-			<command id="READ_TOU_RATE_D_FROZEN" enabled="false">
-				<name>Read TOU Rate D (Frozen)</name>
-        		<cmd text="getvalue kWh rate d frozen"/>
-        		<pointRef name="Rate D kWh"/>
-        		<pointRef name="Peak kW (Rate D kW)"/>
-        	</command>
-			<command id="READ_LP_REQUEST_STATUS">
-				<name>Read LP Request Status</name>
-        		<cmd text="getvalue lp status"/>
-        	</command>
-			<command id="CANCEL_LP_REQUEST">
-				<name>Cancel LP Request</name>
-        		<cmd text="getvalue lp cancel"/>
-        	</command>
-			<command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
-				<name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
-        		<cmd text="getconfig intervals"/>
-        	</command>
-        	<command id="READ_INTERNAL_STATUS">
-        		<name>Read General Info</name>
-        		<cmd text="getstatus internal"/>
-        		<pointRef name="General Alarm"/>
-        		<pointRef name="Power Fail"/>
-        		<pointRef name="Tamper Flag Set"/>
-        		<pointRef name="Zero Usage (24 Hours)"/>
+            <command id="READ_MIN_MAX_VOLTAGE">
+                <name>Read Min/Max Voltage</name>
+                <cmd text="getvalue voltage"/>
+                <pointRef name="Max Volts"/>
+                <pointRef name="Min Volts"/>
+            </command>
+            <command id="READ_MIN_MAX_VOLTAGE_FROZEN" enabled="false">
+                <name>Read Min/Max Voltage (Frozen)</name>
+                <cmd text="getvalue voltage frozen"/>
+                <pointRef name="Frozen Max Volts"/>
+                <pointRef name="Frozen Min Volts"/>
+            </command>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Blink Count"/>
+            </command>
+            <command id="READ_OUTAGE_LOG_6_MOST_RECENT">
+                <name>Read Outage Log (6 most recent)</name>
+                <cmd text="getvalue outage 1"/>
+                <cmd text="getvalue outage 3"/>
+                <cmd text="getvalue outage 5"/>
+                <pointRef name="Outages"/>
+            </command>
+            <command id="READ_TOU_RATE_A">
+                <name>Read TOU Rate A</name>
+                <cmd text="getvalue kWh rate a"/>
+                <pointRef name="Rate A kWh"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_B">
+                <name>Read TOU Rate B</name>
+                <cmd text="getvalue kWh rate b"/>
+                <pointRef name="Rate B kWh"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_C">
+                <name>Read TOU Rate C</name>
+                <cmd text="getvalue kWh rate c"/>
+                <pointRef name="Rate C kWh"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_D">
+                <name>Read TOU Rate D</name>
+                <cmd text="getvalue kWh rate d"/>
+                <pointRef name="Rate D kWh"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_A_FROZEN" enabled="false">
+                <name>Read TOU Rate A (Frozen)</name>
+                <cmd text="getvalue kWh rate a frozen"/>
+                <pointRef name="Rate A kWh"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_B_FROZEN" enabled="false">
+                <name>Read TOU Rate B (Frozen)</name>
+                <cmd text="getvalue kWh rate b frozen"/>
+                <pointRef name="Rate B kWh"/>
+                <pointRef name="Peak kW (Rate B kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_C_FROZEN" enabled="false">
+                <name>Read TOU Rate C (Frozen)</name>
+                <cmd text="getvalue kWh rate c frozen"/>
+                <pointRef name="Rate C kWh"/>
+                <pointRef name="Peak kW (Rate C kW)"/>
+            </command>
+            <command id="READ_TOU_RATE_D_FROZEN" enabled="false">
+                <name>Read TOU Rate D (Frozen)</name>
+                <cmd text="getvalue kWh rate d frozen"/>
+                <pointRef name="Rate D kWh"/>
+                <pointRef name="Peak kW (Rate D kW)"/>
+            </command>
+            <command id="READ_LP_REQUEST_STATUS">
+                <name>Read LP Request Status</name>
+                <cmd text="getvalue lp status"/>
+            </command>
+            <command id="CANCEL_LP_REQUEST">
+                <name>Cancel LP Request</name>
+                <cmd text="getvalue lp cancel"/>
+            </command>
+            <command id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
+                <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
+                <cmd text="getconfig intervals"/>
+            </command>
+            <command id="READ_INTERNAL_STATUS">
+                <name>Read General Info</name>
+                <cmd text="getstatus internal"/>
+                <pointRef name="General Alarm"/>
+                <pointRef name="Power Fail"/>
+                <pointRef name="Tamper Flag Set"/>
+                <pointRef name="Zero Usage (24 Hours)"/>
                 <pointRef name="Reverse Power"/>
-        	</command>
+            </command>
         </commands>
         
         <attributes>
-        	<attribute name="USAGE">
-        		<basicLookup point="kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Peak kW" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_FROZEN">
-        		<basicLookup point="Frozen Peak Demand" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="kW" />
-        	</attribute>
-        	<attribute name="VOLTAGE">
-        		<basicLookup point="Voltage" />
-        	</attribute>        	
-        	<attribute name="OUTAGE_LOG">
-        		<basicLookup point="Outages" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="kW-LP" />
-        	</attribute>
+            <attribute name="USAGE">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_FROZEN">
+                <basicLookup point="Frozen Peak Demand" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="kW" />
+            </attribute>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage" />
+            </attribute>            
+            <attribute name="OUTAGE_LOG">
+                <basicLookup point="Outages" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="kW-LP" />
+            </attribute>
             <attribute name="PROFILE_CHANNEL_2">
                 <basicLookup point="kW-LP (Channel 2)" />
             </attribute>
             <!--<attribute name="PROFILE_CHANNEL_3">
                 <basicLookup point="kW-LP (Channel 3)" />
             </attribute>  YUK-8942 states to NOT have channel 3 for 410 devices -->
-        	<attribute name="VOLTAGE_PROFILE">
-        		<basicLookup point="Voltage Profile" />
-        	</attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
-        	</attribute>
-			<attribute name="USAGE_RATE_A">
-        		<basicLookup point="Rate A kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_B">
-        		<basicLookup point="Rate B kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_C">
-        		<basicLookup point="Rate C kWh" />
-        	</attribute>
-        	<attribute name="USAGE_RATE_D">
-        		<basicLookup point="Rate D kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_A">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_B">
-        		<basicLookup point="Peak kW (Rate B kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_C">
-        		<basicLookup point="Peak kW (Rate C kW)" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND_RATE_D">
-        		<basicLookup point="Peak kW (Rate D kW)" />
-        	</attribute>
+            <attribute name="VOLTAGE_PROFILE">
+                <basicLookup point="Voltage Profile" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="USAGE_RATE_A">
+                <basicLookup point="Rate A kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_B">
+                <basicLookup point="Rate B kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_C">
+                <basicLookup point="Rate C kWh" />
+            </attribute>
+            <attribute name="USAGE_RATE_D">
+                <basicLookup point="Rate D kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_A">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_B">
+                <basicLookup point="Peak kW (Rate B kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_C">
+                <basicLookup point="Peak kW (Rate C kW)" />
+            </attribute>
+            <attribute name="PEAK_DEMAND_RATE_D">
+                <basicLookup point="Peak kW (Rate D kW)" />
+            </attribute>
             <attribute name="MINIMUM_VOLTAGE">
                 <basicLookup point="Min Volts" />
             </attribute>
@@ -2771,34 +2771,34 @@
                 <basicLookup point="Phase" />
             </attribute>
             <attribute name="GENERAL_ALARM_FLAG">
-            	<basicLookup point="General Alarm" />
+                <basicLookup point="General Alarm" />
             </attribute>
             <attribute name="POWER_FAIL_FLAG">
-            	<basicLookup point="Power Fail" />
+                <basicLookup point="Power Fail" />
             </attribute>
             <attribute name="TAMPER_FLAG">
-            	<basicLookup point="Tamper Flag Set" />
+                <basicLookup point="Tamper Flag Set" />
             </attribute>
             <attribute name="ZERO_USAGE_FLAG">
-            	<basicLookup point="Zero Usage (24 Hours)" />
+                <basicLookup point="Zero Usage (24 Hours)" />
             </attribute>
             <attribute name="REVERSE_POWER_FLAG">
                 <basicLookup point="Reverse Power"/>
             </attribute>
-        	<attribute name="COMM_STATUS">
-        		<basicLookup point="Comm Status"/>
-        	</attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status"/>
+            </attribute>
         </attributes>
-	</pao>
+    </pao>
         
     <!-- MCT 410s -->
     <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM">
         <displayName>MCT-410iL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>700001-700900,
-            			1000001-1398100,            			
-            			1398102-1600000</value>
+                <value>700001-700900,
+                        1000001-1398100,                        
+                        1398102-1600000</value>
             </tag>
         </tags>
     </pao>
@@ -2806,14 +2806,14 @@
         <displayName>MCT-410cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>310000-313555,
-            			313600-314499,
-            			314500-499999,
-            			590001-592000,
-            			592001-594000,
-            			594001-610000,
-            			810001-1000000,
-            			2897700-3597700</value>
+                <value>310000-313555,
+                        313600-314499,
+                        314500-499999,
+                        590001-592000,
+                        592001-594000,
+                        594001-610000,
+                        810001-1000000,
+                        2897700-3597700</value>
             </tag>
         </tags>
     </pao>
@@ -2821,10 +2821,10 @@
         <displayName>MCT-410fL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>2596200-2796201,            	
-            			3597701-3797699,
-            			3797700-3996927,
-            			3996928-4001336</value>
+                <value>2596200-2796201,                
+                        3597701-3797699,
+                        3797700-3996927,
+                        3996928-4001336</value>
             </tag>
         </tags>
     </pao>
@@ -2834,23 +2834,23 @@
     
     <!-- MCT 360/370 BASE -->
     <pao id="MCT_360_370_BASE" abstract="true" inherits="MCT_BASE, MCT_300_SERIES_TAG">
-    	<points>
-    		<point type="Analog" offset="1">
-    			<init>true</init>
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
                 <name>Total kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Rate A kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -2895,7 +2895,7 @@
             
             <!-- ANALOG (10-20) -->
             <point type="Analog" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -3048,7 +3048,7 @@
                 <decimalplaces value="3"/>
             </point>
 
-			<!-- STATUS -->            
+            <!-- STATUS -->            
             <point type="Status" offset="5">
                 <name>Status of A relay</name>
                 <stategroup value="SystemState"/>
@@ -3073,51 +3073,51 @@
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
             </point>
-    	</points>
-    	<commands>
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
-			<command id="READ_IED_KWH_KW">
-				<name>Read IED kWh/kW</name>
-        		<cmd text="getvalue ied kwht"/>
-        		<pointRef name="Total kWh"/>
-        	</command>
-			<command id="READ_RATE_A_KWH_PEAK_KW">
-				<name>Read Rate A kWh/Peak kW</name>
-				<cmd text="getvalue ied kwha"/>
-				<pointRef name="Peak kW (Rate A kW)"/>
-				<pointRef name="Rate A kWh"/>
-			</command>
-        	<command id="READ_IED_LAST_INTERVAL_DEMAND">
-        		<name>Read IED Last Interval Demand</name>
-        		<cmd text="getvalue ied demand"/>
-        		<pointRef name="Last Interval kW"/>
-        	</command>
-       	</commands>
-       	<attributes>
-        	<attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="Last Interval kW" />
-        	</attribute>
-        	<attribute name="COMM_STATUS">
-        		<basicLookup point="Comm Status" />
-        	</attribute>
-        	<attribute name="KVAR">
-        		<basicLookup point="Last Interval kVAr" />
-        	</attribute>
+        </points>
+        <commands>
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
+            <command id="READ_IED_KWH_KW">
+                <name>Read IED kWh/kW</name>
+                <cmd text="getvalue ied kwht"/>
+                <pointRef name="Total kWh"/>
+            </command>
+            <command id="READ_RATE_A_KWH_PEAK_KW">
+                <name>Read Rate A kWh/Peak kW</name>
+                <cmd text="getvalue ied kwha"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Rate A kWh"/>
+            </command>
+            <command id="READ_IED_LAST_INTERVAL_DEMAND">
+                <name>Read IED Last Interval Demand</name>
+                <cmd text="getvalue ied demand"/>
+                <pointRef name="Last Interval kW"/>
+            </command>
+           </commands>
+           <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Last Interval kW" />
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
+            </attribute>
+            <attribute name="KVAR">
+                <basicLookup point="Last Interval kVAr" />
+            </attribute>
         </attributes>
     </pao>
     
@@ -3162,7 +3162,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Fail Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -3226,7 +3226,7 @@
             
             <!-- ANALOG (10-20) overrride multipler of MCT_360_370_BASE -->
             <point type="Analog" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
@@ -3283,16 +3283,16 @@
             </point>
         </points>
         <commands>
-        	<command id="READ_BLINK_COUNT">
-        		<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Power Fail Count"/>
-        	</command>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Power Fail Count"/>
+            </command>
         </commands>
         <attributes>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Power Fail Count" />
-        	</attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Power Fail Count" />
+            </attribute>
         </attributes>
     </pao>
     
@@ -3379,9 +3379,9 @@
     
     <!-- MCT 318 BASE -->
     <pao id="MCT_318_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_300_SERIES_TAG">
-    	<points>
-    		<point type="PulseAccumulator" offset="1">
-    			<init>true</init>
+        <points>
+            <point type="PulseAccumulator" offset="1">
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
@@ -3418,7 +3418,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Fail Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -3426,7 +3426,7 @@
             </point>
             
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -3529,41 +3529,41 @@
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
             </point>
-    	</points>
-    	<commands>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Power Fail Count"/>
-        	</command>		
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
-       	</commands>
-       	<attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="kWh" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="kW" />
-        	</attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Power Fail Count" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
-        	</attribute>
-        	<attribute name="COMM_STATUS">
-        		<basicLookup point="Comm Status" />
-        	</attribute>
-      	</attributes>
+        </points>
+        <commands>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Power Fail Count"/>
+            </command>        
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
+           </commands>
+           <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="kW" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Power Fail Count" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
+            </attribute>
+          </attributes>
     </pao>
     
     <!-- MCT 318L -->
@@ -3571,9 +3571,9 @@
         <displayName>MCT-318L</displayName>
         <points>
         
-        	<!-- DEMAND ACCUMULATOR overrides unitofmeasure -->
+            <!-- DEMAND ACCUMULATOR overrides unitofmeasure -->
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
@@ -3619,25 +3619,25 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
-	</pao>
-	
+    </pao>
+    
     <!-- MCT 318 -->
     <pao id="MCT318" inherits="MCT_318_BASE" creatable="false">
         <displayName>MCT-318</displayName>
-	</pao> 
-	
-	<!-- MCT 310 BASE -->
+    </pao> 
+    
+    <!-- MCT 310 BASE -->
     <pao id="MCT_310_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_300_SERIES_TAG">
-    	<points>
+        <points>
             <point type="PulseAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="1"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -3661,35 +3661,35 @@
             </point>
         </points>
         <commands>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Blink Count"/>
-        	</command>		
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-       	</commands>
-       	<attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="kWh" />
-        	</attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
-        	</attribute>
-        	<attribute name="COMM_STATUS">
-        		<basicLookup point="Comm Status" />
-        	</attribute>
-       	</attributes>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Blink Count"/>
+            </command>        
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+           </commands>
+           <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
+            </attribute>
+           </attributes>
     </pao>
     
     <!-- MCT 310 IM/CT/I/ID BASE -->
     <pao id="MCT_310_IM_CT_IL_ID_BASE" abstract="true" inherits="MCT_310_BASE">
         <points>
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -3697,49 +3697,49 @@
             </point>
         </points>
         <commands>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
         </commands>
         <attributes>
-        	<attribute name="DEMAND">
-        		<basicLookup point="kW" />
-        	</attribute>
-       	</attributes>
-	</pao>
-	
-	<!-- MCT 310 ID/IL BASE -->
+            <attribute name="DEMAND">
+                <basicLookup point="kW" />
+            </attribute>
+           </attributes>
+    </pao>
+    
+    <!-- MCT 310 ID/IL BASE -->
     <pao id="MCT_310_ID_IL_BASE" abstract="true" inherits="MCT_310_IM_CT_IL_ID_BASE">
         <points>
-        	<point type="Status" offset="1">
-        		<init>true</init>
+            <point type="Status" offset="1">
+                <init>true</init>
                 <name>Disconnect Status</name>
                 <stategroup value="ThreeStateStatus"/>
             </point>
         </points>
-	</pao> 
-	
-	<pao id="MCT_310_D_BASE" abstract="true" inherits="MCT_310_ID_IL_BASE">
+    </pao> 
+    
+    <pao id="MCT_310_D_BASE" abstract="true" inherits="MCT_310_ID_IL_BASE">
         <commands>
-			<command id="READ_DISCONNECT_STATUS">
-				<name>Read Disconnect Status</name>
-        		<cmd text="getstatus disconnect"/>
-        		<pointRef name="Disconnect Status"/>
-        	</command>
-       	</commands>
-       	<attributes>
-        	<attribute name="DISCONNECT_STATUS">
-        		<basicLookup point="Disconnect Status" />
-        	</attribute>
-       	</attributes>
+            <command id="READ_DISCONNECT_STATUS">
+                <name>Read Disconnect Status</name>
+                <cmd text="getstatus disconnect"/>
+                <pointRef name="Disconnect Status"/>
+            </command>
+           </commands>
+           <attributes>
+            <attribute name="DISCONNECT_STATUS">
+                <basicLookup point="Disconnect Status" />
+            </attribute>
+           </attributes>
     </pao>
     
     <pao id="MCT_310_L_BASE" abstract="true" inherits="MCT_310_IM_CT_IL_ID_BASE">
         <points>
-			<point type="DemandAccumulator" offset="101">
-				<init>true</init>
+            <point type="DemandAccumulator" offset="101">
+                <init>true</init>
                 <name>kW-LP</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -3747,32 +3747,32 @@
             </point>
         </points>
         <attributes>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="kW-LP" />
-        	</attribute>
-       	</attributes>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="kW-LP" />
+            </attribute>
+           </attributes>
     </pao>
-	
+    
     <!-- MCT 310s -->
     <pao id="MCT310CT" inherits="MCT_310_IM_CT_IL_ID_BASE">
         <displayName>MCT-310CT</displayName>
-	</pao> 
+    </pao> 
     <pao id="MCT310ID" inherits="MCT_310_D_BASE" creatable="false">
         <displayName>MCT-310ID</displayName>
         <tags>
             <tag name="DISCONNECT_310"/>
         </tags>
-	</pao> 
+    </pao> 
     <pao id="MCT310IDL" inherits="MCT_310_D_BASE, MCT_310_L_BASE">
         <displayName>MCT-310IDL</displayName>
         <tags>
             <tag name="DISCONNECT_310"/>
         </tags>
-	</pao>
+    </pao>
     <pao id="MCT310IL" inherits="MCT_310_L_BASE">
         <displayName>MCT-310IL</displayName>
         <points>
-        	<point type="PulseAccumulator" offset="2">
+            <point type="PulseAccumulator" offset="2">
                 <name>Pulse Input #2 (Current)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -3804,7 +3804,7 @@
             </point>
             
             <point type="DemandAccumulator" offset="1">
-            	<init>false</init>
+                <init>false</init>
                 <name>kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -3823,7 +3823,7 @@
                 <decimalplaces value="3"/>
             </point>
             
-        	<point type="Status" offset="5">
+            <point type="Status" offset="5">
                 <name>Status of A relay</name>
                 <stategroup value="SystemState"/>
             </point>
@@ -3832,11 +3832,11 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
-	</pao>
+    </pao>
     <pao id="MCT310IM" inherits="MCT_310_IM_CT_IL_ID_BASE" creatable="false">
         <displayName>MCT-310IM</displayName>
         <points>
-			<point type="PulseAccumulator" offset="2">
+            <point type="PulseAccumulator" offset="2">
                 <name>Pulse Input #2 (Current)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -3879,23 +3879,23 @@
                 <decimalplaces value="3"/>
             </point>
         </points>
-	</pao>
+    </pao>
     <pao id="MCT310" inherits="MCT_310_BASE" creatable="false">
         <displayName>MCT-310</displayName>
-	</pao>
+    </pao>
     
     <!-- MCT 240/248/250 BASE -->
     <pao id="MCT_240_248_250_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_200_SERIES_TAG">
         <points>
             <point type="PulseAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="1"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Fail Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -3903,14 +3903,14 @@
             </point>
             
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW-LP</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -3947,50 +3947,50 @@
             </point>
         </points>
         <commands>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Power Fail Count"/>
-        	</command>		
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
-       	</commands>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Power Fail Count"/>
+            </command>        
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
+           </commands>
         <attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="kWh" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="kW" />
-        	</attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Power Fail Count" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="kW-LP" />
-        	</attribute>
-       	</attributes>
-	</pao> 
+            <attribute name="USAGE">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="kW" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Power Fail Count" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="kW-LP" />
+            </attribute>
+           </attributes>
+    </pao> 
     
     <!-- MCT 250/248/240 -->
     <pao id="MCT250" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-250</displayName>
         <points>
-        	<point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+            <point type="PulseAccumulator" offset="20">
+                <init>true</init>
                 <name>Power Fail Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
-			<point type="Status" offset="1">
+            <point type="Status" offset="1">
                 <name>Status Input 1</name>
                 <stategroup value="SystemState"/>
             </point>
@@ -4007,32 +4007,32 @@
                 <stategroup value="SystemState"/>
             </point>
         </points>
-	</pao>
+    </pao>
     <pao id="MCT248" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-248</displayName>
         <points>
-        	<point type="Status" offset="1">
+            <point type="Status" offset="1">
                 <name>Control Point</name>
                 <stategroup value="SystemState"/>
             </point>
         </points>
-	</pao>
+    </pao>
     <pao id="MCT240" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-240</displayName>
-	</pao>
-	
+    </pao>
+    
     <!-- MCT 210/213 BASE -->
     <pao id="MCT_210_213_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_200_SERIES_TAG">
-    	<points>
+        <points>
             <point type="PulseAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="1"/>
             </point>
             <point type="PulseAccumulator" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Fail Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -4040,7 +4040,7 @@
             </point>
             
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>kW</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
@@ -4061,76 +4061,76 @@
             </point>
         </points>
         <commands>
-			<command id="READ_BLINK_COUNT">
-				<name>Read Blink Count</name>
-        		<cmd text="getvalue powerfail"/>
-        		<pointRef name="Power Fail Count"/>
-        	</command>		
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
-       	</commands>
-       	<attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="kWh" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="kW" />
-        	</attribute>
-        	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Power Fail Count" />
-        	</attribute>
-       	</attributes>
+            <command id="READ_BLINK_COUNT">
+                <name>Read Blink Count</name>
+                <cmd text="getvalue powerfail"/>
+                <pointRef name="Power Fail Count"/>
+            </command>        
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
+           </commands>
+           <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="kWh" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="kW" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Power Fail Count" />
+            </attribute>
+           </attributes>
     </pao>
     
     <!-- MCT 213/210 -->
     <pao id="MCT213" inherits="MCT_210_213_BASE" creatable="false">
         <displayName>MCT-213</displayName>
         <points>
-			<point type="Status" offset="1">
-				<init>true</init>
+            <point type="Status" offset="1">
+                <init>true</init>
                 <name>Disconnect Status</name>
                 <stategroup value="ThreeStateStatus"/>
             </point>
-			<point type="Status" offset="2000">
+            <point type="Status" offset="2000">
                 <name>Comm Status</name>
                 <stategroup value="SystemState"/>
             </point>
         </points>
         <commands>
-        	<command id="READ_DISCONNECT_STATUS">
-        		<name>Read Disconnect Status</name>
-        		<cmd text="getstatus disconnect"/>
-        		<pointRef name="Disconnect Status"/>
-        	</command>
+            <command id="READ_DISCONNECT_STATUS">
+                <name>Read Disconnect Status</name>
+                <cmd text="getstatus disconnect"/>
+                <pointRef name="Disconnect Status"/>
+            </command>
         </commands>
         <attributes>
-        	<attribute name="DISCONNECT_STATUS">
-        		<basicLookup point="Disconnect Status" />
-        	</attribute>
-       	</attributes>
-       	<tags>
+            <attribute name="DISCONNECT_STATUS">
+                <basicLookup point="Disconnect Status" />
+            </attribute>
+           </attributes>
+           <tags>
             <tag name="DISCONNECT_213"/>
         </tags>
-	</pao>
-	<pao id="MCT210" inherits="MCT_210_213_BASE" creatable="false">
+    </pao>
+    <pao id="MCT210" inherits="MCT_210_213_BASE" creatable="false">
         <displayName>MCT-210</displayName>
-	</pao>
-	
-	<!-- MCT BROADCAST -->
-	<pao id="MCTBROADCAST">
+    </pao>
+    
+    <!-- MCT BROADCAST -->
+    <pao id="MCTBROADCAST">
         <displayName>MCT Broadcast</displayName>
         <displayGroup>MCT</displayGroup>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>1-4096</value>
+                <value>1-4096</value>
             </tag>
             <tag name="DB_EDITOR_INCOMPATIBLE"/>
         </tags>
@@ -4254,16 +4254,16 @@
             </point>
         </points>
         <commands>
-        	<command id="READ_USAGE">
-        		<name>Read Usage</name>
-        		<cmd text="getvalue kWh"/>
-        		<pointRef name="kWh"/>
-        	</command>
-			<command id="READ_CURRENT_DEMAND">
-				<name>Read Current Demand</name>
-        		<cmd text="getvalue demand"/>
-        		<pointRef name="kW"/>
-        	</command>
+            <command id="READ_USAGE">
+                <name>Read Usage</name>
+                <cmd text="getvalue kWh"/>
+                <pointRef name="kWh"/>
+            </command>
+            <command id="READ_CURRENT_DEMAND">
+                <name>Read Current Demand</name>
+                <cmd text="getvalue demand"/>
+                <pointRef name="kW"/>
+            </command>
         </commands>
     </pao>
     
@@ -4563,140 +4563,140 @@
     
     <!-- TWO WAY LCRs -->
     <pao id="TWO_WAY_LCR_BASE" abstract="true">
-    	<displayGroup>Two Way LCR</displayGroup>
+        <displayGroup>Two Way LCR</displayGroup>
     </pao>
     
     <pao id="LCR3102" inherits="TWO_WAY_LCR_BASE, SUPPORTS_LOCATE_ROUTE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayName>LCR-3102</displayName>
         <points>
             <point type="DemandAccumulator" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW Relay 1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW Relay 2</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW Relay 3</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="DemandAccumulator" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Last Interval kW Relay 4</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="5">
-            	<init>true</init>
+                <init>true</init>
                 <name>Runtime Load 1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="6">
-            	<init>true</init>
+                <init>true</init>
                 <name>Runtime Load 2</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="7">
-            	<init>true</init>
+                <init>true</init>
                 <name>Runtime Load 3</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="8">
-            	<init>true</init>
+                <init>true</init>
                 <name>Runtime Load 4</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="9">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 1 Shed Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 2 Shed Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 3 Shed Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 4 Shed Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="13">
-            	<init>true</init>
+                <init>true</init>
                 <name>Prop Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="15">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 1 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="16">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 2 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="17">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 3 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="18">
-            	<init>true</init>
+                <init>true</init>
                 <name>Relay 4 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="19">
-            	<init>true</init>
+                <init>true</init>
                 <name>CT1 Duty Cycle</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Percent"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="20">
-            	<init>true</init>
+                <init>true</init>
                 <name>CT2 Duty Cycle</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Percent"/>
@@ -4713,99 +4713,99 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2000">
-            	<init>true</init>
+                <init>true</init>
                 <name>Comm Status</name>
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
         <commands>
-        	<command id="LAST_INTERVAL_KW_RELAY_1">
-        		<name>Last Interval kW Relay 1</name>
-        		<cmd text="getvalue interval last relay 1"/>
-        		<pointRef name="Last Interval kW Relay 1"/>
-        	</command>
-        	<command id="LAST_INTERVAL_KW_RELAY_2">
-        		<name>Last Interval kW Relay 2</name>
-        		<cmd text="getvalue interval last relay 2"/>
-        		<pointRef name="Last Interval kW Relay 2"/>
-        	</command>
-        	<command id="LAST_INTERVAL_KW_RELAY_3">
-        		<name>Last Interval kW Relay 3</name>
-        		<cmd text="getvalue interval last relay 3"/>
-        		<pointRef name="Last Interval kW Relay 3"/>
-        	</command>
-        	<command id="LAST_INTERVAL_KW_RELAY_4">
-        		<name>Last Interval kW Relay 4</name>
-        		<cmd text="getvalue interval last relay 4"/>
-        		<pointRef name="Last Interval kW Relay 4"/>
-        	</command>
-        	<command id="RUNTIME_LOAD_1">
-        		<name>Runtime Load 1</name>
-        		<cmd text="getvalue runtime load 1 previous 12"/>
-        		<pointRef name="Runtime Load 1"/>
-        	</command>
-        	<command id="RUNTIME_LOAD_2">
-        		<name>Runtime Load 2</name>
-        		<cmd text="getvalue runtime load 2 previous 12"/>
-        		<pointRef name="Runtime Load 2"/>
-        	</command>
-        	<command id="RUNTIME_LOAD_3">
-        		<name>Runtime Load 3</name>
-        		<cmd text="getvalue runtime load 3 previous 12"/>
-        		<pointRef name="Runtime Load 3"/>
-        	</command>
-        	<command id="RUNTIME_LOAD_4">
-        		<name>Runtime Load 4</name>
-        		<cmd text="getvalue runtime load 4 previous 12"/>
-        		<pointRef name="Runtime Load 4"/>
-        	</command>
-        	<command id="RELAY_1_SHED_TIME">
-        		<name>Relay 1 Shed Time</name>
-        		<cmd text="getvalue shedtime relay 1 previous 12"/>
-        		<pointRef name="Relay 1 Shed Time"/>
-        	</command>
-        	<command id="RELAY_2_SHED_TIME">
-        		<name>Relay 2 Shed Time</name>
-        		<cmd text="getvalue shedtime relay 2 previous 12"/>
-        		<pointRef name="Relay 2 Shed Time"/>
-        	</command>
-        	<command id="RELAY_3_SHED_TIME">
-        		<name>Relay 3 Shed Time</name>
-        		<cmd text="getvalue shedtime relay 3 previous 12"/>
-        		<pointRef name="Relay 3 Shed Time"/>
-        	</command>
-        	<command id="RELAY_4_SHED_TIME">
-        		<name>Relay 4 Shed Time</name>
-        		<cmd text="getvalue shedtime relay 4 previous 12"/>
-        		<pointRef name="Relay 4 Shed Time"/>
-        	</command>
-			<command id="RELAY_1_REMAINING_CONTROL">
-        		<name>Relay 1 Remaining Control Time</name>
-        		<cmd text="getvalue controltime remaining relay 1"/>
-        		<pointRef name="Relay 1 Remaining Control Time"/>
-        	</command>
-			<command id="RELAY_2_REMAINING_CONTROL">
-        		<name>Relay 2 Remaining Control Time</name>
-        		<cmd text="getvalue controltime remaining relay 2"/>
-        		<pointRef name="Relay 2 Remaining Control Time"/>
-        	</command>
-			<command id="RELAY_3_REMAINING_CONTROL">
-        		<name>Relay 3 Remaining Control Time</name>
-        		<cmd text="getvalue controltime remaining relay 3"/>
-        		<pointRef name="Relay 3 Remaining Control Time"/>
-        	</command>
-			<command id="RELAY_4_REMAINING_CONTROL">
-        		<name>Relay 4 Remaining Control Time</name>
-        		<cmd text="getvalue controltime remaining relay 4"/>
-        		<pointRef name="Relay 4 Remaining Control Time"/>
-        	</command>
-        	<command id="PROP_COUNT">
-        		<name>Prop Count</name>
-        		<cmd text="getvalue propcount"/>
-        		<pointRef name="Prop Count"/>
-        	</command>
-    	</commands>
-    	<attributes>
+            <command id="LAST_INTERVAL_KW_RELAY_1">
+                <name>Last Interval kW Relay 1</name>
+                <cmd text="getvalue interval last relay 1"/>
+                <pointRef name="Last Interval kW Relay 1"/>
+            </command>
+            <command id="LAST_INTERVAL_KW_RELAY_2">
+                <name>Last Interval kW Relay 2</name>
+                <cmd text="getvalue interval last relay 2"/>
+                <pointRef name="Last Interval kW Relay 2"/>
+            </command>
+            <command id="LAST_INTERVAL_KW_RELAY_3">
+                <name>Last Interval kW Relay 3</name>
+                <cmd text="getvalue interval last relay 3"/>
+                <pointRef name="Last Interval kW Relay 3"/>
+            </command>
+            <command id="LAST_INTERVAL_KW_RELAY_4">
+                <name>Last Interval kW Relay 4</name>
+                <cmd text="getvalue interval last relay 4"/>
+                <pointRef name="Last Interval kW Relay 4"/>
+            </command>
+            <command id="RUNTIME_LOAD_1">
+                <name>Runtime Load 1</name>
+                <cmd text="getvalue runtime load 1 previous 12"/>
+                <pointRef name="Runtime Load 1"/>
+            </command>
+            <command id="RUNTIME_LOAD_2">
+                <name>Runtime Load 2</name>
+                <cmd text="getvalue runtime load 2 previous 12"/>
+                <pointRef name="Runtime Load 2"/>
+            </command>
+            <command id="RUNTIME_LOAD_3">
+                <name>Runtime Load 3</name>
+                <cmd text="getvalue runtime load 3 previous 12"/>
+                <pointRef name="Runtime Load 3"/>
+            </command>
+            <command id="RUNTIME_LOAD_4">
+                <name>Runtime Load 4</name>
+                <cmd text="getvalue runtime load 4 previous 12"/>
+                <pointRef name="Runtime Load 4"/>
+            </command>
+            <command id="RELAY_1_SHED_TIME">
+                <name>Relay 1 Shed Time</name>
+                <cmd text="getvalue shedtime relay 1 previous 12"/>
+                <pointRef name="Relay 1 Shed Time"/>
+            </command>
+            <command id="RELAY_2_SHED_TIME">
+                <name>Relay 2 Shed Time</name>
+                <cmd text="getvalue shedtime relay 2 previous 12"/>
+                <pointRef name="Relay 2 Shed Time"/>
+            </command>
+            <command id="RELAY_3_SHED_TIME">
+                <name>Relay 3 Shed Time</name>
+                <cmd text="getvalue shedtime relay 3 previous 12"/>
+                <pointRef name="Relay 3 Shed Time"/>
+            </command>
+            <command id="RELAY_4_SHED_TIME">
+                <name>Relay 4 Shed Time</name>
+                <cmd text="getvalue shedtime relay 4 previous 12"/>
+                <pointRef name="Relay 4 Shed Time"/>
+            </command>
+            <command id="RELAY_1_REMAINING_CONTROL">
+                <name>Relay 1 Remaining Control Time</name>
+                <cmd text="getvalue controltime remaining relay 1"/>
+                <pointRef name="Relay 1 Remaining Control Time"/>
+            </command>
+            <command id="RELAY_2_REMAINING_CONTROL">
+                <name>Relay 2 Remaining Control Time</name>
+                <cmd text="getvalue controltime remaining relay 2"/>
+                <pointRef name="Relay 2 Remaining Control Time"/>
+            </command>
+            <command id="RELAY_3_REMAINING_CONTROL">
+                <name>Relay 3 Remaining Control Time</name>
+                <cmd text="getvalue controltime remaining relay 3"/>
+                <pointRef name="Relay 3 Remaining Control Time"/>
+            </command>
+            <command id="RELAY_4_REMAINING_CONTROL">
+                <name>Relay 4 Remaining Control Time</name>
+                <cmd text="getvalue controltime remaining relay 4"/>
+                <pointRef name="Relay 4 Remaining Control Time"/>
+            </command>
+            <command id="PROP_COUNT">
+                <name>Prop Count</name>
+                <cmd text="getvalue propcount"/>
+                <pointRef name="Prop Count"/>
+            </command>
+        </commands>
+        <attributes>
             <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
                 <basicLookup point="Runtime Load 1"/>
             </attribute>
@@ -4850,14 +4850,14 @@
     
     <!-- SIGNAL TRANSMITTERS -->
     <pao id="SIGNAL_TRANSMITTER_BASE" abstract="true">
-    	<displayGroup>Signal Transmitters</displayGroup>
-    	<points>
+        <displayGroup>Signal Transmitters</displayGroup>
+        <points>
             <point type="Status" offset="2000">
-            	<init>true</init>
+                <init>true</init>
                 <name>Comm Status</name>
                 <archive>
-                	<type>ON_CHANGE</type>
-                	<interval>ZERO</interval>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
                 </archive>
                 <stategroup value="Comm Status State"/>
             </point>
@@ -4870,11 +4870,11 @@
     </pao>
     
     <pao id="TRANSMITTER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE">
-    	<changeGroup>transmitter</changeGroup>
+        <changeGroup>transmitter</changeGroup>
     </pao>
     
     <pao id="REPEATER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
-    	<changeGroup>repeater</changeGroup>
+        <changeGroup>repeater</changeGroup>
     </pao>
     
     <!-- CCUs -->
@@ -4882,7 +4882,7 @@
         <displayName>CCU-710A</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-127</value>
+                <value>0-127</value>
             </tag>
         </tags>
     </pao>
@@ -4890,7 +4890,7 @@
         <displayName>CCU-711</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-126</value>
+                <value>0-126</value>
             </tag>
         </tags>
     </pao>
@@ -4898,7 +4898,7 @@
         <displayName>CCU-721</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-126</value>
+                <value>0-126</value>
             </tag>
         </tags>
     </pao>
@@ -4913,56 +4913,56 @@
             </point>
             
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #2</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #3</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #4</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="5">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #5</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="6">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #6</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="7">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #7</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="8">
-            	<init>true</init>
+                <init>true</init>
                 <name>Analog Input #8</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -5046,8 +5046,8 @@
         <displayName>REPEATER 900</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>464-4302,
-            			4190464-4194302</value> <!-- 4190464-4194302 is the range for RPT901 -->
+                <value>464-4302,
+                        4190464-4194302</value> <!-- 4190464-4194302 is the range for RPT901 -->
             </tag>
         </tags>
     </pao>
@@ -5055,7 +5055,7 @@
         <displayName>REPEATER 902</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>800450-809900</value>
+                <value>800450-809900</value>
             </tag>
         </tags>
     </pao>
@@ -5063,15 +5063,15 @@
         <displayName>REPEATER 800</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>800000-800436</value>
+                <value>800000-800436</value>
             </tag>
-		</tags>
+        </tags>
     </pao>
     <pao id="REPEATER_850" inherits="REPEATER_BASE">
         <displayName>REPEATER 850</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>560001-590000</value>
+                <value>560001-590000</value>
             </tag>
         </tags>
     </pao>
@@ -5079,12 +5079,12 @@
         <displayName>REPEATER 801</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>809901-809980,
-            			4181952-4182952,
-            			4182953-4183952,
-            			4183953-4184952,
-            			518000-519000
-            	</value>
+                <value>809901-809980,
+                        4181952-4182952,
+                        4182953-4183952,
+                        4183953-4184952,
+                        518000-519000
+                </value>
             </tag>
         </tags>
     </pao>
@@ -5092,7 +5092,7 @@
         <displayName>REPEATER 921</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>464-4302</value>
+                <value>464-4302</value>
             </tag>
         </tags>
     </pao>
@@ -5100,7 +5100,7 @@
         <displayName>RTC</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-15</value>
+                <value>0-15</value>
             </tag>
         </tags>
     </pao>
@@ -5108,7 +5108,7 @@
         <displayName>RTU-LMI</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-127</value>
+                <value>0-127</value>
             </tag>
         </tags>
     </pao>
@@ -5120,7 +5120,7 @@
     </pao>
     <!-- TCU BASE -->
     <pao id="TCU_BASE" abstract="true" inherits="TRANSMITTER_BASE">
-    	<points>
+        <points>
             <point type="Status" offset="17">
                 <name>Local Operation</name>
                 <stategroup value="SystemState"/>
@@ -5170,7 +5170,7 @@
     <pao id="TCU5500" inherits="TCU_BASE">
         <displayName>TCU-5500</displayName>
         <points>
-			<point type="Status" offset="27">
+            <point type="Status" offset="27">
                 <name>VHF Channel Bust</name>
                 <stategroup value="SystemState"/>
             </point>
@@ -5178,7 +5178,7 @@
                 <name>VHF Tx inhibit</name>
                 <stategroup value="SystemState"/>
             </point>
-        	
+            
         </points>
     </pao>
     <pao id="WCTP_TERMINAL" inherits="SIGNAL_TRANSMITTER_BASE">
@@ -5187,10 +5187,10 @@
     
     <!-- ELECTRONIC METERS -->
     <pao id="ELECTRONIC_METER_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
-    	<displayGroup>Electronic Meters</displayGroup>
-    	<points>
+        <displayGroup>Electronic Meters</displayGroup>
+        <points>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Total kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
@@ -5264,7 +5264,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="15">
-            	<init>true</init>
+                <init>true</init>
                 <name>Load Profile kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -5272,7 +5272,7 @@
             </point>
             
             <point type="Analog" offset="21">
-            	<init>true</init>
+                <init>true</init>
                 <name>Total kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
@@ -5345,7 +5345,7 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="35">
-            	<init>true</init>
+                <init>true</init>
                 <name>Load Profile kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
@@ -5518,35 +5518,35 @@
             </point>
         </points>
         <commands>
-        	<command id="GENERAL_SCAN">
-        		<name>General Scan</name>
-        		<cmd text="scan general"/>
-        		<pointRef name="Total kWh"/>
-        		<pointRef name="Total kVArh"/>
-        	</command>
+            <command id="GENERAL_SCAN">
+                <name>General Scan</name>
+                <cmd text="scan general"/>
+                <pointRef name="Total kWh"/>
+                <pointRef name="Total kVArh"/>
+            </command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="Last Interval kW" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="Load Profile kW" />
-        	</attribute>
-       	</attributes>
-       	<tags>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Last Interval kW" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="Load Profile kW" />
+            </attribute>
+           </attributes>
+           <tags>
             <tag name="DEVICE_ICON_TYPE">
                 <value>electric_meter</value>
             </tag>
             <tag name="METER_DETAIL_DISPLAYABLE" />
-    		<tag name="PORTER_COMMAND_REQUESTS"/>
+            <tag name="PORTER_COMMAND_REQUESTS"/>
         </tags>
-      	
+          
     </pao>
     
     <!-- IPC METERS -->
@@ -5645,28 +5645,28 @@
     <pao id="ALPHA_PPLUS" inherits="ELECTRONIC_METER_BASE">
         <displayName>ALPHA POWER PLUS</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>    
+    </pao>    
     <pao id="ALPHA_A1" inherits="ELECTRONIC_METER_BASE">
         <displayName>ALPHA A1</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>
-	<!--
-	<pao id="ALPHA_A3" inherits="ELECTRONIC_METER_BASE">
+    </pao>
+    <!--
+    <pao id="ALPHA_A3" inherits="ELECTRONIC_METER_BASE">
         <displayName>ALPHA A3</displayName>
-	</pao>  
-	-->
+    </pao>  
+    -->
     <pao id="DR_87" inherits="ELECTRONIC_METER_BASE" creatable="false">
         <displayName>DR-87</displayName>
         <changeGroup>electronic</changeGroup>
-		<points>
-			<!-- these are init=false -->
-			<point type="Analog" offset="1">
+        <points>
+            <!-- these are init=false -->
+            <point type="Analog" offset="1">
                 <name>Total kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
-			<point type="Analog" offset="15">
+            <point type="Analog" offset="15">
                 <name>Load Profile kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -5678,22 +5678,22 @@
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3"/>
             </point>
-			<point type="Analog" offset="35">
+            <point type="Analog" offset="35">
                 <name>Load Profile kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="3"/>
             </point>
             <!-- extra -->
-			<point type="Analog" offset="90">
-				<init>true</init>
+            <point type="Analog" offset="90">
+                <init>true</init>
                 <name>Total Pulses for Channel 1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="91">
-            	<init>true</init>
+                <init>true</init>
                 <name>Load Profile for Channel 1</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -5737,51 +5737,51 @@
             </point>
         </points>
         <!-- redefine commands and attributes -->
-		<commands>
-        	<command id="GENERAL_SCAN">
-        		<name>General Scan</name>
-        		<cmd text="scan general"/>
-        		<pointRef name="Total kWh"/>
-        		<pointRef name="Total kVArh"/>
-        		<pointRef name="Total Pulses for Channel 1"/>
-        		<pointRef name="Load Profile for Channel 1"/>
-        	</command>
+        <commands>
+            <command id="GENERAL_SCAN">
+                <name>General Scan</name>
+                <cmd text="scan general"/>
+                <pointRef name="Total kWh"/>
+                <pointRef name="Total kVArh"/>
+                <pointRef name="Total Pulses for Channel 1"/>
+                <pointRef name="Load Profile for Channel 1"/>
+            </command>
         </commands>
-		<attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="Total Pulses for Channel 1" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-        	<attribute name="DEMAND">
-        		<basicLookup point="Last Interval kW" />
-        	</attribute>
-        	<attribute name="LOAD_PROFILE">
-        		<basicLookup point="Load Profile for Channel 1" />
-        	</attribute>
-       	</attributes>
-	</pao>
+        <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Total Pulses for Channel 1" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Last Interval kW" />
+            </attribute>
+            <attribute name="LOAD_PROFILE">
+                <basicLookup point="Load Profile for Channel 1" />
+            </attribute>
+           </attributes>
+    </pao>
     <pao id="FULCRUM" inherits="ELECTRONIC_METER_BASE">
         <displayName>FULCRUM</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>
-	
-	<!-- ION BASE -->
-	<pao id="ELECTRONIC_METER_ION_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
-		<displayGroup>Electronic Meters</displayGroup>
-		<points>
+    </pao>
+    
+    <!-- ION BASE -->
+    <pao id="ELECTRONIC_METER_ION_BASE" abstract="true" inherits="SUPPORTS_COMMANDER_REQUESTS_TAG">
+        <displayGroup>Electronic Meters</displayGroup>
+        <points>
             <point type="Status" offset="2000">
-            	<init>true</init>
+                <init>true</init>
                 <name>Comm Status</name>
                 <stategroup value="TwoStateStatus"/>
             </point>        
         </points>
         <tags>
-    		<tag name="PORTER_COMMAND_REQUESTS"/>
+            <tag name="PORTER_COMMAND_REQUESTS"/>
         </tags>
-	</pao>
-	<pao id="ION_7330" inherits="ELECTRONIC_METER_ION_BASE">
+    </pao>
+    <pao id="ION_7330" inherits="ELECTRONIC_METER_ION_BASE">
         <displayName>ION-7330</displayName>
     </pao>
     <pao id="ION_7700" inherits="ELECTRONIC_METER_ION_BASE">
@@ -5790,41 +5790,41 @@
     <pao id="ION_8300" inherits="ELECTRONIC_METER_ION_BASE">
         <displayName>ION-8300</displayName>
     </pao>
-	<!--
+    <!--
     <pao id="KV" inherits="ELECTRONIC_METER_BASE">
         <displayName>KV</displayName>
-	</pao>
+    </pao>
     <pao id="KVII" inherits="ELECTRONIC_METER_BASE">
         <displayName>KV2</displayName>
-	</pao>
-	-->
-	<pao id="LANDISGYRS4" inherits="ELECTRONIC_METER_BASE">
+    </pao>
+    -->
+    <pao id="LANDISGYRS4" inherits="ELECTRONIC_METER_BASE">
         <displayName>LANDIS-GYR S4</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>
+    </pao>
     <pao id="QUANTUM" inherits="ELECTRONIC_METER_BASE">
         <displayName>QUANTUM</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>
-	<pao id="SENTINEL" inherits="ELECTRONIC_METER_BASE">
+    </pao>
+    <pao id="SENTINEL" inherits="ELECTRONIC_METER_BASE">
         <displayName>SENTINEL</displayName>
-	</pao>
-	<pao id="FOCUS" inherits="ELECTRONIC_METER_BASE">
+    </pao>
+    <pao id="FOCUS" inherits="ELECTRONIC_METER_BASE">
         <displayName>FOCUS</displayName>
         <commands>
-        	<command id="GENERAL_SCAN">
-        		<name>General Scan</name>
-        		<cmd text="scan general"/>
-        		<pointRef name="Total kWh"/>
-        		<pointRef name="Total kVArh"/>
-        		<pointRef name="Peak kW (Rate A kW)"/>
-        		<pointRef name="Last Interval kW"/>
-        	</command>
+            <command id="GENERAL_SCAN">
+                <name>General Scan</name>
+                <cmd text="scan general"/>
+                <pointRef name="Total kWh"/>
+                <pointRef name="Total kVArh"/>
+                <pointRef name="Peak kW (Rate A kW)"/>
+                <pointRef name="Last Interval kW"/>
+            </command>
         </commands>
-	</pao>
-	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE" creatable="false">
+    </pao>
+    <pao id="SIXNET" inherits="ELECTRONIC_METER_BASE" creatable="false">
         <displayName>SIXNET</displayName>
-	</pao>
+    </pao>
 
     <pao id="RFN_DISCONNECT" abstract="true">
         <points>
@@ -5846,7 +5846,7 @@
 
 <!--  These Yukon-calculated points are NOT in rfnPointMapping.xml as they are not read directly from the devices-->
     <pao id="RFN_PTCALC__ALL" abstract="true">
-    	<points>
+        <points>
             <point type="Analog" offset="182">
                 <init>true</init>
                 <name>Delivered kWh per Interval</name>
@@ -5899,7 +5899,7 @@
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
-    	</points>
+        </points>
         <attributes>
             <attribute name="DELIVERED_KWH_PER_INTERVAL">
                 <basicLookup point="Delivered kWh per Interval"/>
@@ -5988,8 +5988,8 @@
 
 <!-- ###################################  RFN_COMMON  ################################### -->
 <pao id="RFN_COMMON" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, RFN_PTCALC__ALL, SUPPORTS_COMMANDER_REQUESTS_TAG">
-	<displayGroup>RFMESH</displayGroup>
-	<changeGroup>rfn</changeGroup>
+    <displayGroup>RFMESH</displayGroup>
+    <changeGroup>rfn</changeGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>true</init>
@@ -6579,29 +6579,29 @@
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
                 <name>Total Outage Count</name>
-				<archive>
-					<type>ON_CHANGE</type>
-					<interval>ZERO</interval>
-				</archive>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
                 <calculation>
                     <updateType>On First Change</updateType>
                     <components>
-	                    <component point="Blink Count"/>
-	                    <component point="Outage Count"/>
+                        <component point="Blink Count"/>
+                        <component point="Outage Count"/>
                     </components>
                 </calculation>
             </point>
         </points>
         <attributes>
             <attribute name="USAGE">
-            	<basicLookup point="Delivered kWh" />
-			</attribute>
+                <basicLookup point="Delivered kWh" />
+            </attribute>
             <attribute name="DELIVERED_KWH">
-            	<basicLookup point="Delivered kWh" />
-			</attribute>
+                <basicLookup point="Delivered kWh" />
+            </attribute>
             <attribute name="RECEIVED_KWH">
                 <basicLookup point="Received kWh"/>
             </attribute>
@@ -6678,7 +6678,7 @@
             <attribute name="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE">
                 <basicLookup point="Energy Accumulated While In Standby Mode" />
             </attribute>
-			<attribute name="FAILED_UPGRADE_SIGNATURE_VERIF">
+            <attribute name="FAILED_UPGRADE_SIGNATURE_VERIF">
                 <basicLookup point="Failed Upgrade Signature Verification" />
             </attribute>
             <attribute name="IMPROPER_METER_ENGINE_OPERATION_WARNING">
@@ -6958,8 +6958,8 @@
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
-		</points>
-		<attributes>
+        </points>
+        <attributes>
             <attribute name="USAGE_RATE_A">
                 <basicLookup point="Rate A kWh" />
             </attribute>
@@ -7285,13 +7285,13 @@
             <attribute name="NET_KWH_RATE_E">
                 <basicLookup point="Net kWh (Rate E kWh)"/>
             </attribute>
-			<attribute name="PEAK_DEMAND_RATE_E">
+            <attribute name="PEAK_DEMAND_RATE_E">
                 <basicLookup point="Peak kW (Rate E kW)"/>
             </attribute>
-			<attribute name="USAGE_RATE_E">
+            <attribute name="USAGE_RATE_E">
                 <basicLookup point="Rate E kWh"/>
             </attribute>
-			<attribute name="RECEIVED_KWH_RATE_E">
+            <attribute name="RECEIVED_KWH_RATE_E">
                 <basicLookup point="Received kWh (Rate E kWh)"/>
             </attribute>
         </attributes>
@@ -7943,7 +7943,7 @@
             </point>
         </points>
         <attributes>
-        	<attribute name="RECEIVED_KVARH">
+            <attribute name="RECEIVED_KVARH">
                 <basicLookup point="Received kVArh" />
             </attribute>
         </attributes>
@@ -8459,18 +8459,18 @@
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
                 <name>Total Outage Count</name>
-				<archive>
-					<type>ON_CHANGE</type>
-					<interval>ZERO</interval>
-				</archive>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
                 <calculation>
                     <updateType>On First Change</updateType>
                     <components>
-	                    <component point="Blink Count"/>
-	                    <component point="Outage Count"/>
+                        <component point="Blink Count"/>
+                        <component point="Outage Count"/>
                     </components>
                 </calculation>
             </point>
@@ -8484,7 +8484,7 @@
                </archive>
                <stategroup value="Event Status"/>
             </point>
-			<point type="Status" offset="78">
+            <point type="Status" offset="78">
                <name>ANSI Security Failed</name>
                <archive>
                    <type>ON_CHANGE</type>
@@ -8743,10 +8743,10 @@
             <attribute name="DEMAND_READS_AND_RESET">
                 <basicLookup point="Demand Reads And Reset"/>
             </attribute>
-			<attribute name="FAILED_UPGRADE_SIGNATURE_VERIF">
+            <attribute name="FAILED_UPGRADE_SIGNATURE_VERIF">
                 <basicLookup point="Failed Upgrade Signature Verification"/>
             </attribute>
-			<attribute name="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR">
+            <attribute name="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR">
                 <basicLookup point="Inactive Phase Current Diagnostic Error"/>
             </attribute>
             <attribute name="LOW_BATTERY_WARNING">
@@ -8814,7 +8814,7 @@
             <tag name="METER_DETAIL_DISPLAYABLE"/>
             <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
             <tag name="USES_METER_NUMBER_FOR_MSP"/>
-		</tags>
+        </tags>
     </pao>
     
     <pao id="RFN_L0_SENTINEL" abstract="true" inherits="RFN_COMMON_SENTINEL">
@@ -8840,7 +8840,7 @@
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="3"/>
             </point>
-		</points>
+        </points>
         <attributes>
             <attribute name="USAGE">
                 <basicLookup point="Delivered kWh" />
@@ -8860,7 +8860,7 @@
         </attributes>
         <tags>
             <tag name="RFN_POINT_CALCULATION"/>
-		</tags>
+        </tags>
     </pao>
 
     <pao id="RFN_L1_SENTINEL" abstract="true" inherits="RFN_L0_SENTINEL, RFN_TOU_FOR_ALL_EXCEPT_A3D, THREE_PHASE_VOLTAGE">
@@ -9182,7 +9182,7 @@
             </point>
         </points>
         <attributes>
-        	<!-- Using KVARH attributes for "Delivered kVArh". May need separate attributes in the futre -->
+            <!-- Using KVARH attributes for "Delivered kVArh". May need separate attributes in the futre -->
             <attribute name="KVARH">
                 <basicLookup point="Delivered kVArh" />
             </attribute>
@@ -9381,20 +9381,20 @@
     </pao>
 
 
-	<pao id="TRANSDATA_MARKV">
+    <pao id="TRANSDATA_MARKV">
         <displayName>TRANSDATA MARK-V</displayName>
         <displayGroup>Electronic Meters</displayGroup>
         <changeGroup>electronic</changeGroup>
-		<points>
+        <points>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Total kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -9402,30 +9402,30 @@
             </point>
         </points>
         <commands>
-        	<command id="GENERAL_SCAN">
-        		<name>General Scan</name>
-        		<cmd text="scan general"/>
-        		<pointRef name="Total kWh"/>
-        	</command>
+            <command id="GENERAL_SCAN">
+                <name>General Scan</name>
+                <cmd text="scan general"/>
+                <pointRef name="Total kWh"/>
+            </command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
-        		<basicLookup point="Total kWh" />
-        	</attribute>
-        	<attribute name="PEAK_DEMAND">
-        		<basicLookup point="Peak kW (Rate A kW)" />
-        	</attribute>
-       	</attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)" />
+            </attribute>
+           </attributes>
     </pao>
     
-	<pao id="VECTRON" inherits="ELECTRONIC_METER_BASE">
+    <pao id="VECTRON" inherits="ELECTRONIC_METER_BASE">
         <displayName>VECTRON</displayName>
         <changeGroup>electronic</changeGroup>
-	</pao>
-    	
+    </pao>
+        
     <!-- RTUs -->
     <pao id="RTU_BASE" abstract="true">
-    	<displayGroup>RTU</displayGroup>
+        <displayGroup>RTU</displayGroup>
     </pao>
     
     <pao id="DAVISWEATHER" inherits="RTU_BASE" creatable="false">
@@ -9471,7 +9471,7 @@
         <changeGroup>rtu</changeGroup>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-127</value>
+                <value>0-127</value>
             </tag>
         </tags>
     </pao>
@@ -9479,7 +9479,7 @@
         <displayName>RTM</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
-            	<value>0-15</value>
+                <value>0-15</value>
             </tag>
         </tags>
     </pao>
@@ -9499,14 +9499,14 @@
     <pao id="FAULT_CI">
         <displayName>Faulted Circuit Indicator</displayName>
         <displayGroup>Grid Advisor</displayGroup>
-		<points>
+        <points>
             <point type="Status" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Fault Status</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>No 60Hz or Low Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
@@ -9516,90 +9516,90 @@
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Momentary Toggle</name>
                 <stategroup value="TrueFalse"/>
             </point>
-			<point type="Status" offset="100">
-            	<init>true</init>
+            <point type="Status" offset="100">
+                <init>true</init>
                 <name>Signal Strength</name>
                 <stategroup value="Signal Strength"/>
             </point>
             <!-- <point type="Status" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>Configured to send Current Survey</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="102">
-            	<init>true</init>
+                <init>true</init>
                 <name>Request ACK</name>
-				<stategroup value="TrueFalse"/>
+                <stategroup value="TrueFalse"/>
             </point> -->
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Nominal Amps</name>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Peak Amps</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Battery Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Device Temperature</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-C"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>false</init>
+                <init>false</init>
                 <name>Latitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>false</init>
+                <init>false</init>
                 <name>Longitude</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="31">
-            	<init>true</init>
+                <init>true</init>
                 <name>Current Survey</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="100">
-            	<init>true</init>
+                <init>true</init>
                 <name>RSSI</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>BER</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="PulseAccumulator" offset="1">
-        		<init>true</init>
+                <init>true</init>
                 <name>Momentary Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
@@ -9615,111 +9615,111 @@
     <pao id="NEUTRAL_MONITOR">
         <displayName>Capacitor Bank Neutral Monitor</displayName>
         <displayGroup>Grid Advisor</displayGroup>
-		<points>
+        <points>
             <point type="Status" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Over Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Reset Over Current</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Reed Switch Communication</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="10">
-            	<init>false</init>
+                <init>false</init>
                 <name>Calibrated</name>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="100">
-            	<init>true</init>
+                <init>true</init>
                 <name>Signal Strength</name>
-				<stategroup value="Signal Strength"/>
+                <stategroup value="Signal Strength"/>
             </point>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Max Current - Report</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Min Current - Report</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Battery Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Device Temperature</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Temp-C"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="5">
-            	<init>true</init>
+                <init>true</init>
                 <name>Max Current - Period</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="6">
-            	<init>true</init>
+                <init>true</init>
                 <name>Min Current - Period</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="10">
-            	<init>false</init>
+                <init>false</init>
                 <name>Period Rate</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="11">
-            	<init>false</init>
+                <init>false</init>
                 <name>High Alert Setpoint</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="12">
-            	<init>false</init>
+                <init>false</init>
                 <name>Reset Alert Setpoint</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="31">
-            	<init>true</init>
+                <init>true</init>
                 <name>Current Survey</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3"/>
             </point>
-			<point type="Analog" offset="100">
-            	<init>true</init>
+            <point type="Analog" offset="100">
+                <init>true</init>
                 <name>RSSI</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="101">
-            	<init>true</init>
+                <init>true</init>
                 <name>BER</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
@@ -9731,7 +9731,7 @@
     
     <!-- LM GROUPS -->
     <pao id="LM_GROUP_BASE" abstract="true">
-    	<changeGroup>lm</changeGroup>
+        <changeGroup>lm</changeGroup>
     </pao>
     <pao id="LM_GROUP" abstract="true">
         <points>
@@ -9746,8 +9746,8 @@
             </attribute>
         </attributes>
         <tags>
-       		<tag name="LM_GROUP" />
-		</tags>
+               <tag name="LM_GROUP" />
+        </tags>
     </pao>
     
     <pao id="LM_GROUP_EMETCON" inherits="LM_GROUP_BASE, LM_GROUP">
@@ -9771,7 +9771,7 @@
     <pao id="LM_GROUP_MCT" inherits="LM_GROUP">
         <displayName>MCT GROUP</displayName>
     </pao>
-	<pao id="LM_GROUP_SA305" inherits="LM_GROUP">
+    <pao id="LM_GROUP_SA305" inherits="LM_GROUP">
         <displayName>SA-305 Group</displayName>
     </pao>
     <pao id="LM_GROUP_SA205" inherits="LM_GROUP">
@@ -9860,8 +9860,8 @@
                 <decimalplaces value="1"/>
             </point>
         </points>
-		<tags>
-        	<tag name="LM_SCENARIO" />
+        <tags>
+            <tag name="LM_SCENARIO" />
         </tags>
     </pao>
         
@@ -9892,44 +9892,44 @@
                 <decimalplaces value="1"/>
             </point>
         </points>
-		<tags>
-        	<tag name="LM_CONTROL_AREA"/>
+        <tags>
+            <tag name="LM_CONTROL_AREA"/>
         </tags>
     </pao>
     
     <!-- CapControl -->
     <pao id="CAP_CONTROL_AREA">
-    	<displayName>Area</displayName>
-    	<changeGroup>cap</changeGroup>
+        <displayName>Area</displayName>
+        <changeGroup>cap</changeGroup>
     </pao>
     
     <pao id="CAP_CONTROL_SUBBUS">
-    	<displayName>Substation Bus</displayName>
-    	<changeGroup>cap</changeGroup>
-    	<points>
+        <displayName>Substation Bus</displayName>
+        <changeGroup>cap</changeGroup>
+        <points>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Estimated Var Load</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Daily Operations</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Estimated Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
@@ -9939,42 +9939,42 @@
     </pao>
     
     <pao id="CAP_CONTROL_SPECIAL_AREA">
-    	<displayName>Special Area</displayName>
-    	<changeGroup>cap</changeGroup>
+        <displayName>Special Area</displayName>
+        <changeGroup>cap</changeGroup>
     </pao>
     
     <pao id="CAP_CONTROL_SUBSTATION">
-    	<displayName>Substation</displayName>
-    	<changeGroup>cap</changeGroup>
+        <displayName>Substation</displayName>
+        <changeGroup>cap</changeGroup>
     </pao>
     
     <pao id="CAP_CONTROL_FEEDER">
-    	<displayName>Feeder</displayName>
-    	<changeGroup>cap</changeGroup>
-    	<points>
+        <displayName>Feeder</displayName>
+        <changeGroup>cap</changeGroup>
+        <points>
             <point type="Analog" offset="1">
-            	<init>true</init>
+                <init>true</init>
                 <name>Estimated Var Load</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="2">
-            	<init>true</init>
+                <init>true</init>
                 <name>Daily Operations</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="3">
-            	<init>true</init>
+                <init>true</init>
                 <name>Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="4">
-            	<init>true</init>
+                <init>true</init>
                 <name>Estimated Power Factor</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="PF"/>
@@ -9989,8 +9989,8 @@
             <point type="Status" offset="1">
                 <init>true</init>
                 <name>Capacitor Bank State</name>
-				<controlType value="NORMAL"/>
-				<controlOffset value="1"/>
+                <controlType value="NORMAL"/>
+                <controlOffset value="1"/>
                 <stategroup value="TwoStateStatus"/>
             </point>
         </points>
@@ -10051,11 +10051,11 @@
     <pao id="CAPBANKCONTROLLER" inherits="CBC_1WAY_BASE">
         <displayName>CBC Versacom</displayName>
         <changeGroup>cap</changeGroup>
-		<tags>
+        <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>700000001-701000000</value>
+                <value>700000001-701000000</value>
             </tag>
-        </tags>	<!-- legacy has 0-999999999 -->
+        </tags>    <!-- legacy has 0-999999999 -->
     </pao>
     
     <pao id="CBC_7010" inherits="CBC_1WAY_BASE">
@@ -10575,8 +10575,8 @@
             <point type="Status" offset="2">
                 <init>true</init>
                 <name>SCADA Override</name>
-				<controlType value="NORMAL"/>
-				<controlOffset value="2"/>
+                <controlType value="NORMAL"/>
+                <controlOffset value="2"/>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="3">
@@ -10649,19 +10649,19 @@
             <point type="Status" offset="86">
                 <init>true</init>
                 <name>Manual Control Mode</name>
-				<controlType value="LATCH"/>
-				<controlOffset value="11"/>
-				<stateZeroControl value="OPEN"/>
-				<stateOneControl value="CLOSE"/>
+                <controlType value="LATCH"/>
+                <controlOffset value="11"/>
+                <stateZeroControl value="OPEN"/>
+                <stateOneControl value="CLOSE"/>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="87">
                 <init>true</init>
                 <name>Remote Control Mode</name>
-				<controlType value="LATCH"/>
-				<controlOffset value="11"/>
-				<stateZeroControl value="CLOSE"/>
-				<stateOneControl value="OPEN"/>
+                <controlType value="LATCH"/>
+                <controlOffset value="11"/>
+                <stateZeroControl value="CLOSE"/>
+                <stateOneControl value="OPEN"/>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="88">
@@ -10672,9 +10672,9 @@
             <point type="Status" offset="89">
                 <init>true</init>
                 <name>OVUV Control</name>
-				<controlType value="LATCH"/>
-				<controlOffset value="14"/>
-				<stategroup value="TrueFalse"/>
+                <controlType value="LATCH"/>
+                <controlOffset value="14"/>
+                <stategroup value="TrueFalse"/>
             </point>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
@@ -10897,7 +10897,7 @@
     
     <pao id="VOLTAGE_REGULATOR" abstract="true">
         <tags>
-        	<tag name="VOLTAGE_REGULATOR"/>
+            <tag name="VOLTAGE_REGULATOR"/>
         </tags>
     </pao>
 
@@ -10916,14 +10916,14 @@
         <displayName>Phase Operated</displayName>
     </pao>
 
-    <pao id="SCRIPT" creatable="false">	<!-- creatable is false as these are created in TDC, not DBEditor -->
+    <pao id="SCRIPT" creatable="false">    <!-- creatable is false as these are created in TDC, not DBEditor -->
         <tags>
-        	<tag name="LM_SCHEDULE"/>
+            <tag name="LM_SCHEDULE"/>
         </tags>
     </pao>
-    <pao id="SIMPLE_SCHEDULE" creatable="false">	<!-- creatable is false as these are created in TDC, not DBEditor -->
+    <pao id="SIMPLE_SCHEDULE" creatable="false">    <!-- creatable is false as these are created in TDC, not DBEditor -->
         <tags>
-        	<tag name="LM_SCHEDULE"/>
+            <tag name="LM_SCHEDULE"/>
         </tags>
     </pao>
     
@@ -10974,31 +10974,31 @@
     </pao>
     
     <pao id="WEATHER_LOCATION">
-    	<displayName>WEATHER LOCATION</displayName>
-    	<points>
-    		<point type="Analog" offset="1">
-    			<init>true</init>
-    			<name>Temperature</name>
-    			<archive>
-    				<type>ON_CHANGE</type>
-    				<interval>ZERO</interval>
-    			</archive>
-    			<multiplier value="1.0"/>
-    			<unitofmeasure value="Degrees"/>
-    			<decimalplaces value="1"/>
-    		</point>
-    		<point type="Analog" offset="2">
-    			<init>true</init>
-    			<name>Relative Humidity</name>
-    			<archive>
-    				<type>ON_CHANGE</type>
-    				<interval>ZERO</interval>
-    			</archive>
-    			<multiplier value="1.0"/>
-    			<unitofmeasure value="Percent"/>
-    			<decimalplaces value="1"/>
-    		</point>
-    	</points>
+        <displayName>WEATHER LOCATION</displayName>
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Temperature</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Relative Humidity</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Percent"/>
+                <decimalplaces value="1"/>
+            </point>
+        </points>
         <attributes>
             <attribute name="TEMPERATURE">
                 <basicLookup point="Temperature" />
