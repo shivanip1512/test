@@ -14,7 +14,7 @@
     <cti:checkEnergyCompanyOperator showError="true" >
         <tags:setFormEditMode mode="${mode}"/>
         
-        <form id="deleteAccountForm" action="/stars/operator/account/deleteAccount" method="post">
+        <form id="deleteAccountForm" action="deleteAccount" method="post">
             <cti:csrfToken/>
             <input type="hidden" name="accountId" value="${accountId}">
         </form>
@@ -26,7 +26,7 @@
         </form>
         <d:confirm on=".f-delete-user" nameKey="delete.user" argument="${accountGeneral.accountDto.accountNumber}"/>
     
-        <cti:url var="generatedPasswordUrl" value="/stars/operator/account/generatePassword" />
+        <cti:url var="generatedPasswordUrl" value="generatePassword" />
     
         <script type="text/javascript">
     

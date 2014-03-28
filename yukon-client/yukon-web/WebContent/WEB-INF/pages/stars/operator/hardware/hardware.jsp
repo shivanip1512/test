@@ -30,7 +30,7 @@ $(function(){
 
         $.ajax({
             type: 'GET',
-            url: url,
+            url: yukon.url(url),
             data: {'deviceId': '${hardware.deviceId}'}
         }).done( function (data, textStatus, jqXHR) {
             $('#zbCommandStatus').html(data.message);
@@ -156,7 +156,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
 
     <!-- Changeout Form -->
     <cti:displayForPageEditModes modes="VIEW">
-        <form id="changeOutForm" action="/stars/operator/hardware/changeOut">
+        <form id="changeOutForm" action="changeOut">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="newInventoryId" id="newInventoryId">
             <input type="hidden" name="oldInventoryId" id="oldInventoryId">
@@ -167,7 +167,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     
     <!-- Delete Hardware Popup -->
     <i:simplePopup titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardware.displayName}">
-        <form id="deleteForm" action="/stars/operator/hardware/delete" method="post">
+        <form id="deleteForm" action="delete" method="post">
             <cti:csrfToken/>
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -488,7 +488,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                         
                         <c:if test="${not empty availableDevices}">
                             <div class="action-area">
-                                <form action="/stars/operator/hardware/zb/addDeviceToGateway" method="post">
+                                <form action="zb/addDeviceToGateway" method="post">
                                     <cti:csrfToken/>
                                     <input type="hidden" name="accountId" value="${accountId}">
                                     <input type="hidden" name="inventoryId" value="${inventoryId}">
@@ -527,7 +527,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
     <cti:displayForPageEditModes modes="VIEW">
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
             <div class="page-action-area">
-                <cti:url value="/stars/operator/hardware/edit" var="editUrl">
+                <cti:url value="edit" var="editUrl">
                     <cti:param name="accountId" value="${accountId}"/>
                     <cti:param name="inventoryId" value="${inventoryId}"/>
                 </cti:url>
