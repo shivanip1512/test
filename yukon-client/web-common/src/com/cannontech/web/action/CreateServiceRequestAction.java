@@ -25,6 +25,7 @@ import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
+import com.cannontech.stars.dr.workOrder.dao.WorkOrderBaseDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -56,15 +57,17 @@ public class CreateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
-	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
+	@Override
+    public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
 			TimeZone tz = yukonUserContext.getTimeZone();
 			
 			StarsOperation operation = (StarsOperation) session.getAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ);
 			session.removeAttribute( WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ );
-			if (operation == null)
-				operation = getRequestOperation( req, tz );
+			if (operation == null) {
+                operation = getRequestOperation( req, tz );
+            }
 			
 			return SOAPUtil.buildSOAPMessage( operation );
 		}
@@ -82,7 +85,8 @@ public class CreateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#process(SOAPMessage, HttpSession)
 	 */
-	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
+	@Override
+    public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
         StarsOperation respOper = new StarsOperation();
         
         try {
@@ -179,7 +183,8 @@ public class CreateServiceRequestAction implements ActionBase {
 	/**
 	 * @see com.cannontech.web.action.ActionBase#parse(SOAPMessage, HttpSession)
 	 */
-	public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
+	@Override
+    public int parse(SOAPMessage reqMsg, SOAPMessage respMsg, HttpSession session) {
         try {
             StarsOperation operation = SOAPUtil.parseSOAPMsgForOperation( respMsg );
 
@@ -220,17 +225,18 @@ public class CreateServiceRequestAction implements ActionBase {
 		
 		if (checkConstraint) {
 			if (orderNo != null) {
-				if (orderNo.trim().length() == 0)
-					throw new WebClientException( "Order # cannot be empty" );
-				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyId() ))
-					throw new WebClientException( "Order # already exists" );
+				if (orderNo.trim().length() == 0) {
+                    throw new WebClientException( "Order # cannot be empty" );
+                }
+				if (WorkOrderBase.orderNumberExists( orderNo, energyCompany.getEnergyCompanyId() )) {
+                    throw new WebClientException( "Order # already exists" );
+                }
 			}
 			else {
-				// Order # not provided, get the next one available
-				orderNo = energyCompany.getNextOrderNumber();
-				if (orderNo == null)
-					throw new WebClientException( "Failed to assign an order # automatically" );
-				createOrder.setOrderNumber( orderNo );
+                // Order # not provided, get the next one available
+                WorkOrderBaseDao workOrderBaseDao = YukonSpringHook.getBean(WorkOrderBaseDao.class);
+                long nextWorkOrder = workOrderBaseDao.getLargestNumericOrderNumber(energyCompany.getEnergyCompanyId()) + 1;
+                createOrder.setOrderNumber(String.valueOf(nextWorkOrder));
 			}
 		}
         

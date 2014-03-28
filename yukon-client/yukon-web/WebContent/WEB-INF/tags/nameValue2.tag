@@ -15,7 +15,6 @@
 <%@ attribute name="rowClass" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="valueClass" %>
-<%@ attribute name="titleKey" %>
 
 <cti:msgScope paths=".${nameKey},">
 <c:choose>

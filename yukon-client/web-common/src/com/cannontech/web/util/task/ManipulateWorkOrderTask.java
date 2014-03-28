@@ -49,8 +49,8 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     private int numSuccess = 0, numFailure = 0;
 
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
-	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-	private final DbChangeManager dbChangeManager = YukonSpringHook.getBean("dbChangeManager", DbChangeManager.class);
+	    YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+	private final DbChangeManager dbChangeManager = YukonSpringHook.getBean(DbChangeManager.class);
 	
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, 
 	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
@@ -68,17 +68,18 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     public String getProgressMsg() {
 		if (selectedWorkOrders.size() > 0) {
             if (status == STATUS_FINISHED && numFailure == 0) {
-                if (statusMsg != null)
-                	statusMsg = "Selected Work Order entries";
-                else
-                	statusMsg = "All Work Order entries";
+                if (statusMsg != null) {
+                    statusMsg = "Selected Work Order entries";
+                } else {
+                    statusMsg = "All Work Order entries";
+                }
                 return statusMsg + " have been updated successfully.";
-            }
-            else
+            } else {
                 return numSuccess + " of " + selectedWorkOrders.size() + " Work Orders have been updated.";
-        }
-        else
+            }
+        } else {
             return "Updating Work Order entries...";
+        }
 	}
 
 	/* (non-Javadoc)
@@ -185,7 +186,9 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			}
 		}
 		
-		if (statusMsg == null) statusMsg = "Selected Work Orders";
+		if (statusMsg == null) {
+            statusMsg = "Selected Work Orders";
+        }
 		
 		status = STATUS_FINISHED;
         mBean.setFailures(numFailure);
@@ -199,8 +202,9 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET_DESC, resultDesc);
 			session.setAttribute(WorkOrderManagerUtil.WORK_ORDER_SET, workOrderList);
 			session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
-			if (confirmOnMessagePage)
-				session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
+			if (confirmOnMessagePage) {
+                session.setAttribute(ServletUtils.ATT_REFERRER, session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
+            }
 		}
 	}
 }

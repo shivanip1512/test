@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -29,16 +30,16 @@ import com.google.common.collect.Lists;
 
 public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
 
-    private NextValueHelper nextValueHelper;
-    private ECMappingDao ecMappingDao;
-    private EventBaseDao eventBaseDao;
-    private EventWorkOrderDao eventWorkOrderDao;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EventBaseDao eventBaseDao;
+    @Autowired private EventWorkOrderDao eventWorkOrderDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     private SimpleTableAccessTemplate<WorkOrderBase> workOrderBaseTemplate;
 
     private SqlStatementBuilder selectBase = new SqlStatementBuilder();
-    {    
+    {
         selectBase.append("SELECT *");
         selectBase.append("FROM WorkOrderBase WOB");
         selectBase.append("JOIN ECToWorkOrderMapping ECWOM ON ECWOM.WorkOrderId = WOB.OrderId");
@@ -170,33 +171,29 @@ public class WorkOrderBaseDaoImpl implements WorkOrderBaseDao {
             
             return workOrderBase;
         }
-
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setEventBaseDao(EventBaseDao eventBaseDao) {
-        this.eventBaseDao = eventBaseDao;
-    }
-    
-    @Autowired
-    public void setEventWorkOrderDao(EventWorkOrderDao eventWorkOrderDao) {
-        this.eventWorkOrderDao = eventWorkOrderDao;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
+    private Function<String, Long> toLongOrZero = new Function<String, Long>() {
+        @Override
+        public Long apply(String input) {
+            try {
+                return Long.parseLong(input);
+            } catch (NumberFormatException e) {
+                return 0L;
+            }
+        }
+    };
+
+    @Override
+    public long getLargestNumericOrderNumber(int ecId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT OrderNumber");
+        sql.append("FROM WorkOrderBase wob, ECToWorkOrderMapping map");
+        sql.append("WHERE map.EnergyCompanyId").eq(ecId);
+        sql.append("AND wob.OrderID = map.WorkOrderID");
+
+        // order number is a string and not necessarily a number
+        List<Long> callNumbers = Lists.transform(yukonJdbcTemplate.query(sql, RowMapper.STRING), toLongOrZero);
+        return callNumbers.isEmpty() ? 0L : Collections.max(callNumbers);
+    }
 }

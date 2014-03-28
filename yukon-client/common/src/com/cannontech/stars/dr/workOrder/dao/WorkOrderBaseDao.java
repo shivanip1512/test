@@ -32,4 +32,9 @@ public interface WorkOrderBaseDao {
      */
     public List<WorkOrderBase> getByAccountId(int accountId);
 
+    /**
+     * Find the largest order number. If no numeric call numbers exist 0 is returned.
+     */
+    long getLargestNumericOrderNumber(int ecId);
+
 }

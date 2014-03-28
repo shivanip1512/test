@@ -27,7 +27,7 @@ public class WorkOrderValidator extends SimpleValidator<WorkOrderDto> {
 
         if (!rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN, 
                                            userContext.getYukonUser())) { 
-            YukonValidationUtils.rejectIfEmpty(errors, "workOrderBase.orderNumber", "");
+            YukonValidationUtils.rejectIfEmpty(errors, "workOrderBase.orderNumber", "empty");
             YukonValidationUtils.checkExceedsMaxLength(errors, "workOrderBase.orderNumber", workOrderDto.getWorkOrderBase().getOrderNumber(), 20);
         }
         

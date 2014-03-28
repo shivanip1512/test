@@ -27,12 +27,12 @@ import com.google.common.collect.Lists;
 
 public class WorkOrderServiceImpl implements WorkOrderService {
 
-    private AccountEventLogService accountEventLogService;
-    private EventBaseDao eventBaseDao;
-    private EventWorkOrderDao eventWorkOrderDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private WorkOrderBaseDao workOrderBaseDao;
-    private YukonListDao yukonListDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private EventBaseDao eventBaseDao;
+    @Autowired private EventWorkOrderDao eventWorkOrderDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private WorkOrderBaseDao workOrderBaseDao;
+    @Autowired private YukonListDao yukonListDao;
     
     @Override
     @Transactional
@@ -42,12 +42,13 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         // Generate a new work order number if needed
         if (StringUtils.isEmpty(workOrderDto.getWorkOrderBase().getOrderNumber())) {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            workOrderDto.getWorkOrderBase().setOrderNumber(energyCompany.getNextOrderNumber());
+            long nextWorkOrder = workOrderBaseDao.getLargestNumericOrderNumber(energyCompany.getEnergyCompanyId()) + 1;
+            workOrderDto.getWorkOrderBase().setOrderNumber(Long.toString(nextWorkOrder));
         }
         workOrderDto.getWorkOrderBase().setEnergyCompanyId(energyCompanyId);
         workOrderDto.getWorkOrderBase().setDateReported(workOrderDto.getEventDate().toInstant());
         workOrderBaseDao.add(workOrderDto.getWorkOrderBase());
-        
+
         // Create a new event
         createNewWorkOrderEvent(workOrderDto, userContext);
        
@@ -160,37 +161,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         EventWorkOrder eventWorkOrder = 
             new EventWorkOrder(eventBase.getEventId(), workOrderDto.getWorkOrderBase().getOrderId());
         eventWorkOrderDao.add(eventWorkOrder);
-    }
-    
-    // DI
-    @Autowired
-    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-    
-    @Autowired
-    public void setEventBaseDao(EventBaseDao eventBaseDao) {
-        this.eventBaseDao = eventBaseDao;
-    }
-    
-    @Autowired
-    public void setEventWorkOrderDao(EventWorkOrderDao eventWorkOrderDao) {
-        this.eventWorkOrderDao = eventWorkOrderDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setWorkOrderBaseDao(WorkOrderBaseDao workOrderBaseDao) {
-        this.workOrderBaseDao = workOrderBaseDao;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
     }
 
 }

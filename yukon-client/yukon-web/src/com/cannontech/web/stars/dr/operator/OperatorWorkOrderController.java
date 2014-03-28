@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DefaultMessageCodesResolver;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,7 +30,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -62,14 +60,16 @@ public class OperatorWorkOrderController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WorkOrderService workOrderService;
     
-    // CALL LIST
+    private final String baseKey = "yukon.web.modules.operator.workOrder.";
+    
     @RequestMapping("workOrderList")
     public String workOrderList(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         // pageEditMode
-        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        boolean allowAccountEditing = 
+                rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
         
         // workOrders
@@ -83,10 +83,9 @@ public class OperatorWorkOrderController {
         return "operator/workOrder/workOrderList.jsp";
     }
 
-    // Create Order Page
     @RequestMapping("create")
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
         model.addAttribute("mode", PageEditMode.CREATE);
         
         setupWorkOrderModel(fragment, model, context, null);
@@ -99,11 +98,9 @@ public class OperatorWorkOrderController {
         return "operator/workOrder/viewWorkOrder.jsp";
     }
     
-    // Edit Order Page
     @RequestMapping("edit")
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String edit(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
-        LiteYukonUser user = context.getYukonUser();
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         model.addAttribute("mode", PageEditMode.EDIT);
         
         setupViewEditModel(model, workOrderId, context, fragment);
@@ -111,7 +108,6 @@ public class OperatorWorkOrderController {
         return "operator/workOrder/viewWorkOrder.jsp";
     }
 
-    // View Order Page
     @RequestMapping("view")
     public String view(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
@@ -127,16 +123,12 @@ public class OperatorWorkOrderController {
         model.addAttribute("workOrderDto", workOrderDto);
     }
     
-    // Update Order
     @RequestMapping("updateWorkOrder")
-    public String updateWorkOrder(@ModelAttribute("workOrderDto") WorkOrderDto workOrderDto,
-                                  BindingResult bindingResult,
-                                  ModelMap modelMap,
-                                  YukonUserContext userContext,
-                                  FlashScope flashScope,
-                                  AccountInfoFragment accountInfoFragment) {
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
+    public String updateWorkOrder(@ModelAttribute("workOrderDto") WorkOrderDto workOrderDto, BindingResult bindingResult,
+            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, 
+            AccountInfoFragment accountInfoFragment) {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         setupWorkOrderModel(accountInfoFragment, modelMap, userContext, workOrderDto.getWorkOrderBase().getOrderId());
 
         // validate
@@ -160,7 +152,7 @@ public class OperatorWorkOrderController {
 
             workOrderService.createWorkOrder(workOrderDto, accountInfoFragment.getEnergyCompanyId(),
                                              accountInfoFragment.getAccountNumber(), userContext);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderCreated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderCreated"));
         
         // Update a work order
         } else {
@@ -170,21 +162,16 @@ public class OperatorWorkOrderController {
                                                             EventSource.OPERATOR);
 
             workOrderService.updateWorkOrder(workOrderDto, accountInfoFragment.getAccountNumber(), userContext);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderUpdated"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderUpdated"));
         }
         
         return "redirect:workOrderList";
     }
     
-    // DELETE WORK ORDER
     @RequestMapping("deleteWorkOrder")
-    public String deleteWorkOrder(int deleteWorkOrderId,
-                                  ModelMap modelMap,
-                                  YukonUserContext userContext,
-                                  FlashScope flashScope,
-                                  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+    @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
+    public String deleteWorkOrder(int deleteWorkOrderId, ModelMap modelMap, YukonUserContext userContext, 
+            FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
         WorkOrderDto workOrderDto = workOrderService.getWorkOrder(deleteWorkOrderId);
         accountEventLogService.workOrderDeletionAttempted(userContext.getYukonUser(),
@@ -192,16 +179,14 @@ public class OperatorWorkOrderController {
                                                           workOrderDto.getWorkOrderBase().getOrderNumber(),
                                                           EventSource.OPERATOR);
 
-        
         workOrderService.deleteWorkOrder(deleteWorkOrderId, accountInfoFragment.getAccountNumber(), userContext);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.workOrder.workOrderRemoved"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderRemoved"));
         
         return "redirect:workOrderList"; 
     }
     
-    // Generate Work Order PDF
     @RequestMapping("generateWorkOrderReport")
     public void generateWorkOrderReport(int workOrderId,
                                           HttpServletResponse response,
@@ -262,7 +247,7 @@ public class OperatorWorkOrderController {
         
         if (binder.getTarget() != null) {
             DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.operator.workOrder.");
+            msgCodesResolver.setPrefix(baseKey);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
         

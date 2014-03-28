@@ -35,7 +35,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.RowMapper;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteBase;
@@ -181,9 +180,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = new ConcurrentHashMap<>();
-    
-    private long nextOrderNo = 0;
-    
+
     private volatile int defaultRouteId = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
     
@@ -721,40 +718,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         }
 
         return Collections.unmodifiableList(routeList);
-    }
-
-    /**
-     * Find the next to the largest order number with pattern "CTI#(NUMBER)", e.g. "CTI#10"
-     */
-    public synchronized String getNextOrderNumber() {
-        if (nextOrderNo == 0) {
-            String sql = "SELECT OrderNumber FROM WorkOrderBase service, ECToWorkOrderMapping map "
-                       + "WHERE map.EnergyCompanyID = " + getEnergyCompanyId() + " AND service.OrderID = map.WorkOrderID";
-            SqlStatement stmt = new SqlStatement(
-                    sql, com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-            
-            try {
-                stmt.execute();
-                long maxOrderNo = 0;
-                
-                for (int i = 0; i < stmt.getRowCount(); i++) {
-                    try {
-                        long orderNo = Long.parseLong( (String)stmt.getRow(i)[0] );
-                        if (orderNo > maxOrderNo) {
-                            maxOrderNo = orderNo;
-                        }
-                    }
-                    catch (NumberFormatException nfe) {}
-                }
-                
-                nextOrderNo = maxOrderNo + 1;
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
-        }
-        
-        return String.valueOf( nextOrderNo++ );
     }
 
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
