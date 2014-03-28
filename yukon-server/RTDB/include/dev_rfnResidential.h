@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dev_rfn.h"
+#include "dev_rfnMeter.h"
 #include "cmd_rfn_LoadProfile.h"
 #include "cmd_rfn_DemandFreeze.h"
 #include "cmd_rfn_TouConfiguration.h"
@@ -13,7 +13,7 @@ namespace Devices   {
 
 
 class IM_EX_DEVDB RfnResidentialDevice
-    :   public RfnDevice
+    :   public RfnMeterDevice
 {
 protected:
 

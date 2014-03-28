@@ -204,7 +204,7 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
 
 } // anonymous namespace
 
-RfnDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
 {
     if( readOnly )
     {
@@ -1579,11 +1579,11 @@ void RfnResidentialDevice::handleCommandResult( const Commands::RfnRemoteDisconn
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMode, getDisconnectModeString( cmd.getDisconnectMode() ) );
     setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ReconnectParam, getReconnectParamString( cmd.getReconnectParam() ) );
 
-    if( cmd.getDemandInterval() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval, *cmd.getDemandInterval() ); 
-    if( cmd.getDemandThreshold() )   setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, *cmd.getDemandThreshold() ); 
-    if( cmd.getConnectDelay() )      setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay, *cmd.getConnectDelay() ); 
-    if( cmd.getMaxDisconnects() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, *cmd.getMaxDisconnects() ); 
-    if( cmd.getDisconnectMinutes() ) setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, *cmd.getDisconnectMinutes() ); 
+    if( cmd.getDemandInterval() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectDemandInterval, *cmd.getDemandInterval() );
+    if( cmd.getDemandThreshold() )   setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DemandThreshold, *cmd.getDemandThreshold() );
+    if( cmd.getConnectDelay() )      setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectDelay, *cmd.getConnectDelay() );
+    if( cmd.getMaxDisconnects() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects, *cmd.getMaxDisconnects() );
+    if( cmd.getDisconnectMinutes() ) setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes, *cmd.getDisconnectMinutes() );
     if( cmd.getConnectMinutes() )    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes, *cmd.getConnectMinutes() );
 }
 
@@ -1594,7 +1594,7 @@ std::string RfnResidentialDevice::getDisconnectModeString( Commands::RfnRemoteDi
     if( ! disconnectStr )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for disconnect mode (" 
+        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for disconnect mode ("
              << disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return "(unknown)";
@@ -1610,7 +1610,7 @@ std::string RfnResidentialDevice::getReconnectParamString( Commands::RfnRemoteDi
     if( ! reconnectStr )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for reconnect param (" 
+        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for reconnect param ("
              << reconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
         return "(unknown)";

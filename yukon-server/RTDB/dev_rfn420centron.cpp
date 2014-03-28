@@ -89,7 +89,7 @@ T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::stri
 
 }
 
-RfnDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
 {
     ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
 

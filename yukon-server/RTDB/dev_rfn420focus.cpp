@@ -76,7 +76,7 @@ T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::stri
 
 } // anonymous namespace
 
-RfnDevice::ConfigMap Rfn420FocusDevice::getConfigMethods(bool readOnly)
+RfnMeterDevice::ConfigMap Rfn420FocusDevice::getConfigMethods(bool readOnly)
 {
     ConfigMap m = RfnResidentialDevice::getConfigMethods( readOnly );
 
