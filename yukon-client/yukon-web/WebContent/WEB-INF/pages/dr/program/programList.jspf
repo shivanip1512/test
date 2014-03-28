@@ -8,7 +8,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdator.js"/>
+<cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdater.js"/>
 
 <cti:msgScope paths="modules.dr.programList">
 

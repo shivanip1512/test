@@ -1,25 +1,25 @@
-yukon.namespace('yukon.dr.program.showActionDataUpdator');
+yukon.namespace('yukon.dr.program.showActionDataUpdater');
 
-yukon.dr.program.showActionDataUpdator = (function () {
+yukon.dr.program.showActionDataUpdater = (function () {
     var 
     _updateLink = function(actionsEl, action, enabled, title) {
         if (enabled) {
-            actionsEl.filter("[data-"+action+"-action='disabled']").hide();
-            actionsEl.filter("[data-"+action+"-action='enabled']").show();
+            actionsEl.filter("[data-" + action + "-action='disabled']").hide();
+            actionsEl.filter("[data-" + action + "-action='enabled']").show();
         } else {
-            actionsEl.filter("[data-"+action+"-action='enabled']").hide();
-            actionsEl.filter("[data-"+action+"-action='disabled']").show().attr("title", title);
+            actionsEl.filter("[data-" + action + "-action='enabled']").hide();
+            actionsEl.filter("[data-" + action + "-action='disabled']").show().attr("title", title);
         }
     },
 
     _updateQuickLinks = function(paoId, canStart, canStop, title) {
-        var actions = jQuery("[data-pao-id="+paoId+"]");
+        var actions = jQuery("[data-pao-id=" + paoId + "]");
         _updateLink(actions, "start", canStart, title);
         _updateLink(actions, "stop", canStop, title);
     },
 
     _updateDetailLinks = function(linksState) {
-        var actions = jQuery("[data-pao-id="+linksState.paoId+"]");
+        var actions = jQuery("[data-pao-id=" + linksState.paoId + "]");
         _updateLink(actions, "start", linksState.canStart, linksState.startTitle);
         _updateLink(actions, "stop", linksState.canStop, linksState.stopTitle);
         _updateLink(actions, "change-gears", linksState.canChangeGears, linksState.gearsTitle);

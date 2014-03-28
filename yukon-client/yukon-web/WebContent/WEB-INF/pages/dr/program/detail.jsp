@@ -11,7 +11,7 @@
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdator.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdater.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -298,6 +298,6 @@
             </div>
         </div>
     </table>
-    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdator.updateDetailLinks(${programId})" 
+    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdater.updateDetailLinks(${programId})" 
         initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
 </cti:standardPage>

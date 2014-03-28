@@ -45,7 +45,7 @@
             </li>
         </div>
     </cm:dropdown>
-    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdator.updateQuickLinks(${paoId})"
+    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdater.updateQuickLinks(${paoId})"
         initialize="true" state="DR_PROGRAM/${paoId}/SHOW_ACTION"/>
 </cti:checkPaoAuthorization>
 
