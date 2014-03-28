@@ -144,7 +144,7 @@ public abstract class DbPageIndexBuilder implements PageIndexBuilder {
     protected abstract SqlFragmentSource getWhereClauseForDbChange(int database, String category, int id);
 
     public IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
-        if (database != this.database || this.category != null && this.category.equalsIgnoreCase(category)) {
+        if (database != this.database || this.category != null && !this.category.equalsIgnoreCase(category)) {
             // This database change isn't applicable to this index builder.
             if (log.isTraceEnabled()) {
                 log.trace("ignoring DB change not applicable to page index builder " + pageKeyBase + "(dbChangeType="
