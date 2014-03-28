@@ -16,6 +16,15 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * scenario), without resorting to wildcard queries.
  */
 public final class PrefixTokenizer extends Tokenizer {
+    private int offset = 0;
+    private int bufferIndex = 0;
+    private int dataLen = 0;
+    private static final int MAX_WORD_LEN = 255;
+    private static final int IO_BUFFER_SIZE = 1024;
+    private final char[] buffer = new char[MAX_WORD_LEN];
+    private final char[] ioBuffer = new char[IO_BUFFER_SIZE];
+    private int length = 0;
+    private int start = 0;
 
     public PrefixTokenizer(Reader input) {
         super(input);
@@ -24,75 +33,61 @@ public final class PrefixTokenizer extends Tokenizer {
         addAttribute(CharTermAttribute.class);
     }
 
-    private int offset = 0, bufferIndex = 0, dataLen = 0;
-    private static final int MAX_WORD_LEN = 255;
-    private static final int IO_BUFFER_SIZE = 1024;
-    private final char[] buffer = new char[MAX_WORD_LEN];
-    private final char[] ioBuffer = new char[IO_BUFFER_SIZE];
-    private int length = 0;
-    private int start = 0;
-    
-    /** Called on each token character to normalize it before it is added to the
-     * token.  The default implementation does nothing.  Subclasses may use this
-     * to, e.g., lowercase tokens. */
+    /**
+     * Called on each token character to normalize it before it is added to the
+     * token. The default implementation does nothing. Subclasses may use this
+     * to, e.g., lowercase tokens.
+     */
     protected char normalize(char c) {
-      return Character.toLowerCase(c);
+        return Character.toLowerCase(c);
     }
 
-    /** Returns true if a character should be included in a token.  This
+    /**
+     * Returns true if a character should be included in a token. This
      * tokenizer generates as tokens adjacent sequences of characters which
-     * satisfy this predicate.  Characters for which this is false are used to
-     * define token boundaries and are not included in tokens. */
+     * satisfy this predicate. Characters for which this is false are used to
+     * define token boundaries and are not included in tokens.
+     */
     protected static boolean isTokenChar(int c) {
-        return !((Character.isWhitespace(c)) || 
-                (c == '_') || 
-                (c == '-') || 
-                (c == '(') ||
-                (c == ')') ||
-                (c == '/'));
+        return !((Character.isWhitespace(c)) || (c == '_') || (c == '-') || (c == '(') || (c == ')') || (c == '/'));
     }
-    
+
     @Override
     public boolean incrementToken() throws IOException {
-      clearAttributes();
-      
-      start = offset;
-      while (true) {
-          final char c;
-          
-          offset++;
-          if (bufferIndex >= dataLen) {
-              dataLen = input.read(ioBuffer);
-              bufferIndex = 0;
-          }
-          if (dataLen == -1) {
-              break;
-          } else {
-              c = ioBuffer[bufferIndex++];
-          }
-          
-          if (isTokenChar(c)) {
-              
-              if (length == 0) {
-                  start = offset - 1;
-              }
-              
-              buffer[length++] = normalize(c); // buffer it, normalized
+        clearAttributes();
 
-              CharTermAttribute charTermAttribute = getAttribute(CharTermAttribute.class);
-              Token token = new Token(new String(buffer, 0, length), start, start + length);
-              charTermAttribute.append(token);
+        start = offset;
+        while (true) {
+            final char c;
 
-              return true;
-              
-          } else if (length > 0) {
-              length = 0;
-          }
-          
-      }
-      
-      // We have reached the end of the string.
-      return false;
+            offset++;
+            if (bufferIndex >= dataLen) {
+                dataLen = input.read(ioBuffer);
+                bufferIndex = 0;
+            }
+            if (dataLen == -1) {
+                break;
+            }
+            c = ioBuffer[bufferIndex++];
+
+            if (isTokenChar(c)) {
+                if (length == 0) {
+                    start = offset - 1;
+                }
+
+                buffer[length++] = normalize(c); // buffer it, normalized
+
+                CharTermAttribute charTermAttribute = getAttribute(CharTermAttribute.class);
+                Token token = new Token(new String(buffer, 0, length), start, start + length);
+                charTermAttribute.append(token);
+
+                return true;
+            } else if (length > 0) {
+                length = 0;
+            }
+        }
+
+        // We have reached the end of the string.
+        return false;
     }
-
 }
