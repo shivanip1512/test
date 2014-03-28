@@ -5,7 +5,6 @@
 
     <lastValueId value="1235532"/>
 
-    <paos>
         <pao meterNumber="1012312312" paoType="MCT-410fL" name="1012312312">
         <!-- there are as many children of this element as there are children of the <values> element above -->
             <point uofm="kWh" pointName="kWh">
@@ -34,5 +33,4 @@
                 </list>
             </point>
         </pao>
-    </paos>
 </archivedValuesResponse>

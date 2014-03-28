@@ -316,18 +316,13 @@
         </xsd:complexContent>
       </xsd:complexType>
       <xsd:element name="archivedValuesRequest" type="yukon:ArchivedValuesRequest"/>
-      <xsd:complexType name="PaoPointList">
-        <xsd:sequence maxOccurs="unbounded">
-          <xsd:element maxOccurs="unbounded" name="pao" type="yukon:PaoPoint"/>
-        </xsd:sequence>
-      </xsd:complexType>
       <xsd:complexType name="FlattenedValueList">
         <xsd:sequence maxOccurs="unbounded">
           <xsd:element maxOccurs="unbounded" name="value" type="yukon:FlatValue"/>
         </xsd:sequence>
       </xsd:complexType>
       <xsd:complexType name="PaoPoint">
-        <xsd:sequence maxOccurs="unbounded">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
           <xsd:element name="point">
             <xsd:complexType>
               <xsd:choice maxOccurs="unbounded">
@@ -398,11 +393,18 @@
       <xsd:complexType name="ArchivedValuesResponse">
         <xsd:complexContent>
           <xsd:extension base="yukon:YukonMessage">
-            <xsd:choice>
-              <xsd:element name="paos" type="yukon:PaoPointList"/>
-              <xsd:element name="values" type="yukon:FlattenedValueList"/>
-              <xsd:element name="failure" type="yukon:Failure"/>
-            </xsd:choice>
+           <xsd:sequence>
+       	    <xsd:element name="lastValueId" minOccurs="0">
+              <xsd:complexType>
+                <xsd:attribute name="value" type="xsd:long"/>
+              </xsd:complexType>
+            </xsd:element>
+       	    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+             <xsd:element name="pao" type="yukon:PaoPoint"/>
+            </xsd:sequence>
+            <xsd:element name="values" type="yukon:FlattenedValueList"  minOccurs="0"/>
+            <xsd:element name="failure" type="yukon:Failure"  minOccurs="0"/>
+           </xsd:sequence>
           </xsd:extension>
         </xsd:complexContent>
       </xsd:complexType>
