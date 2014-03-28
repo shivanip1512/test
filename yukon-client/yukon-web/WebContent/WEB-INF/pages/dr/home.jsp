@@ -14,6 +14,7 @@
     
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/JavaScript/yukon.dr.dashboard.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdater.js"/>
 
     <tags:simpleDialog id="drDialog"/>
 
