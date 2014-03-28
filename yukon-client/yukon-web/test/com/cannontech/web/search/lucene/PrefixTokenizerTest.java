@@ -5,19 +5,16 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
-import com.cannontech.web.search.lucene.PrefixTokenizer;
-
 public class PrefixTokenizerTest extends TestCase {
-
     /*
      * Test method for 'com.cannontech.common.search.PrefixTokenizer.next()'
      */
-    
     public void testNext() throws Exception {
         String testInput = "Hello_my -name (is) /65412";
         List<String> expectedList = Arrays.asList(new String[] {
@@ -73,5 +70,24 @@ public class PrefixTokenizerTest extends TestCase {
         }
 
         assertEquals("Lists don't match", expectedList, tokeTextList);
+    }
+
+    public void testIsTokenChar() {
+        Pattern tokenDelimiterPattern = Pattern.compile(PrefixTokenizer.TOKEN_DELIMITER_PATTERN);
+        for (char c = 0; c < Character.MAX_VALUE; c++) {
+            if (tokenDelimiterPattern.matcher(String.valueOf(c)).matches()) {
+                if (PrefixTokenizer.isTokenChar(c)) {
+                    System.out.println("character " + c + " (0x" + Integer.toString((c), 16)
+                        + ") reported as a token character but the RE disagrees");
+                    fail();
+                }
+            } else {
+                if (!PrefixTokenizer.isTokenChar(c)) {
+                    System.out.println("character " + c + " (0x" + Integer.toString((c), 16)
+                        + ") reported as a non-token character but the RE disagrees");
+                    fail();
+                }
+            }
+        }
     }
 }

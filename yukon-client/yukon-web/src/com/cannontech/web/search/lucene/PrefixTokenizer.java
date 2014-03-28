@@ -16,6 +16,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
  * scenario), without resorting to wildcard queries.
  */
 public final class PrefixTokenizer extends Tokenizer {
+    public final static String TOKEN_DELIMITER_PATTERN = "[\\p{javaWhitespace}_\\-()/]";
+
     private int offset = 0;
     private int bufferIndex = 0;
     private int dataLen = 0;
@@ -43,13 +45,14 @@ public final class PrefixTokenizer extends Tokenizer {
     }
 
     /**
-     * Returns true if a character should be included in a token. This
-     * tokenizer generates as tokens adjacent sequences of characters which
-     * satisfy this predicate. Characters for which this is false are used to
+     * Returns true if a character should be included in a token. This tokenizer generates as tokens adjacent
+     * sequences of characters which satisfy this predicate. Characters for which this is false are used to
      * define token boundaries and are not included in tokens.
+     * 
+     * This needs to match {@link #TOKEN_CHAR_PATTERN}. We could just use that here but it would be slower.
      */
     protected static boolean isTokenChar(int c) {
-        return !((Character.isWhitespace(c)) || (c == '_') || (c == '-') || (c == '(') || (c == ')') || (c == '/'));
+        return !Character.isWhitespace(c) && c != '_' && c != '-' && c != '(' && c != ')' && c != '/';
     }
 
     @Override

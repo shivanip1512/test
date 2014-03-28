@@ -11,6 +11,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
+import com.cannontech.web.search.lucene.PrefixTokenizer;
+
 public class HighlightSearchTermTag extends BodyTagSupport {
     private String searchTerm;
     private boolean asLuceneTerms = false;
@@ -40,11 +42,9 @@ public class HighlightSearchTermTag extends BodyTagSupport {
                 if (!asLuceneTerms) {
                     output = doReplace(output, searchTerm, false);
                 } else {
-                    // Uniquify the Lucene search terms
-                    // - keep only the largest version for similar terms, eg. "metering" if {"meter", "metering"}
-                    // TODO:  I think this should "analyze" the terms with the same code Lucene uses...not this
-                    // custom stuff.
-                    String[] rawTerms = searchTerm.split("[^a-zA-Z0-9\\-]+");
+                    // Find Lucene-specific unique search terms.  In other words, keep only the largest version for
+                    // similar terms.  For example, use "metering" if both "meter" and "metering" were searched.
+                    String[] rawTerms = searchTerm.split(PrefixTokenizer.TOKEN_DELIMITER_PATTERN + "+");
                     List<String> terms = new ArrayList<>();
                     for (String raw : rawTerms) {
                         boolean found = false;
@@ -72,8 +72,9 @@ public class HighlightSearchTermTag extends BodyTagSupport {
     }
 
     private static String doReplace(String replaceWithin, String replaceWhat, boolean startWordDivision) {
-        String result = replaceWithin.replaceFirst("(?i)" + (startWordDivision ? "\\b" : "") + "(" + replaceWhat + ")",
-                "<strong>$1</strong>");
+        String result = replaceWithin.replaceFirst("(?i)"
+                + (startWordDivision ? "(?<=" + PrefixTokenizer.TOKEN_DELIMITER_PATTERN + ")" : "")
+                + "(" + replaceWhat + ")", "<strong>$1</strong>");
         return result;
     }
 

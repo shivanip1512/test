@@ -444,7 +444,7 @@ public class OperatorAccountController {
                 /* IMPORTANT NOTE HERE
                  * 
                  * The AccountDto does have login fields and can be used by the AccountSevice to create/edit/delete logins
-                 * because it was originally created for the BGE soap messaging service.  There was also a seperate operator page 
+                 * because it was originally created for the BGE soap messaging service.  There was also a separate operator page 
                  * to create/edit/delete logins which has now been rolled into the account page.  For the account page we will
                  * use the (refactored and moved) operator page login code, now moved to the ResidentialLoginService.  This was 
                  * done because the page has slightly more options for logins than the messaging service does and to ensure
