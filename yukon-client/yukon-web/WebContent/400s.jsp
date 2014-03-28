@@ -26,7 +26,7 @@ try {
 <c:if test="${loggedIn}">
     <cti:css key="yukon.web.error.errorStyles"/>
 </c:if>
-<c:if test="${!loggedIn}">
+<c:if test="${not loggedIn}">
     <link rel="stylesheet" href="<cti:url value="/WebConfig/yukon/errorStyles.css"/>" type="text/css">
 </c:if>
 
