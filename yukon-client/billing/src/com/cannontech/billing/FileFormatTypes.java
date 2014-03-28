@@ -59,13 +59,13 @@ public final class FileFormatTypes {
   	public static final int SIMPLE_TOU_DEVICE_NAME = 26;
   	public static final int CMEP = 27;
 
+  	// Custom formats that are disabled by default (negative ID) in database.
   	public static final int MVRS_KETCHIKAN = 30;
   	public static final int STANDARD = 31;
   	public static final int NISC_TOU_KVARH_RATES_ONLY = 32;
   	public static final int NISC_INTERVAL_READINGS = 33;
-  	
-  	//Custom "billing" for C&I Events
-  	public static final int CURTAILMENT_EVENTS_ITRON = 34;
+  	public static final int CURTAILMENT_EVENTS_ITRON = 34;       //Custom "billing" for C&I Events
+  	public static final int BANNER = 35;
   	
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -98,6 +98,7 @@ public final class FileFormatTypes {
 	public static final String NISC_TOU_KVARH_RATES_ONLY_STRING = "NISC TOU (kVarH) Rates Only";
 	public static final String NISC_INTERVAL_READINGS_STRING = "NISC Interval Readings";
 	public static final String CURTAILMENT_EVENTS_ITRON_STRING = "Curtailment Events - Itron";
+	public static final String BANNER_STRING = "Banner";
 	
     private static final int[] defaultValidFormatIds;
     private static final String[] defaultValidFormatTypes;
@@ -200,6 +201,7 @@ public final class FileFormatTypes {
         final SortedMap<String, Integer> typeToFormatIdsMap = Maps.newTreeMap();
         try {
             yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+                @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     typeToFormatIdsMap.put(rs.getString("FormatType"), rs.getInt("FormatId"));
                 }

@@ -1,0 +1,124 @@
+package com.cannontech.billing;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.billing.record.BannerData;
+import com.cannontech.billing.record.BannerRecord;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
+import com.cannontech.core.dao.RawPointHistoryDao.Order;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
+
+public class BannerFormat extends FileFormatBase {
+
+    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
+    private YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+    private DeviceGroupService deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
+    private MeterDao meterDao = YukonSpringHook.getBean(MeterDao.class);
+
+    private final Logger log = YukonLogManager.getLogger(BannerFormat.class);
+    
+    @Override
+    public boolean retrieveBillingData() {
+        Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(getBillingFileDefaults().getDeviceGroups());
+        Set<SimpleDevice> allDevices = deviceGroupService.getDevices(deviceGroups);
+        final Map<String, BannerData> recordsMap = getBannerRecords();
+        
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedUsageAttributeDatas =
+                rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.USAGE, 
+                                                           getBillingFileDefaults().getEnergyStartDate(),
+                                                           getBillingFileDefaults().getEndDate(),
+                                                           1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
+        
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedPeakDemandAttributeDatas =
+                rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.PEAK_DEMAND, 
+                                                           getBillingFileDefaults().getDemandStartDate(),
+                                                           getBillingFileDefaults().getEndDate(),
+                                                           1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
+        
+        List<YukonMeter> meters = meterDao.getMetersForYukonPaos(allDevices);
+        for (YukonMeter meter : meters) {
+            BannerData bannerData = recordsMap.get(meter.getMeterNumber());
+            if (bannerData != null) {
+                
+                List<PointValueQualityHolder> pointValues = limitedUsageAttributeDatas.get(meter.getPaoIdentifier());
+                addPointValueToRecords(pointValues, bannerData, BuiltInAttribute.USAGE);    //attribute needs to align with the type of data in pointValues
+                
+                pointValues = limitedPeakDemandAttributeDatas.get(meter.getPaoIdentifier());
+                addPointValueToRecords(pointValues, bannerData, BuiltInAttribute.PEAK_DEMAND);    //attribute needs to align with the type of data in pointValues
+
+                //might as well try to keep the size somewhat in check
+                recordsMap.remove(meter.getMeterNumber());
+            } else {
+                log.warn("No BannerData found for meternumber: " + meter.getMeterNumber() + ". Check BannerData_View for existance.");
+                //error...meter doesn't exist in banner view
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Loads BannerData values from database.
+     * Requires special view BannerData_View to exist: YUK-12890
+     * Returns a map of <MeterNumber, BannerData>
+     */
+    private Map<String, BannerData> getBannerRecords() {
+        final Map<String, BannerData> recordsMap = Maps.newHashMap();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT MeterNumber, PremiseNumber, ServiceNumber, RouteNumber");   //ScatNumber?
+        sql.append("FROM BannerData_View");
+
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                String meterNumber = rs.getString("MeterNumber");
+                String premiseNumber = rs.getString("PremiseNumber");
+                String serviceNumber = rs.getString("ServiceNumber");
+                String routeNumber = rs.getString("RouteNumber");
+                BannerData data = new BannerData(premiseNumber, serviceNumber, meterNumber, routeNumber);
+                recordsMap.put(meterNumber,  data);
+            }
+        });
+        log.info("Loaded " + recordsMap.size() + " records from BannerData_View");
+        return recordsMap;
+    }
+    
+    /**
+     * Helper method to load the BannerRecord object and add it to the recordVector
+     */
+    private void addPointValueToRecords(List<PointValueQualityHolder> pointValues, BannerData bannerData, BuiltInAttribute attribute) {
+        //populate the rest of the object!
+        if (!pointValues.isEmpty()) {
+            // Only asked for one in the query, so get(0) is safe to assume.
+            PointValueQualityHolder thisValue = pointValues.get(0);
+            
+            BannerRecord record = new BannerRecord(bannerData, attribute);
+            record.setReading(thisValue.getValue());
+            record.setTimestamp(thisValue.getPointDataTimeStamp());
+            getRecordVector().add(record);
+        } else {
+            log.trace("No " + attribute + " pointdata found for meternumber: " + bannerData.getMeterNumber());
+        }
+    }
+}

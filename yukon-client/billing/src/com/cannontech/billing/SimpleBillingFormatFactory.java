@@ -133,6 +133,9 @@ public final class SimpleBillingFormatFactory {
         	
 		case FileFormatTypes.CMEP:
 		    return new CMEP_MEPMD01Format();
+		    
+		case FileFormatTypes.BANNER:
+		    return new BannerFormat();
             
         default:
         	// Assume dynamic format
