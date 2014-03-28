@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
@@ -22,11 +21,10 @@ import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.stars.database.db.hardware.InventoryBase;
-import com.cannontech.stars.database.db.hardware.LMHardwareBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.db.hardware.InventoryBase;
+import com.cannontech.stars.database.db.hardware.LMHardwareBase;
 
 /**
  * <p>Title: </p>
@@ -78,12 +76,14 @@ public class CustomerAccount extends DBPersistent {
 	        rset = stmt.executeQuery();
 	        
 	        ArrayList<Integer> acctIDList = new ArrayList<Integer>();
-	        while (rset.next())
-	        	acctIDList.add( new Integer(rset.getInt(1)) );
+	        while (rset.next()) {
+                acctIDList.add( new Integer(rset.getInt(1)) );
+            }
 	        
 			int[] accountIDs = new int[ acctIDList.size() ];
-			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = acctIDList.get(i).intValue();
+			for (int i = 0; i < accountIDs.length; i++) {
+                accountIDs[i] = acctIDList.get(i).intValue();
+            }
 			
 			return accountIDs;
         }
@@ -92,9 +92,15 @@ public class CustomerAccount extends DBPersistent {
         }
 		finally {
 			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
+				if (rset != null) {
+                    rset.close();
+                }
+				if (stmt != null) {
+                    stmt.close();
+                }
+				if (conn != null) {
+                    conn.close();
+                }
 			}
 			catch (java.sql.SQLException e) {}
 		}
@@ -103,14 +109,17 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static int[] searchByPrimaryContactIDs(int[] contactIDs, int energyCompanyID) {
-    	if (contactIDs == null || contactIDs.length == 0) return null;
+    	if (contactIDs == null || contactIDs.length == 0) {
+            return null;
+        }
         int [] accountIDs = new int[0];
     	Date timerStart = new Date();
         String sql = "SELECT DISTINCT acct.AccountID, acct.AccountNumber FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + com.cannontech.database.db.customer.Customer.TABLE_NAME + " cust "
     			   + "WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.AccountID = acct.AccountID "
     			   + "AND acct.CustomerID = cust.CustomerID AND (cust.PrimaryContactID = " + String.valueOf(contactIDs[0]);
-    	for (int i = 1; i < contactIDs.length; i++)
-    		sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
+    	for (int i = 1; i < contactIDs.length; i++) {
+            sql += " OR cust.PrimaryContactID = " + String.valueOf(contactIDs[i]);
+        }
     	sql += ")";
     	sql += "ORDER BY acct.AccountNumber ASC";
     	
@@ -121,8 +130,9 @@ public class CustomerAccount extends DBPersistent {
             stmt.execute();
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
             accountIDs = new int[ stmt.getRowCount() ];
-            for (int i = 0; i < stmt.getRowCount(); i++)
+            for (int i = 0; i < stmt.getRowCount(); i++) {
                 accountIDs[i] = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
+            }
 
         }
         catch (Exception e) {
@@ -134,7 +144,9 @@ public class CustomerAccount extends DBPersistent {
     }
     
     public static int[] searchByPrimaryContactLastName(String lastName_, int energyCompanyID, boolean partialMatch) {
-        if (lastName_ == null || lastName_.length() == 0) return null;
+        if (lastName_ == null || lastName_.length() == 0) {
+            return null;
+        }
         int [] accountIDs = new int[0];
         Date timerStart = new Date();
         String lastName = lastName_.trim();
@@ -153,8 +165,9 @@ public class CustomerAccount extends DBPersistent {
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND cust.primarycontactid = cont.contactid " +
                     " AND UPPER(cont.contlastname) like ?" ;
-                    if (firstName != null && firstName.length() > 0)
+                    if (firstName != null && firstName.length() > 0) {
                         sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+                    }
 
         PreparedStatement pstmt = null;
         Connection conn = null;
@@ -166,8 +179,9 @@ public class CustomerAccount extends DBPersistent {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt( 1, energyCompanyID);
             pstmt.setString( 2, lastName.toUpperCase()+(partialMatch? "%":""));
-            if (firstName != null && firstName.length() > 0)
+            if (firstName != null && firstName.length() > 0) {
                 pstmt.setString(3, firstName.toUpperCase() + "%");
+            }
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
@@ -177,8 +191,9 @@ public class CustomerAccount extends DBPersistent {
                 accountIDList.add(new Integer(rset.getInt(1)));
             }
             accountIDs = new int[accountIDList.size()];
-            for (int i = 0; i < accountIDList.size(); i++)
+            for (int i = 0; i < accountIDList.size(); i++) {
                 accountIDs[i] = accountIDList.get(i).intValue();
+            }
             
         }
         catch( Exception e ){
@@ -186,9 +201,15 @@ public class CustomerAccount extends DBPersistent {
         }
         finally {
             try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }
@@ -199,8 +220,12 @@ public class CustomerAccount extends DBPersistent {
     
     
     public static Map<Integer, List<Integer>> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, ArrayList<Integer> energyCompanyIDList) {
-        if (lastName_ == null || lastName_.length() == 0) return null;
-        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
+        if (lastName_ == null || lastName_.length() == 0) {
+            return null;
+        }
+        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
+            return null;
+        }
         
         //Contains EnergyCompanyID<Integer> to accountID array <int[]> objects.
         Map<Integer, List<Integer>> ecToAccountIDMap = new HashMap<Integer, List<Integer>>();
@@ -222,15 +247,19 @@ public class CustomerAccount extends DBPersistent {
                     " AND acct.CustomerID = cust.CustomerID " + 
                     " AND cust.primarycontactid = cont.contactid " +
                     " AND UPPER(cont.contlastname) like ?" ;
-                    if (firstName != null && firstName.length() > 0)
+                    if (firstName != null && firstName.length() > 0) {
                         sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+                    }
 
                     // Hey, if we have all the ECIDs available, don't bother adding this criteria!
-                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size());
+                    if( energyCompanyIDList.size() != StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()) {
+                        ;
+                    }
                     {
                         sql += " AND (map.EnergyCompanyID = " + energyCompanyIDList.get(0).toString(); 
-                        for (int i = 1; i < energyCompanyIDList.size(); i++)
-                             sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        for (int i = 1; i < energyCompanyIDList.size(); i++) {
+                            sql += " OR map.EnergyCompanyID = " + energyCompanyIDList.get(i).toString();
+                        }
                         sql += " ) ";
                     }
                     sql += " order by contlastname, contfirstname";
@@ -245,8 +274,9 @@ public class CustomerAccount extends DBPersistent {
             
             pstmt = conn.prepareStatement(sql);
             pstmt.setString( 1, lastName.toUpperCase()+(partialMatch? "%":""));
-            if (firstName != null && firstName.length() > 0)
+            if (firstName != null && firstName.length() > 0) {
                 pstmt.setString(2, firstName.toUpperCase() + "%");
+            }
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
@@ -269,9 +299,15 @@ public class CustomerAccount extends DBPersistent {
         }
         finally {
             try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }
@@ -282,7 +318,9 @@ public class CustomerAccount extends DBPersistent {
     
     public static int[] searchBySerialNumber(String serialNo, int energyCompanyID) {
 			LMHardwareBase[] hardwares = LMHardwareBase.searchBySerialNumber( serialNo, energyCompanyID );
-			if (hardwares.length == 0) return new int[0];
+			if (hardwares.length == 0) {
+                return new int[0];
+            }
 
             int[] returnAcctIDs = null;
             String sql = "SELECT DISTINCT acct.AccountID " +
@@ -291,8 +329,9 @@ public class CustomerAccount extends DBPersistent {
                         " AND map.AccountID = acct.AccountID " +
                         " AND acct.AccountID = inv.AccountID " +
                         " AND (inv.InventoryID = ?" ;
-                        for (int i = 1; i < hardwares.length; i++)
+                        for (int i = 1; i < hardwares.length; i++) {
                             sql += " OR inv.InventoryID = ?";
+                        }
                         sql += ")";
             
             PreparedStatement pstmt = null;
@@ -304,18 +343,21 @@ public class CustomerAccount extends DBPersistent {
                 
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setInt(1, energyCompanyID);
-                for(int i = 0; i < hardwares.length; i++)
+                for(int i = 0; i < hardwares.length; i++) {
                     pstmt.setInt(i+2, hardwares[i].getInventoryID().intValue());
+                }
 
                 rset = pstmt.executeQuery();
                 
                 ArrayList<Integer> accountIDs = new ArrayList<Integer>();
-                while(rset.next())
+                while(rset.next()) {
                     accountIDs.add(rset.getInt(1));
+                }
                 
                 returnAcctIDs = new int[accountIDs.size()];
-                for(int i = 0; i < accountIDs.size(); i++)
+                for(int i = 0; i < accountIDs.size(); i++) {
                     returnAcctIDs[i] = accountIDs.get(i).intValue();
+                }
             }
             catch (Exception e) {
                 CTILogger.error( e.getMessage(), e );
@@ -372,17 +414,23 @@ public class CustomerAccount extends DBPersistent {
     	}
     	finally {
     		try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
+				if (rset != null) {
+                    rset.close();
+                }
+				if (stmt != null) {
+                    stmt.close();
+                }
+				if (conn != null) {
+                    conn.close();
+                }
     		}
     		catch (java.sql.SQLException e) {}
     	}
     	return customerAccts;
     }
     
-    public static List<Object> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList, boolean searchMembers) 
-    {
+    public static List<Integer> searchByCompanyName(String searchName, List<Integer> energyCompanyIdList,
+                                                    boolean searchMembers) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ACCT.AccountId, CICB.CompanyName, MAP.EnergyCompanyId ");
         sql.append("FROM ECToAccountMapping MAP, CustomerAccount ACCT, CICustomerBase CICB ");
@@ -404,16 +452,10 @@ public class CustomerAccount extends DBPersistent {
             
             rset = pstmt.executeQuery();
             
-            ArrayList<Object> accountIds = new ArrayList<Object>();
+            List<Integer> accountIds = new ArrayList<>();
             while(rset.next()) {
             	int accountId = rset.getInt(1);
-            	int energyCompanyId = rset.getInt(3);
-            	LiteStarsEnergyCompany liteSarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyId);
-            	
-            	 if (searchMembers)
-            		 accountIds.add(new Pair<Integer,LiteStarsEnergyCompany>(accountId, liteSarsEC) );
-                 else
-                	 accountIds.add(accountId);
+                accountIds.add(accountId);
             }
             return accountIds;
             
@@ -451,12 +493,14 @@ public class CustomerAccount extends DBPersistent {
             rset = pstmt.executeQuery();
             
             ArrayList<Integer> accountIDs = new ArrayList<Integer>();
-            while(rset.next())
+            while(rset.next()) {
                 accountIDs.add(rset.getInt(1));
+            }
             
             returnAcctIDs = new int[accountIDs.size()];
-            for(int i = 0; i < accountIDs.size(); i++)
+            for(int i = 0; i < accountIDs.size(); i++) {
                 returnAcctIDs[i] = accountIDs.get(i).intValue();
+            }
         }
         catch (Exception e) {
             CTILogger.error( e.getMessage(), e );
@@ -490,8 +534,9 @@ public class CustomerAccount extends DBPersistent {
             rset = pstmt.executeQuery();
             
             ArrayList<Integer> accountIds = new ArrayList<Integer>();
-            while(rset.next())
+            while(rset.next()) {
                 accountIds.add(rset.getInt(1));
+            }
 
             return accountIds;
         }
@@ -525,12 +570,14 @@ public class CustomerAccount extends DBPersistent {
 			rset = stmt.executeQuery();
 	        
 			ArrayList<Integer> acctIDList = new ArrayList<Integer>();
-			while (rset.next())
-				acctIDList.add( new Integer(rset.getInt(1)) );
+			while (rset.next()) {
+                acctIDList.add( new Integer(rset.getInt(1)) );
+            }
 	        
 			int[] accountIDs = new int[ acctIDList.size() ];
-			for (int i = 0; i < accountIDs.length; i++)
-				accountIDs[i] = acctIDList.get(i).intValue();
+			for (int i = 0; i < accountIDs.length; i++) {
+                accountIDs[i] = acctIDList.get(i).intValue();
+            }
 			
 			return accountIDs;
 		}
@@ -539,9 +586,15 @@ public class CustomerAccount extends DBPersistent {
 		}
 		finally {
 			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
+				if (rset != null) {
+                    rset.close();
+                }
+				if (stmt != null) {
+                    stmt.close();
+                }
+				if (conn != null) {
+                    conn.close();
+                }
 			}
 			catch (java.sql.SQLException e) {}
 		}
@@ -572,8 +625,9 @@ public class CustomerAccount extends DBPersistent {
 			rset = stmt.executeQuery();
 			
 			ArrayList<Integer> acctIdList = new ArrayList<Integer>();
-			while (rset.next())
-				acctIdList.add( new Integer(rset.getInt(1)) );
+			while (rset.next()) {
+                acctIdList.add( new Integer(rset.getInt(1)) );
+            }
 	        return acctIdList;
 		}
 		catch (java.sql.SQLException e) {
@@ -581,9 +635,15 @@ public class CustomerAccount extends DBPersistent {
 		}
 		finally {
 			try {
-				if (rset != null) rset.close();
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
+				if (rset != null) {
+                    rset.close();
+                }
+				if (stmt != null) {
+                    stmt.close();
+                }
+				if (conn != null) {
+                    conn.close();
+                }
 			}
 			catch (java.sql.SQLException e) {}
 		}
@@ -639,8 +699,9 @@ public class CustomerAccount extends DBPersistent {
 
     @Override
     public void add() throws java.sql.SQLException {
-    	if (getAccountID() == null)
-    		setAccountID( getNextAccountID() );
+    	if (getAccountID() == null) {
+            setAccountID( getNextAccountID() );
+        }
     		
         Object[] addValues = {
             getAccountID(), getAccountSiteID(), getAccountNumber(),
@@ -674,9 +735,9 @@ public class CustomerAccount extends DBPersistent {
             setCustomerID( (Integer) results[2] );
             setBillingAddressID( (Integer) results[3] );
             setAccountNotes( (String) results[4] );
-        }
-        else
+        } else {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
+        }
     }
 
     private Integer getNextAccountID() {
@@ -737,7 +798,9 @@ public class CustomerAccount extends DBPersistent {
      */
     public static HashMap<Integer, Integer> getAccountIDsFromZipCode(String zipCode) 
     {
-        if (zipCode == null || zipCode.length() == 0) return null;
+        if (zipCode == null || zipCode.length() == 0) {
+            return null;
+        }
         
         HashMap<Integer, Integer> accounts = new HashMap<Integer, Integer>();
         
@@ -778,9 +841,15 @@ public class CustomerAccount extends DBPersistent {
         {
             try 
             {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }
@@ -831,9 +900,15 @@ public class CustomerAccount extends DBPersistent {
         {
             try 
             {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }
@@ -874,8 +949,9 @@ public class CustomerAccount extends DBPersistent {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
             pstmt = conn.prepareStatement(sql);
-            if(ecID > -1)
+            if(ecID > -1) {
                 pstmt.setInt( 1, ecID);
+            }
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromCICustomerType execute" );
@@ -895,9 +971,15 @@ public class CustomerAccount extends DBPersistent {
         {
             try 
             {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }

@@ -25,8 +25,6 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
  * or Customer. If we can not determine which Energy Company to use, we send
  * the request to the MasterMail, supplied in:
  * 
- *  
- * NOTE: Can't put this class in common since it uses STARS
  */
 public class StarsRequestPword extends RequestPword {
 	private String accNum = null;
@@ -50,7 +48,8 @@ public class StarsRequestPword extends RequestPword {
 		this.starsCustAccountInformationDao = starsCustAccountInformationDao;
 	}
 	
-	public void doRequest() {
+	@Override
+    public void doRequest() {
 		try {
 			//uses STARS functionality
 			if( accNum != null ) {
@@ -65,7 +64,7 @@ public class StarsRequestPword extends RequestPword {
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
 
 					LiteAccountInfo lCustInfo = null;
-					List<Object> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
+					List<Integer> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
 					
 					lCustInfo = searchForMatchingAccount(accounts, lsec);
 					
@@ -128,19 +127,17 @@ public class StarsRequestPword extends RequestPword {
 		}
 	}
 
-	private LiteAccountInfo searchForMatchingAccount(List<Object> accounts, LiteStarsEnergyCompany lsec) {
+	private LiteAccountInfo searchForMatchingAccount(List<Integer> accounts, LiteStarsEnergyCompany lsec) {
 	    LiteAccountInfo lCustInfo = null;
-	    for(Object object : accounts) {
-            if(object instanceof Integer) {
-                Integer accountId = (Integer) object;
-                lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyId());
-                return lCustInfo;
-            }
+	    for(Integer accountId : accounts) {
+            lCustInfo = starsCustAccountInformationDao.getById(accountId, lsec.getEnergyCompanyId());
+            return lCustInfo;
         }
 	    return null;
 	}
 	
-	protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
+	@Override
+    protected LiteEnergyCompany[] processContact( LiteContact lCont_ ) {
 		LiteCustomer liteCust = YukonSpringHook.getBean(ContactDao.class).getCustomer( lCont_.getContactID() );
 		
 		if (liteCust.getEnergyCompanyID() != -1) {

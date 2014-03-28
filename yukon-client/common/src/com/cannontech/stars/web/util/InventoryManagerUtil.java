@@ -23,7 +23,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
@@ -72,18 +71,9 @@ public class InventoryManagerUtil {
     
     private static final Logger log = YukonLogManager.getLogger(InventoryManagerUtil.class);
 
-	public static final String STARS_INVENTORY_TEMP = "STARS_INVENTORY_TEMP";
-	public static final String STARS_INVENTORY_NO = "STARS_INVENTORY_NO";
 	public static final String STARS_INVENTORY_OPERATION = "STARS_INVENTORY_OPERATION";
-	
-	public static final String INVENTORY_TO_CHECK = "INVENTORY_TO_CHECK";
-	public static final String INVENTORY_TO_DELETE = "INVENTORY_TO_DELETE";
 	public static final String INVENTORY_SET = "INVENTORY_SET";
 	public static final String INVENTORY_SET_DESC = "INVENTORY_SET_DESCRIPTION";
-	public static final String SN_RANGE_TO_CONFIG = "SN_RANGE_TO_CONFIG";
-	public static final String INVENTORY_SELECTED = "INVENTORY_SELECTED";
-	public static final String DEVICE_SELECTED = "DEVICE_SELECTED";
-	public static final String HARDWARE_ADDRESSING = "HARDWARE_ADDRESSING";
 	
 	private static Map<Integer,Object[]> batchCfgSubmission = null;
 	
@@ -97,8 +87,9 @@ public class InventoryManagerUtil {
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
 		synchronized (cache) {
-			if (InventoryUtils.isMCT( categoryID ))
-				allDevices = cache.getAllMCTs();
+			if (InventoryUtils.isMCT( categoryID )) {
+                allDevices = cache.getAllMCTs();
+            }
 			
 			if (deviceName == null || deviceName.length() == 0) {
 				devList.addAll( allDevices );
@@ -107,8 +98,9 @@ public class InventoryManagerUtil {
 				deviceName = deviceName.toUpperCase();
 				for (int i = 0; i < allDevices.size(); i++) {
 					LiteYukonPAObject litePao = allDevices.get(i);
-					if (litePao.getPaoName().toUpperCase().startsWith( deviceName ))
-						devList.add( litePao );
+					if (litePao.getPaoName().toUpperCase().startsWith( deviceName )) {
+                        devList.add( litePao );
+                    }
 				}
 			}
 		}
@@ -252,30 +244,19 @@ public class InventoryManagerUtil {
 	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
 	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
 	 */
-	private static List<LiteInventoryBase> getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
-		List<LiteInventoryBase> invList = new ArrayList<LiteInventoryBase>();
+	private static List<LiteInventoryBase> getInventoryByAccounts(List<Integer> accounts) {
+		List<LiteInventoryBase> invList = new ArrayList<>();
 		
 		InventoryBaseDao inventoryBaseDao = 
 			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
 		InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
 		
-		for (int i = 0; i < accounts.size(); i++) {
-			if (accounts.get(i) instanceof Pair) {
-				@SuppressWarnings("unchecked") Integer accountId = (Integer) ((Pair)accounts.get(i)).getFirst();
-				List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(accountId);
-				for (Integer inventoryId : inventoryIds) {
-					LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(inventoryId);
-					invList.add(liteInv);
-				}
-			}
-			else {
-				Integer accountId = (Integer) accounts.get(i);
-				List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(accountId);
-				for (Integer inventoryId : inventoryIds) {
-					LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(inventoryId);
-					invList.add(liteInv);
-				}
-			}
+		for (Integer accountId : accounts) {
+		    List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(accountId);
+            for (Integer inventoryId : inventoryIds) {
+                LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(inventoryId);
+                invList.add(liteInv);
+            }
 		}
 		
 		return invList;
@@ -313,26 +294,26 @@ public class InventoryManagerUtil {
 			return inventoryList;
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			List<Object> accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true);
-			return getInventoryByAccounts( accounts, energyCompany );
+			List<Integer> accounts = energyCompany.searchAccountByAccountNumber(searchValue, searchMembers, true);
+			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
-			String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-			List<Object> accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
-			return getInventoryByAccounts( accounts, energyCompany );
+			String phoneNo = ServletUtils.formatPhoneNumberForSearch(searchValue);
+			List<Integer> accounts = energyCompany.searchAccountByPhoneNo(phoneNo, searchMembers);
+			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-            List<Object> accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers, true );
-			return getInventoryByAccounts( accounts, energyCompany );
+            List<Integer> accounts = energyCompany.searchAccountByLastName(searchValue, searchMembers, true);
+			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-            List<Object> accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
-			return getInventoryByAccounts( accounts, energyCompany );
+            List<Integer> accounts = energyCompany.searchAccountByOrderNo(searchValue, searchMembers);
+			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
-            List<Object> accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
-			return getInventoryByAccounts( accounts, energyCompany );
+            List<Integer> accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
+			return getInventoryByAccounts(accounts);
 		}
 		else {
 			throw new WebClientException("Unrecognized search type");

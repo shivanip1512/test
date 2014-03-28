@@ -23,7 +23,6 @@ import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.IterableUtils;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -870,8 +869,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * it returns a list of Pair(LiteWorkOrderBase, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteWorkOrderBase.
      */
-    public List<Object> searchWorkOrderByOrderNo(String orderNo, boolean searchMembers) {
-        List<Object> orderList = new ArrayList<Object>();
+    public List<LiteWorkOrderBase> searchWorkOrderByOrderNo(String orderNo, boolean searchMembers) {
+        List<LiteWorkOrderBase> orderList = new ArrayList<>();
         
         int[] orderIDs = com.cannontech.stars.database.db.report.WorkOrderBase.searchByOrderNumber( orderNo, getLiteID() );
         if (orderIDs == null) {
@@ -882,16 +881,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         List<LiteWorkOrderBase> workOrderList = starsWorkOrderBaseDao.getByIds(workOrderIds);
         
         for (final LiteWorkOrderBase workOrderBase : workOrderList) {
-            if (searchMembers) {
-                orderList.add(new Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>(workOrderBase, this));
-            } else {
-                orderList.add(workOrderBase);
-            }
+            orderList.add(workOrderBase);
         }
         
         if (searchMembers) {
             for (final LiteStarsEnergyCompany company : getChildren()) {
-                List<Object> memberList = company.searchWorkOrderByOrderNo( orderNo, searchMembers );
+                List<LiteWorkOrderBase> memberList = company.searchWorkOrderByOrderNo( orderNo, searchMembers );
                 orderList.addAll( memberList );
             }
         }
@@ -949,9 +944,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     /**
      * Use LiteStarsEnergyCompany.searchAccountByAccountNumber or CustomerAccountDao.getByAccountNumber
      */
-    public LiteAccountInfo searchAccountByAccountNo(String accountNo) 
-    {
-        List<Object> accounts = searchAccountByAccountNumber(accountNo, false, true);
+    public LiteAccountInfo searchAccountByAccountNo(String accountNo) {
+        List<Integer> accountIds = searchAccountByAccountNumber(accountNo, false, true);
         int accountNumberLength = energyCompanySettingDao.getInteger(EnergyCompanySettingType.ACCOUNT_NUMBER_LENGTH, this.getEnergyCompanyId());
         int rotationDigitLength = energyCompanySettingDao.getInteger(EnergyCompanySettingType.ROTATION_DIGIT_LENGTH, this.getEnergyCompanyId());
         int accountNumSansRotationDigitsIndex = accountNo.length();
@@ -972,11 +966,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             adjustForAccountLength = true;
         }
         
-        for (Object object : accounts) {
-            if (object instanceof Integer) {
-                Integer accountId = (Integer) object;
+        for (Integer accountId : accountIds) {
                 LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyId());
-            
+
                 String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
                 if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits) {
                     comparableAcctNum = comparableAcctNum.substring(0, accountNumSansRotationDigitsIndex);
@@ -984,11 +976,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                 if(comparableDigitEndIndex > 0 && comparableAcctNum.length() >= comparableDigitEndIndex && adjustForAccountLength) {
                     comparableAcctNum = comparableAcctNum.substring(0, comparableDigitEndIndex);
                 }
-                if (comparableAcctNum.equalsIgnoreCase( accountNo ))
-                {
+                if (comparableAcctNum.equalsIgnoreCase(accountNo)) {
                     return liteAcctInfo;
                 }
-            }
         }
         
         return null;
@@ -999,17 +989,16 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public List<Object> searchAccountByAccountNumber(String accountNumber, boolean searchMembers, boolean partialMatch) {
-        List<Object> accountList = new ArrayList<Object>();
+    public List<Integer> searchAccountByAccountNumber(String accountNumber, boolean searchMembers, boolean partialMatch) {
 
-        List<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
-        if( searchMembers) {
+        List<Integer> allEnergyCompanyIDs = new ArrayList<>();
+        if(searchMembers) {
             allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
         } else {
-            allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+            allEnergyCompanyIDs.add(getLiteID());
         }
 
-        accountList = searchByAccountNumber( accountNumber, partialMatch, allEnergyCompanyIDs, searchMembers);
+        List<Integer> accountList = searchByAccountNumber(accountNumber, partialMatch, allEnergyCompanyIDs, searchMembers);
 
         return accountList;
     }
@@ -1019,92 +1008,27 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public List<Object> searchAccountBySerialNo(String serialNo, boolean searchMembers) {
+    public List<Integer> searchAccountBySerialNo(String serialNo, boolean searchMembers) {
         
         List<LiteInventoryBase> invList = 
             starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList((YukonEnergyCompany)this));
-        List<Object> accountList = new ArrayList<Object>();
+        List<Integer> accountList = new ArrayList<>();
        
         for (int i = 0; i < invList.size(); i++) {
             LiteInventoryBase inv = invList.get(i);
             Integer accountId = inv.getAccountID();
             if (accountId > 0) {
-                if (searchMembers) {
-                    accountList.add( new Pair<Integer,LiteStarsEnergyCompany>(accountId, this) );
-                } else {
-                    accountList.add( accountId );
-                }
+                accountList.add(accountId);
             }
         }
         
         if (searchMembers) {
             for (final LiteStarsEnergyCompany company : getChildren()) {
-                List<Object> memberList = company.searchAccountBySerialNo( serialNo, searchMembers );
-                accountList.addAll( memberList );
+                List<Integer> memberList = company.searchAccountBySerialNo(serialNo, searchMembers);
+                accountList.addAll(memberList);
             }
         }
         
-        return accountList;
-    }
-    
-    /**
-     * Search customer accounts by account alternate tracking # (AltTrackingNum from Customer table).
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
-     */
-    public List<Object> searchAccountByAltTrackNo(String altTrackNo, boolean searchMembers) {
-        List<Object> accountList = new ArrayList<Object>();
-        
-        // Gets all the possible energy company ids
-        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
-        if (searchMembers) {
-            energyCompanyIdList = getAllEnergyCompaniesDownward();
-        } else {
-            energyCompanyIdList.add(getLiteID());
-        }
-        
-        accountList.addAll(CustomerAccount.searchByCustomerAltTrackingNumber( altTrackNo + "%", energyCompanyIdList ));
-        return accountList;
-    }
-    
-    /**
-    * Search customer account by company name, search results based on partial match
-    * If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-    * otherwise the return type is LiteStarsCustAccountInformation.
-    */
-    public List<Object> searchAccountByCompanyName(String searchName, boolean searchMembers) {
-        List<Object> accountList = new ArrayList<Object>();
-        
-        // Gets all the possible energy company ids
-        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
-        if (searchMembers) {
-            energyCompanyIdList = getAllEnergyCompaniesDownward();
-        } else {
-            energyCompanyIdList.add(getLiteID());
-        }
-        
-        accountList.addAll(CustomerAccount.searchByCompanyName( searchName + "%", energyCompanyIdList, searchMembers));
-       return accountList;
-   }
-    
-    /**
-     * Search customer account by residence map #, search results based on partial match
-     * If searchMembers is true, the return type is Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise the return type is LiteStarsCustAccountInformation.
-     */
-    public List<Object> searchAccountByMapNo(String mapNo, boolean searchMembers) {
-        List<Object> accountList = new ArrayList<Object>();
-
-        // Gets all the possible energy company ids
-        List<Integer> energyCompanyIdList = new ArrayList<Integer>();
-        if (searchMembers) {
-            energyCompanyIdList = getAllEnergyCompaniesDownward();
-        } else {
-            energyCompanyIdList.add(getLiteID());
-        }
-        
-        // Uses the the energy company ids to find all the desired accounts
-        accountList.addAll(CustomerAccount.searchBySiteNumber( mapNo + "%", energyCompanyIdList));
         return accountList;
     }
     
@@ -1113,78 +1037,56 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
-    public List<Object> searchAccountByAddress(String address, boolean searchMembers, boolean partialMatch) {
-        List<Object> accountList = new ArrayList<Object>();
-
-        List<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
+    public List<Integer> searchAccountByAddress(String address, boolean searchMembers, boolean partialMatch) {
+        List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if( searchMembers) {
             allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
         } else {
-            allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+            allEnergyCompanyIDs.add(getLiteID());
         }
 
-        accountList = searchByStreetAddress( address, partialMatch, allEnergyCompanyIDs, searchMembers);
+        List<Integer> accountList = searchByStreetAddress(address, partialMatch, allEnergyCompanyIDs, searchMembers);
 
         return accountList;
     }
     
-    @SuppressWarnings("unchecked")
-    public List<Object> searchAccountByOrderNo(String orderNo, boolean searchMembers) {
-        List<Object> orderList = searchWorkOrderByOrderNo( orderNo, false );
-        List<Object> accountList = new ArrayList<Object>();
+    public List<Integer> searchAccountByOrderNo(String orderNo, boolean searchMembers) {
+        List<LiteWorkOrderBase> orderList = searchWorkOrderByOrderNo(orderNo, false);
+        List<Integer> accountList = new ArrayList<>();
 
-        for (final Object obj : orderList) {
-            LiteWorkOrderBase liteOrder = null;
-            
-            if (obj instanceof LiteWorkOrderBase) {
-                liteOrder = (LiteWorkOrderBase) obj;
-            }
-            if (obj instanceof Pair) {
-                Pair<LiteWorkOrderBase,LiteStarsEnergyCompany> pair = (Pair<LiteWorkOrderBase,LiteStarsEnergyCompany>) obj;
-                liteOrder = pair.getFirst();
-            }
-            
+        for (final LiteWorkOrderBase liteOrder : orderList) {
             if (liteOrder != null) {
                 int accountId = liteOrder.getAccountID();
                 if (accountId > 0){
-                    if (searchMembers) {
-                        accountList.add( new Pair<Integer,LiteStarsEnergyCompany>(accountId, this) );
-                    } else {
-                        accountList.add(accountId);
-                    }
-                }
-            }
-        }
-        
-        if (searchMembers) {
-            for (LiteStarsEnergyCompany company : getChildren()) {
-                List<Object> memberList = company.searchAccountByOrderNo( orderNo, searchMembers );
-                accountList.addAll( memberList );
-            }
-        }
-
-        return accountList;
-    }
-    
-    private List<Object> searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
-        List<Object> accountList = new ArrayList<Object>();
-
-        int[] accountIDs = com.cannontech.stars.database.db.customer.CustomerAccount.searchByPrimaryContactIDs( contactIDs, getLiteID() );
-        if (accountIDs != null) {
-            for (final int accountId : accountIDs) {
-                if (searchMembers) {
-                    accountList.add(
-                        new Pair<Integer, LiteStarsEnergyCompany>(accountId, this));
-                } else {
                     accountList.add(accountId);
                 }
             }
         }
         
         if (searchMembers) {
+            for (LiteStarsEnergyCompany company : getChildren()) {
+                List<Integer> memberList = company.searchAccountByOrderNo(orderNo, searchMembers);
+                accountList.addAll(memberList);
+            }
+        }
+
+        return accountList;
+    }
+
+    private List<Integer> searchAccountByContactIDs(int[] contactIDs, boolean searchMembers) {
+        List<Integer> accountList = new ArrayList<>();
+
+        int[] accountIDs = com.cannontech.stars.database.db.customer.CustomerAccount.searchByPrimaryContactIDs(contactIDs, getLiteID());
+        if (accountIDs != null) {
+            for (final int accountId : accountIDs) {
+                accountList.add(accountId);
+            }
+        }
+        
+        if (searchMembers) {
             for (final LiteStarsEnergyCompany company : getChildren()) {
-                List<Object> memberList = company.searchAccountByContactIDs( contactIDs, searchMembers );
-                accountList.addAll( memberList );
+                List<Integer> memberList = company.searchAccountByContactIDs(contactIDs, searchMembers);
+                accountList.addAll(memberList);
             }
         }
 
@@ -1193,10 +1095,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     /**
      * Search customer accounts by phone number.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
+     * returns a list of LiteStarsCustAccountInformation.
      */
-    public List<Object> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
+    public List<Integer> searchAccountByPhoneNo(String phoneNo, boolean searchMembers) {
         List<LiteContact> contacts = YukonSpringHook.getBean(ContactDao.class).findContactsByPhoneNo(phoneNo, true);
         
         int[] contactIDs = new int[ contacts.size()];
@@ -1204,25 +1105,23 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             contactIDs[i] = contacts.get(i).getContactID();
         }
         
-        return searchAccountByContactIDs( contactIDs, searchMembers );
+        return searchAccountByContactIDs(contactIDs, searchMembers);
     }
     
     /**
      * Search customer accounts by last name. The search is based on partial match, and is case-insensitive.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
+     * returns a list of LiteStarsCustAccountInformation.
      */
-    public List<Object> searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
-        List<Object> accountList = new ArrayList<Object>();
-
-        List<Integer> allEnergyCompanyIDs = new ArrayList<Integer>();
-        if( searchMembers) {
+    public List<Integer> searchAccountByLastName(String lastName, boolean searchMembers, boolean partialMatch) {
+        List<Integer> allEnergyCompanyIDs = new ArrayList<>();
+        if(searchMembers) {
             allEnergyCompanyIDs = getAllEnergyCompaniesDownward();
         } else {
-            allEnergyCompanyIDs.add(new Integer(getLiteID()) );
+            allEnergyCompanyIDs.add(getLiteID());
         }
 
-        accountList = searchByPrimaryContactLastName( lastName, partialMatch, allEnergyCompanyIDs, searchMembers);
+        List<Integer> accountList = 
+                searchByPrimaryContactLastName(lastName, partialMatch, allEnergyCompanyIDs, searchMembers);
 
         return accountList;
     }
@@ -1234,7 +1133,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
             starsOperECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
             starsOperECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
-            starsOperECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
+            starsOperECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user.getYukonUser()) );
             starsOperECSettings.setStarsServiceCompanies( getStarsServiceCompanies() );
             starsOperECSettings.setStarsSubstations( getStarsSubstations() );
             return starsOperECSettings;
@@ -1243,7 +1142,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
             starsCustECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
             starsCustECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
-            starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
+            starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user.getYukonUser()) );
             return starsCustECSettings;
         }
         
@@ -1291,12 +1190,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         
         return null;
     }
-    
-    public StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
 
-        return getStarsCustomerSelectionLists(starsUser.getYukonUser());
-    }
-    
     public StarsEnrollmentPrograms getStarsEnrollmentPrograms() {
         StarsEnrollmentPrograms starsEnrPrograms = new StarsEnrollmentPrograms();
         StarsLiteFactory.setStarsEnrollmentPrograms( starsEnrPrograms, getAllApplianceCategories(), this );
@@ -1421,11 +1315,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         energyCompanyHierarchy = null;
     }
     
-    private List<Object> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
-        if (lastName_ == null || lastName_.length() == 0) {
-            return null;
-        }
-        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
+    private List<Integer> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (lastName_ == null || lastName_.length() == 0 
+                || energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
             return null;
         }
         
@@ -1433,8 +1325,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         String lastName = lastName_.trim();
         String firstName = null;
         int commaIndex = lastName_.indexOf(",");
-        if( commaIndex > 0 )
-        {
+        if( commaIndex > 0 ) {
             firstName = lastName_.substring(commaIndex+1).trim();
             lastName = lastName_.substring(0, commaIndex).trim();
         }
@@ -1460,7 +1351,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     }
                     sql += " order by contlastname, contfirstname";                    
         
-        List<Object> accountList = new ArrayList<Object>();
+        List<Integer> accountList = new ArrayList<>();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -1478,16 +1369,9 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
             while(rset.next()) {
-                Integer energyCompanyID = new Integer(rset.getInt(1));
-                final LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
-                
                 Integer accountID = new Integer(rset.getInt(2));
 
-                if (searchMembers) {
-                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountID, liteStarsEC) );
-                } else {
-                    accountList.add(accountID);
-                }
+                accountList.add(accountID);
 
                 count++;
             }
@@ -1513,16 +1397,15 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + lastName_ + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
     }
-    private static List<Object> searchByStreetAddress(String address_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
-        if (address_ == null || address_.length() == 0) {
-            return null;
-        }
-        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
+
+    private static List<Integer> searchByStreetAddress(String address, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (address == null || address.length() == 0 
+                ||energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
             return null;
         }
         
         Date timerStart = new Date();
-        String address = address_.trim();
+        String addressTrimmed = address.trim();
         
         String sql = "SELECT map.energycompanyID, acct.AccountID " + 
                     " FROM ECToAccountMapping map, " + CustomerAccount.TABLE_NAME + " acct, " + 
@@ -1542,7 +1425,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     }
                     sql += " order by adr.LocationAddress1, adr.LocationAddress2, CityName, StateCode";                          
         
-        List<Object> accountList = new ArrayList<Object>();
+        List<Integer> accountIdList = new ArrayList<>();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -1551,30 +1434,21 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString( 1, address.toUpperCase()+(partialMatch? "%":""));
+            pstmt.setString( 1, addressTrimmed.toUpperCase()+(partialMatch? "%":""));
             rset = pstmt.executeQuery();
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
-            LiteStarsEnergyCompany liteStarsEC = null;
-            while(rset.next())
-            {
-                Integer energyCompanyID = new Integer(rset.getInt(1));
-                liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
-                
+            while(rset.next()) {
                 Integer accountID = new Integer(rset.getInt(2));
 
-                if (searchMembers) {
-                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountID, liteStarsEC) );
-                } else {
-                    accountList.add(accountID);
-                }
+                accountIdList.add(accountID);
 
                 count++;
             }
         }
         catch( Exception e ){
-            CTILogger.error( "Error retrieving contacts with last name " + address_ + ": " + e.getMessage(), e );
+            CTILogger.error( "Error retrieving contacts with last name " + address + ": " + e.getMessage(), e );
         }
         finally {
             try {
@@ -1591,15 +1465,15 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             catch (java.sql.SQLException e) {}
         }
 
-        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + address_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
-        return accountList;
+        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + address 
+                        + "' Search (" + count + " AccountIDS loaded; EC=" + 
+                (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
+        return accountIdList;
     }
     
-    private static List<Object> searchByAccountNumber(String accountNumber_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
-        if (accountNumber_ == null || accountNumber_.length() == 0) {
-            return null;
-        }
-        if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
+    private static List<Integer> searchByAccountNumber(String accountNumber_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
+        if (accountNumber_ == null || accountNumber_.length() == 0 
+                ||energyCompanyIDList == null || energyCompanyIDList.size() == 0) {
             return null;
         }
         
@@ -1621,7 +1495,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
                     }
                     sql += " order by accountNumber";                          
         
-        List<Object> accountList = new ArrayList<Object>();
+        List<Integer> accountList = new ArrayList<>();
         PreparedStatement pstmt = null;
         Connection conn = null;
         ResultSet rset = null;
@@ -1635,20 +1509,12 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
             CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After execute" );
   
-            LiteStarsEnergyCompany liteStarsEC = null;
             Integer accountId = null;
             while(rset.next())
             {
-                Integer energyCompanyID = new Integer(rset.getInt(1));
-                liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID.intValue());
-                
                 accountId = new Integer(rset.getInt(2));
 
-                if (searchMembers) {
-                    accountList.add(new Pair<Integer,LiteStarsEnergyCompany>(accountId, liteStarsEC) );
-                } else {
-                    accountList.add(accountId);
-                }
+                accountList.add(accountId);
 
                 count++;
             }

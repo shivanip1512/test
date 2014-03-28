@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
@@ -61,26 +60,23 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         
         
         // Remember the last search option
-        session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy));
-        session.setAttribute( ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE, new String(searchValue) );
+        session.setAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION, new Integer(searchBy));
+        session.setAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_VALUE, new String(searchValue));
         boolean searchMembers = this.rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user.getYukonUser()) && 
                                 (energyCompany.hasChildEnergyCompanies());
 
         if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-            liteWorkOrderList = cleanList(energyCompany.searchWorkOrderByOrderNo( searchValue, searchMembers),
-                                          LiteWorkOrderBase.class);
+            liteWorkOrderList = energyCompany.searchWorkOrderByOrderNo(searchValue, searchMembers);
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-            List<Integer> accountIds = cleanList(energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true),
-                                                                       Integer.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
+            List<Integer> acounts = energyCompany.searchAccountByAccountNumber(searchValue, searchMembers, true);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts(acounts));
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
             try {
                 String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-                List<Integer> accountIds = cleanList(energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers),
-                                                                           Integer.class);
-                liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
+                List<Integer> acounts = energyCompany.searchAccountByPhoneNo(phoneNo, searchMembers);
+                liteWorkOrderList.addAll(getOrderIDsByAccounts(acounts));
             }
             catch (WebClientException e) {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
@@ -90,19 +86,16 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
             }
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-            List<Integer> accountIds = cleanList(energyCompany.searchAccountByLastName( searchValue, searchMembers , true),
-                                                                       Integer.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
+            List<Integer> acounts = energyCompany.searchAccountByLastName(searchValue, searchMembers, true);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts(acounts));
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-            List<Integer> accountIds = cleanList(energyCompany.searchAccountBySerialNo( searchValue, searchMembers),
-                                                                       Integer.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ) );
+            List<Integer> acounts = energyCompany.searchAccountBySerialNo(searchValue, searchMembers);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts(acounts) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-            List<Integer> accountIds = cleanList(energyCompany.searchAccountByAddress( searchValue, searchMembers, true),
-                                              Integer.class);
-            liteWorkOrderList.addAll(getOrderIDsByAccounts( accountIds, energyCompany ));
+            List<Integer> acounts = energyCompany.searchAccountByAddress(searchValue, searchMembers, true);
+            liteWorkOrderList.addAll(getOrderIDsByAccounts(acounts));
         }
         
         if (liteWorkOrderList.size() == 0) {
@@ -118,29 +111,19 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
         response.sendRedirect(redirect);
     }
     
-    private List<LiteWorkOrderBase> getOrderIDsByAccounts(List<Integer> accountIds, LiteStarsEnergyCompany defaultEnergyCompany) {
-        List<Integer> workOrderIdList = new ArrayList<Integer>();
+    private List<LiteWorkOrderBase> getOrderIDsByAccounts(List<Integer> accounts) {
+        List<Integer> workOrderIdList = new ArrayList<>();
         
-        for (final Integer accountId : accountIds) {
+        for (final Integer accountId : accounts) {
             int[] woIDs = WorkOrderBase.searchByAccountID(accountId);
-            if (woIDs == null) continue;
+            if (woIDs == null) {
+                continue;
+            }
             workOrderIdList.addAll(Arrays.asList(ArrayUtils.toObject(woIDs)));
         }
         
         List<LiteWorkOrderBase> list = starsWorkOrderBaseDao.getByIds(workOrderIdList);
         return list;
     }
-    
-    @SuppressWarnings("unchecked")
-    private <E> List<E> cleanList(List<Object> list, Class<E> type) {
-        List<E> resultList = new ArrayList<E>(list.size());
-        
-        for (final Object obj : list) {
-            Object realObject = (obj instanceof Pair) ? ((Pair) obj).getFirst() : obj;
-            resultList.add((E) realObject);
-        }
-        
-        return resultList;
-    }
-    
+
 }
