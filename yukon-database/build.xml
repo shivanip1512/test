@@ -210,7 +210,7 @@
             <arg value="diff"/>
         </exec>
         
-        <echo message="Checking in sql server database snapshot" />
+        <echo message="Checking in oracle database snapshot" />
         <exec executable="svn" dir="${dbSnapshotTempDir}">
             <arg value="commit"/>
             <arg value="oracle.xml"/>
