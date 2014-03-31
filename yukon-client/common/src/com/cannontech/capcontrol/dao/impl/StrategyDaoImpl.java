@@ -333,8 +333,7 @@ public class StrategyDaoImpl implements StrategyDao {
         sql.append("AND SettingType").in(Lists.newArrayList(VoltageViolationSettingType.values()));
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
-        if (!strategy.isIvvc())
-         {
+        if (!strategy.isIvvc()) {
             return; // Don't save these IVVC-only settings if we aren't going to use them
         }
 

@@ -1,7 +1,6 @@
 package com.cannontech.web.updater;
 
-import java.util.Date;
-
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -40,9 +39,9 @@ public abstract class UpdateBackingServiceBase<T> implements UpdateBackingServic
 
         DatedObject<T> datedObject = getDatedObject(objectId);
 
-        Date afterDate = new Date(afterDateLong);
+        Instant afterDate = new Instant(afterDateLong);
 
-        if (datedObject == null || !datedObject.getDate().before(afterDate)) {
+        if (datedObject == null || !datedObject.getDate().isBefore(afterDate)) {
             Object value = getValue(datedObject, idBits, userContext);
 
             if (value != null) {

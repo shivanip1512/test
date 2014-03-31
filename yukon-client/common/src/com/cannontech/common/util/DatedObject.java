@@ -1,17 +1,17 @@
 package com.cannontech.common.util;
 
-import java.util.Date;
+import org.joda.time.Instant;
 
-public class DatedObject<T> {
-    private final Date date;
+public final class DatedObject<T> {
+    private final Instant date;
     private final T object;
 
     public DatedObject(T object) {
         this.object = object;
-        this.date = new Date();
+        this.date = new Instant();
     }
 
-    public Date getDate() {
+    public Instant getDate() {
         return date;
     }
 
