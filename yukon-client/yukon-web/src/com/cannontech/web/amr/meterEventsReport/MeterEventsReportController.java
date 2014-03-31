@@ -37,7 +37,6 @@ import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.fileExportHistory.FileExportType;
@@ -47,7 +46,6 @@ import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
@@ -93,24 +91,22 @@ import com.google.common.collect.Sets;
 @RequestMapping("/meterEventsReport/*")
 public class MeterEventsReportController {
     
+    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DeviceCollectionService deviceCollectionService;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private JobManager jobManager;
+    @Autowired private MeterEventLookupService meterEventLookupService;
+    @Autowired private ObjectFormattingService objectFormatingService;
     @Autowired private PaoPointValueService paoPointValueService;
     @Autowired private PointFormattingService pointFormattingService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private MeterEventLookupService meterEventLookupService;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private AttributeService attributeService;
-    @Autowired private ObjectFormattingService objectFormatingService;
-    @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private DeviceCollectionService deviceCollectionService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private ScheduledFileExportValidator scheduledFileExportValidator = 
-            new ScheduledFileExportValidator(this.getClass());
+            new ScheduledFileExportValidator(MeterEventsReportController.class);
     private final static Set<String> NON_ABNORMAL_VALUES = Sets.newHashSet(OutageStatus.GOOD.name().toLowerCase(),
                                                                            EventStatus.CLEARED.name().toLowerCase());
     private final String baseKey = "yukon.web.modules.amr.meterEventsReport.report";

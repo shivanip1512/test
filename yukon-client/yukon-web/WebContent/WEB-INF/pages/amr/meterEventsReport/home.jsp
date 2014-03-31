@@ -10,7 +10,7 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
-<cti:standardPage page="meterEventsReport.report" module="amr">
+<cti:standardPage module="amr" page="meterEventsReport.report">
     <c:if test="${not empty deviceCollection}">
         <cti:includeScript link="/JavaScript/yukon.tag.scheduled.file.export.inputs.js"/>
         <cti:includeScript link="/JavaScript/yukon.field.helper.js"/>
