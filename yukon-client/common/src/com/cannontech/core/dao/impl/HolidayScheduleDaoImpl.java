@@ -63,7 +63,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         // All we wanted was the scheduleId.
         if( scheduleIds.size() > 0 ) {
             schedule.setHolidayScheduleId(scheduleIds.get(0));
-        } else{
+        } else {
             CTILogger.error("Error: No schedule in database for paoid: " + paoId );
             schedule.setHolidayScheduleId(-1);
         }

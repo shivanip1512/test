@@ -47,9 +47,6 @@
   
   <bean id="graphDao" class="com.cannontech.core.dao.impl.GraphDaoImpl"/>
   
-  <bean id="lmControlHistoryDao" class="com.cannontech.core.dao.impl.LMControlHistoryDaoImpl" >
-    <property name="nextValueHelper" ref="nextValueHelper" />  
-  </bean>
   <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>    
     <property name="paoDao" ref="paoDao"/>   
