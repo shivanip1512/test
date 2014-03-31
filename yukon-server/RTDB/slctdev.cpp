@@ -76,6 +76,7 @@
 #include "dev_repeater.h"
 #include "dev_repeater850.h"
 #include "dev_rfn.h"
+#include "dev_rf_da.h"
 #include "dev_rfn420centron.h"
 #include "dev_rfn420focus.h"
 #include "dev_rfnCommercial.h"
@@ -254,6 +255,8 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPE_RFN430SL2,    makeDevice<Rfn430sl2Device>)
     (TYPE_RFN430SL3,    makeDevice<Rfn430sl3Device>)
     (TYPE_RFN430SL4,    makeDevice<Rfn430sl4Device>)
+    //  RF DA devices
+    (TYPE_RF_DA,        makeDevice<RfDaDevice>)
     //  Electronic meters
     (TYPE_FULCRUM,      makeDevice<CtiDeviceFulcrum>)
     (TYPE_QUANTUM,      makeDevice<CtiDeviceQuantum>)

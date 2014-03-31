@@ -174,6 +174,8 @@ string desolveDeviceType( int aType )
         case TYPE_RFN430SL3:    Ret = "rfn-430sl3";     break;
         case TYPE_RFN430SL4:    Ret = "rfn-430sl4";     break;
 
+        case TYPE_RF_DA:        Ret = "rf-da";          break;
+
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 
         case TYPELTC:           Ret = "load tap changer";   break;

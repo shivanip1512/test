@@ -398,7 +398,10 @@ static const device_lookup_t device_lookups = boost::assign::map_list_of<string,
     ("rfn-430sl3",         TYPE_RFN430SL3)
     ("rfn-430sl4",         TYPE_RFN430SL4)
 
-//  --- RTU devices ---
+    //  --- RF mesh meters ---
+    ("rf-da",              TYPE_RF_DA)
+
+    //  --- RTU devices ---
     ("rtu-dart",           TYPE_DARTRTU)
     ("rtu-dnp",            TYPE_DNPRTU)
     ("rtu-ilex",           TYPE_ILEXRTU)
@@ -918,6 +921,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT440_2131B:
         case TYPEMCT440_2132B:
         case TYPEMCT440_2133B:
+        case TYPE_RF_DA:
         case TYPE_RFN410FL:
         case TYPE_RFN410FX:
         case TYPE_RFN410FD:

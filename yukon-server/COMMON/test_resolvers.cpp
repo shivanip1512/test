@@ -446,6 +446,10 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 
 
+    tempName = "rf-da";
+    devType = TYPE_RF_DA;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+
 
     tempName = "mct-430a3";
     devType = TYPEMCT430A3;

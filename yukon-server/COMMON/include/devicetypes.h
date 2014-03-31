@@ -87,6 +87,9 @@ enum DeviceTypes {
     TYPE_RFN430SL3,
     TYPE_RFN430SL4,
 
+    //  RF DA devices
+    TYPE_RF_DA,
+
     // Substation device identifiers
     TYPE_CCU700,
     TYPE_CCU710,
@@ -195,6 +198,7 @@ enum DeviceTypes {
     PortTypePoolDialout,
     PortTypeTcp,
     PortTypeUdp,
+    PortTypeRfDa,
 
     PortTypeInvalid,
 };
