@@ -39,7 +39,6 @@ import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifMap;
 import com.cannontech.database.data.notification.NotificationGroup;
-import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.model.DummyTreeNode;
 import com.cannontech.dbeditor.editor.user.LiteBaseNode;
 import com.cannontech.spring.YukonSpringHook;
@@ -250,16 +249,12 @@ private javax.swing.JTree getJTreeNotifs() {
 
 			}
 
-			int[] contIDs = Contact.getOrphanedContacts();
-			for( int i = 0; i < contIDs.length; i++ )
-			{
-			    LiteContact lcont = YukonSpringHook.getBean(ContactDao.class).getContact( contIDs[i] );
-			    LiteBaseNode lbNode = new LiteBaseNode( lcont );
+            List<LiteContact> contacts = YukonSpringHook.getBean(ContactDao.class).getUnassignedContacts();
+            for (LiteContact liteContact : contacts) {
+			    LiteBaseNode lbNode = new LiteBaseNode(liteContact);
 			    lbNode.setUserValue( NotifMap.DEF_ATTRIBS );	
-
 			    unassignContactsNode.add( lbNode );
-
-			    addContactNotifsToTree( lcont, lbNode );
+			    addContactNotifsToTree(liteContact, lbNode );
 			}
 
 			root.add( unassignContactsNode );

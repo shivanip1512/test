@@ -25,7 +25,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 *   Object[0] is a DataInputPanel
 	 *   Object[1] is a String (Tab Name)
 	 */
-	public Object[] createNewPanel(int panelIndex)
+	@Override
+    public Object[] createNewPanel(int panelIndex)
 	{
 		Object[] objs = new Object[2];
 		
@@ -35,11 +36,6 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 				objs[0] = new GroupNotificationEditorPanel();
 				objs[1] = "General";
 				break;
-	
-//			case 1:
-//				objs[0] = new GroupNotificationAddContactPanel();
-//				objs[1] = "Recipients";
-//				break;
 
 			case 1:
 				objs[0] = new NotificationPanel();
@@ -54,7 +50,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 * This method was created in VisualAge.
 	 * @return DataInputPanel[]
 	 */
-	public DataInputPanel[] getInputPanels() {
+	@Override
+    public DataInputPanel[] getInputPanels() {
 		//At least guarantee a non-null array if not a meaningful one
 		if( this.inputPanels == null )
 			this.inputPanels = new DataInputPanel[0];
@@ -65,7 +62,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 * This method was created in VisualAge.
 	 * @return java.awt.Dimension
 	 */
-	public java.awt.Dimension getPreferredSize() {
+	@Override
+    public java.awt.Dimension getPreferredSize() {
 		return new java.awt.Dimension( 400, 450 );
 	}
 	/**
@@ -96,7 +94,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 * This method was created in VisualAge.
 	 * @return java.lang.String[]
 	 */
-	public String[] getTabNames() {
+	@Override
+    public String[] getTabNames() {
 		if( this.inputPanelTabNames == null )
 			this.inputPanelTabNames = new String[0];
 			
@@ -144,7 +143,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 			frame.setContentPane(aStateEditorPanel);
 			frame.setSize(aStateEditorPanel.getSize());
 			frame.addWindowListener(new java.awt.event.WindowAdapter() {
-				public void windowClosing(java.awt.event.WindowEvent e) {
+				@Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
 					System.exit(0);
 				};
 			});
@@ -158,7 +158,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 * This method was created in VisualAge.
 	 * @param val java.lang.Object
 	 */
-	public void setValue(Object val) 
+	@Override
+    public void setValue(Object val) 
 	{	
 		//Vector to hold the panels temporarily
 		java.util.Vector panels = new java.util.Vector();
@@ -190,7 +191,8 @@ public class NotificationGroupEditorPanel extends com.cannontech.common.editor.P
 	 * This method was created in VisualAge.
 	 * @return java.lang.String
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Notification Group Editor";
 	}
 	/**

@@ -46,6 +46,7 @@ public void setParentFrame(Frame frame) {
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase
  */
+@Override
 public boolean insertTreeObject( LiteBase lb ) 
 {
 	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
@@ -101,6 +102,7 @@ public boolean insertTreeObject( LiteBase lb )
  * Creation date: (4/22/2002 2:05:03 PM)
  * @return com.cannontech.database.data.lite.LiteBase[]
  */
+@Override
 public boolean isLiteTypeSupported( int liteType )
 {
 	return ( liteType == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI
@@ -112,6 +114,7 @@ public boolean isTreePrimaryForObject(LiteBase liteBase) {
     return liteBase.getLiteType() == com.cannontech.database.data.lite.LiteTypes.CUSTOMER_CI;
 }
 
+@Override
 public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 {
 	//Watch out, this reloads the contacts every TIME!!!
@@ -125,8 +128,8 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
 		node.removeAllChildren();
 		
 		int primaryContactId = ciCust.getPrimaryContactID();
-		if (primaryContactId > 0) {
-		    LiteContact primaryContact = YukonSpringHook.getBean(ContactDao.class).getContact(primaryContactId);
+	    LiteContact primaryContact = YukonSpringHook.getBean(ContactDao.class).getContact(primaryContactId);
+	    if (primaryContact != null) {
 		    node.add(new DBTreeNode(primaryContact));
 		}
 		
@@ -143,6 +146,7 @@ public synchronized void treePathWillExpand(javax.swing.tree.TreePath path)
  * Creation date: (4/17/2002 1:58:45 PM)
  * @param lite com.cannontech.database.data.lite.LiteBase
  */
+@Override
 public boolean updateTreeObject(LiteBase lb) 
 {
 	if( lb == null || !isLiteTypeSupported(lb.getLiteType()) )
@@ -165,6 +169,7 @@ public boolean updateTreeObject(LiteBase lb)
 /**
  * This method was created in VisualAge.
  */
+@Override
 public void doUpdate(final Runnable onCompletion) {
 	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     // if we have a worker, cancel it
@@ -183,9 +188,11 @@ public void doUpdate(final Runnable onCompletion) {
     worker = new SwingWorker<Object, LiteCICustomer>() {
         private int count = 0;
         private volatile int customerCount = 0;
+        @Override
         protected Object doInBackground() throws Exception {
             customerCount = customerDao.getAllCiCustomerCount();
             customerDao.callbackWithAllCiCustomers(new SimpleCallback<LiteCICustomer>() {
+                @Override
                 public void handle(LiteCICustomer item) {
                     publish(item);
                 }
@@ -193,6 +200,7 @@ public void doUpdate(final Runnable onCompletion) {
             return null;
         };
         
+        @Override
         protected void process(java.util.List<LiteCICustomer> chunks) {
             // if the user canceled, there isn't much we can do about the background thread
             // but we can stop adding stuff to the model (and tying up memory)

@@ -174,9 +174,11 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     }
     
     @Override
-    public List<LiteContactNotification> getNotificationsForContact(
-            LiteContact liteContact) {
-        return getNotificationsForContact(liteContact.getContactID());
+    public List<LiteContactNotification> getNotificationsForContact(LiteContact liteContact) {
+        if (liteContact != null) {
+            return getNotificationsForContact(liteContact.getContactID());
+        }
+        return new ArrayList<>();
     }
     
     @Override
@@ -195,7 +197,10 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao 
     
     @Override
     public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType) {
-        return getNotificationsForContactByType(liteContact.getContactID(), contactNotificationType);
+        if (liteContact != null) {
+            return getNotificationsForContactByType(liteContact.getContactID(), contactNotificationType);
+        }
+        return new ArrayList<>();
     }
     
     @Override

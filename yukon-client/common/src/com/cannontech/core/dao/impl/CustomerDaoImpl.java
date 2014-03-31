@@ -169,7 +169,8 @@ public final class CustomerDaoImpl implements CustomerDao {
          */
         List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(customerId);
         for (int contactId : additionalContacts) {
-        	contactDao.deleteContact(contactId);
+            LiteContact contact = contactDao.getContact(contactId);
+        	contactDao.deleteContact(contact);
         }
 
         String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
@@ -186,7 +187,7 @@ public final class CustomerDaoImpl implements CustomerDao {
          * - needs to happen after Customer is deleted
          */
         LiteContact primaryContact = getPrimaryContact(customerId);
-        contactDao.deleteContact(primaryContact.getContactID());
+        contactDao.deleteContact(primaryContact);
         
     }
     

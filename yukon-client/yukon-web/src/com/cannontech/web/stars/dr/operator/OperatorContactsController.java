@@ -218,14 +218,15 @@ public class OperatorContactsController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteContact contact = contactDao.getContact(contactId);
-        contactDao.deleteContact(contactId);
-        
-        // Log contact removal
-        String contactName = contact.getContFirstName()+" "+contact.getContLastName();
-        accountEventLogService.contactRemoved(userContext.getYukonUser(),
-                                              accountInfoFragment.getAccountNumber(),
-                                              contactName);
-        
+        if (contact != null) {
+            contactDao.deleteContact(contact);
+            
+            // Log contact removal
+            String contactName = contact.getContFirstName()+" "+contact.getContLastName();
+            accountEventLogService.contactRemoved(userContext.getYukonUser(),
+                                                  accountInfoFragment.getAccountNumber(),
+                                                  contactName);
+        }
         setupContactBasicModelMap(null, accountInfoFragment, modelMap);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
         return "redirect:contactList";

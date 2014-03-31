@@ -16,6 +16,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.constants.YukonSelectionListOrder;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AddressDao;
@@ -35,7 +36,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -1303,28 +1303,25 @@ public class StarsLiteFactory {
         starsCompany.setCompanyAddress((CompanyAddress) StarsFactory.newStarsCustomerAddress(CompanyAddress.class));
         starsCompany.setTimeZone(energyCompanyService.getDefaultTimeZone(liteCompany.getEnergyCompanyId()).getID());
         
-        if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-            LiteContact liteContact = contactDao.getContact(liteCompany.getPrimaryContactID());
+        LiteContact liteContact = contactDao.getContact(liteCompany.getPrimaryContactID());
+        if (liteContact != null) {
+            LiteContactNotification liteNotifPhone = 
+                    contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.PHONE);
+            starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone));
             
-            if (liteContact != null) {
-                LiteContactNotification liteNotifPhone = 
-                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.PHONE);
-                starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone));
-                
-                LiteContactNotification liteNotifFax = 
-                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.FAX);
-                starsCompany.setMainFaxNumber(StarsUtils.getNotification(liteNotifFax));
-                
-                LiteContactNotification liteNotifEmail = 
-                        contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.EMAIL);
-                starsCompany.setEmail(StarsUtils.getNotification(liteNotifEmail));
+            LiteContactNotification liteNotifFax = 
+                    contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.FAX);
+            starsCompany.setMainFaxNumber(StarsUtils.getNotification(liteNotifFax));
+            
+            LiteContactNotification liteNotifEmail = 
+                    contactNotificatinDao.getFirstNotificationForContactByType(liteContact, ContactNotificationType.EMAIL);
+            starsCompany.setEmail(StarsUtils.getNotification(liteNotifEmail));
 
-                if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
-                    LiteAddress liteAddr = addressDao.getByAddressId(liteContact.getAddressID()); 
-                    CompanyAddress starsAddr = new CompanyAddress();
-                    setStarsCustomerAddress(starsAddr, liteAddr);
-                    starsCompany.setCompanyAddress(starsAddr);
-                }
+            if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
+                LiteAddress liteAddr = addressDao.getByAddressId(liteContact.getAddressID()); 
+                CompanyAddress starsAddr = new CompanyAddress();
+                setStarsCustomerAddress(starsAddr, liteAddr);
+                starsCompany.setCompanyAddress(starsAddr);
             }
         }
     }
@@ -1345,8 +1342,8 @@ public class StarsLiteFactory {
             starsCompany.setCompanyAddress( companyAddr );
         }
         
-        if (liteCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-            LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID() );
+        LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact( liteCompany.getPrimaryContactID());
+        if (liteContact != null) {
             PrimaryContact primContact = new PrimaryContact();
             setStarsCustomerContact( primContact, liteContact );
             starsCompany.setPrimaryContact( primContact );
@@ -1781,7 +1778,7 @@ public class StarsLiteFactory {
         for (int j = 0; j < liteProg.getGroupIDs().length; j++) {
             YukonPao yukonPao = YukonSpringHook.getBean(PaoDao.class).getYukonPao(liteProg.getGroupIDs()[j]);
             
-            if (yukonPao.getPaoIdentifier().getPaoType().getDeviceTypeId() == PAOGroups.MACRO_GROUP) {
+            if (yukonPao.getPaoIdentifier().getPaoType() == PaoType.MACRO_GROUP) {
                 java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
                 try {
                     GenericMacro[] groups = GenericMacro.getGenericMacros(new Integer(yukonPao.getPaoIdentifier().getPaoId()),

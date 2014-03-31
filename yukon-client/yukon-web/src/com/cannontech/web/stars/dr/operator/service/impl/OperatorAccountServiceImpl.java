@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
@@ -191,21 +190,17 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     @Override
     public ContactDto getContactDto(int contactId, boolean setDtoHomePhone, boolean setDtoWorkPhone, boolean setDtoEmail, YukonUserContext userContext) {
 
-    	LiteContact contact = null;
-    	if (contactId <= 0) {
-    		return null;
-    	}
-    	try {
-    		contact = contactDao.getContact(contactId);
-    	} catch (DataAccessException e) {
-    		return new ContactDto();
-    	}
-    	boolean isPrimary = contactDao.isPrimaryContact(contactId);
-    	
-    	ContactDto contactDto = new ContactDto();
+		LiteContact contact = contactDao.getContact(contactId);
+		if (contact == null) {
+		    return null;
+		}
+
+		ContactDto contactDto = new ContactDto();
     	contactDto.setContactId(contactId);
     	contactDto.setFirstName(contact.getContFirstName());
     	contactDto.setLastName(contact.getContLastName());
+        
+    	boolean isPrimary = contactDao.isPrimaryContact(contactId);
     	contactDto.setPrimary(isPrimary);
     	
     	List<LiteContactNotification> notificationsForContact = contactNotificationDao.getNotificationsForContact(contactId);
@@ -231,7 +226,6 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 			
 			contactDto.getOtherNotifications().add(contactNotificationDto);
     	}
-    	
     	return contactDto;
     }
     

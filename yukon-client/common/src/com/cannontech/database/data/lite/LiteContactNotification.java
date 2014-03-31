@@ -82,7 +82,8 @@ public class LiteContactNotification extends LiteBase
 	/**
 	 * This method was created by Cannon Technologies Inc.
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return getNotification();
 	}
 

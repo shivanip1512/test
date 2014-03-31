@@ -74,9 +74,12 @@ public final class OptOutNotificationUtil {
         text.append("Account #").append(liteAcctInfo.getCustomerAccount().getAccountNumber()).append(LINE_SEPARATOR);
         
         LiteContact cont = YukonSpringHook.getBean(ContactDao.class).getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-        String name = StarsUtils.formatName(cont.getContFirstName(), cont.getContLastName());
-        if (name.length() > 0)
-            text.append( name ).append(LINE_SEPARATOR);
+        if (cont != null) {
+            String name = StarsUtils.formatName(cont.getContFirstName(), cont.getContLastName());
+            if (name.length() > 0) {
+                text.append( name ).append(LINE_SEPARATOR);
+            }
+        }
 
         LiteAddress addr = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
         if (addr.getLocationAddress1().trim().length() > 0) {

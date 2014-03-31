@@ -43,6 +43,7 @@ public CustomerContactPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
@@ -155,9 +156,9 @@ private javax.swing.JComboBox getJComboBoxContacts() {
 			ivjJComboBoxContacts.setToolTipText("Contacts that are not already assigned to an existing customer");
 
 			//only make the unassigned contacts available
-			LiteContact[] contacts = YukonSpringHook.getBean(ContactDao.class).getUnassignedContacts();
-			for( int i = 0; i < contacts.length; i++ ) {
-				getJComboBoxContacts().addItem( contacts[i] );
+			List<LiteContact> contacts = YukonSpringHook.getBean(ContactDao.class).getUnassignedContacts();
+			for (LiteContact contact : contacts) {
+			    getJComboBoxContacts().addItem(contact);
 			}
 			
 			setEnableContactList();
@@ -327,6 +328,7 @@ private CustomerContactTableModel getJTableModel()
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	Customer customer = (Customer)o;
@@ -471,6 +473,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 
@@ -547,7 +550,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aCustomerContactPanel);
 		frame.setSize(aCustomerContactPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -565,6 +569,7 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if( o == null )
@@ -581,11 +586,13 @@ public void setValue(Object o)
 
 }
 
+@Override
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             

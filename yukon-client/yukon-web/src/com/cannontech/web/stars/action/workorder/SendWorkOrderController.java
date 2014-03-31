@@ -57,9 +57,9 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         
         LiteServiceCompany sc = energyCompany.getServiceCompany( liteOrder.getServiceCompanyID() );
         String email = null;
-        if (sc.getPrimaryContactID() > 0) {
-            LiteContact contact = contactDao.getContact( sc.getPrimaryContactID() );
-            LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.EMAIL);
+        LiteContact contact = contactDao.getContact( sc.getPrimaryContactID() );
+        if (contact != null) {
+            LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType( contact, ContactNotificationType.EMAIL);
             if (emailNotif != null) email = emailNotif.getNotification();
         }
         

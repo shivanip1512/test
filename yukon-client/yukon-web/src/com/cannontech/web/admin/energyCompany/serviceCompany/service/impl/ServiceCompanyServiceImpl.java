@@ -176,7 +176,7 @@ public class ServiceCompanyServiceImpl implements ServiceCompanyService {
         //and finally delete dependent primary contact
         if(serviceCompany.getPrimaryContact() != null) {
             //notifications will get deleted here as well
-            contactDao.deleteContact(serviceCompany.getPrimaryContact().getContactID());
+            contactDao.deleteContact(serviceCompany.getPrimaryContact());
         }
         sendServiceCompanyChangeMessage(serviceCompany.getCompanyId(), DbChangeType.DELETE);
     }

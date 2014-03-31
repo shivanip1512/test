@@ -80,11 +80,12 @@ public class StarsRequestPword extends RequestPword {
 						(LiteAccountInfo)allCustAccts.get(0);
 
 					LiteContact lc = YukonSpringHook.getBean(ContactDao.class).getContact( lCustInf.getCustomer().getPrimaryContactID() );
-
-					LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( lc.getLoginID() );
-					
-					foundData.add( " Username: " + user.getUsername() );					
-					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
+					if (lc != null) {
+    					LiteYukonUser user = YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser( lc.getLoginID() );
+    					
+    					foundData.add( " Username: " + user.getUsername() );					
+    					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
+					}
 					
 					//we must get the Yukon lite energy company for the stars lite energy company
 					LiteEnergyCompany lEnrgy =

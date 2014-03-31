@@ -13,7 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface ContactDao {
 
     /**
-     * Returns the LiteContact for contactID_.
+     * Returns the LiteContact for contactID_ or null (for default contactId=0).
+     * Returns null if contactId is 0. This may happen when a customer's primaryContact is "not set" (value of 0 in DB).
      * @return com.cannontech.database.data.lite.LiteContact
      * @param contactID_ int
      */
@@ -40,7 +41,7 @@ public interface ContactDao {
      * Returns all the LiteContacts that do not belong to a Customer.
      * 
      */
-    public LiteContact[] getUnassignedContacts();
+    public List<LiteContact> getUnassignedContacts();
 
     /**
      * Looks the first email notificatoin type in the list passed in. Returns a zero length string
@@ -138,7 +139,7 @@ public interface ContactDao {
     
     public void associateAdditionalContact(int contactId, int customerId);
 
-    public void deleteContact(int contactId);
+    public void deleteContact(LiteContact liteContact);
     
     /**
      * Method to get all contact ids for a customer

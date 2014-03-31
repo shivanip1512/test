@@ -66,6 +66,11 @@ public final class ContactDaoImpl implements ContactDao {
 
     @Override
     public LiteContact getContact(int contactId) {
+        
+        // Return null if 0. This is the "default contact" that we ship with, representing null assignment to customers
+        if (contactId == CtiUtilities.NONE_ZERO_ID) {
+            return null;
+        }
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
         sql.append("FROM Contact");
@@ -81,6 +86,7 @@ public final class ContactDaoImpl implements ContactDao {
 		sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
         sql.append("FROM Contact");
         sql.append("WHERE LoginId").eq(loginId);
+        sql.append("AND ContactID").gt(CtiUtilities.NONE_ZERO_ID);
         
 	    final List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
         return contactList;
@@ -97,6 +103,7 @@ public final class ContactDaoImpl implements ContactDao {
                 sqlBuilder.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
                 sqlBuilder.append("FROM Contact");
                 sqlBuilder.append("WHERE ContactID").in(subList);
+                sqlBuilder.append("AND ContactID").gt(CtiUtilities.NONE_ZERO_ID);
                 return sqlBuilder;
             }
         }, contactIds, rowMapper);
@@ -208,23 +215,19 @@ public final class ContactDaoImpl implements ContactDao {
 	}
 
 	@Override
-    public LiteContact[] getUnassignedContacts() {
+    public List<LiteContact> getUnassignedContacts() {
 
-		int[] contIDs = new int[0];
-		try {
-			contIDs = Contact.getOrphanedContacts();
-		} catch( SQLException se ) {
-			log.error("Unable to get the Unassigned Contacts from the database", se);
-		}
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ContactId, ContFirstName, ContLastName, LogInID, AddressID");
+        sql.append("FROM CONTACT cnt");
+        sql.append("WHERE NOT EXISTS (SELECT 1 FROM CustomerAdditionalContact ca WHERE ca.ContactId = cnt.ContactId)");
+        sql.append("AND NOT EXISTS (SELECT 1 FROM Customer cs WHERE cs.PrimaryContactId = cnt.ContactId)");
+        sql.append("AND ContactID").gt(CtiUtilities.NONE_ZERO_ID);
+        sql.append("ORDER BY cnt.ContFirstName, cnt.ContLastName");
 
-		List<LiteContact> contList = new ArrayList<LiteContact>(32);
-
-		for( int i = 0; i < contIDs.length; i++ ) {
-			contList.add( getContact(contIDs[i]) );
-		}
-
-		return contList.toArray( new LiteContact[contList.size()] );
-	}
+        final List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
+        return contactList;
+    }
 
 	@Override
     public String[] getAllEmailAddresses( int contactId ) {
@@ -360,6 +363,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append("FROM Contact c, CustomerAdditionalContact cac");
         sql.append("WHERE c.ContactId = cac.ContactId");
         sql.append("AND cac.CustomerId").eq(customerId);
+        sql.append("AND c.ContactID").gt(CtiUtilities.NONE_ZERO_ID);
         sql.append("ORDER BY cac.Ordering");
 
         List<LiteContact> contactList = yukonJdbcTemplate.query(sql, rowMapper);
@@ -490,10 +494,16 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     @Transactional
-    public void deleteContact(int contactId) {
+    public void deleteContact(LiteContact contact) {
     	
     	SqlStatementBuilder sql = null;
-    	LiteContact contact = getContact(contactId); 
+    	if (contact == null || contact.getContactID() == CtiUtilities.NONE_ZERO_ID) {
+    	    // safety check to make sure we didn't somehow get in here with the default LiteContact
+    	    log.warn("Contact was not deleted. Cannot delete default contactId=0.");
+    	    return;
+    	}
+    	
+    	int contactId = contact.getContactID();
     	int addressId = contact.getAddressID();
 
     	// delete notifications

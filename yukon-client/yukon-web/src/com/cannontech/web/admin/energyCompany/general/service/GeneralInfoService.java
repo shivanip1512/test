@@ -41,25 +41,25 @@ public class GeneralInfoService {
         info.setName(energyCompany.getName());
         
         LiteContact contact = contactDao.getContact(energyCompany.getPrimaryContactID());
-        int contactId = contact.getContactID();
-        int addressId = contact.getAddressID();
         
-        LiteContactNotification phone = contactNotificationDao.getFirstNotificationForContactByType(contactId, ContactNotificationType.PHONE);
+        LiteContactNotification phone = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.PHONE);
         if (phone != null) {
             info.setPhone(phone.getNotification());
         }
         
-        LiteContactNotification fax = contactNotificationDao.getFirstNotificationForContactByType(contactId, ContactNotificationType.FAX);
+        LiteContactNotification fax = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.FAX);
         if (fax != null) {
             info.setFax(fax.getNotification());
         }
         
-        LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(contactId, ContactNotificationType.EMAIL);
+        LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.EMAIL);
         if (email != null) { 
             info.setEmail(email.getNotification());
         }
         
-        info.setAddress(Address.getDisplayableAddress((addressDao.getByAddressId(addressId))));
+        if (contact != null) {
+            info.setAddress(Address.getDisplayableAddress((addressDao.getByAddressId(contact.getAddressID()))));
+        }
         
         info.setDefaultRouteId(energyCompany.getDefaultRouteId());
         

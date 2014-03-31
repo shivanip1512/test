@@ -225,7 +225,7 @@ public class ContactController extends AbstractConsumerController {
         	return "redirect:/stars/consumer/contacts";
         }
         
-    	contactDao.deleteContact(contact.getContactID());
+    	contactDao.deleteContact(contact);
         //clean-up user login, if exists
         if (contact.getLoginID() > 0) {
             yukonUserDao.deleteUser(contact.getLoginID());

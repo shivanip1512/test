@@ -8,7 +8,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -51,7 +50,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	/**
 	 * add method comment.
 	 */
-	public void add() throws java.sql.SQLException 
+	@Override
+    public void add() throws java.sql.SQLException 
 	{
 		if (getContactID() == null)
 			setContactID( getNextContactID() );
@@ -67,7 +67,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	/**
 	 * delete method comment.
 	 */
-	public void delete() throws java.sql.SQLException 
+	@Override
+    public void delete() throws java.sql.SQLException 
 	{
 		//just delete the bridge value to the mapping table
 		delete("CustomerAdditionalContact", "ContactID", getContactID());
@@ -211,56 +212,6 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	}
 	
 	/**
-	 * Returns an array of Contacts IDs that are not assigned to a customer
-	 * 
-	 */
-	public static final int[] getOrphanedContacts() throws java.sql.SQLException
-	{
-		NativeIntVector idVect = new NativeIntVector(32);
-		java.sql.Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		String sql = "select cnt.contactid from " + TABLE_NAME
-                + " cnt where not exists (select 1 from CustomerAdditionalContact ca where "
-                + "ca.contactid = cnt.contactid) and not exists (select 1 from "
-                + Customer.TABLE_NAME
-                + " cs where cs.primarycontactid = cnt.contactid) order by cnt.contfirstname, "
-                + "cnt.contlastname";
-
-		try
-		{		
-			pstmt = conn.prepareStatement(sql);
-			rset = pstmt.executeQuery();
-	
-			while( rset.next() )
-			{
-				idVect.add( rset.getInt(1) );
-			}
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			try
-			{
-				if( rset != null ) rset.close();
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
-		}
-	
-	
-		return idVect.toArray();
-	}
-
-	/**
 	 * Insert the method's description here.
 	 * Creation date: (3/26/2001 3:07:17 PM)
 	 * @return java.lang.Integer
@@ -290,7 +241,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (12/19/2001 1:45:25 PM)
 	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
 	 */
-	public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+	@Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 
 	    DBChangeMsg[] msgs = {
 	            new DBChangeMsg(
@@ -366,7 +318,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	/**
 	 * retrieve method comment.
 	 */
-	public void retrieve() throws java.sql.SQLException 
+	@Override
+    public void retrieve() throws java.sql.SQLException 
 	{
 		Object constraintValues[] = { getContactID() };	
 		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
@@ -421,14 +374,16 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 * Creation date: (4/2/2001 9:46:10 AM)
 	 * @return java.lang.String
 	 */
-	public String toString() 
+	@Override
+    public String toString() 
 	{
 		return getContFirstName() + " " + getContLastName();
 	}
 	/**
 	 * update method comment.
 	 */
-	public void update() throws java.sql.SQLException 
+	@Override
+    public void update() throws java.sql.SQLException 
 	{
 		Object setValues[] =
 		{ 

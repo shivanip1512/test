@@ -967,8 +967,8 @@ public class AccountServiceImpl implements AccountService {
         LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
         
         retrievedDto.setAccountNumber(customerAccount.getAccountNumber());
-        retrievedDto.setFirstName(primaryContact.getContFirstName());
-        retrievedDto.setLastName(primaryContact.getContLastName());
+        retrievedDto.setFirstName(primaryContact != null ? primaryContact.getContFirstName() : "");
+        retrievedDto.setLastName(primaryContact != null ? primaryContact.getContLastName() : "");
         
         /*
          * Customer
@@ -1022,9 +1022,8 @@ public class AccountServiceImpl implements AccountService {
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
         retrievedDto.setPropertyNotes(accountSite.getPropertyNotes());
         
-        int loginId = primaryContact.getLoginID();
-        if(loginId > UserUtils.USER_NONE_ID) {
-            LiteYukonUser user = yukonUserDao.getLiteYukonUser(loginId);
+        if(primaryContact != null && primaryContact.getLoginID() > UserUtils.USER_NONE_ID) {
+            LiteYukonUser user = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
             retrievedDto.setUserName(user.getUsername());
 
             if (user.getUserGroupId() != null) {

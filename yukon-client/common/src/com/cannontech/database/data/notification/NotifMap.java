@@ -15,12 +15,6 @@ public class NotifMap implements java.io.Serializable, Iterable<NotifType>
 	// [0]:send email, [1]:make phone call, [2]:send short email
 	private String attribs = DEF_ATTRIBS;
 	public static final String DEF_ATTRIBS = "YNYNNNNNNNNNNNNN";
-    //public static final int METHOD_EMAIL = 0;
-    //public static final int METHOD_VOICE = 1;
-    //public static final int METHOD_SMS = 2;
-    
-    //public static final int[] ALL_METHODS = {METHOD_EMAIL,METHOD_VOICE,METHOD_SMS};
-
 
 	public NotifMap()
 	{
@@ -31,9 +25,11 @@ public class NotifMap implements java.io.Serializable, Iterable<NotifType>
 		setAttribs( attribs );
 	}
     
+    @Override
     public Iterator<NotifType> iterator() {
         return new Iterator<NotifType>() {
             private int nextIndex = 0;
+            @Override
             public boolean hasNext() {
                 int tempNextIndex = nextIndex;
                 while (tempNextIndex < NotifType.values().length && !supportsMethod(NotifType.values()[tempNextIndex])) {
@@ -41,6 +37,7 @@ public class NotifMap implements java.io.Serializable, Iterable<NotifType>
                 }
                 return (tempNextIndex < NotifType.values().length);
             }
+            @Override
             public NotifType next() {
                 while (nextIndex < NotifType.values().length && !supportsMethod(NotifType.values()[nextIndex])) {
                     nextIndex++;
@@ -50,6 +47,7 @@ public class NotifMap implements java.io.Serializable, Iterable<NotifType>
                 }
                 throw new NoSuchElementException();
             }
+            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }

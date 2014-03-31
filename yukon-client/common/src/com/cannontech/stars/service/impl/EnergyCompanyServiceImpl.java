@@ -484,15 +484,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
         
         StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
-        if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
-            try {
-                LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(energyCompany.getPrimaryContactID());
-                dbChangeManager.processDbChange(liteContact.getContactID(),
-                                                DBChangeMsg.CHANGE_CONTACT_DB,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                                DbChangeType.DELETE);
-            }catch(EmptyResultDataAccessException ignore) {}
+        LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(energyCompany.getPrimaryContactID());
+        if (liteContact != null) {
+            dbChangeManager.processDbChange(liteContact.getContactID(),
+                                            DBChangeMsg.CHANGE_CONTACT_DB,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                            DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                            DbChangeType.DELETE);
         }
     }
 

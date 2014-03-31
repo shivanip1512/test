@@ -70,11 +70,15 @@ public class DeviceActivationController extends MultiActionController {
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
         LiteContact contact = contactDao.getContact(customer.getPrimaryContactID());
         
-        boolean emptyContactName = isEmptyValue(contact.getContFirstName()) && isEmptyValue(contact.getContLastName()); 
+        if (contact != null) {
+            if (isEmptyValue(contact.getContFirstName()) && isEmptyValue(contact.getContLastName())) {
+                // if empty values, might as well set contact to be null
+                contact = null;
+            }
+        }
         boolean emptyAddress = isEmptyValue(address.getLocationAddress1());
-
         ModelAndView mav = new ModelAndView();
-        mav.addObject("contact", (!emptyContactName) ? contact : null);
+        mav.addObject("contact", contact);
         mav.addObject("address", (!emptyAddress) ? address : null);
         mav.addObject("accountNumber", accountNumber);
         mav.addObject("serialNumber", serialNumber);

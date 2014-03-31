@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -42,6 +41,7 @@ public class CICustomerLoader implements Runnable
         this.allCICustomers = custArray;
     }
     
+    @Override
     public void run() {
         Date timerStart = null;
         Date timerStop = null;
@@ -63,6 +63,7 @@ public class CICustomerLoader implements Runnable
         // The following is reusable if slightly refactored.
         final RowMapper customerMapper = new RowMapper() {
             
+            @Override
             public Object mapRow(ResultSet rset, int rowNum) throws SQLException {
                 int cstID = rset.getInt("CustomerID");
                 int contactID = rset.getInt("PrimaryContactID");
@@ -119,17 +120,20 @@ public class CICustomerLoader implements Runnable
         final Map<LiteCustomer, Vector<LiteContact>> temporaryAdditionalContacts = new TreeMap<LiteCustomer, Vector<LiteContact>>();
         
         template.query(sqlString, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int custumerId = rs.getInt("CustomerID");
                 LiteCustomer liteCustomer = allCICustomersMap.get(custumerId);
-                // for the following to be efficient, the contacts should have been cached already
-                LiteContact contact = YukonSpringHook.getBean(ContactDao.class).getContact(rs.getInt("ContactID"));
                 Vector<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
                 if (contactList == null) {
                     contactList = new Vector<LiteContact>();
                     temporaryAdditionalContacts.put(liteCustomer, contactList);
                 }
-                contactList.add(contact);
+                // for the following to be efficient, the contacts should have been cached already
+                LiteContact contact = YukonSpringHook.getBean(ContactDao.class).getContact(rs.getInt("ContactID"));
+                if (contact != null) {
+                    contactList.add(contact);
+                }
             }
         });
         
@@ -155,6 +159,7 @@ public class CICustomerLoader implements Runnable
         final Map<LiteCustomer, Vector<Integer>> temporaryAccountIds = new TreeMap<LiteCustomer, Vector<Integer>>();
         
         template.query(sqlString, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rset) throws SQLException {
                 Integer accountId = rset.getInt("AccountID");
                 int energyCompanyId = rset.getInt("EnergyCompanyID");
@@ -184,6 +189,7 @@ public class CICustomerLoader implements Runnable
             "where CustomerID <= " + maxCustomerID;
         
         template.query(sqlString, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rset) throws SQLException {
                 int customerId = rset.getInt("CustomerID");
                 int addressID = rset.getInt("MainAddressID");

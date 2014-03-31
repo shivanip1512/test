@@ -96,35 +96,6 @@ public class LiteCustomer extends LiteBase {
         }
     }
 
-    private synchronized void retrieveAdditionalContacts() {
-        PreparedStatement pstmt = null;
-        java.sql.Connection conn = null;
-        ResultSet rset = null;
-        try {
-            conn = PoolManager.getYukonConnection();
-            
-            String sql = "SELECT ca.ContactID " + 
-                         " FROM CustomerAdditionalContact ca, " + Customer.TABLE_NAME + " c " +
-                         " WHERE c.CustomerID = ?" +
-                         " AND c.CustomerID=ca.CustomerID " +
-                         " ORDER BY ca.Ordering";
-            
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, getCustomerID());
-            rset = pstmt.executeQuery();
-            
-            additionalContacts.removeAllElements();
-            
-            while(rset.next()) //add the LiteContact to this Customer
-                additionalContacts.add( YukonSpringHook.getBean(ContactDao.class).getContact( rset.getInt(1)) );
-
-        } catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        } finally {
-            SqlUtils.close(rset, pstmt, conn);
-        }
-    }
-    
     private synchronized void retrieveAccountIDs() {
         PreparedStatement pstmt = null;
         java.sql.Connection conn = null;
@@ -236,7 +207,8 @@ public class LiteCustomer extends LiteBase {
 		if (additionalContacts == null)
         {
 			additionalContacts = new Vector<LiteContact>(10);
-            retrieveAdditionalContacts();
+			additionalContacts.removeAllElements();
+	        additionalContacts.addAll(YukonSpringHook.getBean(ContactDao.class).getAdditionalContactsForCustomer(getCustomerID()));
         }
 		return additionalContacts;
 	}
