@@ -715,9 +715,9 @@ public enum BuiltInAttribute implements Attribute {
                 REVERSED_AGGREGATE,
                 REVERSED_PHASE_A,
                 REVERSED_PHASE_C,
+                RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED,
                 SERVICE_CURRENT_TEST_FAILURE_WARNING,
                 USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED,
-                RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED,
                 VOLTAGE_ALERTS,
                 VOLTAGE_PHASE_ERROR);
         
