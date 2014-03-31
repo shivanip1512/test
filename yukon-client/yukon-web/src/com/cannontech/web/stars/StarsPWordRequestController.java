@@ -3,14 +3,15 @@ package com.cannontech.web.stars;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.stars.core.model.StarsRequestPword;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.util.ServletUtil;
@@ -18,7 +19,9 @@ import com.cannontech.util.ServletUtil;
 public class StarsPWordRequestController implements Controller {
     private static final String INVALID_URI = "/login/forgotPassword?failedMsg=";
     private static final String SUCCESS_URI = "/login/forgotPassword?success=true";
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private StarsSearchService starsSearchService;
     
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -40,7 +43,7 @@ public class StarsPWordRequestController implements Controller {
         reqPword.setEnergyCompany( energyComp );
 
         String returnURI = "";
-        boolean authorized = YukonSpringHook.getBean(GlobalSettingDao.class).getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+        boolean authorized = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         if(!authorized) {
             throw new NotAuthorizedException("Missing a required role or property to use this page.");
         }
@@ -55,10 +58,11 @@ public class StarsPWordRequestController implements Controller {
             reqPword.doRequest();
             
             //decide where we need to go next
-            if( reqPword.getState() == RequestPword.RET_SUCCESS )
+            if( reqPword.getState() == RequestPword.RET_SUCCESS ) {
                 returnURI = SUCCESS_URI;
-            else
+            } else {
                 returnURI = INVALID_URI + reqPword.getResultString();
+            }
         }
         
         
@@ -67,20 +71,17 @@ public class StarsPWordRequestController implements Controller {
     }
     
     private RequestPword createRequest( HttpServletRequest req_,
-            String userName, String email, String fName, String lName, String accNum )
-    {
+            String userName, String email, String fName, String lName, String accNum) {
         StarsRequestPword reqPword = new StarsRequestPword( 
                 userName,
                 email,
                 fName,
                 lName,
                 accNum,
-                starsCustAccountInformationDao);
+                starsCustAccountInformationDao,
+                starsSearchService);
 
         return reqPword;
     }
 
-    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
 }

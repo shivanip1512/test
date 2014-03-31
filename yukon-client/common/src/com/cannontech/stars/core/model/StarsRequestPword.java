@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -29,8 +30,11 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 public class StarsRequestPword extends RequestPword {
 	private String accNum = null;
 	private StarsCustAccountInformationDao starsCustAccountInformationDao;
+	private StarsSearchService starsSearchService;
 	
-	public StarsRequestPword( String userName, String email, String fName, String lName, String accNum, StarsCustAccountInformationDao starsCustAccountInformationDao ) {
+	public StarsRequestPword( String userName, String email, String fName, String lName, String accNum, 
+	                          StarsCustAccountInformationDao starsCustAccountInformationDao,
+	                          StarsSearchService starsSearchService) {
 		super(
 			userName,
 			email,
@@ -46,6 +50,7 @@ public class StarsRequestPword extends RequestPword {
 		allParams = tParams;
 		
 		this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+		this.starsSearchService = starsSearchService;
 	}
 	
 	@Override
@@ -64,7 +69,7 @@ public class StarsRequestPword extends RequestPword {
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
 
 					LiteAccountInfo lCustInfo = null;
-					List<Integer> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
+					List<Integer> accounts = starsSearchService.searchAccountByAccountNumber(lsec, accNum, false, true);
 					
 					lCustInfo = searchForMatchingAccount(accounts, lsec);
 					

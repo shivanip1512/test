@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -21,6 +22,7 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class CreateWorkOrderController extends StarsWorkorderActionController {
     @Autowired private EnergyCompanyService ecService;
+    @Autowired private StarsSearchService starsSearchService;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
@@ -44,7 +46,8 @@ public class CreateWorkOrderController extends StarsWorkorderActionController {
         }
 
         if (request.getParameter("AcctNo").trim().length() > 0) {
-            LiteAccountInfo liteAcctInfo = energyCompany.searchAccountByAccountNo( request.getParameter("AcctNo") );
+            LiteAccountInfo liteAcctInfo = 
+                    starsSearchService.searchAccountByAccountNo(energyCompany, request.getParameter("AcctNo"));
             if (liteAcctInfo == null) {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified account # doesn't exist");
                 String location = this.getReferer(request);

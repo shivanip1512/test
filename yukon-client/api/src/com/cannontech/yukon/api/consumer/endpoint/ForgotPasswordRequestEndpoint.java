@@ -16,6 +16,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.model.RequestPword;
 import com.cannontech.stars.core.model.StarsRequestPword;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.api.stars.endpoint.RunThermostatProgramEndpoint;
@@ -29,6 +30,7 @@ public class ForgotPasswordRequestEndpoint {
 
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private StarsSearchService starsSearchService;
 
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="forgotPasswordRequest")
     public Element invoke(Element forgotPasswordRequest) throws Exception {
@@ -55,7 +57,9 @@ public class ForgotPasswordRequestEndpoint {
             String energyComp = requestTemplate.evaluateAsString("//y:energyProvider");
 
             //try to recover the password
-            StarsRequestPword reqPword = new StarsRequestPword(userName, email, fName, lName, accNum, starsCustAccountInformationDao);
+            StarsRequestPword reqPword = new StarsRequestPword(userName, email, fName, lName, accNum, 
+                                                               starsCustAccountInformationDao,
+                                                               starsSearchService);
             reqPword.setNotes(notes);
             reqPword.setEnergyCompany(energyComp);
 

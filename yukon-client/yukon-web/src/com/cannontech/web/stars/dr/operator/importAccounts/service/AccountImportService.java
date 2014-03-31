@@ -42,6 +42,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -92,6 +93,7 @@ public class AccountImportService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EmailService emailService;
     @Autowired private EnergyCompanyService ecService;
+    @Autowired private StarsSearchService starsSearchService;
     
     private PrintWriter importLog;
     private Executor executor;
@@ -99,6 +101,7 @@ public class AccountImportService {
     
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
         executor.execute(new Runnable() {
+            @Override
             public void run() {
                 result.setStartTime(new Instant());
                 processAccountImport(result, context.getYukonUser());
@@ -336,7 +339,8 @@ public class AccountImportService {
                      * to only consider the account number itself.  The number of digits to consider
                      * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                      */
-                    LiteAccountInfo liteAcctInfo = lsec.searchAccountByAccountNo(custFields[ImportFields.IDX_ACCOUNT_NO]);
+                    LiteAccountInfo liteAcctInfo = 
+                            starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
                     
                     // Nothing is done to existing Accounts when CUST_ACTION is set to INSERT.
                     if ((liteAcctInfo != null) && result.isInsertSpecified()) {
@@ -383,8 +387,9 @@ public class AccountImportService {
 
                                 if (liteAcctInfo != null) {
                                     LiteYukonUser login = contactDao.getYukonUser(liteAcctInfo.getCustomer().getPrimaryContactID());
-                                    if (login != null && login.getUserID() != UserUtils.USER_NONE_ID && !removedUsernames.contains(login.getUsername()))
+                                    if (login != null && login.getUserID() != UserUtils.USER_NONE_ID && !removedUsernames.contains(login.getUsername())) {
                                         removedUsernames.add(login.getUsername());
+                                    }
                                 } else if (prevFields[ImportFields.IDX_USERNAME].trim().length() > 0) {
                                     addedUsernames.remove(prevFields[ImportFields.IDX_USERNAME]);
                                 }
@@ -496,9 +501,12 @@ public class AccountImportService {
                     
                     if (hwInfoContained) {
                         if (preScan) {
-                            if (hwFieldsList == null) hwFieldsList = new ArrayList<String[]>();
-                            if (hwColIdx[result.COL_APP_TYPE] != -1 && appFieldsList == null)
+                            if (hwFieldsList == null) {
+                                hwFieldsList = new ArrayList<String[]>();
+                            }
+                            if (hwColIdx[result.COL_APP_TYPE] != -1 && appFieldsList == null) {
                                 appFieldsList = new ArrayList<String[]>();
+                            }
                         }
                         
                         String[] hwFields = prepareFields(ImportFields.NUM_INV_FIELDS);
@@ -808,7 +816,7 @@ public class AccountImportService {
                          * to only consider the accountnumber itself.  The number of digits to consider
                          * as valid comparable, non-rotation digits of the account number is expressed in a role property. 
                          */
-                        liteAcctInfo = lsec.searchAccountByAccountNo(hwFields[ImportFields.IDX_ACCOUNT_ID]);
+                        liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_ID]);
                         if (liteAcctInfo == null) {
                             if (hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                 importLog.println("WARNING at " + result.getPosition() + ": account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist, record ignored");
@@ -863,7 +871,7 @@ public class AccountImportService {
                     } else {
                         String acctNo = hwFieldsMap.get(hwFields[ImportFields.IDX_SERIAL_NO]);
                         if (acctNo == null) {
-                            LiteLmHardwareBase liteHw = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], lsec);
+                            LiteLmHardwareBase liteHw = starsSearchDao.searchLmHardwareBySerialNumber(hwFields[ImportFields.IDX_SERIAL_NO], lsec);
                             if (liteHw != null && liteHw.getAccountID() > 0) {
                                 acctNo = scaiDao.getById(liteHw.getAccountID(), lsec.getEnergyCompanyId()).getCustomerAccount().getAccountNumber();
                             }
@@ -1058,8 +1066,8 @@ public class AccountImportService {
                                                           LiteStarsEnergyCompany lsec, 
                                                           AccountImportResult result,
                                                           LiteYukonUser user) throws Exception {
-        LiteAccountInfo liteAcctInfo = lsec.searchAccountByAccountNo(custFields[ImportFields.IDX_ACCOUNT_NO]);
-        
+        LiteAccountInfo liteAcctInfo = 
+                starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
         try {
             
             if (custFields[ImportFields.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1090,8 +1098,7 @@ public class AccountImportService {
                 // ADD ACCOUNT
                 UpdatableAccount updatableAccount = accountConverter.createNewUpdatableAccount(custFields, lsec);
                 accountService.addAccount(updatableAccount, user);
-                liteAcctInfo = lsec.searchAccountByAccountNo(custFields[ImportFields.IDX_ACCOUNT_NO]);
-                
+                liteAcctInfo = starsSearchService.searchAccountByAccountNo(lsec, custFields[ImportFields.IDX_ACCOUNT_NO]);
                 result.getAccountsAdded().add(custFields[ImportFields.IDX_ACCOUNT_NO]);
             } else if (!result.isInsertSpecified()) {
                 accountLog.accountUpdateAttempted(user, custFields[ImportFields.IDX_ACCOUNT_NO], EventSource.ACCOUNT_IMPORTER);
@@ -1117,92 +1124,133 @@ public class AccountImportService {
     
     private void setCustomerFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         
-        if (colIdx[result.COL_ACCOUNT_NO] >= 0 && colIdx[result.COL_ACCOUNT_NO] < columns.length)
+        if (colIdx[result.COL_ACCOUNT_NO] >= 0 && colIdx[result.COL_ACCOUNT_NO] < columns.length) {
             fields[ImportFields.IDX_ACCOUNT_NO] = columns[ colIdx[result.COL_ACCOUNT_NO] ];
-        if (colIdx[result.COL_CUST_ACTION] >= 0 && colIdx[result.COL_CUST_ACTION] < columns.length)
+        }
+        if (colIdx[result.COL_CUST_ACTION] >= 0 && colIdx[result.COL_CUST_ACTION] < columns.length) {
             fields[ImportFields.IDX_ACCOUNT_ACTION] = columns[ colIdx[result.COL_CUST_ACTION] ];
-        if (colIdx[result.COL_LAST_NAME] >= 0 && colIdx[result.COL_LAST_NAME] < columns.length)
+        }
+        if (colIdx[result.COL_LAST_NAME] >= 0 && colIdx[result.COL_LAST_NAME] < columns.length) {
             fields[ImportFields.IDX_LAST_NAME] = columns[ colIdx[result.COL_LAST_NAME] ];
-        if (colIdx[result.COL_FIRST_NAME] >= 0 && colIdx[result.COL_FIRST_NAME] < columns.length)
+        }
+        if (colIdx[result.COL_FIRST_NAME] >= 0 && colIdx[result.COL_FIRST_NAME] < columns.length) {
             fields[ImportFields.IDX_FIRST_NAME] = columns[ colIdx[result.COL_FIRST_NAME] ];
-        if (colIdx[result.COL_LAST_NAME] >= 0 && colIdx[result.COL_LAST_NAME] < columns.length)
+        }
+        if (colIdx[result.COL_LAST_NAME] >= 0 && colIdx[result.COL_LAST_NAME] < columns.length) {
             fields[ImportFields.IDX_LAST_NAME] = columns[ colIdx[result.COL_LAST_NAME] ];
-        if (colIdx[result.COL_HOME_PHONE] >= 0 && colIdx[result.COL_HOME_PHONE] < columns.length)
+        }
+        if (colIdx[result.COL_HOME_PHONE] >= 0 && colIdx[result.COL_HOME_PHONE] < columns.length) {
             fields[ImportFields.IDX_HOME_PHONE] = columns[ colIdx[result.COL_HOME_PHONE] ];
-        if (colIdx[result.COL_WORK_PHONE] >= 0 && colIdx[result.COL_WORK_PHONE] < columns.length)
+        }
+        if (colIdx[result.COL_WORK_PHONE] >= 0 && colIdx[result.COL_WORK_PHONE] < columns.length) {
             fields[ImportFields.IDX_WORK_PHONE] = columns[ colIdx[result.COL_WORK_PHONE] ];
-        if (colIdx[result.COL_EMAIL] >= 0 && colIdx[result.COL_EMAIL] < columns.length)
+        }
+        if (colIdx[result.COL_EMAIL] >= 0 && colIdx[result.COL_EMAIL] < columns.length) {
             fields[ImportFields.IDX_EMAIL] = columns[ colIdx[result.COL_EMAIL] ];
-        if (colIdx[result.COL_STREET_ADDR1] >= 0 && colIdx[result.COL_STREET_ADDR1] < columns.length)
+        }
+        if (colIdx[result.COL_STREET_ADDR1] >= 0 && colIdx[result.COL_STREET_ADDR1] < columns.length) {
             fields[ImportFields.IDX_STREET_ADDR1] = columns[ colIdx[result.COL_STREET_ADDR1] ];
-        if (colIdx[result.COL_STREET_ADDR2] >= 0 && colIdx[result.COL_STREET_ADDR2] < columns.length)
+        }
+        if (colIdx[result.COL_STREET_ADDR2] >= 0 && colIdx[result.COL_STREET_ADDR2] < columns.length) {
             fields[ImportFields.IDX_STREET_ADDR2] = columns[ colIdx[result.COL_STREET_ADDR2] ];
-        if (colIdx[result.COL_CITY] >= 0 && colIdx[result.COL_CITY] < columns.length)
+        }
+        if (colIdx[result.COL_CITY] >= 0 && colIdx[result.COL_CITY] < columns.length) {
             fields[ImportFields.IDX_CITY] = columns[ colIdx[result.COL_CITY] ];
-        if (colIdx[result.COL_STATE] >= 0 && colIdx[result.COL_STATE] < columns.length)
+        }
+        if (colIdx[result.COL_STATE] >= 0 && colIdx[result.COL_STATE] < columns.length) {
             fields[ImportFields.IDX_STATE] = columns[ colIdx[result.COL_STATE] ];
-        if (colIdx[result.COL_COUNTY] >= 0 && colIdx[result.COL_COUNTY] < columns.length)
+        }
+        if (colIdx[result.COL_COUNTY] >= 0 && colIdx[result.COL_COUNTY] < columns.length) {
             fields[ImportFields.IDX_COUNTY] = columns[ colIdx[result.COL_COUNTY] ];
-        if (colIdx[result.COL_ZIP_CODE] >= 0 && colIdx[result.COL_ZIP_CODE] < columns.length)
+        }
+        if (colIdx[result.COL_ZIP_CODE] >= 0 && colIdx[result.COL_ZIP_CODE] < columns.length) {
             fields[ImportFields.IDX_ZIP_CODE] = columns[ colIdx[result.COL_ZIP_CODE] ];
-        if (colIdx[result.COL_MAP_NO] >= 0 && colIdx[result.COL_MAP_NO] < columns.length)
+        }
+        if (colIdx[result.COL_MAP_NO] >= 0 && colIdx[result.COL_MAP_NO] < columns.length) {
             fields[ImportFields.IDX_MAP_NO] = columns[ colIdx[result.COL_MAP_NO] ];
-        if (colIdx[result.COL_SUBSTATION] >= 0 && colIdx[result.COL_SUBSTATION] < columns.length && columns[colIdx[result.COL_SUBSTATION]].trim().length() > 0)
+        }
+        if (colIdx[result.COL_SUBSTATION] >= 0 && colIdx[result.COL_SUBSTATION] < columns.length && columns[colIdx[result.COL_SUBSTATION]].trim().length() > 0) {
             fields[ImportFields.IDX_SUBSTATION] = columns[ colIdx[result.COL_SUBSTATION] ];
-        if (colIdx[result.COL_FEEDER] >= 0 && colIdx[result.COL_FEEDER] < columns.length)
+        }
+        if (colIdx[result.COL_FEEDER] >= 0 && colIdx[result.COL_FEEDER] < columns.length) {
             fields[ImportFields.IDX_FEEDER] = columns[ colIdx[result.COL_FEEDER] ];
-        if (colIdx[result.COL_POLE] >= 0 && colIdx[result.COL_POLE] < columns.length)
+        }
+        if (colIdx[result.COL_POLE] >= 0 && colIdx[result.COL_POLE] < columns.length) {
             fields[ImportFields.IDX_POLE] = columns[ colIdx[result.COL_POLE] ];
-        if (colIdx[result.COL_TRFM_SIZE] >= 0 && colIdx[result.COL_TRFM_SIZE] < columns.length)
+        }
+        if (colIdx[result.COL_TRFM_SIZE] >= 0 && colIdx[result.COL_TRFM_SIZE] < columns.length) {
             fields[ImportFields.IDX_TRFM_SIZE] = columns[ colIdx[result.COL_TRFM_SIZE] ];
-        if (colIdx[result.COL_SERV_VOLT] >= 0 && colIdx[result.COL_SERV_VOLT] < columns.length)
+        }
+        if (colIdx[result.COL_SERV_VOLT] >= 0 && colIdx[result.COL_SERV_VOLT] < columns.length) {
             fields[ImportFields.IDX_SERV_VOLT] = columns[ colIdx[result.COL_SERV_VOLT] ];
-        if (colIdx[result.COL_USERNAME] >= 0 && colIdx[result.COL_USERNAME] < columns.length)
+        }
+        if (colIdx[result.COL_USERNAME] >= 0 && colIdx[result.COL_USERNAME] < columns.length) {
             fields[ImportFields.IDX_USERNAME] = columns[ colIdx[result.COL_USERNAME] ];
-        if (colIdx[result.COL_PASSWORD] >= 0 && colIdx[result.COL_PASSWORD] < columns.length)
+        }
+        if (colIdx[result.COL_PASSWORD] >= 0 && colIdx[result.COL_PASSWORD] < columns.length) {
             fields[ImportFields.IDX_PASSWORD] = columns[ colIdx[result.COL_PASSWORD] ];
-        if (colIdx[result.COL_LOGIN_GROUP] >= 0 && colIdx[result.COL_LOGIN_GROUP] < columns.length)
+        }
+        if (colIdx[result.COL_LOGIN_GROUP] >= 0 && colIdx[result.COL_LOGIN_GROUP] < columns.length) {
             fields[ImportFields.IDX_LOGIN_GROUP] = columns[ colIdx[result.COL_LOGIN_GROUP] ];
-        if (colIdx[result.COL_COMPANY_NAME] >= 0 && colIdx[result.COL_COMPANY_NAME] < columns.length)
+        }
+        if (colIdx[result.COL_COMPANY_NAME] >= 0 && colIdx[result.COL_COMPANY_NAME] < columns.length) {
             fields[ImportFields.IDX_COMPANY_NAME] = columns[ colIdx[result.COL_COMPANY_NAME] ];
-        if (colIdx[result.COL_IVR_PIN] >= 0 && colIdx[result.COL_IVR_PIN] < columns.length)
+        }
+        if (colIdx[result.COL_IVR_PIN] >= 0 && colIdx[result.COL_IVR_PIN] < columns.length) {
             fields[ImportFields.IDX_IVR_PIN] = columns[ colIdx[result.COL_IVR_PIN] ];
-        if (colIdx[result.COL_IVR_USERNAME] >= 0 && colIdx[result.COL_IVR_USERNAME] < columns.length)
+        }
+        if (colIdx[result.COL_IVR_USERNAME] >= 0 && colIdx[result.COL_IVR_USERNAME] < columns.length) {
             fields[ImportFields.IDX_IVR_USERNAME] = columns[ colIdx[result.COL_IVR_USERNAME] ];
+        }
     }
     
     private void setHardwareFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         if (colIdx[result.COL_HW_ACCOUNT_NO] >= 0 && colIdx[result.COL_HW_ACCOUNT_NO] < columns.length)
+         {
             fields[ImportFields.IDX_ACCOUNT_ID] = columns[ colIdx[result.COL_HW_ACCOUNT_NO] ];    // Use account ID field to store account #
-        if (colIdx[result.COL_HW_ACTION] >= 0 && colIdx[result.COL_HW_ACTION] < columns.length)
+        }
+        if (colIdx[result.COL_HW_ACTION] >= 0 && colIdx[result.COL_HW_ACTION] < columns.length) {
             fields[ImportFields.IDX_HARDWARE_ACTION] = columns[ colIdx[result.COL_HW_ACTION] ];
-        if (colIdx[result.COL_SERIAL_NO] >= 0 && colIdx[result.COL_SERIAL_NO] < columns.length)
+        }
+        if (colIdx[result.COL_SERIAL_NO] >= 0 && colIdx[result.COL_SERIAL_NO] < columns.length) {
             fields[ImportFields.IDX_SERIAL_NO] = columns[ colIdx[result.COL_SERIAL_NO] ];
-        if (colIdx[result.COL_DEVICE_TYPE] >= 0 && colIdx[result.COL_DEVICE_TYPE] < columns.length)
+        }
+        if (colIdx[result.COL_DEVICE_TYPE] >= 0 && colIdx[result.COL_DEVICE_TYPE] < columns.length) {
             fields[ImportFields.IDX_DEVICE_TYPE] = columns[ colIdx[result.COL_DEVICE_TYPE] ];
-        if (colIdx[result.COL_INSTALL_DATE] >= 0 && colIdx[result.COL_INSTALL_DATE] < columns.length)
+        }
+        if (colIdx[result.COL_INSTALL_DATE] >= 0 && colIdx[result.COL_INSTALL_DATE] < columns.length) {
             fields[ImportFields.IDX_INSTALL_DATE] = columns[ colIdx[result.COL_INSTALL_DATE] ];
-        if (colIdx[result.COL_REMOVE_DATE] >= 0 && colIdx[result.COL_REMOVE_DATE] < columns.length)
+        }
+        if (colIdx[result.COL_REMOVE_DATE] >= 0 && colIdx[result.COL_REMOVE_DATE] < columns.length) {
             fields[ImportFields.IDX_REMOVE_DATE] = columns[ colIdx[result.COL_REMOVE_DATE] ];
-        if (colIdx[result.COL_SERVICE_COMPANY] >= 0 && colIdx[result.COL_SERVICE_COMPANY] < columns.length && !columns[colIdx[result.COL_SERVICE_COMPANY]].trim().equals(""))
+        }
+        if (colIdx[result.COL_SERVICE_COMPANY] >= 0 && colIdx[result.COL_SERVICE_COMPANY] < columns.length && !columns[colIdx[result.COL_SERVICE_COMPANY]].trim().equals("")) {
             fields[ImportFields.IDX_SERVICE_COMPANY] = columns[ colIdx[result.COL_SERVICE_COMPANY] ];
-        if (colIdx[result.COL_PROGRAM_NAME] >= 0 && colIdx[result.COL_PROGRAM_NAME] < columns.length)
+        }
+        if (colIdx[result.COL_PROGRAM_NAME] >= 0 && colIdx[result.COL_PROGRAM_NAME] < columns.length) {
             fields[ImportFields.IDX_PROGRAM_NAME] = columns[ colIdx[result.COL_PROGRAM_NAME] ];
-        if (colIdx[result.COL_ADDR_GROUP] >= 0 && colIdx[result.COL_ADDR_GROUP] < columns.length)
+        }
+        if (colIdx[result.COL_ADDR_GROUP] >= 0 && colIdx[result.COL_ADDR_GROUP] < columns.length) {
             fields[ImportFields.IDX_ADDR_GROUP] = columns[ colIdx[result.COL_ADDR_GROUP] ];
-        if (colIdx[result.COL_OPTION_PARAMS] >= 0 && colIdx[result.COL_OPTION_PARAMS] < columns.length)
+        }
+        if (colIdx[result.COL_OPTION_PARAMS] >= 0 && colIdx[result.COL_OPTION_PARAMS] < columns.length) {
             fields[ImportFields.IDX_OPTION_PARAMS] = columns[ colIdx[result.COL_OPTION_PARAMS] ];
-        if (colIdx[result.COL_DEVICE_LABEL] >= 0 && colIdx[result.COL_DEVICE_LABEL] < columns.length)
+        }
+        if (colIdx[result.COL_DEVICE_LABEL] >= 0 && colIdx[result.COL_DEVICE_LABEL] < columns.length) {
             fields[ImportFields.IDX_DEVICE_LABEL] = columns[ colIdx[result.COL_DEVICE_LABEL] ];
+        }
     }
     
     private void setApplianceFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
-        if (colIdx[result.COL_APP_TYPE] >= 0 && colIdx[result.COL_APP_TYPE] < columns.length)
+        if (colIdx[result.COL_APP_TYPE] >= 0 && colIdx[result.COL_APP_TYPE] < columns.length) {
             fields[ImportFields.IDX_APP_TYPE] = columns[ colIdx[result.COL_APP_TYPE] ];
-        if (colIdx[result.COL_APP_KW] >= 0 && colIdx[result.COL_APP_KW] < columns.length)
+        }
+        if (colIdx[result.COL_APP_KW] >= 0 && colIdx[result.COL_APP_KW] < columns.length) {
             fields[ImportFields.IDX_APP_KW] = columns[ colIdx[result.COL_APP_KW] ];
-        if (colIdx[result.COL_APP_RELAY_NUMBER] >= 0 && colIdx[result.COL_APP_RELAY_NUMBER] < columns.length)
+        }
+        if (colIdx[result.COL_APP_RELAY_NUMBER] >= 0 && colIdx[result.COL_APP_RELAY_NUMBER] < columns.length) {
             fields[ImportFields.IDX_RELAY_NUM] = columns[ colIdx[result.COL_APP_RELAY_NUMBER] ];
+        }
     }
     
     private File getBaseDir(LiteStarsEnergyCompany lsec, LiteYukonUser user) {
@@ -1276,7 +1324,9 @@ public class AccountImportService {
            if (!StringUtils.isBlank(appFields[ImportFields.IDX_APP_KW])) {
                try {
                    Double appKw = Double.parseDouble(appFields[ImportFields.IDX_APP_KW]);
-                   if (appKw < 0) throw new IllegalArgumentException("Appliance KW should be a valid numeric value");
+                   if (appKw < 0) {
+                    throw new IllegalArgumentException("Appliance KW should be a valid numeric value");
+                }
                    enrollmentHelper.setApplianceKW(appKw.floatValue());                
                } catch(NumberFormatException e) {
                    throw new IllegalArgumentException("Appliance KW should be a valid numeric value");

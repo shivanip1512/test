@@ -41,6 +41,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.InventoryBase;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -271,7 +272,8 @@ public class InventoryManagerUtil {
 		throws WebClientException
 	{
 		
-		StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+        StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
+        StarsSearchService starsSearchService = YukonSpringHook.getBean(StarsSearchService.class);
 		List<YukonEnergyCompany> ecList = new ArrayList<YukonEnergyCompany>();
 		ecList.add(energyCompany);
 		if(searchMembers) {
@@ -294,25 +296,30 @@ public class InventoryManagerUtil {
 			return inventoryList;
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			List<Integer> accounts = energyCompany.searchAccountByAccountNumber(searchValue, searchMembers, true);
+			List<Integer> accounts = 
+			        starsSearchService.searchAccountByAccountNumber(energyCompany, searchValue, searchMembers, true);
 			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
 			String phoneNo = ServletUtils.formatPhoneNumberForSearch(searchValue);
-			List<Integer> accounts = energyCompany.searchAccountByPhoneNo(phoneNo, searchMembers);
+			List<Integer> accounts = 
+			        starsSearchService.searchAccountByPhoneNo(energyCompany, phoneNo, searchMembers);
 			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-            List<Integer> accounts = energyCompany.searchAccountByLastName(searchValue, searchMembers, true);
+            List<Integer> accounts = 
+                    starsSearchService.searchAccountByLastName(energyCompany, searchValue, searchMembers, true);
 			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-            List<Integer> accounts = energyCompany.searchAccountByOrderNo(searchValue, searchMembers);
+            List<Integer> accounts = 
+                    starsSearchService.searchAccountByOrderNo(energyCompany, searchValue, searchMembers);
 			return getInventoryByAccounts(accounts);
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
-            List<Integer> accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
+            List<Integer> accounts = 
+                    starsSearchService.searchAccountByAddress(energyCompany, searchValue, searchMembers, true);
 			return getInventoryByAccounts(accounts);
 		}
 		else {

@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.account.service;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -40,7 +39,6 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.YukonEnergyCompanyMockFactory;
@@ -164,12 +162,7 @@ public class AccountServiceTest extends EasyMockSupport {
         starsDatabaseCacheMock = new StarsDatabaseCache() {
             @Override
             public LiteStarsEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
-                LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() {
-                    @Override
-                    public LiteAccountInfo searchAccountByAccountNo(String accountNumber) {
-                        return null;
-                    }
-                };
+                LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() { };
                 return ec;
             }
         };

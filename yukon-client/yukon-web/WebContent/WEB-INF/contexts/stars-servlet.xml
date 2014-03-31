@@ -52,9 +52,7 @@
         <property name="switchContextService" ref="switchContextService"/>
     </bean>
     
-	<bean id="starsPWordRequest" class="com.cannontech.web.stars.StarsPWordRequestController">
-		<property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
-	</bean>
+	<bean id="starsPWordRequest" class="com.cannontech.web.stars.StarsPWordRequestController"/>
 
 	<bean id="importManager" class="com.cannontech.web.stars.StarsActionController">
 		<property name="prefix"><value>importmanager</value></property>

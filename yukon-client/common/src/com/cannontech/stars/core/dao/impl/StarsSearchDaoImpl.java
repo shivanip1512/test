@@ -81,7 +81,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 
     @Override
     public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber,
-            Collection<YukonEnergyCompany> yecList) {
+            Collection<? extends YukonEnergyCompany> yecList) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         

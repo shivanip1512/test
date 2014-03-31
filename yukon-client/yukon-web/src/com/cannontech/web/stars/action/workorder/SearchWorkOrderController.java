@@ -16,6 +16,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.core.service.StarsSearchService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
@@ -28,6 +29,7 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 public class SearchWorkOrderController extends StarsWorkorderActionController {
     @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsSearchService starsSearchService;
 
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
@@ -66,16 +68,18 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
                                 (energyCompany.hasChildEnergyCompanies());
 
         if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ORDER_NO) {
-            liteWorkOrderList = energyCompany.searchWorkOrderByOrderNo(searchValue, searchMembers);
+            liteWorkOrderList = starsSearchService.searchWorkOrderByOrderNo(energyCompany, searchValue, searchMembers);
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ACCT_NO) {
-            List<Integer> accountIds = energyCompany.searchAccountByAccountNumber(searchValue, searchMembers, true);
+            List<Integer> accountIds = 
+                    starsSearchService.searchAccountByAccountNumber(energyCompany, searchValue, searchMembers, true);
             liteWorkOrderList.addAll(getOrderIDsByAccounts(accountIds));
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_PHONE_NO) {
             try {
                 String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-                List<Integer> accountIds = energyCompany.searchAccountByPhoneNo(phoneNo, searchMembers);
+                List<Integer> accountIds = 
+                        starsSearchService.searchAccountByPhoneNo(energyCompany, phoneNo, searchMembers);
                 liteWorkOrderList.addAll(getOrderIDsByAccounts(accountIds));
             }
             catch (WebClientException e) {
@@ -86,15 +90,18 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
             }
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_LAST_NAME) {
-            List<Integer> accountIds = energyCompany.searchAccountByLastName(searchValue, searchMembers, true);
+            List<Integer> accountIds =
+                    starsSearchService.searchAccountByLastName(energyCompany, searchValue, searchMembers, true);
             liteWorkOrderList.addAll(getOrderIDsByAccounts(accountIds));
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_SERIAL_NO) {
-            List<Integer> accountIds = energyCompany.searchAccountBySerialNo(searchValue, searchMembers);
+            List<Integer> accountIds = 
+                    starsSearchService.searchAccountBySerialNo(energyCompany, searchValue, searchMembers);
             liteWorkOrderList.addAll(getOrderIDsByAccounts(accountIds) );
         }
         else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_SO_SEARCH_BY_ADDRESS) {
-            List<Integer> accountIds = energyCompany.searchAccountByAddress(searchValue, searchMembers, true);
+            List<Integer> accountIds = 
+                    starsSearchService.searchAccountByAddress(energyCompany, searchValue, searchMembers, true);
             liteWorkOrderList.addAll(getOrderIDsByAccounts(accountIds));
         }
 

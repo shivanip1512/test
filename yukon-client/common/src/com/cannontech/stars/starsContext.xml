@@ -121,6 +121,7 @@
     <bean id="customerAccountDao" class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl"/>
 
     <bean id="starsSearchDao" class="com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl"/>
+    <bean class="com.cannontech.stars.core.service.impl.StarsSearchServiceImpl"/>
 
     <bean id="starsCustAccountInformationDao" class="com.cannontech.stars.core.dao.impl.StarsCustAccountInformationDaoImpl"/>
 

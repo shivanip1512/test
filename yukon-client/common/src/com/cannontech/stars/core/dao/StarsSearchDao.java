@@ -39,7 +39,7 @@ public interface StarsSearchDao {
 	 * @param energyCompanyList - Energy companies to look for device in
 	 * @return List of hardware found
 	 */
-	public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber, Collection<YukonEnergyCompany> yecList);
+	public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber, Collection<? extends YukonEnergyCompany> yecList);
 	
 	/**
 	 * Method to search for a device by category and name
