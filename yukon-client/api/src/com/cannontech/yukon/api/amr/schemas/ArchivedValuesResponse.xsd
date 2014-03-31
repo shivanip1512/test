@@ -6,12 +6,6 @@
     
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
-    
-    <xsd:complexType name="PaoPointList">
-        <xsd:sequence maxOccurs="unbounded">
-            <xsd:element name="pao" maxOccurs="unbounded" type="yukon:PaoPoint"/>
-        </xsd:sequence>
-    </xsd:complexType>
 
     <xsd:complexType name="FlattenedValueList">
         <xsd:sequence maxOccurs="unbounded">
@@ -20,7 +14,7 @@
     </xsd:complexType>
 
     <xsd:complexType name="PaoPoint">
-        <xsd:sequence maxOccurs="unbounded" minOccurs="1">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
             <xsd:element name="point">
                 <xsd:complexType>
                     <xsd:choice maxOccurs="unbounded">
@@ -106,12 +100,12 @@
                 <xsd:attribute name="value" type="xsd:long"/>
               </xsd:complexType>
             </xsd:element>
-            <xsd:choice maxOccurs="1" minOccurs="1">
-              <xsd:element name="paos" type="yukon:PaoPointList"/>
-              <xsd:element name="values" type="yukon:FlattenedValueList"/>
-              <xsd:element name="failure" type="yukon:Failure" />
-            </xsd:choice>
-          </xsd:sequence>
+            <xsd:sequence minOccurs="0" maxOccurs="unbounded"> 
+              <xsd:element name="pao" type="yukon:PaoPoint"/> 
+            </xsd:sequence> 
+            <xsd:element name="values" type="yukon:FlattenedValueList" minOccurs="0"/>
+            <xsd:element name="failure" type="yukon:Failure" minOccurs="0" />
+		  </xsd:sequence>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
