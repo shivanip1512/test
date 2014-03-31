@@ -31,8 +31,8 @@ import com.google.common.collect.Maps;
 
 public class BannerFormat extends FileFormatBase {
 
-    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
-    private YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
+    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean(RawPointHistoryDao.class);
+    private YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
     private DeviceGroupService deviceGroupService = YukonSpringHook.getBean(DeviceGroupService.class);
     private MeterDao meterDao = YukonSpringHook.getBean(MeterDao.class);
 
@@ -42,7 +42,7 @@ public class BannerFormat extends FileFormatBase {
     public boolean retrieveBillingData() {
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(getBillingFileDefaults().getDeviceGroups());
         Set<SimpleDevice> allDevices = deviceGroupService.getDevices(deviceGroups);
-        final Map<String, BannerData> recordsMap = getBannerRecords();
+        final Map<String, BannerData> recordsByMeterNumber = getBannerRecords();
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedUsageAttributeDatas =
                 rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.USAGE, 
@@ -58,7 +58,7 @@ public class BannerFormat extends FileFormatBase {
         
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(allDevices);
         for (YukonMeter meter : meters) {
-            BannerData bannerData = recordsMap.get(meter.getMeterNumber());
+            BannerData bannerData = recordsByMeterNumber.get(meter.getMeterNumber());
             if (bannerData != null) {
                 
                 List<PointValueQualityHolder> pointValues = limitedUsageAttributeDatas.get(meter.getPaoIdentifier());
@@ -68,7 +68,7 @@ public class BannerFormat extends FileFormatBase {
                 addPointValueToRecords(pointValues, bannerData, BuiltInAttribute.PEAK_DEMAND);    //attribute needs to align with the type of data in pointValues
 
                 //might as well try to keep the size somewhat in check
-                recordsMap.remove(meter.getMeterNumber());
+                recordsByMeterNumber.remove(meter.getMeterNumber());
             } else {
                 log.warn("No BannerData found for meternumber: " + meter.getMeterNumber() + ". Check BannerData_View for existance.");
                 //error...meter doesn't exist in banner view
@@ -89,7 +89,7 @@ public class BannerFormat extends FileFormatBase {
         sql.append("SELECT DISTINCT MeterNumber, PremiseNumber, ServiceNumber, RouteNumber");   //ScatNumber?
         sql.append("FROM BannerData_View");
 
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 String meterNumber = rs.getString("MeterNumber");

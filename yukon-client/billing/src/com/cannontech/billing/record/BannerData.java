@@ -1,13 +1,12 @@
 package com.cannontech.billing.record;
 
-public class BannerData {
-    private String premiseNumber;
-    private String serviceNumber;
-    private String meterNumber;
-    private String routeNumber;
+public final class BannerData {
+    private final String premiseNumber;
+    private final String serviceNumber;
+    private final String meterNumber;
+    private final String routeNumber;
     public BannerData(String premiseNumber, String serviceNumber,
             String meterNumber, String routeNumber) {
-        super();
         this.premiseNumber = premiseNumber;
         this.serviceNumber = serviceNumber;
         this.meterNumber = meterNumber;
