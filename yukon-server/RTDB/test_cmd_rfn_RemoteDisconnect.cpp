@@ -170,19 +170,19 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration )
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfiguration_constructor_exceptions )
 {
     const std::vector< RfnCommand::CommandException > expected = list_of
-        ( RfnCommand::CommandException( BADPARAM, "Invalid Demand Threshold: (-1.0) underflow (minimum 0.0)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Demand Threshold: (0.0) underflow (minimum 0.5)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Demand Threshold: (13.0) overflow (maximum 12.0)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Delay: (31) overflow (maximum 30)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Max Disconnects: (21) overflow (maximum 20)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
 
-    // Demand threshold underflow 
+    // Demand threshold underflow
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                      RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                                     -1.0,
+                                                                     0.0,
                                                                      0,
                                                                      0);
     }
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
         actual.push_back( ex );
     }
 
-    // Demand threshold overflow 
+    // Demand threshold overflow
     try
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                      RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                                     0.0,
+                                                                     0.5,
                                                                      31,
                                                                      0);
     }
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
     {
         RfnRemoteDisconnectSetThresholdConfigurationCommand command( RfnRemoteDisconnectCommand::Reconnect_Arm,
                                                                      RfnRemoteDisconnectCommand::DemandInterval_Five,
-                                                                     0.0,
+                                                                     0.5,
                                                                      0,
                                                                      21);
     }
@@ -240,11 +240,15 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_DemandThreshold_SetConfigura
 BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_Cycling_SetConfiguration_constructor_exceptions )
 {
     const std::vector< std::pair< unsigned, unsigned > > inputs = pair_list_of
+        (   60,    4 )   // Connect minutes < 5
         (   60, 1441 )   // Connect minutes > 1440
+        (    4,   60 )   // Disconnect minutes < 5
         ( 1441,   60 );  // Disconnect minutes > 1440
 
     const std::vector< RfnCommand::CommandException >   expected = list_of
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Minutes: (4) underflow (minimum 5)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Connect Minutes: (1441) overflow (maximum 1440)" ) )
+        ( RfnCommand::CommandException( BADPARAM, "Invalid Disconnect Minutes: (4) underflow (minimum 5)" ) )
         ( RfnCommand::CommandException( BADPARAM, "Invalid Disconnect Minutes: (1441) overflow (maximum 1440)" ) );
 
     std::vector< RfnCommand::CommandException > actual;
@@ -489,7 +493,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
                                  "Status: Success (0)"
                                  "\nDisconnect mode: Demand Threshold"
                                  "\nReconnect param: Immediate reconnect"
-                                 "\nDisconnect demand interval: 15 minutes" 
+                                 "\nDisconnect demand interval: 15 minutes"
                                  "\nDisconnect demand threshold: 10.0 kW"
                                  "\nConnect delay: 10 minutes"
                                  "\nMax disconnects: disable" );
@@ -594,6 +598,99 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
             BOOST_CHECK_EQUAL( ex.what(),     "Status: Failure (1)" );
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_decoding_exceptions )
+{
+    const std::vector< RfnCommand::RfnResponsePayload > responses = list_of
+        //  invalid response length
+        ( list_of( 0x83 )( 0x01 ) )
+        //         \/\/ invalid response command code
+        ( list_of( 0xcc )( 0x01 )( 0x00 ) )
+        //                 \/\/ invalid operation code
+        ( list_of( 0x83 )( 0x00 )( 0x00 ) )
+        //  invalid status         \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x17 ) )
+        //  status: failure        \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x01 ) )
+        //  response too small
+        ( list_of( 0x83 )( 0x01 )( 0x00 ) )
+        //  invalid TLV count                      \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x02 )( 0x18 )( 0x00 )( 0x19 )( 0x00 ) )
+        //  invalid TLV type                               \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x17 )( 0x01 )( 0x01 ) )
+        //  response reconnect param invalid                               \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x01 )( 0x01 )( 0x01 )( 0x01 )( 0x17 ) )
+        //  response TLV too small                                 \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x04 )( 0x01 )( 0x0f )( 0x64 )( 0x0a ) )
+        //  demand interval invalid                                                \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0e )( 0x64 )( 0x0a )( 0x00 ) )
+        //  threshold invalid                                                              \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0xcc )( 0x0a )( 0x00 ) )
+        //  connect delay invalid                                                                  \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x2a )( 0x00 ) )
+        //  max disconnects invalid                                                                        \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x02 )( 0x01 )( 0x02 )( 0x05 )( 0x01 )( 0x0f )( 0x64 )( 0x0a )( 0x15 ) )
+        //  response TLV too small                                 \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x04 )( 0x01 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c ) )
+        //  reconnect param invalid                                        \/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x02 )( 0x03 )( 0xe8 )( 0x00 )( 0x3c ) )
+        //  disconnect minutes invalid                                             \/\/\/\/\/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x04 )( 0x00 )( 0x3c ) )
+        //  disconnect minutes invalid                                             \/\/\/\/\/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x05 )( 0xa1 )( 0x00 )( 0x3c ) )
+        //  connect minutes invalid                                                                \/\/\/\/\/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x3c )( 0x00 )( 0x04 ) )
+        //  connect minutes invalid                                                                \/\/\/\/\/\/
+        ( list_of( 0x83 )( 0x01 )( 0x00 )( 0x03 )( 0x01 )( 0x03 )( 0x05 )( 0x01 )( 0x00 )( 0x3c )( 0x05 )( 0xa1 ) )
+        ;
+
+    const std::vector< RfnCommand::CommandException >   expected = list_of
+        //  0
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response length (2)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Response Command Code (0xcc)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Operation Code (0x00)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid Status (23)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Status: Failure (1)" ) )
+        //  5
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response too small (3 < 5)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV count (2 != 1)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Invalid TLV type received in response (23)" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (23) expecting 0 or 1" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
+        //  10
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response demand interval invalid (14) expecting 5, 10, or 15." ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response hectoWatt threshold invalid (204) expecting <= 120" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect delay invalid (42) expecting <= 30" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response max disconnects invalid (21) expecting <= 20" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response TLV too small (4 != 5)" ) )
+        //  15
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response reconnect param invalid (2) expecting 0 or 1" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response disconnect minutes invalid (4) expecting >= 5" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response disconnect minutes invalid (1441) expecting <= 1440" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect minutes invalid (4) expecting >= 5" ) )
+        ( RfnCommand::CommandException( ErrorInvalidData, "Response connect minutes invalid (1441) expecting <= 1440" ) );
+
+    std::vector< RfnCommand::CommandException > actual;
+
+    RfnRemoteDisconnectGetConfigurationCommand command;
+
+    for each ( const RfnCommand::RfnResponsePayload & response in responses )
+    {
+        BOOST_CHECK_THROW( command.decodeCommand( execute_time, response ), RfnCommand::CommandException );
+
+        try
+        {
+            RfnCommandResult rcv = command.decodeCommand( execute_time, response );
+        }
+        catch ( const RfnCommand::CommandException & ex )
+        {
+            actual.push_back( ex );
+        }
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
+                                   expected.begin(), expected.end() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

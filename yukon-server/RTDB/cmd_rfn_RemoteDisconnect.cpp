@@ -191,9 +191,9 @@ RfnRemoteDisconnectSetThresholdConfigurationCommand::RfnRemoteDisconnectSetThres
         maxDisconnects( max_disconnects )
 {
     std::string underVal = CtiNumStr( demand_threshold, 1 );
-    validate( Condition( demand_threshold >= 0.0, BADPARAM )
+    validate( Condition( demand_threshold >= 0.5, BADPARAM )
             << "Invalid Demand Threshold: (" << underVal
-            << ") underflow (minimum 0.0)" );
+            << ") underflow (minimum 0.5)" );
 
     std::string overVal = CtiNumStr( demand_threshold, 1 );
     validate( Condition( demand_threshold <= 12.0, BADPARAM )
@@ -246,9 +246,17 @@ RfnRemoteDisconnectSetCyclingConfigurationCommand::RfnRemoteDisconnectSetCycling
     :   disconnectMinutes( disconnect_minutes ),
         connectMinutes( connect_minutes )
 {
+    validate( Condition( disconnect_minutes >= 5, BADPARAM )
+            << "Invalid Disconnect Minutes: (" << disconnect_minutes
+            << ") underflow (minimum 5)" );
+
     validate( Condition( disconnect_minutes <= 1440, BADPARAM )
             << "Invalid Disconnect Minutes: (" << disconnect_minutes
             << ") overflow (maximum 1440)" );
+
+    validate( Condition( connect_minutes >= 5, BADPARAM )
+            << "Invalid Connect Minutes: (" << connect_minutes
+            << ") underflow (minimum 5)" );
 
     validate( Condition( connect_minutes <= 1440, BADPARAM )
             << "Invalid Connect Minutes: (" << connect_minutes
@@ -369,8 +377,8 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
             // Byte 4 - max disconnects
             _maxDisconnects = tlv.value[4];
 
-            validate( Condition( *_maxDisconnects <= 30, ErrorInvalidData )
-                    << "Response max disconnects invalid (" << tlv.value[4] 
+            validate( Condition( *_maxDisconnects <= 20, ErrorInvalidData )
+                    << "Response max disconnects invalid (" << tlv.value[4]
                     << ") expecting <= 20" );
 
             std::string disconnectsStr = CtiNumStr( *_maxDisconnects );
@@ -390,8 +398,12 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
             // Bytes 1-2 : disconnect minutes
             _disconnectMinutes = tlv.value[1] << 8 | tlv.value[2];
 
+            validate( Condition( *_disconnectMinutes >= 5, ErrorInvalidData )
+                    << "Response disconnect minutes invalid (" << *_disconnectMinutes
+                    << ") expecting >= 5" );
+
             validate( Condition( *_disconnectMinutes <= 1440, ErrorInvalidData )
-                    << "Response disconnect minutes invalid (" << *_disconnectMinutes 
+                    << "Response disconnect minutes invalid (" << *_disconnectMinutes
                     << ") expecting <= 1440" );
 
             result.description += "\nDisconnect minutes: " + CtiNumStr( *_disconnectMinutes );
@@ -399,8 +411,12 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
             // Bytes 3-4 : connect minutes
             _connectMinutes = tlv.value[3] << 8 | tlv.value[4];
 
+            validate( Condition( *_connectMinutes >= 5, ErrorInvalidData )
+                    << "Response connect minutes invalid (" << *_connectMinutes
+                    << ") expecting >= 5" );
+
             validate( Condition( *_connectMinutes <= 1440, ErrorInvalidData )
-                    << "Response connect minutes invalid (" << *_connectMinutes 
+                    << "Response connect minutes invalid (" << *_connectMinutes
                     << ") expecting <= 1440" );
 
             result.description += "\nConnect minutes: " + CtiNumStr( *_connectMinutes );
