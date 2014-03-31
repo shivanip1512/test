@@ -8,6 +8,8 @@
 
 #include "std_helper.h"
 
+#include "boostutil.h"
+
 #include <boost/assign/list_of.hpp>
 
 namespace Cti {
