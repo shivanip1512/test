@@ -151,7 +151,6 @@ yukon.modules.dialogConfirm = function () {
      *      strings.ok:string       - ok button string
      *      strings.cancel:string   - cancel button string
      */
-//    mod.add = function (args) {
     mod = {
         add : function (args) {
 

@@ -95,10 +95,10 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         });
         this.selectAllCheckBox.checked = allSelected;
-        $(this.selectAllPagesLink.parentNode).hide();
-        $(this.allPagesSelected.parentNode).hide();
-        $(this.clearEntireSelectionLink.parentNode).hide();
-        $(this.entireSelectionCleared).hide();
+        this.jqSelectAllPagesLinkParentNode.hide();
+        this.jqAllPagesSelectedParentNode.hide();
+        this.jqClearEntireSelectionLinkParentNode.hide();
+        this.jqEntireSelectionCleared.hide();
     },
 
     okPressed = function () {
@@ -544,6 +544,10 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         this.allPagesSelected = document.getElementById('picker_' + this.pickerId + '_allPagesSelected');
         this.clearEntireSelectionLink = document.getElementById('picker_' + this.pickerId + '_clearEntireSelection');
         this.entireSelectionCleared = document.getElementById('picker_' + this.pickerId + '_entireSelectionCleared');
+        this.jqSelectAllPagesLinkParentNode = this.selectAllPagesLink ? $(this.selectAllPagesLink.parentNode) : null;
+        this.jqAllPagesSelectedParentNode = this.allPagesSelected ? $(this.allPagesSelected.parentNode) : null;
+        this.jqClearEntireSelectionLinkParentNode = this.clearEntireSelectionLink ? $(this.clearEntireSelectionLink.parentNode) : null;
+        this.jqEntireSelectionCleared = $(this.entireSelectionCleared);
 
         doIdSearch.call(this, initialIds);
 
@@ -710,17 +714,17 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
             }
         });
 
-        $(this.clearEntireSelectionLink.parentNode).hide();
-        $(this.entireSelectionCleared).hide();
-        $(this.allPagesSelected.parentNode).hide();
+        this.jqClearEntireSelectionLinkParentNode.hide();
+        this.jqEntireSelectionCleared.hide();
+        this.jqAllPagesSelectedParentNode.hide();
         // Cap "select all on every page" at 5000.
         if (this.selectAllCheckBox.checked && this.nextIndex !== -1 && this.hitCount <= 5000) {
             this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg;
-            $(this.selectAllPagesLink.parentNode).show();
+            this.jqSelectAllPagesLinkParentNode.show();
         } else {
-            $(this.selectAllPagesLink.parentNode).hide();
+            this.jqSelectAllPagesLinkParentNode.hide();
             if (numSelectedBefore > this.selectedItems.length && this.selectedItems.length > 0) {
-                $(this.clearEntireSelectionLink.parentNode).show(); 
+                this.jqClearEntireSelectionLinkParentNode.show();
             }
         }
 
@@ -745,9 +749,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
         }
         this.inSearch = false;
         this.ssInput.focus();
-        $(this.selectAllPagesLink.parentNode).hide();
+        this.jqSelectAllPagesLinkParentNode.hide();
         this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
-        $(this.allPagesSelected.parentNode).show();
+        this.jqAllPagesSelectedParentNode.show();
         this.unblock();
     };
 
@@ -757,9 +761,9 @@ yukon.protoPicker = function (okText, cancelText, noneSelectedText, pickerType, 
 
     yukon.protoPicker.prototype.clearEntireSelection = function () {
         this.selectedItems = [];
-        $(this.allPagesSelected.parentNode).hide();
-        $(this.clearEntireSelectionLink).parentNode.hide();
-        $(this.entireSelectionCleared).show();
+        this.jqAllPagesSelectedParentNode.hide();
+        this.jqClearEntireSelectionLinkParentNode.hide();
+        this.jqEntireSelectionCleared.show();
         this.allLinks.forEach(function (hitRow, index, arr) {
             $(hitRow.link.parentNode.parentNode).removeClass('highlighted');
         });
