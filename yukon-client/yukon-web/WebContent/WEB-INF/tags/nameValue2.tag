@@ -9,14 +9,15 @@
 <%@ attribute name="excludeColon" %>
 <%@ attribute name="label" type="java.lang.Object" %>
 <%@ attribute name="labelForId" %>
-<%@ attribute name="nameKey" %>
+<%@ attribute name="nameKey" description="The key to use for the label.
+    This key with .title appended will be used for the title of the key column.
+    NOTE:  This nameKey does NOT work like nameKey attributes of other tags." %>
 <%@ attribute name="nameClass" %>
 <%@ attribute name="nameColumnWidth" %>
 <%@ attribute name="rowClass" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="valueClass" %>
 
-<cti:msgScope paths=".${nameKey},">
 <c:choose>
 	<c:when test="${nameValueContainer2}">
 		<c:set var="colonSuffix" value=":"/>
@@ -59,4 +60,3 @@
 		<div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
 	</c:otherwise>
 </c:choose>
-</cti:msgScope>
