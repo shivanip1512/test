@@ -109,7 +109,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-logging-1.1.jar" sourcepath="/third-party/linked-sources/commons-logging-1.1-src.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-logging-1.1.3.jar" sourcepath="/third-party/linked-sources/commons-logging-1.1.3-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -124,7 +124,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/commons-codec-1.3.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-codec-1.9.jar" sourcepath="/third-party/linked-sources/commons-codec-1.9-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -320,7 +320,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-httpclient.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

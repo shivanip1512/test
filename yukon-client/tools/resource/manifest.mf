@@ -30,7 +30,6 @@ Class-Path: ./
  jaxm-api.jar 
  saaj.jar 
  commons-discovery.jar 
- commons-httpclient.jar 
  wsdl4j.jar 
  SchemaCompare.jar 
  ../log/ 

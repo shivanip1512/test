@@ -12,6 +12,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cbc"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
-	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

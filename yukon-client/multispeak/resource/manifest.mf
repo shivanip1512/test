@@ -13,7 +13,6 @@ Class-Path:
  axis.jar 
  activation.jar 
  commons-discovery.jar 
- commons-httpclient.jar 
  jaxrpc.jar 
  wsdl4j.jar 
  mail.jar 

@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="lib/apache-activemq-4.1.0-incubator.jar" sourcepath="C:/Yukon/Client/bin/apache-activemq-4.1.0-incubator.jar"/>
 	<classpathentry kind="lib" path="resource"/>
-	<classpathentry kind="lib" path="/third-party/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/AMDSCommon.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>

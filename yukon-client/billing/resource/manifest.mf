@@ -11,7 +11,6 @@ Class-Path: ./
  batik.jar 
  ojdbc6.jar 
  commons-discovery.jar 
- commons-httpclient.jar 
  jaxm-api.jar 
  jaxrpc.jar 
  jcfield401K.jar 
