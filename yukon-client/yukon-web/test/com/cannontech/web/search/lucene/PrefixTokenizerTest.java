@@ -72,20 +72,22 @@ public class PrefixTokenizerTest extends TestCase {
         assertEquals("Lists don't match", expectedList, tokeTextList);
     }
 
+    /**
+     * Test to be sure that {@link PrefixTokenizer#TOKEN_DELIMITER_PATTERN} matches the same characters as
+     * {@link PrefixTokenizer#isTokenChar(int)} since they have slightly different code for performance reasons.
+     */
     public void testIsTokenChar() {
         Pattern tokenDelimiterPattern = Pattern.compile(PrefixTokenizer.TOKEN_DELIMITER_PATTERN);
         for (char c = 0; c < Character.MAX_VALUE; c++) {
             if (tokenDelimiterPattern.matcher(String.valueOf(c)).matches()) {
                 if (PrefixTokenizer.isTokenChar(c)) {
-                    System.out.println("character " + c + " (0x" + Integer.toString((c), 16)
+                    fail("character " + c + " (0x" + Integer.toString((c), 16)
                         + ") reported as a token character but the RE disagrees");
-                    fail();
                 }
             } else {
                 if (!PrefixTokenizer.isTokenChar(c)) {
-                    System.out.println("character " + c + " (0x" + Integer.toString((c), 16)
+                    fail("character " + c + " (0x" + Integer.toString((c), 16)
                         + ") reported as a non-token character but the RE disagrees");
-                    fail();
                 }
             }
         }
