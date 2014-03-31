@@ -13,6 +13,8 @@ import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.capcontrol.CapControlArea;
+import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
@@ -58,6 +60,7 @@ public abstract class DeleteForm extends DBEditorForm {
                 try {
                     Area area = null;
                     
+                    
                     Deleteable deleteable = deletables[i];
                     boolean isSubstation = false;
                     if(deleteable.getDbPersistent() instanceof CapControlSubstation) { // get these before the delete
@@ -86,11 +89,12 @@ public abstract class DeleteForm extends DBEditorForm {
                         facesMsg.setDetail( "...deleted" );
                         if(deleteable.getDbPersistent() instanceof PointBase) {
                             CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
+                            
                             capControlForm.getPointTreeForm().resetPointList();
                         }
+                        HttpSession session = (HttpSession) ex.getSession(false);
+                        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
                         if(area != null) {
-                            HttpSession session = (HttpSession) ex.getSession(false);
-                            CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
                             String previousPage = navObject.getPreviousPage();
                             if (previousPage.contains("feeders")) {
                                 // We came from the substation's page, and that station doesn't exist anymore. Go to the areas page instead.
@@ -111,8 +115,16 @@ public abstract class DeleteForm extends DBEditorForm {
                                     navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/tier/areas"));
                                 }
                             }
-                        }
-                    }
+                        } else {
+                            // This is to set the return page to list page when a area/special area is deleted.
+                            if(deleteable.getDbPersistent() instanceof CapControlArea)
+                                navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)
+                                      ex.getRequest(), "/capcontrol/tier/areas"));
+                            else if (deleteable.getDbPersistent() instanceof CapControlSpecialArea)
+                                navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)
+                                      ex.getRequest(), "/capcontrol/tier/areas?isSpecialArea=true"));
+                        }        
+                     }
                     else {
                         facesMsg.setDetail( "Item not deleted" );
                     }
