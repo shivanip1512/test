@@ -38,7 +38,6 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -281,15 +280,6 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     @Override
-    public int[] getNextPaoIds(int count) {
-        int[] ids = new int[count];
-        for (int i = 0; i < ids.length; i++) {
-            ids[i] = nextValueHelper.getNextValue("YukonPaObject");
-        }
-        return ids;
-    }
-
-    @Override
     public String getYukonPAOName(int paoID) {
         try {
             String sql = "select paoname from yukonpaobject where paobjectid=?";
@@ -352,11 +342,12 @@ public final class PaoDaoImpl implements PaoDao {
             Collections.sort(routes, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
 
             for (LiteYukonPAObject litePao : routes) {
-                for (int j = 0; j < routeTypes.length; j++)
+                for (int j = 0; j < routeTypes.length; j++) {
                     if (litePao.getPaoType().getDeviceTypeId() != routeTypes[j]) {
                         routeList.add(litePao);
                         break;
                     }
+                }
             }
         }
 
@@ -364,34 +355,6 @@ public final class PaoDaoImpl implements PaoDao {
         routeList.toArray(retVal);
 
         return retVal;
-    }
-
-    @Override
-    public LiteYukonPAObject[] getAllUnusedCCPAOs(Integer ignoreID) {
-        synchronized (databaseCache) {
-            List<LiteYukonPAObject> lPaos = databaseCache.getAllUnusedCCDevices();
-
-            LiteYukonPAObject retVal[] = lPaos.toArray(new LiteYukonPAObject[lPaos.size()]);
-
-            return retVal;
-        }
-    }
-
-    @Override
-    public int countLiteYukonPaoByName(String name, boolean partialMatch) throws NotFoundException {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        if (partialMatch) {
-            sqlBuilder.append("SELECT COUNT(*) ");
-            sqlBuilder.append("FROM YukonPAObject ");
-            sqlBuilder.append("WHERE UPPER(PAOName) LIKE UPPER('" + name + "%')");
-        } else {
-            sqlBuilder.append("SELECT COUNT(*) ");
-            sqlBuilder.append("FROM YukonPAObject ");
-            sqlBuilder.append("WHERE UPPER(PAOName) = UPPER('" + name + "')");
-        }
-
-        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        return jdbcOps.queryForObject(sqlBuilder.getSql(), Integer.class);
     }
 
     @Override
@@ -410,18 +373,6 @@ public final class PaoDaoImpl implements PaoDao {
         }
 
         List<LiteYukonPAObject> paos = jdbcOps.query(sqlBuilder.getSql(), new Object[] { name }, litePaoRowMapper);
-        return paos;
-    }
-
-    @Override
-    public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber) {
-        String sql = litePaoSql;
-        sql += " LEFT OUTER JOIN deviceMeterGroup dmg ON y.paobjectid = dmg.deviceid ";
-        sql += " WHERE upper(meternumber) = ?";
-
-        List<LiteYukonPAObject> paos =
-            jdbcOps.query(sql.toString(), new Object[] { StringUtils.upperCase(meterNumber) }, litePaoRowMapper);
-
         return paos;
     }
 
@@ -467,28 +418,6 @@ public final class PaoDaoImpl implements PaoDao {
             throw new NotFoundException("No Paos found in (carrier) address range(" + startAddress + " - " + endAddress
                 + ")");
         }
-    }
-
-    @Override
-    public long getObjectCountByAddressRange(int startAddress, int endAddress) {
-        long count = 0;
-
-        try {
-            String sqlString =
-                "SELECT COUNT(pao.PAObjectID) "
-                        + " FROM " + YukonPAObject.TABLE_NAME + " pao "
-                        + " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid "
-                        + " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID "
-                        + " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid "
-                        + " where address >= ? AND address <= ?" + " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
-
-            count = jdbcOps.queryForLong(sqlString, new Object[] { startAddress, endAddress });
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress
-                + " - " + endAddress + ")");
-        }
-
-        return count;
     }
 
     @Override

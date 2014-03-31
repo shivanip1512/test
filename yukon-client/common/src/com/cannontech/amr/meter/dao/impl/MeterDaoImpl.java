@@ -1,11 +1,9 @@
 package com.cannontech.amr.meter.dao.impl;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,9 +21,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -37,8 +33,6 @@ import com.cannontech.core.dao.impl.SimpleMeterRowMapper;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.system.GlobalSettingType;
@@ -56,11 +50,6 @@ public class MeterDaoImpl implements MeterDao {
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private PaoDao paoDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-
-    
-    public void delete(YukonMeter object) {
-        throw new UnsupportedOperationException("maybe someday...");
-    }
 
     @Override
     @Transactional
@@ -137,15 +126,6 @@ public class MeterDaoImpl implements MeterDao {
             throw new NotFoundException("Unknown RFN meter id " + id);
         }
     }
-    
-    @Override
-    public YukonMeter getForYukonDevice(YukonDevice yukonDevice) {
-        if (yukonDevice instanceof YukonMeter) {
-            return (YukonMeter) yukonDevice;
-        } else {
-            return getForId(yukonDevice.getPaoIdentifier().getPaoId());
-        }
-    }
 
     @Override
     public YukonMeter getForMeterNumber(String meterNumber) {
@@ -195,47 +175,6 @@ public class MeterDaoImpl implements MeterDao {
         } catch (NotFoundException e) {
             return null;
         }
-    }
-
-    @Override
-    public Map<PaoIdentifier, YukonMeter> getPaoIdMeterMap(Iterable<PaoIdentifier> paos) {
-        
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-            @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append(meterRowMapper.getSql());
-                sql.append("WHERE ypo.PAObjectId").in(subList);
-                return sql;
-            }
-        };
-        
-        Function<PaoIdentifier, Integer> transform = new Function<PaoIdentifier, Integer>() {
-            @Override
-            public Integer apply(PaoIdentifier pao) {
-                return pao.getPaoId();
-            }
-        };
-        
-        YukonRowMapper<Map.Entry<Integer, YukonMeter>> mappingRowMapper =
-            new YukonRowMapper<Map.Entry<Integer, YukonMeter>>() {
-                @Override
-                public Entry<Integer, YukonMeter> mapRow(YukonResultSet rs)
-                        throws SQLException {
-                    YukonMeter meter = meterRowMapper.mapRow(rs);
-                    return Maps.immutableEntry(meter.getDeviceId(), meter);
-                }
-        };
-
-        Map<PaoIdentifier, YukonMeter> meterMap = template.mappedQuery(sqlGenerator, paos, mappingRowMapper, transform);
-        
-        return meterMap;
-    }
-
-    public void save(PlcMeter object) {
-        throw new UnsupportedOperationException("maybe someday...");
     }
 
     @Override

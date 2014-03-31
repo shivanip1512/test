@@ -25,8 +25,4 @@ public interface AuthenticationThrottleService {
      */
     public void removeAuthenticationThrottle(String username);
 
-    /**
-     * Resets all the AuthenticationThrottle data in case needed
-     */
-    public void resetAll();
 }

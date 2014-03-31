@@ -1,7 +1,6 @@
 package com.cannontech.cc.daojdbc;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -49,40 +48,8 @@ public class ProgramParameterDaoImpl implements ProgramParameterDao {
     }
 
     @Override
-    public ProgramParameter getForId(Integer id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from CCurtProgramParameter");
-        sql.append("where CCurtProgramParameterID").eq(id);
-        
-        ProgramParameter result = yukonJdbcTemplate.queryForObject(sql, new ProgramParameterRowMapper());
-        return result;
-    }
-    
-    @Override
-    public List<ProgramParameter> getAllForProgram(Program program) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from CCurtProgramParameter");
-        sql.append("where CCurtProgramID").eq(program.getId());
-        
-        List<ProgramParameter> result = yukonJdbcTemplate.query(sql, new ProgramParameterRowMapper(program));
-        return result;
-    }
-
-    @Override
     public void save(ProgramParameter object) {
         template.save(object);
-    }
-
-    @Override
-    public void delete(ProgramParameter programParameter) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete");
-        sql.append("from CCurtProgramParameter");
-        sql.append("where CCurtProgramParameterID").eq(programParameter.getId());
-        
-        yukonJdbcTemplate.update(sql);
     }
 
     @Override
@@ -96,15 +63,18 @@ public class ProgramParameterDaoImpl implements ProgramParameterDao {
     }
     
     private FieldMapper<ProgramParameter> programParameterFieldMapper = new FieldMapper<ProgramParameter>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, ProgramParameter programParameter) {
             p.addValue("ParameterValue",programParameter.getParameterValue());
             p.addValue("ParameterKey", programParameter.getParameterKey());
             p.addValue("CCurtProgramID", programParameter.getProgram().getId());
             
         }
+        @Override
         public Number getPrimaryKey(ProgramParameter programParameter) {
             return programParameter.getId();
         }
+        @Override
         public void setPrimaryKey(ProgramParameter programParameter, int value) {
             programParameter.setId(value);
         }
@@ -159,6 +129,7 @@ public class ProgramParameterDaoImpl implements ProgramParameterDao {
             cachingProgramDao = new CachingDaoWrapper<Program>(programDao, initialItems);
         }
         
+        @Override
         public ProgramParameter mapRow(YukonResultSet rs) throws SQLException {
             ProgramParameter programParameter = new ProgramParameter();
             programParameter.setId(rs.getInt("CCurtProgramParameterID"));

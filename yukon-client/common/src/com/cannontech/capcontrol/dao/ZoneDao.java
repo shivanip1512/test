@@ -110,13 +110,6 @@ public interface ZoneDao {
      */
     public List<Integer> getAllUsedPointIds();
 
-    /**
-     * Return all Points attached to a zoneId.
-     * @param zoneId
-     * @return
-     */
-    public List<Integer> getPointIdsByZone(int zoneId);
-
 	/**
      * Return the CapBankToZoneMapping object for a zone.
      * @param zoneId

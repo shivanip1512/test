@@ -20,10 +20,6 @@ public class YukonSelectionList {
         super();
     }
 
-    public static String getTABLE_NAME() {
-        return TABLE_NAME;
-    }
-
     public int getListId() {
         return listId;
     }
@@ -85,8 +81,9 @@ public class YukonSelectionList {
     }
 
     public List<YukonListEntry> getYukonListEntries() {
-        if (yukonListEntries == null)
+        if (yukonListEntries == null) {
             yukonListEntries = new ArrayList<YukonListEntry>();
+        }
         return yukonListEntries;
     }
 

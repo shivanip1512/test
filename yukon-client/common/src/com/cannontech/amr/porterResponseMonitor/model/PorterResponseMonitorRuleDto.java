@@ -82,10 +82,6 @@ public class PorterResponseMonitorRuleDto implements Comparable<PorterResponseMo
         this.state = state;
     }
 
-    public static Function<PorterResponseMonitorErrorCode, Integer> getTransformer() {
-        return transformer;
-    }
-
     @Override
     public int compareTo(PorterResponseMonitorRuleDto o) {
         return this.getRuleOrder() - o.getRuleOrder();

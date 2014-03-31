@@ -11,7 +11,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -68,25 +67,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         }
     }
 
-    @Override
-    public RfnMeter getMeterForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT rfn.SerialNumber, rfn.Manufacturer, rfn.Model, dmg.MeterNumber,");
-        sql.append("  pao.paoName, pao.disableFlag, pao.paobjectId, pao.type");
-        sql.append("FROM RfnAddress rfn");
-        sql.append(  "JOIN DeviceMeterGroup dmg ON dmg.deviceId = rfn.DeviceId");
-        sql.append(  "JOIN YukonPaobject pao ON pao.paobjectId = rfn.DeviceId");
-        sql.append("WHERE rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-        sql.append(  "AND rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-        sql.append(  "AND rfn.Model").eq(rfnIdentifier.getSensorModel());
-        try {
-            RfnMeter rfnMeter = jdbcTemplate.queryForObject(sql, new RfnMeterRowMapper());
-            return rfnMeter;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
-        }
-    }
-    
     @Override
     public RfnDevice getDeviceForId(int paoId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();

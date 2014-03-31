@@ -82,8 +82,6 @@ public interface SubstationBusDao {
 
     public List<CymePaoPoint> getBankStatusPointPaoIdsBySubbusId(int substationBusId);
     
-    public List<Integer> getBankStatusPointIdsBySubbusId(int substationBusId);
-    
     /**
      * Returns a container with the PointId's selected by the pickers for the substation bus with the given Pao Id.
      * @param substationBusId

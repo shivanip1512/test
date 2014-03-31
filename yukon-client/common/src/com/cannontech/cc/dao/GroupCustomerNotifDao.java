@@ -2,7 +2,6 @@ package com.cannontech.cc.dao;
 
 import java.util.List;
 
-import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
 
@@ -11,7 +10,6 @@ public interface GroupCustomerNotifDao {
 
     public void saveNotifsForGroup(Group group, List<GroupCustomerNotif> required);
     public void deleteFor(Group object);
-    public void deleteFor(CICustomerStub object);
     public void save(GroupCustomerNotif object);
     public void delete(GroupCustomerNotif object);
 }

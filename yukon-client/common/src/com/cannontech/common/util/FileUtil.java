@@ -30,10 +30,6 @@ public final class FileUtil {
         super();
     }
 
-    public static List<String> readLines(File fileObj, int linesWanted) throws IOException{
-    	return readLines(fileObj, linesWanted, 0);
-    }
-
     public static List<String> readLines(File fileObj, int linesWanted, long offSet) throws IOException{
     	List<String> results = new ArrayList<String>();
         int avgLineSize = 75;
@@ -42,10 +38,12 @@ public final class FileUtil {
     	 * to obtain a full line
     	 */
     	int characterBufferSize = avgLineSize*linesWanted;
-    	if(characterBufferSize < 550)
-    		characterBufferSize = 550;
-    	if(linesWanted < 0)
-    		linesWanted = 0;
+    	if(characterBufferSize < 550) {
+            characterBufferSize = 550;
+        }
+    	if(linesWanted < 0) {
+            linesWanted = 0;
+        }
 
     	long fileLength = fileObj.length();
     	long fileCharDisplacement = (fileLength)-characterBufferSize;
@@ -74,8 +72,9 @@ public final class FileUtil {
     			raf.seek(fileCharDisplacement);
     	
     			// burns the first line to reassure that there are no partial lines
-    			if (fileCharDisplacement != offSet)
-    				raf.readLine();	
+    			if (fileCharDisplacement != offSet) {
+                    raf.readLine();
+                }	
     		
     			String tempString;
     			while((tempString = raf.readLine()) != null){
@@ -222,11 +221,17 @@ public final class FileUtil {
         try{
             file1 = file1.getCanonicalFile();
             file2 = file2.getCanonicalFile();
-            if(file1.equals(file2)) return true;
+            if(file1.equals(file2)) {
+                return true;
+            }
             File fileWithTrailingSeparator = new File(file1, "/");
-            if(fileWithTrailingSeparator.equals(file2)) return true;
+            if(fileWithTrailingSeparator.equals(file2)) {
+                return true;
+            }
             fileWithTrailingSeparator = new File(file2, "/");
-            if(fileWithTrailingSeparator.equals(file1)) return true;
+            if(fileWithTrailingSeparator.equals(file1)) {
+                return true;
+            }
         } catch (IOException e){
             log.warn("Exception occurred testing file equality.", e);
         }

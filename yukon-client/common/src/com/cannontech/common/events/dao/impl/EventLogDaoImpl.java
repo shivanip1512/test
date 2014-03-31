@@ -101,6 +101,7 @@ public class EventLogDaoImpl implements EventLogDao {
             return new SimpleSqlFragment("ORDER BY EventTime DESC");
         }
         
+        @Override
         public EventLog mapRow(YukonResultSet yrs) throws java.sql.SQLException {
             ResultSet rs = yrs.getResultSet();
             EventLog eventLog = new EventLog();
@@ -182,6 +183,7 @@ public class EventLogDaoImpl implements EventLogDao {
         return allCategories;
     }
     
+    @Override
     public Set<EventCategory> getAllCategories() {
         Set<EventCategory> allCategoryLeafs = getAllCategoryLeafs();
         
@@ -219,7 +221,9 @@ public class EventLogDaoImpl implements EventLogDao {
                                               ReadableInstant stopDate) {
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         
-        if (slimEventCategories.isEmpty()) return Collections.emptyList();
+        if (slimEventCategories.isEmpty()) {
+            return Collections.emptyList();
+        }
         
         SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
         sql.append("ORDER BY EL.EventTime, EL.EventLogId");
@@ -266,42 +270,6 @@ public class EventLogDaoImpl implements EventLogDao {
         return result;
     }
 
-    @Override
-    public SearchResults<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
-                                                                 ReadableInstant startDate,
-                                                                 ReadableInstant stopDate,
-                                                                 Integer start,
-                                                                 Integer pageCount) {
-        SearchResults<EventLog> result = new SearchResults<EventLog>();
-
-        Iterator<String> iterator = eventLogTypes.iterator();
-        if (!iterator.hasNext()){
-            return SearchResults.emptyResult();
-        }
-        
-        /* Get row count. */
-        SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("SELECT COUNT(*)");
-        countSql.append("FROM EventLog EL");
-        countSql.append("WHERE EL.EventType").in(eventLogTypes);
-        countSql.append(  "AND EL.EventTime").lt(stopDate);
-        countSql.append(  "AND EL.EventTime").gte(startDate);
-        
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
-        
-        /* Get paged data. */
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, eventLogTypes));
-        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
-
-        PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
-        yukonJdbcTemplate.query(sql, rse);
-        result.setResultList(rse.getResultList());
-        result.setBounds(start, pageCount, hitCount);
-        
-        return result;
-    }
-
 
     @Override
     public SearchResults<EventLog> 
@@ -341,7 +309,6 @@ public class EventLogDaoImpl implements EventLogDao {
         
         return result;
     }
-
 
     @Override
     public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {

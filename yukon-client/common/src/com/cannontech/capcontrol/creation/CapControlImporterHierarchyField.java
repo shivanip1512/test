@@ -91,10 +91,6 @@ public enum CapControlImporterHierarchyField {
 		return required;
 	}
 	
-	public static int numColumns() {
-		return lookupByString.size();
-	}
-	
 	@Override
 	public String toString() {
 		return columnName;

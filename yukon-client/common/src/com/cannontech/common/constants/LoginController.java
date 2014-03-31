@@ -38,16 +38,8 @@ public interface LoginController {
 	/* Parameter Names */
 	public static final String USERNAME = "USERNAME";
 	public static final String PASSWORD = "PASSWORD";
-	public static final String ACTION = "ACTION";
 	public static final String REDIRECT = ServletUtil.ATT_REDIRECT;
-	public static final String SAVE_CURRENT_USER = "SAVE_CURRENT_USER";
 	public static final String TOKEN = "TOKEN";
-	
-	/* Possible Action Values */
-	public static final String LOGIN = "LOGIN";
-	public static final String CLIENT_LOGIN = "CLIENTLOGIN";
-	public static final String LOGOUT = "LOGOUT";
-	public static final String OUTBOUND_VOICE_LOGIN = "VOICELOGIN";
 	
 	public static final String YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";
@@ -57,8 +49,8 @@ public interface LoginController {
     public static final String AUTH_FAILED_PARAM = "failed";
     public static final String AUTH_RETRY_SECONDS_PARAM = "retrySeconds";
 	
-	public static final String INVALID_URI = "/login.jsp?" + FAILED_LOGIN_PARAM;
 	public static final String LOGIN_URL = "/login.jsp";
+    public static final String INVALID_URI = LOGIN_URL + FAILED_LOGIN_PARAM;
 	public static final String REMEMBER_ME_COOKIE = "REMEMBER_ME_COOKIE";
     public static final String REDIRECTED_FROM = "REDIRECTED_FROM";
     

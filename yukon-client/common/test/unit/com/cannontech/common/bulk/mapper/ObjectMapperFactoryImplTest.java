@@ -74,28 +74,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             }
 
             @Override
-            public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(
-                    String meterNumber) {
-
-                if ("none".equalsIgnoreCase(meterNumber)) {
-                    return new ArrayList<LiteYukonPAObject>();
-                }
-                if ("one".equalsIgnoreCase(meterNumber)) {
-                    return Collections.singletonList(lite1);
-                }
-
-                if ("two".equalsIgnoreCase(meterNumber)) {
-                    List<LiteYukonPAObject> deviceList = new ArrayList<LiteYukonPAObject>();
-                    deviceList.add(lite1);
-                    deviceList.add(lite2);
-
-                    return deviceList;
-                }
-
-                throw new IllegalArgumentException(meterNumber + " is not supported");
-            }
-
-            @Override
             public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(
                     int address) {
 
@@ -219,67 +197,67 @@ public class ObjectMapperFactoryImplTest extends TestCase {
      */
     private class PaoDaoAdapter implements PaoDao {
 
-        public int countLiteYukonPaoByName(String name, boolean partialMatch) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
+        @Override
         public List<LiteYukonPAObject> getAllCapControlSubBuses() {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject[] getAllLiteRoutes() {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject[] getAllUnusedCCPAOs(Integer ignoreID) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
+        @Override
         public YukonPao getYukonPao(int paoId) {
             throw new UnsupportedOperationException("Method not implemented");   
         }
         
+        @Override
         public LiteYukonPAObject getLiteYukonPAO(int paoID) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
                 int category, int paoClass, int type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> getLiteYukonPAObjectBy(
                 Integer[] paoType, Integer[] paoCategory, Integer[] paoClass,
                 Integer[] pointTypes, Integer[] uOfMId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
                 boolean partialMatch) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(
                 int address) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public int getNextPaoId() {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public int[] getNextPaoIds(int count) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
+        @Override
         public LiteYukonPAObject[] getRoutesByType(int[] routeTypes) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public String getYukonPAOName(int paoID) {
             throw new UnsupportedOperationException("Method not implemented");
         }
@@ -289,22 +267,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @Override
         public List<LiteYukonPAObject> searchByName(String name, String paoClass) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(
-                String meterNumber) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
+        @Override
         public List<PaoIdentifier> getPaosByAddressRange(
                 int startAddress, int endAddress) {
-            throw new UnsupportedOperationException("Method not implemented");
-        }
-
-        @Override
-        public long getObjectCountByAddressRange(int startAddress, int endAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

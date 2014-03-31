@@ -2253,14 +2253,6 @@
   </tag>
 
   <function>
-    <name>equalsIgnoreCase</name>
-    <function-class>com.cannontech.common.util.StringUtils</function-class>
-    <function-signature>
-        boolean equalsIgnoreCase(java.lang.String, java.lang.String)
-    </function-signature>
-  </function>
-
-  <function>
     <name>constantValue</name>
     <function-class>com.cannontech.util.ReflectivePropertySearcher</function-class>
     <function-signature>

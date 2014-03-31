@@ -22,8 +22,6 @@ public interface StrategyDao {
      */
     public List<LiteCapControlStrategy> getAllLiteStrategies();
 
-    public boolean deleteStrategyAssignmentsByStrategyId(int strategyId);
-    
     public int add(String name);
 
     public void savePowerFactorCorrectionSetting(CapControlStrategy strategy);

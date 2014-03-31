@@ -2,7 +2,6 @@ package com.cannontech.core.authentication.service.impl;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,11 +112,6 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
         for (String username : authThrottleRemoveList) {
             authThrottleMap.remove(username);
         }
-    }
-    
-    @Override
-    public synchronized void resetAll() {
-        authThrottleMap = new HashMap<String, AuthenticationThrottle>();
     }
 
     public synchronized void setAuthThrottleExpBase(double authThrottleExpBase) {

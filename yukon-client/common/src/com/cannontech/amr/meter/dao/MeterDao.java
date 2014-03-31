@@ -2,7 +2,6 @@ package com.cannontech.amr.meter.dao;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -10,8 +9,6 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.service.impl.PaoLoader;
 
@@ -29,8 +26,6 @@ public interface MeterDao {
     
     public YukonMeter findForPaoName(String paoName);
 
-    public YukonMeter getForYukonDevice(YukonDevice yukonDevice);
-    
     public YukonMeter getForId(Integer id);
     
     public SimpleMeter getSimpleMeterForId(int id);
@@ -60,6 +55,4 @@ public interface MeterDao {
     
     public int getMeterCount();
 
-    public Map<PaoIdentifier, YukonMeter> getPaoIdMeterMap(Iterable<PaoIdentifier> paoIds);
-    
 }

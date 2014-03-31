@@ -1,6 +1,6 @@
 package com.cannontech.core.authentication.service.impl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,6 @@ public class IncreasingAuthenticationThrottleImplTest {
         authenticationThrottleServiceImpl = new IncreasingAuthenticationThrottleServiceImpl();
         authenticationThrottleServiceImpl.setAuthThrottleExpBase(Math.E/2);
         authenticationThrottleServiceImpl.setAuthThrottleDelta(0.0);
-        authenticationThrottleServiceImpl.resetAll();
     }
 
     @Test (expected=AuthenticationThrottleException.class)

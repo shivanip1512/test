@@ -95,6 +95,7 @@ public interface PaoDao {
      * @return true when no object is found for paoName, category, paoClass
      * @deprecated Use findUnique(String paoName, PaoCategory category, PaoClass paoClass)
      */
+    @Deprecated
     public LiteYukonPAObject findUnique(final String paoName, final String category, final String paoClass);
     
     /**
@@ -147,8 +148,6 @@ public interface PaoDao {
      */
     public int getNextPaoId();
     
-    public int[] getNextPaoIds(int count);
-    
     /**
      * This method was created in VisualAge.
      * @return String
@@ -161,19 +160,10 @@ public interface PaoDao {
     
     public LiteYukonPAObject[] getRoutesByType(int[] routeTypes);
 
-    /**
-     * Returns all available PAObjects that have points that may be used for
-     * a CapBanks control point. Add the given ignoreID PAO to our list.
-     */
-    public LiteYukonPAObject[] getAllUnusedCCPAOs(Integer ignoreID);
-
-    public int countLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);
     public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress);
-    public long getObjectCountByAddressRange(int startAddress, int endAddress);
-    public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber);
-    
+
     public List<LiteYukonPAObject> searchByName(String name, String paoClass);
 
     public Map<Integer, PaoIdentifier> findPaoIdentifiersByCarrierAddress(Iterable<Integer> carrierAddresses);

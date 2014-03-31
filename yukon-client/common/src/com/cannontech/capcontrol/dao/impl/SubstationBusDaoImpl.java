@@ -222,20 +222,8 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
         return statusPoints;
     }
-	
-    @Override
-    public List<Integer> getBankStatusPointIdsBySubbusId(int substationBusId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT P.PointId");
-        buildBankStatusPointQueryEnd(sql,substationBusId);        
-        
-        List<Integer> statusPoints = yukonJdbcTemplate.query(sql,RowMapper.INTEGER);
-        
-        return statusPoints;
-    }
-	
-    private void buildBankStatusPointQueryEnd(SqlStatementBuilder sql, int substationBusId) {
+
+	private void buildBankStatusPointQueryEnd(SqlStatementBuilder sql, int substationBusId) {
         sql.append("FROM Point P");
         sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = P.PAObjectId");
         sql.append("JOIN CCFeederBankList FBL on P.PAObjectId = FBL.DeviceId");

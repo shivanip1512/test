@@ -15,8 +15,4 @@ public interface ScheduledGroupRequestExecutionService {
 		
 	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, String command, DeviceRequestType type, String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy);
 	public YukonJob scheduleReplacement(int existingJobId, String name, String groupName, Set<? extends Attribute> attributes, DeviceRequestType type, String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy);
-	
-	public void disableJob(int existingJobId);
-	
-	public String getCronExpression(int jobId);
 }

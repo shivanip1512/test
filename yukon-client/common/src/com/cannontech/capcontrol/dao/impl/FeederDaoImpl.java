@@ -18,7 +18,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.impl.LitePaoRowMapper;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -57,25 +56,7 @@ public class FeederDaoImpl implements FeederDao {
         
         return feeders;
     }
-    
-    /**
-     * This method returns all the Feeder IDs that are assigned
-     *  to the SubBus passed in.
-     */
-    @Override
-    public List<Integer> getFeederIdBySubstationBus(YukonPao subbus) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        
-        sql.append("SELECT FeederID");
-        sql.append("FROM CapControlFeeder");
-        sql.append("WHERE FeederID  IN");
-        sql.append(   "(SELECT FeederID");
-        sql.append(    "FROM CCFeederSubAssignment WHERE SubstationBusId = " + subbus.getPaoIdentifier().getPaoId() +")");
-        
-        List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-        return listmap;
-    }
-    
+
     @Override
     public FeederPhaseData getFeederPhaseData(int feederId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -44,20 +44,6 @@ public interface EventLogDao {
                                                  Integer pageCount);
 
     /**
-     * This method gets all the event logs between the start and stop date for the supplied
-     * event log types.
-     * 
-     * @param startDate         Greater-than or equal to this (eg. inclusive).  Remember that it is TIME SENSITIVE
-     * @param stopDate          Less than (eg. not inclusive).  Remember that it is TIME SENSITIVE
-     */
-    public SearchResults<EventLog> 
-                getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes, 
-                                               ReadableInstant startDate, 
-                                               ReadableInstant stopDate, 
-                                               Integer start, 
-                                               Integer pageCount);
-
-    /**
      * This method gets all the event logs that have any of the filter values between the supplied
      * start and stop date for the given set of event categories. 
      * 

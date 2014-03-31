@@ -23,9 +23,9 @@ import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableList.Builder;
 
 public class EventLogFactoryBeanTest {
 
@@ -87,14 +87,6 @@ public class EventLogFactoryBeanTest {
                                                                            ReadableInstant stopDate, 
                                                                            Integer start, 
                                                                            Integer pageCount) {
-                return null;
-            }
-            @Override
-            public SearchResults<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
-                                                                         ReadableInstant startDate,
-                                                                         ReadableInstant stopDate,
-                                                                         Integer start,
-                                                                         Integer pageCount) {
                 return null;
             }
             @Override
@@ -189,15 +181,6 @@ public class EventLogFactoryBeanTest {
                                                                            ReadableInstant stopDate,
                                                                            Integer start,
                                                                            Integer pageCount) {
-                return null;
-            }
-            @Override
-            public SearchResults<EventLog> getPagedSearchResultByLogTypes(
-                                                                         Iterable<String> eventLogTypes,
-                                                                         ReadableInstant startDate,
-                                                                         ReadableInstant stopDate,
-                                                                         Integer start,
-                                                                         Integer pageCount) {
                 return null;
             }
             @Override

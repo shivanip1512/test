@@ -60,48 +60,6 @@ public final class StringUtils {
 
         return b.toString();
     }
-
-    /**
-     * Takes an array of strings and try to convert and put each element into an
-     * array of ints. If anything goes wrong, a zero length int array is
-     * returned.
-     */
-    public static int[] toIntArray(String[] str) {
-        int[] intArr = new int[0];
-        if (str != null) {
-            try {
-                intArr = new int[str.length];
-                for (int i = 0; i < str.length; i++) {
-                    intArr[i] = Integer.parseInt(str[i]);
-                }
-            } catch (NumberFormatException nfe) {
-                intArr = new int[0];
-            }
-        }
-
-        return intArr;
-    }
-    /**
-     * Takes an array of strings and try to convert and put each element into an
-     * array of float. If anything goes wrong, a zero length float array is
-     * returned.
-     */
-    public static float[] toFloatArray(String[] str) {
-        float[] intArr = new float[0];
-        if (str != null) {
-            try {
-                intArr = new float[str.length];
-                for (int i = 0; i < str.length; i++) {
-                    intArr[i] = Float.parseFloat(str[i]);
-                }
-            } catch (NumberFormatException nfe) {
-                intArr = new float[0];
-            }
-        }
-
-        return intArr;
-    }
-    
     /**
      * Parase a comma separated string into an List<Integer>
      * @param s
@@ -184,31 +142,7 @@ public final class StringUtils {
     public static String toStringList(Object... args) {
         return org.apache.commons.lang.StringUtils.join(args, ",");
     }
-    
-    /**
-     * Wrapper method for use with jstl
-     * @param string1 - String to compare
-     * @param string2 - String to compare
-     * @return True if equalsIgnoreCase is true
-     */
-    public static boolean equalsIgnoreCase(String string1, String string2){
-        if(string1 == null){
-            return string2 == null;
-        }
-        
-        return string1.equalsIgnoreCase(string2);
-    }
 
-    public static String toCamelCase(String string){
-        String[] words = string.split(" ");
-        String resultString = "";
-        for (String word : words) {
-            resultString += word.substring(0,1).toUpperCase() + 
-                            word.substring(1).toLowerCase();
-        }
-        return resultString.substring(0,1).toLowerCase() + resultString.substring(1);
-    }
-    
     public static String elideCenter(String input, int maxSize) {
         String ellipsis = "\u2026";
         if (input.length() <= maxSize) {
@@ -244,8 +178,12 @@ public final class StringUtils {
     public static List<String> restoreJsSafeList(String input) {
         List<String> result = Lists.newArrayList();
 
-        if( org.apache.commons.lang.StringUtils.isEmpty(input)) return result;
-        if( input.equals("[]")) return result;
+        if( org.apache.commons.lang.StringUtils.isEmpty(input)) {
+            return result;
+        }
+        if( input.equals("[]")) {
+            return result;
+        }
 
         input = input.replaceAll("(^\\[')|('\\]$)", "");
         String[] items = input.split("','");

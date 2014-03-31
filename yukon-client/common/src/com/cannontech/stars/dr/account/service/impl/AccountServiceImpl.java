@@ -27,7 +27,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.UserNameUnavailableException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -86,7 +85,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private AuthDao authDao;
     @Autowired private AddressDao addressDao;
     @Autowired private ContactDao contactDao;

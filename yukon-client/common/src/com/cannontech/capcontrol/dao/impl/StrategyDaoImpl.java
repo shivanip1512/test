@@ -247,16 +247,7 @@ public class StrategyDaoImpl implements StrategyDao {
         }
 
     }
-    
-    @Override
-    @Transactional(readOnly = false)
-    public boolean deleteStrategyAssignmentsByStrategyId(int strategyId){
-        String deleteStrategyAssignments = "DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId = ?";
-        int rowsAffected = yukonJdbcTemplate.update(deleteStrategyAssignments, strategyId);
-        
-        return rowsAffected == 1;
-    }
-    
+
     @Override
     public List<String> getAllOtherPaoNamesUsingSeasonStrategy( int strategyId, int excludedPaoId ) {
        SqlStatementBuilder sql = new SqlStatementBuilder();

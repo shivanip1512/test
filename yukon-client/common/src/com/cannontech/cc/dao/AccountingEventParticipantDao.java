@@ -9,5 +9,4 @@ public interface AccountingEventParticipantDao {
     public List<AccountingEventParticipant> getForEvent(AccountingEvent event);
     public void deleteForEvent(AccountingEvent event);
     public void save(AccountingEventParticipant object);
-    public AccountingEventParticipant getForId(Integer id);
 }

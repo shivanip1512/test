@@ -32,17 +32,6 @@ public class AccountingEventParticipantDaoImpl implements AccountingEventPartici
     private AccountingEventDao accountingEventDao;
 
     @Override
-    public AccountingEventParticipant getForId(Integer id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from CCurtAcctEventParticipant");
-        sql.append("where CCurtAcctEventParticipantID").eq(id);
-        
-        AccountingEventParticipant result = yukonJdbcTemplate.queryForObject(sql, new AccountingEventParticipantRowMapper());
-        return result;
-    }
-
-    @Override
     public List<AccountingEventParticipant> getForEvent(AccountingEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select * from CCurtAcctEventParticipant");
@@ -68,13 +57,16 @@ public class AccountingEventParticipantDaoImpl implements AccountingEventPartici
     }
 
     private FieldMapper<AccountingEventParticipant> accountingEventParticipantFieldMapper = new FieldMapper<AccountingEventParticipant>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, AccountingEventParticipant participant) {
             p.addValue("CustomerID", participant.getCustomer().getId());
             p.addValue("CCurtAcctEventID", participant.getEvent().getId());
         }
+        @Override
         public Number getPrimaryKey(AccountingEventParticipant participant) {
             return participant.getId();
         }
+        @Override
         public void setPrimaryKey(AccountingEventParticipant participant, int value) {
             participant.setId(value);
         }
@@ -117,6 +109,7 @@ public class AccountingEventParticipantDaoImpl implements AccountingEventPartici
             cachingCustomerStubDao = new CachingDaoWrapper<CICustomerStub>(customerStubDao);
         }
         
+        @Override
         public AccountingEventParticipant mapRow(YukonResultSet rs) throws SQLException {
             AccountingEventParticipant participant = new AccountingEventParticipant();
             participant.setId(rs.getInt("CCurtAcctEventParticipantID"));

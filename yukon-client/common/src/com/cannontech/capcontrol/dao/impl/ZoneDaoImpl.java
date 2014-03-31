@@ -29,9 +29,9 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.AdvancedFieldMapper;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SimpleTableAccessTemplate.CascadeMode;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterChildSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -341,18 +341,7 @@ public class ZoneDaoImpl implements ZoneDao {
         
         return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
     }
-    
-    @Override
-    public List<Integer> getPointIdsByZone(int zoneId) {
-        
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT PointId");
-        sqlBuilder.append("FROM PointToZoneMapping");
-        sqlBuilder.append("WHERE ZoneId").eq(zoneId);
-        
-        return yukonJdbcTemplate.query(sqlBuilder, RowMapper.INTEGER);
-    }
-    
+
     @Override
     public void updateCapBankToZoneMapping(int zoneId, List<CapBankToZoneMapping> banksToZone) {
         

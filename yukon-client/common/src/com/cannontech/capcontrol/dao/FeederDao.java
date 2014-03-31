@@ -8,7 +8,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.capcontrol.model.PointIdContainer;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -38,12 +37,6 @@ public interface FeederDao {
      * This method returns all the Feeders that are not assigned to a SubBus.
      */
     public List<LiteYukonPAObject> getUnassignedFeeders();
-    
-    /**
-     * This method returns all the Feeder IDs that are assigned
-     *  to the SubBus passed in.
-     */
-    public List<Integer> getFeederIdBySubstationBus(YukonPao subbus);
     
     /**
      * Returns the phase data pointIds for the feeder id provided.

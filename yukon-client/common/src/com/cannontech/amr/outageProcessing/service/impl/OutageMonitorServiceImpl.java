@@ -1,10 +1,6 @@
 package com.cannontech.amr.outageProcessing.service.impl;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -51,14 +47,7 @@ public class OutageMonitorServiceImpl implements OutageMonitorService {
         // delete processor
         return outageMonitorDao.delete(outageMonitorId);
 	}
-	
-	@Override
-	public Date getLatestPreviousReadingDate(OutageMonitor outageMonitor) {
-	    Duration outagePeriod = Duration.standardDays(outageMonitor.getTimePeriodDays());
-	    Instant now = new Instant();
-		return now.minus(outagePeriod).toDate();
-	}
-	
+
 	@Override
 	public MonitorEvaluatorStatus toggleEnabled(int outageMonitorId) throws OutageMonitorNotFoundException {
 		

@@ -63,11 +63,6 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
         authThrottleMap.invalidate(username);
     }
 
-    @Override
-    public synchronized void resetAll() {
-        authThrottleMap.invalidateAll();
-    }
-
     public static class AuthenticationThrottle {
 
         private Duration lockoutDuration;

@@ -3,7 +3,6 @@ package com.cannontech.common.pao.definition.model;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -24,14 +23,6 @@ public class PaoData {
 
         public final static Set<OptionalField> SET_OF_ALL = ImmutableSet.copyOf(values());
     }
-
-    public final static Function<PaoData, PaoIdentifier> paoIdFunction =
-        new Function<PaoData, PaoIdentifier>() {
-            @Override
-            public PaoIdentifier apply(PaoData from) {
-                return from.getPaoIdentifier();
-            }
-        };
 
     private Set<OptionalField> responseFields;
 

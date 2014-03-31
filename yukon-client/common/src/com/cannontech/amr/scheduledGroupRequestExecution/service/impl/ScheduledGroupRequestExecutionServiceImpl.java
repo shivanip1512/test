@@ -29,7 +29,8 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
     
     // SCHEDULE - COMMAND
-	public YukonJob schedule(String name, 
+	@Override
+    public YukonJob schedule(String name, 
                              String groupName, 
                              String command, 
                              DeviceRequestType type, 
@@ -41,6 +42,7 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     }
 	
 	// SCHEDULE - ATTRIBUTE
+    @Override
     public YukonJob schedule(String name, 
                              String groupName, 
                              Set<? extends Attribute> attributes, 
@@ -85,7 +87,8 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	}
 	
 	// SCHEDULE REPLACEMENT - COMMAND
-	public YukonJob scheduleReplacement(int existingJobId, 
+	@Override
+    public YukonJob scheduleReplacement(int existingJobId, 
                                         String name, 
                                         String groupName, 
                                         String command, 
@@ -98,7 +101,8 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     }
 	
 	// SCHEDULE REPLACEMENT - ATTRIBUTE
-	public YukonJob scheduleReplacement(int existingJobId, 
+	@Override
+    public YukonJob scheduleReplacement(int existingJobId, 
                                         String name, 
                                         String groupName, 
                                         Set<? extends Attribute> attributes, 
@@ -132,19 +136,6 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
     	         ", retryCount=" + retryStrategy.getRetryCount() + ", stopRetryAfterHoursCount=" + retryStrategy.getStopRetryAfterHoursCount() + ", turnOffQueuingAfterRetryCount=" + retryStrategy.getTurnOffQueuingAfterRetryCount() + ".");
     	
 		return replacementJob;
-	}
-	
-	
-	public void disableJob(int existingJobId) {
-		
-		YukonJob existingJob = jobManager.getJob(existingJobId);
-		jobManager.disableJob(existingJob);
-	}
-	
-	public String getCronExpression(int jobId) {
-		
-		ScheduledRepeatingJob job = (ScheduledRepeatingJob)jobManager.getJob(jobId);
-		return job.getCronString();
 	}
 	
 	@Resource(name="jobManager")

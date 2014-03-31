@@ -2,7 +2,6 @@ package com.cannontech.amr.rfn.dao;
 
 import java.util.Map;
 
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -20,8 +19,6 @@ public interface RfnDeviceDao {
      * @throws NotFoundException
      */
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
-    
-    public RfnMeter getMeterForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException;
     
     /**
      * Returns RfnDevice for pao. 

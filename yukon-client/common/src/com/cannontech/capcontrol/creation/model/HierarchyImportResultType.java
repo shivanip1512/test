@@ -1,6 +1,5 @@
 package com.cannontech.capcontrol.creation.model;
 
-import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -43,12 +42,6 @@ public enum HierarchyImportResultType implements DatabaseRepresentationSource {
 	private HierarchyImportResultType(String dbString, int errorCode) {
 		this.dbString = dbString;
 		this.errorCode = errorCode;
-	}
-	
-	public static HierarchyImportResultType getForDbString(String dbString) {
-		HierarchyImportResultType action = lookupByDbString.get(dbString);
-		Validate.notNull(action, dbString);
-		return action;
 	}
 	
 	public Boolean isSuccess() {
