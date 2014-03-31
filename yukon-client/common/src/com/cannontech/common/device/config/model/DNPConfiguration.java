@@ -7,9 +7,7 @@ package com.cannontech.common.device.config.model;
  */
 public class DNPConfiguration extends LightDeviceConfiguration {
     private final static long serialVersionUID = 1L;
-    
-    public static final int DEFAULT_DNP_CONFIG_ID = -1;
-    
+
     private int internalRetries = 2;
     private boolean localTime = false;
     private boolean enableDnpTimesyncs = false;

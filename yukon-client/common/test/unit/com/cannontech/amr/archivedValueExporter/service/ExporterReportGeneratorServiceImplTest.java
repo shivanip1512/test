@@ -91,20 +91,33 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", unitMeasureDao);
     }
 
-    private static final DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy").withZone(centralTimeZone);
-    private static final YukonUserContext userContextOne = new SimpleYukonUserContext(null, null, centralTimeZone.toTimeZone(), null);
+    private final static DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
+    private final static DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy").withZone(centralTimeZone);
+    private final static YukonUserContext userContextOne = new SimpleYukonUserContext(null, null, centralTimeZone.toTimeZone(), null);
     
     DateTime julyDateTime = dateTimeFormatter.parseDateTime("07/12/2012");
     PointValueQualityHolder pointValueQualityHolder = 
             PointValueBuilder.create().withPointId(200).withType(PulseAccumulator).withPointQuality(Manual).withValue(600).withTimeStamp(julyDateTime.toDate()).build();
-    
-    private static final ExportAttribute earliestUsageAttribute = new ExportAttribute(USAGE, EARLIEST, 7);
-    private static final ExportAttribute latestUsageAttribute = new ExportAttribute(USAGE, LATEST, 7);
-    private static final ExportAttribute maxPeakDemandAttribute = new ExportAttribute(PEAK_DEMAND, MAX, 4);
-    private static final ExportAttribute minPeakKVarAttribute = new ExportAttribute(PEAK_KVAR, MIN, 4);
-    
-    
+
+    private final static ExportAttribute earliestUsageAttribute = new ExportAttribute();
+    private final static ExportAttribute latestUsageAttribute = new ExportAttribute();
+    private final static ExportAttribute maxPeakDemandAttribute = new ExportAttribute();
+    private final static ExportAttribute minPeakKVarAttribute = new ExportAttribute();
+    static {
+        earliestUsageAttribute.setAttribute(USAGE);
+        earliestUsageAttribute.setDataSelection(EARLIEST);
+        earliestUsageAttribute.setDaysPrevious(7);
+        latestUsageAttribute.setAttribute(USAGE);
+        latestUsageAttribute.setDataSelection(LATEST);
+        latestUsageAttribute.setDaysPrevious(7);
+        maxPeakDemandAttribute.setAttribute(PEAK_DEMAND);
+        maxPeakDemandAttribute.setDataSelection(MAX);
+        maxPeakDemandAttribute.setDaysPrevious(4);
+        minPeakKVarAttribute.setAttribute(PEAK_KVAR);
+        minPeakKVarAttribute.setDataSelection(MIN);
+        minPeakKVarAttribute.setDaysPrevious(4);
+    }
+
     private final ExportFormat basicFixedFormatExport = new ExportFormat();
     {
         ExportField deviceNameExportField = getExportField(0, DEVICE_NAME);

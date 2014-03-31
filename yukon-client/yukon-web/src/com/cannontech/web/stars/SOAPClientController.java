@@ -167,7 +167,7 @@ public class SOAPClientController implements Controller {
         return null;
     }
     
-    public static void setErrorMsg(HttpSession session, int status) {
+    private static void setErrorMsg(HttpSession session, int status) {
         if (status == StarsConstants.FAILURE_CODE_RUNTIME_ERROR) {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to process response message" );
         } else if (status == StarsConstants.FAILURE_CODE_REQUEST_NULL) {
@@ -178,5 +178,4 @@ public class SOAPClientController implements Controller {
             session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Operation failed: invalid response message" );
         }
     }
-
 }

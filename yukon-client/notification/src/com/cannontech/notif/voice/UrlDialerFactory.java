@@ -27,9 +27,9 @@ import com.google.common.collect.Maps;
 
 
 public class UrlDialerFactory implements DialerFactory {
-    private @Autowired RolePropertyDao rolePropertyDao;
-    private @Autowired YukonUserDao yukonUserDao;
-    private @Autowired ConfigurationSource configurationSource;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
 
     private static final Logger log = YukonLogManager.getLogger(UrlDialerFactory.class);

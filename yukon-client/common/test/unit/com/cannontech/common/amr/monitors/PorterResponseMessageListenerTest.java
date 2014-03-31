@@ -159,7 +159,8 @@ public class PorterResponseMessageListenerTest {
     private PorterResponseMonitorRule getRule(boolean success, PorterResponseMonitorMatchStyle style, String state, Integer... errorCodes) {
         List<PorterResponseMonitorErrorCode> errorCodesList = Lists.newArrayList();
         for (Integer errorCode: errorCodes) {
-            PorterResponseMonitorErrorCode error = new PorterResponseMonitorErrorCode(errorCode);
+            PorterResponseMonitorErrorCode error = new PorterResponseMonitorErrorCode();
+            error.setErrorCode(errorCode);
             errorCodesList.add(error);
         }
         PorterResponseMonitorRule rule = new PorterResponseMonitorRule();

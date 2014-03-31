@@ -5,12 +5,6 @@ public class PorterResponseMonitorErrorCode {
 	private Integer ruleId;
 	private Integer errorCode;
 
-    public PorterResponseMonitorErrorCode() {}
-
-	public PorterResponseMonitorErrorCode(Integer errorCode) {
-	    this.errorCode = errorCode;
-	}
-
 	public Integer getErrorCodeId() {
 		return errorCodeId;
 	}
