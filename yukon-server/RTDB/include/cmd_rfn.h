@@ -70,7 +70,7 @@ public:
         virtual void handleCommandResult(const RfnTouConfigurationCommand &)                          {}
         virtual void handleCommandResult(const RfnTouScheduleGetConfigurationCommand &)               {}
         virtual void handleCommandResult(const RfnTouScheduleSetConfigurationCommand &)               {}
-        virtual void handleCommandResult(const RfnTouStateConfigurationCommand &)           {}
+        virtual void handleCommandResult(const RfnTouStateConfigurationCommand &)                     {}
         virtual void handleCommandResult(const RfnTouHolidayConfigurationCommand &)                   {}
         virtual void handleCommandResult(const RfnGetOvUvAlarmConfigurationCommand &)                 {}
         virtual void handleCommandResult(const RfnSetOvUvAlarmProcessingStateCommand &)               {}

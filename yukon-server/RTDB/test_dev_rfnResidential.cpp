@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
                     std::vector<unsigned char> exp = boost::assign::list_of
-                            (0x60)(0x01)
+                            (0x60)(0x01)    // enable TOU
                             (0x00);
 
                     BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,
@@ -648,7 +648,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
                     Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
                     std::vector<unsigned char> exp = boost::assign::list_of
-                            (0x60)(0x01)
+                            (0x60)(0x01)    // enable TOU
                             (0x00);
 
                     BOOST_CHECK_EQUAL_COLLECTIONS( rcv.begin() , rcv.end() ,

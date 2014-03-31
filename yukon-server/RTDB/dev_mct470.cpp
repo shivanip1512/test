@@ -304,6 +304,7 @@ Mct470Device::FunctionReadValueMappings Mct470Device::initFunctionReadValueMaps(
 
         { FuncRead_TOUDaySchedulePos,        0, { 2, CtiTableDynamicPaoInfo::Key_MCT_DayTable                   } },
         { FuncRead_TOUDaySchedulePos,        2, { 1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate             } },
+        //  the existence of a default TOU rate also indicates that TOU is enabled (see decodeReadDataForKey() for details)
         { FuncRead_TOUDaySchedulePos,        2, { 1, CtiTableDynamicPaoInfo::Key_MCT_TouEnabled                 } },
         { FuncRead_TOUDaySchedulePos,       10, { 1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset             } },
     };

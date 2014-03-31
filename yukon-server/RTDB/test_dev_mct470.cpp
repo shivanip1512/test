@@ -1115,6 +1115,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             BOOST_REQUIRE(om);
 
+            // This is the Enable TOU command
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          2 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x56 );
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      0 );
