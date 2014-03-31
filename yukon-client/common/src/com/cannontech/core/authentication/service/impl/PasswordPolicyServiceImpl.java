@@ -147,11 +147,6 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         
         return null;
     }
-    
-    @Override
-    public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user) {
-        return getPasswordPolicyErrors(password, user, null);
-    }
 
     @Override
     public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
@@ -181,11 +176,6 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         }
         
         return errors;
-    }
-    
-    @Override
-    public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user) {
-    	return getValidPolicyRules(password, user, null);
     }
 
     @Override

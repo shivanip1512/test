@@ -66,16 +66,6 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 	}
 
 	@Override
-	public double getPropertyDoubleValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
-	    throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
-	public float getPropertyFloatValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
-	    throw new UnsupportedOperationException("not implemented");
-	}
-	
-	@Override
 	public int getPropertyIntegerValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
 	    throw new UnsupportedOperationException("not implemented");
 	}
@@ -107,16 +97,6 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 	}
 
 	@Override
-	public void verifyCategory(YukonRoleCategory category, LiteYukonUser user) throws NotAuthorizedException {
-		throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
-	public void verifyFalseProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
-		throw new UnsupportedOperationException("not implemented");
-	}
-
-	@Override
 	public void verifyProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
 		throw new UnsupportedOperationException("not implemented");
 	}
@@ -125,11 +105,6 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
 	public void verifyRole(YukonRole role, LiteYukonUser user) throws NotAuthorizedException {
 		throw new UnsupportedOperationException("not implemented");
 	}
-
-    @Override
-    public boolean isMissingProperty(YukonRoleProperty roleProperty) throws NotAuthorizedException {
-        throw new UnsupportedOperationException("not implemented");
-    }
 
     @Override
     public ImmutableSet<YukonRoleProperty> getMissingProperties() throws NotAuthorizedException {

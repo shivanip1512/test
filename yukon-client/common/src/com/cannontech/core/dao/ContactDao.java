@@ -58,15 +58,6 @@ public interface ContactDao {
     public LiteContactNotification[] getAllPINNotifDestinations(int contactID_);
 
     /**
-     * Finds all notifcations that are of a phone type. Returns a zero length array
-     * when no phone numbers are found.
-     * 
-     * @param contact
-     * @return int
-     */
-    public LiteContactNotification[] getAllPhonesNumbers(int contactID_);
-
-    /**
      * Returns all contactNotifications.
      * @return List LiteContactNotifications
      */
@@ -110,8 +101,6 @@ public interface ContactDao {
     public LiteCustomer getCustomer(int contactID);
 
     public LiteYukonUser getYukonUser(int contactID_);
-
-    public boolean hasPin(int contactId);
 
     /**
      * Method to get the primary contact for an account

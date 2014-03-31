@@ -3,25 +3,25 @@ package com.cannontech.core.dao.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.core.dao.HolidayScheduleDao;
-import com.cannontech.database.model.Holiday;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.holiday.HolidaySchedule;
+import com.cannontech.database.model.Holiday;
 
 public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
 
     private SimpleJdbcOperations jdbcTemplate;
     
     private static final ParameterizedRowMapper<Holiday> holidayRowMapper = new ParameterizedRowMapper<Holiday>() {
+        @Override
         public Holiday mapRow(ResultSet rs, int rowNum) throws SQLException {
             Holiday holiday = new Holiday();
             holiday.setHolidayName( rs.getString("HolidayName"));
@@ -31,6 +31,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
     };
     
     private static final ParameterizedRowMapper<HolidaySchedule> holidayScheduleRowMapper = new ParameterizedRowMapper<HolidaySchedule>() {
+        @Override
         public HolidaySchedule mapRow(ResultSet rs, int rowNum) throws SQLException {
             HolidaySchedule holiday = new HolidaySchedule();
             holiday.setHolidayScheduleId(rs.getInt("HolidayScheduleId"));
@@ -40,12 +41,14 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
     };
     
     private static final ParameterizedRowMapper<Integer> scheduleIDRowMapper = new ParameterizedRowMapper<Integer>() {
+        @Override
         public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
             int scheduleId = rs.getInt("HolidayScheduleId");
             return scheduleId;
         }
     };
     
+    @Override
     public HolidaySchedule getScheduleForPao(int paoId) {
         
         String sql = "Select HolidayScheduleId " + 
@@ -58,9 +61,9 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         
         HolidaySchedule schedule = new HolidaySchedule();
         // All we wanted was the scheduleId.
-        if( scheduleIds.size() > 0 )
+        if( scheduleIds.size() > 0 ) {
             schedule.setHolidayScheduleId(scheduleIds.get(0));
-        else{
+        } else{
             CTILogger.error("Error: No schedule in database for paoid: " + paoId );
             schedule.setHolidayScheduleId(-1);
         }
@@ -81,6 +84,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         return schedule;
     }
     
+    @Override
     public Integer getStrategyForPao(int paoId) {
         
         String sql = "Select StrategyId " + 
@@ -93,23 +97,16 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
             return -1;
         }
     }
-    
-    public List<Holiday> getHolidaysForSchedule(Integer scheduleId) {
-        if(scheduleId <1) {
-            return new ArrayList<Holiday>();
-        }
-        String sql = "Select HolidayName, HolidayScheduleId From DateOfHoliday Where HolidayScheduleId = ?";
-        
-        List<Holiday> holidays = jdbcTemplate.query(sql, holidayRowMapper, scheduleId);
-        return holidays;
-    }
 
+    @Override
     public void saveHolidayScheduleStrategyAssigment(int paoId, int scheduleId, int strategyId) {
         
         String sql = "Delete From CCHolidayStrategyAssignment Where PaobjectId = ?";
         jdbcTemplate.update(sql, paoId);
         
-        if(scheduleId == -1) return;
+        if(scheduleId == -1) {
+            return;
+        }
         
         sql = "Insert Into CCHolidayStrategyAssignment Values ( ?,?,? )";
         jdbcTemplate.update( sql, paoId, scheduleId, strategyId);
@@ -128,6 +125,7 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         }
     }
     
+    @Override
     public List<HolidaySchedule> getAllHolidaySchedules() {
        String sql = "select HolidayScheduleID, HolidayScheduleName from HolidaySchedule where HolidayScheduleId <> 0 order by HolidayScheduleName";
        return jdbcTemplate.query(sql, holidayScheduleRowMapper);

@@ -78,6 +78,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     @PostConstruct
     public void initialize() {
         porterConnection.addMessageListener(new MessageListener() {
+            @Override
             public void messageReceived(MessageEvent e) {
                 Message message = e.getMessage();
                 if (message instanceof Return) {
@@ -88,6 +89,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         });
     }
     
+    @Override
     public synchronized long initiateLoadProfile(LiteYukonPAObject device, int channel,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
@@ -205,6 +207,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             currentDeviceRequests.put(deviceId, info);
             // start timer to monitor request
             executor.schedule(new Runnable() {
+                @Override
                 public void run() {
                     checkRequestStatus(info);
                 }
@@ -248,6 +251,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 receivedReturnsCount.remove(info.requestId);
                 if(info.callback != null){
                     executor.execute(new Runnable() {
+                        @Override
                         public void run() {
                             info.callback.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
                         }
@@ -263,6 +267,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         }
         // good news, lets restart the timer for another 5 minutes
         executor.schedule(new Runnable() {
+            @Override
             public void run() {
                 checkRequestStatus(info);
             }
@@ -330,6 +335,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 // get callback and execute it on the global thread pool
                 if (runnable != null) {
                     executor.execute(new Runnable() {
+                        @Override
                         public void run() {
 
                             // success
@@ -392,6 +398,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 final CompletionCallback runnable = currentRequestIds.remove(requestId);
                 if (runnable != null) {
                     executor.execute(new Runnable() {
+                        @Override
                         public void run() {
                             runnable.onCancel(cancelUser);
                         }
@@ -421,6 +428,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     final CompletionCallback runnable = currentRequestIds.remove(requestId);
                     if (runnable != null) {
                         executor.execute(new Runnable() {
+                            @Override
                             public void run() {
                                 runnable.onCancel(cancelUser);
                             }
@@ -499,6 +507,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         
     }
         
+    @Override
     public Double calculatePercentDone(Long requestId){
         
         Double percentDone = 0.0;
@@ -516,6 +525,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         return percentDone;
     }
 
+    @Override
     public String getLastReturnMsg(long requestId){
         return lastReturnMsgs.get(requestId);
     }
@@ -526,18 +536,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             + pendingDeviceRequests.size()
             + currentDeviceRequests.size();
     }
-    
-    public void printSizeOfCollections(int deviceId) {
-        System.out.println("recentlyReceivedRequestIds = " + recentlyReceivedRequestIds.size());
-        System.out.println("currentRequestIds = " + currentRequestIds.size());
-        System.out.println("- " + currentRequestIds.toString());
-        System.out.println("pendingDeviceRequests = " +pendingDeviceRequests.size(deviceId));
-        System.out.println("- " + pendingDeviceRequests.get(deviceId).toString());
-        System.out.println("currentDeviceRequests = " +currentDeviceRequests.size());
-        System.out.println("- " + currentDeviceRequests.toString());
-        
-    }
-    
+
+    @Override
     public List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  YukonUserContext userContext) {
         
         //  pending past profiles

@@ -3,13 +3,11 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
@@ -23,10 +21,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
     private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectByPAObjectId;
-    private static final String selectByStartRange;
-    private static final String selectByPAObjectIdAndStartRange;
     private static final ParameterizedRowMapper<LMControlHistory> rowMapper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -38,46 +32,15 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
         
         selectAllSql = "SELECT LMCtrlHistId, PAObjectId, StartDateTime, SOE_Tag, ControlDuration, ControlType, CurrentDailyTime, " +
                 "CurrentMonthlyTime, CurrentSeasonalTime, CurrentAnnualTime, ActiveRestore, ReductionValue, StopDateTime from " + TABLE_NAME;
-    
-        selectById = selectAllSql + " WHERE LMCtrlHistId = ?";
-        
-        selectByPAObjectId = selectAllSql + " WHERE PAObjectId = ?";
-        
-        selectByStartRange = selectAllSql + " AND StartDateTime >= ? AND StartDateTime <= ? ORDER BY PAObjectId";
-        
-        selectByPAObjectIdAndStartRange = selectAllSql + selectByPAObjectId + " AND StartDateTime >= ? AND StartDateTime <= ?";
-        
+
         rowMapper = LMControlHistoryDaoImpl.createRowMapper();
     }
     
     /*No adds, removes, or updates should be performed on this table by the clients, which is why those methods
      * are not implemented here.
      */
-    
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMControlHistory getById(final int lmCtrlHistId) throws DataAccessException {
-        LMControlHistory lmControlHistory = yukonJdbcTemplate.queryForObject(selectById, rowMapper, lmCtrlHistId);
-        return lmControlHistory;
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMControlHistory> getByPAObjectId(final int paObjectId) {
-        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByPAObjectId, rowMapper, paObjectId);
-        return list;
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMControlHistory> getByPAObjectIdAndStartDateRange(final int paObjectId, Date firstDate, Date secondDate) {
-        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByPAObjectIdAndStartRange, rowMapper, paObjectId, firstDate, secondDate);
-        return list;
-    }
-    
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMControlHistory> getByStartDateRange(Date firstDate, Date secondDate) {
-        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByStartRange, rowMapper, firstDate, secondDate);
-        return list;
-    }
-    
+
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getAll() {
         List<LMControlHistory> list = yukonJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
@@ -86,6 +49,7 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
     
     private static final ParameterizedRowMapper<LMControlHistory> createRowMapper() {
         final ParameterizedRowMapper<LMControlHistory> rowMapper = new ParameterizedRowMapper<LMControlHistory>() {
+            @Override
             public LMControlHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LMControlHistory lmControlHistory = new LMControlHistory();
                 lmControlHistory.setLmCtrlHistID(rs.getInt("LMCtrlHistId"));
@@ -108,6 +72,7 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
     }
     
     private FieldMapper<LMControlHistory> lmControlHistoryFieldMapper = new FieldMapper<LMControlHistory>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, LMControlHistory lmControlHistory) {
             p.addValue("PAObjectId", lmControlHistory.getPaObjectID());
             p.addValue("StartDateTime", lmControlHistory.getStartDateTime(), Types.TIMESTAMP);
@@ -122,9 +87,11 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao {
             p.addValue("ReductionValue", lmControlHistory.getReductionValue());
             p.addValue("StopDateTime", lmControlHistory.getStopDateTime(), Types.TIMESTAMP);
         }
+        @Override
         public Number getPrimaryKey(LMControlHistory lmControlHistory) {
             return lmControlHistory.getLmCtrlHistID();
         }
+        @Override
         public void setPrimaryKey(LMControlHistory lmControlHistory, int value) {
             lmControlHistory.setLmCtrlHistID(value);
         }

@@ -87,14 +87,7 @@
   
   <bean id="mspIdentifiablePaoService" class="com.cannontech.multispeak.service.impl.MspIdentifiablePaoServiceImpl">
   </bean>
-  
-  <bean id="mspAccountInfoDao" class="com.cannontech.multispeak.dao.impl.MspAccountInfoDaoImpl">
-    <property name="mspObjectDao" ref="mspObjectDao"/>
-  	<property name="multispeakFuncs" ref="multispeakFuncs"/>
-    <property name="multispeakDao" ref="multispeakDao"/>
-    <property name="meterDao" ref="meterDao"/>
-  </bean>
-  
+
   <bean id="mspMeterDao" class="com.cannontech.multispeak.dao.impl.MspMeterDaoImpl"/>
 
   <bean id="multispeakCustomerInfoService" class="com.cannontech.multispeak.service.impl.MultispeakCustomerInfoServiceImpl"/>

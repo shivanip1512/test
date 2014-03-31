@@ -244,17 +244,7 @@ public class UserGroupDaoImpl implements UserGroupDao {
         com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
         return userGroup;
     }
-    
-    @Override
-    public com.cannontech.database.db.user.UserGroup findDBUserGroupByUserGroupName(String userGroupName) {
-        try {
-            return getDBUserGroupByUserGroupName(userGroupName);
-        } catch (EmptyResultDataAccessException e) {}
-        
-        return null;
-    }
 
-    
     @Override
     public List<LiteUserGroup> getAllLiteUserGroups() {
         SqlStatementBuilder sql = new SqlStatementBuilder();

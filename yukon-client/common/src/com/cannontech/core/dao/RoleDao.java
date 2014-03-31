@@ -4,7 +4,6 @@ import java.util.Set;
 
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.google.common.collect.Multimap;
 
@@ -48,13 +47,6 @@ public interface RoleDao {
     @Deprecated
     public String getRolePropValueGroup(int groupId,
                                         int rolePropertyId, String defaultValue);
-
-    /**
-     * Return a particular lite yukon group given the group name
-     * @param groupName
-     * @return LiteYukonGroup
-     */
-    public LiteYukonGroup getGroup(String groupName);
 
     /**
      * Return a particular lite yukon group given the group ID

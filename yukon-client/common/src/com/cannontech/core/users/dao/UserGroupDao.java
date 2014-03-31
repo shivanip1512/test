@@ -46,11 +46,6 @@ public interface UserGroupDao {
     public com.cannontech.database.db.user.UserGroup getDBUserGroupByUserGroupName(String userGroupName);
 
     /**
-     * This method returns the lite user group associated with the supplied user group name.
-     */
-    public com.cannontech.database.db.user.UserGroup findDBUserGroupByUserGroupName(String userGroupName);
-
-    /**
      * This method returns all of the lite user groups that have the supplied role group id.
      */
     public List<LiteUserGroup> getLiteUserGroupsByRoleGroupId(int roleGroupId);

@@ -111,6 +111,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         sql.append("SELECT RolePropertyId, RoleId, DefaultValue");
         sql.append("FROM YukonRoleProperty");
         yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("RolePropertyId");
                 int roleId = rs.getInt("RoleId");
@@ -222,7 +223,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Validate.isTrue(allAreCompatible, "at least one of " + properties +" is not compatible with a check method");
 
         for (YukonRoleProperty property : properties) {
-            if (!checkProperty(property, user)) return false;
+            if (!checkProperty(property, user)) {
+                return false;
+            }
         }
 
         return true;
@@ -240,7 +243,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Validate.isTrue(allAreCompatible, "at least one of " + properties +" is not compatible with a check method");
 
         for (YukonRoleProperty property : properties) {
-            if (checkProperty(property, user)) return true;
+            if (checkProperty(property, user)) {
+                return true;
+            }
         }
 
         return false;
@@ -365,26 +370,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
 
     @Override
-    public float getPropertyFloatValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
-        Number propertyNumberValue = getPropertyNumberValue(property, user);
-        
-        return propertyNumberValue.floatValue();
-    }
-    
-    @Override
     public int getPropertyIntegerValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
         Number propertyNumberValue = getPropertyNumberValue(property, user);
         
         return propertyNumberValue.intValue();
     }
-    
-    @Override
-    public double getPropertyDoubleValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
-        Number propertyNumberValue = getPropertyNumberValue(property, user);
-        
-        return propertyNumberValue.doubleValue();
-    }
-    
+
     @Override
     public long getPropertyLongValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
         Number propertyNumberValue = getPropertyNumberValue(property, user);
@@ -517,11 +508,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
 
     @Override
-    public void verifyCategory(YukonRoleCategory category, LiteYukonUser user) throws NotAuthorizedException {
-        if (!checkCategory(category, user)) throw NotAuthorizedException.category(user, category);
-    }
-
-    @Override
     public void verifyAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
     		YukonRoleProperty... otherProperties) throws NotAuthorizedException {
     	
@@ -532,24 +518,18 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     
     @Override
     public void verifyProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
-        if (!checkProperty(property, user)) throw NotAuthorizedException.trueProperty(user, property);
+        if (!checkProperty(property, user)) {
+            throw NotAuthorizedException.trueProperty(user, property);
+        }
     }
-    
-    @Override
-    public void verifyFalseProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException {
-        if (!checkFalseProperty(property, user)) throw NotAuthorizedException.trueProperty(user, property);
-    }
-    
+
     @Override
     public void verifyRole(YukonRole role, LiteYukonUser user) throws NotAuthorizedException {
-        if (!checkRole(role, user)) throw NotAuthorizedException.role(user, role);
+        if (!checkRole(role, user)) {
+            throw NotAuthorizedException.role(user, role);
+        }
     }
-    
-    @Override
-    public boolean isMissingProperty(YukonRoleProperty roleProperty) {
-        return missingProperties.contains(roleProperty);
-    }
-    
+
     @Override
     public ImmutableSet<YukonRoleProperty> getMissingProperties() {
         return missingProperties;

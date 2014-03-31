@@ -30,16 +30,7 @@ public class FixedDeviceGroupingHack {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
-    
-    public Set<SimpleDevice> getDevices(FixedDeviceGroups group, String groupName) {
-        String fullName = group.getPrefix() + "/" + groupName;
-        
-        DeviceGroup resovledGroup = deviceGroupService.resolveGroupName(fullName);
-        Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singleton(resovledGroup));
-        
-        return devices;
-    }
-    
+
     public Set<Integer> getDeviceIds(FixedDeviceGroups group, String groupName) {
         String fullName = group.getPrefix() + "/" + groupName;
         
@@ -54,6 +45,7 @@ public class FixedDeviceGroupingHack {
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(deviceGroup);
         
         ObjectMapper<DeviceGroup, String> mapper = new ObjectMapper<DeviceGroup, String>() {
+            @Override
             public String map(DeviceGroup from) {
                 return from.getName();
             }

@@ -27,7 +27,6 @@ public final class VersionTools {
     public static final String KEY_YUKON_VERSION = "Yukon-Version";
     public static final String KEY_YUKON_DETAILS = "Yukon-Details";
     public static final String KEY_BUILD_INFO = "Hudson-Build-Details";
-    public static final String COMMON_JAR = "common.jar";
 
     private static Boolean crsPtjIntegration = null;
     private static Boolean staticLoadGroupMapping = null;
@@ -267,13 +266,5 @@ public final class VersionTools {
             }
         }
         return buildInfo;
-    }
-
-    public static Boolean getStaticLoadGroupMapping() {
-        return staticLoadGroupMapping;
-    }
-
-    public static void setStaticLoadGroupMapping(Boolean staticLoadGroupMapping) {
-        VersionTools.staticLoadGroupMapping = staticLoadGroupMapping;
     }
 }

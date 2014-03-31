@@ -57,22 +57,6 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     };
 
     @Override
-    public PaoPointIdentifier getPaoPointIdentifier(YukonPao pao, RegulatorPointMapping regulatorPointMapping) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.paobjectId paobjectId, ypo.type paoType, point.PointType pointType, point.PointOffset pointOffset");
-        sql.append("from Point point");
-        sql.append("join ExtraPaoPointAssignment eppa on point.PointId = eppa.PointId");
-        sql.append("join YukonPaobject ypo on ypo.paobjectid = point.paobjectId");
-        sql.append("where eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
-        sql.append("and eppa.Attribute = ").appendArgument(regulatorPointMapping);
-        try {
-            return yukonJdbcTemplate.queryForObject(sql, paoPointIdentifierRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + regulatorPointMapping.getDescription(), e);
-        }
-    }
-    
-    @Override
     public int getPointId(YukonPao pao, RegulatorPointMapping regulatorPointMapping) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT point.PointId");

@@ -3,7 +3,6 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -58,8 +56,9 @@ public class RoleDaoImpl implements RoleDao {
 
             for (int i = 0; i < props.size(); i++) {
                 LiteYukonRoleProperty p = props.get(i);
-                if (p.getRoleID() == roleID_)
+                if (p.getRoleID() == roleID_) {
                     list.add(p);
+                }
             }
         }
 
@@ -112,22 +111,6 @@ public class RoleDaoImpl implements RoleDao {
         Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
         return getRolePropValueGroup(liteYukonGroup, rolePropertyId, defaultValue);
     }
-    
-    
-    @Override
-    public LiteYukonGroup getGroup(String groupName) {
-        
-        synchronized (databaseCache) {
-            java.util.Iterator<LiteYukonGroup> it = databaseCache.getAllYukonGroups().iterator();
-            while (it.hasNext()) {
-                LiteYukonGroup group = it.next();
-                if (group.getGroupName().equalsIgnoreCase( groupName ))
-                    return group;
-            }
-        }
-        
-        return null;
-    }
 
     @Override
     public LiteYukonGroup getGroup(int grpID_) 
@@ -137,8 +120,9 @@ public class RoleDaoImpl implements RoleDao {
             java.util.Iterator<LiteYukonGroup> it = databaseCache.getAllYukonGroups().iterator();
             while (it.hasNext()) {
                 LiteYukonGroup group = it.next();
-                if (group.getGroupID() == grpID_ )
+                if (group.getGroupID() == grpID_ ) {
                     return group;
+                }
             }
           }
         

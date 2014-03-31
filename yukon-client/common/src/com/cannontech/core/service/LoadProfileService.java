@@ -31,8 +31,6 @@ public interface LoadProfileService {
     public boolean removePendingLoadProfileRequest(YukonPao device, long requestId,
                                                    YukonUserContext userContext);
 
-    public void printSizeOfCollections(int deviceId);
-    
     public Double calculatePercentDone(Long requestId); 
     
     public String getLastReturnMsg(long requestId); 

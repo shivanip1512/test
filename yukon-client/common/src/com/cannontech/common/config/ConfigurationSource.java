@@ -179,16 +179,7 @@ public interface ConfigurationSource {
      * @param defaultValue Period value to return if the key does not exist
      */
     public Period getPeriod(String key, ReadablePeriod defaultValue);
-    
-    /**
-     * Equivalent to calling {@link #getPeriod(String, ReadablePeriod, DurationFieldType)} and then calling
-     * {@link Period#toStandardDuration()} on the result.
-     * @param key
-     * @param defaultValue Duration value to return if the key does not exist
-     * @param durationFieldType field type of unadorned numbers 
-     */
-    public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType durationFieldType);
-    
+
     /**
      * Equivalent to calling {@link #getPeriod(String, ReadablePeriod)} and then calling
      * {@link Period#toStandardDuration()} on the result.

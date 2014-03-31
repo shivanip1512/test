@@ -391,29 +391,10 @@ public class PaoDefinitionDaoImplTest {
     public void testGetValueForTag() {
         String valueForTagString1 = dao.getValueForTagString(PaoType.MCT370, PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
         assertEquals("1-5", valueForTagString1);
-        long valueForTagLong1 = dao.getValueForTagLong(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
-        assertEquals(8251709l, valueForTagLong1);
-        long valueForTagLong2 = dao.getValueForTagLong(PaoType.MCT318L, PaoTag.DUMMY_LONG_TAG);
-        assertEquals(0, valueForTagLong2);
-        
         // should not work
-        try {
-            dao.getValueForTagLong(PaoType.MCT370, PaoTag.DLC_ADDRESS_RANGE_ENFORCE);
-            fail("should not be compatible get long");
-        } catch (Exception e) {
-            // exception expected for test
-        }
-
         try {
             dao.getValueForTagString(PaoType.MCT370, PaoTag.DUMMY_LONG_TAG);
             fail("should not be compatible get string");
-        } catch (Exception e) {
-            // exception expected for test
-        }
-
-        try {
-            dao.getValueForTagLong(PaoType.MCT310, PaoTag.DUMMY_LONG_TAG);
-            fail("should not exist on pao");
         } catch (Exception e) {
             // exception expected for test
         }

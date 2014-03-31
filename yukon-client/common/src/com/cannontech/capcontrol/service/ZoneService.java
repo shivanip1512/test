@@ -67,13 +67,6 @@ public interface ZoneService {
     public List<Integer> getAllUsedPointIds();
 
     /**
-     * Returns a list of pointIds assigned to the Zone with zoneId.
-     * @param zoneId
-     * @return
-     */
-    public List<Integer> getPointIdsForZoneId(int zoneId);
-    
-    /**
      * Returns a list of CapBankToZoneMapping objects by zoneId.
      * @param zoneId
      * @return

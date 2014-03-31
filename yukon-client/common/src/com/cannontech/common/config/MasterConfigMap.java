@@ -35,11 +35,6 @@ public class MasterConfigMap implements ConfigurationSource {
         initialize();
     }
 
-    public void reset() {
-        log.debug("resetting");
-        configMap.clear();
-    }
-
     public void setConfigSource(File file) {
         this.masterCfgFile = file;
     }
@@ -237,11 +232,6 @@ public class MasterConfigMap implements ConfigurationSource {
     @Override
     public Duration getDuration(String key, ReadableDuration defaultValue) {
         return getPeriod(key, defaultValue.toPeriod()).toStandardDuration();
-    }
-
-    @Override
-    public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType duationFieldType) {
-        return getPeriod(key, defaultValue.toPeriod(), duationFieldType).toStandardDuration();
     }
 
     /**

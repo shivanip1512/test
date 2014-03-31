@@ -87,37 +87,7 @@ public interface RolePropertyDao {
      * @throws UserNotInRoleException user must be in role to access a role property
      */
     public int getPropertyIntegerValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
-    
-    /**
-     * Returns the user's value of the specified role property as a float.
-     * 
-     * Undefined values are returned as 0.
-     * 
-     * This method may only be called with properties that have a type return type 
-     * that can be cast to Number. Rounding or truncation may occur to return an float.
-     * 
-     * @param property any property with a Number return type
-     * @param user a valid user, may be null when accessing System properties
-     * @return  the value of the property or 0 if undefined
-     * @throws UserNotInRoleException user must be in role to access a role property
-     */
-    public float getPropertyFloatValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
-    
-    /**
-     * Returns the user's value of the specified role property as a double.
-     * 
-     * Undefined values are returned as 0.
-     * 
-     * This method may only be called with properties that have a type return type 
-     * that can be cast to Number. Rounding or truncation may occur to return a double.
-     * 
-     * @param property any property with a Number return type
-     * @param user a valid user, may be null when accessing System properties
-     * @return  the value of the property or 0 if undefined
-     * @throws UserNotInRoleException user must be in role to access a role property
-     */
-    public double getPropertyDoubleValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException;
-    
+
     /**
      * Returns the user's value of the specified role property as an enum.
      * 
@@ -288,16 +258,6 @@ public interface RolePropertyDao {
     public void verifyProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException;
 
     /**
-     * Equivalent to calling checkFalseProperty and returning if true, and throwing
-     * a NotAuthorizedException if false.
-     * 
-     * @param property any property with a Boolean return type
-     * @param user a valid user, may be null when accessing System properties
-     * @throws NotAuthorizedException
-     */
-    public void verifyFalseProperty(YukonRoleProperty property, LiteYukonUser user) throws NotAuthorizedException;
-    
-    /**
      * Equivalent to calling checkRole and returning if true, and throwing
      * a NotAuthorizedException if false.
 
@@ -306,17 +266,7 @@ public interface RolePropertyDao {
      * @throws NotAuthorizedException
      */
     public void verifyRole(YukonRole role, LiteYukonUser user) throws NotAuthorizedException;
-    
-    /**
-     * Equivalent to calling checkCategory and returning if true, and throwing
-     * a NotAuthorizedException if false.
 
-     * @param role any valid role, may not be null
-     * @param user any valid user, may not be null
-     * @throws NotAuthorizedException
-     */
-    public void verifyCategory(YukonRoleCategory category, LiteYukonUser user) throws NotAuthorizedException;
-    
     /**
      * Returns the set of categories that are assigned to the user. This includes
      * both user and group roles.
@@ -325,11 +275,6 @@ public interface RolePropertyDao {
      * @return an unmodifiable Set, never null
      */
     public Set<YukonRoleCategory> getRoleCategoriesForUser(LiteYukonUser user);
-
-    /**
-     * Returns true if this role property does not exist in the database.
-     */
-    public boolean isMissingProperty(YukonRoleProperty roleProperty);
 
     /**
      * Returns the set of role properties that do not exist in the database

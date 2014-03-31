@@ -81,23 +81,6 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
                                         DbChangeType.UPDATE);
     }
 
-    @Override
-    public int delete(int userPreferenceId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM "+ TABLE_NAME);
-        sql.append("WHERE " + FIELD_PRIMARY_KEY).eq(userPreferenceId);
-
-        int affected = yukonJdbcTemplate.update(sql);
-
-        dbChangeManager.processDbChange(userPreferenceId, 
-                                        DBChangeMsg.CHANGE_USER_PREFERENCE_DB,
-                                        DBChangeMsg.CAT_USER_PREFERENCE, 
-                                        DBChangeMsg.CAT_USER_PREFERENCE, 
-                                        DbChangeType.DELETE);
-
-        return affected;
-    }
-
     private UserPreference getPreference(LiteYukonUser user, UserPreferenceName prefName)
             throws EmptyResultDataAccessException {
         SqlStatementBuilder sql = new SqlStatementBuilder();

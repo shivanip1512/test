@@ -375,11 +375,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public Set<PaoType> getPaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
         return getPaoTypesThatSupportTag(Creatable.DONT_CARE, firstTag, otherTags);
     }
-    
-    @Override
-    public Set<PaoType> getCreatablePaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
-        return getPaoTypesThatSupportTag(Creatable.YES, firstTag, otherTags);
-    }
 
     @Override
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, final PaoTag tag) {
@@ -406,12 +401,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     @Override
-    public long getValueForTagLong(PaoType paoType, PaoTag tag) {
-        Number valueForTag = getConvertedValueForTag(paoType, tag, Number.class);
-        return valueForTag.longValue();
-    }
-    
-    @Override
     public String getValueForTagString(PaoType paoType, PaoTag tag) {
         String valueForTag = getConvertedValueForTag(paoType, tag, String.class);
         return valueForTag;
@@ -430,11 +419,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         LogHelper.debug(log, "returning: %s", convertedValue);
         T result = returnType.cast(convertedValue);
         return result;
-    }
-    
-    @Override
-    public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag tag) {
-    	return isTagSupported(paoDefiniton.getType(), tag);
     }
 
     @Override

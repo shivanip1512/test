@@ -114,30 +114,7 @@ public class StrategyDaoImpl implements StrategyDao {
         
         return strategy.getStrategyID();
     }
-    
-    @Override
-    @Transactional
-    public void update(CapControlStrategy strategy) {
-        try {
-            strategyTemplate.update(strategy);
-            savePeakSettings(strategy);
-            saveVoltageViolationSettings(strategy);
-            savePowerFactorCorrectionSetting(strategy);
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("Strategy name already in use.");
-        }
-    }
 
-    @Override
-    @Transactional(readOnly = false)
-    public boolean delete(int strategyId) {
-        deleteStrategyAssignmentsByStrategyId(strategyId);
-        String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId = ?";
-        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
-        
-        return rowsAffected == 1;
-    }
-    
     @Override
     public List<ViewableStrategy> getAllViewableStrategies(final YukonUserContext userContext) {
         Function<CapControlStrategy, ViewableStrategy> viewableConverter = new Function<CapControlStrategy, ViewableStrategy>() {
@@ -356,7 +333,10 @@ public class StrategyDaoImpl implements StrategyDao {
         sql.append("AND SettingType").in(Lists.newArrayList(VoltageViolationSettingType.values()));
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
-        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+        if (!strategy.isIvvc())
+         {
+            return; // Don't save these IVVC-only settings if we aren't going to use them
+        }
 
         List<VoltageViolationSetting> targetSettings = strategy.getVoltageViolationSettings();
         /* Perform Validation */
@@ -390,7 +370,10 @@ public class StrategyDaoImpl implements StrategyDao {
         sql.append("AND SettingName").eq_k(PowerFactorCorrectionSettingName.POWER_FACTOR_CORRECTION);
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
-        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+        if (!strategy.isIvvc())
+         {
+            return; // Don't save these IVVC-only settings if we aren't going to use them
+        }
         
         PowerFactorCorrectionSetting setting = strategy.getPowerFactorCorrectionSetting();
         /* Perform Validation */
@@ -434,7 +417,10 @@ public class StrategyDaoImpl implements StrategyDao {
         sql.append("AND SettingName").eq_k(CommReportingPercentageSettingName.COMM_REPORTING_PERCENTAGE);
         yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         
-        if (!strategy.isIvvc()) return; // Don't save these IVVC-only settings if we aren't going to use them
+        if (!strategy.isIvvc())
+         {
+            return; // Don't save these IVVC-only settings if we aren't going to use them
+        }
         
         CommReportingPercentageSetting setting = strategy.getMinCommunicationPercentageSetting();
         /* Perform Validation */
@@ -575,7 +561,9 @@ public class StrategyDaoImpl implements StrategyDao {
             } else if(setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
                 lowerVoltLimit = Double.parseDouble(setting.getPeakValue());
             }
-            if (upperVoltLimit != 0.0 && lowerVoltLimit != 0.0) break;
+            if (upperVoltLimit != 0.0 && lowerVoltLimit != 0.0) {
+                break;
+            }
         }
         return new StrategyLimitsHolder(strategy, upperVoltLimit, lowerVoltLimit);
     }
@@ -652,7 +640,9 @@ public class StrategyDaoImpl implements StrategyDao {
                 }
             }
         }
-        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        }
     }
     
     private static void validatePowerFactorCorrectionSetting(PowerFactorCorrectionSetting setting) {
@@ -666,7 +656,9 @@ public class StrategyDaoImpl implements StrategyDao {
         if (setting.getMaxCost() < 0) {
             errors.add("Max Cost must be greater than or equal to zero");
         }
-        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        }
     }
     
     private static void validateMinCommunicationPercentageSetting(CommReportingPercentageSetting setting) {
@@ -680,7 +672,9 @@ public class StrategyDaoImpl implements StrategyDao {
         if (setting.getVoltageMonitorReportingRatio() < 0 || setting.getVoltageMonitorReportingRatio() > 100) {
             errors.add("Additional Voltage Points communication percentage must be greater than or equal to zero and less than or equal to one hundred");
         }
-        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+        }
     }
     
     @PostConstruct

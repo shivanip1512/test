@@ -11,16 +11,13 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -95,28 +92,6 @@ public final class LMDaoImpl implements LMDao {
         return retVal;
     }
 
-    @Override
-    public synchronized LiteYukonPAObject[] getAllMemberLMScenarios(
-            LiteYukonUser yukUser) {
-        // Get an instance of the cache.
-        ArrayList scenarioList = new ArrayList(32);
-        synchronized (databaseCache) {
-            List lmScenarios = databaseCache.getAllLMScenarios();
-            Collections.sort(lmScenarios, LiteComparators.liteStringComparator);
-
-            for (int i = 0; i < lmScenarios.size(); i++) {
-                LiteYukonPAObject litePao = (LiteYukonPAObject) lmScenarios.get(i);
-                if (YukonSpringHook.getBean(AuthDao.class)
-                              .userHasAccessPAO(yukUser, litePao.getYukonID()))
-                    scenarioList.add(litePao);
-            }
-        }
-
-        LiteYukonPAObject retVal[] = new LiteYukonPAObject[scenarioList.size()];
-        scenarioList.toArray(retVal);
-        return retVal;
-    }
-
     /*
      * (non-Javadoc)
      * @see com.cannontech.core.dao.LMDao#getLMScenarioProgs(int)
@@ -132,24 +107,15 @@ public final class LMDaoImpl implements LMDao {
 
             for (int i = 0; i < lmProgs.size(); i++) {
                 LiteLMProgScenario liteProg = (LiteLMProgScenario) lmProgs.get(i);
-                if (scenarioID == liteProg.getScenarioID())
+                if (scenarioID == liteProg.getScenarioID()) {
                     progList.add(liteProg);
+                }
             }
         }
 
         LiteLMProgScenario retVal[] = new LiteLMProgScenario[progList.size()];
         progList.toArray(retVal);
         return retVal;
-    }
-
-    @Override
-    public List<Integer> getProgramsForControlArea(int areaID) {
-
-        String sql = "select lmprogramdeviceid from lmcontrolareaprogram where deviceid = ?";
-        List<Integer> programIds = jdbcOps.query(sql,
-                                                 controlAreaProgramIDRowMapper,
-                                                 areaID);
-        return programIds;
     }
 
     @Override

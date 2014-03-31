@@ -197,19 +197,10 @@ public final class CtiUtilities {
             in.close();
 
             return result;
-        } else
+        } else {
             throw new java.io.NotSerializableException("The object '" + s +
                                                        "' does not implement java.io.Serializable");
-    }
-
-    public final static Integer dateToSeconds(Date inDate) {
-        GregorianCalendar tempCal = new GregorianCalendar();
-        tempCal.setTime(inDate);
-
-        Integer outInteger =
-            new Integer(tempCal.get(Calendar.HOUR_OF_DAY) * 3600 +
-                        tempCal.get(Calendar.MINUTE) * 60 + tempCal.get(Calendar.SECOND));
-        return outInteger;
+        }
     }
 
     /**
@@ -234,15 +225,17 @@ public final class CtiUtilities {
                         int end = Integer.parseInt(gTk.nextToken().trim());
 
                         for (int j = beg; j <= end && j <= maxID; j++) {
-                            if (!utilIds.contains(j) && j > 0 && j <= maxID)
+                            if (!utilIds.contains(j) && j > 0 && j <= maxID) {
                                 utilIds.add(j);
+                            }
                         }
 
                     } else {
                         // we only have one int alone
                         int tmp = Integer.parseInt(val);
-                        if (!utilIds.contains(tmp) && tmp > 0 && tmp <= maxID)
+                        if (!utilIds.contains(tmp) && tmp > 0 && tmp <= maxID) {
                             utilIds.add(tmp);
+                        }
                     }
                 }
 
@@ -273,8 +266,9 @@ public final class CtiUtilities {
         // hour = "0" + hour;
 
         String minute = Integer.toString((seconds - (intHour * 3600)) / 60);
-        if (minute.length() <= 1)
+        if (minute.length() <= 1) {
             minute = "0" + minute;
+        }
 
         return hour + ":" + minute;
     }
@@ -285,58 +279,14 @@ public final class CtiUtilities {
      * where HH is hours and mm is seconds
      */
     public static int decodeStringToSeconds(String string) {
-        if (string == null || string.length() != 5)
+        if (string == null || string.length() != 5) {
             return 0;
+        }
 
         int hour = Integer.parseInt(string.substring(0, 2)) * 3600;
         int minute = Integer.parseInt(string.substring(3, 5)) * 60;
 
         return hour + minute;
-    }
-
-    public final static GregorianCalendar decodeTimeString(String timeString) {
-        GregorianCalendar returnCalendar = new GregorianCalendar();
-        String hourString = new String("0");
-        String minuteString = new String("0");
-        char currentChar;
-        boolean minutesField = false;
-        for (int i = 0; i < timeString.length(); i++) {
-            currentChar = timeString.charAt(i);
-            if (currentChar >= '0' && currentChar <= '9' && !minutesField)
-                hourString = hourString.concat(String.valueOf(currentChar));
-            else if (currentChar >= '0' && currentChar <= '9' && minutesField)
-                minuteString = minuteString.concat(String.valueOf(currentChar));
-            else if (currentChar == ':')
-                minutesField = true;
-        }
-        returnCalendar.set(GregorianCalendar.HOUR_OF_DAY,
-                           (new Integer(hourString)).intValue());
-        returnCalendar.set(GregorianCalendar.MINUTE,
-                           (new Integer(minuteString)).intValue());
-        return returnCalendar;
-    }
-
-    public final static Date decodeTimeStringToDate(String timeString) {
-        GregorianCalendar returnCalendar = new GregorianCalendar();
-        String hourString = new String("0");
-        String minuteString = new String("0");
-        char currentChar;
-        boolean minutesField = false;
-        for (int i = 0; i < timeString.length(); i++) {
-            currentChar = timeString.charAt(i);
-            if (currentChar >= '0' && currentChar <= '9' && !minutesField)
-                hourString = hourString.concat(String.valueOf(currentChar));
-            else if (currentChar >= '0' && currentChar <= '9' && minutesField)
-                minuteString = minuteString.concat(String.valueOf(currentChar));
-            else if (currentChar == ':')
-                minutesField = true;
-        }
-        returnCalendar.set(GregorianCalendar.HOUR_OF_DAY,
-                           (new Integer(hourString)).intValue());
-        returnCalendar.set(GregorianCalendar.MINUTE,
-                           (new Integer(minuteString)).intValue());
-
-        return returnCalendar.getTime();
     }
 
     public static GregorianCalendar get1990GregCalendar() {
@@ -415,8 +365,10 @@ public final class CtiUtilities {
             multiplier = 3600;
         } else if (selectedString.toLowerCase().indexOf("day") != -1) {
             multiplier = 86400;
-        } else
+        }
+        else {
             multiplier = 0; // we have no idea, just use zero
+        }
 
         try {
             int loc = selectedString.toLowerCase().indexOf(" ");
@@ -533,11 +485,13 @@ public final class CtiUtilities {
      * windows username.
      */
     public final static String getUserName() {
-        if (ClientSession.getInstance().getUser() != null)
+        if (ClientSession.getInstance().getUser() != null) {
             return ClientSession.getInstance().getUser().getUsername();
-        else
+        }
+        else {
             return CtiUtilities.STRING_NONE;
         // return System.getProperty("user.name");
+        }
     }
 
     /**
@@ -583,12 +537,15 @@ public final class CtiUtilities {
      * Returns true of the given id is in the given array
      */
     public static final boolean isInSet(int[] idSet, int id) {
-        if (idSet == null)
+        if (idSet == null) {
             return false;
+        }
 
-        for (int i = 0; i < idSet.length; i++)
-            if (idSet[i] == id)
+        for (int i = 0; i < idSet.length; i++) {
+            if (idSet[i] == id) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -597,12 +554,15 @@ public final class CtiUtilities {
      * Returns true of the given id is in the given array
      */
     public static final boolean isInSet(Integer[] idSet, int id) {
-        if (idSet == null)
+        if (idSet == null) {
             return false;
+        }
 
-        for (int i = 0; i < idSet.length; i++)
-            if (idSet[i] == id)
+        for (int i = 0; i < idSet.length; i++) {
+            if (idSet[i] == id) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -640,8 +600,9 @@ public final class CtiUtilities {
      * This method will return a string representing a the date passed in.
      */
     public static final String toDatabaseString(Date date) {
-        if (date == null)
+        if (date == null) {
             return null;
+        }
 
         java.text.SimpleDateFormat format =
             new java.text.SimpleDateFormat("dd-MMM-yyyy");
@@ -676,65 +637,6 @@ public final class CtiUtilities {
             ext = s.substring(i + 1).toLowerCase();
         }
         return ext;
-    }
-
-    /**
-     * This method returns the String that represents the key_ as a method.
-     * We search for a method of the vlaue_ object that returns a String
-     * and has a the name:
-     * get(key_);
-     * If anything goes wrong, we print out all possible getters that return
-     * a String and use the default_ as our value.
-     * At most we accept 1 getter method. The percent(%) sign is used as a
-     * token separator. key_ may look like this:
-     * CBC %PAOName%
-     * A call to getPAOName() will replace the %PAOName%.
-     */
-    public static String getReflectiveProperty(
-                                               final Object value_, String key_,
-                                               final String default_) {
-        if (value_ == null)
-            return default_;
-
-        java.lang.reflect.Method[] methods = value_.getClass().getMethods();
-
-        try {
-            StringBuffer buf = new StringBuffer(key_);
-            String methodName = buf.substring(key_.indexOf("%") + 1, key_.lastIndexOf("%"));
-
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().toLowerCase().startsWith("get")
-                        && methods[i].getReturnType().equals(String.class)
-                        && methods[i].getName().toLowerCase().endsWith(methodName.toLowerCase())) {
-                    String s = (String) methods[i].invoke(value_, (Object[]) null);
-
-                    buf.replace(key_.indexOf("%") + 1, key_.lastIndexOf("%"), s);
-
-                    // remove all % signs
-                    while (buf.toString().indexOf("%") != -1)
-                        buf.deleteCharAt(buf.toString().indexOf("%"));
-
-                    return (buf.toString() == null ? default_ : buf.toString());
-                }
-            }
-        } catch (Exception e) {} // no biggy, print some info and use the default_ value
-
-        /****************** ERROR HANDLING BELOW *****************/
-        // oops we failed, list the properties for this reflective class
-        com.cannontech.clientutils.CTILogger.info("*** PROPERTY REFLECTIVE TRANSLATION ERROR: "
-                                                  + key_ + " key/value not stored.");
-        com.cannontech.clientutils.CTILogger.debug("Available REFLECTIVE properties for: "
-                                                   + value_.getClass().getName());
-
-        for (int i = 0; i < methods.length; i++) {
-            if (methods[i].getName().toLowerCase().startsWith("get")
-                    && methods[i].getReturnType().equals(String.class)) {
-                com.cannontech.clientutils.CTILogger.info("   " +
-                                                          methods[i].getName().substring(3));
-            }
-        }
-
-        return default_;
     }
 
     /**

@@ -5,8 +5,8 @@ import java.util.List;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.CommReportingPercentageSetting;
+import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.PowerFactorCorrectionSetting;
 import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
@@ -21,8 +21,6 @@ public interface StrategyDao {
      * @return List<LiteCapControlStrategy>
      */
     public List<LiteCapControlStrategy> getAllLiteStrategies();
-
-    public boolean delete(int strategyId);
 
     public boolean deleteStrategyAssignmentsByStrategyId(int strategyId);
     
@@ -68,8 +66,6 @@ public interface StrategyDao {
     public List<ViewableStrategy> getAllViewableStrategies(YukonUserContext userContext);
 
     public CapControlStrategy getForId(int strategyId);
-
-    public void update(CapControlStrategy strategy);
 
     public StrategyLimitsHolder getStrategyLimitsHolder(int strategyId);
 

@@ -67,13 +67,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     public Duration getDuration(String key, ReadableDuration defaultValue) {
         throw new UnsupportedOperationException();
     }
-    
-    @Override
-    public Duration getDuration(String key, ReadableDuration defaultValue,
-            DurationFieldType durationFieldType) {
-        throw new UnsupportedOperationException();
-    }
-    
+
     @Override
     public Period getPeriod(String key, ReadablePeriod defaultValue) {
         throw new UnsupportedOperationException();

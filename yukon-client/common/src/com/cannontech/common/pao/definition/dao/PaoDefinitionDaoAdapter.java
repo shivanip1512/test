@@ -124,17 +124,6 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 	}
 
 	@Override
-	public boolean isTagSupported(PaoDefinition paoDefiniton,
-			PaoTag tag) {
-		throw new UnsupportedOperationException("not implemented");
-	}
-	
-	@Override
-	public long getValueForTagLong(PaoType paoType, PaoTag tag) {
-	    return 0;
-	}
-	
-	@Override
 	public String getValueForTagString(PaoType paoType, PaoTag tag) {
 	    return null;
 	}
@@ -203,12 +192,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     public Set<PaoDefinition> getCreatablePaosThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
         throw new UnsupportedOperationException("not implemented");
     }
-    
-    @Override
-    public Set<PaoType> getCreatablePaoTypesThatSupportTag(PaoTag firstTag, PaoTag... otherTags) {
-        throw new UnsupportedOperationException("not implemented");
-    }
-    
+
     @Override
     public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
         throw new UnsupportedOperationException("not implemented");

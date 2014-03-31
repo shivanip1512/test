@@ -41,22 +41,10 @@ public interface PasswordPolicyService {
 
     /**
      * This method checks the supplied password against the desired password policy.  It will first try to use the
-     * user's password policy and then fall back to the yukon password policy.
-     */
-    public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user);
-    
-    /**
-     * This method checks the supplied password against the desired password policy.  It will first try to use the
      * liteUserGroup to figure out the password policy and then fall back onto the user's password policy.  If neither are found
      * it will use the yukon password policy.
      */
     public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user, LiteUserGroup liteUserGroup);
-    
-    /**
-     * Get the valid (passed) policy rules for a given user and password. It will first try to use the
-     * user's password policy and then fall back to the yukon password policy.
-     */
-    public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user);
 
     /**
      * Get the valid (passed) policy rules for a given user, group and password. It will first try to use the

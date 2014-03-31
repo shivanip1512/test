@@ -247,12 +247,7 @@ public class ZoneServiceImpl implements ZoneService {
     public List<Integer> getAllUsedPointIds() {        
         return zoneDao.getAllUsedPointIds();
     }
-    
-    @Override
-    public List<Integer> getPointIdsForZoneId(int zoneId) {        
-        return zoneDao.getPointIdsByZone(zoneId);
-    }
-    
+
     @Override
     public List<CapBankToZoneMapping> getCapBankToZoneMapping(int zoneId) {
     	return zoneDao.getBankToZoneMappingByZoneId(zoneId);

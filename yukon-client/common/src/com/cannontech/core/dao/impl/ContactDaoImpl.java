@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -132,13 +131,15 @@ public final class ContactDaoImpl implements ContactDao {
             String sql = "SELECT CONTACTID " + 
                         " FROM " + Contact.TABLE_NAME + 
                         " WHERE UPPER(CONTLASTNAME) LIKE ?";
-                        if (firstName != null && firstName.length() > 0)
+                        if (firstName != null && firstName.length() > 0) {
                             sql += " AND UPPER(CONTFIRSTNAME) LIKE ? ";
+                        }
             
             pstmt = conn.prepareStatement( sql );
             pstmt.setString( 1, lastName.toUpperCase()+(partialMatch? "%":""));
-            if (firstName != null && firstName.length() > 0)
+            if (firstName != null && firstName.length() > 0) {
                 pstmt.setString(2, firstName.toUpperCase() + "%");
+            }
             rset = pstmt.executeQuery();
     
             ArrayList<Integer> contactIDList = new ArrayList<Integer>();
@@ -147,17 +148,24 @@ public final class ContactDaoImpl implements ContactDao {
                 contactIDList.add(new Integer(rset.getInt(1)));
             }
             contactIDs = new int[contactIDList.size()];
-            for (int i = 0; i < contactIDList.size(); i++)
+            for (int i = 0; i < contactIDList.size(); i++) {
                 contactIDs[i] = contactIDList.get(i).intValue();
+            }
         }
         catch( Exception e ){
             log.error("Error retrieving contacts with last name " + lastName+ ": " + e.getMessage(), e);
         }
         finally {
             try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rset != null) {
+                    rset.close();
+                }
+                if (pstmt != null) {
+                    pstmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             }
             catch (java.sql.SQLException e) {}
         }
@@ -166,7 +174,9 @@ public final class ContactDaoImpl implements ContactDao {
 
 	@Override
     public List<LiteContact> findContactsByPhoneNo(String phone, boolean partialMatch) {
-		if (phone == null) return null;
+		if (phone == null) {
+            return null;
+        }
 		
         SqlStatementBuilder sql = getContactByNotificationSql(phone, ContactNotificationMethodType.PHONE, partialMatch);
         List<LiteContact> contacts = yukonJdbcTemplate.query(sql, rowMapper);
@@ -237,24 +247,6 @@ public final class ContactDaoImpl implements ContactDao {
 		return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
 	}
 
-    @Override
-    public LiteContactNotification[] getAllPhonesNumbers( int contactID_ )
-    {
-        LiteContact contact = getContact( contactID_ );
-        List<LiteContactNotification> phoneList = new ArrayList<LiteContactNotification>(16);
-
-        //find all the phone numbers in the list ContactNotifications
-        for(LiteContactNotification ltCntNotif : contactNotificationDao.getNotificationsForContact(contact)) {   
-                
-            if (ltCntNotif.getContactNotificationType().isPhoneType()) {
-                phoneList.add( ltCntNotif );
-            }
-        }
-
-        LiteContactNotification[] phones = new LiteContactNotification[ phoneList.size() ];
-        return phoneList.toArray( phones );
-    }
-    
 	@Override
     public List<LiteContactNotification> getAllContactNotifications() 
 	{
@@ -302,8 +294,9 @@ public final class ContactDaoImpl implements ContactDao {
     public LiteCICustomer getCICustomer (int contactID_)
 	{
 		LiteCICustomer liteCICust = getPrimaryContactCICustomer(contactID_);
-		if( liteCICust == null)
-			liteCICust = getOwnerCICustomer(contactID_);
+		if( liteCICust == null) {
+            liteCICust = getOwnerCICustomer(contactID_);
+        }
 			
 		return liteCICust;
 	}
@@ -338,25 +331,13 @@ public final class ContactDaoImpl implements ContactDao {
 		{
             LiteContact lc = getContact( contactID_ );
             
-            if( lc != null )
-                return yukonUserDao.getLiteYukonUser(lc.getLoginID());            
+            if( lc != null ) {
+                return yukonUserDao.getLiteYukonUser(lc.getLoginID());
+            }            
 		}
 
 		return null;
 	}	
-
-    @Override
-    public boolean hasPin(int contactId) {
-        
-        List<LiteContactNotification> liteContactNotifications = contactNotificationDao.getNotificationsForContact(contactId);
-        for (Iterator<LiteContactNotification> iter = liteContactNotifications.iterator(); iter.hasNext();) {
-            LiteContactNotification contactNotification = iter.next();
-            if (contactNotification.getContactNotificationType() == ContactNotificationType.VOICE_PIN) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public LiteContact getPrimaryContactForAccount(int accountId) {

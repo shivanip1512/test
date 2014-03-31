@@ -38,19 +38,6 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
     private EconomicEventParticipantDao economicEventParticipantDao;
     private SimpleTableAccessTemplate<EconomicEventNotif> template;
     private NextValueHelper nextValueHelper;
-    
-    @Override
-    public List<EconomicEventNotif> getForEvent(EconomicEvent event) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select een.*");
-        sql.append("from CCurtEconomicEventNotif een");
-        sql.append(  "join CCurtEconomicParticipant eep on eep.CCurtEconomicParticipantID = een.CCurtEconomicParticipantID");
-        sql.append("where eep.CustomerID").eq(event.getId());
-        
-        List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
-        setParticipantAndRevisionForNotifsAndEvents(result, event);
-        return result;
-    }
 
     @Override
     public List<EconomicEventNotif> getForEventAndReason(EconomicEvent event, NotificationReason reason) {
@@ -123,18 +110,9 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
         yukonJdbcTemplate.update(sql);
     }
 
-    @Override
-    public void deleteForParticipant(EconomicEventParticipant participant) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete");
-        sql.append("from CCurtEconomicEventNotif");
-        sql.append("where CCurtEconomicParticipantID").eq(participant.getId());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-    
     private FieldMapper<EconomicEventNotif> economicEventNotifFieldMapper = 
         new FieldMapper<EconomicEventNotif>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, EconomicEventNotif notif) {
             p.addValue("NotificationTime", notif.getNotificationTime());
             p.addValue("NotifTypeID", notif.getNotifTypeId());
@@ -144,10 +122,12 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
             p.addValue("CCurtEconomicParticipantID", notif.getParticipant().getId());
         }
 
+        @Override
         public Number getPrimaryKey(EconomicEventNotif notif) {
             return notif.getId();
         }
 
+        @Override
         public void setPrimaryKey(EconomicEventNotif notif, int value) {
             notif.setId(value);
         }
@@ -209,6 +189,7 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
     }
 
     private YukonRowMapper<EconomicEventNotif> rowMapper = new YukonRowMapper<EconomicEventNotif>() {
+        @Override
         public EconomicEventNotif mapRow(YukonResultSet rs) throws SQLException {
             EconomicEventNotif notif = new EconomicEventNotif();
             notif.setId(rs.getInt("CCurtEconomicEventNotifID"));
