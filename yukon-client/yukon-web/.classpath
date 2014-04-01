@@ -17,7 +17,6 @@
     <classpathentry combineaccessrules="false" kind="src" path="/multispeak"/>
     <classpathentry combineaccessrules="false" kind="src" path="/tools"/>
     <classpathentry combineaccessrules="false" kind="src" path="/billing"/>
-    <classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
     <classpathentry kind="lib" path="/third-party/saaj.jar"/>
     <classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
