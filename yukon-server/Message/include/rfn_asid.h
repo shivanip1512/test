@@ -21,6 +21,7 @@ struct IM_EX_MSG ApplicationServiceIdentifiers
 
     static const ApplicationServiceIdentifiers ChannelManager;
     static const ApplicationServiceIdentifiers EventManager;
+    static const ApplicationServiceIdentifiers HubMeterCommandSet;
     static const ApplicationServiceIdentifiers E2EDT;
     static const ApplicationServiceIdentifiers E2EAP_DNP3;
 };

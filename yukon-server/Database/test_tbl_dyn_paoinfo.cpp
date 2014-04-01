@@ -300,6 +300,7 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects,                    "rfn max disconnects" },
         { CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes,                 "rfn disconnect minutes" },
         { CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes,                    "rfn connect minutes" },
+        { CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress,                 "rf da dnp slave address" },
     };
 
     std::vector<std::string> expected, results;

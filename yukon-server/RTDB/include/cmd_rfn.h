@@ -11,6 +11,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
+class RfDaReadDnpSlaveAddressCommand;
 class RfnCentronSetLcdConfigurationCommand;
 class RfnCentronGetLcdConfigurationCommand;
 class RfnDemandFreezeConfigurationCommand;
@@ -59,6 +60,7 @@ public:
     struct ResultHandler
     {
         virtual void handleCommandResult(const RfnCommand &)                                          {}
+        virtual void handleCommandResult(const RfDaReadDnpSlaveAddressCommand &)                           {}
         virtual void handleCommandResult(const RfnCentronSetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnCentronGetLcdConfigurationCommand &)                {}
         virtual void handleCommandResult(const RfnDemandFreezeConfigurationCommand &)                 {}

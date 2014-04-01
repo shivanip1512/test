@@ -5,8 +5,13 @@
 namespace Cti {
 namespace Devices {
 
-class RfDaDevice : public RfnDevice
+class IM_EX_DEVDB RfDaDevice : public RfnDevice
 {
+    typedef RfnDevice Inherited;
+
+    virtual int executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    virtual void handleCommandResult(const Commands::RfDaReadDnpSlaveAddressCommand &);
 };
 
 }

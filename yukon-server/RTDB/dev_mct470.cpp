@@ -2253,7 +2253,7 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
         }
         else if( parse.isKeyValid("dnp") )
         {
-            if( parse.isKeyValid("ied dnp address") )
+            if( parse.isKeyValid("dnp address") )
             {
                 function = EmetconProtocol::GetConfig_IEDDNPAddress;
                 found = getOperation(function, OutMessage->Buffer.BSt);

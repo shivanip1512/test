@@ -333,7 +333,9 @@ public:
         Key_RFN_ConnectDelay,
         Key_RFN_MaxDisconnects,
         Key_RFN_DisconnectMinutes,
-        Key_RFN_ConnectMinutes
+        Key_RFN_ConnectMinutes,
+
+        Key_RF_DA_DnpSlaveAddress
     };
 
 protected:

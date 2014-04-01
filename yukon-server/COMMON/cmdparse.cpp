@@ -1885,11 +1885,11 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                         _cmd["start address"] = atoi(temp2.data());
                     }
                 }
-                if(!(token = CmdStr.match(re_dnp_address)).empty())
-                {
-                    _cmd["ied dnp address"] = true;
-                }
             }
+        }
+        if(CmdStr.contains(" dnp address"))
+        {
+            _cmd["dnp address"] = true;
         }
         if(CmdStr.contains(" scan"))
         {

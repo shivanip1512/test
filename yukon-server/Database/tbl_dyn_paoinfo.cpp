@@ -340,6 +340,8 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_RFN_MaxDisconnects,            "rfn max disconnects")
         (Dpi::Key_RFN_DisconnectMinutes,         "rfn disconnect minutes")
         (Dpi::Key_RFN_ConnectMinutes,            "rfn connect minutes")
+
+        (Dpi::Key_RF_DA_DnpSlaveAddress, "rf da dnp slave address")
         ;
 }
 

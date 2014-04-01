@@ -204,7 +204,7 @@ deps:
         @echo Compiling $< to
         @echo           $(OBJ)\$(_SourceB).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $(_Source)
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $(_Source)
 
 
 ######################################################################################
