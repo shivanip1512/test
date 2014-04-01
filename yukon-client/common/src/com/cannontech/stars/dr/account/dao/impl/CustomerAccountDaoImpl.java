@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,11 +128,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
     }
 
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void add(CustomerAccount account) {
         customerAccountTemplate.insert(account);
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final CustomerAccount account) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -144,11 +146,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void update(CustomerAccount account) {
         customerAccountTemplate.update(account);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getById(final int accountId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -159,6 +163,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return account;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
@@ -233,6 +238,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
         List<CustomerAccount> list = yukonJdbcTemplate.query(selectSql, rowMapper);
@@ -352,6 +358,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return template.mappedQuery(sqlFragmentGenerator, accountIds, rowMapper, identityFunction);
     }
             
+    @Override
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
                                                                              Date startDate, Date stopDate){
 
@@ -371,6 +378,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -389,6 +397,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(selectAccountContactInfoSql);
@@ -412,6 +421,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return retVal;
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccountWithNames getAcountWithNamesByAccountNumber(String accountNumber, 
                                                                               final int ecId) {
@@ -430,12 +440,11 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
         if (accountList.size() == 0) {
             throw new NotAuthorizedException("The supplied user's contact is not assigned to an account.");
-        } else {
-            if (accountList.size() > 1) {
-                logger.warn("Multiple accounts associated with user" + user.getUsername() + ", returning an arbitrary account.");
-            }
-            return accountList.get(0);
         }
+        if (accountList.size() > 1) {
+            logger.warn("Multiple accounts associated with user" + user.getUsername() + ", returning an arbitrary account.");
+        }
+        return accountList.get(0);
     }
 
     private SqlStatementBuilder getAccountIdsByECSql(Iterable<Integer> energyCompanyIds) {
@@ -484,18 +493,18 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("WHERE ECTAM.EnergyCompanyId").eq_k(yukonEnergyCompany.getEnergyCompanyId());
         if (CollectionUtils.isEmpty(assignedProgramIds)) {
             return yukonJdbcTemplate.queryForInt(sql);
-        } else {
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-            
-            SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-                @Override
-                public SqlFragmentSource generate(List<Integer> subList) {
-                    return new SqlStatementBuilder().append(sql).append("  AND LMHCG.ProgramId").in(subList);
-                };
-            };
-            
-            return template.queryForSum(sqlGenerator, assignedProgramIds);
         }
+
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                return new SqlStatementBuilder().append(sql).append("AND LMHCG.ProgramId").in(subList);
+            };
+        };
+        
+        return template.queryForSum(sqlGenerator, assignedProgramIds);
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

@@ -35,7 +35,6 @@
             <attribute name="javadoc_location" value="http://jdom.org/docs/apidocs/"/>
         </attributes>
     </classpathentry>
-    <classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
     <classpathentry combineaccessrules="false" kind="src" path="/report"/>
     <classpathentry combineaccessrules="false" kind="src" path="/commander"/>
     <classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>

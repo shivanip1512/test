@@ -13,10 +13,8 @@ public class OptOutBackingBean {
     private int durationInDays;
     private Integer[] inventoryIds;
     private Integer currentSurveyIndex;
-    private List<SurveyResult> surveyResults =
-        LazyList.ofInstance(SurveyResult.class);
-    private List<ScheduledOptOutQuestion> legacyQuestions =
-        LazyList.ofInstance(ScheduledOptOutQuestion.class);
+    private List<SurveyResult> surveyResults = LazyList.ofInstance(SurveyResult.class);
+    private List<ScheduledOptOutQuestion> legacyQuestions = LazyList.ofInstance(ScheduledOptOutQuestion.class);
 
     public static class SurveyResultAnswer {
         private int questionId;
@@ -47,17 +45,17 @@ public class OptOutBackingBean {
             this.textAnswer = textAnswer;
         }
 
+        @Override
         public String toString() {
-            return "questionId=" + questionId + "; dropDownAnswer=[" +
-                dropDownAnswer + "]; textAnswer=[" + textAnswer + "]";
+            return "questionId=" + questionId + "; dropDownAnswer=[" + dropDownAnswer + "]; textAnswer=[" + textAnswer
+                + "]";
         }
     }
 
     public static class SurveyResult {
         private int surveyId;
         private boolean answered;
-        private List<SurveyResultAnswer> answers =
-            LazyList.ofInstance(SurveyResultAnswer.class);
+        private List<SurveyResultAnswer> answers = LazyList.ofInstance(SurveyResultAnswer.class);
 
         public SurveyResult() {
         }
@@ -91,6 +89,7 @@ public class OptOutBackingBean {
             this.answers = answers;
         }
 
+        @Override
         public String toString() {
             return "surveyId=" + surveyId + "; answered=" + answered;
         }

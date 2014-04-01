@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.collections.iterators.ReverseListIterator;
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.model.BaseEvent;
@@ -36,6 +36,7 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     private BaseEventDao baseEventDao;
 
     private final class StopTimeComparator implements Comparator<BaseEvent> {
+        @Override
         public int compare(BaseEvent o1, BaseEvent o2) {
             return o1.getStopTime().compareTo(o2.getStopTime());
         }
@@ -97,8 +98,9 @@ public class IsocCommonStrategy extends StrategyGroupBase {
 
     public boolean hasCustomerExceeded24HourPeriodHours(CICustomerStub customer, Date endStopTime, int propossedEventLength) throws PointException {
         double allowedHours = get24HourPeriodAllowedHours(customer);
-        if (allowedHours == 0 || allowedHours == 1440)  // 0 and 1440(60*24) represent no 24 hour limit
+        if (allowedHours == 0 || allowedHours == 1440) {
             return false;
+        }
         // applies to 24 hour period
         double actualHours = getTotalEventHoursIn24HourPeriod(customer, endStopTime);
         return ((actualHours * 60) + propossedEventLength) > (allowedHours * 60);
@@ -151,8 +153,8 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     public void checkEventOverlap(VerifiedCustomer vCustomer, BaseEvent event) {
         List<BaseEvent> forCustomer = baseEventDao.getAllForCustomer(vCustomer.getCustomer());
         Collections.sort(forCustomer, stopTimeComparatot);
-        for (Iterator iter = new ReverseListIterator(forCustomer); iter.hasNext();) {
-            BaseEvent otherEvent = (BaseEvent) iter.next();
+        for (Iterator<BaseEvent> iter = new ReverseListIterator<>(forCustomer); iter.hasNext();) {
+            BaseEvent otherEvent = iter.next();
             // rely on ordering to short circuit
             if (!otherEvent.getStopTime().after(event.getStartTime())) {
                 // don't use before because stop and start could be equal
@@ -259,6 +261,10 @@ public class IsocCommonStrategy extends StrategyGroupBase {
     	}
     }
 
+    /**
+     * @param event
+     * @param user
+     */
     public Boolean canEventBeAdjusted(CurtailmentEvent event, LiteYukonUser user) {
     	// The addition of new customer restrictions (max 4 hr control in 24 hr period and less than 4 hour control)
     	//  make it so that it no longer is possible to adjust an event safely without reselecting all the customers.
@@ -273,10 +279,12 @@ public class IsocCommonStrategy extends StrategyGroupBase {
         this.pointTypeHelper = pointTypeHelper;
     }
 
+    @Override
     public BaseEventDao getBaseEventDao() {
         return baseEventDao;
     }
 
+    @Override
     public void setBaseEventDao(BaseEventDao baseEventDao) {
         this.baseEventDao = baseEventDao;
     }

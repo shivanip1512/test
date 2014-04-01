@@ -3,19 +3,17 @@
  */
 package com.cannontech.web.dr;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
+import org.apache.commons.collections4.FactoryUtils;
+import org.apache.commons.collections4.list.LazyList;
 
-import com.google.common.collect.Lists;
-
-@SuppressWarnings("unchecked")
 public class StartMultipleProgramsBackingBean extends StartProgramBackingBeanBase {
     private Integer controlAreaId;
     private Integer scenarioId;
     private List<ProgramStartInfo> programStartInfo =
-        LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStartInfo.class));
+        LazyList.lazyList(new ArrayList<ProgramStartInfo>(), FactoryUtils.instantiateFactory(ProgramStartInfo.class));
 
     public Integer getControlAreaId() {
         return controlAreaId;
@@ -40,5 +38,4 @@ public class StartMultipleProgramsBackingBean extends StartProgramBackingBeanBas
     public void setProgramStartInfo(List<ProgramStartInfo> programStartInfo) {
         this.programStartInfo = programStartInfo;
     }
-
 }

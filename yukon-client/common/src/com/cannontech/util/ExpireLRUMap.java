@@ -9,29 +9,28 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 
 import com.cannontech.common.util.TimeUtil;
 
-@SuppressWarnings("unchecked")
 public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
-    private final Map map;
+    private final Map<K, V> map;
     private int expireDays = 1;
     
     public ExpireLRUMap() {
-        map = Collections.synchronizedMap(new LRUMap());
+        map = Collections.synchronizedMap(new LRUMap<K, V>());
     }
     
     public ExpireLRUMap(final int size) {
-        map = Collections.synchronizedMap(new LRUMap(size));
+        map = Collections.synchronizedMap(new LRUMap<K, V>(size));
     }
     
     public V put(final K key, final V value) {
-        return (V) map.put(key, value);
+        return map.put(key, value);
     }
     
     public V remove(final K key) {
-        return (V) map.remove(key);
+        return map.remove(key);
     }
     
     public V get(final K key) {
@@ -39,7 +38,7 @@ public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
     }
     
     public V get(final K key, final int days) {
-        V t = (V) map.get(key);
+        V t = map.get(key);
         if (t != null && !isExpired(t, days)) {
             return t;
         }
@@ -65,8 +64,8 @@ public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
     }
     
     public boolean containsValue(V value, int days) {
-        for (final Object obj : this.keySet()) {
-            K key = (K) obj;
+        for (final K obj : this.keySet()) {
+            K key = obj;
             if (map.get(key).equals(value)) {
                 if (!isExpired(value, days)) {
                     return true;

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -17,7 +17,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -29,9 +29,8 @@ import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.model.ZigbeeDeviceAssignment;
 
 public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    
     public static YukonRowMapper<DigiGateway> digiGatewayRowMapper = new YukonRowMapper<DigiGateway>() {
         @Override
         public DigiGateway mapRow(YukonResultSet rs) throws SQLException {
@@ -66,7 +65,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         }
     };
     
-    
     private SqlStatementBuilder buildBaseZigbeeDeviceStatementBuilder() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
@@ -82,7 +80,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = buildBaseZigbeeDeviceStatementBuilder();
         sql.append("WHERE ZBG.DeviceId").eq(gatewayId);
         
-        ZigbeeDevice gateway = yukonJdbcTemplate.queryForObject(sql, zigbeeDeviceRowMapper);
+        ZigbeeDevice gateway = jdbcTemplate.queryForObject(sql, zigbeeDeviceRowMapper);
         
         return gateway;
     }
@@ -91,7 +89,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     public List<ZigbeeDevice> getAllGateways() {
         SqlStatementBuilder sql = buildBaseZigbeeDeviceStatementBuilder();
         
-        return yukonJdbcTemplate.query(sql, zigbeeDeviceRowMapper);
+        return jdbcTemplate.query(sql, zigbeeDeviceRowMapper);
     }
     
     @Override
@@ -100,7 +98,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         
         sql.append("WHERE ZBG.DeviceId").in(gatewayIds);
         
-        return yukonJdbcTemplate.query(sql, zigbeeDeviceRowMapper);
+        return jdbcTemplate.query(sql, zigbeeDeviceRowMapper);
     }
     
     @Override
@@ -108,7 +106,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = buildDigiGatewayStatement();
         sql.append("WHERE DG.DeviceId").eq(deviceId);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
+        DigiGateway digiGateway = jdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
 
         return digiGateway;
     }
@@ -118,7 +116,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = buildDigiGatewayStatement();
         sql.append("WHERE ZG.MacAddress").eq(macAddress);
         
-        DigiGateway digiGateway = yukonJdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
+        DigiGateway digiGateway = jdbcTemplate.queryForObject(sql, digiGatewayRowMapper);
 
         return digiGateway;
     }
@@ -149,7 +147,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "JOIN LMHardwareBase HB ON IB.InventoryID = HB.InventoryID");
         sql.append("WHERE IB.AccountId").eq(accountId);
         
-        return yukonJdbcTemplate.query(sql, digiGatewayRowMapper);
+        return jdbcTemplate.query(sql, digiGatewayRowMapper);
     }
     
     @Override
@@ -168,7 +166,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE ib.AccountId").eq(accountId);
         sql.append(  "AND lmhb.LMHardwareTypeId").in(hardwareTypeIds);
         
-        return yukonJdbcTemplate.query(sql, new YukonRowMapper<ZigbeeDeviceAssignment>() {
+        return jdbcTemplate.query(sql, new YukonRowMapper<ZigbeeDeviceAssignment>() {
                 @Override
                 public ZigbeeDeviceAssignment mapRow(YukonResultSet rs) throws SQLException {
                 	ZigbeeDeviceAssignment assignment = new ZigbeeDeviceAssignment();
@@ -191,7 +189,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "JOIN ZBGatewayToDeviceMapping ZBDM on ZBDM.DeviceId = ZEP.DeviceId");
         sql.append("WHERE ZBDM.GatewayId").eq(gatewayId);
         
-        return yukonJdbcTemplate.query(sql, zigbeeDeviceRowMapper);
+        return jdbcTemplate.query(sql, zigbeeDeviceRowMapper);
     }
     
     @Override
@@ -201,7 +199,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     	if (gatewayId != null) {
     	    SqlStatementBuilder sql = new SqlStatementBuilder();
         	sql =  new SqlStatementBuilder("INSERT INTO ZBGatewayToDeviceMapping").values(gatewayId, deviceId);
-        	yukonJdbcTemplate.update(sql);
+        	jdbcTemplate.update(sql);
     	}
     }
     
@@ -210,7 +208,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE GatewayId").eq(gatewayId);
         
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -218,7 +216,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("DELETE FROM ZBGatewayToDeviceMapping WHERE DeviceId").eq(deviceId);
 
-    	yukonJdbcTemplate.update(sql);
+    	jdbcTemplate.update(sql);
     }
     
     @Override
@@ -232,7 +230,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE zb.DeviceId").eq(deviceId);
         
         try {
-            return yukonJdbcTemplate.queryForObject(sql, new LmHardwareInventoryIdentifierMapper());
+            return jdbcTemplate.queryForObject(sql, new LmHardwareInventoryIdentifierMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -246,7 +244,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE DeviceId").eq(deviceId);
         
         try {
-            return yukonJdbcTemplate.queryForInt(sql);
+            return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -264,12 +262,12 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append(  "JOIN YukonPaObject YPO on ZG.DeviceId = YPO.PaObjectId");
         sql.append("WHERE LMHCG.LMGroupId").eq(groupId);
         
-        return yukonJdbcTemplate.query(sql,zigbeeDeviceRowMapper); 
+        return jdbcTemplate.query(sql,zigbeeDeviceRowMapper); 
     }
     
     @Override
     public List<ZigbeeDevice> getZigbeeGatewaysForInventoryIds(Collection<Integer> inventoryIds) {
-        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
         
         List<ZigbeeDevice> gateways = chunkingSqlTemplate.query(new SqlFragmentGenerator<Integer>(){
 
@@ -297,7 +295,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
             
         }, inventoryIds, zigbeeDeviceRowMapper); 
 
-        
         return  gateways;
     }
     
@@ -313,7 +310,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE YPO.PaObjectId").eq(endPointId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
     
     @Override
@@ -328,7 +325,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         sql.append("WHERE YPO.PaObjectId").eq(gatewayId);
         sql.append(  "AND LMHCG.GroupEnrollStop IS NULL");
         
-        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
     
     @Override
@@ -340,7 +337,7 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         
         sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
     
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -352,6 +349,6 @@ public class GatewayDeviceDaoImpl implements GatewayDeviceDao {
         
         sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
     
-        yukonJdbcTemplate.update(sql);
+        jdbcTemplate.update(sql);
     }
 }

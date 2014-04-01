@@ -3,19 +3,17 @@
  */
 package com.cannontech.web.dr;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
+import org.apache.commons.collections4.FactoryUtils;
+import org.apache.commons.collections4.list.LazyList;
 
-import com.google.common.collect.Lists;
-
-@SuppressWarnings("unchecked")
 public class StopMultipleProgramsBackingBean extends StopProgramBackingBeanBase {
     private Integer controlAreaId;
     private Integer scenarioId;
     private List<ProgramStopInfo> programStopInfo =
-        LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ProgramStopInfo.class));
+        LazyList.lazyList(new ArrayList<ProgramStopInfo>(), FactoryUtils.instantiateFactory(ProgramStopInfo.class));
 
     public Integer getControlAreaId() {
         return controlAreaId;

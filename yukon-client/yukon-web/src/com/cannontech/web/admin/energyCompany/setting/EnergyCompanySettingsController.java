@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.map.LazyMap;
+import org.apache.commons.collections4.FactoryUtils;
+import org.apache.commons.collections4.map.LazyMap;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +43,19 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.support.MappedPropertiesHelper;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/energyCompany/settings/*")
 public class EnergyCompanySettingsController {
-    
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private EnergyCompanyService energyCompanyService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
-    
+    @Autowired private EnergyCompanyDao ecDao;
+
     private MappedPropertiesHelper<EnergyCompanySettingType> mappedPropertiesHelper;
-    
+
     private final Validator settingsValidator =
             new SimpleValidator<SettingsBean>(SettingsBean.class) {
                 @Override
@@ -76,7 +72,7 @@ public class EnergyCompanySettingsController {
                             errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.wrongEcId");
                         }
                         
-                        currentSetting = energyCompanySettingDao.getSetting(newSetting.getType(), settingsBean.getEcId());
+                        currentSetting = ecSettingDao.getSetting(newSetting.getType(), settingsBean.getEcId());
 
                         if (!newSetting.isEnabled() && !ObjectUtils.equals(currentSetting.getValue(), newSetting.getValue())) {
                             errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.disabledInput");
@@ -110,8 +106,7 @@ public class EnergyCompanySettingsController {
             };
             
     @RequestMapping("view")
-    public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment) {
-        
+    public String view(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment ecInfoFragment) {
         if (!energyCompanyService.canEditEnergyCompany(context.getYukonUser(), ecId)) {
             throw new NotAuthorizedException("User " + context.getYukonUser().getUsername() + " is not authorized to edit energy company with id " + ecId);
         }
@@ -120,70 +115,70 @@ public class EnergyCompanySettingsController {
 
         EnergyCompanySetting setting = null;
         for (EnergyCompanySettingType type : EnergyCompanySettingType.values()) {
-            setting = energyCompanySettingDao.getSetting(type,ecId);
+            setting = ecSettingDao.getSetting(type,ecId);
             settings.put(type,setting);
         }
         SettingsBean settingsBean = new SettingsBean();
         settingsBean.setSettings(settings);
         settingsBean.setEcId(ecId);
         
-        return energyCompanySettingsView(context, model, ecId, fragment, settingsBean);
+        return energyCompanySettingsView(model, ecId, ecInfoFragment, settingsBean);
     }
 
     @RequestMapping(value="save", method=RequestMethod.POST)
-    public String save(HttpServletRequest request, 
-                       @ModelAttribute("settingsBean") SettingsBean settingsBean,
-                       BindingResult result, YukonUserContext context, 
-                       EnergyCompanyInfoFragment fragment,
-                       ModelMap map, FlashScope flashScope) throws Exception {
-        
+    public String save(@ModelAttribute("settingsBean") SettingsBean settingsBean, BindingResult bindingResult,
+            YukonUserContext userContext, EnergyCompanyInfoFragment ecInfoFragment, ModelMap model,
+            FlashScope flashScope) throws Exception {
         int ecId = settingsBean.getEcId();
 
-        if (!energyCompanyService.canEditEnergyCompany(context.getYukonUser(), ecId)) {
-            throw new NotAuthorizedException("User " + context.getYukonUser().getUsername() + " is not authorized to edit energy company with id " + ecId);
+        if (!energyCompanyService.canEditEnergyCompany(userContext.getYukonUser(), ecId)) {
+            throw new NotAuthorizedException("User " + userContext.getYukonUser().getUsername()
+                + " is not authorized to edit energy company with id " + ecId);
         }
 
-        settingsValidator.validate(settingsBean, result);
+        settingsValidator.validate(settingsBean, bindingResult);
 
-        map.addAttribute("ecId", ecId);
-        map.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
-        map.addAttribute("settingsBean", settingsBean);
+        model.addAttribute("ecId", ecId);
+        model.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
+        model.addAttribute("settingsBean", settingsBean);
         
-        if (result.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return energyCompanySettingsView(context, map, ecId, fragment, settingsBean);
+            return energyCompanySettingsView(model, ecId, ecInfoFragment, settingsBean);
         }
 
         EnergyCompanySetting setting;
         for (EnergyCompanySetting changedSetting : settingsBean.getSettings().values()) {
-            setting = energyCompanySettingDao.getSetting(changedSetting.getType(), ecId);
+            setting = ecSettingDao.getSetting(changedSetting.getType(), ecId);
             setting.setComments(changedSetting.getComments());
             setting.setValue(changedSetting.getValue());
             setting.setEnabled(changedSetting.isEnabled());
-            energyCompanySettingDao.updateSetting(setting, context.getYukonUser(), ecId);
+            ecSettingDao.updateSetting(setting, userContext.getYukonUser(), ecId);
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.energyCompanySettings.updateSuccessful"));
         return "redirect:view";
     }
 
-    private String energyCompanySettingsView(YukonUserContext context, ModelMap model, int ecId, EnergyCompanyInfoFragment fragment, SettingsBean settingsBean) {
+    private String energyCompanySettingsView(ModelMap model, int ecId, EnergyCompanyInfoFragment ecInfoFragment,
+            SettingsBean settingsBean) {
         model.addAttribute("ecId", ecId);
 
         model.addAttribute("settingsBean", settingsBean);
         model.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
-        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecDao.retrieveCompanyName(ecId));
         model.addAttribute("categories", SettingCategory.values());
-        model.addAttribute("energyCompanyInfoFragment", fragment);
+        model.addAttribute("energyCompanyInfoFragment", ecInfoFragment);
 
         return "energyCompany/settings/view.jsp";
     }
     
     public static class SettingsBean {
         private int ecId;
-        private Map<EnergyCompanySettingType,EnergyCompanySetting> settings 
-            = LazyMap.decorate(Maps.newHashMap(), FactoryUtils.instantiateFactory(EnergyCompanySetting.class));
+        private Map<EnergyCompanySettingType, EnergyCompanySetting> settings 
+            = LazyMap.lazyMap(new HashMap<EnergyCompanySettingType, EnergyCompanySetting>(),
+                FactoryUtils.instantiateFactory(EnergyCompanySetting.class));
 
         public Map<EnergyCompanySettingType,EnergyCompanySetting> getSettings() {
             return settings;

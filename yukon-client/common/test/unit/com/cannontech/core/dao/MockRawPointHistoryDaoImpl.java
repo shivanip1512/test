@@ -1,9 +1,7 @@
 package com.cannontech.core.dao;
 
-import static com.cannontech.common.point.PointQuality.Normal;
-import static com.cannontech.database.data.point.PointType.Analog;
-import static com.cannontech.database.data.point.PointType.DemandAccumulator;
-import static com.cannontech.database.data.point.PointType.PulseAccumulator;
+import static com.cannontech.common.point.PointQuality.*;
+import static com.cannontech.database.data.point.PointType.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
@@ -164,9 +162,8 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
             
             List<PointValueQualityHolder> rphPointValueQualityHolders = intersectingPointValueQualityHoldersByRawPointHistoryIds(changeIdRange);
             List<PointValueQualityHolder> dateRangePointValueQualityHolders = intersectingPointValueQualityHoldersByDateRange(dateRange);
-            @SuppressWarnings("unchecked")
             List<PointValueQualityHolder> pointValueQualityHolders = ListUtils.intersection(rphPointValueQualityHolders, dateRangePointValueQualityHolders);
-            
+
             List<PointValueQualityHolder> pvqHolders = getPointValueQualityHoldersForAttribute(attribute, pointValueQualityHolders);
             List<PointValueQualityHolder> orderedPVQHolders = orderPointValueData(pvqHolders, order, orderBy);
             results.putAll(yukonPao.getPaoIdentifier(), orderedPVQHolders.subList(0, maxRows));
@@ -179,16 +176,13 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
             Iterable<? extends YukonPao> yukonPaos, Attribute attribute, final ReadableRange<Instant> dateRange,
             final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order, final Double minimumValue) {
-
         ListMultimap<PaoIdentifier, PointValueQualityHolder> paoIdToPointValueQualityHolder = ArrayListMultimap.create();
 
         for (YukonPao yukonPao : yukonPaos) {
-            
             List<PointValueQualityHolder> rphPointValueQualityHolders = intersectingPointValueQualityHoldersByRawPointHistoryIds(changeIdRange);
             List<PointValueQualityHolder> dateRangePointValueQualityHolders = intersectingPointValueQualityHoldersByDateRange(dateRange);
-            @SuppressWarnings("unchecked")
             List<PointValueQualityHolder> pointValueQualityHolders = ListUtils.intersection(rphPointValueQualityHolders, dateRangePointValueQualityHolders);
-            
+
             List<PointValueQualityHolder> pvqHolders;
             //If we have the map, we can do a more realistic lookup for points mapped to the paos
             if(deviceToAttributeAndPointMap.isEmpty()) {
@@ -257,7 +251,9 @@ public class MockRawPointHistoryDaoImpl extends RawPointHistoryDaoImpl {
     private List<PointValueQualityHolder> getPointValueQualityHoldersForAttribute(Attribute attribute, int paoId, List<PointValueQualityHolder> pointValueQualityHolders) {
         Map<Attribute, Integer> attributeMap = deviceToAttributeAndPointMap.get(paoId);
         Integer pointId = null;
-        if(attributeMap != null) pointId = attributeMap.get(attribute);
+        if(attributeMap != null) {
+            pointId = attributeMap.get(attribute);
+        }
         
         List<PointValueQualityHolder> returnValues = Lists.newArrayList();
         if(pointId != null) {
