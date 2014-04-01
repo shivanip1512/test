@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -200,10 +200,10 @@ public class PoolManager {
         bds.setUsername(primaryUser);
         bds.setPassword(password);
         bds.setInitialSize(initialSize);
-        bds.setMaxActive(maxActive);
+        bds.setMaxTotal(maxActive + maxIdle);
         bds.setMaxIdle(maxIdle);
         bds.setMinIdle(minIdle);
-        bds.setMaxWait(TimeUnit.SECONDS.toMillis(60));
+        bds.setMaxWaitMillis(TimeUnit.SECONDS.toMillis(60));
         bds.setValidationQuery(validationQuery);
         bds.setTestOnBorrow(testOnBorrow);
         bds.setTestOnReturn(testOnReturn);

@@ -84,12 +84,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-dbcp-1.4.jar" sourcepath="/third-party/linked-sources/commons-dbcp-1.4-src.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-dbcp2-2.0.jar" sourcepath="/third-party/linked-sources/commons-dbcp2-2.0-src.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-pool-1.4.jar" sourcepath="/third-party/linked-sources/commons-pool-1.4-src.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-pool2-2.2.jar" sourcepath="/third-party/linked-sources/commons-pool2-2.2-src.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

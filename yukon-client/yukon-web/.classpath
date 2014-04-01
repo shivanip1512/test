@@ -38,8 +38,6 @@
     <classpathentry combineaccessrules="false" kind="src" path="/report"/>
     <classpathentry combineaccessrules="false" kind="src" path="/commander"/>
     <classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>
-    <classpathentry kind="lib" path="/third-party/commons-dbcp-1.4.jar" sourcepath="/third-party/linked-sources/commons-dbcp-1.4-src.zip"/>
-    <classpathentry kind="lib" path="/third-party/commons-pool-1.4.jar" sourcepath="/third-party/linked-sources/commons-pool-1.4-src.zip"/>
     <classpathentry kind="lib" path="/third-party/log4j-1.2.17.jar" sourcepath="/third-party/linked-sources/logging-log4j-1.2.14.zip"/>
     <classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>
     <classpathentry kind="lib" path="/third-party/ecs-1.4.2.jar"/>
