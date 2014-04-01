@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyService {
@@ -65,6 +66,16 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
 
     @Override
     public boolean isPrimaryOperator(int operatorLoginId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public EnergyCompany getEnergyCompany(int ecId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public List<Integer> getRouteIds(int ecId) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

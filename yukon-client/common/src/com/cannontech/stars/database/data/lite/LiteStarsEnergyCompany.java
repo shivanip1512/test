@@ -308,15 +308,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         initApplianceCategories();
     }
 
-    public String getAdminEmailAddress() {
-        String adminEmail = energyCompanySettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, this.getEnergyCompanyId());
-        if (adminEmail == null || adminEmail.trim().length() == 0) {
-            adminEmail = StarsUtils.ADMIN_EMAIL_ADDRESS;
-        }
-        
-        return adminEmail;
-    }
-
     public LiteYukonGroup getOperatorAdminGroup() {
         LiteYukonGroup adminGroup = null;
         if (operDftGroupID < YukonGroup.EDITABLE_MIN_GROUP_ID) {
@@ -693,7 +684,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     }
 
     public List<LiteYukonPAObject> getRoutes() {
-        List<Integer> routeIDs = energyCompanyDao.getRouteIds(this.getEnergyCompanyId());
+        List<Integer> routeIDs = yukonEnergyCompanyService.getRouteIds(this.getEnergyCompanyId());
         List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
         for (Integer routeId : routeIDs) {
             LiteYukonPAObject liteRoute = paoDao.getLiteYukonPAO(routeId);

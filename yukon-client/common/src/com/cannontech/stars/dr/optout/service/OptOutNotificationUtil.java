@@ -14,7 +14,6 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.util.StarsUtils;
@@ -26,9 +25,8 @@ public final class OptOutNotificationUtil {
         
     }
     
-    public static String getProgramInformation(final LiteStarsEnergyCompany energyCompany,
-            final LiteAccountInfo liteAcctInfo,
-                final List<LiteLmHardwareBase> hardwares) {
+    public static String getProgramInformation(final LiteAccountInfo liteAcctInfo, 
+                                               final List<LiteLmHardwareBase> hardwares) {
         
         final StringBuilder text = new StringBuilder();
         
@@ -59,15 +57,15 @@ public final class OptOutNotificationUtil {
             }
             text.append(LINE_SEPARATOR);
             
-            if (!hasAssignedProg)
+            if (!hasAssignedProg) {
                 text.append("    (No Assigned Program)").append(LINE_SEPARATOR);
+            }
         }
         
         return text.toString();
     }
     
-    public static String getAccountInformation(final LiteStarsEnergyCompany energyCompany, 
-            final LiteAccountInfo liteAcctInfo) {
+    public static String getAccountInformation(final LiteAccountInfo liteAcctInfo) {
         
         final StringBuilder text = new StringBuilder();
         
@@ -84,15 +82,19 @@ public final class OptOutNotificationUtil {
         LiteAddress addr = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
         if (addr.getLocationAddress1().trim().length() > 0) {
             text.append(addr.getLocationAddress1());
-            if (addr.getLocationAddress2().trim().length() > 0)
+            if (addr.getLocationAddress2().trim().length() > 0) {
                 text.append(", ").append(addr.getLocationAddress2());
+            }
             text.append(LINE_SEPARATOR);
-            if (addr.getCityName().trim().length() > 0)
+            if (addr.getCityName().trim().length() > 0) {
                 text.append(addr.getCityName()).append(", ");
-            if (addr.getStateCode().trim().length() > 0)
+            }
+            if (addr.getStateCode().trim().length() > 0) {
                 text.append(addr.getStateCode()).append(" ");
-            if (addr.getZipCode().trim().length() > 0)
+            }
+            if (addr.getZipCode().trim().length() > 0) {
                 text.append(addr.getZipCode());
+            }
             text.append(LINE_SEPARATOR);
         }
         
@@ -103,12 +105,13 @@ public final class OptOutNotificationUtil {
         String email = StarsUtils.getNotification(
                 YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(cont, ContactNotificationType.EMAIL) );
         
-        if (homePhone.length() > 0)
+        if (homePhone.length() > 0) {
             text.append(homePhone).append(LINE_SEPARATOR);
-        else if (workPhone.length() > 0)
+        } else if (workPhone.length() > 0) {
             text.append(workPhone).append(LINE_SEPARATOR);
-        else if (email.length() > 0)
+        } else if (email.length() > 0) {
             text.append(email).append(LINE_SEPARATOR);
+        }
         
         return text.toString();
     }
@@ -128,7 +131,9 @@ public final class OptOutNotificationUtil {
 
     private static LiteStarsLMProgram getLMProgram(LiteAccountInfo liteAcctInfo, int programId) {
         for (final LiteStarsLMProgram program : liteAcctInfo.getPrograms()) {
-            if (program.getProgramID() == programId) return program;
+            if (program.getProgramID() == programId) {
+                return program;
+            }
         }
         return null;
     }

@@ -290,16 +290,20 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(ecId);
             if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }
         }
-        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)) return;
+        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user)) {
+            return;
+        }
         /* Check my own and all my anticendants operator login list for this user's id. */
         for (int energyCompanyId : ecMappingDao.getParentEnergyCompanyIds(ecId)) {
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            if(energyCompany.getOperatorLoginIDs().contains(user.getUserID())) return;
+            if(energyCompany.getOperatorLoginIDs().contains(user.getUserID())) {
+                return;
+            }
         }
         throw new NotAuthorizedException("User " + user.getUsername() + " is not authorized to view energy company with id " + ecId);
     }
@@ -502,7 +506,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         List<YukonSelectionList> energyCompanySelectionLists = 
                 yukonListDao.getSelectionListsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
         for (YukonSelectionList cList : energyCompanySelectionLists) {
-            if (cList.getListId() == LiteStarsEnergyCompany.FAKE_LIST_ID) continue;
+            if (cList.getListId() == LiteStarsEnergyCompany.FAKE_LIST_ID) {
+                continue;
+            }
 
             com.cannontech.database.data.constants.YukonSelectionList list =
                     new com.cannontech.database.data.constants.YukonSelectionList();

@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -19,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
@@ -31,13 +27,10 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
@@ -48,18 +41,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private YukonUserDao yukonUserDao;
 
-    @Autowired
-    public EnergyCompanyDaoImpl(AsyncDynamicDataSource asyncDynamicDataSource){
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTE,
-                new DatabaseChangeEventListener() {
-            @Override
-            public void eventReceived(DatabaseChangeEvent event) {
-                cachedRouteIds.clear();
-            }
-        });
-    }
-
-    private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
     private SimpleTableAccessTemplate<EnergyCompany> simpleTableTemplate;
     private final static FieldMapper<EnergyCompany> fieldMapper = new FieldMapper<EnergyCompany>() {
         @Override
@@ -279,20 +260,4 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         return databaseCache.getAllEnergyCompanies();
     }
 
-    @Override
-    public List<Integer> getRouteIds(int ecId) {
-        if (cachedRouteIds.containsKey(ecId)) {
-            return cachedRouteIds.get(ecId);
-        }
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RouteId");
-        sql.append("FROM ECToRouteMapping");
-        sql.append("WHERE EnergyCompanyId").eq(ecId);
-
-        List<Integer> routeIds = 
-                ImmutableList.copyOf(yukonJdbcTemplate.query(sql, com.cannontech.database.RowMapper.INTEGER));
-        cachedRouteIds.put(ecId, routeIds);
-        return routeIds;
-    }
 }

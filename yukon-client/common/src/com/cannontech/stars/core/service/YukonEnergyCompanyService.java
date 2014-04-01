@@ -15,38 +15,38 @@ public interface YukonEnergyCompanyService {
      * 
      * @throws EnergyCompanyNotFoundException
      */
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator);
+    YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator);
 
     /**
      * This method gets the energy company id for the operator supplied.
      * 
      * @throws EnergyCompanyNotFoundException
      */
-    public int getEnergyCompanyIdByOperator(LiteYukonUser operator);
+    int getEnergyCompanyIdByOperator(LiteYukonUser operator);
     
     /**
      * This method returns whether or not the operator provided is an Energy Company Operator
      */
-    public boolean isEnergyCompanyOperator(LiteYukonUser operator);
+    boolean isEnergyCompanyOperator(LiteYukonUser operator);
     
     /**
      * This method gets the yukon energy company that is associated with the supplied account.  
      * This method should be used as the primary option when you are working with an account. 
      */
-    public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId);
+    YukonEnergyCompany getEnergyCompanyByAccountId(int accountId);
 
     /**
      * This method gets the yukon energy company that is associated with the supplied inventory.  
      * This method should be used as the primary option when you are working with an inventory. 
      */
-    public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
+    YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
     
     /**
      * Returns a list of all energy companies
      */
-    public List<YukonEnergyCompany> getAllEnergyCompanies();
+    List<YukonEnergyCompany> getAllEnergyCompanies();
 
-    public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany);
+    boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany);
 
     /**
      * This method returns all of the child energy companies underneath the supplied energy company 
@@ -54,7 +54,7 @@ public interface YukonEnergyCompanyService {
      * 
      * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
      */
-    public List<Integer> getChildEnergyCompanies(int energyCompanyId);
+    List<Integer> getChildEnergyCompanies(int energyCompanyId);
 
     /**
      * This method returns the direct child energy companies underneath the energy company.
@@ -63,22 +63,29 @@ public interface YukonEnergyCompanyService {
      * 
      * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
      */
-    public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId);
+    List<Integer> getDirectChildEnergyCompanies(int energyCompanyId);
 
     /**
      * This method returns the parent energy company id of the energy company id supplied.  This method will throw an exception
      * if you supply the default energy company or the main energy company.
      */
-    public Integer getParentEnergyCompany(int energyCompanyId);
+    Integer getParentEnergyCompany(int energyCompanyId);
 
     /**
      * This method returns the parent energy company id of the energy company id supplied.  This will return null
      * if the energy company id is the default energy company or the main energy company.
      */
-    public Integer findParentEnergyCompany(int energyCompanyId);
+    Integer findParentEnergyCompany(int energyCompanyId);
 
     /**
      * This method returns "true" if this is a primary operator.
      */
-    public boolean isPrimaryOperator(int operatorLoginId);
+    boolean isPrimaryOperator(int operatorLoginId);
+    
+    YukonEnergyCompany getEnergyCompany(int ecId);
+    
+    /**
+     * Returns an immutable list of all routeIds associated with the energy company
+     */
+    List<Integer> getRouteIds(int ecId);
 }

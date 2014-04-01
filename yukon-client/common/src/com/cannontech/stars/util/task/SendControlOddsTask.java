@@ -25,9 +25,11 @@ import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
 
 /**
  * @author yao
@@ -48,7 +50,8 @@ public class SendControlOddsTask implements Runnable {
 	/**
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
+	@Override
+    public void run() {
 		CTILogger.info( "*** Start SendControlOdds task ***" );
 		
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
@@ -83,7 +86,8 @@ public class SendControlOddsTask implements Runnable {
 				stmt.execute();
 				
 				StarsCustAccountInformationDao starsCustAccountInformationDao = 
-					YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+	                    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+				EnergyCompanySettingDao ecSettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
 				
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
@@ -93,16 +97,20 @@ public class SendControlOddsTask implements Runnable {
 					LiteContact primContact = YukonSpringHook.getBean(ContactDao.class).getContact( accountInfo.getCustomer().getPrimaryContactID() );
 					LiteContactNotification email = YukonSpringHook.getBean(ContactNotificationDao.class).getFirstNotificationForContactByType(
 							primContact, ContactNotificationType.EMAIL );
-					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
-						continue;
+					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y")) {
+                        continue;
+                    }
 					
 					List<LiteStarsLMProgram> activeProgs = new ArrayList<LiteStarsLMProgram>();	// List of all the active programs
 					for (int j = 0; j < accountInfo.getPrograms().size(); j++) {
 						LiteStarsLMProgram program = accountInfo.getPrograms().get(j);
-						if (progList.contains( program.getPublishedProgram() ) && program.isInService())
-							activeProgs.add( program );
+						if (progList.contains( program.getPublishedProgram() ) && program.isInService()) {
+                            activeProgs.add( program );
+                        }
 					}
-					if (activeProgs.size() == 0) continue;
+					if (activeProgs.size() == 0) {
+                        continue;
+                    }
 					
 					Map<String, String> programOddsMap = new HashMap<String, String>();
 					int maxProgramNameLength = 18; // length of 'Program Enrollment' header
@@ -156,10 +164,12 @@ public class SendControlOddsTask implements Runnable {
 					
 					try {
 				        EmailService emailService = YukonSpringHook.getBean(EmailService.class);
-					    
-				        EmailMessage message = 
-				                new EmailMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
-				                                        InternetAddress.parse(email.getNotification()), subject, messageText.toString());
+				        String adminEmailAddress = ecSettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, energyCompany.getEnergyCompanyId());
+				        if (adminEmailAddress == null || adminEmailAddress.trim().length() == 0) {
+				            adminEmailAddress = StarsUtils.ADMIN_EMAIL_ADDRESS;
+				        }
+				        EmailMessage message = new EmailMessage(new InternetAddress(adminEmailAddress),
+				                       InternetAddress.parse(email.getNotification()), subject, messageText.toString());
 						emailService.sendMessage(message);
 					}
 					catch (Exception e) {

@@ -30,13 +30,14 @@ import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -59,7 +60,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     @Autowired private YukonUserContextService userContextService;
 
     @Override
-    public void sendOptOutNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+    public void sendOptOutNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
@@ -80,7 +81,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     }
 
     @Override
-    public void sendCancelScheduledNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+    public void sendCancelScheduledNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
@@ -101,7 +102,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     }
 
     @Override
-    public void sendReenableNotification(CustomerAccount customerAccount, LiteStarsEnergyCompany energyCompany,
+    public void sendReenableNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
@@ -126,24 +127,26 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
      * @param energyCompany - Energy company to get context for
      * @return Default context
      */
-    private YukonUserContext getDefaultEnergyCompanyUserContext(LiteStarsEnergyCompany energyCompany) {
-        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(energyCompany.getUser());
+    private YukonUserContext getDefaultEnergyCompanyUserContext(YukonEnergyCompany energyCompany) {
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(energyCompany.getEnergyCompanyUser());
 
         return userContext;
     }
 
     private void sendNotification(NotificationInfo notificationInfo) throws MessagingException {
-        LiteStarsEnergyCompany energyCompany = notificationInfo.energyCompany;
+        int ecId = notificationInfo.energyCompany.getEnergyCompanyId();
 
         String recipientsCsvString =
-            ecSettingDao.getString(EnergyCompanySettingType.OPTOUT_NOTIFICATION_RECIPIENTS,
-                energyCompany.getEnergyCompanyId());
+            ecSettingDao.getString(EnergyCompanySettingType.OPTOUT_NOTIFICATION_RECIPIENTS, ecId);
 
         if (StringUtils.isBlank(recipientsCsvString)) {
             throw new AddressException("Property \"optout_notification_recipients\" is not set.");
         }
 
-        String fromAddress = energyCompany.getAdminEmailAddress();
+        String fromAddress = ecSettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, ecId);
+        if (fromAddress == null || fromAddress.trim().length() == 0) {
+            fromAddress = StarsUtils.ADMIN_EMAIL_ADDRESS;
+        }
         String subject = notificationInfo.subject;
         String messageBody = getMessageBody(notificationInfo);
 
@@ -189,9 +192,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             hardwares.add((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId));
         }
 
-        String accountInfo = OptOutNotificationUtil.getAccountInformation(notificationInfo.energyCompany, liteAcctInfo);
-        String programInfo =
-            OptOutNotificationUtil.getProgramInformation(notificationInfo.energyCompany, liteAcctInfo, hardwares);
+        String accountInfo = OptOutNotificationUtil.getAccountInformation(liteAcctInfo);
+        String programInfo = OptOutNotificationUtil.getProgramInformation(liteAcctInfo, hardwares);
         String questions = OptOutNotificationUtil.getQuestions(notificationInfo.optOutRequest.getQuestions());
 
         Map<String, Object> values = new HashMap<String, Object>();
@@ -210,7 +212,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 
     private static class NotificationInfo {
         CustomerAccount customerAccount;
-        LiteStarsEnergyCompany energyCompany;
+        YukonEnergyCompany energyCompany;
         OptOutRequest optOutRequest;
         String subject;
         String messageBody;

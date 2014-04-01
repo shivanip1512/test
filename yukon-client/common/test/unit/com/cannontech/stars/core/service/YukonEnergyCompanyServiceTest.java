@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl;
 import com.google.common.collect.Maps;
 
-public  class YukonEnergyCompanyServiceTest {
+public class YukonEnergyCompanyServiceTest {
     /**
      *              2  -  8                             
      *           /  
@@ -20,8 +23,25 @@ public  class YukonEnergyCompanyServiceTest {
      *                  \                                           
      *                    6  -  7
      */
-    private final Map<Integer, Integer> childToParentHierarchy;
-    {
+    private Map<Integer, Integer> childToParentHierarchy;
+    
+    public MockAsyncDynamicDataSourceImpl asyncDynamicDataSource = new MockAsyncDynamicDataSourceImpl() {
+        @Override
+        public void addDatabaseChangeEventListener(DbChangeCategory changeCategory,
+                                                   com.cannontech.core.dynamic.DatabaseChangeEventListener listener) {
+            // No need to do anything for this test
+        }
+    };
+    
+    public YukonEnergyCompanyService yukonEnergyCompanyService  = new YukonEnergyCompanyServiceImpl(asyncDynamicDataSource) {
+        @Override
+        protected Map<Integer, Integer> getChildToParentEnergyCompanyHierarchy() {
+            return childToParentHierarchy;
+        }
+    };
+    
+    @Before
+    public void setup() {
         childToParentHierarchy = Maps.newHashMap();
         childToParentHierarchy.put(1, 0);
         childToParentHierarchy.put(2, 1);
@@ -32,13 +52,6 @@ public  class YukonEnergyCompanyServiceTest {
         childToParentHierarchy.put(7, 6);
         childToParentHierarchy.put(8, 2);
     }
-    
-    public YukonEnergyCompanyService yukonEnergyCompanyService  = new YukonEnergyCompanyServiceImpl() {
-        @Override
-        protected Map<Integer, Integer> getChildToParentEnergyCompanyHierarchy() {
-            return childToParentHierarchy;
-        }
-    };
     
     @Test
     public void childEnergyCompaniesTest_NoChildren() {

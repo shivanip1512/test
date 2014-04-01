@@ -51,6 +51,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
@@ -493,8 +494,8 @@ public class StarsAdminUtil {
     }
 
     public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeId) {
-        EnergyCompanyDao ecDao = YukonSpringHook.getBean(EnergyCompanyDao.class);
-        List<Integer> routeIds = ecDao.getRouteIds(energyCompany.getEnergyCompanyId());
+        YukonEnergyCompanyService yukonEnergyCompanyService = YukonSpringHook.getBean(YukonEnergyCompanyService.class);
+        List<Integer> routeIds = yukonEnergyCompanyService.getRouteIds(energyCompany.getEnergyCompanyId());
         if (!routeIds.contains(routeId)) {
             return;
         }

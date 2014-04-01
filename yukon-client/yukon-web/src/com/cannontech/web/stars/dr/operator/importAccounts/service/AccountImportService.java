@@ -53,6 +53,9 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
@@ -78,22 +81,23 @@ public class AccountImportService {
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
 
     @Autowired private AccountEventLogService accountLog;
-    @Autowired private HardwareEventLogService hardwareLog;
-    @Autowired private StarsCustAccountInformationDao scaiDao; 
-    @Autowired private StarsSearchDao starsSearchDao;
-    @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonListDao yukonListDao;
     @Autowired private AccountService accountService;
     @Autowired private ContactDao contactDao;
-    @Autowired private UpdatableAccountConverter accountConverter;
+    @Autowired private EmailService emailService;
+    @Autowired private EnergyCompanyService ecService;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private EnrollmentHelperService enrollmentHelperService;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private HardwareEventLogService hardwareLog;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmDeviceDtoConverter dtoConverter;
     @Autowired private StarsControllableDeviceHelper deviceHelper;
-    @Autowired private EnrollmentHelperService enrollmentHelperService;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private EmailService emailService;
-    @Autowired private EnergyCompanyService ecService;
+    @Autowired private StarsCustAccountInformationDao scaiDao; 
+    @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsSearchService starsSearchService;
+    @Autowired private UpdatableAccountConverter accountConverter;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonListDao yukonListDao;
     
     private PrintWriter importLog;
     private Executor executor;
@@ -1344,11 +1348,15 @@ public class AccountImportService {
        
     }
 
-    private void sendImportLog(File importLog, String email, LiteStarsEnergyCompany energyCompany) throws Exception {
+    private void sendImportLog(File importLog, String email, YukonEnergyCompany energyCompany) throws Exception {
         
         String body = "The log file containing information of the import process is attached." + LINE_SEPARATOR + LINE_SEPARATOR;
+        String adminEmailAddress = ecSettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, energyCompany.getEnergyCompanyId());
+        if (adminEmailAddress == null || adminEmailAddress.trim().length() == 0) {
+            adminEmailAddress = StarsUtils.ADMIN_EMAIL_ADDRESS;
+        }
         EmailAttachmentMessage message = 
-                new EmailAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+                new EmailAttachmentMessage(new InternetAddress(adminEmailAddress),
                                                   InternetAddress.parse(email), "Import Log", body);
         EmailFileDataSource dataSource = new EmailFileDataSource(importLog);
         message.addAttachment(dataSource);

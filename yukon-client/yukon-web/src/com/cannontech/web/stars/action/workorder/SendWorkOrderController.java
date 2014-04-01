@@ -27,6 +27,8 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -37,6 +39,7 @@ import com.cannontech.web.stars.action.StarsWorkorderActionController;
 
 public class SendWorkOrderController extends StarsWorkorderActionController {
     @Autowired private EmailService emailService;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -60,7 +63,9 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         LiteContact contact = contactDao.getContact( sc.getPrimaryContactID() );
         if (contact != null) {
             LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType( contact, ContactNotificationType.EMAIL);
-            if (emailNotif != null) email = emailNotif.getNotification();
+            if (emailNotif != null) {
+                email = emailNotif.getNotification();
+            }
         }
         
         if (email == null) {
@@ -79,7 +84,9 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             JFreeReport report = reportBean.createReport();;
             
             File tempDir = new File( StarsUtils.getStarsTempDir(), "/WorkOrder" );
-            if (!tempDir.exists()) tempDir.mkdirs();
+            if (!tempDir.exists()) {
+                tempDir.mkdirs();
+            }
             File tempFile = File.createTempFile("WorkOrder", ".pdf", tempDir);
             tempFile.deleteOnExit();
             
@@ -94,14 +101,20 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
                 // EOF is met. The exception is simply ignored here, could miss some other exceptions.
             }
             finally {
-                if (fos != null) fos.close();
+                if (fos != null) {
+                    fos.close();
+                }
             }
             
             Date now = new Date();
             String fileName = "WorkOrder_" + StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".pdf";
             
+            String adminEmailAddress = ecSettingDao.getString(EnergyCompanySettingType.ADMIN_EMAIL_ADDRESS, energyCompany.getEnergyCompanyId());
+            if (adminEmailAddress == null || adminEmailAddress.trim().length() == 0) {
+                adminEmailAddress = StarsUtils.ADMIN_EMAIL_ADDRESS;
+            }
             EmailAttachmentMessage message = 
-                    new EmailAttachmentMessage(new InternetAddress(energyCompany.getAdminEmailAddress()),
+                    new EmailAttachmentMessage(new InternetAddress(adminEmailAddress),
                                             InternetAddress.parse(email), 
                                             "Work Order", "Work Order Attached", null);
             message.addAttachment(new EmailFileDataSource(tempFile, fileName));

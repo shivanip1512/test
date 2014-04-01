@@ -73,9 +73,4 @@ public interface EnergyCompanyDao {
     void save(EnergyCompany energyCompany);
 
     String retrieveCompanyName(int energyCompanyId);
-
-    /**
-     * Returns an immutable list of all routeIds associated with the energy company
-     */
-    List<Integer> getRouteIds(int ecId);
 }

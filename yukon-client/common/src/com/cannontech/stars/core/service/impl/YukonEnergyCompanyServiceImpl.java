@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,26 +12,72 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 
 public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
-    
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
+    private Map<Integer, YukonEnergyCompany> cachedEnergyCompanies = new ConcurrentHashMap<>();
+
+    @Autowired
+    public YukonEnergyCompanyServiceImpl(AsyncDynamicDataSource asyncDynamicDataSource){
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY_ROUTE,
+                new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                cachedRouteIds.clear();
+            }
+        });
+        
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY,
+                                                              new DatabaseChangeEventListener() {
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                cachedEnergyCompanies.clear();
+            }
+        });
+        
+    }
+    
+    private static YukonRowMapper<EnergyCompany> energyCompanyRowMapper = new YukonRowMapper<EnergyCompany>() {
+        @Override
+        public EnergyCompany mapRow(YukonResultSet rs) throws SQLException {
+            
+            LiteYukonUser user = new LiteYukonUser(rs.getInt("UserID"));
+            user.setUsername(rs.getString("UserName"));
+            user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
+            user.setForceReset(rs.getBoolean("ForceReset"));
+            user.setUserGroupId(rs.getNullableInt("UserGroupId"));
+            
+            EnergyCompany company = new EnergyCompany(rs.getInt("EnergyCompanyId"), rs.getString("Name"), 
+                                                      user, rs.getInt("PrimaryContactId"));
+            return company;
+        }
+    };
     
     @Override
     public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
@@ -54,7 +101,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
         
         try {
-            int energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
+            int energyCompanyId = jdbcTemplate.queryForInt(sql);
             return energyCompanyId;
         } catch (EmptyResultDataAccessException e) {
             throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
@@ -100,7 +147,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         
         final Map<Integer, Integer> childToParentMap = Maps.newHashMap();
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int parentEnergyCompanyId = rs.getInt("EnergyCompanyId");
@@ -157,7 +204,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append(  "AND EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
+        return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
     @Override
@@ -168,7 +215,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
         sql.append(  "AND ItemId").eq(energyCompanyId);
 
-        return yukonJdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForInt(sql);
     }
     
     @Override
@@ -187,8 +234,40 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         sql.append("FROM EnergyCompany");
         sql.append("WHERE UserId").eq(operatorLoginId);
         
-        int count = yukonJdbcTemplate.queryForInt(sql);
+        int count = jdbcTemplate.queryForInt(sql);
         return count > 0;
     }
+
+    @Override
+    public YukonEnergyCompany getEnergyCompany(final int ecId) {
+        if (cachedEnergyCompanies.containsKey(ecId)) {
+            return cachedEnergyCompanies.get(ecId);
+        }
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EnergyCompanyID, Name, PrimaryContactID, YU.UserId, UserName, Status, ForceReset,");
+        sql.append("       UserGroupId");
+        sql.append("FROM EnergyCompany EC, YukonUser YU");
+        sql.append("WHERE EC.UserId = YU.UserId");
+        sql.append("AND EnergyCompanyId").eq(ecId);
+
+        YukonEnergyCompany energyCompany = jdbcTemplate.queryForObject(sql, energyCompanyRowMapper);
+        cachedEnergyCompanies.put(ecId, energyCompany);
+        return energyCompany;
+    }
     
+    @Override
+    public List<Integer> getRouteIds(int ecId) {
+        if (cachedRouteIds.containsKey(ecId)) {
+            return cachedRouteIds.get(ecId);
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RouteId");
+        sql.append("FROM ECToRouteMapping");
+        sql.append("WHERE EnergyCompanyId").eq(ecId);
+
+        List<Integer> routeIds = ImmutableList.copyOf(jdbcTemplate.query(sql, RowMapper.INTEGER));
+        cachedRouteIds.put(ecId, routeIds);
+        return routeIds;
+    }
 }
