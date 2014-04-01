@@ -15,7 +15,7 @@
 #include <boost/range/algorithm/set_algorithm.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
-#include <boost/smart_ptr/make_shared.hpp>
+#include <boost/make_shared.hpp>
 
 namespace Cti {
 

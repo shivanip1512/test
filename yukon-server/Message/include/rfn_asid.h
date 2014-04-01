@@ -14,9 +14,9 @@ struct IM_EX_MSG ApplicationServiceIdentifiers
 
     ApplicationServiceIdentifiers(unsigned char value_) : value(value_) {}
 
-    bool operator<(const ApplicationServiceIdentifiers &rhs) const
+    bool operator==(const ApplicationServiceIdentifiers &rhs) const
     {
-        return value < rhs.value;
+        return value == rhs.value;
     }
 
     static const ApplicationServiceIdentifiers ChannelManager;

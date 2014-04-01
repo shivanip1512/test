@@ -53,7 +53,9 @@ public:
         boost::optional<YukonError_t> error;
     };
 
-    static void registerHandler(const ApplicationServiceIdentifiers asid, Indication::Callback callback);
+    static void registerE2eDtHandler(Indication::Callback callback);
+    static void registerDnpHandler  (Indication::Callback callback, const RfnIdentifier rfnid);
+
     static void sendE2eDt    (const Request &msg, ApplicationServiceIdentifiers asid, Confirm::Callback callback);
     static void sendE2eAp_Dnp(const Request &msg, Confirm::Callback callback);
 
@@ -61,11 +63,11 @@ private:
 
     typedef std::vector<unsigned char> SerializedMessage;
 
-    //  only one callback per ASID - change to multimap if you need more
-    typedef std::map<ApplicationServiceIdentifiers, Indication::Callback> IndicationCallbackPerAsid;
+    typedef std::map<RfnIdentifier, Indication::Callback> CallbacksPerRfnIdentifier;
 
-    readers_writer_lock_t     _indicationMux;
-    IndicationCallbackPerAsid _indicationCallbacks;
+    readers_writer_lock_t _callbackMux;
+    boost::optional<Indication::Callback> _e2edtCallback;
+    CallbacksPerRfnIdentifier _dnp3Callbacks;
 
     void serializeAndQueue(const E2eDataRequestMsg &msg, Confirm::Callback callback);
 

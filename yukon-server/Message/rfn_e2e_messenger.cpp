@@ -26,13 +26,38 @@ E2eMessenger::E2eMessenger()
 }
 
 
-void E2eMessenger::registerHandler(const ApplicationServiceIdentifiers asid, Indication::Callback callback)
+void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 {
-    readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_indicationMux);
+    readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
 
-    gE2eMessenger->_indicationCallbacks[asid] = callback;
+    gE2eMessenger->_e2edtCallback = callback;
 }
 
+
+void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnIdentifier rfnid)
+{
+    readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
+
+    gE2eMessenger->_dnp3Callbacks[rfnid] = callback;
+}
+
+
+namespace {
+
+bool isE2eDt(ApplicationServiceIdentifiers asid)
+{
+    return (asid == ApplicationServiceIdentifiers::ChannelManager)
+        || (asid == ApplicationServiceIdentifiers::E2EDT)
+        || (asid == ApplicationServiceIdentifiers::EventManager)
+        || (asid == ApplicationServiceIdentifiers::HubMeterCommandSet);
+}
+
+bool isDnp3(ApplicationServiceIdentifiers asid)
+{
+    return asid == ApplicationServiceIdentifiers::E2EAP_DNP3;
+}
+
+}
 
 void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 {
@@ -53,22 +78,48 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
         }
 
         {
-            readers_writer_lock_t::reader_lock_guard_t lock(_indicationMux);
+            readers_writer_lock_t::reader_lock_guard_t lock(_callbackMux);
 
-            const boost::optional<Indication::Callback> callback = mapFind(_indicationCallbacks, indicationMsg->applicationServiceId);
+            //  check protocol?
 
-            if( ! callback )
+            if( isE2eDt(indicationMsg->applicationServiceId) )
             {
-                Indication ind;
+                if( ! _e2edtCallback )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled, no E2EDT callback registered " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
-                //  check protocol?
+                    return;
+                }
+
+                Indication ind;
 
                 ind.rfnIdentifier = indicationMsg->rfnIdentifier;
                 ind.payload       = indicationMsg->payload;
 
-                (*callback)(ind);
+                return (*_e2edtCallback)(ind);
             }
-            else
+
+            if( isDnp3(indicationMsg->applicationServiceId) )
+            {
+                boost::optional<Indication::Callback> dnp3Callback = mapFind(_dnp3Callbacks, indicationMsg->rfnIdentifier);
+
+                if( ! dnp3Callback )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled, no callback registered for RfnIdentifier " << indicationMsg->rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+
+                    return;
+                }
+
+                Indication ind;
+
+                ind.rfnIdentifier = indicationMsg->rfnIdentifier;
+                ind.payload       = indicationMsg->payload;
+
+                return (*dnp3Callback)(ind);
+            }
+
             {
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " WARNING - ASID " << indicationMsg->applicationServiceId << " unhandled " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;

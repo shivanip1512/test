@@ -57,8 +57,7 @@ Rfn::E2eStatistics stats;
 
 RfnRequestManager::RfnRequestManager()
 {
-    E2eMessenger::registerHandler(
-            ApplicationServiceIdentifiers::EventManager,
+    E2eMessenger::registerE2eDtHandler(
             boost::bind(&RfnRequestManager::receiveIndication, this, _1));
 }
 
@@ -144,7 +143,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg payload too large (" << indication.payload.size() << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication payload too large (" << indication.payload.size() << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -152,7 +151,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         if( ! optionalResponse )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
@@ -173,7 +172,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         if( er.token != activeRequest.request.rfnRequestId )
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg received for inactive request token " << er.token << " for device "<< activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            dout << CtiTime() << " Indication received for inactive request token " << er.token << " for device "<< activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
 
             continue;
         }
