@@ -444,6 +444,35 @@ LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 GO
 /* End YUK-13174 */
 
+/* Start YUK-12526 */
+/* @error ignore-begin */
+ALTER TABLE DeviceConfigCategory
+   ADD CONSTRAINT AK_DeviceConfigCategory_Name UNIQUE (Name);
+GO
+
+sp_refreshview 'CCInventory_View';
+GO
+sp_refreshview 'CCOperations_View';
+GO
+sp_refreshview 'CCCapInventory_View';
+GO
+sp_refreshview 'CCCBCInventory_View';
+GO
+
+ALTER TABLE DeviceGroup 
+ALTER COLUMN Permission NVARCHAR(50) NOT NULL;
+
+ALTER TABLE JobStatus 
+ALTER COLUMN Message VARCHAR(1000) NULL;
+
+ALTER TABLE ThermostatEventHistory 
+ALTER COLUMN ManualHeatTemp FLOAT;
+
+ALTER TABLE DeviceTNPPSettings
+ALTER COLUMN PagerID VARCHAR(10) NOT NULL;
+/* @error ignore-end */
+/* End YUK-12526 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

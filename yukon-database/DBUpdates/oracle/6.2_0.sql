@@ -440,6 +440,24 @@ LEFT JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId
 LEFT JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 /* End YUK-13174 */
 
+/* Start YUK-12526 */
+/* @error ignore-begin */
+ALTER TABLE DeviceConfigCategory
+   ADD CONSTRAINT AK_DeviceConfigCategory_Name UNIQUE (Name);
+
+ALTER VIEW CCInventory_View COMPILE;
+ALTER VIEW CCOperations_View COMPILE;
+ALTER VIEW CCCapInventory_View COMPILE;
+ALTER VIEW CCCBCInventory_View COMPILE;
+
+ALTER TABLE DeviceGroup 
+MODIFY Permission NVARCHAR2(50) NOT NULL;
+
+ALTER TABLE ThermostatEventHistory 
+MODIFY ManualHeatTemp FLOAT;
+/* @error ignore-end */
+/* End YUK-12526 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
