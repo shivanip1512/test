@@ -12,7 +12,6 @@ Class-Path:
  ojdbc6.jar 
  axis.jar 
  activation.jar 
- commons-discovery.jar 
  jaxrpc.jar 
  wsdl4j.jar 
  mail.jar 

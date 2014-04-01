@@ -10,7 +10,6 @@ Class-Path: ./
  axis.jar 
  batik.jar 
  ojdbc6.jar 
- commons-discovery.jar 
  jaxm-api.jar 
  jaxrpc.jar 
  jcfield401K.jar 

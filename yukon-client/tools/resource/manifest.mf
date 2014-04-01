@@ -29,7 +29,6 @@ Class-Path: ./
  jaxm-runtime.jar 
  jaxm-api.jar 
  saaj.jar 
- commons-discovery.jar 
  wsdl4j.jar 
  SchemaCompare.jar 
  ../log/ 
