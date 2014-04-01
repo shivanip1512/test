@@ -19,8 +19,6 @@ protected:
         CommandCode_Response        = 0x02
     };
 
-    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
-
     virtual Bytes getCommandHeader();  //  returns getCommandCode() in a vector
     virtual unsigned char getCommandCode() const;
     virtual Bytes getCommandData();  //  empty
@@ -29,6 +27,8 @@ protected:
 public:
 
     virtual void invokeResultHandler( ResultHandler & rh ) const;
+
+    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
 
     unsigned short getDnpSlaveAddress() const;
 

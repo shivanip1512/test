@@ -398,7 +398,7 @@ static const device_lookup_t device_lookups = boost::assign::map_list_of<string,
     ("rfn-430sl3",         TYPE_RFN430SL3)
     ("rfn-430sl4",         TYPE_RFN430SL4)
 
-    //  --- RF mesh meters ---
+    //  --- RF DA nodes ---
     ("rf-da",              TYPE_RF_DA)
 
     //  --- RTU devices ---

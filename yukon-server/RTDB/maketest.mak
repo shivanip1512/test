@@ -54,6 +54,7 @@ $(OPENSSL_LIBS) \
 RTDB_TEST_OBJS=\
 test_main.obj \
 test_cmd_rfn.obj \
+test_cmd_rf_da_dnpAddress.obj \
 test_cmd_rfn_CentronLcdConfiguration.obj \
 test_cmd_rfn_FocusLcdConfiguration.obj \
 test_cmd_rfn_DemandFreeze.obj \
