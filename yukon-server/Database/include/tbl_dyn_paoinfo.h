@@ -357,9 +357,11 @@ public:
 
     struct BadKeyException
     {
-        BadKeyException(std::string key) : badkey(key) {};
+        BadKeyException(long paoid_, std::string key_, std::string owner_) : paoid(paoid_), key(key_), owner(owner_) {};
 
-        const std::string badkey;
+        const long paoid;
+        const std::string key;
+        const std::string owner;
     };
 
     bool Insert(Cti::Database::DatabaseConnection &conn, const std::string &owner);

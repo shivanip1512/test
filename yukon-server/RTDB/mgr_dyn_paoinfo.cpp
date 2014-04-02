@@ -111,19 +111,11 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
 
                     paoInfoPerId[dynInfo->getPaoID()][dynInfo->getKey()] = dynInfo;
                 }
-                catch( CtiTableDynamicPaoInfo::BadKeyException )
+                catch( CtiTableDynamicPaoInfo::BadKeyException &ex )
                 {
-                    long paoid;
-                    std::string key;
-                    std::string owner;
-
-                    rdr["paoid"] >> paoid;
-                    rdr["entrykey"] >> key;
-                    rdr["owner"] >> owner;
-
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    dout << "Invalid key - paoid = " << paoid << ", key = " << key << ", owner = " << owner << std::endl;
+                    dout << "Invalid key - paoid = " << ex.paoid << ", key = " << ex.key << ", owner = " << ex.owner << std::endl;
                 }
             }
 
