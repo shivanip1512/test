@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 public class TimeZoneTest {
     static Date now = new Date();

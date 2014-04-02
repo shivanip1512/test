@@ -1,32 +1,6 @@
 package com.cannontech.macs.schedule.wizard;
 
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_DEMAND_DAYS_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_ENERGY_DAYS_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FILE_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FILE_PATH_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FLAG_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_FORMAT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.BILLING_GROUP_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.EMAIL_SUBJECT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.FILE_PATH_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.GROUP_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_FLAG_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.MAX_RETRY_HOURS_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.MISSED_FILE_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFICATION_FLAG_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFY_GROUP_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.PORTER_TIMEOUT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.QUEUE_OFF_COUNT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_FROZEN_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.READ_WITH_RETRY_FLAG_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.RESET_COUNT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.RETRY_COUNT_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.SCHEDULE_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_DESC_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.*;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -65,7 +39,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.clientutils.CTILogger;
@@ -181,9 +155,10 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         super();
     	initialize();
     	
-    	if( !editMode )
-    		//Don't init the connections during edit Mode, they are inited in the setValues call instead
+    	if( !editMode ) {
+            //Don't init the connections during edit Mode, they are inited in the setValues call instead
     		initializeConnections();
+        }
     }
     
     public IMACSConnection getIMACSConnection() 
@@ -194,6 +169,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * Method to handle events for the ActionListener interface.
      * @param e java.awt.event.ActionEvent
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
     	if ( e.getSource() == getBillingFileBrowseButton()){
     		String file = browseOutput(getBillingFilePathTextBox().getText());
@@ -223,8 +199,9 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	int returnVal = chooser.showOpenDialog(this);
     	if( returnVal == JFileChooser.APPROVE_OPTION ) {
     		String macsSupportedPath = chooser.getSelectedFile().getPath().replace('\\', '/');
-    		if( macsSupportedPath.charAt(macsSupportedPath.length()-1) != '/')
-    			macsSupportedPath += "/";
+    		if( macsSupportedPath.charAt(macsSupportedPath.length()-1) != '/') {
+                macsSupportedPath += "/";
+            }
     		return macsSupportedPath;
     	}
     	return null;
@@ -286,6 +263,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see javax.swing.event.CaretListener#caretUpdate(javax.swing.event.CaretEvent)
      */
+    @Override
     public void caretUpdate(CaretEvent e) {
     	fireInputUpdate();
     }
@@ -303,6 +281,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
      */
+    @Override
     public void focusGained(FocusEvent e){
         
     }
@@ -310,6 +289,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
      */
+    @Override
     public void focusLost(FocusEvent e) {
         if (e.getSource() == getScriptTextArea()) {
             setScriptText(getScriptTextArea().getText());
@@ -1749,8 +1729,9 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * @return Returns the scriptParams.
      */
     public ScriptTemplate getScriptTemplate() {
-        if( scriptTemplate == null)
+        if( scriptTemplate == null) {
             scriptTemplate = new ScriptTemplate();
+        }
         return scriptTemplate;
     }
     
@@ -1985,6 +1966,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * @return java.lang.Object
      * @param o java.lang.Object
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object getValue(Object val)
     {
@@ -2004,8 +1986,9 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     
     	try 
     	{
-    		while( (in = rdr.readLine()) != null )
-    			buf.append(in + endl);
+    		while( (in = rdr.readLine()) != null ) {
+                buf.append(in + endl);
+            }
     	} 
     	catch( java.io.IOException e ) 
     	{
@@ -2173,10 +2156,11 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         String frozen = (getScriptTemplate().getParameterValue(READ_FROZEN_PARAM));
     	if(frozen.length() > 0)
     	{
-    		if( frozen.indexOf("72") > 0)	//we have an alpha command (this way we don't have to have the register be exact (0 vs 00)
-    			getAlphaFrozenRegisterCheckBox().setSelected(true);
-    		else	//default rest to this one?
-    			getS4FrozenRegisterCheckBox().setSelected(true);
+    		if( frozen.indexOf("72") > 0) {
+                getAlphaFrozenRegisterCheckBox().setSelected(true);
+            } else {
+                getS4FrozenRegisterCheckBox().setSelected(true);
+            }
     	}
         Integer resetCountParamValue = Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM));
         if(resetCountParamValue > 0) {
@@ -2198,6 +2182,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * This method was created in VisualAge.
      * @return boolean
      */
+    @Override
     public boolean isInputValid(){
         
     	String scriptName = getScriptNameTextField().getText();
@@ -2221,13 +2206,13 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     }
 
     private boolean isValidFileName(String fileName) {
-        return org.apache.commons.lang.StringUtils.containsNone(fileName, TextFieldDocument.INVALID_CHARS_WINDOWS);
+        return StringUtils.containsNone(fileName, TextFieldDocument.INVALID_CHARS_WINDOWS);
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.event.ItemListener#itemStateChanged(java.awt.event.ItemEvent)
      */
-    @SuppressWarnings("unchecked")
+    @Override
     public void itemStateChanged(ItemEvent e) {
     	if( e.getSource() == getGenerateBillingCheckBox()) {
     	    boolean selected = e.getStateChange() == ItemEvent.SELECTED;
@@ -2270,6 +2255,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	return;
     }
     
+    @Override
     public void keyPressed(java.awt.event.KeyEvent e) {
         
     }
@@ -2278,6 +2264,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * Method to handle events for the KeyListener interface.
      * @param e java.awt.event.KeyEvent
      */
+    @Override
     public void keyReleased(java.awt.event.KeyEvent e) {
     	fireInputUpdate();
     }
@@ -2286,6 +2273,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * Method to handle events for the KeyListener interface.
      * @param e java.awt.event.KeyEvent
      */
+    @Override
     public void keyTyped(java.awt.event.KeyEvent e) {
         
     }
@@ -2377,7 +2365,8 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		frame.setContentPane(aScriptSchedulePanel);
     		frame.setSize(aScriptSchedulePanel.getSize());
     		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-    			public void windowClosing(java.awt.event.WindowEvent e) {
+    			@Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
     				System.exit(0);
     			};
     		});
@@ -2442,7 +2431,8 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	}
     
     	SwingUtilities.invokeLater( new Runnable() {
-    		@SuppressWarnings("unchecked")
+    		@Override
+            @SuppressWarnings("unchecked")
             public void run() {
                 getScriptTemplate().setParameterValue(SCRIPT_FILE_NAME_PARAM, file.getFileName() );
     			setScriptText( file.getFileContents() );
@@ -2540,6 +2530,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * This method was created in VisualAge.
      * @param o java.lang.Object
      */
+    @Override
     public void setValue(Object o) {
     	Schedule sched = (Schedule)o;
     	this.scheduleId = sched.getId();
@@ -2549,6 +2540,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
+    @Override
     public void stateChanged(ChangeEvent e) {
         if( e.getSource() == getTabbedPane() && getTabbedPane().getSelectedComponent() == getScriptScrollPane()) {
             setScriptText(buildScript());
@@ -2560,6 +2552,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see com.klg.jclass.util.value.JCValueListener#valueChanged(com.klg.jclass.util.value.JCValueEvent)
      */
+    @Override
     public void valueChanged(JCValueEvent arg0) {
     	fireInputUpdate();
     }
@@ -2567,6 +2560,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     /* (non-Javadoc)
      * @see com.klg.jclass.util.value.JCValueListener#valueChanging(com.klg.jclass.util.value.JCValueEvent)
      */
+    @Override
     public void valueChanging(JCValueEvent arg0) {
     	//do nothing	
     }
@@ -2588,6 +2582,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	frozenRegisterGroup = group;
     }
     
+    @Override
     public void valueChanged(TreeSelectionEvent e) {
         Object source = e.getSource();
         if(source == getMeterReadGroupTree() || source == getBillingGroupTree()) {

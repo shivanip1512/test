@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.userGroupEditor.model;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.model.AuthenticationCategory;

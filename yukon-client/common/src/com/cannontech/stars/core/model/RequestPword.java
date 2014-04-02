@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.ContactDao;

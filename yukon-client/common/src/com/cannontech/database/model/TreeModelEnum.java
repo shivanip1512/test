@@ -3,7 +3,7 @@ package com.cannontech.database.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.ExceptionHelper;

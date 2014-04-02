@@ -2,7 +2,7 @@ package com.cannontech.core.service.impl;
 
 import java.util.Iterator;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.RoleDao;

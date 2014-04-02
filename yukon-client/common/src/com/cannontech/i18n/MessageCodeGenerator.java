@@ -1,6 +1,6 @@
 package com.cannontech.i18n;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 public final class MessageCodeGenerator {
 

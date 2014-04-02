@@ -3,7 +3,7 @@ package com.cannontech.core.dynamic;
 import java.sql.SQLException;
 import java.util.Date;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.YukonResultSet;

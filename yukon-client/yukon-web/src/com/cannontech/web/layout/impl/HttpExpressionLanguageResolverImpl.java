@@ -15,7 +15,7 @@ import javax.el.ValueExpression;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.el.ExpressionFactoryImpl;
 import org.apache.jasper.el.ELContextImpl;
 import org.springframework.beans.factory.annotation.Autowired;

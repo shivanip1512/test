@@ -11,8 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.LogWriter;
 import com.cannontech.database.PoolManager;
@@ -34,7 +32,7 @@ public class LDCNTSUM implements Runnable {
     private DispatchClientConnection dispatchConn = null;
 
     private long writeDelay = 30000;
-    private java.lang.String fileName = "LDCNTSUM.SND";
+    private String fileName = "LDCNTSUM.SND";
 
     private int SIGNAL_SHED_COUNTER = 0;
     private int SIGNAL_RESTORE_COUNTER = 0;
@@ -42,7 +40,6 @@ public class LDCNTSUM implements Runnable {
     private int SIGNAL_CYCLE_COUNTER = 0;
 
     public LDCNTSUM(DispatchClientConnection newDispatchConn, String outputFile) {
-        super();
         this.dispatchConn = newDispatchConn;
         this.fileName = outputFile;
     }
@@ -55,8 +52,9 @@ public class LDCNTSUM implements Runnable {
         if (message instanceof Multi) {
             Vector<Message> v = ((Multi)message).getVector();
             for (Message m : v) {
-                if (m instanceof Signal)
+                if (m instanceof Signal) {
                     signalList.add((Signal)m);
+                }
             }
         } else if (message instanceof Signal) {
             signalList.add((Signal)message);
@@ -171,9 +169,6 @@ public class LDCNTSUM implements Runnable {
      * Returns a customized group addressing string for paoName.
      */
     private String getGroupAddress(String name) {
-
-        name = StringEscapeUtils.escapeSql(name);
-
         String sql = "SELECT UtilityAddress,ClassAddress,DivisionAddress FROM " + 
                 " LMGroupVersacom,YukonPaobject WHERE LMGroupVersacom.DeviceID = " + 
                 " YukonPaobject.PAObjectID AND YukonPaobject.PAOName = ?";
@@ -196,36 +191,43 @@ public class LDCNTSUM implements Runnable {
                 int d = rset.getInt(3);
 
                 int temp = 0;
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 16; i++) {
                     temp |= (((c >> i) & 0x0001) << (15 - i));
+                }
 
                 c = temp;
                 temp = 0;
 
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 16; i++) {
                     temp |= (((d >> i) & 0x0001) << (15 - i));
+                }
 
                 d = temp;
 
                 String uStr = "U=" + u;
-                while (uStr.length() < 12)
+                while (uStr.length() < 12) {
                     uStr = uStr + " ";
+                }
 
                 String cStr = Long.toHexString(c).toUpperCase();
-                while (cStr.length() < 4)
+                while (cStr.length() < 4) {
                     cStr = "0" + cStr;
+                }
 
                 cStr = "C=" + cStr;
-                while (cStr.length() < 7)
+                while (cStr.length() < 7) {
                     cStr = cStr + " ";
+                }
 
                 String dStr = Long.toHexString(d).toUpperCase();
-                while (dStr.length() < 4)
+                while (dStr.length() < 4) {
                     dStr = "0" + dStr;
+                }
 
                 dStr = "D=" + dStr;
-                while (dStr.length() < 7)
+                while (dStr.length() < 7) {
                     dStr = dStr + " ";
+                }
 
                 retVal = uStr + cStr + dStr;
             }
@@ -260,8 +262,9 @@ public class LDCNTSUM implements Runnable {
                     LinkedList<Signal> writeList = new LinkedList<>();
                     decodeMessge(message, writeList);
 
-                    if (writeList.isEmpty())
+                    if (writeList.isEmpty()) {
                         continue;
+                    }
 
                     while (writeAt > System.currentTimeMillis()) {
                         if ((in = dispatchConn.read(0L)) != null) {
@@ -319,8 +322,9 @@ public class LDCNTSUM implements Runnable {
                     } catch (FileNotFoundException fne) {
                         fne.printStackTrace();
                     } finally {
-                        if (writer != null)
+                        if (writer != null) {
                             writer.close();
+                        }
                     }
                 }
 
@@ -333,7 +337,7 @@ public class LDCNTSUM implements Runnable {
     }
 
 
-    public java.lang.String getFileName() {
+    public String getFileName() {
         return fileName;
     }
 

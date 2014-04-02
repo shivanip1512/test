@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 

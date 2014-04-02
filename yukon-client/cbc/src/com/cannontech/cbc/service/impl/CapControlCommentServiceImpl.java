@@ -3,7 +3,7 @@ package com.cannontech.cbc.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.cbc.dao.CapControlCommentDao;
@@ -49,6 +49,7 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
     /**
      * Returns a list of hmtl escaped comment strings.
      */
+    @Override
     public List<String> getComments(final int paoId, final int size) {
         final List<String> list = new ArrayList<String>(size);
         final List<CapControlComment> commentList = capControlCommentDao.getAllCommentsByPao(paoId);
@@ -56,7 +57,7 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
         for (int x = 0; x < size && x < commentList.size(); x++) {
             CapControlComment comment = commentList.get(x);
             String text = comment.getComment();
-            list.add(StringEscapeUtils.escapeHtml(text));
+            list.add(StringEscapeUtils.escapeHtml4(text));
         }
         return list;
     }
@@ -65,13 +66,14 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
     /**
      * Returns a list of hmtl escaped comment strings.
      */
+    @Override
     public List<String> getLastTenCommentsForActionAndType(final int paoId, final int cmdId) {
         final List<String> list = new ArrayList<String>(10);
         CommentAction action = CapControlComment.getActionForCommand(CommandType.getForId(cmdId));
         final List<String> commentList = capControlCommentDao.getLastTenCommentsByActionAndType(paoId, action);
         
         for (String comment : commentList) {
-            list.add(StringEscapeUtils.escapeHtml(comment));
+            list.add(StringEscapeUtils.escapeHtml4(comment));
         }
         return list;
     }

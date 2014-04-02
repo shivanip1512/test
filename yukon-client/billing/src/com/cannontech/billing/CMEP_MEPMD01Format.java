@@ -8,7 +8,7 @@ import java.util.Set;
 
 import javax.transaction.NotSupportedException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.amr.meter.dao.MeterDao;

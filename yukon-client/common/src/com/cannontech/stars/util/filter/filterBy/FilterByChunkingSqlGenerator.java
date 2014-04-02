@@ -3,7 +3,7 @@ package com.cannontech.stars.util.filter.filterBy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.util.SqlGenerator;
 

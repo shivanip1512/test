@@ -2,7 +2,7 @@ package com.cannontech.yukon.conns;
 
 import java.util.Date;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.enums.CurtailmentEventAction;

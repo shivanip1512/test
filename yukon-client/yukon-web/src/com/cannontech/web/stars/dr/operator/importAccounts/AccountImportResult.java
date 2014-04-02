@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -161,9 +161,9 @@ public class AccountImportResult implements Completable {
                 return Duration.standardSeconds(1);
             }
             return duration;
-        } else {
-            return null;
         }
+
+        return null;
     }
     
     public String getFileNames() {
@@ -172,9 +172,15 @@ public class AccountImportResult implements Completable {
         String hardwareFile = hardwareFileUpload.getName();
         String names = "";
         
-        if (StringUtils.isNotBlank(accountFile)) names += accountFile;
-        if (StringUtils.isNotBlank(accountFile) && StringUtils.isNotBlank(hardwareFile)) names += ", ";
-        if (StringUtils.isNotBlank(hardwareFile)) names += hardwareFile;
+        if (StringUtils.isNotBlank(accountFile)) {
+            names += accountFile;
+        }
+        if (StringUtils.isNotBlank(accountFile) && StringUtils.isNotBlank(hardwareFile)) {
+            names += ", ";
+        }
+        if (StringUtils.isNotBlank(hardwareFile)) {
+            names += hardwareFile;
+        }
         
         return names;
     }
@@ -327,7 +333,7 @@ public class AccountImportResult implements Completable {
                         AccountImportError error = new AccountImportError();
                         error.setLineNumber(Integer.parseInt(m.group(1)));
                         error.setErrorMessage(m.group(2));
-                        error.setImportAccount(StringEscapeUtils.escapeHtml(value[0]));
+                        error.setImportAccount(StringEscapeUtils.escapeHtml4(value[0]));
                         errors.add(error);
                     }
                 }
@@ -443,12 +449,11 @@ public class AccountImportResult implements Completable {
     
     public String getPrescanStatusColor() {
         String status = "";
-        if(complete) {
-            if(canceled || hasErrors()) {
+        if (complete) {
+            if (canceled || hasErrors()) {
                 return "error";
-            } else {
-                return "success";
             }
+            return "success";
         }
         
         return status;

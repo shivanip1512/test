@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.hardware.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 

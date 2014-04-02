@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,11 +16,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -72,10 +71,11 @@ import com.cannontech.yukon.BasicServerConnection;
  * @param <T> - Type of command request this executor will execute
  */
 @ManagedResource
-public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> implements
-        CommandRequestExecutor<T> {
+public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> implements CommandRequestExecutor<T> {
+    private final static Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
+    private final static Random random = new Random();
 
-    private static final Logger log = YukonLogManager.getLogger(CommandRequestExecutorBase.class);
+    private final static int CANCEL_PRIORITY = 8;
 
     @Autowired private PorterRequestCancelService porterRequestCancelService;
     @Autowired private ConfigurationSource configurationSource;
@@ -84,16 +84,14 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	@Autowired private NextValueHelper nextValueHelper;
 	@Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
 	@Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-    
+	@Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+	@Autowired private CommandPermissionConverter commandPermissionConverter;
+	@Autowired private @Qualifier("main") Executor executor;
+
     private BasicServerConnection porterConnection;
-    private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private CommandPermissionConverter commandPermissionConverter;
     private Set<Permission> loggableCommandPermissions = new HashSet<>();
-    private Executor executor;
-	
+
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<>();
-    
-    private static final int CANCEL_PRIORITY = 8;
 
     // COMMAND RESULT MESSAGE LISTENER
     private final class CommandResultMessageListener implements MessageListener {
@@ -344,8 +342,9 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         int commandPriority;
         try{
             commandPriority = configurationSource.getInteger("OVERRIDE_PRIORITY_"+parameterDto.getType(), parameterDto.getPriority());
-            if(!CommandPriority.isCommandPriorityValid(commandPriority))
+            if(!CommandPriority.isCommandPriorityValid(commandPriority)) {
                 throw new IllegalArgumentException("Command priorities must be between "+CommandPriority.minPriority+" and "+CommandPriority.maxPriority);
+            }
         } catch (IllegalArgumentException e) {
             log.warn("System has recieved a new priority for "+parameterDto.getType()+", but cannot use the value because it is invalid.  The system will revert to using the default priority value until a valid priority is supplied.  Please fix the priority value and try again.",e);
             commandPriority = parameterDto.getPriority();
@@ -360,13 +359,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         
         // execute
         executor.execute(new Runnable() {
-        	
         	@Override
             public void run() {
-
 		        // build up a list of command requests
 		        final List<RequestHolder> commandRequests = new ArrayList<>(commands.size());
-		        int groupMessageId = RandomUtils.nextInt();
+		        int groupMessageId = random.nextInt();
 		        
 		        for (T command : commands) {
 		            
@@ -583,7 +580,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
     // HELPERS
     private void logCommand(Request request, LiteYukonUser user) {
-        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: " + request.getDeviceID() + ", Route: " + request.getRouteID(), user);
+        new SystemLogHelper(PointTypes.SYS_PID_SYSTEM).log("Manual: " + request.getCommandString(), "ID: "
+                + request.getDeviceID() + ", Route: " + request.getRouteID(), user);
     }
 
     private boolean commandRequiresLogging(Request request) {
@@ -594,7 +592,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
     
     /* This method creates CommandRequestExecution. The start date is set to now. */
-    private CommandRequestExecution createCommandRequestExecution(CommandRequestExecutionParameterDto parameterDto, List<T> commands){
+    private CommandRequestExecution createCommandRequestExecution(CommandRequestExecutionParameterDto parameterDto,
+            List<T> commands){
         LiteYukonUser user = parameterDto.getUser();
         CommandRequestExecution execution = new CommandRequestExecution();
         CommandRequestExecutionContextId contextId = parameterDto.getContextId();
@@ -615,7 +614,13 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     
     protected abstract CommandRequestType getCommandRequestType();
     
-    protected abstract void applyIdsToCommandRequestExecutionResult(T commandRequest, CommandRequestExecutionResult commandRequestExecutionResult);
+    protected abstract void applyIdsToCommandRequestExecutionResult(T commandRequest,
+            CommandRequestExecutionResult commandRequestExecutionResult);
+
+    private class RequestHolder {
+        public Request request;
+        public T command;
+    }
 
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
@@ -623,35 +628,10 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     }
 
     @Required
-    public void setDeviceErrorTranslatorDao(
-            DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
-        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
-    }
-
-    private class RequestHolder {
-        public Request request;
-        public T command;
-    }
-
-    public Set<Permission> getLoggableCommandPermissions() {
-        return loggableCommandPermissions;
-    }
-
-    public void setLoggableCommandPermissions(
-            Set<Permission> loggableCommandPermissions) {
+    public void setLoggableCommandPermissions(Set<Permission> loggableCommandPermissions) {
         this.loggableCommandPermissions = loggableCommandPermissions;
     }
-    
-    public void setCommandPermissionConverter(
-            CommandPermissionConverter commandPermissionConverter) {
-        this.commandPermissionConverter = commandPermissionConverter;
-    }
-    
-    @Resource(name="globalScheduledExecutor")
-    public void setExecutor(Executor executor) {
-		this.executor = executor;
-	}
-    
+
     @ManagedAttribute
     public int getPendingRequestCount() {
         return msgListeners.size();

@@ -1,6 +1,6 @@
 package com.cannontech.common.fdr;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class to represent the option values for each FDR interface.

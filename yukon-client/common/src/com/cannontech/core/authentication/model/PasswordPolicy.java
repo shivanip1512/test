@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 import javax.naming.ConfigurationException;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 

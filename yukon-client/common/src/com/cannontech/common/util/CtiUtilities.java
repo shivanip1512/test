@@ -39,9 +39,9 @@ import java.util.jar.Manifest;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.joda.time.Instant;
 import org.springframework.util.FileCopyUtils;

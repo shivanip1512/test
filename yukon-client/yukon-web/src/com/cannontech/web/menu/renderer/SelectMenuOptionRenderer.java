@@ -3,8 +3,8 @@ package com.cannontech.web.menu.renderer;
 import java.io.Writer;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ecs.html.OptGroup;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
@@ -73,11 +73,11 @@ public class SelectMenuOptionRenderer {
 	}
 	
 	private String e(String input) {
-        return StringEscapeUtils.escapeHtml(input);
+        return StringEscapeUtils.escapeHtml4(input);
     }
     
     private Option createPortalOption(SimpleMenuOption subMenuOption, MessageSourceAccessor messageSourceAccessor) {
-        SimpleMenuOption simpleMenuOption = (SimpleMenuOption) subMenuOption;
+        SimpleMenuOption simpleMenuOption = subMenuOption;
         Option portalOption = new Option(simpleMenuOption.getUrl());
         String linkName = messageSourceAccessor.getMessage(simpleMenuOption.getMenuText());
         portalOption.addElement(e(linkName));

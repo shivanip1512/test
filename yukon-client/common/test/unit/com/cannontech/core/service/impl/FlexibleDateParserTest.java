@@ -13,7 +13,7 @@ import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

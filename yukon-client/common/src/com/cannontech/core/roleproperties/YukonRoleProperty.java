@@ -31,7 +31,7 @@ import static com.cannontech.core.roleproperties.YukonRole.TRENDING;
 import static com.cannontech.core.roleproperties.YukonRole.WEB_CLIENT;
 import static com.cannontech.core.roleproperties.YukonRole.WORK_ORDER;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.web.input.type.InputType;
 import com.google.common.collect.ImmutableMap;

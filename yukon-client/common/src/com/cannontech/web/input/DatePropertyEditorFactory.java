@@ -5,7 +5,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;

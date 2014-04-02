@@ -3,7 +3,7 @@ package com.cannontech.common.csvImport;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 

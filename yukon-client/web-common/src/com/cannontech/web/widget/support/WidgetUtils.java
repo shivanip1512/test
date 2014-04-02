@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +56,6 @@ public class WidgetUtils {
      * @return The escaped string
      */
     public static String escapeJavaScript(String string) {
-        return StringEscapeUtils.escapeJavaScript(string);
+        return StringEscapeUtils.escapeEcmaScript(string);
     }
 }

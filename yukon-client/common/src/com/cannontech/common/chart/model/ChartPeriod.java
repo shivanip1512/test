@@ -3,7 +3,7 @@ package com.cannontech.common.chart.model;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 

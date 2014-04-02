@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -97,7 +97,9 @@ public class StandardMenuRenderer {
     	LiteYukonUser user = context.getYukonUser();
     	
     	/* Bail out if we don't have permission to view this menu. */
-    	if (!checkPermissions(menu, user)) return;
+    	if (!checkPermissions(menu, user)) {
+            return;
+        }
     	
     	Iterable<Element> options = getElementChildren(menu.getChild("options", NS), "option");
     	
@@ -173,13 +175,19 @@ public class StandardMenuRenderer {
     		
     		if (or != null) {
     			/* Skip this menu if NONE of the elements in 'or' are met */
-    			if (!checkAny(or.getChildren(), user)) return false;
+    			if (!checkAny(or.getChildren(), user)) {
+                    return false;
+                }
     		} else if (and != null) {
     			/* Skip this menu if ALL of the elements in 'and' are NOT met */
-    			if (!checkAll(and.getChildren(), user)) return false;
+    			if (!checkAll(and.getChildren(), user)) {
+                    return false;
+                }
     		} else {
     			/* Default to an 'or' type check on whatever is in here */
-    			if (!checkAny(permissions.getChildren(), user)) return false;
+    			if (!checkAny(permissions.getChildren(), user)) {
+                    return false;
+                }
     		}
     	}
     	return true;
@@ -192,18 +200,26 @@ public class StandardMenuRenderer {
 		Permission type = Permission.valueOf(permission.getName());
 		
 		if (type == Permission.role) {
-			if (rpDao.checkRole(YukonRole.valueOf(permission.getAttributeValue("name")), user)) return true;
+			if (rpDao.checkRole(YukonRole.valueOf(permission.getAttributeValue("name")), user)) {
+                return true;
+            }
 		} else if (type == Permission.roleProperty) {
-			if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) return true;
+			if (rpDao.checkProperty(YukonRoleProperty.valueOf(permission.getAttributeValue("name")), user)) {
+                return true;
+            }
 		} else if (type == Permission.ecOperator) {
-			if (yecService.isEnergyCompanyOperator(user)) return true;
+			if (yecService.isEnergyCompanyOperator(user)) {
+                return true;
+            }
 		} else if (type == Permission.masterConfig) {
 		    if (configurationSource.getBoolean(permission.getAttributeValue("name"), false)) {
 	              return true;
 		    }
 		} else {
 			/* Not used yet and only supporting booleans, add 'value' to globalSetting element in schema if needed */
-			if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) return true;
+			if (gsDao.getBoolean(GlobalSettingType.valueOf(permission.getAttributeValue("name")))) {
+                return true;
+            }
 		}
 		return false;
     }
@@ -214,7 +230,9 @@ public class StandardMenuRenderer {
     private boolean checkAny(List<?> permissions, LiteYukonUser user) {
     	for (Object obj : permissions) {
     		Element permission = (Element) obj;
-    		if (checkPermission(permission, user)) return true;
+    		if (checkPermission(permission, user)) {
+                return true;
+            }
     	}
     	return false;
     }
@@ -225,7 +243,9 @@ public class StandardMenuRenderer {
 	private boolean checkAll(List<?> permissions, LiteYukonUser user) {
 		for (Object obj : permissions) {
 			Element permission = (Element) obj;
-			if (!checkPermission(permission, user)) return false;
+			if (!checkPermission(permission, user)) {
+                return false;
+            }
 		}
 		return true;
 	}
@@ -235,7 +255,7 @@ public class StandardMenuRenderer {
     }
     
     private String buildUrl(HttpServletRequest req, String url) {
-    	return StringEscapeUtils.escapeHtml(ServletUtil.createSafeUrl(req, url));
+    	return StringEscapeUtils.escapeHtml4(ServletUtil.createSafeUrl(req, url));
     }
     
     private enum Permission {

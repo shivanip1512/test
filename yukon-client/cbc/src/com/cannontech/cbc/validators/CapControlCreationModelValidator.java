@@ -1,6 +1,6 @@
 package com.cannontech.cbc.validators;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.capcontrol.dao.StrategyDao;

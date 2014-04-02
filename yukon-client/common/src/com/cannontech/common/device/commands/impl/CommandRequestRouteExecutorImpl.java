@@ -1,8 +1,8 @@
 package com.cannontech.common.device.commands.impl;
 
 import java.util.Collections;
+import java.util.Random;
 
-import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -21,16 +21,14 @@ import com.cannontech.message.porter.message.Request;
 /**
  * Implementation class for CommandRequestRouteExecutor
  */
-public class CommandRequestRouteExecutorImpl extends
-        CommandRequestExecutorBase<CommandRequestRoute> implements
-        CommandRequestRouteExecutor {
-
-    private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
+public class CommandRequestRouteExecutorImpl extends CommandRequestExecutorBase<CommandRequestRoute>
+        implements CommandRequestRouteExecutor {
+    private final static Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
+    private final static Random random = new Random();
 
     @Override
     protected void adjustRequest(Request request, CommandRequestRoute commandRequest) {
-        
-        long requestId = RandomUtils.nextInt();
+        long requestId = random.nextInt();
         int routeId = commandRequest.getRouteId();
         
         request.setRouteID(routeId);

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.core.dao.NotFoundException;

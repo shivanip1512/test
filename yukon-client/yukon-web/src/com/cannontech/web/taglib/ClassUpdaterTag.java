@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.web.updater.DataUpdaterService;
@@ -13,7 +13,6 @@ import com.cannontech.web.updater.UpdateValue;
 
 @Configurable("classUpdaterTagPrototype")
 public class ClassUpdaterTag extends YukonTagSupport {
-	
     private DataUpdaterService dataUpdaterService;
     
     private String type;
@@ -23,7 +22,6 @@ public class ClassUpdaterTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-    	
     	if (getKey() == null && (getType() == null || getIdentifier() == null)) {
     		throw new IllegalArgumentException("Must use type/identifier parameters, or the key parameter.");
     	}
@@ -39,7 +37,8 @@ public class ClassUpdaterTag extends YukonTagSupport {
         JspWriter out = getJspContext().getOut();
         
         String className = value.isUnavailable() ? initialClassName :  value.getValue();
-        out.print("<span data-class-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" class=\"" + className + "\" >");
+        out.print("<span data-class-updater=\""
+                + StringEscapeUtils.escapeHtml4(value.getFullIdentifier()) + "\" class=\"" + className + "\" >");
         getJspBody().invoke(null);
         out.print("</span>");
     }
@@ -79,5 +78,4 @@ public class ClassUpdaterTag extends YukonTagSupport {
 	public void setDataUpdaterService(DataUpdaterService dataUpdaterService) {
         this.dataUpdaterService = dataUpdaterService;
     }
-
 }

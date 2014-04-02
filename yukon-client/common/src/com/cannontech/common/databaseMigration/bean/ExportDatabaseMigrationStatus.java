@@ -3,7 +3,7 @@ package com.cannontech.common.databaseMigration.bean;
 import java.io.File;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.util.Completable;

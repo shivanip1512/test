@@ -2,7 +2,7 @@ package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.LMProgramBase;

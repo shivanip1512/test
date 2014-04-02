@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.amr.endpoint.helper.parsers;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.yukon.api.amr.endpoint.helper.PointValueSelector;

@@ -4,7 +4,7 @@ package com.cannontech.database.db.port;
  * This type was created in VisualAge.
  */
 
- import org.apache.commons.lang.Validate;
+ import org.apache.commons.lang3.Validate;
 
 import com.cannontech.database.db.DBPersistent;
  

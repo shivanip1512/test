@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -16,7 +16,6 @@ import com.cannontech.web.updater.UpdateValue;
 
 @Configurable("capControlValueTagPrototype")
 public class CapControlValueTag extends YukonTagSupport {
-	
     private DataUpdaterService updaterService;
     private int paoId;
     private boolean isPaoIdSet;
@@ -41,8 +40,8 @@ public class CapControlValueTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
-        out.print(StringEscapeUtils.escapeHtml(value.getValue()));
+        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml4(value.getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
+        out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
         out.print("</span>");
     }
     

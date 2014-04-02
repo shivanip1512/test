@@ -12,7 +12,7 @@ import javax.xml.soap.Name;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,8 +49,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Autowired private MultispeakFuncs multispeakFuncs; 
     
     private SystemLogHelper getSystemLogHelper() {
-        if (_systemLogHelper == null)
+        if (_systemLogHelper == null) {
             _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_MULTISPEAK);
+        }
         return _systemLogHelper;
     }
     
@@ -285,7 +286,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 				Name attributeName = attributeNamesItr.next();
 				if (attributeName.getLocalName().equalsIgnoreCase(name)) {
 					value = headerElement.getAttributeValue(attributeName);
-					if (!org.apache.commons.lang.StringUtils.isBlank(value)) {
+					if (!StringUtils.isBlank(value)) {
 						break;
 					}
 				}

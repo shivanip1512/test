@@ -6,7 +6,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;

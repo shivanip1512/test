@@ -2,7 +2,7 @@ package com.cannontech.common.bulk.service;
 
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 
 public abstract class BulkFileInfo {

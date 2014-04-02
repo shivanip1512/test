@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A helper class for building SQL statements.
@@ -102,29 +101,7 @@ public class SqlStringStatementBuilder {
         }
         return this;
     }
-    
-    /**
-     * This will insert a quoted string into the output.
-     * Example:
-     *   In:
-     *          the cat's leg
-     *   Out: 
-     *          'the cat''s leg'
-     *          
-     *  Unlike other methods, the input argument is not trimmed.
-     *  
-     * This method should not be used anymore. See appendArgument.
-     * @param arg
-     * @return
-     */
-    @Deprecated
-    public SqlStringStatementBuilder appendQuotedString(Object arg) {
-        statement.append('\'');
-        statement.append(StringEscapeUtils.escapeSql(arg.toString()));
-        statement.append('\'');
-        return this;
-    }
-    
+
     /**
      * Adds a single space to the output.
      */

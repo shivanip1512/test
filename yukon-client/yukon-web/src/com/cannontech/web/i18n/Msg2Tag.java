@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
@@ -76,7 +77,7 @@ public class Msg2Tag extends YukonTagSupport {
         if (debug) {
             String[] codes = resolvable.getCodes();
             Map<String,String> debugMap = Maps.newLinkedHashMap();
-            if (org.apache.commons.lang.StringUtils.isNotBlank(resolvable.getDefaultMessage())) {
+            if (StringUtils.isNotBlank(resolvable.getDefaultMessage())) {
                 debugMap.put("[default]", resolvable.getDefaultMessage());
             }
             if (codes != null) {
@@ -86,6 +87,7 @@ public class Msg2Tag extends YukonTagSupport {
                     try {
                         specificCodeMessage = getMessageSource().getMessage(specificCode, resolvedArguments);
                     } catch (NoSuchMessageException e) {
+                        // debug mode
                     }
                     debugMap.put(specificCode, specificCodeMessage);
                 }

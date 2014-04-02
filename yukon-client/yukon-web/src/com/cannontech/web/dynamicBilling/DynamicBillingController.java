@@ -10,11 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -233,9 +230,8 @@ public class DynamicBillingController {
 
         // use the class method getBillingFileString to give us
         // header+generated string+footer
-        returnString.append(StringEscapeUtils.escapeHtml(dynamicFormatter
-                .getBillingFileString(Collections.singletonList(device))
-                .toString()));
+        returnString.append(StringEscapeUtils.escapeHtml4(dynamicFormatter.getBillingFileString(
+            Collections.singletonList(device)).toString()));
 
         // for our html page purposes, replace carriage returns with <BR>
         returnString = new StringBuffer(returnString.toString().replaceAll("\r\n", "<BR>"));
@@ -245,15 +241,14 @@ public class DynamicBillingController {
     }
 
     @RequestMapping("updateFormatName")
-    public @ResponseBody String updateFormatName(int formatId, String formatName, ModelMap model, final YukonUserContext context) throws ServletException {
-
+    public @ResponseBody String updateFormatName(int formatId, String formatName, YukonUserContext userContext) {
         DynamicFormat format = new DynamicFormat();
         format.setFormatId(formatId);
         format.setName(formatName);
             
         if (!dynamicBillingFileDao.isFormatNameUnique(format)){
             
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             return messageSourceAccessor.getMessage("yukon.web.billing.nonUniqueFormatName");
         }
 
@@ -393,25 +388,23 @@ public class DynamicBillingController {
      * @return Default billable device
      */
     private BillableDevice getDefaultDevice() {
-        
         BillingDeviceBase device = new BillingDeviceBase() {
-            
             @Override
             public void populate(PointIdentifier pointIdentifier,
                     Timestamp timestamp, double value, int unitOfMeasure,
                     String pointName, DeviceData meterData) {
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             }
             @Override
             public boolean isEnergy(PointIdentifier pointIdentifier) {
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             }
             @Override
             public boolean isDemand(PointIdentifier pointIdentifier) {
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
             }
         };
-        
+
         // Add meter data to channel one
         device.addData(Channel.ONE, ReadingType.DEVICE_DATA,
                 BillableField.meterNumber, "111111111");

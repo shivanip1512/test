@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.program.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.pao.PaoType;

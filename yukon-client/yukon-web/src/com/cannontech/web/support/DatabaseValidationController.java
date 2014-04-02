@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.NotSupportedException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
@@ -41,13 +41,13 @@ import com.cariboulake.db.schemacompare.business.domain.dbcompare.DbDifferences;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_LOGS)
 public class DatabaseValidationController implements ResourceLoaderAware {
-    
+    private final static Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
+
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     private ResourceLoader resourceLoader;
-    private JdbcTemplate jdbcTemplate;
     private Semaphore running = new Semaphore(1);
-    private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
         
     @RequestMapping(value="/database/validate/home")
     public String home(ModelMap map, final YukonUserContext context) {
@@ -106,7 +106,7 @@ public class DatabaseValidationController implements ResourceLoaderAware {
             schemaDifferences.printDifferences(stringWriter);
             PrintWriter writer = response.getWriter();
             writer.write("<pre>");
-            StringEscapeUtils.escapeHtml(writer, stringWriter.toString());
+            writer.write(StringEscapeUtils.escapeHtml4(stringWriter.toString()));
             writer.write("</pre>");
     
             return null;
@@ -138,10 +138,12 @@ public class DatabaseValidationController implements ResourceLoaderAware {
     private Resource getDatabaseXMLFile(final YukonUserContext context) throws NotSupportedException, MetaDataAccessException  {
         String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
         
-        if (databaseProductName.contains("SQL Server"))
+        if (databaseProductName.contains("SQL Server")) {
             return resourceLoader.getResource("classpath:com/cannontech/database/snapshot/mssql.xml");
-        if (databaseProductName.contains("Oracle"))
+        }
+        if (databaseProductName.contains("Oracle")) {
             return resourceLoader.getResource("classpath:com/cannontech/database/snapshot/oracle.xml");
+        }
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
         throw new NotSupportedException(messageSourceAccessor.getMessage("yukon.web.modules.support.databaseValidate.msgError.valitationNotSupported"));
@@ -154,18 +156,14 @@ public class DatabaseValidationController implements ResourceLoaderAware {
      */
     private boolean isDatabaseOracle() throws MetaDataAccessException {
         String databaseProductName = (String)JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
-        if (databaseProductName.contains("Oracle"))
+        if (databaseProductName.contains("Oracle")) {
             return true;
+        }
         return false;
     }
     
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
-    }
-    
-    @Autowired
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
     }
 }

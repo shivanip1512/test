@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Ignore;

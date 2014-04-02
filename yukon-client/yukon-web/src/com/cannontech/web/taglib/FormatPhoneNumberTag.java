@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -25,11 +25,13 @@ public class FormatPhoneNumberTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        if (!isValueSet) throw new JspException("value is not set.");
+        if (!isValueSet) {
+            throw new JspException("value is not set.");
+        }
         
         String formattedPhoneNumber = formattingService.formatPhoneNumber(value, getUserContext());
         if (htmlEscape) {
-            formattedPhoneNumber = StringEscapeUtils.escapeHtml(formattedPhoneNumber);
+            formattedPhoneNumber = StringEscapeUtils.escapeHtml4(formattedPhoneNumber);
         }
         
         if (isVarSet) {

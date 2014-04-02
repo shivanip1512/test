@@ -1,7 +1,7 @@
 package com.cannontech.yukon.api.util;
 
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jdom.Element;

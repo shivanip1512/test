@@ -2,7 +2,7 @@ package com.cannontech.message.dispatch.message;
 
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 public class DbChangeHelper {
     public static DBChangeMsg newDbChange(DbChangeType type, DbChangeCategory category, int primaryKey) {

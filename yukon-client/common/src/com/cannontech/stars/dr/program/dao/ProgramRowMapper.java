@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.program.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;

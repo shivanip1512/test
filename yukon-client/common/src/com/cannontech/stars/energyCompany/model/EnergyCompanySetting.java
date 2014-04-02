@@ -2,7 +2,7 @@ package com.cannontech.stars.energyCompany.model;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;

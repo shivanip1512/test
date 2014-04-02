@@ -2,7 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.LinkedHashMap;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.user.YukonUserContext;
 

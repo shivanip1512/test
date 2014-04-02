@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;

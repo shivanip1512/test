@@ -3,7 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerStub;

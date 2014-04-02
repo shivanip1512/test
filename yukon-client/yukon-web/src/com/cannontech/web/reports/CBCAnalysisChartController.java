@@ -12,8 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,9 +41,12 @@ public class CBCAnalysisChartController extends MultiActionController  {
 	private CapControlCache capControlCache = null;
 	private SubstationBusDao substationBusDao = null;
 	private FeederDao feederDao = null;
-	
+
+	/**
+	 * @param request
+	 * @param response
+	 */
     public ModelAndView cbcChart(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
     	// PARAMETERS
     	// ------------------------------------------------------------------------------------------------------
     	String analysisType = ServletRequestUtils.getRequiredStringParameter(request, "analysisType");
@@ -62,7 +65,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	Date endDate = new Date();
     	Date startDate = endDate;
     	if(chartPeriod == ChartPeriod.MONTH) {
-    		startDate = DateUtils.add(startDate, Calendar.DATE, -30);
+    		startDate = DateUtils.addDays(startDate, -30);
     		startDate = DateUtils.truncate(startDate, Calendar.DATE);
     	}
     	else if(chartPeriod == ChartPeriod.DAY) {

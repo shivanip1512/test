@@ -2,7 +2,7 @@ package com.cannontech.common.rfn.message;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public final class RfnIdentifier implements Serializable {
 

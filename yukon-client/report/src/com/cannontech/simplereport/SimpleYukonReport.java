@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.ReportHeader;
 import org.jfree.report.elementfactory.LabelElementFactory;

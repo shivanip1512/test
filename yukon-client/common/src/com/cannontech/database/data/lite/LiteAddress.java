@@ -1,6 +1,6 @@
 package com.cannontech.database.data.lite;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.util.CtiUtilities;
 

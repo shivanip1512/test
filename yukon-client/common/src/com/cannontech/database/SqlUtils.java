@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 
 /**

@@ -62,7 +62,6 @@ import com.google.common.collect.Maps;
  *         .done(function(data, ...) {...
  */
 public class JsonUtils {
-
     private static final ObjectReader reader;
     private static final ObjectWriter writer;
     static {
@@ -141,5 +140,4 @@ public class JsonUtils {
 
         return result;
     }
-
 }

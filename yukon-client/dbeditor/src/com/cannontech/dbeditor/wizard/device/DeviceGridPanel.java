@@ -8,7 +8,7 @@ package com.cannontech.dbeditor.wizard.device;
 import java.awt.Dimension;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;

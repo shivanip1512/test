@@ -1,6 +1,6 @@
 package com.cannontech.web.admin.energyCompany.applianceCategory;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 

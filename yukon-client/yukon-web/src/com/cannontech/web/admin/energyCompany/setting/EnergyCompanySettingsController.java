@@ -7,8 +7,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.collections4.FactoryUtils;
 import org.apache.commons.collections4.map.LazyMap;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;

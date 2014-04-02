@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;

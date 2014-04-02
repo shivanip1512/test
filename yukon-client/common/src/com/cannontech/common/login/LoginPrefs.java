@@ -1,7 +1,7 @@
 package com.cannontech.common.login;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.ClientApplicationRememberMe;

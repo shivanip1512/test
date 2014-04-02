@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 

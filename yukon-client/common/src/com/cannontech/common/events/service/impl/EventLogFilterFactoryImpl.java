@@ -1,6 +1,6 @@
 package com.cannontech.common.events.service.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.model.ArgumentColumn;

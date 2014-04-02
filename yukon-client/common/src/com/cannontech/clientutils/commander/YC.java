@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import javax.swing.Timer;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -33,7 +33,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.KeysAndValues;
 import com.cannontech.common.util.KeysAndValuesFile;
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -45,9 +44,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
-import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -81,8 +78,8 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class YC extends Observable implements MessageListener
 {
-    protected PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
-    
+    protected PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
+
     private final SystemLogHelper _systemLogHelper;
     private String logUserName = null;
     
@@ -308,8 +305,9 @@ public class YC extends Observable implements MessageListener
      */
     public Object[] getAllRoutes()
     {
-        if( allRoutes == null)
+        if( allRoutes == null) {
             allRoutes = YukonSpringHook.getBean(PaoDao.class).getAllLiteRoutes();
+        }
         return allRoutes;
     }
     /**
@@ -324,8 +322,9 @@ public class YC extends Observable implements MessageListener
     /** Vector of String commands, parsed from commandString */    
     public Vector<String> getExecuteCmdsVector()
     {
-        if( executeCmdsVector == null)
+        if( executeCmdsVector == null) {
             executeCmdsVector = new Vector<String>(2);
+        }
         return executeCmdsVector;
     }
 
@@ -366,10 +365,11 @@ public class YC extends Observable implements MessageListener
      */
     public String getQueueCommandString()
     {
-        if( getYCDefaults().getQueueExecuteCommand())
+        if( getYCDefaults().getQueueExecuteCommand()) {
             return "";
-        else 
+        } else {
             return " noqueue";
+        }
     }
     /**
      * Return the routeID
@@ -405,8 +405,9 @@ public class YC extends Observable implements MessageListener
      */
     public YCDefaults getYCDefaults()
     {
-        if( ycDefaults == null)
+        if( ycDefaults == null) {
             ycDefaults = new YCDefaults();
+        }
         return ycDefaults;
     }
     
@@ -454,8 +455,9 @@ public class YC extends Observable implements MessageListener
                     rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
                 }
     
-                if( rt.getPaoType() == PaoType.ROUTE_MACRO)
+                if( rt.getPaoType() == PaoType.ROUTE_MACRO) {
                     return;
+                }
     
                 porterRequest.setRouteID(rt.getYukonID());
             }
@@ -480,9 +482,9 @@ public class YC extends Observable implements MessageListener
             String command = getExecuteCmdsVector().get(i);
             int index = command.indexOf("serial");
             
-            if( index < 0 )    // serial not in command string = -1
-            getExecuteCmdsVector().setElementAt( command + " serial " + serialNumber , i);
-            else {    // set serial as in command string
+            if( index < 0 ) {
+                getExecuteCmdsVector().setElementAt( command + " serial " + serialNumber , i);
+            } else {    // set serial as in command string
                 StringTokenizer st = new StringTokenizer( command.substring(index+6) );
                 if (st.hasMoreTokens())
                 {
@@ -490,11 +492,12 @@ public class YC extends Observable implements MessageListener
                     String serialNumToken = st.nextToken();
                     if( i > 0)    //more than one command
                     {
-                        if( !getSerialNumber().equalsIgnoreCase(serialNumToken) )
+                        if( !getSerialNumber().equalsIgnoreCase(serialNumToken) ) {
                             logCommand(" ** Warning: Different serial numbers are being used in this multiple command, the first serial number will be used for all commands!");
-                    }
-                    else    //only store/use the serial number of the first command!
+                        }
+                    } else {
                         setSerialNumber( serialNumToken);
+                    }
                 }
             }
         }
@@ -632,9 +635,9 @@ public class YC extends Observable implements MessageListener
      */
     public void setAllRoutes(Object[] allRoutesArray_) 
     {
-        if (allRoutesArray_ == null)
+        if (allRoutesArray_ == null) {
             allRoutes = null;
-        else
+        } else
         {
             allRoutes = new Object[allRoutesArray_.length];
             for ( int i = 0; i < allRoutesArray_.length; i++)
@@ -827,10 +830,11 @@ public class YC extends Observable implements MessageListener
      */
     public void setSerialNumber(String serialNumber_)
     {
-        if( serialNumber_ == null)
+        if( serialNumber_ == null) {
             serialNumber = null;
-        else 
+        } else {
             serialNumber = serialNumber_.trim();
+        }
     }
 
     /**
@@ -912,10 +916,11 @@ public class YC extends Observable implements MessageListener
         long timer = (System.currentTimeMillis());
 
         String log = "";
-        if( request_.getDeviceID() > 0)
+        if( request_.getDeviceID() > 0) {
             log = " Device \'" + YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(request_.getDeviceID()) + "\'";
-        else
+        } else {
             log = " Serial # \'" + serialNumber + "\'";
+        }
 
         if( isPilConnValid() )
         {
@@ -964,6 +969,7 @@ public class YC extends Observable implements MessageListener
     /* (non-Javadoc)
      * @see com.cannontech.message.util.MessageListener#messageReceived(com.cannontech.message.util.MessageEvent)
      */
+    @Override
     public void messageReceived(MessageEvent e)
     {
         Message in = e.getMessage();        
@@ -1002,7 +1008,7 @@ public class YC extends Observable implements MessageListener
                     //textColor = java.awt.Color.black;
                     debugOutput = "<BR>["+ displayFormat.format(returnMsg.getTimeStamp()) + "]-{" + returnMsg.getUserMessageID() 
                             +"} {Device: " +  YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID()) 
-                            + "} Return from '" + StringEscapeUtils.escapeHtml(returnMsg.getCommandString()) + "'";
+                            + "} Return from '" + StringEscapeUtils.escapeHtml4(returnMsg.getCommandString()) + "'";
                     writeOutputMessage(OutputMessage.DEBUG_MESSAGE, debugOutput, MessageType.INFO);
                     debugOutput = "";
                     prevUserID = returnMsg.getUserMessageID();
@@ -1029,11 +1035,13 @@ public class YC extends Observable implements MessageListener
                 
                 if( returnMsg.getExpectMore() == 0) {
                     String routeName = null;
-                    if (returnMsg.getRouteOffset() > 0)
-                        routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getRouteOffset());                                                                                
+                    if (returnMsg.getRouteOffset() > 0) {
+                        routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getRouteOffset());
+                    }                                                                                
                     
-                    if( routeName == null)
+                    if( routeName == null) {
                         routeName = YukonSpringHook.getBean(PaoDao.class).getYukonPAOName(returnMsg.getDeviceID());
+                    }
 
                     displayOutput = "Route:   " + routeName;
                     int tabCount = (60 - displayOutput.length())/ 24;
@@ -1098,8 +1106,9 @@ public class YC extends Observable implements MessageListener
                                         rt = (LiteYukonPAObject) getAllRoutes()[sendMore];
                                     }
                                     // Have to check again because last one may be route_ macro
-                                    if(rt.getPaoType() == PaoType.ROUTE_MACRO)
+                                    if(rt.getPaoType() == PaoType.ROUTE_MACRO) {
                                         break doneSendMore;
+                                    }
 
                                     getPorterRequest().setRouteID(rt.getYukonID());
                                 }
@@ -1246,8 +1255,9 @@ public class YC extends Observable implements MessageListener
      */
     public void startStopWatch(int timeOutInMillis)
     {
-        if( stopWatch == null)
+        if( stopWatch == null) {
             stopWatch = new Timer(timeOutInMillis, timerPerfomer);
+        }
         stopWatch.setInitialDelay(timeOutInMillis);
         stopWatch.setRepeats(false);
         stopWatch.start();
@@ -1258,8 +1268,9 @@ public class YC extends Observable implements MessageListener
      */
     public boolean isWatchRunning()
     {
-        if( stopWatch != null && stopWatch.isRunning())
+        if( stopWatch != null && stopWatch.isRunning()) {
             return true;
+        }
         return false;
     }
     /**
@@ -1286,6 +1297,7 @@ public class YC extends Observable implements MessageListener
         if (timerPerfomer == null)
         {
             timerPerfomer = new ActionListener(){
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     setTimeOut(0);
@@ -1320,33 +1332,33 @@ public class YC extends Observable implements MessageListener
                         {
                             category = fileName;
                         }
-                        else if( fileName.equalsIgnoreCase("alpha-base"))
+                        else if( fileName.equalsIgnoreCase("alpha-base")) {
                             category = CommandCategory.STRING_CMD_ALPHA_BASE;
-                        else if( fileName.equalsIgnoreCase("cbc-base"))
+                        } else if( fileName.equalsIgnoreCase("cbc-base")) {
                             category = CommandCategory.STRING_CMD_CBC_BASE;
-                        else if( fileName.equalsIgnoreCase("ccu-base"))
+                        } else if( fileName.equalsIgnoreCase("ccu-base")) {
                             category = CommandCategory.STRING_CMD_CCU_BASE;
-                        else if( fileName.equalsIgnoreCase("iedbase"))
+                        } else if( fileName.equalsIgnoreCase("iedbase")) {
                             category = CommandCategory.STRING_CMD_IED_BASE;
-                        else if( fileName.equalsIgnoreCase("ion-base"))
+                        } else if( fileName.equalsIgnoreCase("ion-base")) {
                             category = CommandCategory.STRING_CMD_ION_BASE;
-                        else if( fileName.equalsIgnoreCase("lcu-base"))
+                        } else if( fileName.equalsIgnoreCase("lcu-base")) {
                             category = CommandCategory.STRING_CMD_LCU_BASE;
-                        else if( fileName.equalsIgnoreCase("lsbase"))
+                        } else if( fileName.equalsIgnoreCase("lsbase")) {
                             category = CommandCategory.STRING_CMD_LP_BASE;
-                        else if( fileName.equalsIgnoreCase("loadgroup-base"))
+                        } else if( fileName.equalsIgnoreCase("loadgroup-base")) {
                             category = CommandCategory.STRING_CMD_LOAD_GROUP_BASE;
-                        else if( fileName.equalsIgnoreCase("mct-base"))
+                        } else if( fileName.equalsIgnoreCase("mct-base")) {
                             category = CommandCategory.STRING_CMD_MCT_BASE;
-                        else if( fileName.equalsIgnoreCase("rtu-base"))
+                        } else if( fileName.equalsIgnoreCase("rtu-base")) {
                             category = CommandCategory.STRING_CMD_RTU_BASE;
-                        else if( fileName.equalsIgnoreCase("repeater-base"))
+                        } else if( fileName.equalsIgnoreCase("repeater-base")) {
                             category = CommandCategory.STRING_CMD_REPEATER_BASE;
-                        else if( fileName.equalsIgnoreCase("tcu-base"))
+                        } else if( fileName.equalsIgnoreCase("tcu-base")) {
                             category = CommandCategory.STRING_CMD_TCU_BASE;
-                        else if( fileName.equalsIgnoreCase("lcrserial"))
+                        } else if( fileName.equalsIgnoreCase("lcrserial")) {
                             category = CommandCategory.STRING_CMD_SERIALNUMBER;
-                        else
+                        } else
                         {
                             CTILogger.info("UNknown filename: " + fileName);
                         }
@@ -1507,8 +1519,9 @@ public class YC extends Observable implements MessageListener
         LiteTOUSchedule lSchedule = null;
         for (int i = 0; i < schedules.size(); i++)
         {
-            if(((LiteTOUSchedule)schedules.get(i)).getScheduleID() == schedID)
-                lSchedule = (LiteTOUSchedule)schedules.get(i); 
+            if(((LiteTOUSchedule)schedules.get(i)).getScheduleID() == schedID) {
+                lSchedule = (LiteTOUSchedule)schedules.get(i);
+            } 
         }
         if( lSchedule != null)
         {
@@ -1563,8 +1576,9 @@ public class YC extends Observable implements MessageListener
                         }
                         dayOffsets[dayOffset-1] = currentIndex+1;
                     }
-                    if (!exists)
+                    if (!exists) {
                         scheduleStr += " " + switchRate + "/" + convertSecondsToTimeString(switchOffset);
+                    }
 
                     currentDayOffset = dayOffset;
                 }
@@ -1608,19 +1622,20 @@ public class YC extends Observable implements MessageListener
                         liteYukonPAObject.getPaoName() + 
                         " (ID:" + liteYukonPAObject.getLiteID() + ")";
                         
-            if( liteYukonPAObject.getPaoType().isCbc() )
+            if( liteYukonPAObject.getPaoType().isCbc() ) {
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
-
-            else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
+            } else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) ) {
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 0); //the Control Status (Pseudo) Point
-
-            else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
+            } else if (DeviceTypesFuncs.isMCT(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
             {
-                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1)    //the leading space helps find the right string
+                if( commandStr.indexOf(" connect") > -1 || commandStr.indexOf(" disconnect") > -1)
+                 {
                     pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Disconnect Status Point
+                }
             }
-            else if( liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID)  //serial number I suppose?
+            else if( liteYukonPAObject.getLiteID() == Device.SYSTEM_DEVICE_ID) {
                 logDescr = "Serial: " + getSerialNumber();
+            }
 
             
             _systemLogHelper.log(pointID, "Manual: " + command, logDescr, logUserName);
@@ -1695,5 +1710,4 @@ public class YC extends Observable implements MessageListener
         return DeviceTypesFuncs.isMCT(liteYukonPao.getPaoType().getDeviceTypeId())
                 || DeviceTypesFuncs.isRepeater(liteYukonPao.getPaoType().getDeviceTypeId());
     }
-
 }

@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.PageContext;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 import com.cannontech.util.ServletUtil;
@@ -19,7 +19,6 @@ import com.google.common.collect.ListMultimap;
  * the JSESSIONID in the URL.
  */
 public class UrlTag extends YukonTagSupport implements ParamParent {
-
     private String var;
     private String value;
     private boolean htmlEscape;
@@ -33,7 +32,6 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     private static final String APPLICATION = "application";
 
     public UrlTag() {
-        super();
         init();
     }
 
@@ -60,7 +58,7 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
         // add parameters to the baseUrl
         String result = appendParams(baseUrl);
         if (htmlEscape) {
-            result = StringEscapeUtils.escapeHtml(result);
+            result = StringEscapeUtils.escapeHtml4(result);
         }
 
         // store or print the output
@@ -120,12 +118,13 @@ public class UrlTag extends YukonTagSupport implements ParamParent {
     public static int getScope(String scope) {
         int ret = PageContext.PAGE_SCOPE; // default
 
-        if (REQUEST.equalsIgnoreCase(scope))
+        if (REQUEST.equalsIgnoreCase(scope)) {
             ret = PageContext.REQUEST_SCOPE;
-        else if (SESSION.equalsIgnoreCase(scope))
+        } else if (SESSION.equalsIgnoreCase(scope)) {
             ret = PageContext.SESSION_SCOPE;
-        else if (APPLICATION.equalsIgnoreCase(scope))
+        } else if (APPLICATION.equalsIgnoreCase(scope)) {
             ret = PageContext.APPLICATION_SCOPE;
+        }
 
         return ret;
     }

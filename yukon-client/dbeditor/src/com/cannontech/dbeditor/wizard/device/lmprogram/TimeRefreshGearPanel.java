@@ -59,13 +59,17 @@ public class TimeRefreshGearPanel extends GenericGearPanel {
 	private javax.swing.JLabel ivjJLabelStopOrder = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == TimeRefreshGearPanel.this.getJCheckBoxRampIn()) 
-				connEtoC1(e);
-			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxWhenChange()) 
-				connEtoC2(e);
-			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxCycleCountSndType()) 
-				connEtoC3(e);
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == TimeRefreshGearPanel.this.getJCheckBoxRampIn()) {
+                connEtoC1(e);
+            }
+			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxWhenChange()) {
+                connEtoC2(e);
+            }
+			if (e.getSource() == TimeRefreshGearPanel.this.getJComboBoxCycleCountSndType()) {
+                connEtoC3(e);
+            }
 		};
 	};
 /**
@@ -80,27 +84,35 @@ public TimeRefreshGearPanel() {
  * @param e java.awt.event.ActionEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJComboBoxShedTimeDigits() || e.getSource() == getJComboBoxShedTimeUnits()) 
-		connEtoC4(e);
-	if (e.getSource() == getJComboBoxNumGroups() || e.getSource() == getJComboBoxStopOrder() || e.getSource() == getJTextFieldRampOutInterval()) 
-		connEtoC5(e);
-	if (e.getSource() == getJComboBoxSendRateDigits() || e.getSource() == getJComboBoxSendRateUnits()) 
-		connEtoC7(e);
-	if (e.getSource() == getJComboBoxGroupSelection()) 
-		connEtoC8(e);
-	if (e.getSource() == getJComboBoxHowToStop()) 
-		connEtoC10(e);
+	if (e.getSource() == getJComboBoxShedTimeDigits() || e.getSource() == getJComboBoxShedTimeUnits()) {
+        connEtoC4(e);
+    }
+	if (e.getSource() == getJComboBoxNumGroups() || e.getSource() == getJComboBoxStopOrder() || e.getSource() == getJTextFieldRampOutInterval()) {
+        connEtoC5(e);
+    }
+	if (e.getSource() == getJComboBoxSendRateDigits() || e.getSource() == getJComboBoxSendRateUnits()) {
+        connEtoC7(e);
+    }
+	if (e.getSource() == getJComboBoxGroupSelection()) {
+        connEtoC8(e);
+    }
+	if (e.getSource() == getJComboBoxHowToStop())
+     {
+        connEtoC10(e);
 	// user code begin {2}
 	// user code end
+    }
 }
 	/**
 	 * Called when the caret position is updated.
 	 *
 	 * @param e the caret event
 	 */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {}
 /**
  * connEtoC1:  (JComboBoxWhenChange.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.jComboBoxWhenChange_ActionPerformed(Ljava.awt.event.ActionEvent;)V)
@@ -381,8 +393,10 @@ private javax.swing.JComboBox getJComboBoxNumGroups() {
 			// user code begin {1}
 			ivjJComboBoxNumGroups.addItem("All of Them");
 			for( int i = 1; i < 26; i++ )
-				ivjJComboBoxNumGroups.addItem( new Integer(i) );
+             {
+                ivjJComboBoxNumGroups.addItem( new Integer(i) );
 			// user code end
+            }
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1495,6 +1509,7 @@ private javax.swing.JTextField getJTextFieldRampOutInterval() {
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object o) 
 {
 	com.cannontech.database.db.device.lm.LMProgramDirectGear gear = null;
@@ -1505,49 +1520,54 @@ public Object getValue(Object o)
 	{
 		if(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Time In") == 0)
 		{
-			if(getJComboBoxStopOrder().getSelectedItem().toString().compareTo("First In First Out") == 0)
-				gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO);
-			else
-				gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM);
+			if(getJComboBoxStopOrder().getSelectedItem().toString().compareTo("First In First Out") == 0) {
+                gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO);
+            } else {
+                gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM);
+            }
 			gear.setRampOutPercent(new Integer(((Number)getJCSpinFieldRampOutPercent().getValue()).intValue()));
 			String interval = getJTextFieldRampOutInterval().getText();
-			if(interval.compareTo("") == 0)
-				gear.setRampOutInterval(new Integer(0));
-			else
-				gear.setRampOutInterval(new Integer(interval));
+			if(interval.compareTo("") == 0) {
+                gear.setRampOutInterval(new Integer(0));
+            } else {
+                gear.setRampOutInterval(new Integer(interval));
+            }
 		}
 		else if(getJComboBoxHowToStop().getSelectedItem().toString().compareTo("Ramp Out / Restore") == 0)
 		{
-			if(getJComboBoxStopOrder().getSelectedItem().toString().compareTo("First In First Out") == 0)
-				gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE);
-			else
-				gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE);
+			if(getJComboBoxStopOrder().getSelectedItem().toString().compareTo("First In First Out") == 0) {
+                gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_FIFO_RESTORE);
+            } else {
+                gear.setMethodStopType(LMProgramDirectGear.STOP_RAMP_OUT_RANDOM_RESTORE);
+            }
 			gear.setRampOutPercent(new Integer(((Number)getJCSpinFieldRampOutPercent().getValue()).intValue()));
 			String interval = getJTextFieldRampOutInterval().getText();
-			if(interval.compareTo("") == 0)
-				gear.setRampOutInterval(new Integer(0));
-			else
-				gear.setRampOutInterval(new Integer(interval));
-		}
-		else
-			gear.setMethodStopType( 
+			if(interval.compareTo("") == 0) {
+                gear.setRampOutInterval(new Integer(0));
+            } else {
+                gear.setRampOutInterval(new Integer(interval));
+            }
+		} else {
+            gear.setMethodStopType( 
 				com.cannontech.common.util.StringUtils.removeChars( ' ', getJComboBoxHowToStop().getSelectedItem().toString() ) );
+        }
 	}
 	
 	if(getJCheckBoxRampIn().isSelected())
 	{
 		gear.setRampInPercent(new Integer(((Number)getJCSpinFieldRampInPercent().getValue()).intValue()));
-        if( org.apache.commons.lang.StringUtils.isBlank(getJTextFieldRampInInterval().getText())) {
+        if( org.apache.commons.lang3.StringUtils.isBlank(getJTextFieldRampInInterval().getText())) {
             getJTextFieldRampInInterval().setText("0");
         }
         gear.setRampInInterval(new Integer(getJTextFieldRampInInterval().getText()));	            
 	}
 
 	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
-	if(com.cannontech.common.util.StringUtils.removeChars( ' ', (String)getJComboBoxCycleCountSndType().getSelectedItem()).compareTo(LMProgramDirectGear.OPTION_DYNAMIC_SHED) == 0)
-		gear.setMethodOptionType(LMProgramDirectGear.OPTION_COUNT_DOWN);
-	else
-		gear.setMethodOptionType(LMProgramDirectGear.OPTION_FIXED_COUNT);
+	if(com.cannontech.common.util.StringUtils.removeChars( ' ', (String)getJComboBoxCycleCountSndType().getSelectedItem()).compareTo(LMProgramDirectGear.OPTION_DYNAMIC_SHED) == 0) {
+        gear.setMethodOptionType(LMProgramDirectGear.OPTION_COUNT_DOWN);
+    } else {
+        gear.setMethodOptionType(LMProgramDirectGear.OPTION_FIXED_COUNT);
+    }
 	
 	gear.setPercentReduction( new Integer( ((Number)getJCSpinFieldPercentReduction().getValue()).intValue() ) );
 	
@@ -1557,10 +1577,11 @@ public Object getValue(Object o)
 	gear.setChangePriority( new Integer( ((Number)getJCSpinFieldChangePriority().getValue()).intValue() ) );
 	gear.setChangeTriggerNumber( new Integer( ((Number)getJCSpinFieldChangeTriggerNumber().getValue()).intValue() ) );
 	
-	if( getJTextFieldChangeTriggerOffset().getText() == null || getJTextFieldChangeTriggerOffset().getText().length() <= 0 )
-		gear.setChangeTriggerOffset( new Double(0.0) );
-	else
-		gear.setChangeTriggerOffset( Double.valueOf(getJTextFieldChangeTriggerOffset().getText()) );
+	if( getJTextFieldChangeTriggerOffset().getText() == null || getJTextFieldChangeTriggerOffset().getText().length() <= 0 ) {
+        gear.setChangeTriggerOffset( new Double(0.0) );
+    } else {
+        gear.setChangeTriggerOffset( Double.valueOf(getJTextFieldChangeTriggerOffset().getText()) );
+    }
 
 	com.cannontech.database.data.device.lm.TimeRefreshGear t = (com.cannontech.database.data.device.lm.TimeRefreshGear)gear;
 
@@ -1915,6 +1936,7 @@ public void jComboBoxCycleCountSndType_ActionPerformed(java.awt.event.ActionEven
 /**
  * Comment
  */
+@Override
 public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	getJLabelChangeDuration().setVisible(false);
@@ -1961,9 +1983,9 @@ public void jComboBoxWhenChange_ActionPerformed(java.awt.event.ActionEvent actio
 
 		getJLabelChangeTriggerOffset().setVisible(true);
 		getJTextFieldChangeTriggerOffset().setVisible(true);
-	}
-	else
-		throw new Error("Unknown LMProgramDirectGear control condition found, the value = " + getJComboBoxWhenChange().getSelectedItem().toString() );
+	} else {
+        throw new Error("Unknown LMProgramDirectGear control condition found, the value = " + getJComboBoxWhenChange().getSelectedItem().toString() );
+    }
 
 
 	fireInputUpdate();
@@ -1981,7 +2003,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aTimeRefreshGearPanel);
 		frame.setSize(aTimeRefreshGearPanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -2021,8 +2044,9 @@ public void rampItOut(boolean rampOrNotToRamp)
  */
 private void setChangeCondition(String change) 
 {
-	if( change == null )
-		return;
+	if( change == null ) {
+        return;
+    }
 
 	if( change.equalsIgnoreCase(LMProgramDirectGear.CHANGE_NONE) )
 	{
@@ -2056,6 +2080,7 @@ public void setJComboBoxCycleCountSndType(javax.swing.JComboBox box)
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	LMProgramDirectGear gear = null;
@@ -2063,9 +2088,9 @@ public void setValue(Object o)
 	if( o == null )
 	{
 		return;
-	}
-	else
-		gear = (LMProgramDirectGear)o;
+	} else {
+        gear = (LMProgramDirectGear)o;
+    }
 	
 	if(gear.getMethodStopType().compareTo(LMProgramDirectGear.STOP_RAMP_OUT_FIFO) == 0)
 	{
@@ -2094,9 +2119,9 @@ public void setValue(Object o)
 		getJComboBoxStopOrder().setSelectedItem( "Random" );
 		getJCSpinFieldRampOutPercent().setValue(gear.getRampOutPercent());
 		getJTextFieldRampOutInterval().setText(gear.getRampOutInterval().toString());
-	}
-	else
-		getJComboBoxHowToStop().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
+	} else {
+        getJComboBoxHowToStop().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
+    }
 
 	if(gear.getRampInPercent().intValue() != 0 && gear.getRampInInterval().intValue() != 0)
 	{
@@ -2132,10 +2157,11 @@ public void setValue(Object o)
     getJComboBoxNumGroups().setSelectedIndex( t.getNumberOfGroups() );
 	
 	//This will need to be altered once serverside supports the strings for fixed shed times and dynamic shed times
-	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0)
-		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_DYNAMIC_SHED));
-	else
-		getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_FIXED_SHED));
+	if(t.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0) {
+        getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_DYNAMIC_SHED));
+    } else {
+        getJComboBoxCycleCountSndType().setSelectedItem(StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.OPTION_FIXED_SHED));
+    }
 
 	SwingUtil.setIntervalComboBoxSelectedItem( 
 			getJComboBoxSendRateDigits(), getJComboBoxSendRateUnits(), t.getRefreshRate().intValue() );
@@ -2147,6 +2173,7 @@ public void setValue(Object o)
 /**
  * valueChanged method comment.
  */
+@Override
 public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 	//fire this event for all JCSpinFields!!
@@ -2155,5 +2182,6 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 /**
  * valueChanging method comment.
  */
+@Override
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) {}
 }

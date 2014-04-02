@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;

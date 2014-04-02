@@ -1,6 +1,6 @@
 package com.cannontech.common.pao.definition.model;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 public class PaoTagDefinition implements Comparable<PaoTagDefinition> {
 

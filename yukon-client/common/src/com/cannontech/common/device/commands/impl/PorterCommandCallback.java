@@ -1,6 +1,6 @@
 package com.cannontech.common.device.commands.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;

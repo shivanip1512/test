@@ -2,7 +2,7 @@ package com.cannontech.common.point;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.bulk.model.ImportCalculationType;
 import com.cannontech.common.util.CtiUtilities;

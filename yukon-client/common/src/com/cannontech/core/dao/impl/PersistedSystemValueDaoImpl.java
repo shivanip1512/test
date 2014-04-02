@@ -2,7 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.beans.PropertyEditor;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;

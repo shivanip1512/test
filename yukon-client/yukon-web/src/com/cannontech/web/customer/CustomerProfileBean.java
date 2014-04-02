@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.CustomerDao;

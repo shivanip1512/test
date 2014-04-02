@@ -8,12 +8,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -30,11 +29,13 @@ public class LocalizationController {
      * Only Controller-type method, since Localization is currently only 1 page.
      * Based on the backing bean's task, the page will
      * perform a search, a comparison, or a dump of default key-value pairs.
-     * The results of these will be output to the page or dowloaded,
+     * The results of these will be output to the page or downloaded,
      * depending on the selected action.
      */
     @RequestMapping("view")
-    public String view(ModelMap model, HttpServletResponse response, @ModelAttribute("localizationBackingBean") LocalizationBackingBean localizationBackingBean, BindingResult bindingResult, FlashScope flashScope) throws IOException {
+    public String view(ModelMap model, HttpServletResponse response,
+            @ModelAttribute("localizationBackingBean") LocalizationBackingBean localizationBackingBean,
+            FlashScope flashScope) throws IOException {
         if(localizationBackingBean.getTask() == null){
             localizationBackingBean.setTask("");
         }
@@ -111,7 +112,7 @@ public class LocalizationController {
     private List<String> sanitizeHtml(List<String> unsanitizedStrings){
         List<String> sanitizedStrings = Lists.newArrayList();
         for(String unsanitizedString : unsanitizedStrings){
-            String sanitized = StringEscapeUtils.escapeHtml(unsanitizedString);
+            String sanitized = StringEscapeUtils.escapeHtml4(unsanitizedString);
             sanitized = sanitized.replaceAll("(\r\n|\n)", "<br />");
             sanitizedStrings.add(sanitized);
         }

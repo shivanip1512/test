@@ -1,6 +1,6 @@
 package com.cannontech.web.editor.point;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.database.db.point.PointStatusControl;
 

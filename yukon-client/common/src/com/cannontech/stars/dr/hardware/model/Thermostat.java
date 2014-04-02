@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.model;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryCategory;

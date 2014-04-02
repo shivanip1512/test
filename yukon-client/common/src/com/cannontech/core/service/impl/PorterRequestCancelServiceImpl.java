@@ -1,6 +1,7 @@
 package com.cannontech.core.service.impl;
 
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -13,17 +14,18 @@ import com.cannontech.message.util.TimeoutException;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class PorterRequestCancelServiceImpl implements PorterRequestCancelService {
-    
-    private BasicServerConnection porterConnection;
-    private Logger log = YukonLogManager.getLogger(PorterRequestCancelServiceImpl.class);
+    private final static Logger log = YukonLogManager.getLogger(PorterRequestCancelServiceImpl.class);
+    private final static Random random = new Random();
 
-    private final String commandString = "system message request cancel";
-    private final long timeout = 60000;
-    
+    private BasicServerConnection porterConnection;
+
+    private final static String commandString = "system message request cancel";
+    private final static long timeout = 60000;
+
+    @Override
     public long cancelRequests(int groupMessageId, int priority) {
-        
-        final int randomId = RandomUtils.nextInt();
-        
+        final int randomId = random.nextInt();
+
         Request req = new Request();
         req.setCommandString(commandString);
         req.setUserMessageID(randomId);
@@ -32,13 +34,13 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
         
         ServerRequestBlocker<RequestCancel> blocker = 
             new ServerRequestBlocker<RequestCancel>(porterConnection, RequestCancel.class, new Checker<RequestCancel>() {
+            @Override
             public boolean check(RequestCancel msg) {
                 return msg.getUserMessageId() == randomId;
             }
         });
         
         try {
-            
             RequestCancel response = blocker.execute(req, timeout);
             long itemsCanceled = response.getRequestIdCount();
             
@@ -53,5 +55,4 @@ public class PorterRequestCancelServiceImpl implements PorterRequestCancelServic
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }
-
 }

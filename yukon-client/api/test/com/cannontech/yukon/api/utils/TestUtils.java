@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.xerces.jaxp.validation.XMLSchemaFactory;
 import org.jdom.Element;
 import org.jdom.transform.JDOMSource;

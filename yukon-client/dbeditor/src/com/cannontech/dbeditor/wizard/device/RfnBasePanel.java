@@ -15,7 +15,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.device.model.SimpleDevice;

@@ -17,7 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;

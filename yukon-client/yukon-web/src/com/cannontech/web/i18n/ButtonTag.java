@@ -8,8 +8,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
@@ -133,7 +133,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (StringUtils.isBlank(labelText)) {
                 labelText = getLocalMessage(scope, ".label");
                 if (StringUtils.isNotBlank(labelText)) {
-                    labelText = StringEscapeUtils.escapeHtml(labelText);
+                    labelText = StringEscapeUtils.escapeHtml4(labelText);
                 }
             } else {
                 override = true;
@@ -144,7 +144,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             }
             
             /* Always use label when provide */
-            if (StringUtils.isNotBlank(label)) labelText = label;
+            if (StringUtils.isNotBlank(label)) {
+                labelText = label;
+            }
 
             if (dialogButton && !override) {
                 String ellipsis = getMessageSource().getMessage("yukon.web.defaults.moreInfoSuffix");
@@ -154,7 +156,7 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             /* Busy Text */
             String busyText = getLocalMessage(scope, ".labelBusy");
             if (StringUtils.isNotBlank(busyText)) {
-                busyText = StringEscapeUtils.escapeHtml(busyText);
+                busyText = StringEscapeUtils.escapeHtml4(busyText);
             }
             
             /* Icon */
@@ -170,15 +172,21 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             } else {
                 hoverText = getLocalMessage(scope, ".hoverText");
                 if (StringUtils.isNotBlank(hoverText)) {
-                    hoverText = StringEscapeUtils.escapeHtml(hoverText);
+                    hoverText = StringEscapeUtils.escapeHtml4(hoverText);
                 }
             }
 
             /* Class */
             StringBuilder classes = new StringBuilder().append("button");
-            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) classes.append(" naked");
-            if (StringUtils.isNotBlank(this.classes)) classes.append(" " + this.classes);
-            if (busy) classes.append(" f-disable-after-click");
+            if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE) {
+                classes.append(" naked");
+            }
+            if (StringUtils.isNotBlank(this.classes)) {
+                classes.append(" " + this.classes);
+            }
+            if (busy) {
+                classes.append(" f-disable-after-click");
+            }
             
             id = StringUtils.isBlank(id) ? UniqueIdentifierTag.generateIdentifier(getJspContext(), "button") : id;
 
@@ -189,13 +197,27 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
                 out.write(" " + attributeName + "=\"" + dynamicAttributes.get(attributeName) + "\"");
             }
             
-            if (StringUtils.isNotBlank(labelText)) out.write(" aria-label=\"" + labelText + "\"");
-            if (StringUtils.isNotBlank(name)) out.write(" name=\"" + name + "\"");
-            if (StringUtils.isNotBlank(value)) out.write(" value=\"" + value + "\"");
-            if (StringUtils.isNotBlank(hoverText)) out.write(" title=\"" + hoverText + "\"");
-            if (StringUtils.isNotBlank(onclick)) out.write(" onclick=\"" + onclick + "\"");
-            if (StringUtils.isNotBlank(href)) out.write(" data-href=\"" + href + "\"");
-            if (disabled) out.write(" disabled=\"disabled\"");
+            if (StringUtils.isNotBlank(labelText)) {
+                out.write(" aria-label=\"" + labelText + "\"");
+            }
+            if (StringUtils.isNotBlank(name)) {
+                out.write(" name=\"" + name + "\"");
+            }
+            if (StringUtils.isNotBlank(value)) {
+                out.write(" value=\"" + value + "\"");
+            }
+            if (StringUtils.isNotBlank(hoverText)) {
+                out.write(" title=\"" + hoverText + "\"");
+            }
+            if (StringUtils.isNotBlank(onclick)) {
+                out.write(" onclick=\"" + onclick + "\"");
+            }
+            if (StringUtils.isNotBlank(href)) {
+                out.write(" data-href=\"" + href + "\"");
+            }
+            if (disabled) {
+                out.write(" disabled=\"disabled\"");
+            }
             
             if (busy) {
                 if (StringUtils.isNotBlank(busyText)) {
@@ -210,8 +232,12 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             boolean hasImage = StringUtils.isNotBlank(icon);
             
             /* icon order matters here */
-            if (busy) out.write("<i class=\"icon busy\"></i>");
-            if (hasImage) out.write("<i class=\"icon " + icon + "\"></i>");
+            if (busy) {
+                out.write("<i class=\"icon busy\"></i>");
+            }
+            if (hasImage) {
+                out.write("<i class=\"icon " + icon + "\"></i>");
+            }
 
             if (mode != RenderMode.IMAGE 
                     && mode != RenderMode.BUTTON_IMAGE

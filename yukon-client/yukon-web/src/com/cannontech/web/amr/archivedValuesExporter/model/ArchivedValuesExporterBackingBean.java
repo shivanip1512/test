@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
 import com.cannontech.amr.archivedValueExporter.model.AttributeField;

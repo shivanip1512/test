@@ -2,7 +2,7 @@ package com.cannontech.common.inventory;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 public class InventoryIdentifier implements YukonInventory, Serializable {
 

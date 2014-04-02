@@ -7,8 +7,8 @@ import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.model.ContactNotificationType;

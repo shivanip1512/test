@@ -13,7 +13,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.JspFragment;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 import com.cannontech.util.ServletUtil;
@@ -32,6 +32,7 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
     private Map<String, String> encodedParameters = new HashMap<String, String>();
     private Writer bodyContentWriter;
     
+    @Override
     public void doTag() throws JspException, IOException {
         
         // access to page writer and request
@@ -65,7 +66,7 @@ public class CrumbLinkTag extends YukonTagSupport implements ParamParent {
             // build the link
             String url = getUrl();
             url= ServletUtil.createSafeUrl(httpRequest, url);
-            url = StringEscapeUtils.escapeHtml(url);
+            url = StringEscapeUtils.escapeHtml4(url);
             
             if (encodedParameters.size() > 0 && url.contains("?")) {
                 throw new RuntimeException("CrumbLink url may not contain parameters when used with param tags.");

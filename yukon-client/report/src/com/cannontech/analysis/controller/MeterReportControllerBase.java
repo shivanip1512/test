@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.tablemodel.MeterReportModelBase;

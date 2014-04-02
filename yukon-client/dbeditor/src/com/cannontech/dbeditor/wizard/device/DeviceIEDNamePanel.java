@@ -2,7 +2,7 @@ package com.cannontech.dbeditor.wizard.device;
 
 import java.awt.Dimension;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;

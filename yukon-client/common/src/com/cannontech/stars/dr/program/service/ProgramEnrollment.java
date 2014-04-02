@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.program.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;

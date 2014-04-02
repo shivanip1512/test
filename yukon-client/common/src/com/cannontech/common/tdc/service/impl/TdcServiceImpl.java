@@ -1,9 +1,6 @@
 package com.cannontech.common.tdc.service.impl;
 
-import static com.cannontech.common.tdc.model.IDisplay.EVENT_VIEWER_DISPLAY_NUMBER;
-import static com.cannontech.common.tdc.model.IDisplay.GLOBAL_ALARM_DISPLAY;
-import static com.cannontech.common.tdc.model.IDisplay.SOE_LOG_DISPLAY_NUMBER;
-import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
+import static com.cannontech.common.tdc.model.IDisplay.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +12,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -65,9 +61,9 @@ import com.google.common.collect.Maps;
 
 
 public class TdcServiceImpl implements TdcService{
+    private final static Logger log = YukonLogManager.getLogger(TdcServiceImpl.class);
 
-    private Logger log = YukonLogManager.getLogger(TdcServiceImpl.class);
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
@@ -77,10 +73,10 @@ public class TdcServiceImpl implements TdcService{
     @Autowired private DisplayDao displayDao;
     @Autowired private StateDao stateDao;
     @Autowired private DisplayDataDao displayDataDao;
-    
+
     private Map<Integer, String> stateColorMap;
     private final String defaultAlertStr = "alert"; // yukon.css 
-        
+
     private Comparator<DisplayData> sortByDate = new Comparator<DisplayData>() {
         @Override
         public int compare(DisplayData d1, DisplayData d2) {
@@ -128,14 +124,13 @@ public class TdcServiceImpl implements TdcService{
             count = displayDataDao.getEventViewerDisplayDataCount(timeZone);
             break;
         default:
-            throw new NotImplementedException();
+            throw new UnsupportedOperationException();
         }
         return count;
     }
         
     @Override
     public void sendPointData(int pointId, double value, LiteYukonUser user){
-
         PointData pd = dynamicDataSource.getPointData(pointId);
         PointData data  = new PointData();
         data.setId(pointId);

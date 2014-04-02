@@ -1,6 +1,6 @@
 package com.cannontech.common.pao;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.DeviceClasses;

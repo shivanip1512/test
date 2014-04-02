@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.util.Date;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
 

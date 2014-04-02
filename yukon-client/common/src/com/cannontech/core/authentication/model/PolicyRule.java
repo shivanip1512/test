@@ -2,7 +2,7 @@ package com.cannontech.core.authentication.model;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

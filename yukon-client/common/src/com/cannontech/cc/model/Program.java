@@ -3,8 +3,8 @@ package com.cannontech.cc.model;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.util.NaturalOrderComparator;

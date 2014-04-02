@@ -1,6 +1,6 @@
 package com.cannontech.core.dao.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 class SqlUtil {
     

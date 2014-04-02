@@ -1,8 +1,8 @@
 package com.cannontech.common.pao.definition.attribute.lookup;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.pao.YukonPao;

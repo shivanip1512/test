@@ -12,9 +12,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -29,9 +29,8 @@ import org.springframework.core.io.Resource;
 import com.cannontech.common.util.Iso8601DateUtil;
 
 public class XmlUtils {
+    private final static XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 
-    private static XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-    
     public static List<Integer> convertToIntegerList(List<?> selectNodes) {
         List<Integer> result = new ArrayList<Integer>(selectNodes.size());
         for (Object object : selectNodes) {
@@ -151,29 +150,28 @@ public class XmlUtils {
     }
 
     /**
-     * This method translates the supplied enumString into the enum supplied
+     * Translate the supplied enumString into the enum supplied
      * 
      * @throws IllegalArgumentException the enumString is not a valid representation of the enum class.
      */
     public static <E extends Enum<E>> E  toEnum(String enumString, Class<E> enumClass) throws IllegalArgumentException {
-        
         // Try getting the value from the enum
         try {
             String stringValue = convertReadableToEnum(enumString);
             return Enum.valueOf(enumClass, stringValue);
-        } catch (IllegalArgumentException e) {}
-        
-        // See if there is an xmlRepresentation of this value.
-        E enumValue = findEnumFromXmlRepresentation(enumString, enumClass);
-        if (enumValue != null) {
-            return enumValue;
+        } catch (IllegalArgumentException e) {
+            // See if there is an xmlRepresentation of this value.
+            E enumValue = findEnumFromXmlRepresentation(enumString, enumClass);
+            if (enumValue != null) {
+                return enumValue;
+            }
         }
-        
+
         throw new IllegalArgumentException(enumString + " is not a legal representation of " + enumClass);
     }
-    
+
     /**
-     * This method translates the supplied enumString into the enum supplied
+     * Translate the supplied enumString into the enum supplied
      */
     public static <E extends Enum<E>> String toXmlRepresentation(E enumValue) {
         
@@ -188,7 +186,7 @@ public class XmlUtils {
     }
     
     /**
-     * This method searches for the xmlRepresentation in the supplied enumClass.  If it finds the xmlRepresentation it will
+     * Search for the xmlRepresentation in the supplied enumClass.  If it finds the xmlRepresentation it will
      * return the enum associated with it.  If not it will return null.
      */
     private static <E extends Enum<E>> E findEnumFromXmlRepresentation(String xmlRepresentation, Class<E> enumClass) {
@@ -213,7 +211,7 @@ public class XmlUtils {
     }
 
     /**
-     * This method returns the XmlRepresentation of the enum value suppied.
+     * Return the XmlRepresentation of the enum value supplied.
      */
     private static <E extends Enum<E>> String findXmlRepresentation(E enumObj) {
         Validate.notNull(enumObj);

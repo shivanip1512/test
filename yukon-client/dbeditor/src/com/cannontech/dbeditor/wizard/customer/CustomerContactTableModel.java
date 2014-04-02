@@ -3,7 +3,7 @@ package com.cannontech.dbeditor.wizard.customer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.gui.dnd.IDroppableTableModel;
 import com.cannontech.core.dao.ContactNotificationDao;

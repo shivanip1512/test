@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.DynamicAttributes;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -39,7 +39,7 @@ public abstract class HtmlTagBase extends YukonTagSupport implements DynamicAttr
             String tagValue = linkAttributes.remove(attribute);
             String attributeValue = getAttributeValue(attribute, tagValue);
             if (StringUtils.isNotBlank(attributeValue)) {
-                attributeValue = StringEscapeUtils.escapeHtml(attributeValue);
+                attributeValue = StringEscapeUtils.escapeHtml4(attributeValue);
                 attributes.put(attribute, attributeValue);
             }
         }

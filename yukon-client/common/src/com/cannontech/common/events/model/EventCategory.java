@@ -2,8 +2,8 @@ package com.cannontech.common.events.model;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 public class EventCategory implements Comparable<EventCategory> {
     

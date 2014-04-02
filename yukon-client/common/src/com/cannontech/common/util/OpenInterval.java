@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.ReadableInstant;

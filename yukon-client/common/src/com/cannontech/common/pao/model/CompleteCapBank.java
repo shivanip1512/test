@@ -1,6 +1,6 @@
 package com.cannontech.common.pao.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.common.pao.PaoType;

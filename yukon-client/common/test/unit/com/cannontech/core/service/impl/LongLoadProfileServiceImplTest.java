@@ -1,6 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,6 +19,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
@@ -43,7 +44,6 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -77,10 +77,8 @@ public class LongLoadProfileServiceImplTest {
         public void write(Message o) {
             if (failMode) {
                 throw new ConnectionException("Unable to write message");
-            } else {
-                writtenOut.add(o);
             }
-            
+            writtenOut.add(o);
         }
         
         public void respond(Message m) {
@@ -107,8 +105,7 @@ public class LongLoadProfileServiceImplTest {
     private int successRan = 0;
     private int failureRan = 0;
     private int cancelRan = 0;
-    private final YukonUserContext userContext = new SystemUserContext();
-    
+
     private final LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileService.CompletionCallback() {
         @Override
         public void onFailure(int returnStatus, String resultString) {
@@ -132,25 +129,22 @@ public class LongLoadProfileServiceImplTest {
     public void setUp() throws Exception {
         serviceDebug = new LoadProfileServiceImpl();
         scheduledExecutorMock = new ScheduledExecutorMock(true);
-        serviceDebug.setExecutor(scheduledExecutorMock);
+        ReflectionTestUtils.setField(serviceDebug, "executor", scheduledExecutorMock);
         queueDataService = new PorterQueueDataServiceMock();
-        serviceDebug.setQueueDataService(queueDataService);
+        ReflectionTestUtils.setField(serviceDebug, "queueDataService", queueDataService);
         porterConnection = new PorterConnection();
         serviceDebug.setPorterConnection(porterConnection);
         serviceDebug.initialize();
-        
-        serviceDebug.setDbPersistentDao(new DBPersistentDao(){
 
+        ReflectionTestUtils.setField(serviceDebug, "dbPersistentDao", new DBPersistentDao(){
             @Override
             public void performDBChange(DBPersistent item, int transactionType) {
+                // for test case
             }
 
             @Override
             public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
-                
-
                     return new MCTBase(){
-                        
                         @Override
                         public DeviceLoadProfile getDeviceLoadProfile() {
                            
@@ -164,57 +158,48 @@ public class LongLoadProfileServiceImplTest {
                     
                     };
             }
+
             @Override
 			public void performDBChangeWithNoMsg(List<DBPersistent> items, TransactionType transactionType) {
+                // for test case
 			}
 
             @Override
-            public void performDBChangeWithNoMsg(
-                    DBPersistent dbPersistent, TransactionType transactionType) {
+            public void performDBChangeWithNoMsg(DBPersistent dbPersistent, TransactionType transactionType) {
+                // for test case
             }
             
             @Override
-            public void performDBChange(DBPersistent item, TransactionType transactionType)
-                    throws PersistenceException {
+            public void performDBChange(DBPersistent item, TransactionType transactionType) throws PersistenceException {
+                // for test case
             }
-
 
             @Override
             public DBPersistent retrieveDBPersistent(DBPersistent dbPersistent) {
                 return null;
             }            
+        });
 
-        });
-        
-        serviceDebug.setDateFormattingService(new DateFormattingServiceImpl(){
-            
-            
-        });
-        
-        serviceDebug.setSystemDateFormattingService(new SystemDateFormattingServiceImpl() {
+        ReflectionTestUtils.setField(serviceDebug, "dateFormattingService", new DateFormattingServiceImpl());
+        ReflectionTestUtils.setField(serviceDebug, "systemDateFormattingService", new SystemDateFormattingServiceImpl() {
             @Override
             public TimeZone getSystemTimeZone() throws BadConfigurationException {
                 return TimeZone.getDefault();
             }
         });
-        
-        serviceDebug.setActivityLoggerService(new ActivityLoggerServiceImpl(){
-            
+        ReflectionTestUtils.setField(serviceDebug, "activityLoggerService", new ActivityLoggerServiceImpl(){
             @Override
             public void logEvent(int userID, String action, String description){
                 // do nothing
             }
-            
         });
-        
-        serviceDebug.setPaoDefinitionDao(new PaoDefinitionDaoAdapter(){
-        	@Override
-        	public boolean isTagSupported(PaoType deviceType, PaoTag tag) {
-        		return true;
-        	}
-            
+        ReflectionTestUtils.setField(serviceDebug, "paoDefinitionDao", new PaoDefinitionDaoAdapter() {
+            @Override
+            public boolean isTagSupported(PaoType deviceType, PaoTag tag) {
+                return true;
+            }
         });
-        
+
         successRan = 0;
         failureRan = 0;
         cancelRan = 0;
@@ -248,7 +233,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
-        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // get message that was written
         Message message = porterConnection.writtenOut.remove();
@@ -292,7 +277,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = new SimpleDateFormat("MM/dd/yy hh:mm a");
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -366,7 +351,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -375,18 +360,18 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // attempt to request again
-        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue still has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // attempt to request for device 2
-        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
         
         // attempt to request again for device 1
-        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         
         // check that outQueue still has two messages
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
@@ -426,19 +411,12 @@ public class LongLoadProfileServiceImplTest {
     
     @Test
     public void testWriteError() throws ParseException {
-        LiteYukonPAObject myDevice1 = 
-        	new LiteYukonPAObject(5, 
-        			"Test Device Id:5", 
-        			PaoType.MCT410IL,
-        			CtiUtilities.STRING_NONE,
-        			"N");	 // five is arbitrary
+        // five is arbitrary
+        LiteYukonPAObject myDevice1 =
+            new LiteYukonPAObject(5, "Test Device Id:5", PaoType.MCT410IL, CtiUtilities.STRING_NONE, "N");
 
-        LiteYukonPAObject myDevice2 = 
-        	new LiteYukonPAObject(8, 
-        			"Test Device Id:8", 
-        			PaoType.MCT410IL,
-        			CtiUtilities.STRING_NONE,
-        			"N");	 // eight is arbitrary
+        // eight is arbitrary
+        new LiteYukonPAObject(8, "Test Device Id:8", PaoType.MCT410IL, CtiUtilities.STRING_NONE, "N");
 
         int channel = 1;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -449,7 +427,7 @@ public class LongLoadProfileServiceImplTest {
         porterConnection.failMode = true;
         
         try {
-            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
             fail("should have thrown an exception");
         } catch (RuntimeException e) {
             // expected
@@ -461,7 +439,7 @@ public class LongLoadProfileServiceImplTest {
         // this should not fail and it shouldn't cause the service to hold the message
         // because its deviceId is the same as the previous
         try {
-            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
         } catch (RuntimeException e) {
             fail("should have not thrown an exception");
         }
@@ -495,21 +473,21 @@ public class LongLoadProfileServiceImplTest {
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
 
-        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, YukonUserContext.system);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, YukonUserContext.system);
         Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice1).size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 0, failureRan);
         Assert.assertEquals("runner should not have run", 0, cancelRan);
-        
+
         // eat the two requests
-        Request temp1 = (Request) porterConnection.writtenOut.remove(); 
-        Request temp2 = (Request) porterConnection.writtenOut.remove(); 
-        
+        porterConnection.writtenOut.remove(); 
+        porterConnection.writtenOut.remove(); 
+
         // some time has passed and porter hasn't responded, run timers
         queueDataService.setReturnValue(0); // forgotten messagess...
         scheduledExecutorMock.doAllTasks();

@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.spring.YukonSpringHook;
 

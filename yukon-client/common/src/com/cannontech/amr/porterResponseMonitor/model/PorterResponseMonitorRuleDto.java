@@ -2,7 +2,7 @@ package com.cannontech.amr.porterResponseMonitor.model;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;

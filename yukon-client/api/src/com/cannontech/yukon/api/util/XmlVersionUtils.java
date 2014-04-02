@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.Attribute;
 import org.jdom.Element;
 

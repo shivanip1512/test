@@ -1,6 +1,6 @@
 package com.cannontech.common.util;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
@@ -178,29 +177,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         }
         return this;
     }
-    
-    /**
-     * This will insert a quoted string into the output.
-     * Example:
-     *   In:
-     *          the cat's leg
-     *   Out: 
-     *          'the cat''s leg'
-     *          
-     *  Unlike other methods, the input argument is not trimmed.
-     *  
-     * This method should not be used anymore. See appendArgument.
-     * @param arg
-     * @return
-     */
-    @Deprecated
-    public SqlStatementBuilder appendQuotedString(Object arg) {
-        addString("\'");
-        addString(StringEscapeUtils.escapeSql(arg.toString()));
-        addString("\'");
-        return this;
-    }
-    
+
     /**
      * Adds a single space to the output.
      */
@@ -574,7 +551,9 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     
     private void assertSqlIdentifier(String tableName) {
         // this check could be fancier, but it is good enough to prevent injection
-        if (!StringUtils.isAlphanumeric(tableName)) throw new IllegalArgumentException(tableName + " should be alphanumeric");
+        if (!StringUtils.isAlphanumeric(tableName)) {
+            throw new IllegalArgumentException(tableName + " should be alphanumeric");
+        }
     }
 
     /**

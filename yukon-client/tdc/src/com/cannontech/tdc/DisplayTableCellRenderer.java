@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.tdc.custom.CustomDisplay;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class DisplayTableCellRenderer extends javax.swing.JLabel implements javax.swing.table.TableCellRenderer
 {

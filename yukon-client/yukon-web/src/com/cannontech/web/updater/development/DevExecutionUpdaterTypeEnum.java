@@ -1,6 +1,6 @@
 package com.cannontech.web.updater.development;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.objects.DevObject;

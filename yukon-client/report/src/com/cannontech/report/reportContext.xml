@@ -12,11 +12,9 @@
     
     <!-- report layout data formatter -->
     <bean id="simpleReportService" class="com.cannontech.simplereport.SimpleReportServiceImpl">
-        <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
-        <property name="pointFormattingService" ref="pointFormattingService"/>
     </bean>
-    
+
     <bean id="simpleReportOutputter" class="com.cannontech.simplereport.SimpleReportOutputterImpl">
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>

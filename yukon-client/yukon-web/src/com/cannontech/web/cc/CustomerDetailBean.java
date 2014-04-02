@@ -14,7 +14,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.service.CustomerLMProgramService;

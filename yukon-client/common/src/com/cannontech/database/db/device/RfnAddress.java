@@ -2,7 +2,7 @@ package com.cannontech.database.db.device;
 
 import java.sql.SQLException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.database.db.DBPersistent;
 

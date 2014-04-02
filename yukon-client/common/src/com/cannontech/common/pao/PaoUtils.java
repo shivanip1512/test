@@ -1,7 +1,7 @@
 package com.cannontech.common.pao;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.model.PaoDefinition;

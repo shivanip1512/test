@@ -9,7 +9,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.JspTag;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 
 public class MapParamTag extends SimpleTagSupport {

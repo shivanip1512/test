@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 

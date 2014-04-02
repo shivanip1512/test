@@ -122,7 +122,7 @@ public final class StringUtils {
 	    final List<String> tokenStrings = new ArrayList<String>(st.countTokens());
 	    while (st.hasMoreTokens()) {
 	    	String token = st.nextToken().trim();
-	    	if (org.apache.commons.lang.StringUtils.isNotBlank(token)) {
+	    	if (org.apache.commons.lang3.StringUtils.isNotBlank(token)) {
 	    		tokenStrings.add(token);
 	    	}
 	    }
@@ -135,12 +135,12 @@ public final class StringUtils {
      * @return
      */
     public static int[] parseIntStringAfterRemovingWhitespace(String s) {
-        s = org.apache.commons.lang.StringUtils.deleteWhitespace(s);
+        s = org.apache.commons.lang3.StringUtils.deleteWhitespace(s);
         return parseIntString(s);
     }
     
     public static String toStringList(Object... args) {
-        return org.apache.commons.lang.StringUtils.join(args, ",");
+        return org.apache.commons.lang3.StringUtils.join(args, ",");
     }
 
     public static String elideCenter(String input, int maxSize) {
@@ -178,7 +178,7 @@ public final class StringUtils {
     public static List<String> restoreJsSafeList(String input) {
         List<String> result = Lists.newArrayList();
 
-        if( org.apache.commons.lang.StringUtils.isEmpty(input)) {
+        if( org.apache.commons.lang3.StringUtils.isEmpty(input)) {
             return result;
         }
         if( input.equals("[]")) {

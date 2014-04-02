@@ -157,7 +157,7 @@ public class ScheduledFileExportData {
 
     public void setNotificationEmailAddresses(String notificationEmailAddresses) {
 		String input = StringUtils.trimAllWhitespace(notificationEmailAddresses);
-		if(org.apache.commons.lang.StringUtils.isNotBlank(input)) {
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(input)) {
 			this.notificationEmailAddresses = input;
 		} else {
 			this.notificationEmailAddresses = null;

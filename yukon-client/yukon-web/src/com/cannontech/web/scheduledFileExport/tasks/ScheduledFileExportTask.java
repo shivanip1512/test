@@ -30,8 +30,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.tools.csv.CSVWriter;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailHtmlMessage;
+import com.cannontech.tools.email.EmailService;
 import com.google.common.io.Files;
 
 /**
@@ -191,7 +191,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
             log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
         } else {
             //send notifications
-            if(org.apache.commons.lang.StringUtils.isNotEmpty(notificationEmailAddresses)) {
+            if (org.apache.commons.lang3.StringUtils.isNotEmpty(notificationEmailAddresses)) {
                 sendNotificationEmails(historyEntry);
             }
         }
@@ -210,7 +210,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
             try {
                 EmailHtmlMessage message = 
                         new EmailHtmlMessage(InternetAddress.parse(emailAddress),
-                                                    subject, org.apache.commons.lang.StringUtils.EMPTY, body);
+                                                    subject, org.apache.commons.lang3.StringUtils.EMPTY, body);
 
                 emailService.sendMessage(message);
             } catch(MessagingException e) {
@@ -243,9 +243,9 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
                 log.error("Unable to copy Archive file to Export file: ", e);
             }
             return exportFile;
-        } else {
-            return null;
         }
+
+        return null;
     }
     
     /**

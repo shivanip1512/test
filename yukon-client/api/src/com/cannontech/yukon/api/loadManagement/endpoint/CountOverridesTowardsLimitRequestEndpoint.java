@@ -1,6 +1,6 @@
 package com.cannontech.yukon.api.loadManagement.endpoint;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;

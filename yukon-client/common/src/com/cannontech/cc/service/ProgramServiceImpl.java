@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cc.dao.AvailableProgramGroupDao;

@@ -1,6 +1,7 @@
 package com.cannontech.common.device.commands.impl;
 
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -18,16 +19,15 @@ import com.cannontech.message.porter.message.Request;
 /**
  * Implementation class for CommandRequestDeviceExecutor
  */
-public class CommandRequestDeviceExecutorImpl extends
-        CommandRequestExecutorBase<CommandRequestDevice> implements
-        CommandRequestDeviceExecutor {
-
-    private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
+public class CommandRequestDeviceExecutorImpl extends CommandRequestExecutorBase<CommandRequestDevice>
+        implements CommandRequestDeviceExecutor {
+    private final static Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
+    private final static Random random = new Random();
 
     @Override
     protected void adjustRequest(Request request, CommandRequestDevice commandRequest) {
         
-        long requestId = RandomUtils.nextInt();
+        long requestId = random.nextInt();
         int deviceId = commandRequest.getDevice().getPaoIdentifier().getPaoId();
         
         request.setDeviceID(deviceId);

@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.operator.hardware.model;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.HardwareType;

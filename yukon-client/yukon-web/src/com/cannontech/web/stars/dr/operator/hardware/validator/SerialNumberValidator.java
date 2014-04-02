@@ -1,6 +1,6 @@
 package com.cannontech.web.stars.dr.operator.hardware.validator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;

@@ -15,7 +15,7 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -38,12 +38,6 @@ import com.cannontech.stars.web.collection.SimpleCollectionFactory;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class WorkOrderBean {
     private static final EventWorkOrderDao eventWorkOrderDao = 
             YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
@@ -300,7 +294,7 @@ public class WorkOrderBean {
             htmlBuf.append("          <td class='TableCell' width='13%' >").append(dateStr).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceType().getContent() )).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("          <td class='TableCell' width='13%' >").append(starsOrder.getCurrentState().getContent()).append("</td>").append(LINE_SEPARATOR);
-            htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( StringEscapeUtils.escapeHtml(starsOrder.getOrderedBy()) )).append("</td>").append(LINE_SEPARATOR);
+            htmlBuf.append("          <td class='TableCell' width='13%' >").append(ServletUtils.forceNotEmpty( StringEscapeUtils.escapeHtml4(starsOrder.getOrderedBy()) )).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("          <td class='TableCell' width='20%' >").append(ServletUtils.forceNotEmpty( starsOrder.getServiceCompany().getContent() )).append("</td>").append(LINE_SEPARATOR);
             htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
         }

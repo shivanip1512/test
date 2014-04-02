@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -42,7 +42,8 @@ public class CapBankStateColorTag extends YukonTagSupport {
         stateBoxContentBuilder.append("<span id=\"data-color-updater_" + paoId + "\" ");
         stateBoxContentBuilder.append("class=\"box state-box\" ");
         stateBoxContentBuilder.append("style=\"background-color: " + color + "\" ");
-        stateBoxContentBuilder.append("data-color-updater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" data-format=\"background\" >");
+        stateBoxContentBuilder.append("data-color-updater=\""
+                + StringEscapeUtils.escapeHtml4(value.getFullIdentifier()) + "\" data-format=\"background\" >");
         stateBoxContentBuilder.append("</span>\n");
         String stateBoxContent = stateBoxContentBuilder.toString();
 
@@ -68,5 +69,4 @@ public class CapBankStateColorTag extends YukonTagSupport {
     public void setUpdaterService(DataUpdaterService updaterService) {
         this.updaterService = updaterService;
     }
-    
 }

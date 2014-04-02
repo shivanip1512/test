@@ -3,6 +3,5 @@ Class-Path: ./
  common.jar 
  loadcontrol.jar 
  joda-time-2.1.jar 
- jcommons-lang-2.3.jar
  commons-io-2.4.jar 
  spring-ws-1.5.5.jar 

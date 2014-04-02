@@ -3,7 +3,7 @@ package com.cannontech.common.pao;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;

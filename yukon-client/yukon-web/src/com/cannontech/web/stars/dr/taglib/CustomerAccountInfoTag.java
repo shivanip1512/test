@@ -5,8 +5,8 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ecs.html.Div;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -37,7 +37,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        if (account == null) throw new JspException("accountNumber is not set.");
+        if (account == null) {
+            throw new JspException("accountNumber is not set.");
+        }
         
         MessageSourceAccessor messageSource;
 		LiteAddress address;
@@ -85,7 +87,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         Div accountNumberDiv = new Div();
         accountNumberDiv.addAttribute("class", "accountNumber");
         String accountNumberLabel = messageSource.getMessage("yukon.dr.consumer.accountNumberLabel", account.getAccountNumber());
-        accountNumberDiv.addElement(StringEscapeUtils.escapeHtml(accountNumberLabel));
+        accountNumberDiv.addElement(StringEscapeUtils.escapeHtml4(accountNumberLabel));
         mainDiv.addElement(accountNumberDiv);    
     }
     
@@ -97,26 +99,27 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     
     private void addNameDiv(final Div mainDiv, final CustomerInformation customer) {
         Div fullNameDiv = new Div();
-        String first = StringEscapeUtils.escapeHtml(customer.getContactFirstName());
-        String last = StringEscapeUtils.escapeHtml(customer.getContactLastName());
+        String first = StringEscapeUtils.escapeHtml4(customer.getContactFirstName());
+        String last = StringEscapeUtils.escapeHtml4(customer.getContactLastName());
         fullNameDiv.addElement(first + " " + last);
         mainDiv.addElement(fullNameDiv);    
     }
     
     private void addAddressDiv(final Div mainDiv, final LiteAddress address) {
         Div addressDiv = new Div();
-        String formattedAddressString = StringEscapeUtils.escapeHtml(address.toFormattedString());
+        String formattedAddressString = StringEscapeUtils.escapeHtml4(address.toFormattedString());
         formattedAddressString = formattedAddressString.replaceAll("\\n", "<br>");
         addressDiv.addElement(formattedAddressString);
         mainDiv.addElement(addressDiv);    
     }
 
     private void addCompanyNameDiv(final Div mainDiv, CustomerInformation customer) {
-        if (customer.getCompanyName() == null)
-			return;
+        if (customer.getCompanyName() == null) {
+            return;
+        }
 
         Div companyNameDiv = new Div();
-        companyNameDiv.addElement(StringEscapeUtils.escapeHtml(customer.getCompanyName()));
+        companyNameDiv.addElement(StringEscapeUtils.escapeHtml4(customer.getCompanyName()));
         mainDiv.addElement(companyNameDiv);
     }
     
@@ -124,7 +127,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
             final YukonUserContext yukonUserContext) {
         
     	String unFormattedPhoneNumber = customerInformation.getContactHomePhone();
-        if (unFormattedPhoneNumber == null) return;
+        if (unFormattedPhoneNumber == null) {
+            return;
+        }
         
         String phoneNumber = phoneNumberFormattingService.formatPhoneNumber(unFormattedPhoneNumber, yukonUserContext);
         

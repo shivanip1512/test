@@ -1,6 +1,6 @@
 package com.cannontech.util.mbean;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 
 import com.cannontech.common.util.BootstrapUtils;

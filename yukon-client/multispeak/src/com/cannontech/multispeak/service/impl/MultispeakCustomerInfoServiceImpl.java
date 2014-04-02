@@ -2,7 +2,7 @@ package com.cannontech.multispeak.service.impl;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.multispeak.deploy.service.ContactInfo;
 import com.cannontech.multispeak.deploy.service.Customer;

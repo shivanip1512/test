@@ -17,8 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -255,7 +255,7 @@ public class ArchivedValuesExporterController {
         model.addAttribute("backingBean", backingBean);
         model.addAttribute("preview", generatePreview);
         model.addAttribute("mode", PageEditMode.EDIT);
-        model.addAttribute("formatName", StringEscapeUtils.escapeHtml(format.getFormatName()));
+        model.addAttribute("formatName", StringEscapeUtils.escapeHtml4(format.getFormatName()));
         setupModel(model, userContext, backingBean.getFormat());
         return "archivedValuesExporter/exporter.jsp";
     }

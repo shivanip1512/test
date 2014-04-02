@@ -14,7 +14,6 @@
   <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl"/>
  
   <bean id="loadProfileService" class="com.cannontech.core.service.impl.LoadProfileServiceImpl">
-    <property name="executor" ref="globalScheduledExecutor"/>
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
 </beans>

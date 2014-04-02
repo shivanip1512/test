@@ -3,7 +3,7 @@ package com.cannontech.common.device.groups.composed.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 

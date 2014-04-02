@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.ecs.Element;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
@@ -119,7 +119,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
             optionDiv.setClass("menuOption" + level + selectedClass);
 
             // Get the menu text from the message source (user specific)
-            String menuText = StringEscapeUtils.escapeHtml(messageSource.getMessage(option.getMenuText()));
+            String menuText = StringEscapeUtils.escapeHtml4(messageSource.getMessage(option.getMenuText()));
             
             if (option instanceof SimpleMenuOption) {
 
@@ -131,7 +131,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     link.addElement(menuText);
 
                     SimpleMenuOption optionLink = (SimpleMenuOption) option;
-                    String url = StringEscapeUtils.escapeHtml(ServletUtil.createSafeUrl(httpServletRequest,
+                    String url = StringEscapeUtils.escapeHtml4(ServletUtil.createSafeUrl(httpServletRequest,
                                                                                         optionLink.getUrl()));
                     link.setHref(url);
                     

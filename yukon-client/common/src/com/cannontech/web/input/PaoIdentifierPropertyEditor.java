@@ -2,7 +2,7 @@ package com.cannontech.web.input;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;

@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;

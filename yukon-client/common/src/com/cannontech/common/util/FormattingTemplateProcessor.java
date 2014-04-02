@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;

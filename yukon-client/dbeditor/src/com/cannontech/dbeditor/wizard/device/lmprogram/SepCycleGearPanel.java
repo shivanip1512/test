@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.CaretEvent;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.util.StringUtils;

@@ -2,10 +2,8 @@ package com.cannontech.web.capcontrol;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -43,20 +41,16 @@ import com.google.common.collect.Lists;
 @RequestMapping("/menu/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class MenuController {
-    
     @Autowired private CapControlCache cache;
     @Autowired private PaoDao paoDao;
-    @Autowired private RolePropertyDao rpDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CapControlCommentService ccCommentService;
     @Autowired private VoltageRegulatorService voltageRegulatorService;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
-    
-    private static final BankOpState[] allowedOperationStates;
-    
-    static {
-        allowedOperationStates  = new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
-    }
-    
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
+    private final static BankOpState[] allowedOperationStates =
+            new BankOpState[] {BankOpState.FIXED,BankOpState.STANDALONE,BankOpState.SWITCHED};
+
     @RequestMapping("commandMenu")
     public String commandMenu(ModelMap model, int id, LiteYukonUser user) {
         StreamableCapObject object = cache.getObject(id);
@@ -65,12 +59,12 @@ public class MenuController {
         
         // Need to escape this here AND in the jsp since jquery ui dialog call
         // will unescape it. Double escaping solves this.
-        model.addAttribute("paoName", StringEscapeUtils.escapeXml(paoName));
+        model.addAttribute("paoName", StringEscapeUtils.escapeXml11(paoName));
         
         model.addAttribute("showChangeOpState", false);
         model.addAttribute("showComments", true);
         model.addAttribute("showRecentCommands", true);
-        model.addAttribute("showLocalControl", rpDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user));
+        model.addAttribute("showLocalControl", rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user));
         
         if (object instanceof Area || object instanceof SpecialArea) {
             setupAreaMenuModel(model, object);
@@ -181,8 +175,8 @@ public class MenuController {
         boolean isTwoWay = CapControlUtils.isTwoWay(cbcPaoObject);
         boolean is702xDevice = CapControlUtils.is702xDevice(cbcPaoObject.getPaoType().getDeviceTypeId());
         boolean is701xDevice = CapControlUtils.is701xDevice(cbcPaoObject);
-        boolean allowFlip = rpDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
-        boolean allowLocalControl = rpDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
+        boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
+        boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
         
         List<CommandType> commands = Lists.newArrayList();
         if (isClosed) {
@@ -223,7 +217,7 @@ public class MenuController {
     }
 
     @RequestMapping("localControl")
-    public String localControl(ModelMap model, int id, LiteYukonUser user) {
+    public String localControl(ModelMap model, int id) {
         StreamableCapObject capObject = cache.getCapControlPAO(id);
         
         Validate.notNull(capObject);
@@ -250,7 +244,7 @@ public class MenuController {
     }
 
     @RequestMapping("capBankState")
-    public String capBankState(ModelMap model, int id, LiteYukonUser user) {
+    public String capBankState(ModelMap model, int id) {
         CapBankDevice capBank = cache.getCapBankDevice(id);
         model.addAttribute("paoId", id);
         String paoName = capBank.getCcName();
@@ -277,14 +271,14 @@ public class MenuController {
     }
 
     @RequestMapping("resetBankOpCount")
-    public String resetBankOpCount(ModelMap model, int bankId, LiteYukonUser user) {
+    public String resetBankOpCount(ModelMap model, int bankId) {
         model.addAttribute("title", cache.getCapBankDevice(bankId).getCcName());
         model.addAttribute("bankId", bankId);
         return "tier/popupmenu/resetBankOpCountMenu.jsp";
     }
     
     @RequestMapping("opStateChange")
-    public String opStateChange(ModelMap model, int bankId, LiteYukonUser user) {
+    public String opStateChange(ModelMap model, int bankId) {
         CapBankDevice capBank = cache.getCapBankDevice(bankId);
         String reason = ccCommentService.getReason(bankId, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
         BankOpState currentState = BankOpState.getStateByName(capBank.getOperationalState());
@@ -307,8 +301,8 @@ public class MenuController {
     }
 
     @RequestMapping("movedBankMenu")
-    public String movedBankMenu(HttpServletRequest request, ModelMap model, int id, YukonUserContext context) {
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+    public String movedBankMenu(ModelMap model, int id, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         CapBankDevice capBank = cache.getCapBankDevice(id);
         
         model.addAttribute("paoId", id);
@@ -322,12 +316,11 @@ public class MenuController {
     }
     
     @RequestMapping("create")
-    public String create(ModelMap model, YukonUserContext context) {
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+    public String create(ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String title = accessor.getMessage("yukon.web.modules.capcontrol.create.title");
         model.addAttribute("title", title);
         
         return "tier/popupmenu/create.jsp";
     }
-
 }

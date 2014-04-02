@@ -2,7 +2,7 @@ package com.cannontech.common.exception;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Exception thrown during file validation when a duplicate column is present.

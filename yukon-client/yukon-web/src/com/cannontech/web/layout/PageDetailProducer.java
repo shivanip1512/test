@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -206,10 +206,11 @@ public class PageDetailProducer {
     private String createLink(HttpServletRequest request, String label, String link) {
         // abbreviate label to prevent bread crumbs from being too long
         label = StringUtils.elideCenter(label, 60);
-        String safeLabel = StringEscapeUtils.escapeHtml(label);
-        if (link == null)
+        String safeLabel = StringEscapeUtils.escapeHtml4(label);
+        if (link == null) {
             return safeLabel;
-        String safeLink = StringEscapeUtils.escapeHtml(link);
+        }
+        String safeLink = StringEscapeUtils.escapeHtml4(link);
 
         return "<a href=\"" + request.getContextPath() + safeLink + "\">" + safeLabel + "</a>";
     }

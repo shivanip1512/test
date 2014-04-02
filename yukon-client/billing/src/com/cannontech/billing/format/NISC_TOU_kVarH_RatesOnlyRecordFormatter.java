@@ -3,7 +3,7 @@ package com.cannontech.billing.format;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.common.dynamicBilling.model.BillableField;

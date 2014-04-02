@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.clientutils.CTILogger;

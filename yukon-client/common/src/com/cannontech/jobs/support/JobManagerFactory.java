@@ -2,7 +2,7 @@ package com.cannontech.jobs.support;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.FactoryBean;
 
 import com.cannontech.common.config.ConfigurationSource;

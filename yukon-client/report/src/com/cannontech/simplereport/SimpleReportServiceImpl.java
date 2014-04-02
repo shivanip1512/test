@@ -15,8 +15,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jfree.report.ElementAlignment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -40,22 +40,17 @@ import com.cannontech.web.input.InputUtil;
 import com.cannontech.web.input.type.InputType;
 
 public class SimpleReportServiceImpl implements SimpleReportService {
-//implements BeanFactoryAware
-    
-    private DateFormattingService dateFormattingService = null;
-    private PointFormattingService pointFormattingService = null;
-    private ObjectFormattingService objectFormattingService = null;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private ObjectFormattingService objectFormattingService;
 
-    // BEAN AWARE
-    //private BeanFactory beanFactory; // OR...
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
-    
+
     private Set<String> dateFormats = new HashSet<String>();
     private Set<String> pointValueFormats = new HashSet<String>();
     
     
     public SimpleReportServiceImpl() {
-        
         // setup list of know DateFormattingService formats as list of strings
         for(DateFormattingService.DateFormatEnum df : DateFormattingService.DateFormatEnum.values()) {
             dateFormats.add(df.toString());
@@ -65,12 +60,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         for(PointFormattingService.Format pf : PointFormattingService.Format.values()) {
             pointValueFormats.add(pf.toString());
         }
-        
     }
     
-    
+    @Override
     public String formatData(String format, Object data, YukonUserContext userContext, PointFormattingService cachedPointFormatter) {
-        
         if (data == null) {
             return "";
         }
@@ -85,7 +78,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         else if (data instanceof Date) {
             if (dateFormats.contains(format)) {
                 DateFormatEnum enumValue = DateFormattingService.DateFormatEnum.valueOf(format);
-                formattedData = dateFormattingService.format((Date) data,
+                formattedData = dateFormattingService.format(data,
                                                                  enumValue,
                                                                  userContext);
             } else {
@@ -123,10 +116,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         return formattedData;
     }
     
-    
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportDefinition(javax.servlet.http.HttpServletRequest)
      */
+    @Override
     public YukonReportDefinition<BareReportModel> getReportDefinition(HttpServletRequest request) throws Exception {
         
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
@@ -137,14 +130,13 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition(definitionName);
         
         return reportDefinition;
-        
     }
 
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
+    @Override
     public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap, boolean loadData, YukonUserContext userContext) throws Exception {
-        
         BareReportModel reportModel = reportDefinition.createBean();
         
         // set parameters on model
@@ -168,33 +160,38 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     /* (non-Javadoc)
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
+    @Override
     public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
-            final BareReportModel reportModel,
-            final YukonUserContext userContext) {
-        
+            final BareReportModel reportModel, final YukonUserContext userContext) {
         final PointFormattingService cachedInstance = pointFormattingService.getCachedInstance();
         
         BareReportModel stringReportModel = new BareReportModel() {
+            @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return String.class;
             }
 
+            @Override
             public int getColumnCount() {
                 return reportDefinition.getReportLayoutData().getBodyColumns().length;
             }
 
+            @Override
             public String getColumnName(int columnIndex) {
                 return reportModel.getColumnName(columnIndex);
             }
 
+            @Override
             public int getRowCount() {
                 return reportModel.getRowCount();
             }
 
+            @Override
             public String getTitle() {
                 return reportModel.getTitle();
             }
 
+            @Override
             public Object getValueAt(int rowIndex, int columnIndex) {
                 Object objValue = reportModel.getValueAt(rowIndex, columnIndex);
                 ColumnLayoutData columnLayoutData = reportDefinition.getReportLayoutData().getBodyColumns()[columnIndex];
@@ -206,10 +203,8 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         
         return stringReportModel;
     }
-   
-    
 
-    
+    @Override
     public List<List<String>> getFormattedData(YukonReportDefinition<? extends BareReportModel> reportDefinition, BareReportModel reportModel, YukonUserContext userContext) {
         
         BareReportModel stringModel = getStringReportModel(reportDefinition, reportModel, userContext);
@@ -226,10 +221,9 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         
         return data;
     }
-    
-    
+
+    @Override
     public List<ColumnInfo> buildColumnInfoListFromColumnLayoutData(ColumnLayoutData[] bodyColumns) {
-        
         int totalWidth = 0;
         List<ColumnInfo> columnInfo = new ArrayList<ColumnInfo>();
         for(int i = 0; i < bodyColumns.length; i++) {
@@ -261,8 +255,9 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         return columnInfo;
     }
     
-    public String getReportUrl(HttpServletRequest httpRequest, String definitionName, Map<String, Object> inputValues, Map<String, String> optionalAttributeDefaults, String viewType, Boolean htmlOutput) throws Exception{
-        
+    @Override
+    public String getReportUrl(HttpServletRequest httpRequest, String definitionName, Map<String, Object> inputValues,
+            Map<String, String> optionalAttributeDefaults, String viewType, Boolean htmlOutput) throws Exception {
         YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition(definitionName);
         InputRoot inputRoot = reportDefinition.getInputs();
         
@@ -290,12 +285,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         url += "/reports/simple/" + viewType + "?" + queryString;
 
         url = ServletUtil.createSafeUrl(httpRequest, url);
-        url = StringEscapeUtils.escapeHtml(url);
+        url = StringEscapeUtils.escapeHtml4(url);
         
         return url;
-        
     }
-    
     
     /**
      * Inspects the report definitionName for required inputs, for each of them - check if that field
@@ -308,21 +301,18 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      * @param inputRoot
      * @return
      */
-    @SuppressWarnings("unchecked")
+    @Override
     public Map<String, String> extractPropertiesFromAttributesMap(InputRoot inputRoot, Map<String, Object> attributes){
-        
     	// look at the attributes the report input root want, and find them in the dynamic attributes
     	// if found, use inputs' prop editor to convert to text and add to the return map
         HashMap<String,String> propertiesMap = new HashMap<String,String>();
-        Map<String, ? extends InputSource> inputs = inputRoot.getInputMap();
-        for (Entry<String, ? extends InputSource> entry : inputs.entrySet()) {
-            
+        Map<String, ? extends InputSource<?>> inputs = inputRoot.getInputMap();
+        for (Entry<String, ? extends InputSource<?>> entry : inputs.entrySet()) {
             String field = entry.getKey();
             
-            if(attributes.containsKey(field)) {
-                
-                InputType type = entry.getValue().getType();
-                
+            if (attributes.containsKey(field)) {
+                InputType<?> type = entry.getValue().getType();
+
                 PropertyEditor propertyEditor = type.getPropertyEditor();
                 propertyEditor.setValue(attributes.get(field));
                 String reportProperty = propertyEditor.getAsText();
@@ -337,27 +327,9 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     private String elementAlignmentToHtmlAlignment(ElementAlignment elementAlignment) {
         return elementAlignment.toString().toLowerCase();
     }
-    
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
 
     @Required
-    public void setReportDefinitionFactory(
-            YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
+    public void setReportDefinitionFactory(YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
         this.reportDefinitionFactory = reportDefinitionFactory;
-    }
-
-    @Required
-    public void setPointFormattingService(
-            PointFormattingService pointFormattingService) {
-        this.pointFormattingService = pointFormattingService;
-    }
-
-    @Autowired
-    public void setObjectFormattingService(
-            ObjectFormattingService objectFormattingService) {
-        this.objectFormattingService = objectFormattingService;
     }
 }

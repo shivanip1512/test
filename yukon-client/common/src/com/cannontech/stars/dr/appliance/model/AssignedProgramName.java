@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.appliance.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.stars.util.StarsUtils;
 

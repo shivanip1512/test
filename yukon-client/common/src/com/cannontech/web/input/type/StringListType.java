@@ -5,7 +5,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Input type representing a list of strings

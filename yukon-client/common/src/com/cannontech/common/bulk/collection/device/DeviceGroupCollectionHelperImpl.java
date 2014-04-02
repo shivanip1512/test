@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,27 +25,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Maps;
 
 public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHelper {
-    private DeviceGroupService deviceGroupService;
-    private TemporaryDeviceGroupService temporaryDeviceGroupService;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    
-    @Autowired
-    public void setDeviceGroupMemberEditorDao(
-            DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
-    }
-    
-    @Autowired
-    public void setTemporaryDeviceGroupService(
-            TemporaryDeviceGroupService temporaryDeviceGroupService) {
-        this.temporaryDeviceGroupService = temporaryDeviceGroupService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+
     public String getSupportedType() {
         return DeviceCollectionType.group.name();
     }
@@ -68,7 +52,9 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         Map<String, String> parameters = deviceCollection.getCollectionParameters();
         String name = parameters.get(getParameterName(NAME_PARAM_NAME));
         String description = parameters.get(getParameterName(DESCRIPTION_PARAM_NAME));
-        if(description == null) description = "";
+        if(description == null) {
+            description = "";
+        }
         Map<String, String> valueMap = Maps.newHashMap();
         valueMap.put(NAME_PARAM_NAME, name);
         valueMap.put(DESCRIPTION_PARAM_NAME, description);
@@ -92,7 +78,7 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
 
                 paramMap.put("collectionType", getSupportedType());
                 paramMap.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
-                if (org.apache.commons.lang.StringUtils.isNotBlank(descriptionHint)) {
+                if (StringUtils.isNotBlank(descriptionHint)) {
                     paramMap.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
                 }
 
@@ -132,12 +118,10 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
                 if (group.isHidden()) {
                     if (descriptionHint != null) {
                         return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporaryWithHint", descriptionHint);
-                    } else {
-                        return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporary");
                     }
-                } else {
-                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group", group.getFullName());
+                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporary");
                 }
+                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group", group.getFullName());
             }
 
         };
@@ -146,7 +130,6 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     @Override
     @Transactional
     public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
-        
         // step 1, create a new group with random name (will delete itself in 24 hours)
         final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup();
         
@@ -158,5 +141,4 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         
         return deviceCollection;
     }
-
 }

@@ -1,24 +1,25 @@
 package com.cannontech.common.device.routeLocate;
 
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.Random;
 
 import com.cannontech.common.device.model.SimpleDevice;
 
 public class DeviceRouteLocation {
+    private final static Random random = new Random();
 
-    Integer id = null; 
-    SimpleDevice device = null;
-    boolean located = false;
-    boolean routeUpdated = false;
-    Integer routeId = null;
-    String initialRouteName = "";
-    Integer initialRouteId = null;
-    String routeName = "";
-    String deviceName = "";
+    private Integer id = null; 
+    private SimpleDevice device = null;
+    private boolean located = false;
+    private boolean routeUpdated = false;
+    private Integer routeId = null;
+    private String initialRouteName = "";
+    private Integer initialRouteId = null;
+    private String routeName = "";
+    private String deviceName = "";
     
     public DeviceRouteLocation(SimpleDevice device) {
         this.device = device;
-        this.id = RandomUtils.nextInt();
+        this.id = random.nextInt();
     }
 
     public SimpleDevice getDevice() {
@@ -88,5 +89,4 @@ public class DeviceRouteLocation {
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
-    
 }

@@ -9,7 +9,7 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.DimensionUIResource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.TitleBorder;

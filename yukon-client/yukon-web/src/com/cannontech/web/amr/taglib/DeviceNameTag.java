@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -82,7 +82,7 @@ public class DeviceNameTag extends YukonTagSupport {
         if (var == null) {
         	JspWriter out = jspContext.getOut();
         	out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
-            out.print(StringEscapeUtils.escapeHtml(formattedName));
+            out.print(StringEscapeUtils.escapeHtml4(formattedName));
             out.print("</span>");
         } else {
         	jspContext.setAttribute(var, formattedName);

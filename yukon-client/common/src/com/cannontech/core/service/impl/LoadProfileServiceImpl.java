@@ -9,16 +9,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.math.RandomUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -48,18 +49,18 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
-
 public class LoadProfileServiceImpl implements LoadProfileService {
     private final static Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
+    private final static Random random = new Random();
 
-    private PorterQueueDataService queueDataService;
-    private DBPersistentDao dbPersistentDao;
-    private DateFormattingService dateFormattingService;
-    private SystemDateFormattingService systemDateFormattingService;
-    private ActivityLoggerService activityLoggerService = null;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PorterQueueDataService queueDataService;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private ActivityLoggerService activityLoggerService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private @Qualifier("main") ScheduledExecutor executor;
     private BasicServerConnection porterConnection;
-    private ScheduledExecutor executor;
 
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
     private Map<Long, Long> recentlyCanceledRequestIds = new HashMap<Long, Long>();
@@ -116,7 +117,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         // setup request
         req.setCommandString(formatString.toString());
         req.setDeviceID(device.getLiteID());
-        long requestId = RandomUtils.nextInt();
+        long requestId = random.nextInt();
         req.setUserMessageID(requestId);
         
         // get interval
@@ -453,7 +454,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         req.setCommandString(formatString.toString());
         
         req.setDeviceID(deviceId);
-        long requestIdOfCancelCommand = RandomUtils.nextInt();
+        long requestIdOfCancelCommand = random.nextInt();
         req.setUserMessageID(requestIdOfCancelCommand);
         
         log.info("sending cancel command for device id " + deviceId + ", request id " + requestIdToBeCanceled + "; this is request id " + requestIdOfCancelCommand);
@@ -570,44 +571,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
 
         return pendingRequests;
     }
-    
-    @Required
-    public void setExecutor(ScheduledExecutor executor) {
-        this.executor = executor;
-    }
 
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
-    }
-
-    @Autowired
-    public void setQueueDataService(PorterQueueDataService queueDataService) {
-        this.queueDataService = queueDataService;
-    }
-
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
-    @Autowired
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
-    }
-
-    @Autowired
-    public void setActivityLoggerService(ActivityLoggerService activityLoggerService) {
-        this.activityLoggerService = activityLoggerService;
-    }
-
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

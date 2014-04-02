@@ -9,29 +9,26 @@ import java.util.Set;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.util.ServletUtil;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Tag used to output the right side logo for a page if one exists
  */
 public class LinkTag extends HtmlTagBase implements ParamParent {
-
     private String href;
     private boolean escapeBody = true;
     private Map<String, String> encodedParameters = new HashMap<String, String>();
-    private Set<String> supportedAttributes = CtiUtilities.asSet("title", "onclick", "id", "class", "style");
-
+    private Set<String> supportedAttributes = ImmutableSet.of("title", "onclick", "id", "class", "style");
 
     @Override
     public void doTag() throws JspException, IOException {
-
 		MessageSourceAccessor messageSourceAccessor = getMessageSource();
 		
 		if (StringUtils.isBlank(getKey())) {
@@ -41,7 +38,7 @@ public class LinkTag extends HtmlTagBase implements ParamParent {
 		// get href
 		String hrefUrl = getAttributeValue("href", href);
 		hrefUrl = ServletUtil.createSafeUrl(getRequest(), hrefUrl);
-		hrefUrl = StringEscapeUtils.escapeHtml(hrefUrl);
+		hrefUrl = StringEscapeUtils.escapeHtml4(hrefUrl);
 
 		StringWriter bodyWriter = new StringWriter();
 		if (getJspBody() != null) {
@@ -74,7 +71,7 @@ public class LinkTag extends HtmlTagBase implements ParamParent {
         
         out.write(">");
         if (escapeBody) {
-            out.write(StringEscapeUtils.escapeHtml(bodyText));
+            out.write(StringEscapeUtils.escapeHtml4(bodyText));
         } else {
             out.write(bodyText);
         }
@@ -86,16 +83,8 @@ public class LinkTag extends HtmlTagBase implements ParamParent {
         encodedParameters.put(name, value);
     }
 
-    public String getHref() {
-        return href;
-    }
-
     public void setHref(String href) {
         this.href = href;
-    }
-
-    public boolean isEscapeBody() {
-        return escapeBody;
     }
 
     public void setEscapeBody(boolean escapeBody) {

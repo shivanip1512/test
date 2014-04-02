@@ -3,7 +3,7 @@ package com.cannontech.common.fileExportHistory.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 

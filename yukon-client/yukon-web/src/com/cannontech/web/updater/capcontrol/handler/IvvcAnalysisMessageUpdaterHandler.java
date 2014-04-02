@@ -1,6 +1,6 @@
 package com.cannontech.web.updater.capcontrol.handler;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.service.IvvcAnalysisMessageService;

@@ -1,6 +1,6 @@
 package com.cannontech.stars.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class InventorySearch {
     

@@ -1,6 +1,6 @@
 package com.cannontech.common.inventory;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.google.common.collect.ImmutableMap;

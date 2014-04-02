@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.util.UrlPathHelper;
@@ -150,8 +150,9 @@ public class ServletUtil {
 	//this static initializer sets all the simpledateformat to lenient
 	static
 	{
-		for( int i = 0; i < dateFormat.length; i++ )
-			dateFormat[i].setLenient(true);
+		for( int i = 0; i < dateFormat.length; i++ ) {
+            dateFormat[i].setLenient(true);
+        }
 	}
 	
 	// Values of the "format" property of the <cti:getProperty> tag
@@ -212,10 +213,11 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 				{
 					java.sql.Timestamp t = resultSet.getTimestamp(i);
 
-					if( t != null )					
-						o = new java.util.Date( t.getTime() );
-					else
-						o = null;
+					if( t != null ) {
+                        o = new java.util.Date( t.getTime() );
+                    } else {
+                        o = null;
+                    }
 					
 				}
 				else
@@ -229,13 +231,16 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 				}
 
 				if( o != null )
-					nonNullRow = true; // at least 1 value in the row is not null
+                 {
+                    nonNullRow = true; // at least 1 value in the row is not null
+                }
 						
 				rowData.addElement( o );							
 			}
 											
-			if( rowData.size() > 0 && nonNullRow )
-				rows.addElement( rowData );
+			if( rowData.size() > 0 && nonNullRow ) {
+                rows.addElement( rowData );
+            }
 		}
 		
 
@@ -254,24 +259,27 @@ public static Object[][] executeSQL(String dbAlias, String query, Class<? extend
 	{
 		try
 		{
-			if( resultSet != null )
-				resultSet.close();
+			if( resultSet != null ) {
+                resultSet.close();
+            }
 		}
 		catch( java.sql.SQLException e )
 		{}
 
 		try
 		{
-			if( statement != null )
-				statement.close();
+			if( statement != null ) {
+                statement.close();
+            }
 		}
 		catch( java.sql.SQLException e )
 		{}
 
 		try
 		{
-			if( connection != null )
-				connection.close();
+			if( connection != null ) {
+                connection.close();
+            }
 		}
 		catch( java.sql.SQLException e )
 		{
@@ -371,9 +379,9 @@ public static Date getEndingDateOfInterval(Date startingDate, String period) {
     if( period.equalsIgnoreCase(EVENT) )
     {
         return startingDate;
-	}
-	else
-		return null;
+	} else {
+        return null;
+    }
 		
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(startingDate);
@@ -416,40 +424,41 @@ public static String getPeriodFromDates(Date start, Date end) {
 	int numDays = (int) Math.round(((double) (endTime-startTime)) / (double) 86400000 );
 
 	//figure out the closest/most reasonable period we have to numDays
-    if( numDays <= -29 )
+    if( numDays <= -29 ) {
         return PREVTHIRTYDAYS;
-    else
-	if( numDays <= -6 )
-		return PREVSEVENDAYS;
-	else
-	if( numDays <= -4)
-		return PREVFIVEDAYS;
-	else
-	if( numDays <= -2)
-		return PREVTHREEDAYS;
-	else
-	if( numDays <= -1)
-		return PREVTWODAYS;
-	else
-	if( numDays <= 1 )
-		return ONEDAY;	//or return TODAY;
-	else
-	if( numDays <= 3 )
-		return THREEDAYS;
-	else
-	if( numDays <= 5 )
-		return FIVEDAYS;
-	else
-	if( numDays <= 7 )
-		return ONEWEEK;
-	else
-	if( numDays <=28 )
-		return FOURWEEKS;
-	else
-	if( numDays <= 35 )
-		return FIVEWEEKS;
-	else
-		return ONEDAY;
+    } else
+	if( numDays <= -6 ) {
+        return PREVSEVENDAYS;
+    } else
+	if( numDays <= -4) {
+        return PREVFIVEDAYS;
+    } else
+	if( numDays <= -2) {
+        return PREVTHREEDAYS;
+    } else
+	if( numDays <= -1) {
+        return PREVTWODAYS;
+    } else
+	if( numDays <= 1 ) {
+        return ONEDAY;	//or return TODAY;
+    } else
+	if( numDays <= 3 ) {
+        return THREEDAYS;
+    } else
+	if( numDays <= 5 ) {
+        return FIVEDAYS;
+    } else
+	if( numDays <= 7 ) {
+        return ONEWEEK;
+    } else
+	if( numDays <=28 ) {
+        return FOURWEEKS;
+    } else
+	if( numDays <= 35 ) {
+        return FIVEWEEKS;
+    } else {
+        return ONEDAY;
+    }
 }
 /**
  * Insert the method's description here.
@@ -497,10 +506,9 @@ public static java.util.Date getStartingDateOfInterval(Date startingDate, String
     if( period.equalsIgnoreCase(EVENT) )
     {
         return new Date(0);
+    } else {
+        return startingDate;
     }
-
-	else	//Don't change the starting date
-		return startingDate;
 		
 	GregorianCalendar cal = new GregorianCalendar();
 	cal.setTime(startingDate);
@@ -674,10 +682,11 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
     	StringBuffer sb = new StringBuffer();
     	while (st.hasMoreTokens()) {
     		String word = st.nextToken();
-    		if (word.equals(" "))
-    			sb.append( word );
-    		else
-    			sb.append( capitalize(word) );
+    		if (word.equals(" ")) {
+                sb.append( word );
+            } else {
+                sb.append( capitalize(word) );
+            }
     	}
     	
     	return sb.toString();
@@ -693,10 +702,11 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 			|| word.charAt(0) == 'e' || word.charAt(0) == 'E'
 			|| word.charAt(0) == 'i' || word.charAt(0) == 'I'
 			|| word.charAt(0) == 'o' || word.charAt(0) == 'O'
-			|| word.charAt(0) == 'u' || word.charAt(0) == 'U')
-			return "an " + word;
-		else
-			return "a " + word;
+			|| word.charAt(0) == 'u' || word.charAt(0) == 'U') {
+            return "an " + word;
+        }
+
+		return "a " + word;
 	}
 
 	/**
@@ -704,7 +714,9 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 	 *
 	 */
 	public static LiteYukonUser getYukonUser( HttpSession session ) {
-	    if (session == null) return null;
+	    if (session == null) {
+            return null;
+        }
 		return (LiteYukonUser) session.getAttribute(ATT_YUKON_USER);
 	}
 
@@ -733,11 +745,14 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 	 */
 	public static String getFullURL( HttpServletRequest req )
 	{
-	    if( req == null ) return "";
+	    if( req == null ) {
+            return "";
+        }
 	    
 	    String q = "";
-	    if( req.getQueryString() != null )
-	        q = "?" + req.getQueryString();
+	    if( req.getQueryString() != null ) {
+            q = "?" + req.getQueryString();
+        }
 	    
 	    return req.getRequestURI() + q;		
 	}
@@ -764,12 +779,10 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
             HttpServletRequest httpRequest = (HttpServletRequest)request;
             if (url.startsWith("/")) {
                 return httpRequest.getContextPath() + url;
-            } else {
-                return url;
             }
-        } else {
             return url;
         }
+        return url;
     }
     
     /**
@@ -780,7 +793,9 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @return a stripped version of the URL
      */
     public static String createSafeRedirectUrl(final ServletRequest request, final String url) {
-        if (url == null) return "/";
+        if (url == null) {
+            return "/";
+        }
         
         Matcher matcher = Pattern.compile("^\\w{3,}://.+?(/.*)$").matcher(url);
         boolean matches = matcher.matches();
@@ -846,7 +861,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 
         String queryString = StringUtils.join(parameterPairs, "&");
         if (escapeHtml) {
-            queryString = StringEscapeUtils.escapeHtml(queryString);
+            queryString = StringEscapeUtils.escapeHtml4(queryString);
         }
         return queryString;
     }
@@ -989,7 +1004,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @return an HTML escaped full path and query string
      */
     public static String tweakHTMLRequestURI(HttpServletRequest request, String newParameter, String newValue) {
-        return StringEscapeUtils.escapeHtml(tweakRequestURI(request, newParameter, newValue));
+        return StringEscapeUtils.escapeHtml4(tweakRequestURI(request, newParameter, newValue));
     }
     
     /**
@@ -1078,7 +1093,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
             while ( t != null ) {
                 Throwable cause = ExceptionUtils.getCause(t);
                 if (cause == null) {
-                    String escapedCause = StringEscapeUtils.escapeHtml(t.toString());
+                    String escapedCause = StringEscapeUtils.escapeHtml4(t.toString());
                     p.println(escapedCause);
                     StackTraceElement[] trace = t.getStackTrace();
                     for (StackTraceElement element : trace) {
@@ -1091,7 +1106,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
                             }
                         }
                         String thisLine = element.toString();
-                        String safeLine = StringEscapeUtils.escapeHtml(thisLine);
+                        String safeLine = StringEscapeUtils.escapeHtml4(thisLine);
                         if (specialLine) {
                             p.println("<span style=\"font-weight: bold;\">\tat " + safeLine + "</span>");
                         } else {
@@ -1100,7 +1115,7 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
                     }
                     
                 } else {
-                    String escapedCause = StringEscapeUtils.escapeHtml(t.toString());
+                    String escapedCause = StringEscapeUtils.escapeHtml4(t.toString());
                     p.println(escapedCause);
                     p.write("\n");
                 }
@@ -1135,7 +1150,9 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 	
     public static void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        if (cookies == null) return;
+        if (cookies == null) {
+            return;
+        }
         for (final Cookie cookie : cookies) {
             cookie.setMaxAge(0);
             cookie.setValue("");

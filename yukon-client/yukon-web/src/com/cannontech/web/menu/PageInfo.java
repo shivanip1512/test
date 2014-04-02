@@ -3,7 +3,7 @@ package com.cannontech.web.menu;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.cannontech.user.checker.UserChecker;
 import com.google.common.collect.Lists;

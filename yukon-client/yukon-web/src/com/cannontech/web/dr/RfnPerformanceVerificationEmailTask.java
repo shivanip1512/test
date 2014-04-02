@@ -1,7 +1,7 @@
 package com.cannontech.web.dr;
 
 import static com.cannontech.system.GlobalSettingType.*;
-import static org.apache.commons.lang.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

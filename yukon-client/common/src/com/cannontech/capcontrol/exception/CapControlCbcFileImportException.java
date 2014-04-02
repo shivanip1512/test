@@ -2,7 +2,7 @@ package com.cannontech.capcontrol.exception;
 
 import java.util.Collection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
 

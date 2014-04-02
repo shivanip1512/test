@@ -1,6 +1,6 @@
 package com.cannontech.common.device.groups.model;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;

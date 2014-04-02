@@ -54,31 +54,44 @@ public class ScheduleBasePanel extends com.cannontech.common.gui.util.DataInputP
 	private javax.swing.JPanel ivjJPanelStops = null;
 
 class IvjEventHandler implements java.awt.event.ActionListener, javax.swing.event.CaretListener {
-		public void actionPerformed(java.awt.event.ActionEvent e) {
-			if (e.getSource() == ScheduleBasePanel.this.getJCheckBoxEveryYear()) 
-				connEtoC4(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxType()) 
-				connEtoC5(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxHoliday()) 
-				connEtoC6(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxStopPolicy()) 
-				connEtoC8(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxStartPolicy()) 
-				connEtoC9(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJCheckBoxDayChooser()) 
-				connEtoC7();
-			if (e.getSource() == ScheduleBasePanel.this.getDateComboBox()) 
-				connEtoC11(e);
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+			if (e.getSource() == ScheduleBasePanel.this.getJCheckBoxEveryYear()) {
+                connEtoC4(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxType()) {
+                connEtoC5(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxHoliday()) {
+                connEtoC6(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxStopPolicy()) {
+                connEtoC8(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJComboBoxStartPolicy()) {
+                connEtoC9(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJCheckBoxDayChooser()) {
+                connEtoC7();
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getDateComboBox()) {
+                connEtoC11(e);
+            }
 		};
-		public void caretUpdate(javax.swing.event.CaretEvent e) {
-			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldScheduleName()) 
-				connEtoC3(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldDayOfMonth()) 
-				connEtoC10(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldTimeEntryStart()) 
-				connEtoC1(e);
-			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldTimeAbsoluteStopTime()) 
-				connEtoC2(e);
+		@Override
+        public void caretUpdate(javax.swing.event.CaretEvent e) {
+			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldScheduleName()) {
+                connEtoC3(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldDayOfMonth()) {
+                connEtoC10(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldTimeEntryStart()) {
+                connEtoC1(e);
+            }
+			if (e.getSource() == ScheduleBasePanel.this.getJTextFieldTimeAbsoluteStopTime()) {
+                connEtoC2(e);
+            }
 		};
 	};
 /**
@@ -109,27 +122,37 @@ public IMACSConnection getIMACSConnection()
  * This method was created in VisualAge.
  * @param event java.awt.event.ActionEvent
  */
+@Override
 public void actionPerformed(java.awt.event.ActionEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJCheckBoxEveryYear()) 
-		connEtoC4(e);
-	if (e.getSource() == getJComboBoxType()) 
-		connEtoC5(e);
-	if (e.getSource() == getJComboBoxHoliday()) 
-		connEtoC6(e);
-	if (e.getSource() == getJComboBoxStopPolicy()) 
-		connEtoC8(e);
-	if (e.getSource() == getJComboBoxStartPolicy()) 
-		connEtoC9(e);
-	if (e.getSource() == getJCheckBoxDayChooser()) 
-		connEtoC7();
-	if (e.getSource() == getDateComboBox()) 
-		connEtoC11(e);
+	if (e.getSource() == getJCheckBoxEveryYear()) {
+        connEtoC4(e);
+    }
+	if (e.getSource() == getJComboBoxType()) {
+        connEtoC5(e);
+    }
+	if (e.getSource() == getJComboBoxHoliday()) {
+        connEtoC6(e);
+    }
+	if (e.getSource() == getJComboBoxStopPolicy()) {
+        connEtoC8(e);
+    }
+	if (e.getSource() == getJComboBoxStartPolicy()) {
+        connEtoC9(e);
+    }
+	if (e.getSource() == getJCheckBoxDayChooser()) {
+        connEtoC7();
+    }
+	if (e.getSource() == getDateComboBox())
+     {
+        connEtoC11(e);
 	// user code begin {2}
+    }
 
-	if( e.getSource() == getJComboBoxCategory() )
-		this.fireInputUpdate();
+	if( e.getSource() == getJComboBoxCategory() ) {
+        this.fireInputUpdate();
+    }
 
 	// user code end
 }
@@ -138,18 +161,24 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
  * @param e javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
+@Override
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 	// user code end
-	if (e.getSource() == getJTextFieldScheduleName()) 
-		connEtoC3(e);
-	if (e.getSource() == getJTextFieldDayOfMonth()) 
-		connEtoC10(e);
-	if (e.getSource() == getJTextFieldTimeEntryStart()) 
-		connEtoC1(e);
-	if (e.getSource() == getJTextFieldTimeAbsoluteStopTime()) 
-		connEtoC2(e);
+	if (e.getSource() == getJTextFieldScheduleName()) {
+        connEtoC3(e);
+    }
+	if (e.getSource() == getJTextFieldDayOfMonth()) {
+        connEtoC10(e);
+    }
+	if (e.getSource() == getJTextFieldTimeEntryStart()) {
+        connEtoC1(e);
+    }
+	if (e.getSource() == getJTextFieldTimeAbsoluteStopTime())
+     {
+        connEtoC2(e);
 	// user code begin {2}
+    }
 
 	// user code end
 }
@@ -545,8 +574,9 @@ private javax.swing.JComboBox getJComboBoxHoliday() {
 			synchronized( cache )
 			{
 				List holidaySch = cache.getAllHolidaySchedules();
-				for( int i = 0; i < holidaySch.size(); i++ )
-					ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
+				for( int i = 0; i < holidaySch.size(); i++ ) {
+                    ivjJComboBoxHoliday.addItem( holidaySch.get(i) );
+                }
 			}
 			
 			// user code end
@@ -1448,8 +1478,10 @@ private javax.swing.JComboBox getTemplateComboBox() {
 			ivjTemplateComboBox.setName("TemplateComboBox");
 			// user code begin {1}
 			for (int i = 0; i < ScriptTemplateTypes.getAllScriptTemplates().length; i++)
-				ivjTemplateComboBox.addItem(ScriptTemplateTypes.getAllScriptTemplates()[i]);
+             {
+                ivjTemplateComboBox.addItem(ScriptTemplateTypes.getAllScriptTemplates()[i]);
 			// user code end
+            }
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
@@ -1492,13 +1524,15 @@ public int getTemplateType()
 /**
  * getValue method comment.
  */
+@Override
 public Object getValue(Object val) 
 {
 	Schedule sch = null;
-	if( val == null )
-		sch = new Schedule();
-	else
-		sch = (Schedule)val;
+	if( val == null ) {
+        sch = new Schedule();
+    } else {
+        sch = (Schedule)val;
+    }
 
 	// ID must be set by server!!	
 	sch.setScheduleName( getJTextFieldScheduleName().getText().trim() );
@@ -1509,13 +1543,16 @@ public Object getValue(Object val)
 	sch.setStartPolicy( getSelectedStartPolicy() );
 	sch.setStopPolicy( getSelectedStopPolicy() );
 
-	if( getJComboBoxHoliday().getSelectedItem() != null )
-		sch.setHolidayScheduleId( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() );
-	else
-		sch.setHolidayScheduleId( 0 );
+	if( getJComboBoxHoliday().getSelectedItem() != null ) {
+        sch.setHolidayScheduleId( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getSelectedItem()).getHolidayScheduleID() );
+    } else {
+        sch.setHolidayScheduleId( 0 );
+    }
 
  	if( getJTextFieldTimeEntryStart().isEnabled() && getJTextFieldTimeEntryStart().getText() != null )
-		sch.setStartTime( getJTextFieldTimeEntryStart().getTimeText() + ":00" );  // needs the seconds appended for the database:  HH:mm:ss
+     {
+        sch.setStartTime( getJTextFieldTimeEntryStart().getTimeText() + ":00" );  // needs the seconds appended for the database:  HH:mm:ss
+    }
 	
 
 	java.util.GregorianCalendar tempCal = new java.util.GregorianCalendar();
@@ -1532,10 +1569,11 @@ public Object getValue(Object val)
 		sch.setStartDay( tempCal.get(java.util.GregorianCalendar.DAY_OF_MONTH) );
 		sch.setStartMonth( tempCal.get(java.util.GregorianCalendar.MONTH) + 1 );
 
-		if( getJCheckBoxEveryYear().isSelected() )
-			sch.setStartYear( 0 );
-		else
-			sch.setStartYear( tempCal.get(java.util.GregorianCalendar.YEAR) );
+		if( getJCheckBoxEveryYear().isSelected() ) {
+            sch.setStartYear( 0 );
+        } else {
+            sch.setStartYear( tempCal.get(java.util.GregorianCalendar.YEAR) );
+        }
 	} 
 	else if( getSelectedStartPolicy().equalsIgnoreCase(Schedule.DAYOFMONTH_START) )
 	{
@@ -1556,8 +1594,9 @@ public Object getValue(Object val)
 	// Process the stop attributes here
 	if( getSelectedStopPolicy().equalsIgnoreCase( Schedule.ABSOLUTETIME_STOP ) )
 	{
- 		if( getJTextFieldTimeAbsoluteStopTime().isEnabled() && getJTextFieldTimeAbsoluteStopTime().getText() != null )	 	
-			sch.setStopTime( getJTextFieldTimeAbsoluteStopTime().getTimeText() + ":00" );
+ 		if( getJTextFieldTimeAbsoluteStopTime().isEnabled() && getJTextFieldTimeAbsoluteStopTime().getText() != null ) {
+            sch.setStopTime( getJTextFieldTimeAbsoluteStopTime().getTimeText() + ":00" );
+        }
 	}
 	else if( getSelectedStopPolicy().equalsIgnoreCase( Schedule.DURATION_STOP ) )
 	{
@@ -1658,6 +1697,7 @@ private void initialize() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@Override
 public boolean isInputValid() 
 {
 	Integer startSecs = null, stopSecs = null;
@@ -1693,7 +1733,7 @@ public boolean isInputValid()
 	}
 	
 	String scheduleName = getJTextFieldScheduleName().getText().trim();
-    if( org.apache.commons.lang.StringUtils.isBlank(scheduleName) )
+    if( org.apache.commons.lang3.StringUtils.isBlank(scheduleName) )
 	{
 		setErrorString("The Schedule Name text field must be filled in");
 		return false;
@@ -1832,8 +1872,9 @@ public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	if( val )
 	{
 		//release the hate!
-		if( getSelectedStopPolicy().equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
-			getJComboBoxStopPolicy().setSelectedIndex(0);
+		if( getSelectedStopPolicy().equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) ) {
+            getJComboBoxStopPolicy().setSelectedIndex(0);
+        }
 
 		getJComboBoxStopPolicy().removeItem( StringUtils.addCharBetweenWords(' ', Schedule.UNTILCOMPLETE_STOP) );
 		
@@ -1843,15 +1884,17 @@ public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	else	//Schedule.SCRIPT_TYPE
 	{
 		//be sure the UNTIL_COMPLETE stop policy is in the stop policy combo box!
-		for( int i = 0; i < getJComboBoxStopPolicy().getItemCount(); i++ )
-			if( StringUtils.removeChars(' ', getJComboBoxStopPolicy().getItemAt(i).toString()).equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
+		for( int i = 0; i < getJComboBoxStopPolicy().getItemCount(); i++ ) {
+            if( StringUtils.removeChars(' ', getJComboBoxStopPolicy().getItemAt(i).toString()).equalsIgnoreCase(Schedule.UNTILCOMPLETE_STOP) )
 			{
 				val = true;
 				break;
 			}
+        }
 
-		if( !val )
-			getJComboBoxStopPolicy().addItem( StringUtils.addCharBetweenWords(' ', Schedule.UNTILCOMPLETE_STOP) );
+		if( !val ) {
+            getJComboBoxStopPolicy().addItem( StringUtils.addCharBetweenWords(' ', Schedule.UNTILCOMPLETE_STOP) );
+        }
 			
 		setScriptOnlyFieldsEnabled(true);
 	}
@@ -1864,6 +1907,7 @@ public void jComboBoxType_ActionPerformed(java.awt.event.ActionEvent actionEvent
  * @param e java.awt.event.KeyEvent
  */
 
+@Override
 public void keyPressed(java.awt.event.KeyEvent e) 
 {
 }
@@ -1871,6 +1915,7 @@ public void keyPressed(java.awt.event.KeyEvent e)
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
  */
+@Override
 public void keyReleased(java.awt.event.KeyEvent e) 
 {
 	fireInputUpdate();
@@ -1879,6 +1924,7 @@ public void keyReleased(java.awt.event.KeyEvent e)
  * Method to handle events for the KeyListener interface.
  * @param e java.awt.event.KeyEvent
  */
+@Override
 public void keyTyped(java.awt.event.KeyEvent e) 
 {
 }
@@ -1896,7 +1942,8 @@ public static void main(java.lang.String[] args) {
 		frame.setContentPane(aScheduleBasePanel);
 		frame.setSize(aScheduleBasePanel.getSize());
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
 				System.exit(0);
 			};
 		});
@@ -1920,10 +1967,12 @@ private void setEditableJComboBox(final java.util.Enumeration items)
 	{		
 		javax.swing.SwingUtilities.invokeLater( new Runnable()
 		{
-			public void run()
+			@Override
+            public void run()
 			{
-				while( items.hasMoreElements() )
-					getJComboBoxCategory().addItem( items.nextElement().toString() );
+				while( items.hasMoreElements() ) {
+                    getJComboBoxCategory().addItem( items.nextElement().toString() );
+                }
 			}
 				
 		});			
@@ -1990,6 +2039,7 @@ private void setStopFieldVisible()
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object val) 
 {
 	Schedule sched = (Schedule)val;
@@ -2003,18 +2053,20 @@ public void setValue(Object val)
 	getTemplateComboBox().setSelectedItem( ScriptTemplateTypes.getScriptTemplateFromID(sched.getTemplateType()));
 	getJCSpinFieldDuration().setValue( new Integer(sched.getDuration()) );
 
-	for( int i = 0; i < getJComboBoxHoliday().getItemCount(); i++ )
-		if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getItemAt(i)).getHolidayScheduleID()
+	for( int i = 0; i < getJComboBoxHoliday().getItemCount(); i++ ) {
+        if( ((com.cannontech.database.data.lite.LiteHolidaySchedule)getJComboBoxHoliday().getItemAt(i)).getHolidayScheduleID()
 			 == sched.getHolidayScheduleId() )
 		{
 			getJComboBoxHoliday().setSelectedIndex(i);
 			break;
 		}
+    }
 
-	if( sched.getStartTime().length() > 5 )
-		getJTextFieldTimeEntryStart().setText( sched.getStartTime().substring(0, 5) );
-	else
-		getJTextFieldTimeEntryStart().setText( sched.getStartTime() );
+	if( sched.getStartTime().length() > 5 ) {
+        getJTextFieldTimeEntryStart().setText( sched.getStartTime().substring(0, 5) );
+    } else {
+        getJTextFieldTimeEntryStart().setText( sched.getStartTime() );
+    }
 		
 	// Process the start policies and set the viewable area in the
 	// startPolicyScrollPane to the selected radioButton
@@ -2038,11 +2090,12 @@ public void setValue(Object val)
 			// just set the year to the current year
 			cal.set( java.util.GregorianCalendar.YEAR, cal.get(java.util.GregorianCalendar.YEAR) );
 		}
-		else if( sched.getStartYear() <= 2000 )
-			cal.set( java.util.GregorianCalendar.YEAR, cal.get(java.util.GregorianCalendar.YEAR) );
-		else
-			cal.set( java.util.GregorianCalendar.YEAR, sched.getStartYear() );
+		else if( sched.getStartYear() <= 2000 ) {
+            cal.set( java.util.GregorianCalendar.YEAR, cal.get(java.util.GregorianCalendar.YEAR) );
+        } else {
+            cal.set( java.util.GregorianCalendar.YEAR, sched.getStartYear() );
 		/*----- END SUPER HACK */
+        }
 		
 		getDateComboBox().setSelectedDate( cal.getTime() );
 	}
@@ -2066,10 +2119,11 @@ public void setValue(Object val)
 	
 	if( sched.getStopPolicy().equalsIgnoreCase( Schedule.ABSOLUTETIME_STOP ) )
 	{
-		if( sched.getStopTime().length() > 5 )
-			getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime().substring(0, 5) );
-		else
-			getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime() );
+		if( sched.getStopTime().length() > 5 ) {
+            getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime().substring(0, 5) );
+        } else {
+            getJTextFieldTimeAbsoluteStopTime().setText( sched.getStopTime() );
+        }
 	}
 	else if( sched.getStopPolicy().equalsIgnoreCase( Schedule.DURATION_STOP ) )
 	{

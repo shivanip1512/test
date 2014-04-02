@@ -1,6 +1,6 @@
 package com.cannontech.database;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.ImmutableMap;

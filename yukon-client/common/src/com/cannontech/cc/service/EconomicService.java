@@ -2,7 +2,7 @@ package com.cannontech.cc.service;
 
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.dao.EconomicEventDao;

@@ -8,7 +8,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.database.data.customer.Customer;

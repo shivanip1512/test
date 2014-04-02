@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;

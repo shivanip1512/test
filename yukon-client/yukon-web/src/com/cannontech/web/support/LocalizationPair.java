@@ -2,7 +2,7 @@ package com.cannontech.web.support;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.google.common.collect.Lists;
 
@@ -70,7 +70,7 @@ public class LocalizationPair implements Comparable<LocalizationPair> {
             clean = "<![CDATA[" + clean + "]]>";
         }
         else {
-            clean = StringEscapeUtils.escapeXml(unclean);
+            clean = StringEscapeUtils.escapeXml11(unclean);
             //We can have quotes and apostrophes in our properties xml file
             clean = clean.replaceAll("&quot;", "\"");
             clean = clean.replaceAll("&apos;", "'");
@@ -86,11 +86,9 @@ public class LocalizationPair implements Comparable<LocalizationPair> {
     public static List<LocalizationPair> sanitizeHtmlPairs(List<LocalizationPair> input){
         List<LocalizationPair> results = Lists.newArrayList();
         for(LocalizationPair unclean : input){
-            results.add(new LocalizationPair(
-                    StringEscapeUtils.escapeHtml(unclean.getKey()),
-                    StringEscapeUtils.escapeHtml(LocalizationPair.sanitizeXml(unclean.getValue())),
-                    StringEscapeUtils.escapeHtml(LocalizationPair.sanitizeXml(unclean.getSecondaryValue()))
-                    ));
+            results.add(new LocalizationPair(StringEscapeUtils.escapeHtml4(unclean.getKey()),
+                StringEscapeUtils.escapeHtml4(LocalizationPair.sanitizeXml(unclean.getValue())),
+                StringEscapeUtils.escapeHtml4(LocalizationPair.sanitizeXml(unclean.getSecondaryValue()))));
         }
         return results;
     }

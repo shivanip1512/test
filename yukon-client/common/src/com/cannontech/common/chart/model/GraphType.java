@@ -1,6 +1,6 @@
 package com.cannontech.common.chart.model;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum GraphType {
     LINE ("line"), 

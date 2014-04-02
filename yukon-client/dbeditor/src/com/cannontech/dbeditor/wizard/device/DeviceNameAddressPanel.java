@@ -8,7 +8,7 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;

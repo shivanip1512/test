@@ -1,13 +1,14 @@
 package com.cannontech.message.capcontrol.model;
 
-import org.apache.commons.lang.math.RandomUtils;
+import java.util.Random;
 
 import com.cannontech.message.util.Message;
 
 public class CapControlCommand extends Message implements CommandResultParticipant {
+    private final static Random random = new Random();
 
     private int commandId;
-    private int messageId = RandomUtils.nextInt();
+    private int messageId = random.nextInt();
     
     public CapControlCommand() {
         super();
@@ -35,5 +36,4 @@ public class CapControlCommand extends Message implements CommandResultParticipa
     public void setMessageId(int messageId) {
         this.messageId = messageId;
     }
-
 }

@@ -1,6 +1,6 @@
 package com.cannontech.i18n;
 
-import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.LocaleUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 

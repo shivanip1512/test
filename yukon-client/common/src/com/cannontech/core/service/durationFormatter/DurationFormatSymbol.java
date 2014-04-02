@@ -1,6 +1,6 @@
 package com.cannontech.core.service.durationFormatter;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DurationFieldType;
 import org.joda.time.format.PeriodFormatterBuilder;
 

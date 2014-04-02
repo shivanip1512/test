@@ -9,8 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -54,10 +54,7 @@ public class CommanderController {
             @RequestParam(value = "orderBy", defaultValue = "NAME") DeviceSearchField orderByField,
             @RequestParam(value = "descending", defaultValue = "false") Boolean orderByDescending,
             @RequestParam(defaultValue = "1") Integer page, Integer itemsPerPage,
-            ModelMap modelMap,
-            YukonUserContext userContext,
-            HttpServletRequest request) {
-        
+            ModelMap model, HttpServletRequest request) {
         List<SearchField> fields = deviceSearchService.getFieldsForCategory(category);
         
         OrderByField orderBy = new OrderByField(orderByField, orderByDescending);
@@ -72,23 +69,19 @@ public class CommanderController {
         searchFilters.addAll(editableFilters);
         SearchResults<DeviceSearchResultEntry> deviceSearchResults = deviceSearchService.search(fields, searchFilters, orderBy, ((page - 1) * itemsPerPage), itemsPerPage);
         
-        modelMap.addAttribute("filters", editableFilters);
-        modelMap.addAttribute("fields", fields);
-        modelMap.addAttribute("category", category);
-        modelMap.addAttribute("orderBy", orderByField);
-        modelMap.addAttribute("deviceSearchResults", deviceSearchResults);
-        modelMap.addAttribute("menuSelection", getMenuSelection(category));
+        model.addAttribute("filters", editableFilters);
+        model.addAttribute("fields", fields);
+        model.addAttribute("category", category);
+        model.addAttribute("orderBy", orderByField);
+        model.addAttribute("deviceSearchResults", deviceSearchResults);
+        model.addAttribute("menuSelection", getMenuSelection(category));
         
         return "select.jsp";
     }
 
     @RequestMapping(value = "/command", method = RequestMethod.GET)
-    public String command(
-            @RequestParam(required = true) Integer deviceId,
-            ModelMap modelMap,
-            YukonUserContext userContext,
+    public String command(@RequestParam(required = true) Integer deviceId, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
-        
         YCBean ycBean = setupYCBean(request.getSession(), userContext);
         
         if(deviceId == null) {
@@ -107,28 +100,24 @@ public class CommanderController {
         
         LiteYukonPAObject lPao = ycBean.getLiteYukonPao();
         
-        modelMap.addAttribute("lPao", lPao);
-        modelMap.addAttribute("deviceId", deviceId);
-        modelMap.addAttribute("deviceName", getDeviceName(ycBean, null));
-        modelMap.addAttribute("meterDetailDisplayable", deviceSearchService.isMeterDetailsSupported(lPao));
-        modelMap.addAttribute("availableCommands", getAvailableCommands(ycBean, lPao, userContext));
-        modelMap.addAttribute("menuSelection", getMenuSelection(deviceSearchService.getDeviceCategory(deviceId)));
-        modelMap.addAttribute("redirectURI", String.format("%s?deviceId=%d", request.getRequestURI(), deviceId));
-        modelMap.addAttribute("category", DeviceSearchCategory.fromLiteYukonPAObject(lPao));
+        model.addAttribute("lPao", lPao);
+        model.addAttribute("deviceId", deviceId);
+        model.addAttribute("deviceName", getDeviceName(ycBean, null));
+        model.addAttribute("meterDetailDisplayable", deviceSearchService.isMeterDetailsSupported(lPao));
+        model.addAttribute("availableCommands", getAvailableCommands(ycBean, lPao, userContext));
+        model.addAttribute("menuSelection", getMenuSelection(deviceSearchService.getDeviceCategory(deviceId)));
+        model.addAttribute("redirectURI", String.format("%s?deviceId=%d", request.getRequestURI(), deviceId));
+        model.addAttribute("category", DeviceSearchCategory.fromLiteYukonPAObject(lPao));
 
-        mapCommonAttributes(ycBean, modelMap, userContext);
+        mapCommonAttributes(ycBean, model);
 
         return "command.jsp";
     }
 
     @RequestMapping(value = "/command/{serialType}", method = RequestMethod.GET)
-    public String commandSerialType(
-            @PathVariable String serialType,
-            @RequestParam(required = false) String serialNumber,
-            ModelMap modelMap,
-            YukonUserContext userContext,
+    public String commandSerialType( @PathVariable String serialType,
+            @RequestParam(required = false) String serialNumber, ModelMap model, YukonUserContext userContext,
             HttpServletRequest request) {
-        
         YCBean ycBean = setupYCBean(request.getSession(), userContext);
 
         ycBean.setLiteYukonPao(null);
@@ -146,16 +135,16 @@ public class CommanderController {
             ycBean.setSerialNumber(ycBean.getDeviceType(), serialNumber);
         }
         
-        modelMap.addAttribute("deviceName", getDeviceName(ycBean, serialType));
-        modelMap.addAttribute("serialType", serialType);
+        model.addAttribute("deviceName", getDeviceName(ycBean, serialType));
+        model.addAttribute("serialType", serialType);
         if(serialNumber != null && !serialNumber.isEmpty()) {
-            modelMap.addAttribute("serialNumber", serialNumber);
+            model.addAttribute("serialNumber", serialNumber);
         }
-        modelMap.addAttribute("availableRoutes", ycBean.getValidRoutes());
-        modelMap.addAttribute("availableCommands", getAvailableCommands(ycBean, serialType, userContext));
-        modelMap.addAttribute("menuSelection", getMenuSelection(serialType));
+        model.addAttribute("availableRoutes", ycBean.getValidRoutes());
+        model.addAttribute("availableCommands", getAvailableCommands(ycBean, serialType, userContext));
+        model.addAttribute("menuSelection", getMenuSelection(serialType));
         
-        mapCommonAttributes(ycBean, modelMap, userContext);
+        mapCommonAttributes(ycBean, model);
         
         String redirectURI;
         if(serialNumber != null && !serialNumber.isEmpty()) {
@@ -163,7 +152,7 @@ public class CommanderController {
         } else {
             redirectURI = request.getRequestURI();
         }
-        modelMap.addAttribute("redirectURI", redirectURI);
+        model.addAttribute("redirectURI", redirectURI);
         
         return "command.jsp";
     }
@@ -181,15 +170,15 @@ public class CommanderController {
         return ycBean;
     }
 
-    private void mapCommonAttributes(YCBean ycBean, ModelMap modelMap, YukonUserContext userContext) {
-        modelMap.addAttribute("deviceType", ycBean.getDeviceType());
-        modelMap.addAttribute("currentCommand", ycBean.getCommandString().replaceAll("noqueue", "").trim());
-        modelMap.addAttribute("resultText", ycBean.getResultText());
-        modelMap.addAttribute("deviceHistory", ycBean.getDeviceHistory());
-        modelMap.addAttribute("sa205History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA205_SERIAL));
-        modelMap.addAttribute("sa305History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA305_SERIAL));
-        modelMap.addAttribute("xcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL));
-        modelMap.addAttribute("vcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_VERSACOM_SERIAL));
+    private void mapCommonAttributes(YCBean ycBean, ModelMap model) {
+        model.addAttribute("deviceType", ycBean.getDeviceType());
+        model.addAttribute("currentCommand", ycBean.getCommandString().replaceAll("noqueue", "").trim());
+        model.addAttribute("resultText", ycBean.getResultText());
+        model.addAttribute("deviceHistory", ycBean.getDeviceHistory());
+        model.addAttribute("sa205History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA205_SERIAL));
+        model.addAttribute("sa305History", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_SA305_SERIAL));
+        model.addAttribute("xcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_EXPRESSCOM_SERIAL));
+        model.addAttribute("vcomHistory", getSerialNumberHistory(ycBean, CommandCategory.STRING_CMD_VERSACOM_SERIAL));
     }
 
     private String getDeviceName(YCBean ycBean, String serialType) {
@@ -216,7 +205,7 @@ public class CommanderController {
         for(Object o : ycBean.getLiteDeviceTypeCommandsVector()) {
             LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)o;
             LiteCommand lc = commandDao.getCommand(ldtc.getCommandID());
-            String commandString = StringEscapeUtils.escapeHtml(lc.getCommand());
+            String commandString = StringEscapeUtils.escapeHtml4(lc.getCommand());
             
             if(ldtc.isVisible() && ycBean.isAllowCommand(commandString, userContext.getYukonUser(), commandObject)) {
                 commands.put(commandString, lc.getLabel());

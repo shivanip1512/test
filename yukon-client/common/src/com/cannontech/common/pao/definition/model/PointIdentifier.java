@@ -2,7 +2,7 @@ package com.cannontech.common.pao.definition.model;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.cannontech.common.point.YukonPoint;
 import com.cannontech.database.data.lite.LitePoint;
