@@ -184,14 +184,14 @@ $(function(){
     $("#allProgramsCheckbox").click(allStopProgramChecked);
     $("#stopNowCheckbox").click(stopNowChecked);
     $("#autoObserveConstraints").click(updateActionButtons);
-    
 
     updateProgramState = function(index) {
         return function(data) {
-            if (0 === data.state.indexOf('running') || 0 === data.state.indexOf('scheduled')) {
-                $('#stopProgramCheckbox' + index).removeAttr("disabled");
+            var programState = JSON.parse(data.state);
+            if (programState.running || programState.scheduled) {
+                jQuery('#stopProgramCheckbox' + index).prop("disabled", false);
             } else {
-                $('#stopProgramCheckbox' + index).attr("disabled", "disabled");
+                jQuery('#stopProgramCheckbox' + index).prop("disabled", true);
                 document.getElementById('stopProgramCheckbox' + index).checked = false;
             }
             updateComponents();

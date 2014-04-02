@@ -21,8 +21,20 @@ $(function() {
         }
     }
     
-    $(".f-singleProgramChecked").click(singleProgramChecked); 
+    $(".f-singleProgramChecked").click(singleProgramChecked);
 
+    updateProgramState = function(index) {
+        return function(data) {
+            var programState = JSON.parse(data.state);
+            if (programState.running || programState.scheduled) {
+                //programGearChangeInfo
+                $('#changeGearCheckbox' + index).prop("disabled", false);
+            } else {
+                $('#changeGearCheckbox' + index).prop("disabled", true);
+                $('#changeGearCheckbox' + index).prop("checked", false);
+            }
+        }
+    }
 });
 </script>
 
@@ -81,6 +93,7 @@ $(function() {
                                     </form:select>
                                 </td>
                                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                                <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
                             </c:if>
                             <c:if test="${fn:length(gears) < 2}">
                                 <td>
