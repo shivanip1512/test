@@ -61,14 +61,17 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Cap Control Operations Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
         boolean oracle = false;
@@ -91,6 +94,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         CTILogger.info(sql); 
         
         jdbcOps.query(sql.getSql(), sql.getArguments(), new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 
                 CapControlOperationsModel.ModelRow row = new CapControlOperationsModel.ModelRow();
@@ -178,7 +182,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("join yukonpaobject yp3 on yp3.paobjectid = cb.controldeviceid ");
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
-        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') p ");
+        sql.append("left outer join (select paobjectid, value from dynamicpaoinfo where infokey like '%udp ip%' UNION");
+        sql.append("select paobjectid, propertyvalue as value from paoproperty where propertyname = 'TcpIpAddress') p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
@@ -280,7 +285,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("join yukonpaobject yp3 on yp3.paobjectid = cb.controldeviceid ");
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
-        sql.append("left outer join (select * from dynamicpaoinfo where UPPER(infokey) like '%UDP IP%') p ");
+        sql.append("left outer join (select paobjectid, value from dynamicpaoinfo where UPPER(infokey) like '%UDP IP%' UNION");
+        sql.append("select paobjectid, propertyvalue as value from paoproperty where propertyname = 'TcpIpAddress') p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
