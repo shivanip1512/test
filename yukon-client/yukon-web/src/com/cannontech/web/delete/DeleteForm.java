@@ -117,12 +117,14 @@ public abstract class DeleteForm extends DBEditorForm {
                             }
                         } else {
                             // This is to set the return page to list page when a area/special area is deleted.
-                            if(deleteable.getDbPersistent() instanceof CapControlArea)
+                            if(deleteable.getDbPersistent() instanceof CapControlArea) { 
                                 navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)
                                       ex.getRequest(), "/capcontrol/tier/areas"));
-                            else if (deleteable.getDbPersistent() instanceof CapControlSpecialArea)
+                            }
+                            else if (deleteable.getDbPersistent() instanceof CapControlSpecialArea) {
                                 navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)
                                       ex.getRequest(), "/capcontrol/tier/areas?isSpecialArea=true"));
+                            }
                         }        
                      }
                     else {
