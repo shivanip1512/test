@@ -78,9 +78,9 @@ public class AccountServiceTest extends EasyMockSupport {
 
     // collaborators to be mocked...and ridiculed
     private AuthenticationService authenticationServiceMock;
-    private YukonUserDao yukonUserDaoMock;
+    private YukonUserDao userDaoMock;
     private UserGroupDao userGroupDaoMock;
-    private EnergyCompanySettingDao energyCompanySettingDaoMock;
+    private EnergyCompanySettingDao ecSettingDaoMock;
     private AuthDao authDaoMock;
     private AddressDao addressDaoMock;
     private ContactNotificationService contactNotificationServiceMock;
@@ -100,16 +100,16 @@ public class AccountServiceTest extends EasyMockSupport {
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
     private DbChangeManager dbChangeManager;
     private AccountEventLogService accountEventLogServiceMock;
-    private YukonEnergyCompanyService yukonEnergyCompanyServiceMock;
+    private YukonEnergyCompanyService ecServiceMock;
     private ContactService contactServiceMock;
     private StarsDatabaseCache starsDatabaseCacheMock;
 
     @Before
     public void setUp() throws SecurityException, NoSuchMethodException {
         authenticationServiceMock = createNiceMock(AuthenticationService.class);
-        yukonUserDaoMock = createNiceMock(YukonUserDao.class);
+        userDaoMock = createNiceMock(YukonUserDao.class);
         userGroupDaoMock = createNiceMock(UserGroupDao.class);
-        energyCompanySettingDaoMock = createMock(EnergyCompanySettingDao.class);
+        ecSettingDaoMock = createMock(EnergyCompanySettingDao.class);
         authDaoMock = createMock(AuthDao.class);
         addressDaoMock = createMock(AddressDao.class);
         
@@ -144,7 +144,7 @@ public class AccountServiceTest extends EasyMockSupport {
         };
         List<String> yukonEnergyCompanyServiceMockableMethods = 
             getMethodNamesToMock(yecServiceMock.getClass(), "getEnergyCompanyByOperator", "getEnergyCompanyByAccountId");
-        yukonEnergyCompanyServiceMock = createPartialMock(yecServiceMock.getClass(), yukonEnergyCompanyServiceMockableMethods).createMock();        
+        ecServiceMock = createPartialMock(yecServiceMock.getClass(), yukonEnergyCompanyServiceMockableMethods).createMock();        
         
         ContactService contServiceMock = new ContactServiceAdapter() {
             @Override
@@ -169,8 +169,8 @@ public class AccountServiceTest extends EasyMockSupport {
 
         accountService = new AccountServiceImpl();
         ReflectionTestUtils.setField(accountService, "authenticationService", authenticationServiceMock);
-        ReflectionTestUtils.setField(accountService, "yukonUserDao", yukonUserDaoMock);
-        ReflectionTestUtils.setField(accountService, "energyCompanySettingDao", energyCompanySettingDaoMock);
+        ReflectionTestUtils.setField(accountService, "userDao", userDaoMock);
+        ReflectionTestUtils.setField(accountService, "ecSettingDao", ecSettingDaoMock);
         ReflectionTestUtils.setField(accountService, "authDao", authDaoMock);
         ReflectionTestUtils.setField(accountService, "addressDao", addressDaoMock);
         ReflectionTestUtils.setField(accountService, "contactService", contactServiceMock);
@@ -190,7 +190,7 @@ public class AccountServiceTest extends EasyMockSupport {
         ReflectionTestUtils.setField(accountService, "eventAccountDao", eventAccountDaoMock);
         ReflectionTestUtils.setField(accountService, "starsCustAccountInformationDao", starsCustAccountInformationDaoMock);
         ReflectionTestUtils.setField(accountService, "dbChangeManager", dbChangeManager);
-        ReflectionTestUtils.setField(accountService, "yukonEnergyCompanyService", yukonEnergyCompanyServiceMock);
+        ReflectionTestUtils.setField(accountService, "ecService", ecServiceMock);
         ReflectionTestUtils.setField(accountService, "accountEventLogService", accountEventLogServiceMock);
         ReflectionTestUtils.setField(accountService, "starsDatabaseCache", starsDatabaseCacheMock);
         ReflectionTestUtils.setField(accountService, "userGroupDao", userGroupDaoMock);
@@ -268,10 +268,10 @@ public class AccountServiceTest extends EasyMockSupport {
          * Record what should happen
          */
         expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), 1)).andReturn(null);
-        expect(yukonUserDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
+        expect(userDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
         expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
 
-        yukonUserDaoMock.save(newuser);
+        userDaoMock.save(newuser);
         authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
         
         dbChangeManager.processDbChange(newuser.getLiteID(),
@@ -297,7 +297,7 @@ public class AccountServiceTest extends EasyMockSupport {
                                                                  updatableAccount.getAccountDto().getEmailAddress())).andReturn(null);
         expectLastCall().times(3);
         expect(authDaoMock.getUserTimeZone(newuser)).andReturn(TimeZone.getDefault());
-        expect(energyCompanySettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
+        expect(ecSettingDaoMock.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class, YukonEnergyCompanyMockFactory.getYukonEC1().getEnergyCompanyId())).andReturn(TemperatureUnit.FAHRENHEIT);
         customerDaoMock.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(1,
                                         DBChangeMsg.CHANGE_CUSTOMER_DB,
