@@ -20,9 +20,7 @@ LastRefresh(::time(NULL))
 
 CtiConfigParameters::~CtiConfigParameters()
 {
-    #ifndef USE_RECURSIVE_MUX
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
 
     for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
@@ -65,11 +63,7 @@ int CtiConfigParameters::RefreshConfigParameters()
     FILE*       fp;
 
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
 
     for( mHash_itr2 itr = mHash.begin(); itr != mHash.end(); itr++ )
     {
@@ -113,7 +107,7 @@ int CtiConfigParameters::RefreshConfigParameters()
                                             if it was encrypted.
                                         if processed.first is false this value is the improperly decrypted cparm and is ignored
                                 */
-                                    
+
                                 if ( processed.first )
                                 {
                                     CtiConfigValue *Val = new CtiConfigValue( processed.second );
@@ -170,11 +164,7 @@ CtiConfigParameters::Dump()
 
     checkForRefresh();
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
 
     if(mHash.size() > 0)
     {
@@ -231,11 +221,8 @@ BOOL CtiConfigParameters::isOpt(const string& key)
 
     checkForRefresh();
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
+
     mHash_itr2 itr = mHash.find(key);
 
 
@@ -252,11 +239,8 @@ bool CtiConfigParameters::isOpt(const string& key, const string& isEqualThisValu
 
     checkForRefresh();
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
+
     mHash_itr2 itr = mHash.find(key);
 
     if( (itr != mHash.end()) && ciStringEqual((*itr).second->getValue(),isEqualThisValue) )
@@ -293,11 +277,7 @@ CtiConfigParameters::getValueAsString(const string& key, const string& defaultva
 
     checkForRefresh();
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
 
     mHash_itr2 itr = mHash.find(key);
 
@@ -320,11 +300,7 @@ CtiConfigParameters::getValueAsPath(const string& key, const string& defaultval)
 
     checkForRefresh();
 
-    #ifdef USE_RECURSIVE_MUX
-    RWRecursiveLock<RWMutexLock>::LockGuard gaurd(mutex);
-    #else
     CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-    #endif
 
     mHash_itr2 itr = mHash.find(key);
 
@@ -491,13 +467,8 @@ bool CtiConfigParameters::checkForRefresh()
 
     if(now - (ULONG)RefreshRate > LastRefresh)
     {
-        #ifdef USE_RECURSIVE_MUX
-        RWRecursiveLock<RWMutexLock>::TryLockGuard gaurd(mutex);           // Do it this way to reduce the need for locking to only once in a while, and no deadlocks.
-        acquired = gaurd.isAcquired();
-        #else
         acquired = true;
         CtiParmLockGuard< CtiParmCriticalSection > cs_lock(crit_sctn);
-        #endif
 
         if(acquired && now - (ULONG)RefreshRate > LastRefresh)
         {

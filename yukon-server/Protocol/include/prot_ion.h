@@ -369,7 +369,7 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage  );
 
-    void getInboundData( std::list< CtiPointDataMsg* > &pointList, std::list< CtiSignalMsg* > &signalList, string &returnedInfo );
+    void getInboundData( std::list< CtiPointDataMsg* > &pointList, std::list< CtiSignalMsg* > &signalList, std::string &returnedInfo );
     void clearInboundData( void );
 
     bool   hasPointUpdate     ( CtiPointType_t pointType, int offset ) const;

@@ -37,7 +37,7 @@ public:
 
     bool getOvUvDisabledFlag() const;
     bool getVoltReductionFlag() const;
-    const string& getParentName() const;
+    const std::string& getParentName() const;
     long getParentId() const;
     long getDisplayOrder() const;
     double getPFactor() const;
@@ -56,7 +56,7 @@ public:
 
     CtiCCSubstation& setOvUvDisabledFlag(bool flag);
     CtiCCSubstation& setVoltReductionFlag(bool flag);
-    CtiCCSubstation& setParentName(const string& name);
+    CtiCCSubstation& setParentName(const std::string& name);
     CtiCCSubstation& setParentId(long parentId);
     CtiCCSubstation& setDisplayOrder(long displayOrder);
     CtiCCSubstation& setPFactor(double pfactor);
@@ -84,11 +84,11 @@ public:
 
     private:
 
-    string _parentName;
+    std::string _parentName;
     long _parentId;
     long _displayOrder;
 
-    string _additionalFlags;
+    std::string _additionalFlags;
     bool _ovUvDisabledFlag;
     bool _voltReductionFlag;
     bool _recentlyControlledFlag;

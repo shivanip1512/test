@@ -555,8 +555,8 @@ INT CtiDeviceAlpha::ErrorDecode (const INMESS        &InMessage,
     INT retCode = NORMAL;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                            string(InMessage.Return.CommandStr),
-                                            string(),
+                                            InMessage.Return.CommandStr,
+                                            "",
                                             InMessage.EventCode & 0x7fff,
                                             InMessage.Return.RouteID,
                                             InMessage.Return.RetryMacroOffset,
@@ -946,7 +946,7 @@ BOOL CtiDeviceAlpha::verifyAndAddPointToReturnMsg (LONG   aPointId,
                                                    CtiTime aTime,
                                                    CtiReturnMsg *aReturnMsg,
                                                    USHORT aIntervalType,
-                                                   string aValReport)
+                                                   std::string aValReport)
 
 {
     BOOL validPointFound = FALSE;

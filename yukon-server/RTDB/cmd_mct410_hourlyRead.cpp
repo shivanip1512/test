@@ -224,7 +224,7 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::makeRequest(const CtiTime now)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, string &description, vector<point_data> &points)
+DlcCommand::request_ptr Mct410HourlyReadCommand::decodeCommand(CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, vector<point_data> &points)
 try
 {
     const unsigned weekday = getValueFromBits_bEndian(*payload, 0, 3);
@@ -332,7 +332,7 @@ int Mct410HourlyReadCommand::convertDelta(unsigned delta)
 
 
 //  throws CommandException
-DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const int error_code, string &description)
+DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const int error_code, std::string &description)
 {
     if( description.empty() )
     {

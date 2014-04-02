@@ -14,6 +14,7 @@ extern unsigned long _CC_DEBUG;
 extern bool _LOG_MAPID_INFO;
 
 using std::endl;
+using std::string;
 using Cti::CapControl::CapControlType;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::EventLogEntry;

@@ -46,16 +46,16 @@ void DynamicCommandExecutor::execute()
 
     long messageId = _dynamicCommand->getMessageId();
     long commandResult;
-    string commandResultText;
+    std::string commandResultText;
     if (ret == true)
     {
         commandResult = CtiCCServerResponse::RESULT_SUCCESS;
-        commandResultText = string("Command was successful.");
+        commandResultText = "Command was successful.";
     }
     else
     {
         commandResult = CtiCCServerResponse::RESULT_COMMAND_REFUSED;
-        commandResultText = string("Command Failed.");
+        commandResultText = "Command Failed.";
     }
 
     CtiCCServerResponse* msg = new CtiCCServerResponse(messageId, commandResult, commandResultText);

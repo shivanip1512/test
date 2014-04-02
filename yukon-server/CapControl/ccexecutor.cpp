@@ -28,6 +28,7 @@ using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
 using Cti::Messaging::CapControl::CapControlOperationMessage;
 using std::endl;
+using std::string;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;

@@ -48,8 +48,8 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const;
 
-    virtual string  getDeviceIp  ( const long device_id ) const;
-    virtual u_short getDevicePort( const long device_id ) const;
+    virtual std::string getDeviceIp  ( const long device_id ) const;
+    virtual u_short     getDevicePort( const long device_id ) const;
 
 public:
 

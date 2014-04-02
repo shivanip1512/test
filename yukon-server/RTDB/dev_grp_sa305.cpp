@@ -65,28 +65,26 @@ LONG CtiDeviceGroupSA305::getRouteID()
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-string CtiDeviceGroupSA305::getDescription(const CtiCommandParser & parse) const
+std::string CtiDeviceGroupSA305::getDescription(const CtiCommandParser & parse) const
 {
-    CHAR  op_name[20];
-    INT   mask = 1;
-    string tmpStr;
-
-
-    tmpStr = "Group: " + getName();
-
-    return tmpStr;
+    return "Group: " + getName();
 }
 
-string CtiDeviceGroupSA305::getSQLCoreStatement() const
+std::string CtiDeviceGroupSA305::getSQLCoreStatement() const
 {
-    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
-                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, SA3.groupid, SA3.routeid, "
-                                     "SA3.addressusage, SA3.utilityaddress, SA3.groupaddress, SA3.divisionaddress, "
-                                     "SA3.substationaddress, SA3.individualaddress, SA3.ratefamily, SA3.ratemember, "
-                                     "SA3.ratehierarchy, SA3.loadnumber "
-                                   "FROM YukonPAObject YP, Device DV, lmgroupsa305 SA3 "
-                                   "WHERE upper (YP.type) = 'SA-305 GROUP' AND YP.paobjectid = SA3.groupid AND "
-                                     "YP.paobjectid = DV.deviceid";
+    static const std::string sqlCore =
+        "SELECT"
+            " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag,"
+            " DV.deviceid, DV.alarminhibit, DV.controlinhibit, SA3.groupid, SA3.routeid,"
+            " SA3.addressusage, SA3.utilityaddress, SA3.groupaddress, SA3.divisionaddress,"
+            " SA3.substationaddress, SA3.individualaddress, SA3.ratefamily, SA3.ratemember,"
+            " SA3.ratehierarchy, SA3.loadnumber"
+        " FROM"
+            " YukonPAObject YP, Device DV, lmgroupsa305 SA3"
+        " WHERE"
+            " upper (YP.type) = 'SA-305 GROUP'"
+            " AND YP.paobjectid = SA3.groupid"
+            " AND YP.paobjectid = DV.deviceid";
 
     return sqlCore;
 }
@@ -107,7 +105,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 {
     INT   nRet = NoError;
     ULONG etime = 0;
-    string resultString;
+    std::string resultString;
 
     CtiRouteSPtr Route;
     /*
@@ -174,7 +172,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     parse.setValue("sa_hierarchy", getLoadGroup().getHierarchy());
     parse.setValue("serial", serial);
 
-    string au = getLoadGroup().getAddressUsage();
+    std::string au = getLoadGroup().getAddressUsage();
 
     if(findStringIgnoreCase(au,"R"))     // This is a group addressed command
     {
@@ -207,7 +205,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
          *  OutMessage.
          */
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(OutMessage->Request.CommandStr),
+                                                     OutMessage->Request.CommandStr,
                                                      Route->getName(),
                                                      nRet,
                                                      OutMessage->Request.RouteID,
@@ -221,7 +219,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
         // Start the control request on its route(s)
         if( (nRet = Route->ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList)) )
         {
-            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + string(" performing command on route ") + Route->getName();
+            resultString = "ERROR " + CtiNumStr(nRet).spad(3) + " performing command on route " + Route->getName();
             pRet->setStatus(nRet);
             pRet->setResultString(resultString);
             retList.push_back( pRet );
@@ -240,7 +238,7 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
         resultString = " ERROR: Route or Route Transmitter not available for group device " + getName();
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(OutMessage->Request.CommandStr),
+                                                     OutMessage->Request.CommandStr,
                                                      resultString,
                                                      nRet,
                                                      OutMessage->Request.RouteID,
@@ -267,9 +265,9 @@ INT CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
     return nRet;
 }
 
-string CtiDeviceGroupSA305::getPutConfigAssignment(UINT level)
+std::string CtiDeviceGroupSA305::getPutConfigAssignment(UINT level)
 {
-    string assign = string("sa305 assign") +
+    std::string assign = std::string("sa305 assign") +
                        " U" + CtiNumStr(_loadGroup.getUtility()) +
                        " G" + CtiNumStr(_loadGroup.getGroup()) +
                        " D" + CtiNumStr(_loadGroup.getDivision()) +

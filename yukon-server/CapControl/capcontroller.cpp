@@ -51,6 +51,7 @@ extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
 
 using Cti::ThreadStatusKeeper;
 using std::endl;
+using std::string;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 

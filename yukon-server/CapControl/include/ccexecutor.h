@@ -136,7 +136,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
     private:
         //Helper Functions
         void setParentOvUvFlags(int paoId, Cti::CapControl::CapControlType type, bool ovuvFlag, CtiCCSubstationBus_vec& modifiedSubBuses); //TODO CBM
-        void printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const string& actionText, const string& userName,
+        void printOutEventLogsByIdAndType(int paoId, Cti::CapControl::CapControlType type, const std::string& actionText, const std::string& userName,
                                           CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
 
         AttributeService* _attributeService;

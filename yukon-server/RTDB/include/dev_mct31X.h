@@ -41,7 +41,7 @@ private:
         }
     };
 
-    typedef map<int, IedResetCommand> IedTypesToCommands;
+    typedef std::map<int, IedResetCommand> IedTypesToCommands;
 
     static const IedTypesToCommands ResetCommandsByIedType;
     static IedTypesToCommands initIedResetCommands();

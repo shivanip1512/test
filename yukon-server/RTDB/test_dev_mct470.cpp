@@ -404,7 +404,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo)
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval2));
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval));
 
-    string lpconfig;
+    std::string lpconfig;
     dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lpconfig);
     BOOST_CHECK_EQUAL(lpconfig, "300221160000");
     BOOST_CHECK_EQUAL(dev.getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileChannelConfig1), 0x03);
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo_MCT_LoadProfileChanne
 
     INMESS im;
 
-    string lpconfig;
+    std::string lpconfig;
 
     //  Verify we start out empty
     BOOST_CHECK_EQUAL(false, dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig));

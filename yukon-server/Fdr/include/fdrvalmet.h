@@ -55,6 +55,6 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
 
         private:
             std::map<std::string,int> nameToPointId;
-            string scanDevicePointName;
-            string sendAllPointsPointName;
+            std::string scanDevicePointName;
+            std::string sendAllPointsPointName;
 };

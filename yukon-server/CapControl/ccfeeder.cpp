@@ -38,6 +38,8 @@ using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using namespace Cti::Messaging::CapControl;
 using std::endl;
+using std::string;
+using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;

@@ -19,6 +19,7 @@
 #include "MsgVerifyBanks.h"
 
 using std::endl;
+using std::string;
 
 extern unsigned long _CC_DEBUG;
 
@@ -516,11 +517,11 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    
+
     for each (long busId in getCCSubIds() )
     {
         currentSubstationBus = store->findSubBusByPAObjectID(busId);
-        
+
         if (currentSubstationBus != NULL && currentSubstationBus->getVerificationFlag())
         {
             try
@@ -556,7 +557,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
     for each (long busId in getCCSubIds())
     {
         currentSubstationBus = store->findSubBusByPAObjectID(busId);
-        
+
         if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag())
         {
             setRecentlyControlledFlag(true);
@@ -583,7 +584,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
     for each (long busId in getCCSubIds())
     {
         currentSubstationBus = store->findSubBusByPAObjectID(busId);
-        
+
         if (currentSubstationBus->getVoltReductionFlag())
         {
             setChildVoltReductionFlag(true);

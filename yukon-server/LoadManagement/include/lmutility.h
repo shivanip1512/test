@@ -12,8 +12,8 @@ extern CtiTime GetTimeFromOffsetAndDate(LONG offsetFromMidnight, const CtiDate &
 extern std::string ControlWindowErrorMessage(const CtiTime &windowStartTime,
                                         const CtiTime &windowStopTime,
                                         const CtiTime &proposedTime,
-                                        const string &timeType,
-                                        const string &windowType);
+                                        const std::string &timeType,
+                                        const std::string &windowType);
 
 extern bool FitTimeToWindows(CtiTime proposedStart, CtiTime proposedStop,
                         CtiTime &resultStart, CtiTime &resultStop,

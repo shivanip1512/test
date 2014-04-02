@@ -39,7 +39,7 @@ class IM_EX_DEVDB CtiDeviceRTM : public CtiDeviceIED
 
 protected:
 
-    static bool tryDecodeAsSA305(const UCHAR *abuf, const INT len, string &code, string &cmd);
+    static bool tryDecodeAsSA305(const UCHAR *abuf, const INT len, std::string &code, std::string &cmd);
 
 public:
 

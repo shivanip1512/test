@@ -20,6 +20,7 @@
 #include "pao_schedule.h"
 
 using std::endl;
+using std::string;
 using Cti::CapControl::setVariableIfDifferent;
 
 /*---------------------------------------------------------------------------

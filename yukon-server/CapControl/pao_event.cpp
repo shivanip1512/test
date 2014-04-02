@@ -18,6 +18,7 @@
 #include "pao_schedule.h"
 
 using Cti::CapControl::setVariableIfDifferent;
+using std::string;
 
 /*---------------------------------------------------------------------------
     Constructor

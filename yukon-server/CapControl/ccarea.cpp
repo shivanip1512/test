@@ -19,6 +19,7 @@
 #include "database_util.h"
 
 using std::endl;
+using std::string;
 
 extern unsigned long _CC_DEBUG;
 

@@ -117,7 +117,7 @@ int RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &
 void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod )
 {
     int nRet = NoMethod;
-    string error_description;
+    std::string error_description;
 
     try
     {
@@ -131,7 +131,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
 
     if( nRet != NoError )
     {
-        string result;
+        std::string result;
 
         switch(nRet)
         {

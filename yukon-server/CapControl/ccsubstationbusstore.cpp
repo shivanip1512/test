@@ -50,7 +50,7 @@ extern unsigned long _MAX_KVAR;
 extern unsigned long _MAX_KVAR_TIMEOUT;
 extern unsigned long _OP_STATS_USER_DEF_PERIOD;
 extern unsigned long _OP_STATS_REFRESH_RATE;
-extern string _MAXOPS_ALARM_CAT;
+extern std::string _MAXOPS_ALARM_CAT;
 extern long _MAXOPS_ALARM_CATID;
 extern bool _OP_STATS_DYNAMIC_UPDATE;
 extern double _IVVC_DEFAULT_DELTA;
@@ -3480,7 +3480,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 
     const std::string insertSql =
         "INSERT INTO "
-            "CCEventLog (" + boost::algorithm::join( columnNames, ", " ) + 
+            "CCEventLog (" + boost::algorithm::join( columnNames, ", " ) +
         ") VALUES (" + boost::algorithm::join( placeholders, ", " ) + ")";
 
     Cti::Database::DatabaseConnection connection;
@@ -7108,7 +7108,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                 }
 
                 //Get all banks on SubBus all Feeders.
-                
+
                 if ( CtiCCSubstationBusPtr subBusPtr = findInMap( currentBusId, paobject_subbus_map ) )
                 {
                     if ( subBusPtr->addMonitorPoint( currentPointId, currentMonPoint ) )
@@ -7452,7 +7452,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 
                 if (controlTime > lastSendTime)     // update lastSendTime to the 'latest' time selected from the DB
                 {
-                    lastSendTime = controlTime; 
+                    lastSendTime = controlTime;
                 }
             }
         }

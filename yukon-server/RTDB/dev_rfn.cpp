@@ -12,7 +12,7 @@ namespace Devices {
 
 std::string RfnDevice::getSQLCoreStatement() const
 {
-    static const string sqlCore =
+    static const std::string sqlCore =
         "SELECT "
             "YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
             "DV.deviceid, DV.alarminhibit, DV.controlinhibit, "

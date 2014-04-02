@@ -75,7 +75,7 @@ public:
     double getRawCurrentWattLoadPointValue() const;
     long getCurrentVoltLoadPointId() const;
     double getCurrentVoltLoadPointValue() const;
-    const string& getMapLocationId() const;
+    const std::string& getMapLocationId() const;
     long getDecimalPlaces() const;
     const CtiTime& getNextCheckTime() const;
     bool getNewPointDataReceivedFlag() const;
@@ -131,10 +131,10 @@ public:
     long getDisableBusPointId() const;
     bool getSendMoreTimeControlledCommandsFlag() const;
 
-    const string& getSolution() const;
+    const std::string& getSolution() const;
     double getTargetVarValue() const;
-    const string& getParentControlUnits() const;
-    const string& getParentName() const;
+    const std::string& getParentControlUnits() const;
+    const std::string& getParentName() const;
     long getDisplayOrder() const;
     double getIVControlTot() const;
     long getIVCount() const;
@@ -177,7 +177,7 @@ public:
     CtiCCSubstationBus& setCurrentWattLoadPointValue(double currentwattval);
     CtiCCSubstationBus& setCurrentVoltLoadPointId(long currentvoltid);
     CtiCCSubstationBus& setCurrentVoltLoadPointValue(double currentvoltval);
-    CtiCCSubstationBus& setMapLocationId(const string& maplocation);
+    CtiCCSubstationBus& setMapLocationId(const std::string& maplocation);
     CtiCCSubstationBus& setDecimalPlaces(long places);
     CtiCCSubstationBus& figureNextCheckTime();
     CtiCCSubstationBus& setNewPointDataReceivedFlag(bool newpointdatareceived);
@@ -230,10 +230,10 @@ public:
     CtiCCSubstationBus& setSendMoreTimeControlledCommandsFlag(bool flag);
 
     CtiCCSubstationBus& setAllAltSubValues(double volt, double var, double watt);
-    CtiCCSubstationBus& setSolution(const string& text);
+    CtiCCSubstationBus& setSolution(const std::string& text);
     CtiCCSubstationBus& setTargetVarValue(double value);
-    CtiCCSubstationBus& setParentControlUnits(const string& parentControlUnits);
-    CtiCCSubstationBus& setParentName(const string& parentName);
+    CtiCCSubstationBus& setParentControlUnits(const std::string& parentControlUnits);
+    CtiCCSubstationBus& setParentName(const std::string& parentName);
     CtiCCSubstationBus& setDisplayOrder(long displayOrder);
     CtiCCSubstationBus& setIVControlTot(double value);
     CtiCCSubstationBus& setIVCount(long value);
@@ -293,7 +293,7 @@ public:
     bool isAlreadyControlled();
     double convertKQToKVAR(double kq, double kw);
     double convertKVARToKQ(double kvar, double kw);
-    static double calculateKVARSolution(const string& controlUnits, double setPoint, double varValue, double wattValue);
+    static double calculateKVARSolution(const std::string& controlUnits, double setPoint, double varValue, double wattValue);
     bool checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     void voltControlProcess();
@@ -345,22 +345,22 @@ public:
     CtiPAOScheduleManager::VerificationStrategy getVerificationStrategy(void) const;
     void setVerificationDisableOvUvFlag(bool flag);
     bool getVerificationDisableOvUvFlag(void) const;
-    string getVerificationString();
+    std::string getVerificationString();
     void setCapBankInactivityTime(long capBankToVerifyInactivityTime);
     long getCapBankInactivityTime(void) const;
 
     bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
     bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents);
     void createStatusUpdateMessages(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiCCCapBankPtr capBank,
-                                    CtiCCFeederPtr feeder, string text, string additional, bool verifyFlag,
+                                    CtiCCFeederPtr feeder, std::string text, std::string additional, bool verifyFlag,
                                     double before, double after, double change, double phaseA, double phaseB, double phaseC);
-    void createCannotControlBankText(string text, string commandString, Cti::CapControl::EventLogEntries &ccEvents);
+    void createCannotControlBankText(std::string text, std::string commandString, Cti::CapControl::EventLogEntries &ccEvents);
     void performDataOldAndFallBackNecessaryCheck();
 
     bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
     bool updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint);
 
-    const map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
+    const std::map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
     std::vector <long> getAllMonitorPointIds();
     std::vector <CtiCCMonitorPointPtr> getAllCapBankMonitorPoints();
     void removeAllMonitorPoints();
@@ -412,7 +412,7 @@ private:
     bool   _dualBusEnable;
     long   _eventSeq;
     bool   _multiMonitorFlag;
-    string _maplocationid;
+    std::string _maplocationid;
 
     long _decimalplaces;
     CtiTime _nextchecktime;
@@ -439,7 +439,7 @@ private:
     long _currentvoltpointquality;
     bool _waivecontrolflag;
 
-    string _additionalFlags;
+    std::string _additionalFlags;
     long _currentVerificationCapBankId;
     long _currentVerificationFeederId;
     std::vector <CtiCCFeeder*> _ccfeeders;
@@ -471,9 +471,9 @@ private:
     long _capBankToVerifyInactivityTime;
 
     double _targetvarvalue;
-    string _solution;  //text field to be added to messaging indicating status/thinking
-    string _parentControlUnits;
-    string _parentName;
+    std::string _solution;  //text field to be added to messaging indicating status/thinking
+    std::string _parentControlUnits;
+    std::string _parentName;
     long _displayOrder;
 
     double _altSubVoltVal;
@@ -513,7 +513,7 @@ private:
     bool _dirty;
 
     void restore(Cti::RowReader& rdr);
-    string doubleToString(double doubleVal);
+    std::string doubleToString(double doubleVal);
 
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
@@ -525,8 +525,8 @@ private:
     CtiRegression regressionB;
     CtiRegression regressionC;
 
-    map <long, CtiCCMonitorPointPtr> _monitorPoints;
-    map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> _pointResponses;
+    std::map <long, CtiCCMonitorPointPtr> _monitorPoints;
+    std::map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> _pointResponses;
 };
 
 typedef CtiCCSubstationBus* CtiCCSubstationBusPtr;

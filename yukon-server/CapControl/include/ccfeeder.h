@@ -92,7 +92,7 @@ public:
     double getCurrentWattLoadPointValue() const;
     long getCurrentVoltLoadPointId() const;
     double getCurrentVoltLoadPointValue() const;
-    const string& getMapLocationId() const;
+    const std::string& getMapLocationId() const;
     float getDisplayOrder() const;
     bool getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
@@ -115,8 +115,8 @@ public:
     long getCurrentWattPointQuality() const;
     long getCurrentVoltPointQuality() const;
     bool getWaiveControlFlag() const;
-    const string& getParentControlUnits() const;
-    const string& getParentName() const;
+    const std::string& getParentControlUnits() const;
+    const std::string& getParentName() const;
     long getDecimalPlaces() const;
     bool getPeakTimeFlag() const;
     bool getPorterRetFailFlag() const;
@@ -137,7 +137,7 @@ public:
     long getCurrentVerificationCapBankId() const;
     long getCurrentVerificationCapBankOrigState() const;
     double getTargetVarValue() const;
-    const string& getSolution() const;
+    const std::string& getSolution() const;
     double getIVControlTot() const;
     long getIVCount() const;
     double getIWControlTot() const;
@@ -178,7 +178,7 @@ public:
     CtiCCFeeder& setCurrentWattLoadPointValue(double currentwattval);
     CtiCCFeeder& setCurrentVoltLoadPointId(long currentvoltid);
     CtiCCFeeder& setCurrentVoltLoadPointValue(double currentvoltval);
-    CtiCCFeeder& setMapLocationId(const string& maplocation);
+    CtiCCFeeder& setMapLocationId(const std::string& maplocation);
     CtiCCFeeder& setDisplayOrder(float order);
     CtiCCFeeder& setNewPointDataReceivedFlag(bool newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
@@ -203,8 +203,8 @@ public:
     CtiCCFeeder& setCurrentWattPointQuality(long cwpq);
     CtiCCFeeder& setCurrentVoltPointQuality(long cvpq);
     CtiCCFeeder& setWaiveControlFlag(bool waive);
-    CtiCCFeeder& setParentControlUnits(const string& parentControlUnits);
-    CtiCCFeeder& setParentName(const string& parentName);
+    CtiCCFeeder& setParentControlUnits(const std::string& parentControlUnits);
+    CtiCCFeeder& setParentName(const std::string& parentName);
     CtiCCFeeder& setDecimalPlaces(long decimalPlaces);
     CtiCCFeeder& setPeakTimeFlag(bool peakTimeFlag);
     CtiCCFeeder& setPorterRetFailFlag(bool flag);
@@ -225,7 +225,7 @@ public:
     CtiCCFeeder& setCurrentVerificationCapBankId(long capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(long status);
     CtiCCFeeder& setTargetVarValue(double value);
-    CtiCCFeeder& setSolution(const string& text);
+    CtiCCFeeder& setSolution(const std::string& text);
     CtiCCFeeder& setIVControlTot(double value);
     CtiCCFeeder& setIVCount(long value);
     CtiCCFeeder& setIWControlTot(double value);
@@ -246,7 +246,7 @@ public:
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setRetryIndex(long value);
 
-    void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, bool peakTimeFlag);
+    void figureAndSetTargetVarValue(const std::string& controlMethod, const std::string& controlUnits, bool peakTimeFlag);
     CtiCCCapBankPtr getLastCapBankControlledDevice();
     CtiCCCapBankPtr findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
                                           double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0,
@@ -254,11 +254,11 @@ public:
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                            string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
+                                            std::string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                            string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
-    CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, int action, string typeOfControl);
-    void createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, string typeOfControl);
+                                            std::string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
+    CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, int action, std::string typeOfControl);
+    void createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, std::string typeOfControl);
     bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, long minConfirmPercent, long failurePercent,
                                     double varValueBeforeControl, double currentVarLoadPointValue, long currentVarPointQuality,
                                     double varAValue, double varBValue, double varCValue, const CtiRegression& reg);
@@ -267,16 +267,16 @@ public:
                                                      long currentVarPointQuality, double varAValueBeforeControl, double varBValueBeforeControl,
                                                      double varCValueBeforeControl, double varAValue, double varBValue, double varCValue,
                                             const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
-    string createPhaseControlStatusUpdateText(string capControlStatus, double varAValue,double varBValue, double varCValue,
+    std::string createPhaseControlStatusUpdateText(std::string capControlStatus, double varAValue,double varBValue, double varCValue,
                                                   double ratioA, double ratioB, double ratioC);
-    string createControlStatusUpdateText(string capControlStatus, double varAValue, double ratioA);
-    string createPhaseVarText(double aValue,double bValue, double cValue, float multiplier);
-    string createPhaseRatioText(double aValue,double bValue, double cValue, float multiplier);
-    string createVarText(double aValue, float multiplier);
+    std::string createControlStatusUpdateText(std::string capControlStatus, double varAValue, double ratioA);
+    std::string createPhaseVarText(double aValue,double bValue, double cValue, float multiplier);
+    std::string createPhaseRatioText(double aValue,double bValue, double cValue, float multiplier);
+    std::string createVarText(double aValue, float multiplier);
     bool isPeakDay();
     bool isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries);
     bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
-                                                   bool peakTimeFlag, long decimalPlaces, const string& controlUnits,
+                                                   bool peakTimeFlag, long decimalPlaces, const std::string& controlUnits,
                                                    bool dailyMaxOpsHitFlag);
     bool checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -310,14 +310,14 @@ public:
     bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint);
     bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
     double computeRegression( CtiTime time );
-    string createTextString(const string& controlMethod, int control, double controlValue, double monitorValue);
-    void createCannotControlBankText(string text, string commandString, Cti::CapControl::EventLogEntries &ccEvents);
+    std::string createTextString(const std::string& controlMethod, int control, double controlValue, double monitorValue);
+    void createCannotControlBankText(std::string text, std::string commandString, Cti::CapControl::EventLogEntries &ccEvents);
     void resetVerificationFlags();
 
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                                        string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
+                                                        std::string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
-                                                        string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
+                                                        std::string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue);
     bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents,
@@ -340,7 +340,7 @@ public:
     CtiCCFeeder& addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(const CtiCCMonitorPoint & point);
 
-    bool isDataOldAndFallBackNecessary(string controlUnits);
+    bool isDataOldAndFallBackNecessary(std::string controlUnits);
 
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
@@ -365,16 +365,16 @@ public:
     bool isResponseQuestionable(double ratio, double confirmPercent, double failPercent);
     bool isResponseFail(double ratio, double failPercent);
     bool isResponseSuccess(double ratio, double confirmPercent);
-    string getPhaseIndicatorString(long capState, double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
-    string getQuestionablePhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
-    string getFailedPhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    std::string getPhaseIndicatorString(long capState, double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    std::string getQuestionablePhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    std::string getFailedPhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
 
 private:
 
     long _parentId; //subBusId
     bool _multiMonitorFlag;
 
-    string _maplocationid;
+    std::string _maplocationid;
     long _currentvarloadpointid;
     double _currentvarloadpointvalue;
     long _currentwattloadpointid;
@@ -406,15 +406,15 @@ private:
     long _currentvoltpointquality;
     bool _waivecontrolflag;
 
-    string _parentControlUnits;
-    string _parentName;
+    std::string _parentControlUnits;
+    std::string _parentName;
     long _decimalPlaces;
     bool _peakTimeFlag;
 
     CtiCCCapBank_SVector _cccapbanks;
 
     //verification info
-    string _additionalFlags;
+    std::string _additionalFlags;
 
     bool _verificationFlag;
     bool _performingVerificationFlag;
@@ -436,7 +436,7 @@ private:
     long _currentCapBankToVerifyAssumedOrigState;
 
     double _targetvarvalue;
-    string _solution;
+    std::string _solution;
 
     double _iVControlTot;
     long  _iVCount;
@@ -471,7 +471,7 @@ private:
     bool _dirty;
 
     void restore(Cti::RowReader& rdr);
-    string doubleToString(double doubleVal, long decimalPlaces);
+    std::string doubleToString(double doubleVal, long decimalPlaces);
 
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 

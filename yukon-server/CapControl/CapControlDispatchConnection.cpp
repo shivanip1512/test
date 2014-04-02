@@ -5,7 +5,7 @@
 #include "CapControlDispatchConnection.h"
 #include "ccsubstationbusstore.h"
 
-CapControlDispatchConnection::CapControlDispatchConnection( const string& connectionName, Que_t *inQ, int tt) :
+CapControlDispatchConnection::CapControlDispatchConnection( const std::string& connectionName, Que_t *inQ, int tt) :
     DispatchConnection( connectionName, inQ, tt)
 {
 }

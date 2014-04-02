@@ -24,7 +24,7 @@ class IM_EX_DEVDB Mct440_213xBDevice : public Mct420Device
 
     static const CtiDate                    holidayBaseDate;
 
-    static string describeStatusAndEvents(const unsigned char *buf);
+    static std::string describeStatusAndEvents(const unsigned char *buf);
 
     enum SspecInformation
     {
@@ -148,12 +148,12 @@ protected:
     virtual int executePutConfigTimezone           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
     virtual int executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList, bool readsOnly);
 
-    virtual long     resolveScheduleName           (const string & scheduleName);
-    virtual string   decodeDisconnectStatus        (const DSTRUCT &DSt) const;
-    virtual unsigned getDisconnectReadDelay        () const;
+    virtual long        resolveScheduleName           (const std::string & scheduleName);
+    virtual std::string decodeDisconnectStatus        (const DSTRUCT &DSt) const;
+    virtual unsigned    getDisconnectReadDelay        () const;
 
-    virtual void createTOUDayScheduleString        (string &schedule, long (&times)[9], long (&rates)[10]);
-    virtual void parseTOUDayScheduleString         (string &schedule, long (&times)[9], long (&rates)[10]);
+    virtual void createTOUDayScheduleString        (std::string &schedule, long (&times)[9], long (&rates)[10]);
+    virtual void parseTOUDayScheduleString         (std::string &schedule, long (&times)[9], long (&rates)[10]);
 
     virtual void createTOUScheduleConfig           (const long (&daySchedule)[8], const long (&times)[4][9], const long (&rates)[4][10], OUTMESS *&OutMessage, OutMessageList &outList);
 };

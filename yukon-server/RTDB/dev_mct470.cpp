@@ -14,6 +14,9 @@
 #include "ctistring.h"
 #include "config_data_mct.h"
 #include "da_lp_deviceconfig.h"
+
+#include "std_helper.h"
+
 #include <string>
 
 #include <boost/assign/list_of.hpp>
@@ -2642,7 +2645,7 @@ INT Mct470Device::executePutConfig(CtiRequestMsg *pReq,
 
 boost::optional<Mct470Device::IED_Types> Mct470Device::tryFindIedTypeInCommandString(const string &commandString)
 {
-    static const map<string, IED_Types> IedResetNames = boost::assign::map_list_of
+    static const std::map<string, IED_Types> IedResetNames = boost::assign::map_list_of
         (" alpha",    IED_Type_Alpha_PP)
         (" s4",       IED_Type_LG_S4)
         (" a3",       IED_Type_Alpha_A3)
@@ -2690,7 +2693,7 @@ boost::optional<int> Mct470Device::tryDetermineIedTypeFromDeviceConfiguration()
 boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDeviceType(const int deviceType)
 {
     //  we must be an MCT-430 - try to match it up by devicetype
-    typedef map<int, IED_Types> DeviceTypeToIedType;
+    typedef std::map<int, IED_Types> DeviceTypeToIedType;
 
     static const DeviceTypeToIedType IedDeviceTypes = boost::assign::map_list_of
         (TYPEMCT430A,   IED_Type_Alpha_PP)
@@ -2698,14 +2701,7 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDe
         (TYPEMCT430A3,  IED_Type_Alpha_A3)
         (TYPEMCT430SL,  IED_Type_Sentinel);
 
-    DeviceTypeToIedType::const_iterator itr = IedDeviceTypes.find(deviceType);
-
-    if( itr == IedDeviceTypes.end() )
-    {
-        return boost::none;
-    }
-
-    return itr->second;
+    return mapFind(IedDeviceTypes, deviceType);
 }
 
 

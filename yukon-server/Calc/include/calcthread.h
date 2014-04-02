@@ -32,7 +32,7 @@ public:
 
     typedef std::map<long, CtiCalc* > CtiCalcPointMap;
     typedef std::map<long, CtiCalc* >::iterator CtiCalcPointMapIterator;
-    
+
 private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
     CtiValDeque<long> _auAffectedPoints;
@@ -95,9 +95,9 @@ public:
     RWMutexLock outboxMux;
 
     void calcThread( void );
-    bool appendPoint( long pointID, string &updateType, int updateInterval, string &qualityFlag );
-    void appendPointComponent( long pointID, string &componentType, long componentPointID,
-                               string &operationType, double constantValue, string &functionName );
+    bool appendPoint( long pointID, std::string &updateType, int updateInterval, std::string &qualityFlag );
+    void appendPointComponent( long pointID, std::string &componentType, long componentPointID,
+                               std::string &operationType, double constantValue, std::string &functionName );
     void appendCalcPoint( long pointID );
     void pointChange( long changedID, double newValue, const CtiTime &newTime, unsigned newQuality, unsigned newTags );
     void pointSignal( long changedID, unsigned newTags );

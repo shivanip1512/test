@@ -702,7 +702,7 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
         return BADPARAM;
     }
 
-    const string dayTableStr = parse.getsValue("tou_days");
+    const std::string dayTableStr = parse.getsValue("tou_days");
 
     for( int day_nbr = 0; day_nbr < dayTableStr.length(); day_nbr++ )
     {
@@ -726,7 +726,7 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
     // Switch Rates and Times
     //
     int iter = 0;
-    string schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
+    std::string schedule_name = "tou_schedule_" + CtiNumStr(iter).zpad(2);
 
     while( parse.isKeyValid( schedule_name ))
     {
@@ -735,7 +735,7 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                         RfnTouConfigurationCommand::SchedulePrefix + CtiNumStr( parse.getiValue( schedule_name )));
 
         int change_nbr = 0;
-        string change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
+        std::string change_name = schedule_name + "_" + CtiNumStr(change_nbr).zpad(2);
 
         RfnTouScheduleConfigurationCommand::DailyTimes times;
         RfnTouScheduleConfigurationCommand::DailyRates rates;
@@ -750,10 +750,10 @@ int RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq,
                 return BADPARAM;
             }
 
-            const string change_str = parse.getsValue( change_name );
+            const std::string change_str = parse.getsValue( change_name );
 
-            const string rate_str   = change_str.substr(0, 1),
-                         time_str   = change_str.substr(2, change_str.length()-2);
+            const std::string rate_str   = change_str.substr(0, 1),
+                              time_str   = change_str.substr(2, change_str.length()-2);
 
             times.push_back( time_str );
             rates.push_back( rate_str );
@@ -1019,7 +1019,7 @@ int RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg     * pReq,
 
 namespace { // anonymous namespace
 
-typedef map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
+typedef std::map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
 
 const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list_of
     // day table

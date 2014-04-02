@@ -24,7 +24,7 @@ enum
     LcdConfiguration_Operation_Read       = 0x01,
 };
 
-const std::map<unsigned char, string> StatusItems = boost::assign::map_list_of
+const std::map<unsigned char, std::string> StatusItems = boost::assign::map_list_of
         ( 0x0, "Success" )
         ( 0x1, "Failure" );
 

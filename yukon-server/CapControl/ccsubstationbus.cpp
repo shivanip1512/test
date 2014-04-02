@@ -41,6 +41,8 @@ using Cti::CapControl::Database::DatabaseDaoFactory;
 using std::endl;
 using std::set;
 using std::make_pair;
+using std::string;
+using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;

@@ -118,7 +118,7 @@ struct Test_CtiCapController : CtiCapController
 };
 
 template <class T>
-T *create_object(long objectid, string name)
+T *create_object(long objectid, std::string name)
 {
     T *object = new T();
 

@@ -41,7 +41,7 @@ struct CcDbReloadInfo
    {
       return this->objectId == r.objectId;
    }
-   string typeOfAction() {
+   std::string typeOfAction() {
        if (action == 0)
        {
            return "Add";
@@ -300,8 +300,8 @@ public:
     void assignStrategyAtBus(CtiCCSubstationBusPtr bus, long stratId);
     void assignStrategyAtFeeder(CtiCCFeederPtr feeder, long stratId);
     void assignStrategyToCCObject(Cti::RowReader& dbRdr, Cti::CapControl::CapControlType objectType);
-    string getDbTableString(Cti::CapControl::CapControlType objectType);
-    string getDbColumnString(Cti::CapControl::CapControlType objectType);
+    std::string getDbTableString(Cti::CapControl::CapControlType objectType);
+    std::string getDbColumnString(Cti::CapControl::CapControlType objectType);
 
     template<class T>
     T findInMap(const long paoId, const std::map< long, T > *paobjectMap)
@@ -483,8 +483,8 @@ public:
     PaoIdToSubstationMap* getPAOStationMap();
     PaoIdToSpecialAreaMap* getPAOSpecialAreaMap();
 
-    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
-    static const string CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE;
+    static const std::string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+    static const std::string CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 
@@ -552,20 +552,20 @@ private:
     void handleAMFMChanges(Cti::RowReader& rdr);
     void shutdown();
 
-    void feederReconfigureM3IAMFM( string& capacitor_id_string, long circt_id_normal,
-                                   string& circt_nam_normal, long circt_id_current,
-                                   string& circt_name_current, CtiTime& switch_datetime,
-                                   string& owner, string& capacitor_name, string& kvar_rating,
-                                   string& cap_fs, string& cbc_model, string& serial_no,
-                                   string& location, string& switching_seq, string& cap_disable_flag,
-                                   string& cap_disable_type, string& inoperable_bad_order_equipnote,
-                                   string& open_tag_note, string& cap_change_type );
+    void feederReconfigureM3IAMFM( std::string& capacitor_id_string, long circt_id_normal,
+                                   std::string& circt_nam_normal, long circt_id_current,
+                                   std::string& circt_name_current, CtiTime& switch_datetime,
+                                   std::string& owner, std::string& capacitor_name, std::string& kvar_rating,
+                                   std::string& cap_fs, std::string& cbc_model, std::string& serial_no,
+                                   std::string& location, std::string& switching_seq, std::string& cap_disable_flag,
+                                   std::string& cap_disable_type, std::string& inoperable_bad_order_equipnote,
+                                   std::string& open_tag_note, std::string& cap_change_type );
     void capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank,
                                        long feederid, long capswitchingorder);
     void capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank,
                                          long capswitchingorder);
-    void capOutOfServiceM3IAMFM(long feederid, long capid, string& enableddisabled, string& fixedswitched);
-    void feederOutOfServiceM3IAMFM(long feederid, string& fixedswitched, string& enableddisabled);
+    void capOutOfServiceM3IAMFM(long feederid, long capid, std::string& enableddisabled, std::string& fixedswitched);
+    void feederOutOfServiceM3IAMFM(long feederid, std::string& fixedswitched, std::string& enableddisabled);
 
     bool updateDisableFlag(unsigned int paoid, bool isDisabled);
 
@@ -608,22 +608,22 @@ private:
     static CtiCCSubstationBusStore* _instance;
 
     //Possible static strings
-    static const string m3iAMFMInterfaceString;
+    static const std::string m3iAMFMInterfaceString;
 
-    static const string m3iAMFMChangeTypeCircuitOutOfService;
-    static const string m3iAMFMChangeTypeCircuitReturnToService;
-    static const string m3iAMFMChangeTypeCapOutOfService;
-    static const string m3iAMFMChangeTypeCapReturnedToService;
-    static const string m3iAMFMChangeTypeCircuitReconfigured;
-    static const string m3iAMFMChangeTypeCircuitReconfiguredToNormal;
+    static const std::string m3iAMFMChangeTypeCircuitOutOfService;
+    static const std::string m3iAMFMChangeTypeCircuitReturnToService;
+    static const std::string m3iAMFMChangeTypeCapOutOfService;
+    static const std::string m3iAMFMChangeTypeCapReturnedToService;
+    static const std::string m3iAMFMChangeTypeCircuitReconfigured;
+    static const std::string m3iAMFMChangeTypeCircuitReconfiguredToNormal;
     //static const string M3IAMFMCapChangeTypeString;
 
-    static const string m3iAMFMEnabledString;
-    static const string m3iAMFMDisabledString;
-    static const string m3iAMFMFixedString;
-    static const string m3iAMFMSwitchedString;
+    static const std::string m3iAMFMEnabledString;
+    static const std::string m3iAMFMDisabledString;
+    static const std::string m3iAMFMFixedString;
+    static const std::string m3iAMFMSwitchedString;
 
-    static const string m3iAMFMNullString;
+    static const std::string m3iAMFMNullString;
 
     PaoIdToSpecialAreaMap _paobject_specialarea_map;
     PaoIdToAreaMap        _paobject_area_map;

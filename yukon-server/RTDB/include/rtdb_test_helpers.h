@@ -10,7 +10,7 @@ namespace {
 struct test_DeviceConfig : public Config::DeviceConfig
 {
     test_DeviceConfig() :
-        DeviceConfig(-1, string())
+        DeviceConfig(-1, "")
     {
     }
 

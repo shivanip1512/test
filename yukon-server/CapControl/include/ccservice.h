@@ -18,7 +18,7 @@ public:
     DECLARE_SERVICE(CtiCCService, CAPCONTROL)
 
 protected:
-   
+
     virtual void OnStop();
     virtual void Init();
     virtual void DeInit();
@@ -26,7 +26,7 @@ protected:
 
 private:
     bool _quit;
-    string _config_file;
+    std::string _config_file;
 
     CtiCapController* controller;
     CtiCCClientListener* clientListener;

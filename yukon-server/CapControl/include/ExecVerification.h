@@ -32,5 +32,5 @@ class VerificationExecutor : public CtiCCExecutor
         bool _disableOvUv;
         long _inactiveTime;
         long _bankId;
-        string _userName;
+        std::string _userName;
 };

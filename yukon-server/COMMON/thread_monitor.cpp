@@ -245,7 +245,7 @@ void CtiThreadMonitor::processQueue( void )
 void CtiThreadMonitor::processExpired( void )
 {
     State nextState = Normal;
-    string nextOutput = "Thread running correctly.";
+    std::string nextOutput = "Thread running correctly.";
     try
     {
         for( ThreadData::spiterator i = _threadData.getMap().begin(); i != _threadData.getMap().end(); i++ )
@@ -468,12 +468,12 @@ void CtiThreadMonitor::messageOut( const char *fmt, ... )
         }
         else if( *p == 's' )
         {
-            string word = va_arg( ap, char * );
+            std::string word = va_arg( ap, char * );
             dout << " " << word;
         }
         else if( *p == 'v' )
         {
-            string word = va_arg( ap, string );
+            std::string word = va_arg( ap, std::string );
             dout << " " << word;
         }
         else
@@ -504,7 +504,7 @@ CtiThreadMonitor::State CtiThreadMonitor::getState( void)
 //===========================================================================================================
 // Return current string data
 //===========================================================================================================
-string CtiThreadMonitor::getString( void)
+std::string CtiThreadMonitor::getString( void)
 {
 
     CtiLockGuard<CtiMutex> guard(_monitorMux);
@@ -571,7 +571,7 @@ void CtiThreadMonitor::recalculatePointIDList(void)
 }
 //===========================================================================================================
 //===========================================================================================================
-string CtiThreadMonitor::now( void )
+std::string CtiThreadMonitor::now( void )
 {
     return( to_simple_string( second_clock::local_time() ) );
 }
@@ -579,7 +579,7 @@ string CtiThreadMonitor::now( void )
 //===========================================================================================================
 //===========================================================================================================
 
-string CtiThreadMonitor::timeString( ptime in )
+std::string CtiThreadMonitor::timeString( ptime in )
 {
     return( to_simple_string( in ) );
 }

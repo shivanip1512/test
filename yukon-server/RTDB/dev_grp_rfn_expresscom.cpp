@@ -213,16 +213,21 @@ void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDura
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<RfnBroadcastReplyMessage>(OutboundQueue::RfnBroadcast, streamableMessage, callback);
 }
 
-string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const
+std::string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const
 {
-    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
-                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, ECV.routeid, ECV.serialnumber, "
-                                     "ECV.serviceaddress, ECV.geoaddress, ECV.substationaddress, ECV.feederaddress, "
-                                     "ECV.zipcodeaddress, ECV.udaddress, ECV.programaddress, ECV.splinteraddress, "
-                                     "ECV.addressusage, ECV.relayusage, ECV.protocolpriority "
-                                   "FROM YukonPAObject YP, Device DV, ExpressComAddress_View ECV "
-                                   "WHERE upper (YP.type) = 'RFN EXPRESSCOM GROUP' AND YP.paobjectid = ECV.lmgroupid AND "
-                                     "YP.paobjectid = DV.deviceid";
+    static const std::string sqlCore =
+        "SELECT"
+            " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag,"
+            " DV.deviceid, DV.alarminhibit, DV.controlinhibit, ECV.routeid, ECV.serialnumber,"
+            " ECV.serviceaddress, ECV.geoaddress, ECV.substationaddress, ECV.feederaddress,"
+            " ECV.zipcodeaddress, ECV.udaddress, ECV.programaddress, ECV.splinteraddress,"
+            " ECV.addressusage, ECV.relayusage, ECV.protocolpriority"
+        " FROM"
+            " YukonPAObject YP, Device DV, ExpressComAddress_View ECV"
+        " WHERE"
+            " upper (YP.type) = 'RFN EXPRESSCOM GROUP'"
+            " AND YP.paobjectid = ECV.lmgroupid"
+            " AND YP.paobjectid = DV.deviceid";
 
     return sqlCore;
 }

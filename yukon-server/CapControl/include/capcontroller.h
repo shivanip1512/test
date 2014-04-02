@@ -100,7 +100,7 @@ class CtiCapController : public MessageListener
         void pointDataMsgByArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgBySpecialArea(long pointID, double value, unsigned quality, CtiTime& timestamp);
         void pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp);
-        void signalMsg(long pointID, unsigned tags, const string& text, const string& additional);
+        void signalMsg(long pointID, unsigned tags, const std::string& text, const std::string& additional);
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 
         bool isCbcDbChange(const CtiDBChangeMsg* dbChange);

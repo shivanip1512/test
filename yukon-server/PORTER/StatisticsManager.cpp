@@ -391,7 +391,7 @@ bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
 
     if( getDebugLevel() & DEBUGLEVEL_STATISTICS )
     {
-        string sql = deleter.asString();
+        std::string sql = deleter.asString();
 
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -439,7 +439,7 @@ void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
 
         if( DebugLevel & 0x00020000 || !rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
+            std::string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " StatisticsManager::loadPaoStatistics() : error executing query \"" << loggedSQLstring << "\"\n";

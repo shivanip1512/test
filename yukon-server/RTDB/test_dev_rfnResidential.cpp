@@ -347,7 +347,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_getconfig_tou_schedule )
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidential_putconfig_tou_install )
 {
-    typedef map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
+    typedef std::map<CtiDeviceBase::PaoInfoKeys, std::string> TouScheduleCompareKeysMap;
 
     const TouScheduleCompareKeysMap touScheduleCompareKeys = boost::assign::map_list_of
     // day table

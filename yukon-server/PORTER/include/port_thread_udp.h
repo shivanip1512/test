@@ -42,7 +42,7 @@ private:
     type_serial_id_bimap _typeAndSerial_to_id;
     dnp_address_id_bimap _dnpAddress_to_id;
 
-    typedef std::map<long, string>  ip_map;
+    typedef std::map<long, std::string>  ip_map;
     typedef std::map<long, u_short> port_map;
 
     ip_map   _ip_addresses;
@@ -68,10 +68,10 @@ private:
     void updateDeviceIpAndPort( device_record &dr, const packet &p );
     void loadStaticRdsIPAndPort( const CtiDeviceSingle &device);
 
-    void setDeviceIp  ( const long device_id, const string  ip );
+    void setDeviceIp  ( const long device_id, const std::string ip );
     void setDevicePort( const long device_id, const u_short port );
 
-    static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, string ip, u_short port );
+    static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, std::string ip, u_short port );
 
     void loadEncodingFilter();
 
@@ -94,8 +94,8 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const;
 
-    virtual string  getDeviceIp  ( const long device_id ) const;
-    virtual u_short getDevicePort( const long device_id ) const;
+    virtual std::string getDeviceIp  ( const long device_id ) const;
+    virtual u_short     getDevicePort( const long device_id ) const;
 
 public:
 
