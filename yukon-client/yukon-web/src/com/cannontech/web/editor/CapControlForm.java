@@ -70,7 +70,6 @@ import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
@@ -117,7 +116,6 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.DataModelFactory;
@@ -180,7 +178,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
     private CBCSelectionLists selectionLists;
-    private NextValueHelper nextValueHelper;
     private TransactionTemplate transactionTemplate;
     
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
@@ -662,7 +659,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		getVisibleTabs().put("GeneralPAO", Boolean.TRUE);
         getVisibleTabs().put("CBCArea", Boolean.FALSE);
         getVisibleTabs().put("CBCSpecialArea", Boolean.FALSE);
-		getVisibleTabs().put("BaseCapControl", Boolean.FALSE);
 		getVisibleTabs().put("CBCSubstation", Boolean.FALSE);
 		getVisibleTabs().put("CBCSubstationBus", Boolean.FALSE);
 		getVisibleTabs().put("CBCFeeder", Boolean.FALSE);
@@ -1147,73 +1143,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	@Override
     public void setEditingController(boolean val) {
 		editingController = val;
-	}
-
-	@Override
-    public void createStrategy() {
-        CapControlStrategy ccStrat = CCYukonPAOFactory.createCapControlStrategy();
-		Integer newId = nextValueHelper.getNextValue(CapControlStrategy.TABLE_NAME);
-		ccStrat.setStrategyID(newId);
-		ccStrat.setStrategyName("Strat #" + newId + " (New)");
-		// this message will be filled in by the super class
-		FacesMessage facesMsg = new FacesMessage();
-		try {
-			addDBObject(ccStrat, facesMsg);
-			// clear out the memory of the any list of Strategies
-			cbcStrategies = null;
-			setEditingCBCStrategy(true);
-			facesMsg.setDetail("CapControl Strategy add was SUCCESSFUL");
-			cbcStrategiesMap.put(newId, ccStrat);
-			JSFUtil.redirect("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_STRATEGY + "&itemid=" + newId);
-		} catch (TransactionException te) {
-			// do nothing since the appropriate actions was taken in the super
-		} finally {
-			FacesContext.getCurrentInstance().addMessage("cti_db_add", facesMsg);
-		}
-	}
-
-	@Override
-    public void deleteStrategy() {
-	    FacesContext context = FacesContext.getCurrentInstance(); 
-		FacesMessage facesMsg = new FacesMessage();
-		int stratID = CtiUtilities.NONE_ZERO_ID;
-		try {
-			// cancel any editing of the Strategy we may have been doing
-			setEditingCBCStrategy(false);
-            if (getDbPersistent() instanceof CapControlStrategy) {
-                stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
-            }
-			// decide if we need to do any special handling of this transaction based on what other PAOs use this Strategy
-            
-			List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(stratID, itemId);
-			if (otherPaosUsingStrategy.isEmpty()) {
-				// update the current PAOBase object just in case it uses the strategy we are deleting
-				updateDBObject(getDbPersistent(), null);
-				deleteDBObject(getCbcStrategiesMap().get(new Integer(stratID)), facesMsg);
-				// clear out the memory of the any list of Strategies
-				cbcStrategies = null;
-				facesMsg.setDetail("CapControl Strategy delete was SUCCESSFUL");
-				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-				CtiNavObject navObject = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE); 
-				String moduleExitPage = navObject.getModuleExitPage();
-                JSFUtil.redirect(moduleExitPage);
-			} else {
-				if(otherPaosUsingStrategy.size() > 4) {
-				    facesMsg.setDetail("Strategy used by: " + otherPaosUsingStrategy.get(0) 
-				                       + ", " +otherPaosUsingStrategy.get(1)
-				                       + ", " +otherPaosUsingStrategy.get(2)
-				                       + ", " +otherPaosUsingStrategy.get(3) + " ..." + Integer.toString(otherPaosUsingStrategy.size() - 4) + " more.");
-				} else {
-				    facesMsg.setDetail("Strategy used by: " + otherPaosUsingStrategy);
-				}
-				facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-			}
-		} catch (TransactionException te) {
-			facesMsg.setDetail("Unable to delete the Strategy: " + te.getMessage());
-            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		} finally {
-		    context.addMessage("cti_db_delete", facesMsg);
-		}
 	}
 
 	@Override
@@ -2236,10 +2165,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {

@@ -116,6 +116,24 @@ public class StrategyDaoImpl implements StrategyDao {
     }
 
     @Override
+    @Transactional
+    public boolean delete(int strategyId) {
+        deleteStrategyAssignmentsByStrategyId(strategyId);
+        String deleteStrategy = "DELETE FROM CapControlStrategy WHERE StrategyId";
+        int rowsAffected = yukonJdbcTemplate.update(deleteStrategy, strategyId);
+
+        return rowsAffected == 1;
+    }
+
+    @Transactional
+    private boolean deleteStrategyAssignmentsByStrategyId(int strategyId){
+        String deleteStrategyAssignments = "DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId = ?";
+        int rowsAffected = yukonJdbcTemplate.update(deleteStrategyAssignments, strategyId);
+
+        return rowsAffected == 1;
+    }
+
+    @Override
     public List<ViewableStrategy> getAllViewableStrategies(final YukonUserContext userContext) {
         Function<CapControlStrategy, ViewableStrategy> viewableConverter = new Function<CapControlStrategy, ViewableStrategy>() {
             @Override

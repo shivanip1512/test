@@ -24,6 +24,8 @@ public interface StrategyDao {
 
     public int add(String name);
 
+    public boolean delete(int strategyId);
+
     public void savePowerFactorCorrectionSetting(CapControlStrategy strategy);
 
     public void saveMinCommunicationPercentageSetting(CapControlStrategy strategy);

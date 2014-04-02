@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +17,10 @@ import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 
@@ -26,10 +29,10 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class StrategyController {
     
-    private StrategyDao strategyDao = null;
+    @Autowired private StrategyDao strategyDao;
     
     @RequestMapping("strategies")
-    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap mav) throws ServletRequestBindingException {
+    public String strategies(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletRequestBindingException {
         List<ViewableStrategy> strategies = strategyDao.getAllViewableStrategies(userContext);
         
         int itemsPerPage = CtiUtilities.itemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage"));
@@ -44,19 +47,32 @@ public class StrategyController {
         SearchResults<ViewableStrategy> result = new SearchResults<ViewableStrategy>();
         result.setResultList(strategies);
         result.setBounds(startIndex, itemsPerPage, numberOfResults);
-        mav.addAttribute("searchResult", result);
-        mav.addAttribute("strategies", result.getResultList());
+        model.addAttribute("searchResult", result);
         
         String urlParams = request.getQueryString();
-        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
+        String requestURI = request.getRequestURI().substring(request.getContextPath().length()) + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
         return "strategy/strategies.jsp";
     }
-    
-    @Autowired
-    public void setStrategyDao(StrategyDao strategyDao) {
-        this.strategyDao = strategyDao;
+
+    @RequestMapping(value="deleteStrategy")
+    public String deleteStrategy(HttpServletRequest request, ModelMap model, int strategyId, FlashScope flash) {
+        String name = strategyDao.getForId(strategyId).getStrategyName();
+        List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(strategyId, strategyId);
+        if (otherPaosUsingStrategy.isEmpty()) {
+            strategyDao.delete(strategyId);
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.strategies.deleteSuccess", name));
+        } else {
+            List<Object> params = new ArrayList<>();
+            params.add(name);
+            params.add(otherPaosUsingStrategy.size());
+            params.addAll(otherPaosUsingStrategy);
+
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.strategies.deleteFailed", 
+                                                            params.toArray()));
+        }
+
+        return "redirect:strategies";
     }
-    
 }

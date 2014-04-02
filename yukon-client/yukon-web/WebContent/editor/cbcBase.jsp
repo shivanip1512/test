@@ -77,13 +77,20 @@
                     
                     <f:verbatim>
                         <cti:msgScope paths="capcontrol.cbcBase">
-                            <c:if test="${not capControlForm.visibleTabs['CBCSchedule']}">
-                                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-                                    <cti:param name="value" value="${capControlForm.itemId}"/>
+                            <%-- Delete Buttons --%>
+                            <c:set var="paoDeletion" value="true" />
+
+                            <c:if test="${capControlForm.visibleTabs['CBCStrategy']}">
+                                <c:set var="paoDeletion" value="false"/>
+                                <cti:url var="deleteStrategyUrl" value="/capcontrol/strategy/deleteStrategy">
+                                    <cti:param name="strategyId" value="${capControlForm.itemId}" />
                                 </cti:url>
-                                <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                <cti:button id="strategy-delete-header" nameKey="delete"  href="${deleteStrategyUrl}"/>
+                                <d:confirm on="#strategy-delete-header"
+                                    nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
                             </c:if>
                             <c:if test="${capControlForm.visibleTabs['CBCSchedule']}">
+                                <c:set var="paoDeletion" value="false"/>
                                 <cti:url var="deleteScheduleUrl" value="/capcontrol/schedule/deleteSchedule">
                                     <cti:param name="scheduleId" value="${capControlForm.itemId}" />
                                 </cti:url>
@@ -91,6 +98,14 @@
                                 <d:confirm on="#schedule-delete-header"
                                     nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
                             </c:if>
+                            <c:if test="${paoDeletion}">
+                                <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                                    <cti:param name="value" value="${capControlForm.itemId}"/>
+                                </cti:url>
+                                <cti:button nameKey="delete" href="${deleteUrl}"/>
+                            </c:if>
+
+                            <%-- Copy CBC Button --%>
                             <c:if test="${capControlForm.visibleTabs['CBCController']}">
                                 <cti:url var="copyUrl" value="/editor/copyBase.jsf">
                                     <cti:param name="itemid" value="${capControlForm.itemId}"/>
@@ -206,27 +221,43 @@
                             
                             <f:verbatim>
                                 <cti:msgScope paths="capcontrol.cbcBase">
-                                   <c:if test="${not capControlForm.visibleTabs['CBCSchedule']}">
-                                       <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
-                                           <cti:param name="value" value="${capControlForm.itemId}"/>
-                                       </cti:url>
-                                       <cti:button nameKey="delete" href="${deleteUrl}"/>
-                                   </c:if>
-                                   <c:if test="${capControlForm.visibleTabs['CBCSchedule']}">
-                                       <cti:url var="deleteScheduleUrl" value="/capcontrol/schedule/deleteSchedule">
-                                           <cti:param name="scheduleId" value="${capControlForm.itemId}" />
-                                       </cti:url>
-                                       <cti:button id="schedule-delete-footer" nameKey="delete"  href="${deleteScheduleUrl}"/>
-                                       <d:confirm on="#schedule-delete-footer"
-                                           nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
-                                   </c:if>
-                                   <c:if test="${capControlForm.visibleTabs['CBCController']}">
-                                       <cti:url var="copyUrl" value="/editor/copyBase.jsf">
-                                           <cti:param name="itemid" value="${capControlForm.itemId}"/>
-                                           <cti:param name="type" value="1"/>
-                                       </cti:url>
-                                       <cti:button nameKey="copy" href="${copyUrl}"/>
-                                   </c:if>
+
+                                    <%-- Delete Buttons --%>
+                                    <c:set var="paoDeletion" value="true" />
+
+                                    <c:if test="${capControlForm.visibleTabs['CBCStrategy']}">
+                                        <c:set var="paoDeletion" value="false"/>
+                                        <cti:url var="deleteStrategyUrl" value="/capcontrol/strategy/deleteStrategy">
+                                            <cti:param name="strategyId" value="${capControlForm.itemId}" />
+                                        </cti:url>
+                                        <cti:button id="strategy-delete-footer" nameKey="delete"  href="${deleteStrategyUrl}"/>
+                                        <d:confirm on="#strategy-delete-footer"
+                                            nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
+                                    </c:if>
+                                    <c:if test="${capControlForm.visibleTabs['CBCSchedule']}">
+                                        <c:set var="paoDeletion" value="false"/>
+                                        <cti:url var="deleteScheduleUrl" value="/capcontrol/schedule/deleteSchedule">
+                                            <cti:param name="scheduleId" value="${capControlForm.itemId}" />
+                                        </cti:url>
+                                        <cti:button id="schedule-delete-footer" nameKey="delete"  href="${deleteScheduleUrl}"/>
+                                        <d:confirm on="#schedule-delete-footer"
+                                            nameKey="confirmDelete" argument="${capControlForm.paoName}"/>
+                                    </c:if>
+                                    <c:if test="${paoDeletion}">
+                                        <cti:url var="deleteUrl" value="/editor/deleteBasePAO.jsf">
+                                            <cti:param name="value" value="${capControlForm.itemId}"/>
+                                        </cti:url>
+                                        <cti:button nameKey="delete" href="${deleteUrl}"/>
+                                    </c:if>
+
+                                    <%-- Copy CBC Button --%>
+                                    <c:if test="${capControlForm.visibleTabs['CBCController']}">
+                                        <cti:url var="copyUrl" value="/editor/copyBase.jsf">
+                                            <cti:param name="itemid" value="${capControlForm.itemId}"/>
+                                            <cti:param name="type" value="1"/>
+                                        </cti:url>
+                                        <cti:button nameKey="copy" href="${copyUrl}"/>
+                                    </c:if>
                                 </cti:msgScope>
                             </f:verbatim>
 

@@ -38,10 +38,6 @@ public interface ICapControlModel {
 
     public abstract void setEditingController(boolean val);
 
-    public abstract void createStrategy();
-
-    public abstract void deleteStrategy();
-
     public abstract String getPAODescLabel();
 
     public abstract String getParent();
