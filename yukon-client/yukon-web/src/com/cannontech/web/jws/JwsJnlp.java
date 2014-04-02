@@ -59,6 +59,7 @@ public enum JwsJnlp {
                 "cglib-2.1.3.jar",
                 "common.jar",
                 "commons-codec-1.9.jar",
+                "commons-collections-3.2.1.jar",
                 "commons-collections4-4.0.jar",
                 "commons-dbcp2-2.0.jar",
                 "commons-discovery-0.5.jar",
