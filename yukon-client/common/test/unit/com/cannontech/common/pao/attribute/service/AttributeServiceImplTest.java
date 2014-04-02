@@ -80,11 +80,9 @@ public class AttributeServiceImplTest extends TestCase {
         // Test with invalid device
         try {
             device = new SimpleDevice(1, -1);
-            actualAtributes = service.getExistingAttributes(device, actualAtributes);
-        } catch (IllegalArgumentException e) {
-            // expected exception
+            fail("Should throw an exception.");
         } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
+            // expected an exception
         }
     }
 }
