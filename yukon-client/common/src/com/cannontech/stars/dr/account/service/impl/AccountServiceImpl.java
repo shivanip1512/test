@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
     private final static Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
 
     @Autowired private AccountEventLogService accountEventLogService;
-    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonUserDao userDao;
     @Autowired private AuthDao authDao;
     @Autowired private AddressDao addressDao;
     @Autowired private ContactDao contactDao;
@@ -110,183 +110,176 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private ContactNotificationService contactNotificationService;
     @Autowired private ContactService contactService;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
-    @Autowired private YukonUserContextService yukonUserContextService;
+    @Autowired private YukonUserContextService userContextService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
 
     @Override
     @Transactional
-    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
-    	/* Add the account to the user's energy company,  we do not have a mechanism to allow 
-    	 * an operator user of a parent energy company to add accounts to member energy companies. */
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(operator);
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator)
+            throws AccountNumberUnavailableException, UserNameUnavailableException {
+        // Add the account to the user's energy company, we do not have a mechanism to allow
+        // an operator user of a parent energy company to add accounts to member energy companies.
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(operator);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
-        
-        if(StringUtils.isBlank(accountNumber)) {
+
+        if (StringUtils.isBlank(accountNumber)) {
             log.error("Account " + accountNumber + " could not be added: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
-        } else if (accountNumber.length() > 40) {	// if not blank, check it is within 40 character db size limit 
-            log.error("Account " + accountNumber + " could not be added: The provided account number exceeds maximum length of 40.");
+        } else if (accountNumber.length() > 40) { // if not blank, check it is within 40 character db size limit
+            log.error("Account " + accountNumber
+                + " could not be added: The provided account number exceeds maximum length of 40.");
             throw new InvalidAccountNumberException("The provided account number exceeds maximum length of 40.");
         }
-        
+
         // Checks to see if the account number is already being used.
         try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
-            if (customerAccount != null){
-            	log.error("Account " + accountNumber + " could not be added: The provided account number already exists.");
+            CustomerAccount customerAccount =
+                customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
+            if (customerAccount != null) {
+                log.error("Account " + accountNumber
+                    + " could not be added: The provided account number already exists.");
                 throw new AccountNumberUnavailableException("The provided account number already exists.");
             }
-        } catch (NotFoundException e ) {
-        	// Account doesn't exist
+        } catch (NotFoundException e) {
+            // Account doesn't exist
         }
-        
-        if(yukonUserDao.findUserByUsername( accountDto.getUserName() ) != null) {
+
+        if (userDao.findUserByUsername(accountDto.getUserName()) != null) {
             log.error("Account " + accountNumber + " could not be added: The provided username already exists.");
             throw new UserNameUnavailableException("The provided username already exists.");
         }
-        
+
         Address streetAddress = accountDto.getStreetAddress();
         Address billingAddress = accountDto.getBillingAddress();
-        
-        /*
-         * Create the user login. If no password is specified set the AuthType
-         * to NONE(No Login) and set the password to a space(done by dao).
-         * If any password is specified set the AuthType to the default
-         * AuthType. If it's empty set the password to a space(done by dao);
-         */
+
+        // Create the user login. If no password is specified set the AuthType
+        // to NONE(No Login) and set the password to a space(done by dao).
+        // If any password is specified set the AuthType to the default
+        // AuthType. If it's empty set the password to a space(done by dao);
         LiteYukonUser user = null;
-        if(!StringUtils.isBlank(accountDto.getUserName())) {
-            // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be. 
-            user = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, 
-            						accountDto.getUserName(),
-            						LoginStatusEnum.ENABLED);
+        if (!StringUtils.isBlank(accountDto.getUserName())) {
+            // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how
+            // it will be.
+            user = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, accountDto.getUserName(), LoginStatusEnum.ENABLED);
             try {
-                LiteUserGroup operatorUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
+                LiteUserGroup operatorUserGroup =
+                    userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
                 user.setUserGroupId(operatorUserGroup.getUserGroupId());
-            }catch (NotFoundException e) {
-                log.error("Account " + accountNumber + " could not be added: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
-                throw new InvalidLoginGroupException("The provided role group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+            } catch (NotFoundException e) {
+                log.error("Account " + accountNumber + " could not be added: The provided user group '"
+                    + accountDto.getUserGroup() + "' doesn't exist.");
+                throw new InvalidLoginGroupException("The provided role group '" + accountDto.getUserGroup()
+                    + "' doesn't exist.");
             }
 
-            yukonUserDao.save(user);
+            userDao.save(user);
             String password = accountDto.getPassword();
             if (!StringUtils.isBlank(password)) {
                 authenticationService.setPassword(user, authenticationService.getDefaultAuthenticationCategory(),
-                        password);
+                    password);
             }
 
-            dbChangeManager.processDbChange(user.getLiteID(), 
-                                            DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                            DBChangeMsg.CAT_YUKON_USER, 
-                                            DBChangeMsg.CAT_YUKON_USER, 
-                                            DbChangeType.ADD);
+            dbChangeManager.processDbChange(user.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
+                DBChangeMsg.CAT_YUKON_USER, DBChangeMsg.CAT_YUKON_USER, DbChangeType.ADD);
         }
-            
-        /*
-         * Create the address
-         */
+
+        // Create the address
         LiteAddress liteAddress = new LiteAddress();
-        if(streetAddress != null) {
+        if (streetAddress != null) {
             setAddressFieldsFromDTO(liteAddress, streetAddress);
-        }else {
+        } else {
             setAddressDefaults(liteAddress);
         }
         addressDao.add(liteAddress);
-            
-        /*
-         * Create billing address
-         */
+
+        // Create billing address
         LiteAddress liteBillingAddress = new LiteAddress();
-        if(billingAddress != null) {
+        if (billingAddress != null) {
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
-        }else {
+        } else {
             setAddressDefaults(liteBillingAddress);
         }
         addressDao.add(liteBillingAddress);
-            
-        /*
-         * Create the contact
-         */
-        LiteContact liteContact = contactService.createContact(accountDto.getFirstName(), accountDto.getLastName(), user);
-        
-        /*
-         * Create the notifications
-         */
-        if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-        	contactNotificationService.createNotification(liteContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
-        }
-        
-        if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-        	contactNotificationService.createNotification(liteContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
-        }
-        
-        if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-        	contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
+
+        // Create the contact
+        LiteContact liteContact =
+            contactService.createContact(accountDto.getFirstName(), accountDto.getLastName(), user);
+
+        // Create the notifications
+        if (StringUtils.isNotBlank(accountDto.getHomePhone())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.HOME_PHONE,
+                accountDto.getHomePhone());
         }
 
-        if(StringUtils.isNotBlank(accountDto.getIvrLogin())) {
-            contactNotificationService.createNotification(liteContact, ContactNotificationType.IVR_LOGIN, accountDto.getIvrLogin());
+        if (StringUtils.isNotBlank(accountDto.getWorkPhone())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.WORK_PHONE,
+                accountDto.getWorkPhone());
         }
 
-        if(StringUtils.isNotBlank(accountDto.getVoicePIN())) {
-            contactNotificationService.createNotification(liteContact, ContactNotificationType.VOICE_PIN, accountDto.getVoicePIN());
+        if (StringUtils.isNotBlank(accountDto.getEmailAddress())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL,
+                accountDto.getEmailAddress());
         }
-        
-        /*
-         * Create the customer
-         */
+
+        if (StringUtils.isNotBlank(accountDto.getIvrLogin())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.IVR_LOGIN,
+                accountDto.getIvrLogin());
+        }
+
+        if (StringUtils.isNotBlank(accountDto.getVoicePIN())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.VOICE_PIN,
+                accountDto.getVoicePIN());
+        }
+
+        // Create the customer
         LiteCustomer liteCustomer = new LiteCustomer();
         liteCustomer.setPrimaryContactID(liteContact.getContactID());
-        if(accountDto.getIsCommercial()) {
+        if (accountDto.getIsCommercial()) {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
-        }else {
+        } else {
             liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
         }
         if (accountDto.getAltTrackingNumber() == null) {
-        	accountDto.setAltTrackingNumber(CtiUtilities.STRING_NONE);
+            accountDto.setAltTrackingNumber(CtiUtilities.STRING_NONE);
         }
         if (user != null) {
-        	liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
+            liteCustomer.setTimeZone(authDao.getUserTimeZone(user).getID());
         } else {
-        	liteCustomer.setTimeZone(systemDateFormattingService.getSystemTimeZone().getID());
+            liteCustomer.setTimeZone(systemDateFormattingService.getSystemTimeZone().getID());
         }
         if (accountDto.getCustomerNumber() != null) {
-        	liteCustomer.setCustomerNumber(accountDto.getCustomerNumber());
+            liteCustomer.setCustomerNumber(accountDto.getCustomerNumber());
         } else {
-        	liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
+            liteCustomer.setCustomerNumber(CtiUtilities.STRING_NONE);
         }
         if (accountDto.getRateScheduleEntryId() != null) {
-        	liteCustomer.setRateScheduleID(accountDto.getRateScheduleEntryId());
+            liteCustomer.setRateScheduleID(accountDto.getRateScheduleEntryId());
         } else {
-        	liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
+            liteCustomer.setRateScheduleID(CtiUtilities.NONE_ZERO_ID);
         }
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-        String tempUnit = energyCompanySettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT,
-            TemperatureUnit.class, yukonEnergyCompany.getEnergyCompanyId()).getLetter();
+        String tempUnit =
+            ecSettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT, TemperatureUnit.class,
+                yukonEnergyCompany.getEnergyCompanyId()).getLetter();
         liteCustomer.setTemperatureUnit(tempUnit);
         customerDao.addCustomer(liteCustomer);
-        dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DbChangeType.ADD);
-            
-        /*
-         * Create comercial/industrial customer if company was passed
-         */
-        if(liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
+        dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
+            DBChangeMsg.CAT_CUSTOMER, DBChangeMsg.CAT_CUSTOMER, DbChangeType.ADD);
+
+        // Create commercial/industrial customer if company was passed
+        if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
             LiteAddress companyAddress = new LiteAddress();
-            if(streetAddress != null) {
+            if (streetAddress != null) {
                 setAddressFieldsFromDTO(companyAddress, streetAddress);
-            }else {
+            } else {
                 setAddressDefaults(companyAddress);
             }
             addressDao.add(companyAddress);
-            
+
             LiteCICustomer liteCICustomer = new LiteCICustomer();
             liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
             liteCICustomer.setMainAddressID(companyAddress.getAddressID());
@@ -294,30 +287,26 @@ public class AccountServiceImpl implements AccountService {
             liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
             liteCICustomer.setCompanyName(accountDto.getCompanyName());
             if (accountDto.getCommercialTypeEntryId() != null) {
-            	liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
+                liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
             } else {
-            	liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+                liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
             }
             liteCICustomer.setEnergyCompanyID(yukonEnergyCompany.getEnergyCompanyId());
             customerDao.addCICustomer(liteCICustomer);
-            dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                            DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                            DBChangeMsg.CAT_CI_CUSTOMER,
-                                            DBChangeMsg.CAT_CI_CUSTOMER,
-                                            DbChangeType.ADD);
+            dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
+                DBChangeMsg.CAT_CI_CUSTOMER, DBChangeMsg.CAT_CI_CUSTOMER, DbChangeType.ADD);
         }
-            
-        /*
-         * Create service info
-         */
+
+        // Create service info
         LiteSiteInformation liteSiteInformation = new LiteSiteInformation();
-        if(StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
+        if (StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
             try {
                 int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
                 liteSiteInformation.setSubstationID(subId);
-            }catch(NotFoundException e) {
+            } catch (NotFoundException e) {
                 log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName());
-                throw new InvalidSubstationNameException("Unable to find substation by name: "+ accountDto.getSiteInfo().getSubstationName());
+                throw new InvalidSubstationNameException("Unable to find substation by name: "
+                    + accountDto.getSiteInfo().getSubstationName());
             }
         }
         liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
@@ -325,77 +314,71 @@ public class AccountServiceImpl implements AccountService {
         liteSiteInformation.setTransformerSize(accountDto.getSiteInfo().getTransformerSize());
         liteSiteInformation.setServiceVoltage(accountDto.getSiteInfo().getServiceVoltage());
         siteInformationDao.add(liteSiteInformation);
-        
-        /*
-         * Create account site
-         */
+
+        // Create account site
         AccountSite accountSite = new AccountSite();
         accountSite.setSiteInformationId(liteSiteInformation.getSiteID());
         accountSite.setStreetAddressId(liteAddress.getAddressID());
         if (accountDto.getIsCustAtHome() != null) {
-        	accountSite.setCustAtHome(BooleanUtils.toString(accountDto.getIsCustAtHome(), "Y", "N"));
+            accountSite.setCustAtHome(BooleanUtils.toString(accountDto.getIsCustAtHome(), "Y", "N"));
         } else {
-        	accountSite.setCustAtHome("N");
+            accountSite.setCustAtHome("N");
         }
         if (accountDto.getCustomerStatus() != null) {
-        	accountSite.setCustomerStatus(accountDto.getCustomerStatus());
+            accountSite.setCustomerStatus(accountDto.getCustomerStatus());
         } else {
-        	accountSite.setCustomerStatus("A");
+            accountSite.setCustomerStatus("A");
         }
-        
+
         accountSite.setSiteNumber(accountDto.getMapNumber());
-        accountSite.setPropertyNotes(updatableAccount.getAccountDto().getPropertyNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getPropertyNotes());
+        accountSite.setPropertyNotes(updatableAccount.getAccountDto().getPropertyNotes() == null
+            ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getPropertyNotes());
         accountSiteDao.add(accountSite);
-        
-        /*
-         * Create customer account
-         */
+
+        // Create customer account
         CustomerAccount customerAccount = new CustomerAccount();
         customerAccount.setAccountSiteId(accountSite.getAccountSiteId());
         customerAccount.setAccountNumber(accountNumber);
         customerAccount.setCustomerId(liteCustomer.getCustomerID());
-        customerAccount.setAccountNotes(updatableAccount.getAccountDto().getAccountNotes() == null ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getAccountNotes());
-        if(liteBillingAddress != null) {
+        customerAccount.setAccountNotes(updatableAccount.getAccountDto().getAccountNotes() == null
+            ? CtiUtilities.STRING_NONE : updatableAccount.getAccountDto().getAccountNotes());
+        if (liteBillingAddress != null) {
             customerAccount.setBillingAddressId(liteBillingAddress.getAddressID());
         }
         customerAccountDao.add(customerAccount);
-        dbChangeManager.processDbChange(customerAccount.getAccountId(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DbChangeType.ADD);
-            
-        /*
-         * Add mapping
-         */
+        dbChangeManager.processDbChange(customerAccount.getAccountId(), DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+            DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DbChangeType.ADD);
+
+        // Add mapping
         ECToAccountMapping ecToAccountMapping = new ECToAccountMapping();
         ecToAccountMapping.setEnergyCompanyId(yukonEnergyCompany.getEnergyCompanyId());
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         log.info("Account: " + accountNumber + " added successfully.");
-        
+
         accountEventLogService.accountAdded(operator, accountNumber);
-        
+
         return customerAccount.getAccountId();
     }
 
-    // DELETE ACCOUNT
     @Override
     @Transactional
     public void deleteAccount(int accountId, LiteYukonUser user) {
         CustomerAccount account = customerAccountDao.getById(accountId);
         deleteAccount(account, user);
     }
-    
+
     @Override
     @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
-    	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-    	try {
-    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
+        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
+        try {
+            CustomerAccount account =
+                customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
             deleteAccount(account, user);
-    	} catch (NotFoundException e ) {
-            log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
+        } catch (NotFoundException e) {
+            log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: "
+                + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
     }
@@ -411,498 +394,449 @@ public class AccountServiceImpl implements AccountService {
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
         LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getCustomerAccountEC(account.getAccountId());
         Integer userId = primaryContact.getLoginID();
-        
-        /*
-         * Delete Hardware info
-         * This also handles unenrolling inventory as well.
-         * clearLMHardwareInfo clears the operator side enrollment and the unenrollHardware method
-         * cleans up the consumer side enrollment
-         */
+
+        // Delete Hardware info
+        // This also handles unenrolling inventory as well.
+        // clearLMHardwareInfo clears the operator side enrollment and the unenrollHardware method
+        // cleans up the consumer side enrollment
         List<Integer> inventoryIds = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
-        for(Integer inventoryId : inventoryIds) {
+        for (Integer inventoryId : inventoryIds) {
             log.info("Clearing LMHardwareInfo and unenrolling hardware for inventory id# " + inventoryId);
             hardwareBaseDao.clearLMHardwareInfo(inventoryId);
             lmHardwareControlGroupDao.unenrollHardware(inventoryId);
         }
-        
-        /*
-         * Delete Program info
-         */
+
+        // Delete Program info
         log.info("Deleting Program info for account id# " + account.getAccountId());
         lmProgramEventDao.deleteProgramEventsForAccount(account.getAccountId());
-        
-        /*
-         * Delete Appliance info
-         */
+
+        // Delete Appliance info
         log.info("Deleting Appliances for account id# " + account.getAccountId());
         applianceDao.deleteAppliancesByAccountId(account.getAccountId());
-        
-        /*
-         * Delete WorkOrders
-         */
+
+        // Delete WorkOrders
         log.info("Deleting Work Orders for account id# " + account.getAccountId());
         workOrderDao.deleteByAccount(account.getAccountId());
-        
-        /*
-         * Delete CallReports 
-         */
+
+        // Delete CallReports
         log.info("Deleting call reports for account id# " + account.getAccountId());
         callReportDao.deleteAllCallsByAccount(account.getAccountId());
-        
-        /*
-         * Delete thermostat schedules for account
-         */
+
+        // Delete thermostat schedules for account
         log.info("Deleting thermostat schedules for account id# " + account.getAccountId());
         accountThermostatScheduleDao.deleteAllByAccountId(account.getAccountId());
-        
-        /*
-         * Delete account mappings
-         */
+
+        // Delete account mappings
         log.info("Deleting EC to account mappings for account id# " + account.getAccountId());
         ecMappingDao.deleteECToAccountMapping(account.getAccountId());
-        
-        /*
-         * Delete account events
-         */
+
+        // Delete account events
         log.info("Deleting events for account id# " + account.getAccountId());
         eventAccountDao.deleteAllEventsForAccount(account.getAccountId());
-        
-        /*
-         * Delete customer account
-         */
+
+        // Delete customer account
         log.info("Deleting customer account " + account.getAccountId());
         customerAccountDao.remove(account);
-        
-        /*
-         * Delete account site
-         */
+
+        // Delete account site
         log.info("Deleting account site id# " + accountSite.getAccountSiteId());
         accountSiteDao.remove(accountSite);
-        
-        /*
-         * Delete site information
-         */
+
+        // Delete site information
         log.info("Deleting site info id# " + siteInfo.getSiteID());
         siteInformationDao.delete(siteInfo);
-        
-        /*
-         * Delete billing address
-         */
-        if(billingAddress.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
+
+        // Delete billing address
+        if (billingAddress.getAddressID() != CtiUtilities.NONE_ZERO_ID) {
             log.info("Deleting billing address id# " + billingAddress.getAddressID());
             addressDao.remove(billingAddress);
         }
-        
-        /*
-         * Delete customer
-         * - handles contact deletion
-         */
+
+        // Delete customer
+        // - handles contact deletion
         customerDao.deleteCustomer(account.getCustomerId());
-        dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DbChangeType.DELETE);
-        
-        /*
-         * Delete login
-         */
+        dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
+            DBChangeMsg.CAT_CUSTOMER, DBChangeMsg.CAT_CUSTOMER, DbChangeType.DELETE);
+
+        // Delete login
         if (!UserUtils.isReservedUserId(userId)) {
             log.info("Deleting login and removing from starsDatabaseCache id# " + userId);
-            yukonUserDao.deleteUser(userId);
+            userDao.deleteUser(userId);
             starsDatabaseCache.deleteStarsYukonUser(userId);
         }
-        
-        /*
-         * Delete customer info
-         */
+
+        // Delete customer info
         starsEnergyCompany.deleteCustAccountInformation(customerInfo);
-        dbChangeManager.processDbChange(customerInfo.getLiteID(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DbChangeType.DELETE);
-        
-        log.info("Account: " +account.getAccountNumber()+ " deleted successfully.");
-        
+        dbChangeManager.processDbChange(customerInfo.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+            DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DbChangeType.DELETE);
+
+        log.info("Account: " + account.getAccountNumber() + " deleted successfully.");
+
         accountEventLogService.accountDeleted(user, account.getAccountNumber());
     }
-    
+
     @Override
     @Transactional
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        
+        YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+
         int energyCompanyId = energyCompany.getEnergyCompanyId();
         String accountNumber = updatableAccount.getAccountNumber();
-        
+
         CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
         int accountId = account.getAccountId();
-        
+
         updateAccount(updatableAccount, accountId, user);
     }
-    
-    
+
     // UPDATE ACCOUNT
     @Transactional
     @Override
     public void updateAccount(UpdatableAccount updatableAccount, int accountId, LiteYukonUser user) {
-    
-    	YukonEnergyCompany energyCompanyOfAccount = yukonEnergyCompanyService.getEnergyCompanyByAccountId(accountId);
+
+        YukonEnergyCompany energyCompanyOfAccount = ecService.getEnergyCompanyByAccountId(accountId);
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
-        String username = accountDto.getUserName(); 
-        
-        /*
-         * Check for account info errors.
-         */
-        if(StringUtils.isBlank(accountNumber)) {
-            log.error("Account " + accountNumber + " could not be updated: The provided account number cannot be empty.");
+        String username = accountDto.getUserName();
+
+        // Check for account info errors.
+        if (StringUtils.isBlank(accountNumber)) {
+            log.error("Account " + accountNumber
+                + " could not be updated: The provided account number cannot be empty.");
             throw new InvalidAccountNumberException("The provided account number cannot be empty.");
-            
+
         }
-        
-        CustomerAccount  account = customerAccountDao.getById(accountId);
-        
-        /* If updating the account number, verify the new one is available */
+
+        CustomerAccount account = customerAccountDao.getById(accountId);
+
+        // If updating the account number, verify the new one is available
         boolean accountNumberUpdate = false;
         String updatedAccountNumber = accountDto.getAccountNumber();
         if (StringUtils.isNotBlank(updatedAccountNumber) && !updatedAccountNumber.equals(accountNumber)) {
-        		
-    		try {
-                CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(updatedAccountNumber, energyCompanyOfAccount.getEnergyCompanyId());
-                if (customerAccount != null){
-                	log.error("Account " + accountNumber + " could not be updated: The provided new account number already exists (" + updatedAccountNumber + ").");
-                    throw new AccountNumberUnavailableException("The provided new account number already exists (" + updatedAccountNumber + ").");
+
+            try {
+                CustomerAccount customerAccount =
+                    customerAccountDao.getByAccountNumber(updatedAccountNumber,
+                        energyCompanyOfAccount.getEnergyCompanyId());
+                if (customerAccount != null) {
+                    log.error("Account " + accountNumber
+                        + " could not be updated: The provided new account number already exists ("
+                        + updatedAccountNumber + ").");
+                    throw new AccountNumberUnavailableException("The provided new account number already exists ("
+                        + updatedAccountNumber + ").");
                 }
-            } catch (NotFoundException e ) {/* Ignore, new account number is available */}
+            } catch (NotFoundException e) {
+                // Ignore; new account number is available.
+            }
 
             accountNumberUpdate = true;
         }
-        
-        /*
-         * Check for login info errors.
-         */
-        LiteYukonUser tempUser = yukonUserDao.findUserByUsername( username ); 
-        if(tempUser != null) {
+
+        // Check for login info errors.
+        LiteYukonUser tempUser = userDao.findUserByUsername(username);
+        if (tempUser != null) {
             List<LiteContact> tempContacts = contactDao.getContactsByLoginId(tempUser.getUserID());
             boolean ourUsername = false;
-            for(LiteContact tempContact : tempContacts) {
+            for (LiteContact tempContact : tempContacts) {
                 CustomerAccount tempAccount = customerAccountDao.getAccountByContactId(tempContact.getContactID());
-                if(tempAccount.getAccountNumber().equalsIgnoreCase(accountNumber)) {
+                if (tempAccount.getAccountNumber().equalsIgnoreCase(accountNumber)) {
                     ourUsername = true;
                     break;
                 }
             }
-            if(!ourUsername) {
+            if (!ourUsername) {
                 log.error("Account " + accountNumber + " could not be updated: The provided username already in use.");
                 throw new UserNameUnavailableException("The provided username already in use.");
             }
         }
-        
+
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
-        LiteSiteInformation liteSiteInformation = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
-        LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId()); 
+        LiteSiteInformation liteSiteInformation =
+            siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
+        LiteAddress liteStreetAddress = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteAddress liteBillingAddress = addressDao.getByAddressId(account.getBillingAddressId());
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
         Address streetAddress = accountDto.getStreetAddress();
         Address billingAddress = accountDto.getBillingAddress();
-        
-        /*RULES FOR LOGIN UPDATE/CREATION
-         * LOGIN EXISTS
-         * Update the login, if no password is specified don't change the Authtype or password.
-         * If any password is specified, set the AuthType to the default AuthType. If it was empty
-         * set the password to a space(done by doa). 
-         * 
-         * LOGIN DOESN'T EXIST
-         * If the account has no login, create one. If no password is specified set the 
-         * AuthType to NONE(No Login) and set the password to a space(done by dao). 
-         * If any password is specified set AuthType to default AuthType.  If it was empty set it
-         *  to a space(done by dao).
-         */
+
+        // RULES FOR LOGIN UPDATE/CREATION
+        // LOGIN EXISTS
+        // Update the login, if no password is specified don't change the Authtype or password.
+        // If any password is specified, set the AuthType to the default AuthType. If it was empty
+        // set the password to a space(done by doa).
+        //
+        // LOGIN DOESN'T EXIST
+        // If the account has no login, create one. If no password is specified set the
+        // AuthType to NONE(No Login) and set the password to a space(done by dao).
+        // If any password is specified set AuthType to default AuthType. If it was empty set it
+        // to a space(done by dao).
         int newLoginId = UserUtils.USER_NONE_ID;
         AuthenticationCategory defaultAuthenticationCategory = authenticationService.getDefaultAuthenticationCategory();
-        if(StringUtils.isNotBlank(username)) {
-            LiteYukonUser login = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
-            if(login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
+        if (StringUtils.isNotBlank(username)) {
+            LiteYukonUser login = userDao.getLiteYukonUser(primaryContact.getLoginID());
+            if (login != null && login.getUserID() != UserUtils.USER_NONE_ID) {
                 // Update their login info.
 
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(login, accountDto.getUserGroup(), accountNumber);
                 }
-                
+
                 login.setUsername(username);
-                yukonUserDao.update(login);
+                userDao.update(login);
 
                 String password = accountDto.getPassword();
                 if (password != null) {
                     if (authenticationService.supportsPasswordSet(defaultAuthenticationCategory)) {
                         authenticationService.setPassword(login, defaultAuthenticationCategory,
-                                SqlUtils.convertStringToDbValue(password));
+                            SqlUtils.convertStringToDbValue(password));
                     } else {
                         authenticationService.setAuthenticationCategory(login, defaultAuthenticationCategory);
                     }
                 }
             } else {
                 // Create a new login.
-                // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is how it will be.
-                LiteYukonUser newUser = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID,
-                											accountDto.getUserName(),
-                											LoginStatusEnum.ENABLED);
+                // This is not preferred, but until we correctly rewrite a way to "create" a YukonUser this is
+                // how it will be.
+                LiteYukonUser newUser = new LiteYukonUser(LiteYukonUser.CREATE_NEW_USER_ID, accountDto.getUserName(),
+                        LoginStatusEnum.ENABLED);
 
                 if (accountDto.getUserGroup() != null) {
                     updateUserGroup(newUser, accountDto.getUserGroup(), accountNumber);
                 }
 
-                yukonUserDao.save(newUser);
+                userDao.save(newUser);
                 String password = accountDto.getPassword();
                 if (!StringUtils.isBlank(password)) {
                     authenticationService.setPassword(newUser, defaultAuthenticationCategory, password);
                 }
 
                 newLoginId = newUser.getUserID();
-                dbChangeManager.processDbChange(newUser.getLiteID(),
-                                                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                                                DBChangeMsg.CAT_YUKON_USER,
-                                                DBChangeMsg.CAT_YUKON_USER,
-                                                DbChangeType.ADD);
+                dbChangeManager.processDbChange(newUser.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
+                    DBChangeMsg.CAT_YUKON_USER, DBChangeMsg.CAT_YUKON_USER, DbChangeType.ADD);
             }
         }
-        
-        /*
-         * Update the address
-         */
-        if(streetAddress != null) {
+
+        // Update the address
+        if (streetAddress != null) {
             setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
             addressDao.update(liteStreetAddress);
         }
-        /*
-         * Update the billing address if supplied
-         */
-        if(billingAddress != null) {
+        // Update the billing address if supplied
+        if (billingAddress != null) {
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
             addressDao.update(liteBillingAddress);
         }
-        
-        /*
-         * Update the customer account
-         */
+
+        // Update the customer account
         if (accountNumberUpdate) {
-        	account.setAccountNumber(updatedAccountNumber);
+            account.setAccountNumber(updatedAccountNumber);
         } else {
-        	account.setAccountNumber(accountNumber);
+            account.setAccountNumber(accountNumber);
         }
         account.setAccountNotes(accountDto.getAccountNotes());
-        
+
         customerAccountDao.update(account);
-        dbChangeManager.processDbChange(account.getAccountId(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
-                                        DbChangeType.UPDATE);
-        
-        /*
-         * Update the primary contact
-         */
-        contactService.updateContact(primaryContact, accountDto.getFirstName(), accountDto.getLastName(), newLoginId != UserUtils.USER_NONE_ID ? newLoginId : null);
-        
+        dbChangeManager.processDbChange(account.getAccountId(), DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+            DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DBChangeMsg.CAT_CUSTOMER_ACCOUNT, DbChangeType.UPDATE);
+
+        // Update the primary contact
+        contactService.updateContact(primaryContact, accountDto.getFirstName(), accountDto.getLastName(),
+            newLoginId != UserUtils.USER_NONE_ID ? newLoginId : null);
+
         primaryContact.setContFirstName(accountDto.getFirstName());
         primaryContact.setContLastName(accountDto.getLastName());
-        if(newLoginId != UserUtils.USER_NONE_ID) {
+        if (newLoginId != UserUtils.USER_NONE_ID) {
             primaryContact.setLoginID(newLoginId);
         }
         contactDao.saveContact(primaryContact);
-        dbChangeManager.processDbChange(primaryContact.getLiteID(),
-                                        DBChangeMsg.CHANGE_CONTACT_DB,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DBChangeMsg.CAT_CUSTOMERCONTACT,
-                                        DbChangeType.UPDATE);
-        
-        /*
-         * Update the notifications
-         */
-        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
-        LiteContactNotification ivrLoginNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.IVR_LOGIN);
-        LiteContactNotification voicePINNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.VOICE_PIN);
-        
-        if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-        	String homePhone = accountDto.getHomePhone();
-            if(homePhoneNotif == null) {
-            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.HOME_PHONE, homePhone);
-            }else {
+        dbChangeManager.processDbChange(primaryContact.getLiteID(), DBChangeMsg.CHANGE_CONTACT_DB,
+            DBChangeMsg.CAT_CUSTOMERCONTACT, DBChangeMsg.CAT_CUSTOMERCONTACT, DbChangeType.UPDATE);
+
+        // Update the notifications
+        LiteContactNotification homePhoneNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.WORK_PHONE);
+        LiteContactNotification emailNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+        LiteContactNotification ivrLoginNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.IVR_LOGIN);
+        LiteContactNotification voicePINNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.VOICE_PIN);
+
+        if (StringUtils.isNotBlank(accountDto.getHomePhone())) {
+            String homePhone = accountDto.getHomePhone();
+            if (homePhoneNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.HOME_PHONE,
+                    homePhone);
+            } else {
                 homePhoneNotif.setNotification(homePhone);
                 contactNotificationDao.saveNotification(homePhoneNotif);
             }
-        }else {
-            if(homePhoneNotif != null) {
+        } else {
+            if (homePhoneNotif != null) {
                 contactNotificationDao.removeNotification(homePhoneNotif.getContactNotifID());
             }
         }
-        
-        if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-        	String workPhone = accountDto.getWorkPhone();
-            if(workPhoneNotif == null) {
-            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.WORK_PHONE, workPhone);
-            }else {
+
+        if (StringUtils.isNotBlank(accountDto.getWorkPhone())) {
+            String workPhone = accountDto.getWorkPhone();
+            if (workPhoneNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.WORK_PHONE,
+                    workPhone);
+            } else {
                 workPhoneNotif.setNotification(workPhone);
                 contactNotificationDao.saveNotification(workPhoneNotif);
             }
-        }else {
-            if(workPhoneNotif != null) {
+        } else {
+            if (workPhoneNotif != null) {
                 contactNotificationDao.removeNotification(workPhoneNotif.getContactNotifID());
             }
         }
-        
-        if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-        	String email = accountDto.getEmailAddress();
-            if(emailNotif == null) {
-            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.EMAIL, email);
-            }else {
+
+        if (StringUtils.isNotBlank(accountDto.getEmailAddress())) {
+            String email = accountDto.getEmailAddress();
+            if (emailNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.EMAIL, email);
+            } else {
                 emailNotif.setNotification(email);
                 contactNotificationDao.saveNotification(emailNotif);
             }
-        }else {
-            if(emailNotif != null) {
+        } else {
+            if (emailNotif != null) {
                 contactNotificationDao.removeNotification(emailNotif.getContactNotifID());
             }
         }
-        
-        if(StringUtils.isNotBlank(accountDto.getIvrLogin())) {
+
+        if (StringUtils.isNotBlank(accountDto.getIvrLogin())) {
             String ivrLogin = accountDto.getIvrLogin();
-            if(ivrLoginNotif == null) {
-                contactNotificationService.createNotification(primaryContact, ContactNotificationType.IVR_LOGIN, ivrLogin);
-            }else {
+            if (ivrLoginNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.IVR_LOGIN,
+                    ivrLogin);
+            } else {
                 ivrLoginNotif.setNotification(ivrLogin);
                 contactNotificationDao.saveNotification(ivrLoginNotif);
             }
-        }else {
-            if(ivrLoginNotif != null) {
+        } else {
+            if (ivrLoginNotif != null) {
                 contactNotificationDao.removeNotification(ivrLoginNotif.getContactNotifID());
             }
         }
-        
-        if(StringUtils.isNotBlank(accountDto.getVoicePIN())) {
+
+        if (StringUtils.isNotBlank(accountDto.getVoicePIN())) {
             String voicePin = accountDto.getVoicePIN();
-            if(voicePINNotif == null) {
-                contactNotificationService.createNotification(primaryContact, ContactNotificationType.VOICE_PIN, voicePin);
-            }else {
+            if (voicePINNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.VOICE_PIN,
+                    voicePin);
+            } else {
                 voicePINNotif.setNotification(voicePin);
                 contactNotificationDao.saveNotification(voicePINNotif);
             }
-        }else {
-            if(voicePINNotif != null) {
+        } else {
+            if (voicePINNotif != null) {
                 contactNotificationDao.removeNotification(voicePINNotif.getContactNotifID());
             }
         }
-        
-        /*
-         * Update the customer
-         */
+
+        // Update the customer
         liteCustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
         if (accountDto.getCustomerNumber() != null) {
-    		liteCustomer.setCustomerNumber(accountDto.getCustomerNumber());
+            liteCustomer.setCustomerNumber(accountDto.getCustomerNumber());
         }
         if (accountDto.getRateScheduleEntryId() != null) {
-        	liteCustomer.setRateScheduleID(accountDto.getRateScheduleEntryId());
+            liteCustomer.setRateScheduleID(accountDto.getRateScheduleEntryId());
         }
-        
-        if(customerDao.isCICustomer(liteCustomer.getCustomerID())){
-            if(!accountDto.getIsCommercial()) {
+
+        if (customerDao.isCICustomer(liteCustomer.getCustomerID())) {
+            if (!accountDto.getIsCommercial()) {
                 // was commercial, not anymore
                 customerDao.deleteCICustomer(liteCustomer.getCustomerID());
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
                 customerDao.updateCustomer(liteCustomer);
-                
+
                 // Log customer type change
-                accountEventLogService.customerTypeChanged(user, accountNumber, 
-                                                           CustomerTypes.STRING_CI_CUSTOMER, 
-                                                           CustomerTypes.STRING_RES_CUSTOMER);
-            }else {
+                accountEventLogService.customerTypeChanged(user, accountNumber, CustomerTypes.STRING_CI_CUSTOMER,
+                    CustomerTypes.STRING_RES_CUSTOMER);
+            } else {
                 // was commercial and still is
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
                 String oldCompanyName = liteCICustomer.getCompanyName();
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 if (accountDto.getCommercialTypeEntryId() != null) {
-                	liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
+                    liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
                 }
                 customerDao.updateCICustomer(liteCICustomer);
                 customerDao.updateCustomer(liteCustomer);
-                
+
                 if (!oldCompanyName.equalsIgnoreCase(accountDto.getCompanyName())) {
-                    accountEventLogService.companyNameChanged(user, accountNumber, 
-                                                              oldCompanyName, 
-                                                              accountDto.getCompanyName());
+                    accountEventLogService.companyNameChanged(user, accountNumber, oldCompanyName,
+                        accountDto.getCompanyName());
                 }
             }
-        }else {
-            if(accountDto.getIsCommercial()) {
+        } else {
+            if (accountDto.getIsCommercial()) {
                 // was residential, now commercial
                 LiteAddress companyAddress = new LiteAddress();
-                if(streetAddress != null) {
+                if (streetAddress != null) {
                     setAddressFieldsFromDTO(companyAddress, streetAddress);
-                }else {
+                } else {
                     setAddressDefaults(companyAddress);
                 }
                 addressDao.add(companyAddress);
-                
+
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
                 customerDao.updateCustomer(liteCustomer);
-                
+
                 LiteCICustomer liteCICustomer = new LiteCICustomer();
                 liteCICustomer.setMainAddressID(companyAddress.getAddressID());
                 liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 if (accountDto.getCommercialTypeEntryId() != null) {
-                	liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
+                    liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
                 } else {
-                	liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
+                    liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
                 }
                 liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
                 liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
                 customerDao.addCICustomer(liteCICustomer);
-                
+
                 // Log customer type change
-                accountEventLogService.customerTypeChanged(user, accountNumber, 
-                                                           CustomerTypes.STRING_RES_CUSTOMER,
-                                                           CustomerTypes.STRING_CI_CUSTOMER); 
-            }else {
+                accountEventLogService.customerTypeChanged(user, accountNumber, CustomerTypes.STRING_RES_CUSTOMER,
+                    CustomerTypes.STRING_CI_CUSTOMER);
+            } else {
                 customerDao.updateCustomer(liteCustomer);
             }
         }
-        
-        dbChangeManager.processDbChange(liteCustomer.getLiteID(),
-                                        DBChangeMsg.CHANGE_CUSTOMER_DB,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DBChangeMsg.CAT_CUSTOMER,
-                                        DbChangeType.UPDATE);
-        
-        /*
-         * Update account site
-         */
+
+        dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
+            DBChangeMsg.CAT_CUSTOMER, DBChangeMsg.CAT_CUSTOMER, DbChangeType.UPDATE);
+
+        // Update account site
         accountSite.setSiteNumber(accountDto.getMapNumber());
         if (accountDto.getCustomerStatus() != null) {
-        	accountSite.setCustomerStatus(accountDto.getCustomerStatus());
+            accountSite.setCustomerStatus(accountDto.getCustomerStatus());
         }
         if (accountDto.getIsCustAtHome() != null) {
-        	accountSite.setCustAtHome(BooleanUtils.toString(accountDto.getIsCustAtHome(), "Y", "N"));
+            accountSite.setCustAtHome(BooleanUtils.toString(accountDto.getIsCustAtHome(), "Y", "N"));
         }
         accountSite.setPropertyNotes(accountDto.getPropertyNotes());
         accountSiteDao.update(accountSite);
-        
-        /*
-         * Update site information
-         */
-        if(StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
+
+        // Update site information
+        if (StringUtils.isNotEmpty(accountDto.getSiteInfo().getSubstationName())) {
             try {
                 int subId = siteInformationDao.getSubstationIdByName(accountDto.getSiteInfo().getSubstationName());
                 liteSiteInformation.setSubstationID(subId);
-            }catch(NotFoundException e) {
-                log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName() , e);
-                throw new InvalidSubstationNameException("Unable to find substation by name: "+ accountDto.getSiteInfo().getSubstationName());
+            } catch (NotFoundException e) {
+                log.error("Unable to find substation by name: " + accountDto.getSiteInfo().getSubstationName(), e);
+                throw new InvalidSubstationNameException("Unable to find substation by name: "
+                    + accountDto.getSiteInfo().getSubstationName());
             }
         }
         liteSiteInformation.setFeeder(accountDto.getSiteInfo().getFeeder());
@@ -910,141 +844,129 @@ public class AccountServiceImpl implements AccountService {
         liteSiteInformation.setTransformerSize(accountDto.getSiteInfo().getTransformerSize());
         liteSiteInformation.setServiceVoltage(accountDto.getSiteInfo().getServiceVoltage());
         siteInformationDao.update(liteSiteInformation);
-        
-        /*
-         * Update mapping
-         */
-        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompanyOfAccount.getEnergyCompanyId());
-        
-        /*
-         * Update Login
-         */
-        
-        log.info("Account: " +accountNumber + " updated successfully.");
 
-        if  (!updatableAccount.getAccountNumber().equalsIgnoreCase(account.getAccountNumber())) {
-            accountEventLogService.accountNumberChanged(user, account.getAccountNumber(), 
-                                                        updatableAccount.getAccountNumber());
+        // Update mapping
+        ecMappingDao.updateECToAccountMapping(account.getAccountId(), energyCompanyOfAccount.getEnergyCompanyId());
+
+        // Update Login
+        log.info("Account: " + accountNumber + " updated successfully.");
+
+        if (!updatableAccount.getAccountNumber().equalsIgnoreCase(account.getAccountNumber())) {
+            accountEventLogService.accountNumberChanged(user, account.getAccountNumber(),
+                updatableAccount.getAccountNumber());
         }
-        
+
         accountEventLogService.accountUpdated(user, accountNumber);
     }
-    
+
     @Override
-    public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser) {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
-    	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, yukonEnergyCompany);
-        
-    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(yukonEnergyCompany.getEnergyCompanyUser());
-    	
-    	return getAccountDto(customerAccount, yukonEnergyCompany, userContext);
+    public AccountDto getAccountDto(String accountNumber, LiteYukonUser user) {
+        YukonEnergyCompany ec = ecService.getEnergyCompanyByOperator(user);
+        CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
+
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getEnergyCompanyUser());
+
+        return getAccountDto(customerAccount, userContext);
     }
-    
+
     @Override
     public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) {
-    
-    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
-    	
-    	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
-    	return getAccountDto(customerAccount, ec, userContext);
+        YukonUserContext userContext = userContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+
+        CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
+        return getAccountDto(customerAccount, userContext);
     }
-    
+
     @Override
     public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext) {
-    	
-    	CustomerAccount customerAccount = getCustomerAccountForAccountId(accountId);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-    	
-        return getAccountDto(customerAccount, energyCompany, userContext);
+        CustomerAccount customerAccount = getCustomerAccountForAccountId(accountId);
+        return getAccountDto(customerAccount, userContext);
     }
-    
-    private AccountDto getAccountDto(CustomerAccount customerAccount, YukonEnergyCompany yukonEnergyCompany, YukonUserContext userContext) {
+
+    private AccountDto getAccountDto(CustomerAccount customerAccount, YukonUserContext userContext) {
         AccountDto retrievedDto = new AccountDto();
-        
+
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-        
+
         retrievedDto.setAccountNumber(customerAccount.getAccountNumber());
         retrievedDto.setFirstName(primaryContact != null ? primaryContact.getContFirstName() : "");
         retrievedDto.setLastName(primaryContact != null ? primaryContact.getContLastName() : "");
-        
-        /*
-         * Customer
-         */
+
+        // Customer
         retrievedDto.setAltTrackingNumber(stripNone(customer.getAltTrackingNumber()));
         retrievedDto.setCustomerNumber(stripNone(customer.getCustomerNumber()));
         retrievedDto.setRateScheduleEntryId(customer.getRateScheduleID());
-        if(customer instanceof LiteCICustomer) {
+        if (customer instanceof LiteCICustomer) {
             retrievedDto.setCompanyName(((LiteCICustomer) customer).getCompanyName());
             retrievedDto.setIsCommercial(true);
             retrievedDto.setCommercialTypeEntryId(((LiteCICustomer) customer).getCICustType());
-        }else {
+        } else {
             retrievedDto.setCompanyName("");
             retrievedDto.setIsCommercial(false);
             retrievedDto.setCommercialTypeEntryId(null);
         }
         retrievedDto.setAccountNotes(customerAccount.getAccountNotes());
-        
-        /*
-         * Notifications
-         */
-        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
-        if(homePhoneNotif != null) {
-        	String homePhone = homePhoneNotif.getNotification();
-        	homePhone = phoneNumberFormattingService.formatPhoneNumber(homePhone, userContext);
+
+        // Notifications
+        LiteContactNotification homePhoneNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact,
+                ContactNotificationType.WORK_PHONE);
+        LiteContactNotification emailNotif =
+            contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+        if (homePhoneNotif != null) {
+            String homePhone = homePhoneNotif.getNotification();
+            homePhone = phoneNumberFormattingService.formatPhoneNumber(homePhone, userContext);
             retrievedDto.setHomePhone(homePhone);
-        }else {
+        } else {
             retrievedDto.setHomePhone("");
         }
-        if(workPhoneNotif != null) {
-        	String workPhone = workPhoneNotif.getNotification();
-        	workPhone = phoneNumberFormattingService.formatPhoneNumber(workPhone, userContext);
+        if (workPhoneNotif != null) {
+            String workPhone = workPhoneNotif.getNotification();
+            workPhone = phoneNumberFormattingService.formatPhoneNumber(workPhone, userContext);
             retrievedDto.setWorkPhone(workPhone);
-        }else {
+        } else {
             retrievedDto.setWorkPhone("");
         }
-        if(emailNotif != null) {
+        if (emailNotif != null) {
             retrievedDto.setEmailAddress(emailNotif.getNotification());
-        }else {
+        } else {
             retrievedDto.setEmailAddress("");
         }
-        
-        /*
-         * Addresses
-         */
+
+        // Addresses
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         giveAddressFieldsToDTO(address, retrievedDto.getStreetAddress());
         LiteAddress billingAdress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         giveAddressFieldsToDTO(billingAdress, retrievedDto.getBillingAddress());
         retrievedDto.setPropertyNotes(accountSite.getPropertyNotes());
-        
-        if(primaryContact != null && primaryContact.getLoginID() > UserUtils.USER_NONE_ID) {
-            LiteYukonUser user = yukonUserDao.getLiteYukonUser(primaryContact.getLoginID());
+
+        if (primaryContact != null && primaryContact.getLoginID() > UserUtils.USER_NONE_ID) {
+            LiteYukonUser user = userDao.getLiteYukonUser(primaryContact.getLoginID());
             retrievedDto.setUserName(user.getUsername());
 
             if (user.getUserGroupId() != null) {
                 LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
                 retrievedDto.setUserGroup(userGroup.getUserGroupName());
             }
-        }else {
+        } else {
             retrievedDto.setUserName("");
             retrievedDto.setUserGroup(null);
         }
-        
-        /*
-         * Account site
-         */
+
+        // Account site
         retrievedDto.setMapNumber(accountSite.getSiteNumber());
         retrievedDto.setCustomerStatus(accountSite.getCustomerStatus());
         retrievedDto.setIsCustAtHome(accountSite.getCustAtHome().equals("N") ? false : true);
         String subName = null;
         try {
             subName = siteInformationDao.getSubstationNameById(siteInfo.getSubstationID());
-        } catch(NotFoundException nfe) {
+        } catch (NotFoundException nfe) {
             subName = "";
         }
         retrievedDto.getSiteInfo().setSubstationName(subName);
@@ -1052,37 +974,37 @@ public class AccountServiceImpl implements AccountService {
         retrievedDto.getSiteInfo().setPole(siteInfo.getPole());
         retrievedDto.getSiteInfo().setTransformerSize(siteInfo.getTransformerSize());
         retrievedDto.getSiteInfo().setServiceVoltage(siteInfo.getServiceVoltage());
-        
+
         return retrievedDto;
     }
 
-    // HELPER METHODS
-    private CustomerAccount getCustomerAccountForAccountNumberAndEnergyCompany(String accountNumber, YukonEnergyCompany ec) {
-    	
-    	CustomerAccount customerAccount = null;
+    private CustomerAccount getCustomerAccountForAccountNumberAndEnergyCompany(String accountNumber,
+        YukonEnergyCompany ec) {
+
+        CustomerAccount customerAccount = null;
         try {
             customerAccount = customerAccountDao.getByAccountNumber(accountNumber, ec.getEnergyCompanyId());
         } catch (NotFoundException e) {
             log.error("Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
-        
+
         return customerAccount;
     }
-    
+
     private CustomerAccount getCustomerAccountForAccountId(int accountId) {
-    	
-    	CustomerAccount customerAccount = null;
+
+        CustomerAccount customerAccount = null;
         try {
             customerAccount = customerAccountDao.getById(accountId);
         } catch (EmptyResultDataAccessException e) {
             log.error("Unable to find account for accountId: " + accountId);
             throw new InvalidAccountNumberException("Unable to find account for accountId: " + accountId, e);
         }
-        
+
         return customerAccount;
     }
-    
+
     // we store "(none)" in the database for some reason
     private void setAddressDefaults(LiteAddress liteAddress) {
         liteAddress.setLocationAddress1("");
@@ -1092,17 +1014,18 @@ public class AccountServiceImpl implements AccountService {
         liteAddress.setStateCode("  ");
         liteAddress.setZipCode("");
     }
-    
+
     private void setAddressFieldsFromDTO(LiteAddress lite, Address address) {
         lite.setLocationAddress1(StringUtils.defaultString(address.getLocationAddress1()));
-       	lite.setLocationAddress2(StringUtils.defaultString(address.getLocationAddress2()));
+        lite.setLocationAddress2(StringUtils.defaultString(address.getLocationAddress2()));
         lite.setCityName(StringUtils.defaultString(address.getCityName()));
         lite.setStateCode(StringUtils.defaultString(address.getStateCode()));
         lite.setZipCode(StringUtils.defaultString(address.getZipCode()));
         lite.setCounty(StringUtils.defaultString(address.getCounty()));
     }
-    
-    // when extracting lets turn "(none)"s into blank strings even though they may turn back into "(none)"s if they are re-saved without being set
+
+    // when extracting lets turn "(none)"s into blank strings even though they may turn back into "(none)"s if
+    // they are re-saved without being set
     private void giveAddressFieldsToDTO(LiteAddress lite, Address address) {
         address.setLocationAddress1(stripNone(lite.getLocationAddress1()));
         address.setLocationAddress2(stripNone(lite.getLocationAddress2()));
@@ -1111,24 +1034,27 @@ public class AccountServiceImpl implements AccountService {
         address.setZipCode(stripNone(lite.getZipCode()));
         address.setCounty(stripNone(lite.getCounty()));
     }
-    
-    private String stripNone (String value) {
-    	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
+
+    private String stripNone(String value) {
+        return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
     }
-    
+
     /**
-     * This method tries to update the user's user group to the user group name supplied.  This method will throw a
+     * This method tries to update the user's user group to the user group name supplied. This method will
+     * throw a
      * InvalidLoginGroupException if the user group does not exist.
      * 
      * @throws InvalidLoginGroupException - The user group name supplied does not exist.
      */
-    private void updateUserGroup(LiteYukonUser user, String userGroupName, String accountNumber) throws InvalidLoginGroupException{
+    private void updateUserGroup(LiteYukonUser user, String userGroupName, String accountNumber)
+            throws InvalidLoginGroupException {
         try {
             LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
             user.setUserGroupId(userGroup.getUserGroupId());
-        }catch (NotFoundException e) {
-            log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ userGroupName + "' doesn't exist.");
-            throw new InvalidLoginGroupException("The provided user group '"+ userGroupName + "' doesn't exist.");
+        } catch (NotFoundException e) {
+            log.error("Account " + accountNumber + " could not be updated: The provided user group '" + userGroupName
+                + "' doesn't exist.");
+            throw new InvalidLoginGroupException("The provided user group '" + userGroupName + "' doesn't exist.");
         }
     }
 }
