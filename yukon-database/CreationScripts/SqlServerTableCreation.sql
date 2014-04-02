@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/24/2014 2:46:44 PM                         */
+/* Created on:     4/2/2014 4:41:19 PM                          */
 /*==============================================================*/
 
 
@@ -572,6 +572,7 @@ INSERT INTO BillingFileFormats VALUES( 31, 'STANDARD',1);
 INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only',1);
 INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1);
 INSERT INTO BillingFileFormats VALUES(-34, 'Curtailment Events - Itron', 1);
+INSERT INTO BillingFileFormats VALUES(-35, 'Banner', 1);
 
 /*==============================================================*/
 /* Index: Indx_BillFile_FormType_UNQ                            */
