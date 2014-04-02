@@ -632,7 +632,7 @@ public class UpdaterHelper {
                     String lead = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead() ,0); 
                     String lag = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", lag, lead);
+                    return accessor.getMessage("yukon.web.modules.capcontrol.offPeakLeadLag", lead, lag);
                 }
             }
         }
