@@ -366,7 +366,11 @@ CtiTableDynamicPaoInfo::CtiTableDynamicPaoInfo(Cti::RowReader& rdr) :
 
     if( ! resolvedKey )
     {
-        throw BadKeyException(tmp_keyString);
+        std::string tmp_OwnerString;
+
+        rdr["owner"] >> tmp_OwnerString;
+
+        throw BadKeyException(_pao_id, tmp_keyString, tmp_OwnerString);
     }
 
     _key = *resolvedKey;
