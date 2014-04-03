@@ -3,7 +3,7 @@ yukon.namespace('yukon.dr.dataUpdater.showAction');
 yukon.dr.dataUpdater.showAction = (function () {
     var 
     _updateMenu = function(paoId, menu) {
-        var actionsEl = jQuery('[data-pao-id='+paoId+']');
+        var actionsEl = $('[data-pao-id='+paoId+']');
         for (var action in menu) {
             actionsEl.filter('[data-' + action + '-action]').hide();
             actionsEl.filter('[data-' + action + '-action="' + menu[action].state + '"]')
