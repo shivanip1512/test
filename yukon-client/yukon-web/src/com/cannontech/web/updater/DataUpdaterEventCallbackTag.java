@@ -19,7 +19,7 @@ public class DataUpdaterEventCallbackTag extends YukonTagSupport {
         
         JspWriter out = getJspContext().getOut();
         out.print("<script type=\"text/javascript\">");
-        out.print("\ncannonDataUpdateEventRegistration(" + function + ", \"" + id + "\");\n");
+        out.print("\nyukon.dataUpdater.cannonDataUpdateEventRegistration(" + function + ", \"" + id + "\");\n");
         out.print("\n</script>");
     }
     

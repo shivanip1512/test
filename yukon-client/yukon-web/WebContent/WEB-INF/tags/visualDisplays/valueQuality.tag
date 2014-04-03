@@ -6,5 +6,5 @@
 <td align="center"><cti:pointValue format="{quality|com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl.getPointQualityLetter}" pointId="${pointId}"/></td>
 
 <script type="text/javascript">
-	cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${pointId}/VALUE'});
+    yukon.dataUpdater.cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${pointId}/VALUE'});
 </script>

@@ -1,3 +1,3 @@
 <script type="text/javascript">
-    disableHighlight = true;
+    yukon.dataUpdater.disableHighlight = true;
 </script>

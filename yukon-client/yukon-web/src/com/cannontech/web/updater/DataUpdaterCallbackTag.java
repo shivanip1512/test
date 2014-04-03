@@ -34,7 +34,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         out.print("<script type=\"text/javascript\">");
         
         // print out a call to register the callback function
-        out.print("\ncannonDataUpdateRegistration(" + function + ",{");
+        out.print("\nyukon.dataUpdater.cannonDataUpdateRegistration(" + function + ",{");
         boolean firstId = true;
         for(String identifierName : identifierAttributes.keySet()) {
             

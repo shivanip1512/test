@@ -16,7 +16,7 @@
  */
 
 yukon.namespace('yukon.dialogConfirm');
-yukon.modules.dialogConfirm = function () {
+yukon.dialogConfirm = (function () {
     var _initialized = false,
         _current_dialog = null,
         _INDEX_OF_ACTION_BUTTON = 1, // Action button is the right of 2 buttons = [1]
@@ -220,12 +220,4 @@ yukon.modules.dialogConfirm = function () {
         }
     };
     return mod;
-};
-
-( function () {
-    try {
-        yukon.dialogConfirm = new yukon.modules.dialogConfirm();
-    } catch(dialogex) {
-        alert('Exception in confirm dialog initialization: ' + dialogex);
-    }
 })();

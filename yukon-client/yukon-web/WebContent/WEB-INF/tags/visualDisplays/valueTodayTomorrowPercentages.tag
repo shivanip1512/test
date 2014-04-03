@@ -7,6 +7,6 @@
 <td align="right" style="padding-right:10px;"><cti:pointValue format="VALUE" pointId="${tomorrowPointId}"/>%</td>
 
 <script type="text/javascript">
-	cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${todayPointId}/VALUE'});
-	cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${tomorrowPointId}/VALUE'});
+    yukon.dataUpdater.cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${todayPointId}/VALUE'});
+    yukon.dataUpdater.cannonDataUpdateRegistration(setLastTransmission(),{'value':'POINT/${tomorrowPointId}/VALUE'});
 </script>
