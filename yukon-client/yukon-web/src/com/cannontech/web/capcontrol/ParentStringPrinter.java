@@ -31,7 +31,6 @@ public class ParentStringPrinter {
     public static final String ORPH_STRING = "---";
     private static final String FEEDER_URL = "/capcontrol/tier/feeders";
     private static final String AREA_URL = "/capcontrol/tier/areas";
-    private static final String SPECIAL_AREA_URL = "/capcontrol/tier/areas?isSpecialArea=true";
     private static final String ZONE_DETAIL_URL = "/capcontrol/ivvc/zone/detail";
     
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
@@ -81,7 +80,7 @@ public class ParentStringPrinter {
                 return buildLink(request, areaName, null, null, false, AREA_URL);
             } else if (specialAreaIdList != null && specialAreaIdList.size() > 0){
                 String areaName = paoDao.getYukonPAOName(specialAreaIdList.get(0));
-                return buildLink(request, areaName, null, null, true, SPECIAL_AREA_URL);
+                return buildLink(request, areaName, null, null, true, AREA_URL);
             } else {
                 return ORPH_STRING;
             }

@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 
-<cti:standardPage module="capcontrol" page="areas.${type}">
+<cti:standardPage module="capcontrol" page="areas">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
 
     <c:if test="${hasAreaControl}">
@@ -13,74 +13,73 @@
             addCommandMenuBehavior('a[id^="areaState_"]');
         </script>
     </c:if>
-     
-    <tags:boxContainer2 nameKey="areasContainer" hideEnabled="false">
-        <table id="areaTable" class="compact-results-table">
-        
-            <thead>
-                <tr>
-                    <th width="16px">&nbsp;</th>
-                    <th><i:inline key=".name"/></th>
-                    <th><i:inline key=".state"/></th>
-                    <th class="tar"><i:inline key=".availableKvars"/></th>
-                    <th class="tar"><i:inline key=".unavailableKvars"/></th>
-                    <th class="tar"><i:inline key=".closedKvars"/></th>
-                    <th class="tar"><i:inline key=".trippedKvars"/></th>
-                    <th class="tar"><i:inline key=".pfactorEstimated"/></th>
-                </tr>
-            </thead>
-            <tfoot></tfoot>
-            
-            <tbody>
-                <c:forEach var="viewableArea" items="${ccAreas}">
-                    
-                    <!-- Setup Variables -->
-                    <c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
-                    
-                    <cti:url var="substationUrl" value="/capcontrol/tier/substations">
-                        <cti:param name="bc_areaId" value="${thisAreaId}"/>
-                        <cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-                    </cti:url>
-                    
+    
+    <c:forEach var="item" items="${areasMap}">
+        <c:set var="ccAreas" value="${item.value}" />
+        <c:set var="type" value="normal"/>
+        <c:set var="updaterType" value="CBCAREA"/>
+        <c:if test="${item.key}">
+            <c:set var="type" value="special"/>
+            <c:set var="updaterType" value="CBCSPECIALAREA"/>
+        </c:if>
+        <tags:boxContainer2 nameKey="areasContainer.${type}" styleClass="stacked-medium">
+            <table id="areaTable" class="compact-results-table">
+                <thead>
                     <tr>
-                        <td>
-                            <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-                        </td>
-                        <td>
-                            <div class="f-tooltip dn">
-                                <c:forEach var="station" items="${viewableArea.subStations}">
-                                        <div class="detail fwb">${fn:escapeXml(station.name)}</div>
-                                        <div class="detail wsnw">
-                                            &nbsp;&nbsp;<i:inline key=".feeders" arguments="${station.feederCount}"/>
-                                            &nbsp;&nbsp;<i:inline key=".banks" arguments="${station.capBankCount}"/>
-                                        </div>
-                                </c:forEach>
-                            </div>
-                            <a href="${substationUrl}" class="f-has-tooltip">${fn:escapeXml(viewableArea.area.ccName)}</a>
-                        </td>
-                        
-                        <td>
-                            <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                            <c:if test="${!hasAreaControl}"><span id="areaState_${thisAreaId}"></c:if>
-                                <span id="areaState_box_${thisAreaId}" class="box state-box">&nbsp;</span>
-                                <cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
-                            <c:if test="${hasAreaControl}"></a></c:if>
-                            <c:if test="${!hasAreaControl}"></span></c:if>
-                            <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
-                        </td>
-                        <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE"/></td>
-                        <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE"/></td>
-                        <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED"/></td>
-                        <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED"/></td>
-                        <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR"/></td>
-                        
+                        <th width="16px">&nbsp;</th>
+                        <th><i:inline key=".name"/></th>
+                        <th><i:inline key=".state"/></th>
+                        <th class="tar"><i:inline key=".availableKvars"/></th>
+                        <th class="tar"><i:inline key=".unavailableKvars"/></th>
+                        <th class="tar"><i:inline key=".closedKvars"/></th>
+                        <th class="tar"><i:inline key=".trippedKvars"/></th>
+                        <th class="tar"><i:inline key=".pfactorEstimated"/></th>
                     </tr>
-                    
-                </c:forEach>
-            </tbody>
-            
-        </table>
+                </thead>
+                <tfoot></tfoot>
+                <tbody>
+                    <c:forEach var="viewableArea" items="${ccAreas}">
+                        <!-- Setup Variables -->
+                        <c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
 
-    </tags:boxContainer2>
-
+                        <cti:url var="substationUrl" value="/capcontrol/tier/substations">
+                            <cti:param name="bc_areaId" value="${thisAreaId}"/>
+                            <cti:param name="isSpecialArea" value="${item.key}"/>
+                        </cti:url>
+                        <tr>
+                            <td>
+                                <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
+                            </td>
+                            <td>
+                                <div class="f-tooltip dn">
+                                    <c:forEach var="station" items="${viewableArea.subStations}">
+                                            <div class="detail fwb">${fn:escapeXml(station.name)}</div>
+                                            <div class="detail wsnw">
+                                                &nbsp;&nbsp;<i:inline key=".feeders" arguments="${station.feederCount}"/>
+                                                &nbsp;&nbsp;<i:inline key=".banks" arguments="${station.capBankCount}"/>
+                                            </div>
+                                    </c:forEach>
+                                </div>
+                                <a href="${substationUrl}" class="f-has-tooltip">${fn:escapeXml(viewableArea.area.ccName)}</a>
+                            </td>
+                            <td>
+                                <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
+                                <c:if test="${!hasAreaControl}"><span id="areaState_${thisAreaId}"></c:if>
+                                    <span id="areaState_box_${thisAreaId}" class="box state-box">&nbsp;</span>
+                                    <cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
+                                <c:if test="${hasAreaControl}"></a></c:if>
+                                <c:if test="${!hasAreaControl}"></span></c:if>
+                                <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
+                            </td>
+                            <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE"/></td>
+                            <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE"/></td>
+                            <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED"/></td>
+                            <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED"/></td>
+                            <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR"/></td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </tags:boxContainer2>
+    </c:forEach>
 </cti:standardPage>

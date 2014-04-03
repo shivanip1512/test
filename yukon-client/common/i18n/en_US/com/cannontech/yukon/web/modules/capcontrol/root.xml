@@ -254,10 +254,11 @@
     <entry key="yukon.web.modules.capcontrol.type.PO_REGULATOR">Phase Operated Regulator</entry>
     
     <!-- areaTier.jsp -->
-    <entry key="yukon.web.modules.capcontrol.areas.normal.pageName">Volt/Var Dashboard</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.normal.contextualPageName">Volt/Var</entry>
-    <entry key="yukon.web.modules.capcontrol.areas.special.pageName">Special Areas</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.pageName">Volt/Var Dashboard</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.contextualPageName">Volt/Var</entry>
     <entry key="yukon.web.modules.capcontrol.areas.systemActions.title">System Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.areasContainer.normal.title">Substation Areas</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.areasContainer.special.title">Special Substation Areas</entry>
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.title">Substation Areas</entry>
     <entry key="yukon.web.modules.capcontrol.substations">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>

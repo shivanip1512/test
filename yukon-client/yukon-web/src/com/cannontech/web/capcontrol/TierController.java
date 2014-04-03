@@ -1,7 +1,9 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,29 +54,22 @@ public class TierController {
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
     
     @RequestMapping("areas")
-    public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap model) {
-        if (isSpecialArea == null) {
-            isSpecialArea = false;
-        }
-        
+    public String areas(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
-        model.addAttribute("areaParam", CCSessionInfo.STR_CC_AREAID);
-        model.addAttribute("isSpecialArea",isSpecialArea);
-        List<? extends StreamableCapObject> ccAreas = null;
-        
-        if (isSpecialArea) {
-            ccAreas = cache.getSpecialCbcAreas();
-            model.addAttribute("updaterType", "CBCSPECIALAREA");
-            model.addAttribute("type", "special");
-        } else {
-            ccAreas = cache.getCbcAreas();
-            model.addAttribute("updaterType", "CBCAREA");
-            model.addAttribute("type", "normal");
-        }
-        
-        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(ccAreas, cache, isSpecialArea);
-        model.addAttribute("ccAreas", viewableAreas);
+        Map<Boolean, List<ViewableArea>> result = new HashMap<>();
+
+        List<Area> ccAreas = cache.getCbcAreas();
+        List<SpecialArea> specialAreas = cache.getSpecialCbcAreas();
+
+        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(ccAreas, cache, false);
+        List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(specialAreas, cache, true);
+
+        result.put(true, viewableSpecialAreas);
+        result.put(false, viewableAreas);
+
+        model.addAttribute("areasMap", result);
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);

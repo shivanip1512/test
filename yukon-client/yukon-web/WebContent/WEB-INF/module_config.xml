@@ -529,10 +529,9 @@
     <css file="/WebConfig/yukon/styles/da/CapcontrolGeneralStyles.css" />
     <search bean="capControlSearchProducer" />
     <pages>
-      <page name="areas.normal" type="BASIC">
+      <page name="areas" type="BASIC">
         <link>/capcontrol/tier/areas</link>
         <pages>
-          <page name="areas.special" type="BASIC"/>
           <page name="area" type="DETAIL">
             <link>/capcontrol/tier/substations?isSpecialArea=${isSpecialArea}&amp;bc_areaId=${bc_areaId}</link>
             <labelArgument>${bc_areaName}</labelArgument>
