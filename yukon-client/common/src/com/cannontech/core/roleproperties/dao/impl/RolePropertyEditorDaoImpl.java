@@ -27,7 +27,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -46,8 +46,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
+    private static final Logger log = YukonLogManager.getLogger(RolePropertyEditorDaoImpl.class);
     
-    private final class RolePredicate implements Predicate<YukonRoleProperty> {
+    private final static class RolePredicate implements Predicate<YukonRoleProperty> {
         private final YukonRole role;
 
         private RolePredicate(YukonRole role) {
@@ -65,10 +66,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     @Autowired private RoleDao roleDao;
     @Autowired private RolePropertyDaoImpl rolePropertyDao;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    private static final Logger log = YukonLogManager.getLogger(RolePropertyEditorDaoImpl.class);
-    
     private ImmutableMap<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRoleProperties;
     private static boolean WRITE_NULL_FOR_DEFAULTS = false; // set to true when db editor support is no longer needed
     
@@ -81,7 +80,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("SELECT rolePropertyId, keyName, description");
         sql.append("FROM YukonRoleProperty");
         
-        yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("rolePropertyId");
@@ -97,7 +96,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
 
                     DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty, defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
                     descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
-                } catch (IllegalArgumentException e) {
+                } catch (NullPointerException e) {
                     // Database contains an unknown role property, this is logged elsewhere
                 }
             }
@@ -147,7 +146,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("from YukonGroupRole ygr");
         sql.append("where ygr.GroupId").eq(group.getGroupID());
         
-        yukonJdbcOperations.query(sql, new YukonRowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 YukonRoleProperty property = YukonRoleProperty.getForId(rs.getInt("rolePropertyId"));
@@ -230,7 +229,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("WHERE GroupId").eq(groupId);
         sql.append(  "AND RoleId").eq(roleId);
         
-        yukonJdbcOperations.update(sql);
+        jdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(groupId,
                                         DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -267,7 +266,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql.append("where groupId").eq(liteYukonGroup.getGroupID());
         sql.append(  "and rolePropertyId").eq(yukonRoleProperty.getPropertyId());
         
-        int updated = yukonJdbcOperations.update(sql);
+        int updated = jdbcTemplate.update(sql);
         if (updated == 0) {
             insertGroupRoleProperty(liteYukonGroup, yukonRoleProperty, dbTextValue);
         }
@@ -281,7 +280,7 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
         sql2.append("insert into YukonGroupRole");
         sql2.values(nextValue, liteYukonGroup.getGroupID(), yukonRoleProperty.getRole().getRoleId(), yukonRoleProperty.getPropertyId(), dbTextValue);
         
-        yukonJdbcOperations.update(sql2);
+        jdbcTemplate.update(sql2);
     }
 
     private String getStringToStoreForValue(YukonRoleProperty yukonRoleProperty, Object valueToStore) {
