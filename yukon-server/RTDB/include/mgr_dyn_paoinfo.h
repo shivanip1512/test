@@ -74,6 +74,8 @@ private:
     typedef std::map<PaoInfoKeys, DynInfoSPtr> PaoInfoMap;
     typedef std::map<long, PaoInfoMap> PaoIdToPaoInfoMap;
 
+    void loadInfoIfNecessary(const long paoId);
+
     void setInfo(DynInfoSPtr &newInfo);
 
     template<typename T>

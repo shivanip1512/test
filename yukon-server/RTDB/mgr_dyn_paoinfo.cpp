@@ -52,6 +52,23 @@ void DynamicPaoInfoManager::setOwner(const Applications owner)
 }
 
 
+void DynamicPaoInfoManager::loadInfoIfNecessary(const long paoId)
+{
+    bool loaded = false;
+
+    {
+        readers_writer_lock_t::reader_lock_guard_t guard(mux);
+
+        loaded = loadedPaos.count(paoId);
+    }
+
+    if( ! loaded )
+    {
+        loadInfo(paoId);
+    }
+}
+
+
 void DynamicPaoInfoManager::loadInfo(const long paoId)
 {
     Database::id_set paoIds;
@@ -138,6 +155,8 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
 
 void DynamicPaoInfoManager::purgeInfo(const long paoId)
 {
+    readers_writer_lock_t::writer_lock_guard_t lock(instance->mux);
+
     boost::optional<PaoInfoMap &> paoInfo = mapFindRef(instance->paoInfoPerId, paoId);
 
     if( ! paoInfo ) // Nothing to purge, let's get out of here!
@@ -171,6 +190,8 @@ void DynamicPaoInfoManager::purgeInfo(const long paoId)
 
 void DynamicPaoInfoManager::purgeInfo(long paoId, CtiTableDynamicPaoInfo::PaoInfoKeys key)
 {
+    readers_writer_lock_t::writer_lock_guard_t lock(instance->mux);
+
     boost::optional<PaoInfoMap &> paoInfo = mapFindRef(instance->paoInfoPerId, paoId);
 
     if( ! paoInfo ) // Nothing to purge, let's get out of here!
@@ -286,28 +307,27 @@ void DynamicPaoInfoManager::writeInfo( void )
 
 void DynamicPaoInfoManager::setInfo(DynInfoSPtr &newInfo)
 {
-    readers_writer_lock_t::writer_lock_guard_t guard(instance->mux);
-
     const long        paoId = newInfo->getPaoID();
     const PaoInfoKeys key   = newInfo->getKey();
 
-    if( ! loadedPaos.count(paoId) )
+    loadInfoIfNecessary(paoId);
+
     {
-        loadInfo(paoId);
+        readers_writer_lock_t::writer_lock_guard_t guard(mux);
+
+        PaoInfoMap &paoInfo = paoInfoPerId[paoId];
+
+        DynInfoSPtr &oldInfo = paoInfo[key];
+
+        if( oldInfo && oldInfo->isFromDb() )
+        {
+            newInfo->setFromDb();
+        }
+
+        oldInfo = newInfo;
+
+        dirtyInfo.insert(newInfo);
     }
-
-    PaoInfoMap &paoInfo = instance->paoInfoPerId[paoId];
-
-    DynInfoSPtr &oldInfo = paoInfo[key];
-
-    if( oldInfo && oldInfo->isFromDb() )
-    {
-        newInfo->setFromDb();
-    }
-
-    oldInfo = newInfo;
-
-    dirtyInfo.insert(newInfo);
 }
 
 void DynamicPaoInfoManager::setInfo(const long paoId, PaoInfoKeys k, const std::string value)    {  instance->setInfo(boost::make_shared<CtiTableDynamicPaoInfo>(paoId, k, value));  }
@@ -322,23 +342,12 @@ void DynamicPaoInfoManager::setInfo(const long paoId, PaoInfoKeys k, const CtiTi
 template <class T>
 bool DynamicPaoInfoManager::getInfoForId(long paoId, CtiTableDynamicPaoInfo::PaoInfoKeys k, T &destination)
 {
-    bool loaded = false;
+    loadInfoIfNecessary(paoId);
 
     {
-        readers_writer_lock_t::reader_lock_guard_t guard(instance->mux);
+        readers_writer_lock_t::reader_lock_guard_t guard(mux);
 
-        loaded = loadedPaos.count(paoId);
-    }
-
-    if( ! loaded )
-    {
-        loadInfo(paoId);
-    }
-
-    {
-        readers_writer_lock_t::reader_lock_guard_t guard(instance->mux);
-
-        boost::optional<PaoInfoMap &> paoInfo = mapFindRef(instance->paoInfoPerId, paoId);
+        boost::optional<PaoInfoMap &> paoInfo = mapFindRef(paoInfoPerId, paoId);
 
         if( ! paoInfo )
         {
@@ -386,16 +395,20 @@ long DynamicPaoInfoManager::getInfo(long paoId, PaoInfoKeys k)
 
 bool DynamicPaoInfoManager::hasInfo(long paoId, PaoInfoKeys k)
 {
-    readers_writer_lock_t::reader_lock_guard_t guard(instance->mux);
+    instance->loadInfoIfNecessary(paoId);
 
-    boost::optional<PaoInfoMap &> paoInfo = mapFindRef(instance->paoInfoPerId, paoId);
-
-    if( ! paoInfo )
     {
-        return false;
-    }
+        readers_writer_lock_t::reader_lock_guard_t guard(instance->mux);
 
-    return paoInfo->count(k);
+        boost::optional<PaoInfoMap &> paoInfo = mapFindRef(instance->paoInfoPerId, paoId);
+
+        if( ! paoInfo )
+        {
+            return false;
+        }
+
+        return paoInfo->count(k);
+    }
 }
 
 
