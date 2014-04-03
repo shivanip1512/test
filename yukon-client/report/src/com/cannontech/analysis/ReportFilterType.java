@@ -56,7 +56,17 @@ public enum ReportFilterType {
         }
 	}
 	,
-	PAOBJECTID {
+    PAOBJECTID {    //stored in request as array of ints ([123], [333], [5646]). 
+        @Override
+        public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
+            int[] idsArray = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+            if (idsArray.length > 0) {
+                model.setPaoIDs(idsArray);
+            }
+        }
+    }
+	,
+	PAOBJECTID_STR {   //stored in request as string ("123,333,5646"). CSV of ids.
 		@Override
         public void applyParameters(ReportModelBase<?> model, HttpServletRequest request) {
             String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");

@@ -7,9 +7,9 @@ public enum ReportFilter {
 	GROUPS("Groups", ReportFilterType.DEVICEGROUP),
 	ROUTE("Route", ReportFilterType.PAOBJECTID),
 	RECEIVER("Receiver", ReportFilterType.PAOBJECTID),
-	LMGROUP("LM Group", ReportFilterType.PAOBJECTID),
-	LMCONTROLAREA("LM Control Area", ReportFilterType.PAOBJECTID),
-	LMSCENARIO("LM Scenario", ReportFilterType.PAOBJECTID),
+	LMGROUP("LM Group", ReportFilterType.PAOBJECTID_STR),  // picker
+	LMCONTROLAREA("LM Control Area", ReportFilterType.PAOBJECTID_STR), //picker
+	LMSCENARIO("LM Scenario", ReportFilterType.PAOBJECTID_STR),    //picker
 	TRANSMITTER("Transmitter", ReportFilterType.PAOBJECTID),
 	RTU("RTU", ReportFilterType.PAOBJECTID),
 	CAPCONTROLSUBBUS("Substation Bus", ReportFilterType.PAOBJECTID),
@@ -19,8 +19,8 @@ public enum ReportFilter {
 	SCHEDULE("Schedule (Script)", ReportFilterType.PAOBJECTID),
 	AREA("Area", ReportFilterType.PAOBJECTID),
 	PORT("Port", ReportFilterType.PAOBJECTID),
-	PROGRAM("Program", ReportFilterType.PAOBJECTID),
-	PROGRAM_SINGLE_SELECT("Program", ReportFilterType.PAOBJECTID, false),
+	PROGRAM("Program", ReportFilterType.PAOBJECTID_STR),
+	PROGRAM_SINGLE_SELECT("Program", ReportFilterType.PAOBJECTID_STR, false),
 	STRATEGY("Strategy", ReportFilterType.PAOBJECTID),
 	ACCOUNT_NUMBER("Account Number", ReportFilterType.ACCOUNTNUMBER),
 	SERIAL_NUMBER("Serial Number", ReportFilterType.SERIALNUMBER),
