@@ -43,11 +43,6 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private ContactDao contactDao;
     
-    /**
-     * Search the work orders by order number. If searchMembers is true,
-     * it returns a list of Pair(LiteWorkOrderBase, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteWorkOrderBase.
-     */
     @Override
     public List<LiteWorkOrderBase> searchWorkOrderByOrderNo(LiteStarsEnergyCompany energyCompany,
             String orderNo, boolean searchMembers) {
@@ -118,12 +113,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         
         return null;
     }
-    
-    /**
-     * Search customer accounts by account #, search results based on partial match.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
-     */
+
     @Override
     public List<Integer> searchAccountByAccountNumber(LiteStarsEnergyCompany energyCompany, String accountNumber,
             boolean searchMembers, boolean partialMatch) {
@@ -139,12 +129,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
 
         return accountList;
     }
-    
-    /**
-     * Search customer accounts by hardware serial #.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
-     */
+
     @Override
     public List<Integer> searchAccountBySerialNo(LiteStarsEnergyCompany energyCompany, String serialNo, boolean searchMembers) {
         List<LiteInventoryBase> invList = 
@@ -168,12 +153,7 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         
         return accountList;
     }
-    
-    /**
-     * Search customer accounts by service address. The search is based on partial match, and is case-insensitive.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
-     */
+
     @Override
     public List<Integer> searchAccountByAddress(LiteStarsEnergyCompany energyCompany, String address, boolean searchMembers, boolean partialMatch) {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
@@ -212,10 +192,6 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         return accountList;
     }
 
-    /**
-     * Search customer accounts by phone number.
-     * returns a list of LiteStarsCustAccountInformation.
-     */
     @Override
     public List<Integer> searchAccountByPhoneNo(LiteStarsEnergyCompany energyCompany, String phoneNo, boolean searchMembers) {
         List<LiteContact> contacts = YukonSpringHook.getBean(ContactDao.class).findContactsByPhoneNo(phoneNo, true);
@@ -228,10 +204,6 @@ public class StarsSearchServiceImpl implements StarsSearchService {
         return searchAccountByContactIDs(energyCompany, contactIDs, searchMembers);
     }
 
-    /**
-     * Search customer accounts by last name. The search is based on partial match, and is case-insensitive.
-     * returns a list of LiteStarsCustAccountInformation.
-     */
     @Override
     public List<Integer> searchAccountByLastName(LiteStarsEnergyCompany energyCompany, String lastName, boolean searchMembers, boolean partialMatch) {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();

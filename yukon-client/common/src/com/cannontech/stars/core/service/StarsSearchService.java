@@ -7,13 +7,10 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 
 public interface StarsSearchService {
-    
-    /**
-     * Search the work orders by order number. Returns a list of LiteWorkOrderBase.
-     */
+
     List<LiteWorkOrderBase> searchWorkOrderByOrderNo(LiteStarsEnergyCompany energyCompany, String orderNo,
         boolean searchMembers);
-    
+
     /**
      * Search customer account by account # within the energy company.
      * int totalComparableDigits is for use with rotation digit billing systems: the field
@@ -29,23 +26,22 @@ public interface StarsSearchService {
     
     /**
      * Search customer accounts by account #, search results based on partial match.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
+     * 
+     * Returns a list of account ids
      */
     List<Integer> searchAccountByAccountNumber(LiteStarsEnergyCompany energyCompany, String accountNumber, 
         boolean searchMembers, boolean partialMatch);
     
     /**
      * Search customer accounts by hardware serial #.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
+     * 
+     * Returns a list of account ids
      */
     List<Integer> searchAccountBySerialNo(LiteStarsEnergyCompany energyCompany, String serialNo, boolean searchMembers);
 
     /**
      * Search customer accounts by service address. The search is based on partial match, and is case-insensitive.
-     * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
-     * otherwise it returns a list of LiteStarsCustAccountInformation.
+     * Returns a list of account ids
      */
     List<Integer> searchAccountByAddress(LiteStarsEnergyCompany energyCompany, String address, boolean searchMembers,
         boolean partialMatch);
@@ -55,13 +51,13 @@ public interface StarsSearchService {
 
     /**
      * Search customer accounts by phone number.
-     * returns a list of LiteStarsCustAccountInformation.
+     * Returns a list of account ids
      */
     List<Integer> searchAccountByPhoneNo(LiteStarsEnergyCompany energyCompany, String phoneNo, boolean searchMembers);
 
     /**
      * Search customer accounts by last name. The search is based on partial match, and is case-insensitive.
-     * returns a list of LiteStarsCustAccountInformation.
+     * Returns a list of account ids
      */
     List<Integer> searchAccountByLastName(LiteStarsEnergyCompany energyCompany, String lastName, boolean searchMembers, 
         boolean partialMatch);
