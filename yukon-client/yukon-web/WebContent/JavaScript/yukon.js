@@ -74,26 +74,27 @@ if (!Function.prototype.bind) {
 }
 
 /** Yukon Module */
-var yukon = (function (yukonMod) {
-    return yukonMod;
-})(yukon || {});
+var yukon = (function () {
+    var mod;
 
-// support for inheritance: inherit superType's prototype
-yukon.inheritPrototype = function (subType, superType) {
-      var prototype = Object.create(superType.prototype);
-      prototype.constructor = subType;
-      subType.prototype = prototype;
-};
-
-// Handle app name prepending here
-yukon.url = function (url) {
-    return YG.APP_NAME + url;
-};
-
-// JavaScript side of JsonTag.java
-yukon.fromJson = function (selector) {
-    return JSON.parse($(selector).text());
-};
+    mod = {
+     // support for inheritance: inherit superType's prototype
+        inheritPrototype : function (subType, superType) {
+            var prototype = Object.create(superType.prototype);
+            prototype.constructor = subType;
+            subType.prototype = prototype;
+        },
+     // Handle app name prepending here
+        url : function (url) {
+            return YG.APP_NAME + url;
+        },
+     // JavaScript side of JsonTag.java
+        fromJson : function (selector) {
+            return JSON.parse($(selector).text());
+        }
+    };
+    return mod;
+})();
 
 // namespace function, so we don't have to put all those checks to see if
 // modules exist and either create empty ones or set a reference to one
