@@ -99,14 +99,10 @@ public class PaoDefinitionServiceImplTest {
         // Test with unsupported device
         try {
             device = new SimpleDevice(1, 9999999);
-            actualPoints = service.createDefaultPointsForPao(device);
-            fail("createDefaultPointsForPao should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
+            fail("new SimpleDevice should've thrown an exception");
         } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
+            // expected exception
         }
-
     }
 
     /**
@@ -114,7 +110,6 @@ public class PaoDefinitionServiceImplTest {
      */
     @Test
     public void testIsPaoTypeChangeable() {
-
         // Test with changeable device
         assertTrue("device1 is changeable", service.isPaoTypeChangeable(device));
 
@@ -125,14 +120,10 @@ public class PaoDefinitionServiceImplTest {
         // Test with unsupported device
         try {
             device = new SimpleDevice(1, 999999);
-            service.isPaoTypeChangeable(device);
-            fail("isPaoTypeChangeable should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
+            fail("new SimpleDevice should've thrown an exception");
         } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
+            // expected exception
         }
-
     }
 
     /**
@@ -140,7 +131,6 @@ public class PaoDefinitionServiceImplTest {
      */
     @Test
     public void testGetChangeablePaos() {
-
         // Test with changeable device
         Set<PaoDefinition> expectedPaos = new HashSet<PaoDefinition>();
         SimpleDevice device2 = new SimpleDevice(11, DeviceTypes.MCT370);
@@ -154,18 +144,6 @@ public class PaoDefinitionServiceImplTest {
         device = new SimpleDevice(1, DeviceTypes.MCT318L);
         Set<PaoDefinition> actualDevices2 = service.getChangeablePaos(device);
         assertTrue("Should be empty set", actualDevices2.isEmpty());
-
-        // Test with unsupported device
-        try {
-            device = new SimpleDevice(1, 999999);
-            service.getChangeablePaos(device);
-            fail("getChangeablePaos should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-
     }
 
     /**
@@ -173,7 +151,6 @@ public class PaoDefinitionServiceImplTest {
      */
     @Test
     public void testCreateAllPointsForPao() {
-
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
         expectedPoints.add(pointCreationService.createPoint(0, "status1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
@@ -185,18 +162,6 @@ public class PaoDefinitionServiceImplTest {
         List<PointBase> actualPoints = service.createAllPointsForPao(device);
 
         assertEquals("All points weren't as expected", expectedPoints, actualPoints);
-
-        // Test with unsupported device
-        try {
-            device = new SimpleDevice(1, 999999);
-            actualPoints = service.createAllPointsForPao(device);
-            fail("createAllPointsForPao should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
-
     }
 
     /**
