@@ -34,8 +34,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.database.IntegerRowMapper;
-import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -70,13 +69,14 @@ import com.google.common.collect.Lists;
  */
 @ManagedResource
 public class RolePropertyDaoImpl implements RolePropertyDao {
-    
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    private final static Logger log = YukonLogManager.getLogger(RolePropertyDaoImpl.class);
+
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ConfigurationSource configurationSource;
-    private Logger log = YukonLogManager.getLogger(RolePropertyDaoImpl.class);
-    
+
     private ImmutableMap<YukonRoleProperty, Object> defaultValueLookup;
-    private LeastRecentlyUsedCacheMap<PropertyTuple, Object> convertedValueCache = new LeastRecentlyUsedCacheMap<PropertyTuple, Object>(10000);
+    private LeastRecentlyUsedCacheMap<PropertyTuple, Object> convertedValueCache =
+            new LeastRecentlyUsedCacheMap<PropertyTuple, Object>(10000);
     private final Object NULL_CACHE_VALUE = new Object();
     private LoadingCache<Integer, Set<YukonRole>> userRoleCache =
             CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<Integer, Set<YukonRole>>(){
@@ -110,7 +110,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RolePropertyId, RoleId, DefaultValue");
         sql.append("FROM YukonRoleProperty");
-        yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int rolePropertyId = rs.getInt("RolePropertyId");
@@ -123,7 +123,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                     try {
                         YukonRole role = YukonRole.getForId(roleId);
                         if (role != roleProperty.getRole()) {
-                            log.warn("Property " + roleProperty + " is incorrectly mapped to " + role + " (should be " + roleProperty.getRole() + ")");
+                            log.warn("Property " + roleProperty + " is incorrectly mapped to " + role + " (should be "
+                                + roleProperty.getRole() + ")");
                         }
                     } catch (IllegalArgumentException e1) {
                         log.warn("Database contains an unknown role: " + roleId);
@@ -134,9 +135,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                             builder.put(roleProperty, convertPropertyValue);
                         }
                     } catch (BadPropertyTypeException e) {
-                        log.error("Database contains an illegal default value for " + roleProperty + " (will be treated as null): " + defaultValue);
+                        log.error("Database contains an illegal default value for " + roleProperty
+                            + " (will be treated as null): " + defaultValue);
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (NullPointerException e) {
                     log.warn("Database contains an unknown role property: " + rolePropertyId);
                 }
             }
@@ -212,8 +214,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
-    public boolean checkAllProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.copyOf(otherProperties));
+    public boolean checkAllProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
+            YukonRoleProperty... otherProperties) {
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
+            ImmutableList.copyOf(otherProperties));
         return checkAllProperties(user, properties);
     }
 
@@ -232,8 +236,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
 
     @Override
-    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.copyOf(otherProperties));
+    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
+            YukonRoleProperty... otherProperties) {
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
+            ImmutableList.copyOf(otherProperties));
         return checkAnyProperties(user, properties);
     }
 
@@ -258,9 +264,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             Boolean booleanValue = getConvertedValue(userPropertyTuple, Boolean.class);
             if (booleanValue == null) {
                 return false;
-            } else {
-                return !booleanValue.booleanValue();
             }
+            return !booleanValue.booleanValue();
         } catch (UserNotInRoleException e) {
             return false;
         }
@@ -273,7 +278,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             return rolesForUser.contains(userPropertyTuple.getYukonRoleProperty().getRole());
         } else if (propertyTuple instanceof RoleGroupPropertyTuple) {
             RoleGroupPropertyTuple roleGroupPropertyTuple = (RoleGroupPropertyTuple) propertyTuple;
-            return checkRoleForRoleGroupId(roleGroupPropertyTuple.getYukonRoleProperty().getRole(), roleGroupPropertyTuple.getRoleGroupId());
+            return checkRoleForRoleGroupId(roleGroupPropertyTuple.getYukonRoleProperty().getRole(),
+                roleGroupPropertyTuple.getRoleGroupId());
         }
         return false;
     }
@@ -287,13 +293,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     
     @Override
     public boolean checkRoleForRoleGroupId(YukonRole role, int roleGroupId) {
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("WHERE YGR.GroupId").eq(roleGroupId);
         
-        List<Integer> roleIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Integer> roleIds = jdbcTemplate.query(sql, RowMapper.INTEGER);
         
         return roleIds.contains(role.getRoleId());
     }
@@ -314,12 +319,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
      * @return the converted value or the default, will only return null if the default was null
      */
     private <T> T getConvertedValue(PropertyTuple propertyTuple, Class<T> returnType) throws BadPropertyTypeException {
-
         totalAccesses.incrementAndGet();
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + propertyTuple + " as " + returnType.getSimpleName());
         }
-        Validate.isTrue(returnType.isAssignableFrom(propertyTuple.getYukonRoleProperty().getType().getTypeClass()), "can't convert " + propertyTuple.getYukonRoleProperty() + " to " + returnType);
+        Validate.isTrue(returnType.isAssignableFrom(propertyTuple.getYukonRoleProperty().getType().getTypeClass()),
+            "can't convert " + propertyTuple.getYukonRoleProperty() + " to " + returnType);
 
         // check cache (using a special value to allow get to be used to check containsValue)
         Object cachedValue = convertedValueCache.get(propertyTuple);
@@ -356,9 +361,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Boolean booleanValue = getConvertedValue(userPropertyTuple, Boolean.class);
         if (booleanValue == null) {
             return false;
-        } else {
-            return booleanValue.booleanValue();
         }
+        return booleanValue.booleanValue();
     }
 
     @Override
@@ -388,9 +392,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Number convertedValue = getConvertedValue(userPropertyTuple, Number.class);
         if (convertedValue == null) {
             return 0;
-        } else {
-            return convertedValue;
         }
+        return convertedValue;
     }
     
     @Override
@@ -399,9 +402,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Object convertedValue = getPropertyObjectValue(userPropertyTuple);
         if (convertedValue == null) {
             return "";
-        } else {
-            return convertedValue.toString();
         }
+        return convertedValue.toString();
     }
     
     private Object getPropertyObjectValue(PropertyTuple propertyTuple) throws UserNotInRoleException {
@@ -413,13 +415,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         totalDbHits.incrementAndGet();
 
         SqlFragmentSource sql = propertyTuple.getRolePropertyValueLookupQuery();
-        List<String> values = yukonJdbcTemplate.query(sql, new StringRowMapper());
+        List<String> values = jdbcTemplate.query(sql, RowMapper.STRING);
         
         return processReturnedValues(propertyTuple, values);
     }
 
     private String processReturnedValues(PropertyTuple propertyTuple, List<String> values) {
-
         if (values.isEmpty()) {
             if (!checkRole(propertyTuple)) {
                 NotInRoleException notInRoleException = propertyTuple.notInRoleException();
@@ -430,9 +431,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                     // must be a special case
                     log.warn("handling UserNotInRoleException for property on exception list", notInRoleException);
                     return null;
-                } else {
-                    throw notInRoleException;
                 }
+
+                throw notInRoleException;
             }
             
             // if we got here, we know the user has this property's role
@@ -458,11 +459,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             // the only way this can happen is if the user has exactly one user property
             // and zero or one group property, any other combination is invalid (and the 0 group case is somewhat sketchy)
             String firstValue = values.get(0);
-            BadConfigurationException configurationException = new BadConfigurationException("Invalid role property combination found of "+propertyTuple+" (groupCount=" + values.size() + ")");
+            BadConfigurationException configurationException =
+                    new BadConfigurationException("Invalid role property combination found of " + propertyTuple
+                        + " (groupCount=" + values.size() + ")");
             if (allowRoleConflicts) {
                 log.warn("handling role conflict exception because ROLE_PROPERTY_CONFLICTS_ALLOWED is set", configurationException);
                 if (log.isDebugEnabled()) {
-                    log.debug("got multiple role property values (using user) of " + propertyTuple + ", returning first value (which happens to be a group  value): " + firstValue);
+                    log.debug("got multiple role property values (using user) of " + propertyTuple
+                        + ", returning first value (which happens to be a group  value): " + firstValue);
                 }
                 return firstValue;
             }
@@ -484,7 +488,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
      * This method returns all the roles for a given user.  Keep in mind this method will not show duplicated roles by different groups..
      */
     private Set<YukonRole> getRolesForUserFromDatabase(int userId) {
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RoleId");
         sql.append("FROM YukonGroupRole YGR");
@@ -492,7 +495,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UGYGM.UserGroupId");
         sql.append("WHERE YU.UserId").eq(userId);
         
-        List<Integer> roleIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Integer> roleIdList = jdbcTemplate.query(sql, RowMapper.INTEGER);
         
         EnumSet<YukonRole> result = EnumSet.noneOf(YukonRole.class);
         for (Integer roleId : roleIdList) {
@@ -510,7 +513,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     @Override
     public void verifyAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
     		YukonRoleProperty... otherProperties) throws NotAuthorizedException {
-    	
         if (!checkAnyProperties(user, firstProperty, otherProperties)) {
         	throw NotAuthorizedException.atLeastOneTrueProperty(user, Lists.asList(firstProperty, otherProperties).toArray(new YukonRoleProperty[]{}));
         }
@@ -541,9 +543,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Number convertedValue = getConvertedValue(roleGroupPropertyTuple, Number.class);
         if (convertedValue == null) {
             return 0;
-        } else {
-            return convertedValue;
         }
+        return convertedValue;
     }
 
     @Override
@@ -553,16 +554,14 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         return propertyNumberValue.intValue();
     }
 
-    
     @Override
     public String getPropertyStringValue(LiteYukonGroup roleGroup, YukonRoleProperty property) throws RoleGroupNotInRoleException {
         RoleGroupPropertyTuple roleGroupPropertyTuple = new RoleGroupPropertyTuple(roleGroup, property);
         Object convertedValue = getPropertyObjectValue(roleGroupPropertyTuple);
         if (convertedValue == null) {
             return "";
-        } else {
-            return convertedValue.toString();
         }
+        return convertedValue.toString();
     }
 
     @Override
@@ -571,9 +570,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         Boolean booleanValue = getConvertedValue(roleGroupPropertyTuple, Boolean.class);
         if (booleanValue == null) {
             return false;
-        } else {
-            return booleanValue.booleanValue();
         }
+        return booleanValue.booleanValue();
     }
     
     /**
