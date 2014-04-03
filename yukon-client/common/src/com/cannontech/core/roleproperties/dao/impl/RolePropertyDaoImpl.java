@@ -116,33 +116,35 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                 int rolePropertyId = rs.getInt("RolePropertyId");
                 int roleId = rs.getInt("RoleId");
                 String defaultValue = rs.getString("DefaultValue");
-                
+
+                YukonRoleProperty roleProperty;
                 try {
-                    YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
-                    unseenProperties.remove(roleProperty);
-                    try {
-                        YukonRole role = YukonRole.getForId(roleId);
-                        if (role != roleProperty.getRole()) {
-                            log.warn("Property " + roleProperty + " is incorrectly mapped to " + role + " (should be "
-                                + roleProperty.getRole() + ")");
-                        }
-                    } catch (IllegalArgumentException e1) {
-                        log.warn("Database contains an unknown role: " + roleId);
-                    }
-                    try {
-                        Object convertPropertyValue = convertPropertyValue(roleProperty, defaultValue);
-                        if (convertPropertyValue != null) {
-                            builder.put(roleProperty, convertPropertyValue);
-                        }
-                    } catch (BadPropertyTypeException e) {
-                        log.error("Database contains an illegal default value for " + roleProperty
-                            + " (will be treated as null): " + defaultValue);
-                    }
-                } catch (NullPointerException e) {
+                    roleProperty = YukonRoleProperty.getForId(rolePropertyId);
+                } catch (IllegalArgumentException e) {
                     log.warn("Database contains an unknown role property: " + rolePropertyId);
+                    return;
+                }
+
+                unseenProperties.remove(roleProperty);
+                try {
+                    YukonRole role = YukonRole.getForId(roleId);
+                    if (role != roleProperty.getRole()) {
+                        log.warn("Property " + roleProperty + " is incorrectly mapped to " + role + " (should be "
+                            + roleProperty.getRole() + ")");
+                    }
+                } catch (IllegalArgumentException e1) {
+                    log.warn("Database contains an unknown role: " + roleId);
+                }
+                try {
+                    Object convertPropertyValue = convertPropertyValue(roleProperty, defaultValue);
+                    if (convertPropertyValue != null) {
+                        builder.put(roleProperty, convertPropertyValue);
+                    }
+                } catch (BadPropertyTypeException e) {
+                    log.error("Database contains an illegal default value for " + roleProperty
+                        + " (will be treated as null): " + defaultValue);
                 }
             }
-            
         });
         
         defaultValueLookup = builder.build();

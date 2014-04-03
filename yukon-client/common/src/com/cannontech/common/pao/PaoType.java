@@ -1,9 +1,10 @@
 package com.cannontech.common.pao;
 
 
+import static com.google.common.base.Preconditions.*;
+
 import java.util.Set;
 
-import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -485,7 +486,7 @@ public enum PaoType implements DatabaseRepresentationSource {
      */
     public static PaoType getForId(int paoTypeId) throws IllegalArgumentException {
         PaoType deviceType = lookupById.get(paoTypeId);
-        Validate.notNull(deviceType, Integer.toString(paoTypeId));
+        checkArgument(deviceType != null, Integer.toString(paoTypeId));
         return deviceType;
     }
 
@@ -500,7 +501,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     @Deprecated
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
         PaoType deviceType = lookupByDbString.get(dbString.toUpperCase().trim());
-        Validate.notNull(deviceType, dbString);
+        checkArgument(deviceType != null, dbString);
         return deviceType;
     }
 

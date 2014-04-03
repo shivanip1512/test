@@ -73,7 +73,8 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
     
     @PostConstruct
     public void initialize() {
-        final Map<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRolePropertyLookup = Maps.newHashMapWithExpectedSize(YukonRoleProperty.values().length);
+        final Map<YukonRoleProperty, DescriptiveRoleProperty> descriptiveRolePropertyLookup =
+                Maps.newHashMapWithExpectedSize(YukonRoleProperty.values().length);
         final ImmutableMap<YukonRoleProperty, Object> defaultValueLookup = rolePropertyDao.getDefaultValueLookup();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -87,18 +88,24 @@ public class RolePropertyEditorDaoImpl implements RolePropertyEditorDao {
                 String keyName = rs.getString("keyName");
                 String description = rs.getString("description");
 
+                YukonRoleProperty roleProperty;
                 try {
-                    YukonRoleProperty roleProperty = YukonRoleProperty.getForId(rolePropertyId);
-                    MessageSourceResolvable keyNameMsr = 
-                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property." + roleProperty.name() + ".name", keyName);
-                    MessageSourceResolvable descriptionMsr = 
-                        YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property." + roleProperty.name() + ".description",description);
-
-                    DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty, defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
-                    descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
-                } catch (NullPointerException e) {
+                    roleProperty = YukonRoleProperty.getForId(rolePropertyId);
+                } catch (IllegalArgumentException e) {
                     // Database contains an unknown role property, this is logged elsewhere
+                    return;
                 }
+
+                MessageSourceResolvable keyNameMsr = 
+                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property."
+                            + roleProperty.name() + ".name", keyName);
+                MessageSourceResolvable descriptionMsr = 
+                    YukonMessageSourceResolvable.createDefault("yukon.common.roleProperty.property."
+                            + roleProperty.name() + ".description",description);
+
+                DescriptiveRoleProperty descriptiveRoleProperty = new DescriptiveRoleProperty(roleProperty,
+                    defaultValueLookup.get(roleProperty), keyNameMsr, descriptionMsr);
+                descriptiveRolePropertyLookup.put(roleProperty, descriptiveRoleProperty);
             }
         });
         

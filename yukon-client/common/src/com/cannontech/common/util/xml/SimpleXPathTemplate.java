@@ -16,6 +16,8 @@
 
 package com.cannontech.common.util.xml;
 
+import static com.google.common.base.Preconditions.*;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -36,7 +38,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
@@ -121,8 +122,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     public Boolean evaluateAsBoolean(String expression, Boolean defaultValue) {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         Node result = evaluateAsNode(expression);
         if (result == null) {
             return defaultValue;
@@ -168,8 +169,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws XPathException
      */
     public Double evaluateAsDouble(String expression) throws XPathException {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
     	Double num = evaluateNumber(expression);
         return num == null ? null : num;
     }
@@ -179,8 +180,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * Returns null if the expression defines a node that does not exists.
      */
 	public Float evaluateAsFloat(String expression) {
-	    Validate.notNull(expression);
-	    
+        checkArgument(expression != null);
+
     	Double num = evaluateNumber(expression);
         return num == null ? null : num.floatValue();
     }
@@ -200,8 +201,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws XPathException
      */
     public Long evaluateAsLong(String expression, Long defaultValue) {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         Double num = evaluateNumber(expression);
         if (num == null) {
             return defaultValue;
@@ -222,8 +223,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     public Integer evaluateAsInt(String expression, Integer defaultInt) throws XPathException {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         Double num = evaluateNumber(expression);
         return (num == null) ? defaultInt : (Integer) num.intValue();
     }
@@ -292,8 +293,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws XPathException
      */
     public Duration evaluateAsDuration(String expression, Duration defaultValue) throws XPathException {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         Long durationInFloat = evaluateAsLong(expression);
         if (durationInFloat == null) {
             return defaultValue;
@@ -342,8 +343,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
      * @throws InvalidDateFormatException
      */
     public Date evaluateAsDate(String expression, Date defaultDate) {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         String dateStr = evaluateAsString(expression);
         
         if (StringUtils.isNotBlank(dateStr)) {
@@ -360,8 +361,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     public List<Integer> evaluateAsIntegerList(String expression) throws XPathException {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         return evaluate(expression, new ObjectMapper<Node, Integer>() {
             @Override
             public Integer map(Node from) throws ObjectMappingException {
@@ -373,8 +374,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     public List<Long> evaluateAsLongList(String expression) throws XPathException {
-        Validate.notNull(expression);
-        
+        checkArgument(expression != null);
+
         return evaluate(expression, new ObjectMapper<Node, Long>() {
             @Override
             public Long map(Node from) throws ObjectMappingException {
@@ -395,9 +396,8 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
                 throw new XPathException("Mapping resulted in DOMException", ex);
             }
         }
-        else {
-            return null;
-        }
+
+        return null;
     }
 
     public <K> List<K> evaluate(String expression, ObjectMapper<? super Node, K> nodeMapper) throws XPathException {

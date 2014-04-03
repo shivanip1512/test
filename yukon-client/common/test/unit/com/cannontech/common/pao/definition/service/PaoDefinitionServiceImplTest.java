@@ -77,7 +77,6 @@ public class PaoDefinitionServiceImplTest {
         ReflectionTestUtils.setField(attributeService, "pointService", pointService);
 
         device = new SimpleDevice(1, DeviceTypes.MCT310);
-
     }
 
     /**
@@ -85,7 +84,6 @@ public class PaoDefinitionServiceImplTest {
      */
     @Test
     public void testCreateDefaultPointsForPao() {
-
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
         expectedPoints.add(pointCreationService.createPoint(2, "pulse1", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1, 0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
@@ -100,7 +98,7 @@ public class PaoDefinitionServiceImplTest {
         try {
             device = new SimpleDevice(1, 9999999);
             fail("new SimpleDevice should've thrown an exception");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             // expected exception
         }
     }
@@ -121,7 +119,7 @@ public class PaoDefinitionServiceImplTest {
         try {
             device = new SimpleDevice(1, 999999);
             fail("new SimpleDevice should've thrown an exception");
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             // expected exception
         }
     }
