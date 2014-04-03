@@ -138,7 +138,6 @@ public:
 
     virtual ULONG getCDWait() const             { return 0L;}
 
-    bool isTCPIPPort() const;
     INT getProtocolWrap() const;
     CtiPort& setProtocolWrap(INT prot);
 

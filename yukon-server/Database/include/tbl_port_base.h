@@ -18,9 +18,6 @@ protected:
 
     UINT _protocol;              // 32 protocols.
     bool _alarmInhibit;
-    bool _performanceAlarm;
-
-    INT _performanceThreshold;
 
     std::string _sharedPortType;
     INT _sharedSocketNumber;
@@ -45,19 +42,10 @@ private:
     CtiTablePortBase& setAlarmInhibit(bool b);
     bool  getAlarmInhibit() const;
 
-    bool isPerformanceAlarm() const;
-    void setPerformanceAlarm(bool b = true);
-
     void setSharedPortType(std::string str);
     std::string getSharedPortType() const;
     INT getSharedSocketNumber() const;
     void setSharedSocketNumber(INT sockNum);
-
-    bool isTCPIPPort() const;
-
-    INT  getPerformanceThreshold() const;
-    INT& getPerformanceThreshold();
-    CtiTablePortBase& setPerformanceThreshold( const INT aPerformanceThreshold );
 
     static std::string getTableName();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);

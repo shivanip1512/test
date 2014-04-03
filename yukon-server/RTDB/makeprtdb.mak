@@ -41,6 +41,7 @@ port_dialout.obj \
 port_direct.obj \
 port_modem.obj \
 port_pool_out.obj \
+port_rf_da.obj \
 port_serial.obj \
 port_tcpipdirect.obj \
 port_tcp.obj \

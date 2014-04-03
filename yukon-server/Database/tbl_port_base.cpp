@@ -25,8 +25,6 @@ using std::endl;
 CtiTablePortBase::CtiTablePortBase() :
 _protocol(ProtocolWrapNone),
 _alarmInhibit(false),
-_performanceAlarm(false),
-_performanceThreshold(false),
 _sharedSocketNumber(-1)
 {
 }
@@ -34,8 +32,6 @@ _sharedSocketNumber(-1)
 CtiTablePortBase::CtiTablePortBase(const CtiTablePortBase& aRef) :
 _protocol(ProtocolWrapNone),
 _alarmInhibit(false),
-_performanceAlarm(false),
-_performanceThreshold(false),
 _sharedSocketNumber(-1)
 {
    *this = aRef;
@@ -54,8 +50,6 @@ CtiTablePortBase& CtiTablePortBase::operator=(const CtiTablePortBase& aRef)
 
       _protocol                = aRef.getProtocol();
       _alarmInhibit            = aRef.getAlarmInhibit();
-      _performanceAlarm        = aRef.isPerformanceAlarm();
-      _performanceThreshold    = aRef.getPerformanceThreshold();
       _sharedPortType          = aRef.getSharedPortType();
       _sharedSocketNumber      = aRef.getSharedSocketNumber();
    }
@@ -82,16 +76,6 @@ bool  CtiTablePortBase::getAlarmInhibit() const
     return _alarmInhibit;
 }
 
-bool CtiTablePortBase::isPerformanceAlarm() const
-{
-   return _performanceAlarm;
-}
-
-void CtiTablePortBase::setPerformanceAlarm(bool b)
-{
-   _performanceAlarm = b;
-}
-
 void CtiTablePortBase::setSharedPortType(string str)
 {
    _sharedPortType = str;
@@ -110,22 +94,6 @@ INT CtiTablePortBase::getSharedSocketNumber() const
 void CtiTablePortBase::setSharedSocketNumber(INT sockNum)
 {
    _sharedSocketNumber = sockNum;
-}
-
-INT  CtiTablePortBase::getPerformanceThreshold() const
-{
-   return _performanceThreshold;
-}
-
-INT& CtiTablePortBase::getPerformanceThreshold()
-{
-   return _performanceThreshold;
-}
-
-CtiTablePortBase& CtiTablePortBase::setPerformanceThreshold( const INT aPerformanceThreshold )
-{
-   _performanceThreshold = aPerformanceThreshold;
-   return *this;
 }
 
 void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -155,22 +123,6 @@ void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
        dout << " Protocol wrap        = " << rwsTemp  << endl;
    }
    _protocol = resolveProtocol(rwsTemp);
-
-   rdr["performancealarm"] >> rwsTemp;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << " Performance Alarming ? " << rwsTemp << endl;
-   }
-   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
-   _performanceAlarm = (rwsTemp[0] == 'y' ? true : false);
-
-   rdr["performthreshold"] >> _performanceThreshold;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << "  Performance Thresh. = " << _performanceThreshold  << endl;
-   }
 
    rdr["sharedporttype"] >> rwsTemp;
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)

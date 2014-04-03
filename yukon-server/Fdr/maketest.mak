@@ -140,7 +140,7 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 

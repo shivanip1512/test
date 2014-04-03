@@ -290,9 +290,7 @@ INT resolvePAOCategory(const string& _category)
 }
 
 
-typedef std::map<string, int> device_lookup_t;
-
-static const device_lookup_t device_lookups = boost::assign::map_list_of<string, int>
+static const std::map<std::string, int> device_lookups = boost::assign::map_list_of<std::string, int>
     //  --- GridSmart ---
     ("capacitor bank neutral monitor",  TYPE_NEUTRAL_MONITOR)
     ("faulted circuit indicator",       TYPE_FCI)
@@ -487,11 +485,9 @@ INT resolveDeviceType(const string& _rwsTemp)
 {
     string typestr = boost::trim_copy(boost::to_lower_copy(_rwsTemp));
 
-    device_lookup_t::const_iterator itr = device_lookups.find(typestr);
-
-    if( itr != device_lookups.end() )
+    if( const boost::optional<int> deviceType = Cti::mapFind(device_lookups, typestr) )
     {
-        return itr->second;
+        return *deviceType;
     }
 
     if( ! isKnownUnsupportedDevice(_rwsTemp) )
@@ -783,55 +779,31 @@ INT resolveProtocol(const string& _str)
     return nRet;
 }
 
+const std::map<std::string, int> PortTypes = boost::assign::map_list_of
+    ("local serial port",        PortTypeLocalDirect    )
+    ("local dialup",             PortTypeLocalDialup    )
+    ("terminal server",          PortTypeTServerDirect  )
+    ("tcp",                      PortTypeTcp            )
+    ("udp",                      PortTypeUdp            )
+    ("terminal server dialup",   PortTypeTServerDialup  )
+    ("local dialback",           PortTypeLocalDialBack  )
+    ("terminal server dialback", PortTypeTServerDialBack)
+    ("dialout pool",             PortTypePoolDialout    )
+    ("rf-da",                    PortTypeRfDa           );
+
+
 INT resolvePortType(const string& _str)
 {
-    INT nRet = 0;
     string str = _str;
     CtiToLower(str);
     in_place_trim(str);
 
-    if(str == "local serial port")
+    if( const boost::optional<int> portType = Cti::mapFind(PortTypes, str) )
     {
-        nRet = PortTypeLocalDirect;
-    }
-    else if(str == "local dialup")
-    {
-        nRet = PortTypeLocalDialup;
-    }
-    else if(str == "terminal server")
-    {
-        nRet = PortTypeTServerDirect;
-    }
-    else if(str == "tcp")
-    {
-        nRet = PortTypeTcp;
-    }
-    else if(str == "udp")
-    {
-        nRet = PortTypeUdp;
-    }
-    else if(str == "terminal server dialup")
-    {
-        nRet = PortTypeTServerDialup;
-    }
-    else if(str == "local dialback")
-    {
-        nRet = PortTypeLocalDialBack;
-    }
-    else if(str == "terminal server dialback")
-    {
-        nRet = PortTypeTServerDialBack;
-    }
-    else if(str == "dialout pool")
-    {
-        nRet = PortTypePoolDialout;
-    }
-    else
-    {
-        nRet = PortTypeInvalid;
+        return *portType;
     }
 
-    return nRet;
+    return PortTypeInvalid;
 }
 
 

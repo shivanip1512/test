@@ -33,8 +33,6 @@ IM_EX_CTIBASE INT resolveLoadManagementType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveCapControlType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveRouteType(const std::string& rwsTemp);
 
-IM_EX_CTIBASE INT resolvePAOType(const std::string& category, const std::string& rwsTemp);
-
 IM_EX_CTIBASE INT resolvePAOClass(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolvePAOCategory(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveScanType(const std::string& rwsTemp);

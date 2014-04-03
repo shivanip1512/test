@@ -21,14 +21,19 @@ public:
 
    static std::string getSQLCoreStatement()
    {
-       static const std::string sql =  
-           "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
-             "CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, "
-             "CP.sharedporttype, CP.sharedsocketnumber, PST.baudrate, PST.cdwait, PST.linesettings, "
-             "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout "
-           "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG "
-             "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "
-             "YP.paobjectid = TMG.portid";
+       static const std::string sql =
+           "SELECT"
+               " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag,"
+               " CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, CP.sharedporttype, CP.sharedsocketnumber,"
+               " PST.baudrate, PST.cdwait, PST.linesettings,"
+               " TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout"
+           " FROM"
+               " YukonPAObject YP"
+               " JOIN CommPort CP on YP.paobjectid = CP.portid"
+               " JOIN PortSettings PST on YP.paobjectid = PST.portid"
+               " JOIN PortTiming TMG on YP.paobjectid = TMG.portid"
+           " WHERE"
+               " YP.type = 'TCP'";
 
        return sql;
    }
