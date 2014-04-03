@@ -468,7 +468,7 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, con
 std::string CtiTableDynamicPaoInfo::getSQLCoreStatement()
 {
     static const std::string sql =
-            "SELECT DPI.entryid, DPI.paobjectid, DPI.infokey, DPI.value "
+            "SELECT DPI.paobjectid, DPI.infokey, DPI.value "
             "FROM DynamicPaoInfo DPI ";
 
     return sql;
