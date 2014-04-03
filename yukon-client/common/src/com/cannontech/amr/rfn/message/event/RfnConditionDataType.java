@@ -14,6 +14,10 @@ public enum RfnConditionDataType {
     THRESHOLD_VALUE(Double.class),
     UOM(String.class),
     UOM_MODIFIERS(RfnUomModifierSet.class),
+    OLD_DNP3_ADDRESS(Integer.class),
+    NEW_DNP3_ADDRESS(Integer.class),
+    PORT_TYPE(Short.class),
+    PORT_LOCKED_MINUTES(Long.class)
     ;
     
     private Class<?> objectType;

@@ -496,6 +496,12 @@ public final class DeviceFactory {
             returnDevice = new RTM();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
+        case RF_DA:
+            returnDevice = new RFDA();
+            returnDevice.setDeviceType(PaoType.RF_DA.name());
+            returnDevice.setDeviceID(PaoType.RF_DA.getDeviceTypeId());
+            returnDevice.setDeviceClass(PaoType.RF_DA.getPaoClass().name());
+            break;
         default:
             returnDevice = new GenericDevice();
             returnDevice.setDeviceClass(paoType.getPaoClass().getDbString());
@@ -504,9 +510,9 @@ public final class DeviceFactory {
         }
 
         //Set a couple reasonable defaults
-        if( returnDevice.getPAOCategory() == null )
+        if( returnDevice.getPAOCategory() == null ) {
             returnDevice.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
-
+        }
         returnDevice.setDisableFlag('N');
         returnDevice.getDevice().setAlarmInhibit('N');
         returnDevice.getDevice().setControlInhibit('N');

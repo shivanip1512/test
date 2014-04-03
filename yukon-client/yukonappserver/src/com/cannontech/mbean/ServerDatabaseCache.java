@@ -852,23 +852,19 @@ public synchronized List<LitePointLimit> getAllPointLimits() {
  *
  */
 @Override
-public synchronized List<LiteYukonPAObject> getAllPorts() 
-{
-    if( allPorts == null )
-    {
+public synchronized List<LiteYukonPAObject> getAllPorts() {
+    if( allPorts == null ) {
         allPorts = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
-
-        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-        {
+        
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ ) {
             if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
-                 == PAOGroups.CAT_PORT )
-                allPorts.add( getAllYukonPAObjects().get(i) );
+                 == PAOGroups.CAT_PORT || getAllYukonPAObjects().get(i).getPaoType() == PaoType.RF_DA) {
+                
+                allPorts.add(getAllYukonPAObjects().get(i));
+            }
         }
-
-        allPorts.trimToSize();        
+        allPorts.trimToSize();
     }
-    
-
     return allPorts;
 }
 /**

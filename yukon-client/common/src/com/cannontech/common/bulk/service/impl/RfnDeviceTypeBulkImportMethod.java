@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableSet;
 public class RfnDeviceTypeBulkImportMethod extends BulkImportMethodBase {
 
     @Autowired
-    private DeviceCreationService deviceCreationService = null;
+    private DeviceCreationService deviceCreationService;
     
     
     private static ImmutableSet<BulkFieldColumnHeader> requiredColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()

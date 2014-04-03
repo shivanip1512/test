@@ -20,6 +20,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public enum PaoType implements DatabaseRepresentationSource {
+    
+    
+    
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU721(DeviceTypes.CCU721, "CCU-721", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -233,6 +236,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     VIRTUAL_SYSTEM(DeviceTypes.VIRTUAL_SYSTEM, "VIRTUAL SYSTEM", PaoCategory.DEVICE, PaoClass.VIRTUAL),
 
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
+
+    RF_DA(DeviceTypes.RF_DA, "RFDA", PaoCategory.DEVICE, PaoClass.RFMESH),
     ;
     
     private final int deviceTypeId;
@@ -376,7 +381,8 @@ public enum PaoType implements DatabaseRepresentationSource {
                 SENTINEL,
                 SIXNET,
                 TRANSDATA_MARKV,
-                VECTRON);
+                VECTRON,
+                RF_DA);
         
         mctTypes = ImmutableSet.of(
             MCT213,
@@ -457,7 +463,8 @@ public enum PaoType implements DatabaseRepresentationSource {
             TSERVER_RADIO,
             TSERVER_DIALUP,
             LOCAL_DIALBACK,
-            DIALOUT_POOL);
+            DIALOUT_POOL,
+            RF_DA);
         
         twoWayLcrTypes = ImmutableSet.of(
             LCR3102,
