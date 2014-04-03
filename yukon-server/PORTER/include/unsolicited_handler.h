@@ -31,8 +31,7 @@ protected:
         int len;
         int used;
 
-        std::string  ip;
-        u_short port;
+        virtual std::string describeAddress() const = 0;
 
         enum ProtocolType
         {
@@ -42,6 +41,21 @@ protected:
             //ProtocolTypeUecp  //  Not using UECP unsolicited inbounds
 
         } protocol;
+    };
+
+    struct ip_packet : packet
+    {
+        std::string  ip;
+        u_short port;
+
+        virtual std::string describeAddress() const
+        {
+            std::ostringstream ostr;
+
+            ostr << ip << ":" << port;
+
+            return ostr.str();
+        }
     };
 
     struct device_record
@@ -176,15 +190,14 @@ protected:
 
     virtual bool isDeviceDisconnected( const long device_id ) const = 0;
 
-    virtual std::string getDeviceIp  ( const long device_id ) const = 0;
-    virtual u_short     getDevicePort( const long device_id ) const = 0;
+    virtual std::string describeDeviceAddress( const long device_id ) const = 0;
 
     device_record *getDeviceRecordById( long device_id );
 
-    void addInboundWork(device_record *dr, packet *&p);
+    void addInboundWork(device_record &dr, packet *p);
 
     void traceOutbound( const device_record &dr, int socket_status );
-    void traceInbound ( std::string ip, unsigned short port, int status, const unsigned char *message, int count, const device_record *dr = 0 );
+    void traceInbound ( std::string location, int status, const unsigned char *message, int count, const device_record *dr = 0 );
 
     static bool isDnpDevice  (const CtiDeviceSingle &ds);
     static bool isGpuffDevice(const CtiDeviceSingle &ds);

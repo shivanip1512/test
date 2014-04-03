@@ -735,7 +735,7 @@ string UnsolicitedHandler::describeDevice( const device_record &dr ) const
 {
     ostringstream ostr;
 
-    ostr << dr.device->getName() << " (" << getDeviceIp(dr.device->getID()) << ":" << getDevicePort(dr.device->getID()) << ")";
+    ostr << dr.device->getName() << " (" << describeDeviceAddress(dr.device->getID()) << ")";
 
     return ostr.str();
 }
@@ -786,7 +786,7 @@ void UnsolicitedHandler::traceOutbound( const device_record &dr, int status )
 }
 
 
-void UnsolicitedHandler::traceInbound( string ip, unsigned short port, int status, const unsigned char *message, int mCount, const device_record *dr )
+void UnsolicitedHandler::traceInbound( string address, int status, const unsigned char *message, int mCount, const device_record *dr )
 {
     CtiTraceMsg mTrace;
     string msg;
@@ -812,7 +812,7 @@ void UnsolicitedHandler::traceInbound( string ip, unsigned short port, int statu
     }
     else
     {
-        msg = " (" + ip + ":" + CtiNumStr(port) + ")";
+        msg = " (" + address + ")";
     }
     mTrace.setTrace(msg);
     mTrace.setEnd(false);
@@ -899,16 +899,14 @@ UnsolicitedHandler::device_record *UnsolicitedHandler::getDeviceRecordById( long
 }
 
 
-void UnsolicitedHandler::addInboundWork(device_record *dr, packet *&p)
+void UnsolicitedHandler::addInboundWork(device_record &dr, packet *p)
 {
-    if( dr && p )
+    if( p )
     {
-        dr->inbound.push(p);
-
-        p = 0;
+        dr.inbound.push(p);
 
         //  check to see if the device was waiting for anything
-        device_activity_map::iterator itr = _waiting_devices.find(dr);
+        device_activity_map::iterator itr = _waiting_devices.find(&dr);
 
         if( itr != _waiting_devices.end() )
         {
@@ -920,12 +918,12 @@ void UnsolicitedHandler::addInboundWork(device_record *dr, packet *&p)
             _waiting_devices.erase(itr);
 
             //  we just got work - we're ready to try a decode
-            _active_devices[dr] = _to_decode.insert(_to_decode.end(), dr);
+            _active_devices[&dr] = _to_decode.insert(_to_decode.end(), &dr);
         }
-        else if( _active_devices.find(dr) == _active_devices.end() )
+        else if( _active_devices.find(&dr) == _active_devices.end() )
         {
             //  it's new work, so get him started next time the pending list is examined
-            _active_devices[dr] = _request_pending.insert(_request_pending.end(), dr);
+            _active_devices[&dr] = _request_pending.insert(_request_pending.end(), &dr);
         }
     }
 }
@@ -1036,7 +1034,7 @@ void UnsolicitedHandler::processDeviceSingleInbound(device_record &dr)
     {
         int om_retry = 0;
 
-        traceInbound(getDeviceIp(dr.device->getID()), getDevicePort(dr.device->getID()), dr.device_status, dr.xfer.getInBuffer(), dr.xfer.getInCountActual(), &dr);
+        traceInbound(describeDeviceAddress(dr.device->getID()), dr.device_status, dr.xfer.getInBuffer(), dr.xfer.getInCountActual(), &dr);
 
         if( !dr.outbound.empty() && dr.outbound.front() )
         {

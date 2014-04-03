@@ -53,19 +53,19 @@ private:
 
     void teardownSocket( void );
 
-    packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
+    ip_packet *recvPacket( unsigned char * const recv_buf, unsigned max_len );
 
-    bool validatePacket(packet *&p);
+    bool validatePacket(ip_packet *&p);
 
-    void distributePacket(packet *p);
+    void distributePacket(ip_packet *p);
 
-    void handleDnpPacket  (packet *&p);
-    void handleGpuffPacket(packet *&p);
+    void handleDnpPacket  (ip_packet *&p);
+    void handleGpuffPacket(ip_packet *&p);
 
     device_record *getDeviceRecordByDnpAddress           ( unsigned short master, unsigned short slave );
     device_record *getDeviceRecordByGpuffDeviceTypeSerial( unsigned short device_type, unsigned long serial );
 
-    void updateDeviceIpAndPort( device_record &dr, const packet &p );
+    void updateDeviceIpAndPort( device_record &dr, const ip_packet &p );
     void loadStaticRdsIPAndPort( const CtiDeviceSingle &device);
 
     void setDeviceIp  ( const long device_id, const std::string ip );
@@ -96,6 +96,8 @@ protected:
 
     virtual std::string getDeviceIp  ( const long device_id ) const;
     virtual u_short     getDevicePort( const long device_id ) const;
+
+    virtual std::string describeDeviceAddress( const long device_id ) const;
 
 public:
 

@@ -273,7 +273,7 @@ int TcpPortHandler::sendOutbound( device_record &dr )
     TcpConnectionManager::bytes buf(dr.xfer.getOutBuffer(),
                                     dr.xfer.getOutBuffer() + dr.xfer.getOutCount());
 
-    Connections::SocketAddress sa = getDeviceAddress(dr.device->getID());
+    Connections::SocketAddress sa = getDeviceSocketAddress(dr.device->getID());
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
@@ -347,7 +347,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
                 {
                     p->protocol = packet::ProtocolTypeDnp;
 
-                    addInboundWork(dr, p);
+                    addInboundWork(*dr, p);
                 }
             }
             else if( isGpuffDevice(*dr->device) )
@@ -356,7 +356,7 @@ bool TcpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
                 {
                     p->protocol = packet::ProtocolTypeGpuff;
 
-                    addInboundWork(dr, p);
+                    addInboundWork(*dr, p);
                 }
             }
         }
@@ -378,11 +378,11 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
         return 0;
     }
 
-    packet *p = new packet;
+    ip_packet *p = new ip_packet;
 
     p->protocol = packet::ProtocolTypeInvalid;  // should be set by whoever calls findPacket()
 
-    Connections::SocketAddress sa = getDeviceAddress(device_id);
+    Connections::SocketAddress sa = getDeviceSocketAddress(device_id);
 
     p->ip   = sa.ip;
     p->port = sa.port;
@@ -398,7 +398,7 @@ UnsolicitedHandler::packet *TcpPortHandler::findPacket( const long device_id, Pr
 }
 
 
-Connections::SocketAddress TcpPortHandler::getDeviceAddress( const long device_id ) const
+Connections::SocketAddress TcpPortHandler::getDeviceSocketAddress( const long device_id ) const
 {
     try
     {
@@ -410,14 +410,11 @@ Connections::SocketAddress TcpPortHandler::getDeviceAddress( const long device_i
     }
 }
 
-string TcpPortHandler::getDeviceIp( const long device_id ) const
+std::string TcpPortHandler::describeDeviceAddress( const long device_id ) const
 {
-    return getDeviceAddress(device_id).ip;
-}
+    Connections::SocketAddress address = getDeviceSocketAddress(device_id);
 
-u_short TcpPortHandler::getDevicePort( const long device_id ) const
-{
-    return getDeviceAddress(device_id).port;
+    return address.ip + ":" + CtiNumStr(address.port);
 }
 
 

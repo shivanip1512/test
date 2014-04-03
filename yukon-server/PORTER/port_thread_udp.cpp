@@ -153,7 +153,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
     }
     else if( isDnpDevice(device) )
     {
-        std::pair<dnp_address_id_bimap::iterator, bool> insertResult = 
+        std::pair<dnp_address_id_bimap::iterator, bool> insertResult =
             _dnpAddress_to_id.insert(dnp_address_id_bimap::value_type(makeDnpAddressPair(device), device_id));
 
         if (!insertResult.second)
@@ -386,7 +386,7 @@ bool UdpPortHandler::tryBindSocket( void )
 }
 
 
-void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const packet &p)
+void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const ip_packet &p)
 {
     string  old_device_ip   = getDeviceIp  (dr.device->getID());
     u_short old_device_port = getDevicePort(dr.device->getID());
@@ -460,12 +460,12 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
                     u_tmp->ul_word[2] == 0xffff )
                 {
                     // IPv4 mapped into IPv6
-                    ul_addr = u_tmp->ul_word[3]; 
+                    ul_addr = u_tmp->ul_word[3];
                 }
                 else
                 {
                     // other IPv6 address are not supported
-                    ul_addr = 0x0; 
+                    ul_addr = 0x0;
                 }
             }
         }
@@ -554,7 +554,7 @@ bool UdpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
     const unsigned max_len = 16000;  //  should be big enough for any incoming packet
     boost::scoped_array<unsigned char> recv_buf(CTIDBG_new unsigned char[max_len]);
 
-    while( packet *p = recvPacket(recv_buf.get(), max_len) )
+    while( ip_packet *p = recvPacket(recv_buf.get(), max_len) )
     {
         distributePacket(p);
 
@@ -568,7 +568,7 @@ bool UdpPortHandler::collectInbounds( const MillisecondTimer & timer, const unsi
 }
 
 
-UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_buf, unsigned max_len)
+UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv_buf, unsigned max_len)
 {
     if( !_udp_sockets.areSocketsValid() )
     {
@@ -607,7 +607,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
         return 0;
     }
 
-    packet *p = CTIDBG_new packet;
+    ip_packet *p = new ip_packet;
 
     if( !p )
     {
@@ -653,7 +653,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
         }
 
         //  this packet was unhandled, so we trace it
-        traceInbound(p->ip, p->port, 0, recv_buf, recv_len);
+        traceInbound(p->describeAddress(), 0, recv_buf, recv_len);
 
         delete p;
 
@@ -687,7 +687,7 @@ UdpPortHandler::packet *UdpPortHandler::recvPacket(unsigned char * const recv_bu
 }
 
 
-bool UdpPortHandler::validatePacket(packet *&p)
+bool UdpPortHandler::validatePacket(ip_packet *&p)
 {
     if( Protocol::DNP::DatalinkLayer::isPacketValid(p->data, p->len) )
     {
@@ -705,7 +705,7 @@ bool UdpPortHandler::validatePacket(packet *&p)
         }
 
         //  this packet was unhandled, so we trace it
-        traceInbound(p->ip, p->port, 0, p->data, p->len);
+        traceInbound(p->describeAddress(), 0, p->data, p->len);
 
         delete p->data;
         delete p;
@@ -717,7 +717,7 @@ bool UdpPortHandler::validatePacket(packet *&p)
 }
 
 
-void UdpPortHandler::distributePacket(packet *p)
+void UdpPortHandler::distributePacket(ip_packet *p)
 {
     if( !p )  return;
 
@@ -746,7 +746,7 @@ void UdpPortHandler::distributePacket(packet *p)
     if( p )
     {
         //  this packet was unhandled, so we trace it
-        traceInbound(p->ip, p->port, 0, p->data, p->len);
+        traceInbound(p->describeAddress(), 0, p->data, p->len);
 
         delete p->data;
         delete p;
@@ -754,7 +754,7 @@ void UdpPortHandler::distributePacket(packet *p)
 }
 
 
-void UdpPortHandler::handleDnpPacket(packet *&p)
+void UdpPortHandler::handleDnpPacket(ip_packet *&p)
 {
     unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
     unsigned short master_address = p->data[4] | (p->data[5] << 8);
@@ -773,7 +773,7 @@ void UdpPortHandler::handleDnpPacket(packet *&p)
         {
             updateDeviceIpAndPort(*dr, *p);
 
-            addInboundWork(dr, p);
+            addInboundWork(*dr, p);
 
             p = 0;
         }
@@ -785,7 +785,7 @@ void UdpPortHandler::handleDnpPacket(packet *&p)
     }
 }
 
-void UdpPortHandler::handleGpuffPacket(packet *&p)
+void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
 {
     unsigned len, devt, ser;
     bool crc_included, ack_required;
@@ -823,9 +823,11 @@ void UdpPortHandler::handleGpuffPacket(packet *&p)
             {
                 updateDeviceIpAndPort(*dr, *p);
 
-                traceInbound(p->ip, p->port, 0, p->data, p->len);
+                traceInbound(p->describeAddress(), 0, p->data, p->len);
 
-                addInboundWork(dr, p);
+                addInboundWork(*dr, p);
+
+                p = 0;
             }
         }
         else
@@ -907,16 +909,16 @@ typename Map::value_type::second_type find_or_return_numeric_limits_max(const Ma
 }
 
 
-string UdpPortHandler::getDeviceIp( const long device_id ) const
+std::string UdpPortHandler::getDeviceIp( const long device_id ) const
 {
-    ip_map::const_iterator itr = _ip_addresses.find(device_id);
+    boost::optional<std::string> ip = mapFind(_ip_addresses, device_id);
 
-    if( itr == _ip_addresses.end() )
+    if( ! ip )
     {
-        return string(); // return empty string
+        return std::string(); // return empty string
     }
 
-    return itr->second;
+    return *ip;
 }
 
 u_short UdpPortHandler::getDevicePort( const long device_id ) const
@@ -932,6 +934,20 @@ void UdpPortHandler::setDeviceIp( const long device_id, const string ip )
 void UdpPortHandler::setDevicePort( const long device_id, const u_short port )
 {
     _ports[device_id] = port;
+}
+
+std::string UdpPortHandler::describeDeviceAddress( const long device_id ) const
+{
+    string ipAddress = getDeviceIp(device_id);
+
+    if( ipAddress.empty() )
+    {
+        return "none:none";
+    }
+
+    boost::optional<u_short> port = mapFind(_ports, device_id);
+
+    return ipAddress + ":" + (port ? CtiNumStr(*port).toString() : "none");
 }
 
 void UdpPortHandler::loadEncodingFilter()
