@@ -18,8 +18,8 @@ $(function() {
     
     <tags:setFormEditMode mode="${mode}"/>
 
-    
-    <form:form id="contactsUpdateForm" commandName="contactDto" action="/stars/operator/contacts/contactUpdate" method="post">
+    <cti:url var="contactUpdateUrl" value="/stars/operator/contacts/contactUpdate"/>
+    <form:form id="contactsUpdateForm" commandName="contactDto" action="${contactUpdateUrl}" method="post">
     
         <input type="hidden" name="contactId" value="${contactDto.contactId}">
         <input type="hidden" name="accountId" value="${accountId}"/>

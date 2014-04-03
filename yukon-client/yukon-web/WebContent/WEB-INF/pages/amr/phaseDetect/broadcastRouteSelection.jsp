@@ -27,7 +27,8 @@
         }
     </script>
     
-    <form action="/amr/phaseDetect/saveBroadcastRoutes" method="post">
+    <cti:url var="saveBroadcastRoutesUrl" value="/amr/phaseDetect/saveBroadcastRoutes"/>
+    <form action="${saveBroadcastRoutesUrl}" method="post">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="selectBroadcastRoutes">
             <table class="stacked">

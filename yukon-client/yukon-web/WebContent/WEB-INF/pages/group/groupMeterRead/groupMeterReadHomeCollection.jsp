@@ -12,8 +12,8 @@
    	<br>
 
    	<tags:bulkActionContainer key="yukon.web.modules.tools.bulk.readAttribute" deviceCollection="${deviceCollection}">
-   	
-   		<form id="groupMeterReadForm" action="/group/groupMeterRead/readCollection" method="post">
+        <cti:url var="groupMeterReadUrl" value="/group/groupMeterRead/readCollection"/>
+   		<form id="groupMeterReadForm" action="${groupMeterReadUrl}" method="post">
             <cti:csrfToken/>
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		

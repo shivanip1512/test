@@ -71,7 +71,8 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <form id="addContactForm" action="/stars/operator/contacts/create" method="get">
+                        <cti:url var="createUrl" value="/stars/operator/contacts/create"/>
+                        <form id="addContactForm" action="${createUrl}" method="get">
                             <input type="hidden" name="contactId" value="0"/>
                             <input type="hidden" name="accountId" value="${accountId}"/>
                             <cti:button nameKey="create" icon="icon-plus-green" type="submit"/>

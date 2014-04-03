@@ -7,7 +7,8 @@
 <cti:standardPage module="operator" page="meterConfig">
     <tags:setFormEditMode mode="${mode}"/>
     
-    <form:form commandName="meter" action="/stars/operator/hardware/config/updateMeterConfig">
+    <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateMeterConfig"/>
+    <form:form commandName="meter" action="${updateMeterConfigUrl}">
         <input type="hidden" name="accountId" value="${accountId}"/>
         <form:hidden path="deviceId"/>
         <form:hidden path="disabled"/>

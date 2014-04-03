@@ -11,7 +11,8 @@
 
             <%-- CREATE APPLIANCE POPUP --%>
             <i:simplePopup on="#createAppliance" titleKey=".createAppliancePopup.title" id="createAppliancePopup" showImmediately="${param.showSwitchCheckingPopup}">
-                <form action="/stars/operator/appliances/applianceNew">
+                <cti:url var="applianceNewUrl" value="/stars/operator/appliances/applianceNew"/>
+                <form action="${applianceNewUrl}">
                     <input type="hidden" name="accountId" value="${accountId}"/>
                     <input type="hidden" name="new" />
 

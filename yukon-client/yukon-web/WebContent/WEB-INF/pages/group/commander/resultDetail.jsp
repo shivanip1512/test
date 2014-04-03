@@ -77,11 +77,9 @@
             
             <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
             
-            <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
-                <cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
-            </cti:url>
-            
-            <cti:link href="${creResultsUrl}" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small"/>
+            <cti:link href="/common/commandRequestExecutionResults/detail" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small">
+                <cti:mapParam name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+            </cti:link>
             
         </div>
                                 

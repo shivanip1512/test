@@ -27,8 +27,9 @@
     </script>
     
     <tags:simpleDialog id="addRuleDialog"/>
-    
-    <form:form id="selectionForm" cssClass="f-preventSubmitViaEnterKey" commandName="filterModel" action="/stars/operator/inventory/applyFilter" method="post">
+
+    <cti:url var="applyFilterUrl" value="/stars/operator/inventory/applyFilter"/>
+    <form:form id="selectionForm" cssClass="f-preventSubmitViaEnterKey" commandName="filterModel" action="${applyFilterUrl}" method="post">
         <input type="hidden" name="removeRule" id="removeRule">
         <div class="stacked">
             <i:inline key=".filterModePrefix"/>

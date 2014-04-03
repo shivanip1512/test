@@ -65,7 +65,8 @@
         }
     </script>
 
-    <form action="/amr/phaseDetect/saveSubstationAndReadMethod" method=post>
+    <cti:url var="saveSubstationAndReadMethodUrl" value="/amr/phaseDetect/saveSubstationAndReadMethod"/>
+    <form action="${saveSubstationAndReadMethodUrl}" method=post>
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="selectSubstation">
             <table style="padding-bottom: 5px;">

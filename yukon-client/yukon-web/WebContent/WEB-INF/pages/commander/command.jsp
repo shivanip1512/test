@@ -63,7 +63,8 @@
 
     <div class="column-16-8">
         <div class="column one">
-            <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
+            <cti:url var="commandFormUrl" value="/servlet/CommanderServlet"/>
+            <form name="commandForm" method="POST" action="${commandFormUrl}">
                 <cti:csrfToken/>
                 <input type="hidden" name="deviceID" value="${deviceId}">
                 <input type="hidden" name="timeOut" value="8000">

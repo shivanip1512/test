@@ -153,8 +153,8 @@ yukon.themes = (function () {
                     
                 imgPicker.dialog('close');
                 input.val(selected);
-                link.attr('href', '/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected);
-                link.find('img').attr('alt', selected).attr('src', '/common/images/' + selected + '/thumb');
+                link.attr('href', yukon.url('/adminSetup/config/themes/imagePicker?category=logos&selected=' + selected));
+                link.find('img').attr('alt', selected).attr('src', yukon.url('/common/images/' + selected + '/thumb'));
             });
 
             /** Build pallet icon for each theme using its colors */

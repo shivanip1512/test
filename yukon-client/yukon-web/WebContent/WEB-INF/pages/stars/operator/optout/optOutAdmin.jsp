@@ -347,7 +347,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="/stars/optOutSurvey/list">
+                            <a href="<cti:url value="/stars/optOutSurvey/list"/>">
                                 <i:inline key=".surveysLink"/>
                             </a>
                         </tags:boxContainer2>

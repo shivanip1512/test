@@ -21,7 +21,7 @@
         $('#spinner').show();
 
         $.ajax({
-            url: '/amr/phaseDetect/startTest',
+            url: yukon.url('/amr/phaseDetect/startTest'),
             data: params,
             type: 'POST',
             dataType: 'json'
@@ -101,7 +101,7 @@
     function sendRead() {
         $('#actionResultDiv').show();
         $.ajax({
-            url: '/amr/phaseDetect/readPhase',
+            url: yukon.url('/amr/phaseDetect/readPhase'),
             type: 'POST'
         }).done(function (data, textStatus, jqXHR) {
             var json = yukon.ui.util.getHeaderJSON(jqXHR);
@@ -199,7 +199,8 @@
     </tags:sectionContainer2>
     
     <div class="page-action-area">
-        <form action="/amr/phaseDetect/phaseDetectResults" method="get">
+        <cti:url var="phaseDetectResultsUrl" value="/amr/phaseDetect/phaseDetectResults"/>
+        <form action="${phaseDetectResultsUrl}" method="get">
             <cti:button nameKey="phaseDetectResults" id="resultsButton" disabled="${testStep != 'results'}" type="submit" classes="primary action"/>
             <cti:button nameKey="cancelTest" name="cancel" type="submit"/>
         </form>

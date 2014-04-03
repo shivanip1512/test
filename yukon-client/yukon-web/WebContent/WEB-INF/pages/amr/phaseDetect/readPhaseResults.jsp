@@ -27,7 +27,8 @@
             </div>
         </div>
         <div style="float: left;" id ="cancelReadDiv">
-            <form action="/amr/phaseDetect/cancelRead" method="get">
+            <cti:url var="cancelReadUrl" value="/amr/phaseDetect/cancelRead"/>
+            <form action="${cancelReadUrl}" method="get">
                 <cti:msg2 var="cancelRead" key="yukon.web.modules.amr.phaseDetect.cancelRead"/>
                 <c:choose>
                     <c:when test="${readComplete}"><c:set var="disabled" value="true"/></c:when>

@@ -21,7 +21,8 @@ function addUsers() {
     <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${baseUrl}" styleClass="usersContainer">
         <c:choose>
             <c:when test="${!empty users}">
-                <form action="/adminSetup/userGroup/removeUser" method="post">
+                <cti:url var="removeUserUrl" value="/adminSetup/userGroup/removeUser"/>
+                <form action="${removeUserUrl}" method="post">
                     <cti:csrfToken/>
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
@@ -71,7 +72,8 @@ function addUsers() {
             </c:otherwise>
         </c:choose>
         <div class="action-area">
-            <form id="addUsersForm" action="/adminSetup/userGroup/addUsers" method="post">
+            <cti:url var="addUsersFormUrl" value="/adminSetup/userGroup/addUsers"/>
+            <form id="addUsersForm" action="${addUsersFormUrl}" method="post">
                 <cti:csrfToken/>
                 <input type="hidden" name="userIds" id="userIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">

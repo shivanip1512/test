@@ -17,7 +17,8 @@
     <tags:sectionContainer2 nameKey="groupsContainer" styleClass="groupsContainer">
         <c:choose>
             <c:when test="${!empty groups}">
-                <form action="/adminSetup/userGroup/removeRoleGroup" method="post">
+                <cti:url var="removeRoleGroupUrl" value="/adminSetup/userGroup/removeRoleGroup"/>
+                <form action="${removeRoleGroupUrl}" method="post">
                     <cti:csrfToken/>
                     <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <table class="compact-results-table row-highlighting">
@@ -53,7 +54,8 @@
             </c:otherwise>
         </c:choose>
         <div class="action-area">
-            <form id="addGroupsForm" action="/adminSetup/userGroup/addRoleGroups" method="post">
+            <cti:url var="addRoleGroupsUrl" value="/adminSetup/userGroup/addRoleGroups"/>
+            <form id="addGroupsForm" action="${addRoleGroupsUrl}" method="post">
                 <cti:csrfToken/>
                 <input type="hidden" name="roleGroupIds" id="roleGroupIds">
                 <input type="hidden" name="userGroupId" value="${userGroupId}">

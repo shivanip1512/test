@@ -5,7 +5,8 @@
 
 <cti:standardPage module="amr" page="phaseDetect.testSettings">
 
-    <form action="/amr/phaseDetect/saveTestSettings" method="post">
+    <cti:url var="saveTestSettingsUrl" value="/amr/phaseDetect/saveTestSettings"/>
+    <form action="${saveTestSettingsUrl}" method="post">
         <cti:csrfToken/>
         <tags:sectionContainer2 nameKey="testParameters">
             <tags:nameValueContainer2>
