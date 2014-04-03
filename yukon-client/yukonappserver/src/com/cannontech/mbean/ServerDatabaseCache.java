@@ -108,89 +108,89 @@ import com.cannontech.yukon.server.cache.bypass.YukonUserRolePropertyLookup;
 
 public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 {
-	//stores a soft reference to the cache
-	//private static java.lang.ref.SoftReference cacheReference = null;	
-	private static ServerDatabaseCache cache = null;
+    //stores a soft reference to the cache
+    //private static java.lang.ref.SoftReference cacheReference = null;    
+    private static ServerDatabaseCache cache = null;
 
-	private PointDao pointDao = null;
-	private PaoDao paoDao = null;
-	@Autowired private UserGroupDao userGroupDao;
-	@Autowired private ContactNotificationDao contactNotificationDao;
-	@Autowired private ContactDao contactDao;
-	
-	private String databaseAlias = CtiUtilities.getDatabaseAlias();
+    private PointDao pointDao = null;
+    private PaoDao paoDao = null;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private ContactDao contactDao;
+    
+    private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
-	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
-	//private ArrayList allPoints = null;
+    private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
+    //private ArrayList allPoints = null;
     private ArrayList<LitePoint> allSystemPoints = null;
-	private List<LiteNotificationGroup> allNotificationGroups = null;
-		
-	private ArrayList<LiteAlarmCategory> allAlarmCategories = null;
-	private ArrayList<LiteGraphDefinition> allGraphDefinitions = null;
-	private ArrayList<LiteYukonPAObject> allMCTs = null;
-	private ArrayList<LiteHolidaySchedule> allHolidaySchedules = null;
-	private ArrayList<LiteBaseline> allBaselines = null;
-	private ArrayList<LiteConfig> allConfigs = null;
-	private ArrayList<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
-	private ArrayList<LitePointLimit> allPointLimits = null;
-	private ArrayList<LiteYukonImage> allYukonImages = null;
-	private volatile List<LiteCICustomer> allCICustomers = null;
-	private ArrayList<LiteLMConstraint> allLMProgramConstraints = null;
-	private ArrayList<LiteYukonPAObject> allLMScenarios = null;
-	private ArrayList<LiteLMProgScenario> allLMScenarioProgs = null;
-	private ArrayList<LiteLMPAOExclusion> allLMPAOExclusions = null;
+    private List<LiteNotificationGroup> allNotificationGroups = null;
+        
+    private ArrayList<LiteAlarmCategory> allAlarmCategories = null;
+    private ArrayList<LiteGraphDefinition> allGraphDefinitions = null;
+    private ArrayList<LiteYukonPAObject> allMCTs = null;
+    private ArrayList<LiteHolidaySchedule> allHolidaySchedules = null;
+    private ArrayList<LiteBaseline> allBaselines = null;
+    private ArrayList<LiteConfig> allConfigs = null;
+    private ArrayList<LiteDeviceMeterNumber> allDeviceMeterGroups = null;
+    private ArrayList<LitePointLimit> allPointLimits = null;
+    private ArrayList<LiteYukonImage> allYukonImages = null;
+    private volatile List<LiteCICustomer> allCICustomers = null;
+    private ArrayList<LiteLMConstraint> allLMProgramConstraints = null;
+    private ArrayList<LiteYukonPAObject> allLMScenarios = null;
+    private ArrayList<LiteLMProgScenario> allLMScenarioProgs = null;
+    private ArrayList<LiteLMPAOExclusion> allLMPAOExclusions = null;
 
-	private ArrayList<LiteTag> allTags = null;
-	
-	private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
-	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
-	private ArrayList<LiteTOUDay> allTOUDays = null;
-	
-	private ArrayList<LiteYukonRole> allYukonRoles = null;
-	private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
-	private ArrayList<LiteYukonGroup> allYukonGroups = null;
-	
-	private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
-		
-	private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
-	
-	//lists that are created by the joining/parsing of existing lists
-	private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; //PAO
-	private ArrayList<LiteYukonPAObject> allCapControlFeeders = null; //PAO
-	private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; //PAO
+    private ArrayList<LiteTag> allTags = null;
+    
+    private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
+    private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
+    private ArrayList<LiteTOUDay> allTOUDays = null;
+    
+    private ArrayList<LiteYukonRole> allYukonRoles = null;
+    private ArrayList<LiteYukonRoleProperty> allYukonRoleProperties = null;
+    private ArrayList<LiteYukonGroup> allYukonGroups = null;
+    
+    private Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> allYukonGroupRolePropertiesMap = null;
+        
+    private volatile List<LiteEnergyCompany> allEnergyCompanies = null;
+    
+    //lists that are created by the joining/parsing of existing lists
+    private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; //PAO
+    private ArrayList<LiteYukonPAObject> allCapControlFeeders = null; //PAO
+    private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; //PAO
     private ArrayList<LiteYukonPAObject> allCapControlSubStations = null; //PAO    
-	private ArrayList<LiteYukonPAObject> allDevices = null; //PAO
-	private ArrayList<LiteYukonPAObject> allLMPrograms = null; //PAO
-	private ArrayList<LiteYukonPAObject> allLMControlAreas = null;	//PAO
-	private ArrayList<LiteYukonPAObject> allLMGroups = null;//PAO
-	private ArrayList<LiteYukonPAObject> allLoadManagement = null; //PAO
-	private ArrayList<LiteYukonPAObject> allPorts = null; //PAO
-	private ArrayList<LiteYukonPAObject> allRoutes = null; //PAO
-	
-	
-	//Maps that are created by the joining/parsing of existing lists
-	//private HashMap allPointidMultiplierHashMap = null;
-	//private Map allPointIDOffsetHashMap = null;
-	//private Map allPointsMap = null;
-	private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
-	private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<Integer, LiteCustomer>(1000, .75f, 30);    
-	private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+    private ArrayList<LiteYukonPAObject> allDevices = null; //PAO
+    private ArrayList<LiteYukonPAObject> allLMPrograms = null; //PAO
+    private ArrayList<LiteYukonPAObject> allLMControlAreas = null;    //PAO
+    private ArrayList<LiteYukonPAObject> allLMGroups = null;//PAO
+    private ArrayList<LiteYukonPAObject> allLoadManagement = null; //PAO
+    private ArrayList<LiteYukonPAObject> allPorts = null; //PAO
+    private ArrayList<LiteYukonPAObject> allRoutes = null; //PAO
     
-	//derived from allYukonUsers,allYukonRoles,allYukonGroups
-	//see type info in IDatabaseCache
-	private final ConcurrentMap<LiteYukonUser, LiteEnergyCompany> userEnergyCompanyCache = new ConcurrentHashMap<LiteYukonUser, LiteEnergyCompany>(1000, .75f, 30);
-	private LiteEnergyCompany NULL_LITE_ENERGY_COMPANY = new LiteEnergyCompany(Integer.MIN_VALUE);
+    
+    //Maps that are created by the joining/parsing of existing lists
+    //private HashMap allPointidMultiplierHashMap = null;
+    //private Map allPointIDOffsetHashMap = null;
+    //private Map allPointsMap = null;
+    private Map<Integer, LiteYukonPAObject> allPAOsMap = null;
+    private final Map<Integer, LiteCustomer> customerCache = new ConcurrentHashMap<Integer, LiteCustomer>(1000, .75f, 30);    
+    private final Map<Integer, LiteContact> allContactsMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+    
+    //derived from allYukonUsers,allYukonRoles,allYukonGroups
+    //see type info in IDatabaseCache
+    private final ConcurrentMap<LiteYukonUser, LiteEnergyCompany> userEnergyCompanyCache = new ConcurrentHashMap<LiteYukonUser, LiteEnergyCompany>(1000, .75f, 30);
+    private LiteEnergyCompany NULL_LITE_ENERGY_COMPANY = new LiteEnergyCompany(Integer.MIN_VALUE);
 
     
-	private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
-	private ArrayList<LiteCommand> allCommands = null;
-	private Map<Integer, LiteCommand> allCommandsMap = null;
-	private Map<Integer, LiteStateGroup> allStateGroupMap = null;
-	private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
-	
-	private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
+    private ArrayList<LiteDeviceTypeCommand> allDeviceTypeCommands = null;
+    private ArrayList<LiteCommand> allCommands = null;
+    private Map<Integer, LiteCommand> allCommandsMap = null;
+    private Map<Integer, LiteStateGroup> allStateGroupMap = null;
+    private Map<Integer, LiteContactNotification> allContactNotifsMap = null;
+    
+    private final Map<Integer, LiteContact> userContactMap = new ConcurrentHashMap<Integer, LiteContact>(1000, .75f, 30);
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
-	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
+    private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
 
     // injected loaders
     private YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup;
@@ -200,15 +200,15 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
  */
 public ServerDatabaseCache() 
 { 
-	super();
+    super();
 }
 
 /**
  * DefaultDatabaseCache constructor comment.
  */
 protected ServerDatabaseCache(String databaseAlias) {
-	super();
-	setDatabaseAlias(databaseAlias);
+    super();
+    setDatabaseAlias(databaseAlias);
 }
 
 /**
@@ -219,7 +219,7 @@ protected ServerDatabaseCache(String databaseAlias) {
 @Override
 public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, DbChangeType dbChangeType )
 {
-	return newItem.getDBChangeMsgs( dbChangeType);
+    return newItem.getDBChangeMsgs( dbChangeType);
 }
 /**
  * Insert the method's description here.
@@ -228,15 +228,15 @@ public synchronized DBChangeMsg[] createDBChangeMessages( CTIDbChange newItem, D
 @Override
 public synchronized List<LiteAlarmCategory> getAllAlarmCategories(){
 
-	if( allAlarmCategories != null )
-		return allAlarmCategories;
-	else
-	{
-		allAlarmCategories = new ArrayList<LiteAlarmCategory>();
-		AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
-		alarmStateLoader.run();
-		return allAlarmCategories;
-	}
+    if( allAlarmCategories != null )
+        return allAlarmCategories;
+    else
+    {
+        allAlarmCategories = new ArrayList<LiteAlarmCategory>();
+        AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
+        alarmStateLoader.run();
+        return allAlarmCategories;
+    }
 }
 
 
@@ -249,13 +249,13 @@ public synchronized List<LiteAlarmCategory> getAllAlarmCategories(){
 public synchronized List<LiteYukonImage> getAllYukonImages()
 {
    if( allYukonImages != null )
-	  return allYukonImages;
+      return allYukonImages;
    else
    {
-	  allYukonImages = new ArrayList<LiteYukonImage>();
-	  YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
-	  imageLoader.run();
-	  return allYukonImages;
+      allYukonImages = new ArrayList<LiteYukonImage>();
+      YukonImageLoader imageLoader = new YukonImageLoader(allYukonImages, databaseAlias);
+      imageLoader.run();
+      return allYukonImages;
    }
 
 }
@@ -266,21 +266,21 @@ public synchronized List<LiteYukonImage> getAllYukonImages()
 @Override
 public synchronized List<LiteYukonPAObject> getAllCapControlFeeders() 
 {
-	if( allCapControlFeeders == null )
-	{
-		allCapControlFeeders = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+    if( allCapControlFeeders == null )
+    {
+        allCapControlFeeders = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
-				 && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_FEEDER )
-				allCapControlFeeders.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory() == PaoCategory.CAPCONTROL
+                 && getAllYukonPAObjects().get(i).getPaoType() == PaoType.CAP_CONTROL_FEEDER )
+                allCapControlFeeders.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allCapControlFeeders.trimToSize();
-	}
+        allCapControlFeeders.trimToSize();
+    }
 
-	return allCapControlFeeders;
+    return allCapControlFeeders;
 }
 /**
  *
@@ -288,21 +288,21 @@ public synchronized List<LiteYukonPAObject> getAllCapControlFeeders()
 @Override
 public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses() 
 {
-	if( allCapControlSubBuses == null )
-	{
-		allCapControlSubBuses = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+    if( allCapControlSubBuses == null )
+    {
+        allCapControlSubBuses = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
-				 && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBBUS )
-				allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_CAPCONTROL
+                 && getAllYukonPAObjects().get(i).getPaoType().getDeviceTypeId() == PAOGroups.CAP_CONTROL_SUBBUS )
+                allCapControlSubBuses.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allCapControlSubBuses.trimToSize();
-	}	
+        allCapControlSubBuses.trimToSize();
+    }    
 
-	return allCapControlSubBuses;
+    return allCapControlSubBuses;
 }
 
 @Override
@@ -339,7 +339,7 @@ private synchronized void loadAllContacts() {
         ContactLoader contactLoader =
             new ContactLoader(allContactsMap, allContactNotifsMap, databaseAlias);
         
-        contactLoader.run();		
+        contactLoader.run();        
         return;
     }
 }
@@ -369,15 +369,15 @@ public List<LiteCICustomer> getAllCICustomers() {
 @Override
 public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
 {
-	if( allDeviceMeterGroups != null )
-		return allDeviceMeterGroups;
-	else
-	{
-		allDeviceMeterGroups = new ArrayList<LiteDeviceMeterNumber>();
-		DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader (allDeviceMeterGroups, databaseAlias);
-		deviceMeterGroupLoader.run();
-		return allDeviceMeterGroups;
-	}
+    if( allDeviceMeterGroups != null )
+        return allDeviceMeterGroups;
+    else
+    {
+        allDeviceMeterGroups = new ArrayList<LiteDeviceMeterNumber>();
+        DeviceMeterGroupLoader deviceMeterGroupLoader = new DeviceMeterGroupLoader (allDeviceMeterGroups, databaseAlias);
+        deviceMeterGroupLoader.run();
+        return allDeviceMeterGroups;
+    }
 
 }
 
@@ -388,21 +388,21 @@ public synchronized List<LiteDeviceMeterNumber> getAllDeviceMeterGroups()
 @Override
 public synchronized List<LiteYukonPAObject> getAllDevices() 
 {
-	if( allDevices == null )
-	{
-		allDevices = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() );
+    if( allDevices == null )
+    {
+        allDevices = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
-				  == PAOGroups.CAT_DEVICE )
-				allDevices.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
+                  == PAOGroups.CAT_DEVICE )
+                allDevices.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allDevices.trimToSize();		
-	}
+        allDevices.trimToSize();        
+    }
 
-	return allDevices;
+    return allDevices;
 }
 
 /**
@@ -410,19 +410,19 @@ public synchronized List<LiteYukonPAObject> getAllDevices()
  */
 @Override
 public synchronized List<LiteYukonPAObject> getAllMCTs() {
-	if (allMCTs == null) {
-		allMCTs = new ArrayList<LiteYukonPAObject>( getAllDevices().size() / 2 );
-		
-		for (int i = 0; i < getAllDevices().size(); i++) {
-			if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
-					getAllDevices().get(i).getPaoType().getDeviceTypeId() ))
-				allMCTs.add( getAllDevices().get(i) );
-		}
-		
-		allMCTs.trimToSize();
-	}
-	
-	return allMCTs;
+    if (allMCTs == null) {
+        allMCTs = new ArrayList<LiteYukonPAObject>( getAllDevices().size() / 2 );
+        
+        for (int i = 0; i < getAllDevices().size(); i++) {
+            if (com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(
+                    getAllDevices().get(i).getPaoType().getDeviceTypeId() ))
+                allMCTs.add( getAllDevices().get(i) );
+        }
+        
+        allMCTs.trimToSize();
+    }
+    
+    return allMCTs;
 }
 
 /**
@@ -432,15 +432,15 @@ public synchronized List<LiteYukonPAObject> getAllMCTs() {
 @Override
 public synchronized List<LiteGraphDefinition> getAllGraphDefinitions()
 {
-	if( allGraphDefinitions != null )
-		return allGraphDefinitions;
-	else
-	{
-		allGraphDefinitions = new ArrayList<LiteGraphDefinition>();
-		GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
-		graphDefinitionLoader.run();
-		return allGraphDefinitions;
-	}
+    if( allGraphDefinitions != null )
+        return allGraphDefinitions;
+    else
+    {
+        allGraphDefinitions = new ArrayList<LiteGraphDefinition>();
+        GraphDefinitionLoader graphDefinitionLoader = new GraphDefinitionLoader(allGraphDefinitions, databaseAlias);
+        graphDefinitionLoader.run();
+        return allGraphDefinitions;
+    }
 }
 /**
  * Insert the method's description here.
@@ -450,15 +450,15 @@ public synchronized List<LiteGraphDefinition> getAllGraphDefinitions()
 public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules()
 {
 
-	if (allHolidaySchedules != null)
-		return allHolidaySchedules;
-	else
-	{
-		allHolidaySchedules = new ArrayList<LiteHolidaySchedule>();
-		HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
-		holidayScheduleLoader.run();
-		return allHolidaySchedules;
-	}
+    if (allHolidaySchedules != null)
+        return allHolidaySchedules;
+    else
+    {
+        allHolidaySchedules = new ArrayList<LiteHolidaySchedule>();
+        HolidayScheduleLoader holidayScheduleLoader = new HolidayScheduleLoader(allHolidaySchedules, databaseAlias);
+        holidayScheduleLoader.run();
+        return allHolidaySchedules;
+    }
 }
 
 /**
@@ -469,173 +469,173 @@ public synchronized List<LiteHolidaySchedule> getAllHolidaySchedules()
 public synchronized List<LiteBaseline> getAllBaselines()
 {
 
-	if (allBaselines != null)
-		return allBaselines;
-	else
-	{
-		allBaselines = new ArrayList<LiteBaseline>();
-		BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
-		baselineLoader.run();
-		return allBaselines;
-	}
+    if (allBaselines != null)
+        return allBaselines;
+    else
+    {
+        allBaselines = new ArrayList<LiteBaseline>();
+        BaselineLoader baselineLoader = new BaselineLoader(allBaselines, databaseAlias);
+        baselineLoader.run();
+        return allBaselines;
+    }
 }
 
 @Override
 public synchronized List<LiteSeasonSchedule> getAllSeasonSchedules()
 {
 
-	if (allSeasonSchedules != null)
-		return allSeasonSchedules;
-	else
-	{
-		allSeasonSchedules = new ArrayList<LiteSeasonSchedule>();
-		SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
-		seasonLoader.run();
-		return allSeasonSchedules;
-	}
+    if (allSeasonSchedules != null)
+        return allSeasonSchedules;
+    else
+    {
+        allSeasonSchedules = new ArrayList<LiteSeasonSchedule>();
+        SeasonScheduleLoader seasonLoader = new SeasonScheduleLoader(allSeasonSchedules, databaseAlias);
+        seasonLoader.run();
+        return allSeasonSchedules;
+    }
 }
 
 @Override
 public synchronized List<LiteTOUSchedule> getAllTOUSchedules()
 {
 
-	if (allTOUSchedules != null)
-		return allTOUSchedules;
-	else
-	{
-		allTOUSchedules = new ArrayList<LiteTOUSchedule>();
-		TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
-		touLoader.run();
-		return allTOUSchedules;
-	}
+    if (allTOUSchedules != null)
+        return allTOUSchedules;
+    else
+    {
+        allTOUSchedules = new ArrayList<LiteTOUSchedule>();
+        TOUScheduleLoader touLoader = new TOUScheduleLoader(allTOUSchedules, databaseAlias);
+        touLoader.run();
+        return allTOUSchedules;
+    }
 }
 
 @Override
 public synchronized List<LiteTOUDay> getAllTOUDays()
 {
 
-	if (allTOUDays != null)
-		return allTOUDays;
-	else
-	{
-		allTOUDays = new ArrayList<LiteTOUDay>();
-		TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
-		dayLoader.run();
-		return allTOUDays;
-	}
+    if (allTOUDays != null)
+        return allTOUDays;
+    else
+    {
+        allTOUDays = new ArrayList<LiteTOUDay>();
+        TOUDayLoader dayLoader = new TOUDayLoader(allTOUDays, databaseAlias);
+        dayLoader.run();
+        return allTOUDays;
+    }
 }
 
 @Override
 public List<LiteGear> getAllGears(){
-	List<LiteGear> allGears = new ArrayList<LiteGear>();
-	GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
-	gearLoader.run();
-	return allGears;
+    List<LiteGear> allGears = new ArrayList<LiteGear>();
+    GearLoader gearLoader = new GearLoader(allGears, databaseAlias);
+    gearLoader.run();
+    return allGears;
 }
 
 @Override
 public synchronized List<LiteCommand> getAllCommands() {
-	if (allCommands== null)
-	{
-		allCommands = new ArrayList<LiteCommand>();
-		allCommandsMap = new HashMap<Integer, LiteCommand>();
-		CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
-		commandLoader.run();
-	}
-	return allCommands;
+    if (allCommands== null)
+    {
+        allCommands = new ArrayList<LiteCommand>();
+        allCommandsMap = new HashMap<Integer, LiteCommand>();
+        CommandLoader commandLoader = new CommandLoader(allCommands, allCommandsMap, databaseAlias);
+        commandLoader.run();
+    }
+    return allCommands;
 }
 
 @Override
 public synchronized java.util.Map<Integer, LiteCommand> getAllCommandsMap()
 {
-	if( allCommandsMap != null )
-		return allCommandsMap;
-	else
-	{
-		releaseAllCommands();
-		getAllCommands();
+    if( allCommandsMap != null )
+        return allCommandsMap;
+    else
+    {
+        releaseAllCommands();
+        getAllCommands();
 
-		return allCommandsMap;
-	}
+        return allCommandsMap;
+    }
 }
 
 @Override
 public synchronized List<LiteConfig> getAllConfigs()
 {
 
-	if (allConfigs != null)
-		return allConfigs;
-	else
-	{
-		allConfigs = new ArrayList<LiteConfig>();
-		ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
-		configLoader.run();
-		return allConfigs;
-	}
+    if (allConfigs != null)
+        return allConfigs;
+    else
+    {
+        allConfigs = new ArrayList<LiteConfig>();
+        ConfigLoader configLoader = new ConfigLoader(allConfigs, databaseAlias);
+        configLoader.run();
+        return allConfigs;
+    }
 }
 
 @Override
 public synchronized List<LiteLMConstraint> getAllLMProgramConstraints()
 {
 
-	if (allLMProgramConstraints != null)
-		return allLMProgramConstraints;
-	else
-	{
-		allLMProgramConstraints = new ArrayList<LiteLMConstraint>();
-		LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
-		lmConstraintsLoader.run();
-		return allLMProgramConstraints;
-	}
+    if (allLMProgramConstraints != null)
+        return allLMProgramConstraints;
+    else
+    {
+        allLMProgramConstraints = new ArrayList<LiteLMConstraint>();
+        LMConstraintLoader lmConstraintsLoader = new LMConstraintLoader(allLMProgramConstraints, databaseAlias);
+        lmConstraintsLoader.run();
+        return allLMProgramConstraints;
+    }
 }
 
 @Override
 public synchronized List<LiteLMProgScenario> getAllLMScenarioProgs()
 {
 
-	if( allLMScenarioProgs == null )
-	{
-		allLMScenarioProgs = new ArrayList<LiteLMProgScenario>();
-		LMScenarioProgramLoader ldr = new LMScenarioProgramLoader(allLMScenarioProgs, databaseAlias);
-		ldr.run();
-	}
-	
-	return allLMScenarioProgs;
+    if( allLMScenarioProgs == null )
+    {
+        allLMScenarioProgs = new ArrayList<LiteLMProgScenario>();
+        LMScenarioProgramLoader ldr = new LMScenarioProgramLoader(allLMScenarioProgs, databaseAlias);
+        ldr.run();
+    }
+    
+    return allLMScenarioProgs;
 }
 
 @Override
 public synchronized List<LiteYukonPAObject> getAllLMScenarios()
 {
 
-	if( allLMScenarios == null )
-	{
-		allLMScenarios = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+    if( allLMScenarios == null )
+    {
+        allLMScenarios = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
-		for( int i = 0; i < getAllLoadManagement().size(); i++ )
-		{
-			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() 
-				  == PAOGroups.LM_SCENARIO )
-			allLMScenarios.add( getAllLoadManagement().get(i) );
-		}
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )
+        {
+            if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() 
+                  == PAOGroups.LM_SCENARIO )
+            allLMScenarios.add( getAllLoadManagement().get(i) );
+        }
 
-		allLMScenarios.trimToSize();		
-	}
+        allLMScenarios.trimToSize();        
+    }
 
-	return allLMScenarios;
+    return allLMScenarios;
 }
 
 @Override
 public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions()
 {
 
-	if( allLMPAOExclusions == null )
-	{
-		allLMPAOExclusions = new ArrayList<LiteLMPAOExclusion>();
-		LMPAOExclusionLoader ldr = new LMPAOExclusionLoader(allLMPAOExclusions, databaseAlias);
-		ldr.run();
-	}
-	
-	return allLMPAOExclusions;
+    if( allLMPAOExclusions == null )
+    {
+        allLMPAOExclusions = new ArrayList<LiteLMPAOExclusion>();
+        LMPAOExclusionLoader ldr = new LMPAOExclusionLoader(allLMPAOExclusions, databaseAlias);
+        ldr.run();
+    }
+    
+    return allLMPAOExclusions;
 }
 /**
  * Insert the method's description here.
@@ -644,23 +644,23 @@ public synchronized List<LiteLMPAOExclusion> getAllLMPAOExclusions()
 @Override
 public synchronized List<LiteYukonPAObject> getAllLMPrograms()
 {
-	if( allLMPrograms == null )
-	{
-		//List allDevices = getAllLoadManagement();
-		allLMPrograms = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
+    if( allLMPrograms == null )
+    {
+        //List allDevices = getAllLoadManagement();
+        allLMPrograms = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
-		for( int i = 0; i < getAllLoadManagement().size(); i++ )
-		{
-			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CURTAIL_PROGRAM
-				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM
-				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM
-				 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
-				allLMPrograms.add( getAllLoadManagement().get(i) );				
-		}
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )
+        {
+            if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CURTAIL_PROGRAM
+                 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM
+                 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM
+                 || getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_ENERGY_EXCHANGE_PROGRAM )
+                allLMPrograms.add( getAllLoadManagement().get(i) );                
+        }
 
-		allLMPrograms.trimToSize();
-	}
-	return allLMPrograms;
+        allLMPrograms.trimToSize();
+    }
+    return allLMPrograms;
 }
 
 /**
@@ -678,7 +678,7 @@ public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
         for( int i = 0; i < getAllLoadManagement().size(); i++ )
         {
             if(getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_DIRECT_PROGRAM ||
-            		getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM)
+                    getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_SEP_PROGRAM)
                 allLMPrograms.add( getAllLoadManagement().get(i) );             
         }
 
@@ -693,19 +693,19 @@ public synchronized List<LiteYukonPAObject> getAllLMDirectPrograms()
 @Override
 public List<LiteYukonPAObject> getAllLMControlAreas()
 {
-	if( allLMControlAreas == null )
-	{
-		allLMControlAreas = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
+    if( allLMControlAreas == null )
+    {
+        allLMControlAreas = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
-		for( int i = 0; i < getAllLoadManagement().size(); i++ )
-		{
-			if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CONTROL_AREA )
-				allLMControlAreas.add( getAllLoadManagement().get(i) );				
-		}
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )
+        {
+            if( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId() == PAOGroups.LM_CONTROL_AREA )
+                allLMControlAreas.add( getAllLoadManagement().get(i) );                
+        }
 
-		allLMControlAreas.trimToSize();
-	}
-	return allLMControlAreas;
+        allLMControlAreas.trimToSize();
+    }
+    return allLMControlAreas;
 }
 
 
@@ -716,18 +716,18 @@ public List<LiteYukonPAObject> getAllLMControlAreas()
 public List<LiteYukonPAObject> getAllLMGroups()
 {
     if( allLMGroups == null )
-	{
-		allLMGroups = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
+    {
+        allLMGroups = new ArrayList<LiteYukonPAObject>( getAllLoadManagement().size() / 2 );
 
-		for( int i = 0; i < getAllLoadManagement().size(); i++ )
-		{
-			if( DeviceTypesFuncs.isLmGroup( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId()) )
-				allLMGroups.add( getAllLoadManagement().get(i) );				
-		}
+        for( int i = 0; i < getAllLoadManagement().size(); i++ )
+        {
+            if( DeviceTypesFuncs.isLmGroup( getAllLoadManagement().get(i).getPaoType().getDeviceTypeId()) )
+                allLMGroups.add( getAllLoadManagement().get(i) );                
+        }
 
-		allLMGroups.trimToSize();
-	}
-	return allLMGroups;
+        allLMGroups.trimToSize();
+    }
+    return allLMGroups;
 }
 /**
  * getAllLoadManagement method comment.
@@ -736,22 +736,22 @@ public List<LiteYukonPAObject> getAllLMGroups()
 @Override
 public synchronized List<LiteYukonPAObject> getAllLoadManagement() 
 {
-	if( allLoadManagement == null )
-	{
-		allLoadManagement = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+    if( allLoadManagement == null )
+    {
+        allLoadManagement = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.LOADMANAGEMENT ||
-					getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.GROUP )
-				allLoadManagement.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.LOADMANAGEMENT ||
+                    getAllYukonPAObjects().get(i).getPaoType().getPaoClass().getPaoClassId() == DeviceClasses.GROUP )
+                allLoadManagement.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allLoadManagement.trimToSize();		
-	}
-	
+        allLoadManagement.trimToSize();        
+    }
+    
 
-	return allLoadManagement;
+    return allLoadManagement;
 }
 /**
  * Called in four external places.
@@ -759,17 +759,17 @@ public synchronized List<LiteYukonPAObject> getAllLoadManagement()
 @Override
 public synchronized List<LiteNotificationGroup> getAllContactNotificationGroups()
 {
-	if( allNotificationGroups != null )
-		return allNotificationGroups;
-	else
-	{
-		allNotificationGroups = new ArrayList<LiteNotificationGroup>();
-		ContactNotificationGroupLoader notifLoader = new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
-		notifLoader.run();
-		
-		//allUsedContactNotifications = notifLoader.getAllUsedContactNotifications();
-		return allNotificationGroups;
-	}
+    if( allNotificationGroups != null )
+        return allNotificationGroups;
+    else
+    {
+        allNotificationGroups = new ArrayList<LiteNotificationGroup>();
+        ContactNotificationGroupLoader notifLoader = new ContactNotificationGroupLoader(allNotificationGroups, databaseAlias);
+        notifLoader.run();
+        
+        //allUsedContactNotifications = notifLoader.getAllUsedContactNotifications();
+        return allNotificationGroups;
+    }
 }
 
 /**
@@ -817,15 +817,15 @@ public synchronized List<LitePoint> getAllSystemPoints(){
 @Override
 public synchronized java.util.Map<Integer, LiteYukonPAObject> getAllPAOsMap()
 {
-	if( allPAOsMap != null )
-		return allPAOsMap;
-	else
-	{
-		releaseAllYukonPAObjects();
-		getAllYukonPAObjects();
+    if( allPAOsMap != null )
+        return allPAOsMap;
+    else
+    {
+        releaseAllYukonPAObjects();
+        getAllYukonPAObjects();
 
-		return allPAOsMap;
-	}
+        return allPAOsMap;
+    }
 }
 
 @Override
@@ -837,15 +837,15 @@ public synchronized java.util.Map<Integer, LiteContactNotification> getAllContac
 
 @Override
 public synchronized List<LitePointLimit> getAllPointLimits() {
-	if( allPointLimits != null ) 
-		return allPointLimits;
-	else
-	{
-		allPointLimits = new ArrayList<LitePointLimit>();
-		PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
-		pointLimitLoader.run();
-		return allPointLimits;
-	}
+    if( allPointLimits != null ) 
+        return allPointLimits;
+    else
+    {
+        allPointLimits = new ArrayList<LitePointLimit>();
+        PointLimitLoader pointLimitLoader = new PointLimitLoader(allPointLimits, databaseAlias);
+        pointLimitLoader.run();
+        return allPointLimits;
+    }
 }
 /**
  * getAllPorts method comment.
@@ -854,22 +854,22 @@ public synchronized List<LitePointLimit> getAllPointLimits() {
 @Override
 public synchronized List<LiteYukonPAObject> getAllPorts() 
 {
-	if( allPorts == null )
-	{
-		allPorts = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+    if( allPorts == null )
+    {
+        allPorts = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
-				 == PAOGroups.CAT_PORT )
-				allPorts.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() 
+                 == PAOGroups.CAT_PORT )
+                allPorts.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allPorts.trimToSize();		
-	}
-	
+        allPorts.trimToSize();        
+    }
+    
 
-	return allPorts;
+    return allPorts;
 }
 /**
  * getAllRoutes method comment.
@@ -878,20 +878,20 @@ public synchronized List<LiteYukonPAObject> getAllPorts()
 @Override
 public synchronized List<LiteYukonPAObject> getAllRoutes() 
 {
-	if( allRoutes == null )
-	{
-		allRoutes = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 100 );
+    if( allRoutes == null )
+    {
+        allRoutes = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 100 );
 
-		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
-		{
-			if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE )
-				allRoutes.add( getAllYukonPAObjects().get(i) );
-		}
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getPaoType().getPaoCategory().getPaoCategoryId() == PAOGroups.CAT_ROUTE )
+                allRoutes.add( getAllYukonPAObjects().get(i) );
+        }
 
-		allRoutes.trimToSize();
-	}
-	
-	return allRoutes;
+        allRoutes.trimToSize();
+    }
+    
+    return allRoutes;
 }
 /**
  * Insert the method's description here.
@@ -901,27 +901,27 @@ public synchronized List<LiteYukonPAObject> getAllRoutes()
 @Override
 public synchronized Map<Integer, LiteStateGroup> getAllStateGroupMap()
 {
-	if( allStateGroupMap == null )
-	{
-		allStateGroupMap = new HashMap<Integer, LiteStateGroup>();
-		StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroupMap);
-		stateGroupLoader.run();
-		return allStateGroupMap;
-	}
+    if( allStateGroupMap == null )
+    {
+        allStateGroupMap = new HashMap<Integer, LiteStateGroup>();
+        StateGroupLoader stateGroupLoader = new StateGroupLoader(allStateGroupMap);
+        stateGroupLoader.run();
+        return allStateGroupMap;
+    }
 
-	return allStateGroupMap;
+    return allStateGroupMap;
 }
 
 @Override
 public synchronized List<LiteTag> getAllTags() {
-	if(allTags == null)
-	{
-		allTags = new ArrayList<LiteTag>();
-		TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
-		tagLoader.run();
-		return allTags;	
-	}
-	return allTags;
+    if(allTags == null)
+    {
+        allTags = new ArrayList<LiteTag>();
+        TagLoader tagLoader = new TagLoader(allTags, databaseAlias);
+        tagLoader.run();
+        return allTags;    
+    }
+    return allTags;
 }
 
 // This cache is derive from the Device cache
@@ -929,65 +929,65 @@ public synchronized List<LiteTag> getAllTags() {
 public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 {
 
-	 if( allUnusedCCDevices != null )
-		  return allUnusedCCDevices;
-	 else
-	 {
-		//temp code
-		java.util.Date timerStart = new java.util.Date();
-		//temp code
+     if( allUnusedCCDevices != null )
+          return allUnusedCCDevices;
+     else
+     {
+        //temp code
+        java.util.Date timerStart = new java.util.Date();
+        //temp code
 
-		//add all the CBC and and addressable Devices (RTU, DNP, etc) into these results
-		String sqlString =
-			"select deviceID from " + DeviceAddress.TABLE_NAME + 
-			" union select deviceID from " + DeviceCBC.TABLE_NAME +
-			" where deviceID not in " + 
-			" (select controldeviceid from " + CapBank.TABLE_NAME + ")";
+        //add all the CBC and and addressable Devices (RTU, DNP, etc) into these results
+        String sqlString =
+            "select deviceID from " + DeviceAddress.TABLE_NAME + 
+            " union select deviceID from " + DeviceCBC.TABLE_NAME +
+            " where deviceID not in " + 
+            " (select controldeviceid from " + CapBank.TABLE_NAME + ")";
 
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		allUnusedCCDevices = new ArrayList<LiteYukonPAObject>(32);
-		
-		try
-		{
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery(sqlString);
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
+        java.sql.ResultSet rset = null;
+        allUnusedCCDevices = new ArrayList<LiteYukonPAObject>(32);
+        
+        try
+        {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery(sqlString);
 
-			while (rset.next()) {
-				
-				int paoID = rset.getInt(1);				
-				LiteYukonPAObject pao = paoDao.getLiteYukonPAO( paoID );
-				
-				if( pao != null ) {
-					allUnusedCCDevices.add( pao );
-				}
-			}
-				
-			if( rset != null ) rset.close();
-			
-			//ensure is list is sorted by name
-			java.util.Collections.sort(allUnusedCCDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
+            while (rset.next()) {
+                
+                int paoID = rset.getInt(1);                
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO( paoID );
+                
+                if( pao != null ) {
+                    allUnusedCCDevices.add( pao );
+                }
+            }
+                
+            if( rset != null ) rset.close();
+            
+            //ensure is list is sorted by name
+            java.util.Collections.sort(allUnusedCCDevices, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
 
 
-		   //temp code
-		   java.util.Date timerStop = new java.util.Date();
-		   CTILogger.info( 
-				   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
-		   //temp code
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			SqlUtils.close(rset, stmt, conn );
-		}
+           //temp code
+           java.util.Date timerStop = new java.util.Date();
+           CTILogger.info( 
+                   (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for getAllUnusedCCPaos()" );
+           //temp code
+        }
+        catch( java.sql.SQLException e )
+        {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally
+        {
+            SqlUtils.close(rset, stmt, conn );
+        }
 
-		return allUnusedCCDevices;
-	 }
+        return allUnusedCCDevices;
+     }
 
 }
 
@@ -999,75 +999,75 @@ public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 @Override
 public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 {
-	if( allYukonPAObjects != null && allPAOsMap != null)
-		return allYukonPAObjects;
-	else
-	{
-		allYukonPAObjects = new ArrayList<LiteYukonPAObject>();
-		allPAOsMap = new HashMap<Integer, LiteYukonPAObject>();
-		YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
-		yukLoader.run();
-		
-		return allYukonPAObjects;
-	}
+    if( allYukonPAObjects != null && allPAOsMap != null)
+        return allYukonPAObjects;
+    else
+    {
+        allYukonPAObjects = new ArrayList<LiteYukonPAObject>();
+        allPAOsMap = new HashMap<Integer, LiteYukonPAObject>();
+        YukonPAOLoader yukLoader = new YukonPAOLoader(allYukonPAObjects, allPAOsMap);
+        yukLoader.run();
+        
+        return allYukonPAObjects;
+    }
 }
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
-	 */
-	@Override
-    public synchronized List<LiteYukonGroup> getAllYukonGroups() {		
-		if(allYukonGroups == null) {
-			allYukonGroups = new ArrayList<LiteYukonGroup>();
-			YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
-			l.run();
-		}
-		return allYukonGroups;				
-	}
+    /**
+     * @see com.cannontech.yukon.IDatabaseCache#getAllYukonGroups()
+     */
+    @Override
+    public synchronized List<LiteYukonGroup> getAllYukonGroups() {        
+        if(allYukonGroups == null) {
+            allYukonGroups = new ArrayList<LiteYukonGroup>();
+            YukonGroupLoader l = new YukonGroupLoader(allYukonGroups, databaseAlias);
+            l.run();
+        }
+        return allYukonGroups;                
+    }
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
-	 */
-	@Override
-    public synchronized List<LiteYukonRole> getAllYukonRoles() {		
-		if( allYukonRoles == null) {
-			allYukonRoles = new ArrayList<LiteYukonRole>();
-			YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
-			l.run();
-		}
-		return allYukonRoles;				
-	}
-		
-	@Override
+    /**
+     * @see com.cannontech.yukon.IDatabaseCache#getAllYukonRoles()
+     */
+    @Override
+    public synchronized List<LiteYukonRole> getAllYukonRoles() {        
+        if( allYukonRoles == null) {
+            allYukonRoles = new ArrayList<LiteYukonRole>();
+            YukonRoleLoader l = new YukonRoleLoader(allYukonRoles, databaseAlias);
+            l.run();
+        }
+        return allYukonRoles;                
+    }
+        
+    @Override
     public synchronized List<LiteYukonRoleProperty> getAllYukonRoleProperties() { 
-		if( allYukonRoleProperties == null) {
-			allYukonRoleProperties = new ArrayList<LiteYukonRoleProperty>();
-			final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
-			l.run();
-		}
-		return allYukonRoleProperties;
-	}
+        if( allYukonRoleProperties == null) {
+            allYukonRoleProperties = new ArrayList<LiteYukonRoleProperty>();
+            final YukonRolePropertyLoader l = new YukonRolePropertyLoader(allYukonRoleProperties, databaseAlias);
+            l.run();
+        }
+        return allYukonRoleProperties;
+    }
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
-	 */
-	@Override
+    /**
+     * @see com.cannontech.yukon.IDatabaseCache#getYukonGroupRolePropertyMap()
+     */
+    @Override
     public synchronized Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> getYukonGroupRolePropertyMap() 
-	{
-		if(allYukonGroupRolePropertiesMap == null) 
-		{
-			allYukonGroupRolePropertiesMap = new HashMap<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>>();
-			final YukonGroupRoleLoader l = 
-				new YukonGroupRoleLoader(allYukonGroupRolePropertiesMap, getAllYukonGroups(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
-			l.run();
-		}		
-		return allYukonGroupRolePropertiesMap;
-	}
+    {
+        if(allYukonGroupRolePropertiesMap == null) 
+        {
+            allYukonGroupRolePropertiesMap = new HashMap<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>>();
+            final YukonGroupRoleLoader l = 
+                new YukonGroupRoleLoader(allYukonGroupRolePropertiesMap, getAllYukonGroups(), getAllYukonRoles(), getAllYukonRoleProperties(), databaseAlias);
+            l.run();
+        }        
+        return allYukonGroupRolePropertiesMap;
+    }
 
-	/**
-	 * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
-	 */
-	@Override
+    /**
+     * @see com.cannontech.yukon.IDatabaseCache#getAllEnergyCompanies()
+     */
+    @Override
     public List<LiteEnergyCompany> getAllEnergyCompanies() {
         List<LiteEnergyCompany> ec = allEnergyCompanies;
         if(ec == null) {
@@ -1077,26 +1077,26 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
             allEnergyCompanies = ec;
         }
         return Collections.unmodifiableList(ec);
-	}
-	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (3/14/00 3:19:19 PM)
-	 * @return java.util.Collection
-	 */
-	@Override
+    }
+    
+    /**
+     * Insert the method's description here.
+     * Creation date: (3/14/00 3:19:19 PM)
+     * @return java.util.Collection
+     */
+    @Override
     public synchronized List<LiteDeviceTypeCommand> getAllDeviceTypeCommands(){
 
-		if( allDeviceTypeCommands != null )
-			return allDeviceTypeCommands;
-		else
-		{
-			allDeviceTypeCommands= new ArrayList<LiteDeviceTypeCommand>();
-			DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
-			devTypeCmdLoader.run();
-			return allDeviceTypeCommands;
-		}
-	}
+        if( allDeviceTypeCommands != null )
+            return allDeviceTypeCommands;
+        else
+        {
+            allDeviceTypeCommands= new ArrayList<LiteDeviceTypeCommand>();
+            DeviceTypeCommandLoader devTypeCmdLoader = new DeviceTypeCommandLoader(allDeviceTypeCommands, databaseAlias);
+            devTypeCmdLoader.run();
+            return allDeviceTypeCommands;
+        }
+    }
 
 /**
  * Insert the method's description here.
@@ -1104,13 +1104,13 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
  */
 public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
 {
-	if( cache == null )
-	{
-		cache = new ServerDatabaseCache();
-		//cache.setDbChangeListener( new CacheDBChangeListener() );
-	}
+    if( cache == null )
+    {
+        cache = new ServerDatabaseCache();
+        //cache.setDbChangeListener( new CacheDBChangeListener() );
+    }
 
-	return cache;
+    return cache;
 }
 
 /**
@@ -1119,61 +1119,61 @@ public static synchronized com.cannontech.yukon.IDatabaseCache getInstance()
  */
 private synchronized LiteBase handleAlarmCategoryChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allAlarmCategories == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allAlarmCategories == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allAlarmCategories.size();i++)
-				{
-					if( allAlarmCategories.get(i).getAlarmStateID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allAlarmCategories.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteAlarmCategory la = new com.cannontech.database.data.lite.LiteAlarmCategory(id);
-					la.retrieve(databaseAlias);
-					allAlarmCategories.add(la);
-					lBase = la;
-				}				
-				break;
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allAlarmCategories.size();i++)
+                {
+                    if( allAlarmCategories.get(i).getAlarmStateID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allAlarmCategories.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteAlarmCategory la = new com.cannontech.database.data.lite.LiteAlarmCategory(id);
+                    la.retrieve(databaseAlias);
+                    allAlarmCategories.add(la);
+                    lBase = la;
+                }                
+                break;
 
-		case UPDATE:
-				for(int i=0;i<allAlarmCategories.size();i++)
-				{
-					if( allAlarmCategories.get(i).getAlarmStateID() == id )
-					{
-						allAlarmCategories.get(i).retrieve(databaseAlias);
-						lBase = allAlarmCategories.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allAlarmCategories.size();i++)
-				{
-					if( allAlarmCategories.get(i).getAlarmStateID() == id )
-					{
-						lBase = allAlarmCategories.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllAlarmCategories();
-				break;
-	}
+        case UPDATE:
+                for(int i=0;i<allAlarmCategories.size();i++)
+                {
+                    if( allAlarmCategories.get(i).getAlarmStateID() == id )
+                    {
+                        allAlarmCategories.get(i).retrieve(databaseAlias);
+                        lBase = allAlarmCategories.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allAlarmCategories.size();i++)
+                {
+                    if( allAlarmCategories.get(i).getAlarmStateID() == id )
+                    {
+                        lBase = allAlarmCategories.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllAlarmCategories();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -1187,53 +1187,53 @@ private synchronized LiteBase handleYukonImageChange( DbChangeType dbChangeType,
 
    // if the storage is not already loaded, we must not care about it
    if( allYukonImages == null )
-	  return lBase;
+      return lBase;
 
    switch(dbChangeType)
    {
-	  case ADD:
-			for(int i=0;i<allYukonImages.size();i++)
-			{
-			   if( allYukonImages.get(i).getImageID() == id )
-			   {
-				  alreadyAdded = true;
-				  lBase = allYukonImages.get(i);
-				  break;
-			   }
-			}
-			if( !alreadyAdded )
-			{
-			   com.cannontech.database.data.lite.LiteYukonImage ls = new com.cannontech.database.data.lite.LiteYukonImage(id);
-			   ls.retrieve(databaseAlias);
-			   allYukonImages.add(ls);
-			   lBase = ls;
-			}           
-			break;
+      case ADD:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( allYukonImages.get(i).getImageID() == id )
+               {
+                  alreadyAdded = true;
+                  lBase = allYukonImages.get(i);
+                  break;
+               }
+            }
+            if( !alreadyAdded )
+            {
+               com.cannontech.database.data.lite.LiteYukonImage ls = new com.cannontech.database.data.lite.LiteYukonImage(id);
+               ls.retrieve(databaseAlias);
+               allYukonImages.add(ls);
+               lBase = ls;
+            }           
+            break;
 
-	  case UPDATE:
-			for(int i=0;i<allYukonImages.size();i++)
-			{
-			   if( allYukonImages.get(i).getImageID() == id )
-			   {
-				  allYukonImages.get(i).retrieve(databaseAlias);
-				  lBase = allYukonImages.get(i);
-				  break;
-			   }
-			}
-			break;
-	  case DELETE:
-			for(int i=0;i<allYukonImages.size();i++)
-			{
-			   if( allYukonImages.get(i).getImageID() == id )
-			   {
-				  lBase = allYukonImages.remove(i);
-				  break;
-			   }
-			}
-			break;
-	  default:
-			releaseAllYukonImages();
-			break;
+      case UPDATE:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( allYukonImages.get(i).getImageID() == id )
+               {
+                  allYukonImages.get(i).retrieve(databaseAlias);
+                  lBase = allYukonImages.get(i);
+                  break;
+               }
+            }
+            break;
+      case DELETE:
+            for(int i=0;i<allYukonImages.size();i++)
+            {
+               if( allYukonImages.get(i).getImageID() == id )
+               {
+                  lBase = allYukonImages.remove(i);
+                  break;
+               }
+            }
+            break;
+      default:
+            releaseAllYukonImages();
+            break;
    }
 
    return lBase;
@@ -1276,7 +1276,7 @@ private synchronized LiteBase handleContactChange( DbChangeType dbChangeType, in
         {
             releaseAllContacts();
             break;
-        }		
+        }        
         
         allContactsMap.remove( new Integer(id) );
 
@@ -1360,7 +1360,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_CAPCONTROL) )
         {
             allCapControlFeeders = null;
-            allCapControlSubBuses = null;	
+            allCapControlSubBuses = null;    
             allCapControlSubStations = null;
         }
         else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
@@ -1369,13 +1369,13 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         }
         else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_ROUTE) )
         {
-            allRoutes = null;	
+            allRoutes = null;    
         }
 
     }
     else if( database == DBChangeMsg.CHANGE_STATE_GROUP_DB )
     {
-        retLBase = handleStateGroupChange( dbChangeType, id );		
+        retLBase = handleStateGroupChange( dbChangeType, id );        
     }
     else if( database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB )
     {
@@ -1400,7 +1400,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
 
         releaseAllCustomers();
 
-        retLBase = handleContactChange( dbChangeType, id );		
+        retLBase = handleContactChange( dbChangeType, id );        
     }
     else if( database == DBChangeMsg.CHANGE_GRAPH_DB )
     {
@@ -1496,66 +1496,66 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
  */
 private synchronized LiteBase handleDeviceMeterGroupChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allDeviceMeterGroups == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allDeviceMeterGroups == null )
+        return lBase;
 
     if( id == 0) {    //A force reload of all devicemetergroups was sent.
         releaseAllDeviceMeterGroups();
         return lBase;
     }
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allDeviceMeterGroups.size();i++)
-				{
-					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allDeviceMeterGroups.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteDeviceMeterNumber liteDMG = new LiteDeviceMeterNumber(id);
-					liteDMG.retrieve(databaseAlias);
-					allDeviceMeterGroups.add(liteDMG);
-					lBase = liteDMG;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allDeviceMeterGroups.size();i++)
-				{
-					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
-					{
-						allDeviceMeterGroups.get(i).retrieve(databaseAlias);
-						lBase = allDeviceMeterGroups.get(i);
-						
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allDeviceMeterGroups.size();i++)
-				{
-					if( allDeviceMeterGroups.get(i).getDeviceID() == id )
-					{
-						lBase = allDeviceMeterGroups.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllDeviceMeterGroups();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allDeviceMeterGroups.size();i++)
+                {
+                    if( allDeviceMeterGroups.get(i).getDeviceID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allDeviceMeterGroups.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    LiteDeviceMeterNumber liteDMG = new LiteDeviceMeterNumber(id);
+                    liteDMG.retrieve(databaseAlias);
+                    allDeviceMeterGroups.add(liteDMG);
+                    lBase = liteDMG;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allDeviceMeterGroups.size();i++)
+                {
+                    if( allDeviceMeterGroups.get(i).getDeviceID() == id )
+                    {
+                        allDeviceMeterGroups.get(i).retrieve(databaseAlias);
+                        lBase = allDeviceMeterGroups.get(i);
+                        
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allDeviceMeterGroups.size();i++)
+                {
+                    if( allDeviceMeterGroups.get(i).getDeviceID() == id )
+                    {
+                        lBase = allDeviceMeterGroups.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllDeviceMeterGroups();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 /**
  * Insert the method's description here.
@@ -1563,60 +1563,60 @@ private synchronized LiteBase handleDeviceMeterGroupChange( DbChangeType dbChang
  */
 private synchronized LiteBase handleGraphDefinitionChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allGraphDefinitions == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allGraphDefinitions == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allGraphDefinitions.size();i++)
-				{
-					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allGraphDefinitions.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteGraphDefinition lsg = new com.cannontech.database.data.lite.LiteGraphDefinition(id);
-					lsg.retrieve(databaseAlias);
-					allGraphDefinitions.add(lsg);
-					lBase = lsg;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allGraphDefinitions.size();i++)
-				{
-					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
-					{
-						allGraphDefinitions.get(i).retrieve(databaseAlias);
-						lBase = allGraphDefinitions.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allGraphDefinitions.size();i++)
-				{
-					if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
-					{
-						lBase = allGraphDefinitions.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllGraphDefinitions();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allGraphDefinitions.size();i++)
+                {
+                    if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allGraphDefinitions.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteGraphDefinition lsg = new com.cannontech.database.data.lite.LiteGraphDefinition(id);
+                    lsg.retrieve(databaseAlias);
+                    allGraphDefinitions.add(lsg);
+                    lBase = lsg;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allGraphDefinitions.size();i++)
+                {
+                    if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
+                    {
+                        allGraphDefinitions.get(i).retrieve(databaseAlias);
+                        lBase = allGraphDefinitions.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allGraphDefinitions.size();i++)
+                {
+                    if( allGraphDefinitions.get(i).getGraphDefinitionID() == id )
+                    {
+                        lBase = allGraphDefinitions.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllGraphDefinitions();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 /**
  * Insert the method's description here.
@@ -1624,292 +1624,292 @@ private synchronized LiteBase handleGraphDefinitionChange( DbChangeType dbChange
  */
 private synchronized LiteBase handleHolidayScheduleChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allHolidaySchedules == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allHolidaySchedules == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allHolidaySchedules.size();i++)
-				{
-					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allHolidaySchedules.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteHolidaySchedule lh = new com.cannontech.database.data.lite.LiteHolidaySchedule(id);
-					lh.retrieve(databaseAlias);
-					allHolidaySchedules.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allHolidaySchedules.size();i++)
-				{
-					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
-					{
-						allHolidaySchedules.get(i).retrieve(databaseAlias);
-						lBase = allHolidaySchedules.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allHolidaySchedules.size();i++)
-				{
-					if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
-					{
-						lBase = allHolidaySchedules.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllHolidaySchedules();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allHolidaySchedules.size();i++)
+                {
+                    if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allHolidaySchedules.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteHolidaySchedule lh = new com.cannontech.database.data.lite.LiteHolidaySchedule(id);
+                    lh.retrieve(databaseAlias);
+                    allHolidaySchedules.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allHolidaySchedules.size();i++)
+                {
+                    if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
+                    {
+                        allHolidaySchedules.get(i).retrieve(databaseAlias);
+                        lBase = allHolidaySchedules.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allHolidaySchedules.size();i++)
+                {
+                    if( allHolidaySchedules.get(i).getHolidayScheduleID() == id )
+                    {
+                        lBase = allHolidaySchedules.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllHolidaySchedules();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 private synchronized LiteBase handleDeviceTypeCommandChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allDeviceTypeCommands == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allDeviceTypeCommands == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allDeviceTypeCommands.size();i++)
-				{
-					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allDeviceTypeCommands.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					LiteDeviceTypeCommand ldtc = new LiteDeviceTypeCommand(id);
-					ldtc.retrieve(databaseAlias);
-					allDeviceTypeCommands.add(ldtc);
-					lBase = ldtc;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allDeviceTypeCommands.size();i++)
-				{
-					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
-					{
-						allDeviceTypeCommands.get(i).retrieve(databaseAlias);
-						lBase = allDeviceTypeCommands.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allDeviceTypeCommands.size();i++)
-				{
-					if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
-					{
-						lBase = allDeviceTypeCommands.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllDeviceTypeCommands();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allDeviceTypeCommands.size();i++)
+                {
+                    if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allDeviceTypeCommands.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    LiteDeviceTypeCommand ldtc = new LiteDeviceTypeCommand(id);
+                    ldtc.retrieve(databaseAlias);
+                    allDeviceTypeCommands.add(ldtc);
+                    lBase = ldtc;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allDeviceTypeCommands.size();i++)
+                {
+                    if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
+                    {
+                        allDeviceTypeCommands.get(i).retrieve(databaseAlias);
+                        lBase = allDeviceTypeCommands.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allDeviceTypeCommands.size();i++)
+                {
+                    if( allDeviceTypeCommands.get(i).getDeviceCommandID() == id )
+                    {
+                        lBase = allDeviceTypeCommands.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllDeviceTypeCommands();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 
 private synchronized LiteBase handleBaselineChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allBaselines == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allBaselines == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allBaselines.size();i++)
-				{
-					if( allBaselines.get(i).getBaselineID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allBaselines.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteBaseline lh = new com.cannontech.database.data.lite.LiteBaseline(id);
-					lh.retrieve(databaseAlias);
-					allBaselines.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allBaselines.size();i++)
-				{
-					if( allBaselines.get(i).getBaselineID() == id )
-					{
-						allBaselines.get(i).retrieve(databaseAlias);
-						lBase = allBaselines.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allBaselines.size();i++)
-				{
-					if( allBaselines.get(i).getBaselineID() == id )
-					{
-						lBase = allBaselines.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllBaselines();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allBaselines.size();i++)
+                {
+                    if( allBaselines.get(i).getBaselineID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allBaselines.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteBaseline lh = new com.cannontech.database.data.lite.LiteBaseline(id);
+                    lh.retrieve(databaseAlias);
+                    allBaselines.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allBaselines.size();i++)
+                {
+                    if( allBaselines.get(i).getBaselineID() == id )
+                    {
+                        allBaselines.get(i).retrieve(databaseAlias);
+                        lBase = allBaselines.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allBaselines.size();i++)
+                {
+                    if( allBaselines.get(i).getBaselineID() == id )
+                    {
+                        lBase = allBaselines.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllBaselines();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 private synchronized LiteBase handleSeasonScheduleChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allSeasonSchedules == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allSeasonSchedules == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allSeasonSchedules.size();i++)
-				{
-					if( allSeasonSchedules.get(i).getScheduleID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allSeasonSchedules.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteSeasonSchedule lh = new com.cannontech.database.data.lite.LiteSeasonSchedule(id);
-					lh.retrieve(databaseAlias);
-					allSeasonSchedules.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allSeasonSchedules.size();i++)
-				{
-					if( allSeasonSchedules.get(i).getScheduleID() == id )
-					{
-						allSeasonSchedules.get(i).retrieve(databaseAlias);
-						lBase = allSeasonSchedules.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allSeasonSchedules.size();i++)
-				{
-					if( allSeasonSchedules.get(i).getScheduleID() == id )
-					{
-						lBase = allSeasonSchedules.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllSeasonSchedules();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allSeasonSchedules.size();i++)
+                {
+                    if( allSeasonSchedules.get(i).getScheduleID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allSeasonSchedules.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteSeasonSchedule lh = new com.cannontech.database.data.lite.LiteSeasonSchedule(id);
+                    lh.retrieve(databaseAlias);
+                    allSeasonSchedules.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allSeasonSchedules.size();i++)
+                {
+                    if( allSeasonSchedules.get(i).getScheduleID() == id )
+                    {
+                        allSeasonSchedules.get(i).retrieve(databaseAlias);
+                        lBase = allSeasonSchedules.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allSeasonSchedules.size();i++)
+                {
+                    if( allSeasonSchedules.get(i).getScheduleID() == id )
+                    {
+                        lBase = allSeasonSchedules.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllSeasonSchedules();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 private synchronized LiteBase handleTOUScheduleChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allTOUSchedules == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allTOUSchedules == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allTOUSchedules.size();i++)
-				{
-					if( allTOUSchedules.get(i).getScheduleID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allTOUSchedules.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteTOUSchedule lh = new com.cannontech.database.data.lite.LiteTOUSchedule(id);
-					lh.retrieve(databaseAlias);
-					allTOUSchedules.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allTOUSchedules.size();i++)
-				{
-					if( allTOUSchedules.get(i).getScheduleID() == id )
-					{
-						allTOUSchedules.get(i).retrieve(databaseAlias);
-						lBase = allTOUSchedules.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allTOUSchedules.size();i++)
-				{
-					if( allTOUSchedules.get(i).getScheduleID() == id )
-					{
-						lBase = allTOUSchedules.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllTOUSchedules();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allTOUSchedules.size();i++)
+                {
+                    if( allTOUSchedules.get(i).getScheduleID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allTOUSchedules.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteTOUSchedule lh = new com.cannontech.database.data.lite.LiteTOUSchedule(id);
+                    lh.retrieve(databaseAlias);
+                    allTOUSchedules.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allTOUSchedules.size();i++)
+                {
+                    if( allTOUSchedules.get(i).getScheduleID() == id )
+                    {
+                        allTOUSchedules.get(i).retrieve(databaseAlias);
+                        lBase = allTOUSchedules.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allTOUSchedules.size();i++)
+                {
+                    if( allTOUSchedules.get(i).getScheduleID() == id )
+                    {
+                        lBase = allTOUSchedules.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllTOUSchedules();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -1918,230 +1918,230 @@ private synchronized LiteBase handleTOUScheduleChange( DbChangeType dbChangeType
  */
 private synchronized LiteBase handleCommandChange( DbChangeType dbChangeType, int id )
 {
-	LiteBase lBase = null;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allCommands == null )
-		return lBase;
-	
-	switch(dbChangeType)
-	{
-		case ADD:
-		
-				lBase = allCommandsMap.get( new Integer(id) );				
-				if( lBase == null )
-				{
-					LiteCommand lc = new LiteCommand(id);
-					lc.retrieve(databaseAlias);
-					allCommands.add(lc);
-					allCommandsMap.put( new Integer(lc.getCommandID()), lc );
+    // if the storage is not already loaded, we must not care about it
+    if( allCommands == null )
+        return lBase;
+    
+    switch(dbChangeType)
+    {
+        case ADD:
+        
+                lBase = allCommandsMap.get( new Integer(id) );                
+                if( lBase == null )
+                {
+                    LiteCommand lc = new LiteCommand(id);
+                    lc.retrieve(databaseAlias);
+                    allCommands.add(lc);
+                    allCommandsMap.put( new Integer(lc.getCommandID()), lc );
 
-					lBase = lc;
-				}
-				break;
+                    lBase = lc;
+                }
+                break;
 
-		case UPDATE:
-		
-				LiteCommand lc = allCommandsMap.get( new Integer(id) );				
-				lc.retrieve( databaseAlias );
-				
-				lBase = lc;
-				break;
+        case UPDATE:
+        
+                LiteCommand lc = allCommandsMap.get( new Integer(id) );                
+                lc.retrieve( databaseAlias );
+                
+                lBase = lc;
+                break;
 
-		case DELETE:
+        case DELETE:
 
-				for(int i=0;i<allCommands.size();i++)
-				{
-					if( allCommands.get(i).getCommandID() == id )
-					{
-						allCommandsMap.remove( new Integer(id) );
-						lBase = allCommands.remove(i);
-						break;
-					}
-				}
-				break;
+                for(int i=0;i<allCommands.size();i++)
+                {
+                    if( allCommands.get(i).getCommandID() == id )
+                    {
+                        allCommandsMap.remove( new Integer(id) );
+                        lBase = allCommands.remove(i);
+                        break;
+                    }
+                }
+                break;
 
-		default:
-				releaseAllCommands();
-				break;
-	}
+        default:
+                releaseAllCommands();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 
 private synchronized LiteBase handleConfigChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allConfigs == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allConfigs == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allConfigs.size();i++)
-				{
-					if( allConfigs.get(i).getConfigID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allConfigs.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteConfig lh = new com.cannontech.database.data.lite.LiteConfig(id);
-					lh.retrieve(databaseAlias);
-					allConfigs.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allConfigs.size();i++)
-				{
-					if( allConfigs.get(i).getConfigID() == id )
-					{
-						allConfigs.get(i).retrieve(databaseAlias);
-						lBase = allConfigs.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allConfigs.size();i++)
-				{
-					if( allConfigs.get(i).getConfigID() == id )
-					{
-						lBase = allConfigs.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllConfigs();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allConfigs.size();i++)
+                {
+                    if( allConfigs.get(i).getConfigID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allConfigs.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteConfig lh = new com.cannontech.database.data.lite.LiteConfig(id);
+                    lh.retrieve(databaseAlias);
+                    allConfigs.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allConfigs.size();i++)
+                {
+                    if( allConfigs.get(i).getConfigID() == id )
+                    {
+                        allConfigs.get(i).retrieve(databaseAlias);
+                        lBase = allConfigs.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allConfigs.size();i++)
+                {
+                    if( allConfigs.get(i).getConfigID() == id )
+                    {
+                        lBase = allConfigs.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllConfigs();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 private synchronized LiteBase handleTagChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lTag = null;
+    boolean alreadyAdded = false;
+    LiteBase lTag = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allTags == null )
-		return lTag;
+    // if the storage is not already loaded, we must not care about it
+    if( allTags == null )
+        return lTag;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allTags.size();i++)
-				{
-					if( allTags.get(i).getTagID() == id )
-					{
-						alreadyAdded = true;
-						lTag = allTags.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteTag lh = new com.cannontech.database.data.lite.LiteTag(id);
-					lh.retrieve(databaseAlias);
-					allTags.add(lh);
-					lTag = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allTags.size();i++)
-				{
-					if( allTags.get(i).getTagID() == id )
-					{
-						allTags.get(i).retrieve(databaseAlias);
-						lTag = allTags.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allTags.size();i++)
-				{
-					if( allTags.get(i).getTagID() == id )
-					{
-						lTag = allTags.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllTags();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allTags.size();i++)
+                {
+                    if( allTags.get(i).getTagID() == id )
+                    {
+                        alreadyAdded = true;
+                        lTag = allTags.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteTag lh = new com.cannontech.database.data.lite.LiteTag(id);
+                    lh.retrieve(databaseAlias);
+                    allTags.add(lh);
+                    lTag = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allTags.size();i++)
+                {
+                    if( allTags.get(i).getTagID() == id )
+                    {
+                        allTags.get(i).retrieve(databaseAlias);
+                        lTag = allTags.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allTags.size();i++)
+                {
+                    if( allTags.get(i).getTagID() == id )
+                    {
+                        lTag = allTags.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllTags();
+                break;
+    }
 
-	return lTag;
+    return lTag;
 }
 
 private synchronized LiteBase handleLMProgramConstraintChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allLMProgramConstraints == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allLMProgramConstraints == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allLMProgramConstraints.size();i++)
-				{
-					if( allLMProgramConstraints.get(i).getConstraintID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allLMProgramConstraints.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteLMConstraint lh = new com.cannontech.database.data.lite.LiteLMConstraint(id);
-					lh.retrieve(databaseAlias);
-					allLMProgramConstraints.add(lh);
-					lBase = lh;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allLMProgramConstraints.size();i++)
-				{
-					if( allLMProgramConstraints.get(i).getConstraintID() == id )
-					{
-						allLMProgramConstraints.get(i).retrieve(databaseAlias);
-						lBase = allLMProgramConstraints.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allLMProgramConstraints.size();i++)
-				{
-					if( allLMProgramConstraints.get(i).getConstraintID() == id )
-					{
-						lBase = allLMProgramConstraints.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllLMProgramConstraints();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allLMProgramConstraints.size();i++)
+                {
+                    if( allLMProgramConstraints.get(i).getConstraintID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allLMProgramConstraints.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteLMConstraint lh = new com.cannontech.database.data.lite.LiteLMConstraint(id);
+                    lh.retrieve(databaseAlias);
+                    allLMProgramConstraints.add(lh);
+                    lBase = lh;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allLMProgramConstraints.size();i++)
+                {
+                    if( allLMProgramConstraints.get(i).getConstraintID() == id )
+                    {
+                        allLMProgramConstraints.get(i).retrieve(databaseAlias);
+                        lBase = allLMProgramConstraints.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allLMProgramConstraints.size();i++)
+                {
+                    if( allLMProgramConstraints.get(i).getConstraintID() == id )
+                    {
+                        lBase = allLMProgramConstraints.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllLMProgramConstraints();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -2150,60 +2150,60 @@ private synchronized LiteBase handleLMProgramConstraintChange( DbChangeType dbCh
  */
 private synchronized LiteBase handleNotificationGroupChange( DbChangeType dbChangeType, int id )
 {
-	boolean alreadyAdded = false;
-	LiteBase lBase = null;
+    boolean alreadyAdded = false;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allNotificationGroups == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allNotificationGroups == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-				for(int i=0;i<allNotificationGroups.size();i++)
-				{
-					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
-					{
-						alreadyAdded = true;
-						lBase = allNotificationGroups.get(i);
-						break;
-					}
-				}
-				if( !alreadyAdded )
-				{
-					com.cannontech.database.data.lite.LiteNotificationGroup lg = new com.cannontech.database.data.lite.LiteNotificationGroup(id);
-					lg.retrieve(databaseAlias);
-					allNotificationGroups.add(lg);
-					lBase = lg;
-				}
-				break;
-		case UPDATE:
-				for(int i=0;i<allNotificationGroups.size();i++)
-				{
-					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
-					{
-						allNotificationGroups.get(i).retrieve(databaseAlias);
-						lBase = allNotificationGroups.get(i);
-						break;
-					}
-				}
-				break;
-		case DELETE:
-				for(int i=0;i<allNotificationGroups.size();i++)
-				{
-					if( allNotificationGroups.get(i).getNotificationGroupID() == id )
-					{
-						lBase = allNotificationGroups.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllNotificationGroups();
-				break;
-	}
+    switch(dbChangeType)
+    {
+        case ADD:
+                for(int i=0;i<allNotificationGroups.size();i++)
+                {
+                    if( allNotificationGroups.get(i).getNotificationGroupID() == id )
+                    {
+                        alreadyAdded = true;
+                        lBase = allNotificationGroups.get(i);
+                        break;
+                    }
+                }
+                if( !alreadyAdded )
+                {
+                    com.cannontech.database.data.lite.LiteNotificationGroup lg = new com.cannontech.database.data.lite.LiteNotificationGroup(id);
+                    lg.retrieve(databaseAlias);
+                    allNotificationGroups.add(lg);
+                    lBase = lg;
+                }
+                break;
+        case UPDATE:
+                for(int i=0;i<allNotificationGroups.size();i++)
+                {
+                    if( allNotificationGroups.get(i).getNotificationGroupID() == id )
+                    {
+                        allNotificationGroups.get(i).retrieve(databaseAlias);
+                        lBase = allNotificationGroups.get(i);
+                        break;
+                    }
+                }
+                break;
+        case DELETE:
+                for(int i=0;i<allNotificationGroups.size();i++)
+                {
+                    if( allNotificationGroups.get(i).getNotificationGroupID() == id )
+                    {
+                        lBase = allNotificationGroups.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllNotificationGroups();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 /**
  * Insert the method's description here.
@@ -2214,27 +2214,27 @@ private synchronized LiteBase handlePointChange( DbChangeType dbChangeType, int 
 {
     // this method is really simply now that we don't cache points
     if (noObjectNeeded) return null;
-	LiteBase lBase = null;
-	
-	switch(dbChangeType)
-	{
-		case ADD:
-		    // Return this so clients like the editor get a db change :(
+    LiteBase lBase = null;
+    
+    switch(dbChangeType)
+    {
+        case ADD:
+            // Return this so clients like the editor get a db change :(
             lBase = pointDao.getLitePoint(id);
             break;
 
-		case UPDATE:
+        case UPDATE:
             lBase = pointDao.getLitePoint(id);
             break;
 
-		case DELETE:
+        case DELETE:
             break;
 
-		default:
+        default:
             break;
-	}
+    }
 
-	return lBase;
+    return lBase;
 }
 /**
  * Insert the method's description here.
@@ -2242,42 +2242,42 @@ private synchronized LiteBase handlePointChange( DbChangeType dbChangeType, int 
  */
 private synchronized LiteBase handleStateGroupChange( DbChangeType dbChangeType, int id )
 {
-	LiteBase lBase = null;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allStateGroupMap == null )
-		return lBase;
+    // if the storage is not already loaded, we must not care about it
+    if( allStateGroupMap == null )
+        return lBase;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-			lBase = allStateGroupMap.get( new Integer(id) );				
-			if( lBase == null )
-			{	
-				LiteStateGroup lsg = new LiteStateGroup(id);
-				lsg.retrieve(databaseAlias);
-				allStateGroupMap.put( new Integer(lsg.getStateGroupID()), lsg );
-				lBase = lsg;
-			}
-			break;
+    switch(dbChangeType)
+    {
+        case ADD:
+            lBase = allStateGroupMap.get( new Integer(id) );                
+            if( lBase == null )
+            {    
+                LiteStateGroup lsg = new LiteStateGroup(id);
+                lsg.retrieve(databaseAlias);
+                allStateGroupMap.put( new Integer(lsg.getStateGroupID()), lsg );
+                lBase = lsg;
+            }
+            break;
 
-		case UPDATE:
-			LiteStateGroup ly = allStateGroupMap.get( new Integer(id) );				
-			ly.retrieve( databaseAlias );
-					
-			lBase = ly;
-			break;
+        case UPDATE:
+            LiteStateGroup ly = allStateGroupMap.get( new Integer(id) );                
+            ly.retrieve( databaseAlias );
+                    
+            lBase = ly;
+            break;
 
-		case DELETE:
-			lBase = allStateGroupMap.remove( new Integer(id) );
-			break;
+        case DELETE:
+            lBase = allStateGroupMap.remove( new Integer(id) );
+            break;
 
-		default:
-			releaseAllStateGroups();
-			break;
-	}
+        default:
+            releaseAllStateGroups();
+            break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 
@@ -2288,36 +2288,36 @@ private synchronized LiteBase handleStateGroupChange( DbChangeType dbChangeType,
  */
 private LiteBase handleCustomerChange( DbChangeType dbChangeType, int id, String dbCategory, boolean noObjectNeeded)
 {
-	LiteBase lBase = null;
+    LiteBase lBase = null;
 
-	switch(dbChangeType)
-	{
-		case ADD:
-        case UPDATE:		    
+    switch(dbChangeType)
+    {
+        case ADD:
+        case UPDATE:            
             customerCache.remove( new Integer(id));
-			if(!noObjectNeeded)
-			{
-				LiteCustomer lc;
-				if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER ))
-					lc = new LiteCICustomer(id);
-				else 
-					lc = new LiteCustomer(id);
-				lc.retrieve(databaseAlias);
-				customerCache.put( new Integer(lc.getCustomerID()), lc);
-				
-				lBase = lc;
-			}
-			break;
+            if(!noObjectNeeded)
+            {
+                LiteCustomer lc;
+                if( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER ))
+                    lc = new LiteCICustomer(id);
+                else 
+                    lc = new LiteCustomer(id);
+                lc.retrieve(databaseAlias);
+                customerCache.put( new Integer(lc.getCustomerID()), lc);
+                
+                lBase = lc;
+            }
+            break;
 
         case DELETE:
-		    customerCache.remove( new Integer(id));
-		    break;
-		default:
-				releaseAllCustomers();
-				break;
-	}
+            customerCache.remove( new Integer(id));
+            break;
+        default:
+                releaseAllCustomers();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -2444,58 +2444,58 @@ private synchronized LiteBase handleYukonUserChange( DbChangeType dbChangeType, 
  */
 private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, int id )
 {
-	LiteBase lBase = null;
+    LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allYukonPAObjects == null || allPAOsMap == null)
-		return lBase;
-		
+    // if the storage is not already loaded, we must not care about it
+    if( allYukonPAObjects == null || allPAOsMap == null)
+        return lBase;
+        
     if( id == 0) {    //A force reload of all paobjects was sent.
         releaseAllYukonPAObjects();
         return lBase;
     }   
     
-	switch(dbChangeType)
-	{
-		case ADD:
+    switch(dbChangeType)
+    {
+        case ADD:
 
-			lBase = allPAOsMap.get( new Integer(id) );				
-			if( lBase == null )
-			{
-				LiteYukonPAObject ly = new LiteYukonPAObject(id);
-				ly.retrieve(databaseAlias);
-				allYukonPAObjects.add(ly);
-				allPAOsMap.put( new Integer(ly.getYukonID()), ly );
-	
-				lBase = ly;
-			}
-			break;
+            lBase = allPAOsMap.get( new Integer(id) );                
+            if( lBase == null )
+            {
+                LiteYukonPAObject ly = new LiteYukonPAObject(id);
+                ly.retrieve(databaseAlias);
+                allYukonPAObjects.add(ly);
+                allPAOsMap.put( new Integer(ly.getYukonID()), ly );
+    
+                lBase = ly;
+            }
+            break;
 
-		case UPDATE:
+        case UPDATE:
 
-			LiteYukonPAObject ly = allPAOsMap.get( new Integer(id) );				
-			ly.retrieve( databaseAlias );
-					
-			lBase = ly;
-			break;
+            LiteYukonPAObject ly = allPAOsMap.get( new Integer(id) );                
+            ly.retrieve( databaseAlias );
+                    
+            lBase = ly;
+            break;
 
-		case DELETE:
-				for(int i=0;i<allYukonPAObjects.size();i++)
-				{
-					if( allYukonPAObjects.get(i).getYukonID() == id )
-					{
-						allPAOsMap.remove( new Integer(id) );
-						lBase = allYukonPAObjects.remove(i);
-						break;
-					}
-				}
-				break;
-		default:
-				releaseAllYukonPAObjects();
-				break;
-	}
+        case DELETE:
+                for(int i=0;i<allYukonPAObjects.size();i++)
+                {
+                    if( allYukonPAObjects.get(i).getYukonID() == id )
+                    {
+                        allPAOsMap.remove( new Integer(id) );
+                        lBase = allYukonPAObjects.remove(i);
+                        break;
+                    }
+                }
+                break;
+        default:
+                releaseAllYukonPAObjects();
+                break;
+    }
 
-	return lBase;
+    return lBase;
 }
 
 /**
@@ -2505,7 +2505,7 @@ private synchronized LiteBase handleYukonPAOChange( DbChangeType dbChangeType, i
 @Override
 public synchronized void releaseAllAlarmCategories()
 {
-	allAlarmCategories = null;
+    allAlarmCategories = null;
 }
 
 /**
@@ -2516,64 +2516,64 @@ public synchronized void releaseAllAlarmCategories()
 @Override
 public synchronized void releaseAllCache()
 {
-	allYukonPAObjects = null;
+    allYukonPAObjects = null;
     allSystemPoints = null;
-	allStateGroupMap = null;
-	allNotificationGroups = null;
-	allContactNotifsMap = null;
+    allStateGroupMap = null;
+    allNotificationGroups = null;
+    allContactNotifsMap = null;
     
-	allAlarmCategories = null;
-	allGraphDefinitions = null;
-	allMCTs = null;
-	allHolidaySchedules = null;
-	allBaselines = null;
-	allConfigs = null;
-	allDeviceMeterGroups = null;
-	allPointLimits = null;
-	allYukonImages = null;
-	allCICustomers = null;
-	allLMProgramConstraints = null;
-	allLMScenarios = null;
-	allLMScenarioProgs = null;
+    allAlarmCategories = null;
+    allGraphDefinitions = null;
+    allMCTs = null;
+    allHolidaySchedules = null;
+    allBaselines = null;
+    allConfigs = null;
+    allDeviceMeterGroups = null;
+    allPointLimits = null;
+    allYukonImages = null;
+    allCICustomers = null;
+    allLMProgramConstraints = null;
+    allLMScenarios = null;
+    allLMScenarioProgs = null;
 
-	allTags = null;
-	allSeasonSchedules = null;
-	allDeviceTypeCommands = null;
-	allTOUSchedules = null;
-	allTOUDays = null;
+    allTags = null;
+    allSeasonSchedules = null;
+    allDeviceTypeCommands = null;
+    allTOUSchedules = null;
+    allTOUDays = null;
     
-	allYukonRoles = null;
-	allYukonRoleProperties = null;
-	allYukonGroups = null;
+    allYukonRoles = null;
+    allYukonRoleProperties = null;
+    allYukonGroups = null;
     
-	allYukonGroupRolePropertiesMap = null;
+    allYukonGroupRolePropertiesMap = null;
         
-	allEnergyCompanies = null;
+    allEnergyCompanies = null;
     
-	//lists that are created by the joining/parsing of existing lists
-	//allGraphTaggedPoints = null; //Points
-	allUnusedCCDevices = null; //PAO
-	allCapControlFeeders = null; //PAO
-	allCapControlSubBuses = null; //PAO   
+    //lists that are created by the joining/parsing of existing lists
+    //allGraphTaggedPoints = null; //Points
+    allUnusedCCDevices = null; //PAO
+    allCapControlFeeders = null; //PAO
+    allCapControlSubBuses = null; //PAO   
     allCapControlSubStations = null; //PAO
-	allDevices = null; //PAO
-	allLMPrograms = null; //PAO
-	allLMControlAreas = null; //PAO
-	allLMGroups = null;	//PAO
-	allLoadManagement = null; //PAO
-	allPorts = null; //PAO
-	allRoutes = null; //PAO
+    allDevices = null; //PAO
+    allLMPrograms = null; //PAO
+    allLMControlAreas = null; //PAO
+    allLMGroups = null;    //PAO
+    allLoadManagement = null; //PAO
+    allPorts = null; //PAO
+    allRoutes = null; //PAO
     
     
-	//Maps that are created by the joining/parsing of existing lists
-	allPAOsMap = null;
-	customerCache.clear();
-	allContactsMap.clear();
+    //Maps that are created by the joining/parsing of existing lists
+    allPAOsMap = null;
+    customerCache.clear();
+    allContactsMap.clear();
 
 
-	//derived from allYukonUsers,allYukonRoles,allYukonGroups
-	//see type info in IDatabaseCache
-	userEnergyCompanyCache.clear();
+    //derived from allYukonUsers,allYukonRoles,allYukonGroups
+    //see type info in IDatabaseCache
+    userEnergyCompanyCache.clear();
 }
 /**
  * Insert the method's description here.
@@ -2582,8 +2582,8 @@ public synchronized void releaseAllCache()
 @Override
 public synchronized void releaseAllContacts()
 {
-	allContactsMap.clear();
-	allContactNotifsMap = null;
+    allContactsMap.clear();
+    allContactNotifsMap = null;
 }
 /**
  * Insert the method's description here.
@@ -2592,7 +2592,7 @@ public synchronized void releaseAllContacts()
 @Override
 public synchronized void releaseAllDeviceMeterGroups()
 {
-	allDeviceMeterGroups = null;
+    allDeviceMeterGroups = null;
 }
 /**
  * Insert the method's description here.
@@ -2610,7 +2610,7 @@ public synchronized void releaseAllYukonImages()
 @Override
 public synchronized void releaseAllGraphDefinitions()
 {
-	allGraphDefinitions = null;
+    allGraphDefinitions = null;
 }
 /**
  * Insert the method's description here.
@@ -2619,67 +2619,67 @@ public synchronized void releaseAllGraphDefinitions()
 @Override
 public synchronized void releaseAllHolidaySchedules()
 {
-	allHolidaySchedules = null;
+    allHolidaySchedules = null;
 }
 
 @Override
 public synchronized void releaseAllBaselines()
 {
-	allBaselines = null;
+    allBaselines = null;
 }
 
 @Override
 public synchronized void releaseAllSeasonSchedules()
 {
-	allSeasonSchedules = null;
+    allSeasonSchedules = null;
 }
 @Override
 public synchronized void releaseAllCommands()
 {
-	allCommands = null;
-	allCommandsMap = null;
+    allCommands = null;
+    allCommandsMap = null;
 }
 
 @Override
 public synchronized void releaseAllTOUSchedules()
 {
-	allTOUSchedules = null;
+    allTOUSchedules = null;
 }
 
 @Override
 public synchronized void releaseAllTOUDays()
 {
-	allTOUDays = null;
+    allTOUDays = null;
 }
 
 @Override
 public synchronized void releaseAllConfigs()
 {
-	allConfigs = null;
+    allConfigs = null;
 }
 
 @Override
 public synchronized void releaseAllTags()
 {
-	allTags = null;
+    allTags = null;
 }
 
 @Override
 public synchronized void releaseAllLMProgramConstraints()
 {
-	allLMProgramConstraints = null;
+    allLMProgramConstraints = null;
 }
 
 @Override
 public synchronized void releaseAllLMScenarios()
 {
-	allLMScenarios = null;
+    allLMScenarios = null;
 }
 
 @Override
 public synchronized void releaseAllLMPAOExclusions()
 {
-	allLMPAOExclusions = null;
+    allLMPAOExclusions = null;
 }
 /**
  * Insert the method's description here.
@@ -2688,13 +2688,13 @@ public synchronized void releaseAllLMPAOExclusions()
 @Override
 public synchronized void releaseAllNotificationGroups()
 {
-	allNotificationGroups = null;
+    allNotificationGroups = null;
 }
 
 @Override
 public void releaseAllCustomers()
 {
-	customerCache.clear();
+    customerCache.clear();
 }
 
 /**
@@ -2711,9 +2711,9 @@ public synchronized void releaseAllSystemPoints()
  * Creation date: (3/14/00 3:22:47 PM)
  */
 public synchronized void releaseAllYukonGroups(){
-	allYukonGroups = null;
-	releaseUserRoleMap();
-	releaseUserRolePropertyValueMap();
+    allYukonGroups = null;
+    releaseUserRoleMap();
+    releaseUserRolePropertyValueMap();
 }
 /**
  * Insert the method's description here.
@@ -2722,7 +2722,7 @@ public synchronized void releaseAllYukonGroups(){
 @Override
 public synchronized void releaseAllStateGroups()
 {
-	allStateGroupMap = null;
+    allStateGroupMap = null;
 }
 
 /**
@@ -2732,8 +2732,8 @@ public synchronized void releaseAllStateGroups()
 @Override
 public synchronized void releaseAllYukonPAObjects()
 {
-	allYukonPAObjects = null;
-	allPAOsMap = null;
+    allYukonPAObjects = null;
+    allPAOsMap = null;
 }
 
 /**
@@ -2742,7 +2742,7 @@ public synchronized void releaseAllYukonPAObjects()
 @Override
 public synchronized void releaseAllDeviceTypeCommands()
 {
-	allDeviceTypeCommands = null;
+    allDeviceTypeCommands = null;
 }
 
 /**
@@ -2752,9 +2752,9 @@ public synchronized void releaseAllDeviceTypeCommands()
  */
 @Override
 public synchronized void setDatabaseAlias(String newAlias){
-	databaseAlias = newAlias;
+    databaseAlias = newAlias;
 }
-	
+    
 /* (non-Javadoc)
  * This method takes a userid and a roleid.  It checks userRoleMap to see
  * if this role has been recovered from the db before.  If it has not, it will
@@ -2763,31 +2763,31 @@ public synchronized void setDatabaseAlias(String newAlias){
 @Override
 public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID) 
 {
-	MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), roleID);
-	LiteYukonRole specifiedRole = null;
-	//check cache for previous grabs
-	if(userRoleMap == null)
-		userRoleMap = new HashMap<MapKeyInts, LiteYukonRole>();
-	else
-		specifiedRole = userRoleMap.get(keyInts);
-	
-	//not in cache, go to DB.
-	if(specifiedRole == null && !userRoleMap.containsKey(keyInts))
-	{
-		specifiedRole = YukonUserRolePropertyLookup.loadSpecificRole(user, roleID);
-		/*found it, put it in the cache for later searches
-		 * Go ahead and put in null values, too.  This will make it faster to check if this
-		 * role exists for this user next time around.
-		 */
-		userRoleMap.put(keyInts, specifiedRole);
+    MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), roleID);
+    LiteYukonRole specifiedRole = null;
+    //check cache for previous grabs
+    if(userRoleMap == null)
+        userRoleMap = new HashMap<MapKeyInts, LiteYukonRole>();
+    else
+        specifiedRole = userRoleMap.get(keyInts);
+    
+    //not in cache, go to DB.
+    if(specifiedRole == null && !userRoleMap.containsKey(keyInts))
+    {
+        specifiedRole = YukonUserRolePropertyLookup.loadSpecificRole(user, roleID);
+        /*found it, put it in the cache for later searches
+         * Go ahead and put in null values, too.  This will make it faster to check if this
+         * role exists for this user next time around.
+         */
+        userRoleMap.put(keyInts, specifiedRole);
         /*
          * This is useful for checking the map after a DBChangeMsg is received to see if
          * this user exists in the map.  If it does, then the map should be reset.
          */
         userRoleMap.put(new MapKeyInts(user.getLiteID(), CtiUtilities.NONE_ZERO_ID), null);
-	}	
-		
-	return specifiedRole;
+    }    
+        
+    return specifiedRole;
 }
 
 /*This method takes a userid to look for the relevant contact. It checks userContactMap
@@ -2847,7 +2847,7 @@ public synchronized LiteContactNotification getAContactNotifByNotifID(int contNo
     loadAllContacts();
     
     LiteContactNotification specifiedNotify = allContactNotifsMap.get(new Integer(contNotifyID));
-	
+    
     //not in cache, go to DB.
     if(specifiedNotify == null)
     {
@@ -2895,25 +2895,25 @@ public LiteCustomer getACustomerByCustomerID(int customerID)
 @Override
 public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUser) {
 
-	// try to load from map
-	LiteEnergyCompany liteEnergyCompany = userEnergyCompanyCache.get(liteYukonUser);
-	
-	// when null, not found in cache...load entry
-	if( liteEnergyCompany == null) {
-		liteEnergyCompany = yukonUserEnergyCompanyLookup.loadLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
-		if (liteEnergyCompany == null) {
-			// user doesn't have a EC, but we need to cache this knowledge somehow
-			userEnergyCompanyCache.put(liteYukonUser, NULL_LITE_ENERGY_COMPANY);
-		} else {
-			userEnergyCompanyCache.put(liteYukonUser, liteEnergyCompany);
-		}
-	}
-	
-	if (liteEnergyCompany == NULL_LITE_ENERGY_COMPANY) { // == on purpose
-		return null;
-	} else {
-		return liteEnergyCompany;
-	}
+    // try to load from map
+    LiteEnergyCompany liteEnergyCompany = userEnergyCompanyCache.get(liteYukonUser);
+    
+    // when null, not found in cache...load entry
+    if( liteEnergyCompany == null) {
+        liteEnergyCompany = yukonUserEnergyCompanyLookup.loadLiteEnergyCompanyByUser(liteYukonUser, getAllEnergyCompanies());
+        if (liteEnergyCompany == null) {
+            // user doesn't have a EC, but we need to cache this knowledge somehow
+            userEnergyCompanyCache.put(liteYukonUser, NULL_LITE_ENERGY_COMPANY);
+        } else {
+            userEnergyCompanyCache.put(liteYukonUser, liteEnergyCompany);
+        }
+    }
+    
+    if (liteEnergyCompany == NULL_LITE_ENERGY_COMPANY) { // == on purpose
+        return null;
+    } else {
+        return liteEnergyCompany;
+    }
 }
 
 /* (non-Javadoc)
@@ -2923,7 +2923,7 @@ public LiteEnergyCompany getALiteEnergyCompanyByUserID(LiteYukonUser liteYukonUs
 @Override
 public synchronized void releaseUserRoleMap() 
 {
-	userRoleMap = null;
+    userRoleMap = null;
 }
 
 /* (non-Javadoc)
@@ -2933,7 +2933,7 @@ public synchronized void releaseUserRoleMap()
 @Override
 public synchronized void releaseUserRolePropertyValueMap() 
 {
-	userRolePropertyValueMap = null;
+    userRolePropertyValueMap = null;
 }
 
 @Override
@@ -2987,8 +2987,8 @@ public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer sl
 
 @Required
 public void setYukonUserEnergyCompanyLookup(
-		YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup) {
-	this.yukonUserEnergyCompanyLookup = yukonUserEnergyCompanyLookup;
+        YukonUserEnergyCompanyLookup yukonUserEnergyCompanyLookup) {
+    this.yukonUserEnergyCompanyLookup = yukonUserEnergyCompanyLookup;
 }
 
 @Required
