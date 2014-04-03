@@ -17,6 +17,7 @@ private:
 
     void RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr);
     void RefreshEntries(bool &rowFound, Cti::RowReader& rdr);
+    bool RefreshType(const std::string name, const std::string sql, void (CtiPortManager::*refreshMethod)(bool &, Cti::RowReader &));
 
     static CtiPort* PortFactory(Cti::RowReader &rdr);
 

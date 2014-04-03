@@ -59,6 +59,7 @@ portfill.obj \
 port_thread_tcp.obj \
 tcp_connection_manager.obj \
 tcp_connection.obj \
+port_thread_rf_da.obj \
 port_thread_udp.obj \
 unsolicited_handler.obj \
 portload.obj \
@@ -83,6 +84,7 @@ PORTERLIBS=\
 advapi32.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\rfn-e2e.lib \
 $(COMPILEBASE)\lib\portglob.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctipil.lib \

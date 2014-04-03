@@ -10,11 +10,18 @@
 #include "port_dialin.h"
 #include "port_dialout.h"
 #include "port_pool_out.h"
+#include "port_rf_da.h"
 #include "port_tcpipdirect.h"
 #include "port_tcp.h"
 #include "port_udp.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "database_util.h"
+
+#include "std_helper.h"
+
+#include <boost/assign/list_of.hpp>
+#include <boost/optional.hpp>
 
 using std::string;
 using std::endl;
@@ -86,218 +93,91 @@ CtiPortManager::~CtiPortManager()
 
 void CtiPortManager::RefreshList()
 {
-    ptr_type pTempPort;
-
     bool rowFound = false;
 
     try
     {
+        // Reset everyone's Updated flag.
+        if(!_smartMap.empty())
         {
-            // Reset everyone's Updated flag.
-            if(!_smartMap.empty())
-            {
-                apply(ApplyResetUpdated, NULL);
-            }
+            apply(ApplyResetUpdated, NULL);
+        }
 
-            _smartMap.resetErrorCode();
+        _smartMap.resetErrorCode();
 
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Direct Ports" << endl;
-                }
+        rowFound |= RefreshType("Direct Ports",                 CtiPortDirect::getSQLCoreStatement(),               &CtiPortManager::RefreshEntries);
+        rowFound |= RefreshType("TCPIP Terminal Server Ports",  CtiPortTCPIPDirect::getSQLCoreStatement(),          &CtiPortManager::RefreshEntries);
+        rowFound |= RefreshType("TCP Ports",                    Cti::Ports::TcpPort::getSQLCoreStatement(),         &CtiPortManager::RefreshEntries);
+        rowFound |= RefreshType("RF DA Ports",                  Cti::Ports::RfDaPort::getSQLCoreStatement(),        &CtiPortManager::RefreshEntries);
+        rowFound |= RefreshType("DialABLE Ports",               CtiPortDialable::getSQLCoreStatement(),             &CtiPortManager::RefreshDialableEntries);
+        rowFound |= RefreshType("Pool Ports",                   CtiPortPoolDialout::getSQLCoreStatement(),          &CtiPortManager::RefreshEntries);
+        rowFound |= RefreshType("Pool Ports Children",          CtiPortPoolDialout::getSQLPooledPortsStatement(),   &CtiPortManager::RefreshPooledPortEntries);
 
-                static const string sql = CtiPortDirect::getSQLCoreStatement();
+        if( ! refreshExclusions() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
 
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
+            return;
+        }
 
-                RefreshEntries(rowFound, rdr);
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Direct Ports" << endl;
-                }
-            }
+        if( ! rowFound )
+        {
+            return;
+        }
 
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Terminal Server Ports" << endl;
-                }
-
-                static const string sql = CtiPortTCPIPDirect::getSQLCoreStatement();
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-
-                RefreshEntries(rowFound, rdr);
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCPIP Terminal Server Ports" << endl;
-                }
-            }
-
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCP Ports" << endl;
-                }
-
-                const string sql = string(Cti::Ports::TcpPort::getSQLCoreStatement() + " AND YP.type = 'TCP'");
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-
-                RefreshEntries(rowFound, rdr);
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCP Ports" << endl;
-                }
-            }
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for DialABLE Ports" << endl;
-                }
-
-                static const string sql = CtiPortDialable::getSQLCoreStatement();
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-
-                RefreshDialableEntries(rowFound, rdr);
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for DialABLE Ports" << endl;
-                }
-            }
-
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Pool Ports" << endl;
-                }
-                static const string sql = CtiPortPoolDialout::getSQLCoreStatement();
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-
-                RefreshEntries(rowFound, rdr);
-
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Pool Ports" << endl;
-                }
-            }
-
-            {
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Pool Ports Children" << endl;
-                }
-
-                static const string sql = CtiPortPoolDialout::getSQLPooledPortsStatement();
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-                rdr.execute();
-                if(DebugLevel & 0x00080000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-
-                RefreshPooledPortEntries(rowFound, rdr);
-
-                if(DebugLevel & 0x00080000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Pool Ports Children" << endl;
-                }
-            }
-
-            if( !refreshExclusions() )
+        // Now I need to check for any Port removals based upon the
+        // Updated Flag being NOT set
+        apply(ApplyInvalidateNotUpdated, NULL);
+        ptr_type pTempPort;
+        do
+        {
+            pTempPort = _smartMap.remove(isNotUpdated, NULL);
+            if(pTempPort)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
+                    dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
                 }
+                pTempPort.reset();      // Free the thing!
             }
-            else
-            {
-                if(rowFound)
-                {
-                    // Now I need to check for any Port removals based upon the
-                    // Updated Flag being NOT set
-                    apply(ApplyInvalidateNotUpdated, NULL);
-                    pTempPort.reset();
-                    do
-                    {
-                        pTempPort = _smartMap.remove(isNotUpdated, NULL);
-                        if(pTempPort)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
-                            }
-                            pTempPort.reset();      // Free the thing!
-                        }
 
-                    } while(pTempPort);
-                }
-            }
-        }   // Temporary results are destroyed to free the connection
+        } while(pTempPort);
     }
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
+}
+
+bool CtiPortManager::RefreshType(const std::string name, const std::string sql, void (CtiPortManager::*refreshMethod)(bool &, Cti::RowReader &))
+{
+    if(DebugLevel & 0x00080000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for " << name << endl;
+    }
+
+    using namespace Cti::Database;
+
+    DatabaseConnection connection;
+    DatabaseReader rdr(connection, sql);
+
+    executeCommand(rdr, __FILE__, __LINE__, LogDebug(DebugLevel & 0x00080000));
+
+    bool rowFound = false;
+
+    (this->*refreshMethod)(rowFound, rdr);
+
+    if(DebugLevel & 0x00080000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "Done looking for " << name << endl;
+    }
+
+    return rowFound;
 }
 
 void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
@@ -761,6 +641,36 @@ bool CtiPortManager::refreshExclusions(LONG id)
 }
 
 
+namespace {
+
+template <class Port>
+CtiPort *makePort()
+{
+    return new Port;
+}
+
+template <class Port, class Dialable>
+CtiPort *makeDialablePort()
+{
+    return new Port(new Dialable);
+}
+
+typedef std::map<int, boost::function<CtiPort *()>> PortLookup;
+
+const PortLookup portFactory = boost::assign::map_list_of
+    (PortTypeLocalDirect,     makePort<CtiPortDirect>)
+    (PortTypeLocalDialup,     makeDialablePort<CtiPortDirect, CtiPortDialout>)
+    (PortTypeLocalDialBack,   makeDialablePort<CtiPortDirect, CtiPortDialin>)
+    (PortTypeTServerDirect,   makePort<CtiPortTCPIPDirect>)
+    (PortTypeTcp,             makePort<Cti::Ports::TcpPort>)
+    (PortTypeUdp,             makePort<Cti::Ports::UdpPort>)
+    (PortTypeRfDa,            makePort<Cti::Ports::RfDaPort>)
+    (PortTypeTServerDialup,   makeDialablePort<CtiPortTCPIPDirect, CtiPortDialout>)
+    (PortTypeTServerDialBack, makeDialablePort<CtiPortTCPIPDirect, CtiPortDialin>)
+    (PortTypePoolDialout,     makePort<CtiPortPoolDialout>);
+
+}
+
 CtiPort* CtiPortManager::PortFactory(Cti::RowReader &rdr)
 {
     string portTypeString;
@@ -773,42 +683,16 @@ CtiPort* CtiPortManager::PortFactory(Cti::RowReader &rdr)
         dout << CtiTime() << " Creating a Port of type " << portTypeString << endl;
     }
 
-   switch( resolvePortType(portTypeString) )
-   {
-        case PortTypeLocalDirect:
-            return new CtiPortDirect;
+    boost::optional<PortLookup::mapped_type> portCreator = Cti::mapFind(portFactory, resolvePortType(portTypeString));
 
-        case PortTypeLocalDialup:
-            return new CtiPortDirect( new CtiPortDialout );
+    if( ! portCreator )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Port Factory has failed to produce for type " << portTypeString << "!" << endl;
 
-        case PortTypeLocalDialBack:
-            return new CtiPortDirect( new CtiPortDialin );
-
-        case PortTypeTServerDirect:
-            return new CtiPortTCPIPDirect;
-
-        case PortTypeTcp:
-            return new Cti::Ports::TcpPort;
-
-        case PortTypeUdp:
-            return new Cti::Ports::UdpPort;
-
-        case PortTypeTServerDialup:
-            return new CtiPortTCPIPDirect( new CtiPortDialout );
-
-        case PortTypeTServerDialBack:
-            return new CtiPortTCPIPDirect( new CtiPortDialin );
-
-        case PortTypePoolDialout:
-            return new CtiPortPoolDialout;
-
-        default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port Factory has failed to produce for type " << portTypeString << "!" << endl;
-
-            return 0;
-        }
+        return 0;
     }
+
+    return (*portCreator)();
 }
 

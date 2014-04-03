@@ -47,6 +47,7 @@
 
 #include "port_thread_udp.h"
 #include "port_thread_tcp.h"
+#include "port_thread_rf_da.h"
 
 #include "port_base.h"
 #include "port_shr.h"
@@ -1337,6 +1338,32 @@ void refreshRepeaterRoutes(const CtiDBChangeMsg *pChg)
     }
 }
 
+
+bool isPortDbChange(const CtiDBChangeMsg *pChg)
+{
+    if( ! pChg )
+    {
+        return true;
+    }
+
+    switch( resolvePAOCategory(pChg->getCategory()) )
+    {
+        case PAO_CATEGORY_PORT:
+        {
+            return true;
+        }
+
+        case PAO_CATEGORY_DEVICE:
+        {
+            //  Special case for RF-DA device/port hybrid
+            return resolveDeviceType(pChg->getObjectType()) == TYPE_RF_DA;
+        }
+    }
+
+    return false;
+}
+
+
 INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 {
     INT   status = NORMAL;
@@ -1356,7 +1383,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
         ReloadStateNames();
     }
 
-    if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT)) )
+    if(!PorterQuit && isPortDbChange(pChg) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1733,6 +1760,11 @@ CTI_PORTTHREAD_FUNC_PTR PortThreadFactory(int porttype)
 
     switch(porttype)
     {
+    case PortTypeRfDa:
+        {
+            fptr = Cti::Porter::PortRfDaThread;
+            break;
+        }
     case PortTypeTcp:
         {
             fptr = Cti::Porter::PortTcpThread;
