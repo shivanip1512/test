@@ -28,7 +28,6 @@ import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -37,16 +36,16 @@ import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 
 public class SelectionListServiceImpl implements SelectionListService {
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SelectionListDao selectionListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonListDao listDao;
 
     @Override
-    public SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> getUserEditableLists(int ecId, YukonUserContext context) {
-        LiteYukonUser user = context.getYukonUser();
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+    public SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> getUserEditableLists(int ecId,
+            LiteYukonUser user) {
+        LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompany(ecId);
 
         Comparator<SelectionListCategory> selListComparator = Ordering.natural();
         Comparator<DisplayableSelectionList> dslComparator = new Comparator<DisplayableSelectionList>() {
@@ -57,11 +56,11 @@ public class SelectionListServiceImpl implements SelectionListService {
         };
         SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> retVal =
             TreeMultimap.create(selListComparator, dslComparator);
-        Set<YukonSelectionList> userLists = getSelectionListsInUse(energyCompany, user);
+        Set<YukonSelectionList> userLists = getSelectionListsInUse(ec, user);
         for (YukonSelectionList list : userLists) {
             if (list.isUserUpdateAvailable()) {
                 retVal.put(list.getType().getCategory(),
-                           new DisplayableSelectionList(list, isListInherited(energyCompany, list)));
+                           new DisplayableSelectionList(list, isListInherited(ec, list)));
             }
         }
         return retVal;
@@ -133,9 +132,11 @@ public class SelectionListServiceImpl implements SelectionListService {
         return retVal;
     }
 
-    private boolean showAdditionalProtocols(LiteStarsEnergyCompany energyCompany) {
-        String optionalProductDevStr = energyCompanySettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
-        boolean isEnabled = energyCompanySettingDao.isEnabled(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV, energyCompany.getEnergyCompanyId());
+    private boolean showAdditionalProtocols(LiteStarsEnergyCompany ec) {
+        String optionalProductDevStr = ecSettingDao.getString(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV,
+            ec.getEnergyCompanyId());
+        boolean isEnabled = ecSettingDao.isEnabled(EnergyCompanySettingType.OPTIONAL_PRODUCT_DEV,
+            ec.getEnergyCompanyId());
         if (!isEnabled || StringUtils.isEmpty(optionalProductDevStr)) {
             return false;
         }
@@ -143,6 +144,7 @@ public class SelectionListServiceImpl implements SelectionListService {
             int optionalProductDev = Integer.parseInt(optionalProductDevStr, 16);
             return (optionalProductDev & ECUtils.RIGHT_SHOW_ADDTL_PROTOCOLS) != 0;
         } catch (NumberFormatException nfe) {
+            // If this string is null, we just don't enable any special options.
         }
         return false;
     }
@@ -164,7 +166,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         Iterable<LiteApplianceCategory> applianceCategories = energyCompany.getAllApplianceCategories();
         Set<Integer> usedApplianceListEntryTypes = Sets.newHashSet();
         for (LiteApplianceCategory appCat : applianceCategories) {
-            usedApplianceListEntryTypes.add(yukonListDao.getYukonListEntry(appCat.getCategoryID()).getYukonDefID());
+            usedApplianceListEntryTypes.add(listDao.getYukonListEntry(appCat.getCategoryID()).getYukonDefID());
         }
 
         for (SelectionListCategory category : SelectionListCategory.values()) {

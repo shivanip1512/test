@@ -27,6 +27,7 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
@@ -51,21 +52,19 @@ import com.google.common.collect.SortedSetMultimap;
 public class ListController {
     private final static String baseKey = "yukon.web.modules.adminSetup.list.";
 
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private SelectionListDao selectionListDao;
-    @Autowired private SelectionListService selectionListService;
+    @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private SelectionListDao selectionListDao;
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private YukonListDao listDao;
 
     private final Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
         @Override
         protected void doValidation(SelectionListDto list, Errors errors) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "selectionLabel",
-                                                       list.getSelectionLabel(), 30);
-            YukonValidationUtils.checkExceedsMaxLength(errors, "whereIsList",
-                                                       list.getWhereIsList(), 100);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "selectionLabel", list.getSelectionLabel(), 30);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "whereIsList", list.getWhereIsList(), 100);
             int index = 0;
             boolean requiresType = list.getType().isRequiresType();
             boolean requiresText = list.getType().isRequiresText();
@@ -91,89 +90,80 @@ public class ListController {
     };
 
     @RequestMapping("list")
-    public String list(ModelMap model, YukonUserContext context, EnergyCompanyInfoFragment ecInfo) {
+    public String list(ModelMap model, LiteYukonUser user, EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
-        energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
+        energyCompanyService.verifyViewPageAccess(user, ecId);
 
         SortedSetMultimap<SelectionListCategory, DisplayableSelectionList> lists =
-            selectionListService.getUserEditableLists(ecInfo.getEnergyCompanyId(), context);
+            selectionListService.getUserEditableLists(ecInfo.getEnergyCompanyId(), user);
         model.addAttribute("lists", lists.asMap());
 
         return "list/list.jsp";
     }
 
     @RequestMapping("view")
-    public String view(ModelMap model, int listId, YukonUserContext context,
-                       EnergyCompanyInfoFragment ecInfo) {
+    public String view(ModelMap model, int listId, YukonUserContext userContext, EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
         int ecId = ecInfo.getEnergyCompanyId();
-        energyCompanyService.verifyViewPageAccess(context.getYukonUser(), ecId);
+        energyCompanyService.verifyViewPageAccess(userContext.getYukonUser(), ecId);
 
-        YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
+        YukonSelectionList list = listDao.getYukonSelectionList(listId);
         model.addAttribute("list", list);
         model.addAttribute("isInherited", selectionListService.isListInherited(ecId, list));
-        addListDefinitionsToModel(model, list, context);
+        addListDefinitionsToModel(model, list, userContext);
 
         model.addAttribute("mode", PageEditMode.VIEW);
         return "list/view.jsp";
     }
 
     @RequestMapping("edit")
-    public String edit(ModelMap model, int listId, YukonUserContext context,
-                       EnergyCompanyInfoFragment ecInfo) {
+    public String edit(ModelMap model, int listId, YukonUserContext userContext, EnergyCompanyInfoFragment ecInfo) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(ecInfo, model);
-        YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
+        YukonSelectionList list = listDao.getYukonSelectionList(listId);
         SelectionListDto listDto = new SelectionListDto(list);
         model.addAttribute("list", listDto);
 
         if (list.getEnergyCompanyId() != ecInfo.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company appears to have been tampered with");
         }
-        return prepareEdit(model, listDto, context);
+        return prepareEdit(model, listDto, userContext);
     }
 
-    private String prepareEdit(ModelMap model, SelectionListDto list, YukonUserContext context) {
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
-                                                  list.getEnergyCompanyId());
+    private String prepareEdit(ModelMap model, SelectionListDto list, YukonUserContext userContext) {
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), list.getEnergyCompanyId());
 
-        addListDefinitionsToModel(model, list.getYukonSelectionList(), context);
+        addListDefinitionsToModel(model, list.getYukonSelectionList(), userContext);
 
         model.addAttribute("mode", PageEditMode.EDIT);
         return "list/edit.jsp";
     }
 
     @RequestMapping("addItem")
-    public String addItem(ModelMap model, int itemIndex, int listId, YukonUserContext context) {
+    public String addItem(ModelMap model, int itemIndex, int listId, YukonUserContext userContext) {
         model.addAttribute("entryIndex", itemIndex);
 
-        YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
+        YukonSelectionList list = listDao.getYukonSelectionList(listId);
         model.addAttribute("list", list);
-        
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(), list.getEnergyCompanyId());
-        addListDefinitionsToModel(model, list, context);
+
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), list.getEnergyCompanyId());
+        addListDefinitionsToModel(model, list, userContext);
 
         return "list/entry.jsp";
     }
 
-    private void addListDefinitionsToModel(ModelMap model, YukonSelectionList list,
-                                           YukonUserContext context) {
+    private void addListDefinitionsToModel(ModelMap model, YukonSelectionList list, YukonUserContext userContext) {
         List<YukonDefinition> listDefinitions =
             selectionListService.getValidDefinitions(list.getEnergyCompanyId(), list.getType());
         listDefinitions =
-            objectFormattingService.sortDisplayableValues(listDefinitions, null, null, context);
+            objectFormattingService.sortDisplayableValues(listDefinitions, null, null, userContext);
 
-        YukonEnergyCompany energyCompany =
-            yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        MeteringType meteringType =
-                energyCompanySettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
-                                                MeteringType.class,
-                                                energyCompany.getEnergyCompanyId());
+        YukonEnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        MeteringType meteringType = ecSettingDao.getEnum(EnergyCompanySettingType.METER_MCT_BASE_DESIGNATION,
+            MeteringType.class, energyCompany.getEnergyCompanyId());
 
-        /*
-         * For metering type yukon (z_meter_mct_base_desig = yukon) the  "Meter" type should be
-         * displayed in selection list only if entry with the "Meter" type already exists.
-         */
+        // For metering type yukon (z_meter_mct_base_desig = yukon) the  "Meter" type should be
+        // displayed in selection list only if entry with the "Meter" type already exists.
         if (meteringType == MeteringType.yukon) {
             List<YukonListEntry> entries = list.getYukonListEntries();
             final Predicate<YukonListEntry> meterTypeEntry = new Predicate<YukonListEntry>() {
@@ -195,11 +185,11 @@ public class ListController {
     }
 
     @RequestMapping(value="save", params="save", method=RequestMethod.POST)
-    public String save(ModelMap model, @ModelAttribute("list") SelectionListDto list,
-                       BindingResult bindingResult, YukonUserContext context, FlashScope flash) {
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
+    public String save(ModelMap model, @ModelAttribute("list") SelectionListDto list, BindingResult bindingResult,
+            YukonUserContext userContext, FlashScope flashScope) {
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(),
                                                   list.getEnergyCompanyId());
-        YukonSelectionList oldList = yukonListDao.getYukonSelectionList(list.getListId());
+        YukonSelectionList oldList = listDao.getYukonSelectionList(list.getListId());
         if (oldList.getEnergyCompanyId() != list.getEnergyCompanyId()) {
             throw new NotAuthorizedException("energy company appears to have been tampered with");
         }
@@ -220,21 +210,20 @@ public class ListController {
 
         validator.validate(list, bindingResult);
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flash.setError(messages);
-            return prepareEdit(model, list, context);
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setError(messages);
+            return prepareEdit(model, list, userContext);
         }
 
         YukonSelectionList newList = list.getYukonSelectionList();
         try {
             selectionListDao.saveList(newList, list.getEntryIdsToDelete());
         } catch (DataIntegrityViolationException dive) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
-            return prepareEdit(model, list, context);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
+            return prepareEdit(model, list, userContext);
         }
 
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "listSaved"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "listSaved"));
 
         model.addAttribute("listId", list.getListId());
         model.addAttribute("ecId", list.getEnergyCompanyId());
@@ -243,21 +232,20 @@ public class ListController {
 
     @RequestMapping(value="save", params="restoreDefault", method=RequestMethod.POST)
     public String restoreDefault(ModelMap model, @ModelAttribute("list") SelectionListDto list,
-                       BindingResult bindingResult, YukonUserContext context, FlashScope flash) {
+            YukonUserContext userContext, FlashScope flashScope) {
         int ecId = list.getEnergyCompanyId();
-        energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
-                                                  list.getEnergyCompanyId());
+        energyCompanyService.verifyEditPageAccess(userContext.getYukonUser(), list.getEnergyCompanyId());
 
-        YukonSelectionList newList = yukonListDao.getYukonSelectionList(list.getListId());
+        YukonSelectionList newList = listDao.getYukonSelectionList(list.getListId());
         try {
             selectionListService.restoreToDefault(newList);
         } catch (DataIntegrityViolationException dive) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "cannotDeleteUsedEntries"));
             list.setType(newList.getType());
-            return prepareEdit(model, list, context);
+            return prepareEdit(model, list, userContext);
         }
 
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "defaultRestored"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "defaultRestored"));
 
         model.addAttribute("listId", list.getListId());
         model.addAttribute("ecId", ecId);

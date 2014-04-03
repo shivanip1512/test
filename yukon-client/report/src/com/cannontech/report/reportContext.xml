@@ -1004,7 +1004,4 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.SurveyResultsDetailReportLayoutData"/>
         </property>
     </bean>
-        
-    <bean id="reportGroupService" class="com.cannontech.analysis.service.impl.ReportGroupServiceImpl">
-    </bean>
 </beans>
