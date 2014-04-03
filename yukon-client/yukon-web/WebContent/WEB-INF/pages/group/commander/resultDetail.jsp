@@ -6,7 +6,8 @@
 <cti:standardPage module="tools" page="groupCommand.details">
 
     <cti:includeScript link="/JavaScript/yukon.ui.progressbar.js"/>
-    
+    <cti:url var="resultListUrl" value="/group/commander/resultList"/>
+
     <script type="text/javascript">
         
         function showCmdCanceldMsg() {
@@ -19,7 +20,7 @@
 
         function refreshResults(kind, theDiv) {
             if (theDiv.is(':visible')) {
-                var url = '/group/commander/' + kind;
+                var url = yukon.url('/group/commander/' + kind);
                 $(theDiv).load(url, {'resultKey': '${result.key}'});
             }
         }
@@ -30,7 +31,6 @@
         <jsp:attribute name="title">
             Executing '${result.command}' on <cti:msg key="${result.deviceCollection.description}"/>
         </jsp:attribute>
-        
         <jsp:body>
     
         <%-- NOTE --%>
@@ -39,7 +39,7 @@
                 <td valign="top" class="strong-label-small">Note:</td>
                 <td style="font-size:11px;">
                     Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
-                    You may view the progress of all recent and ongoing processes from the <a href="/group/commander/resultList">Group Command Processing Results</a> page.<br><br>
+                    You may view the progress of all recent and ongoing processes from the <a href="${resultListUrl}">Group Command Processing Results</a> page.<br><br>
                 </td>
             </tr>
         </table>
@@ -78,7 +78,7 @@
             <cti:msg var="creResultsText" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults"/>
             
             <cti:link href="/common/commandRequestExecutionResults/detail" key="yukon.common.device.commander.collectionActionOnDevicesLabel.creResults" class="small">
-                <cti:mapParam name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
+                <cti:param name="commandRequestExecutionId" value="${result.commandRequestExecutionIdentifier.commandRequestExecutionId}"/>
             </cti:link>
             
         </div>
