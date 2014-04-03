@@ -341,7 +341,7 @@ const PaoInfoKeyNames KeyNames = boost::assign::list_of<PaoInfoKeyNames::relatio
         (Dpi::Key_RFN_DisconnectMinutes,         "rfn disconnect minutes")
         (Dpi::Key_RFN_ConnectMinutes,            "rfn connect minutes")
 
-        (Dpi::Key_RFN_TempAlarmIsSupported,         "rfn temp alarm supported" )
+        (Dpi::Key_RFN_TempAlarmUnsupported,         "rfn temp alarm unsupported" )
         (Dpi::Key_RFN_TempAlarmIsEnabled,           "rfn temp alarm enabled" )
         (Dpi::Key_RFN_TempAlarmRepeatInterval,      "rfn temp alarm repeat interval" )
         (Dpi::Key_RFN_TempAlarmRepeatCount,         "rfn temp alarm repeat count" )

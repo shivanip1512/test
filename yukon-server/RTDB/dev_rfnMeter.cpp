@@ -342,10 +342,7 @@ int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
             return NoConfigData;
         }
         
-        const boost::optional<bool> paoSupportedFeature =
-            findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported );
-
-        if ( paoSupportedFeature == false )
+        if ( hasDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported ) )
         {
             return ErrorUnsupportedFeature;
         }
@@ -413,16 +410,23 @@ int RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiC
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand & cmd )
 {
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported, cmd.isSupported() );
+    const bool unsupported = ! cmd.isSupported();
+
+    if ( unsupported )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true ); 
+    }
 }
 
 void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand & cmd )
 {
-    const bool supported = cmd.isSupported();
+    const bool unsupported = ! cmd.isSupported();
 
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported, supported );
-
-    if ( supported )
+    if ( unsupported )
+    {
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TempAlarmUnsupported, true ); 
+    }
+    else
     {
         Commands::RfnTemperatureAlarmCommand::AlarmConfiguration    configuration = cmd.getAlarmConfiguration();
 
