@@ -12,6 +12,21 @@ using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_resolvers )
 
+BOOST_AUTO_TEST_CASE(test_resolvePortType)
+{
+    BOOST_CHECK_EQUAL(resolvePortType("heffalump"), PortTypeInvalid);
+
+    BOOST_CHECK_EQUAL(resolvePortType("tcp"),   PortTypeTcp);
+    BOOST_CHECK_EQUAL(resolvePortType("udp"),   PortTypeUdp);
+    BOOST_CHECK_EQUAL(resolvePortType("dialout pool"),      PortTypePoolDialout);
+    BOOST_CHECK_EQUAL(resolvePortType("local dialup"),      PortTypeLocalDialup);
+    BOOST_CHECK_EQUAL(resolvePortType("local dialback"),    PortTypeLocalDialBack);
+    BOOST_CHECK_EQUAL(resolvePortType("terminal server"),   PortTypeTServerDirect);
+    BOOST_CHECK_EQUAL(resolvePortType("local serial port"), PortTypeLocalDirect);
+    BOOST_CHECK_EQUAL(resolvePortType("terminal server dialup"),    PortTypeTServerDialup);
+    BOOST_CHECK_EQUAL(resolvePortType("terminal server dialback"),  PortTypeTServerDialBack);
+}
+
 BOOST_AUTO_TEST_CASE(test_resolveRouteType)
 {
     BOOST_CHECK_EQUAL(resolveRouteType("fakeDevice"), RouteTypeInvalid);
