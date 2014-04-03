@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/2/2014 4:40:28 PM                          */
+/* Created on:     4/3/2014 4:19:18 PM                          */
 /*==============================================================*/
 
 
@@ -715,6 +715,7 @@ create table CCEventLog  (
    SubID                NUMBER                          not null,
    FeederID             NUMBER                          not null,
    EventType            NUMBER                          not null,
+   EventSubType         NUMBER,
    SeqID                NUMBER                          not null,
    Value                NUMBER                          not null,
    Text                 VARCHAR2(120)                   not null,
@@ -776,6 +777,16 @@ create index INDX_CCEventLog_SubId on CCEventLog (
 /*==============================================================*/
 create index INDX_CCEventLog_Text on CCEventLog (
    Text ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_CCEventLog_Type_Date_Sub                         */
+/*==============================================================*/
+create index Indx_CCEventLog_Type_Date_Sub on CCEventLog (
+   EventType ASC,
+   DateTime ASC,
+   EventSubType ASC,
+   PointID ASC
 );
 
 /*==============================================================*/

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/2/2014 4:41:19 PM                          */
+/* Created on:     4/3/2014 4:27:49 PM                          */
 /*==============================================================*/
 
 
@@ -759,6 +759,7 @@ create table CCEventLog (
    SubID                numeric              not null,
    FeederID             numeric              not null,
    EventType            numeric              not null,
+   EventSubType         numeric              null,
    SeqID                numeric              not null,
    Value                numeric              not null,
    Text                 varchar(120)         not null,
@@ -826,6 +827,17 @@ go
 /*==============================================================*/
 create index INDX_CCEventLog_Text on CCEventLog (
 Text ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_CCEventLog_Type_Date_Sub                         */
+/*==============================================================*/
+create index Indx_CCEventLog_Type_Date_Sub on CCEventLog (
+EventType ASC,
+DateTime ASC,
+EventSubType ASC,
+PointID ASC
 )
 go
 

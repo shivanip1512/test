@@ -473,6 +473,26 @@ ALTER COLUMN PagerID VARCHAR(10) NOT NULL;
 /* @error ignore-end */
 /* End YUK-12526 */
 
+/* Start YUK-13182 */
+ALTER TABLE CCEventLog
+ADD EventSubtype INT NULL;
+GO
+
+UPDATE CCEventLog
+SET EventSubtype = (
+    CASE
+        WHEN (LOWER(Text) LIKE 'manual confirm open sent, %' OR LOWER(Text) LIKE 'manual confirm close sent, %') THEN 4
+        WHEN (LOWER(Text) LIKE 'manual flip sent, %') THEN 3
+        WHEN (LOWER(Text) LIKE 'manual open sent, %' OR LOWER(Text) LIKE 'manual close sent, %') THEN 2
+        WHEN (LOWER(Text) LIKE 'flip sent, %') THEN 1
+        WHEN (LOWER(Text) LIKE 'open sent, %' OR LOWER(Text) LIKE 'close sent, %') THEN 0
+    END)
+WHERE EventType = 1;
+
+CREATE INDEX Indx_CCEventLog_Type_Date_Sub
+ON CCEventLog (EventType, DateTime, EventSubtype, PointID);
+/* End YUK-13182 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
