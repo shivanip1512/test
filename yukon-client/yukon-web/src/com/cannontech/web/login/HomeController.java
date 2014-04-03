@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,16 +46,16 @@ public class HomeController {
     }
 
     @RequestMapping("/dashboard")
-    public String dashboard(ModelMap model, YukonUserContext context) {
-        List<UserPage> pages = userPageDao.getPagesForUser(context.getYukonUser());
+    public String dashboard(ModelMap model, YukonUserContext userContext) {
+        List<UserPage> pages = userPageDao.getPagesForUser(userContext.getYukonUser());
 
-        List<UserPage> history = pages;//setupDisplayableHistory(pages, context);
+        List<UserPage> history = pages;//setupDisplayableHistory(pages, userContext);
         if (history.size() > UserPageDao.MAX_HISTORY ) {
             history = history.subList(0, UserPageDao.MAX_HISTORY);
         }
         model.put("history", history);
 
-        Multimap<SiteMapCategory, UserPage> favoritesMap = setupDisplayableFavorites(pages, context);
+        Multimap<SiteMapCategory, UserPage> favoritesMap = setupDisplayableFavorites(pages, userContext);
         model.put("favorites", favoritesMap.asMap());
 
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
@@ -100,26 +98,25 @@ public class HomeController {
 
     @RequestMapping("/toggleFavorite")
     public @ResponseBody Map<String, Boolean> toggleFavorite(String module, String name, String labelArgs,
-            String path, YukonUserContext context, HttpServletRequest request) {
+            String path, YukonUserContext userContext) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), true,
+        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, true,
             SiteModule.getByName(module), name, arguments);
         return Collections.singletonMap("isFavorite", userPageDao.toggleFavorite(page));
     }
 
     @RequestMapping("/isFavorite")
-    public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext context,
-            HttpServletRequest request) {
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), true);
+    public @ResponseBody Map<String, Boolean> isFavorite(String path, YukonUserContext userContext) {
+        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, true);
         return Collections.singletonMap("isFavorite", userPageDao.isFavorite(page));
     }
 
     @RequestMapping("/addToHistory")
     public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path, 
-            YukonUserContext context, HttpServletRequest request) {
+            YukonUserContext userContext) {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);
 
-        UserPage page = new UserPage(context.getYukonUser().getUserID(), pathWithoutContextPath(path, request), false,
+        UserPage page = new UserPage(userContext.getYukonUser().getUserID(), path, false,
             SiteModule.getByName(module), name, arguments);
         userPageDao.updateHistory(page);
 
@@ -128,9 +125,9 @@ public class HomeController {
 
     @RequestMapping("/toggleSubscribed")
     public @ResponseBody Map<String, Boolean> toggleSubscribed(SubscriptionType subscriptionType, Integer refId,
-            YukonUserContext context) {
+            YukonUserContext userContext) {
         UserSubscription monitor = 
-                new UserSubscription (context.getYukonUser().getUserID(), subscriptionType, refId, null);
+                new UserSubscription (userContext.getYukonUser().getUserID(), subscriptionType, refId, null);
 
         boolean isSubscribed = userSubscriptionDao.contains(monitor);
         if(isSubscribed) {
@@ -144,9 +141,9 @@ public class HomeController {
 
     @RequestMapping("/isSubscribed")
     public @ResponseBody Map<String, Boolean> isSubscribed(SubscriptionType subscriptionType, Integer refId,
-                                                           YukonUserContext context) {
+            YukonUserContext userContext) {
         UserSubscription monitor = 
-                new UserSubscription(context.getYukonUser().getUserID(), subscriptionType, refId, null);
+                new UserSubscription(userContext.getYukonUser().getUserID(), subscriptionType, refId, null);
 
         return Collections.singletonMap("isSubscribed", userSubscriptionDao.contains(monitor));
     }
@@ -158,21 +155,4 @@ public class HomeController {
                 return userPage.getModule().getSiteMapCategory();
             }
         });
-
-    private final static String pathWithoutContextPath(String path, HttpServletRequest request) {
-        String contextPath = request.getContextPath();
-        if ("".equals(contextPath)) {
-            // Nothing to remove.
-            return path;
-        }
-
-        if (path.startsWith(contextPath)) {
-            return path.substring(contextPath.length());
-        }
-
-        // We expect the context path to be at the beginning of path.  If it isn't there, we can't use this method
-        // because we don't want to inadvertently use this method to remove some legitimate bit of the path that
-        // just happens to match the context path.
-        throw new RuntimeException("Context path prefix not found in path " + path);
-    }
 }
