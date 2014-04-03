@@ -53,20 +53,24 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         return ModelRow.class;
     }
     
+    @Override
     public String getTitle() {
         return "Time Controlled Cap Banks Report";
     }
 
+    @Override
     public int getRowCount() {
         return data.size();
     }
 
+    @Override
     public void doLoadData() {
         
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
         jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+            @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int startMonth = rs.getInt("seasonStartMonth");
                 int startDay = rs.getInt("seasonStartDay");
@@ -123,7 +127,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         sql.append(", yukonpaobject yp ");
         sql.append(", ccsubstationsubbuslist ss ");
         sql.append(", ccsubareaassignment sa ");
-        sql.append("where strat.controlmethod = 'TimeOfDay' ");
+        sql.append("where strat.controlmethod = 'TIME_OF_DAY' ");
         sql.append("and strat.strategyid = strata.strategyid ");
         sql.append("and dos.seasonscheduleid = strata.seasonscheduleid ");
         sql.append("and dos.seasonname = strata.seasonname ");
