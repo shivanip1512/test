@@ -2,7 +2,7 @@
 
 #include "dev_rfn420centron.h"
 #include "config_data_rfn.h"
-#include "config_exceptions.h"
+#include "config_helpers.h"
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
@@ -74,19 +74,6 @@ const std::map<unsigned, Commands::RfnCentronLcdConfigurationCommand::DisplayDig
     ( 5, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits5x1 )
     ( 6, Commands::RfnCentronLcdConfigurationCommand::DisplayDigits6x1 );
 
-template <typename T>
-T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
-{
-    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
-
-    if( ! val )
-    {
-        throw MissingConfigDataException( configKey );
-    }
-
-    return *val;
-}
-
 }
 
 RfnMeterDevice::ConfigMap Rfn420CentronDevice::getConfigMethods(bool readOnly)
@@ -130,7 +117,7 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
 
         for each( const std::string configKey in displayMetricConfigKeys )
         {
-            long configValue = getConfigValue<long>(deviceConfig, configKey);
+            long configValue = getConfigData<long>(deviceConfig, configKey);
 
             if( configValue < 0x00 ||
                 configValue > 0xff )
@@ -144,9 +131,9 @@ int Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommand
             config_display_metrics.push_back(configValue);
         }
 
-        const long config_cycle_delay                 = getConfigValue<long>(deviceConfig, Config::RfnStrings::LcdCycleTime);
-        const long config_display_digits              = getConfigValue<long>(deviceConfig, Config::RfnStrings::DisplayDigits);
-        const bool config_disconnect_display_disabled = getConfigValue<bool>(deviceConfig, Config::RfnStrings::DisconnectDisplayDisabled);
+        const long config_cycle_delay                 = getConfigData<long>(deviceConfig, Config::RfnStrings::LcdCycleTime);
+        const long config_display_digits              = getConfigData<long>(deviceConfig, Config::RfnStrings::DisplayDigits);
+        const bool config_disconnect_display_disabled = getConfigData<bool>(deviceConfig, Config::RfnStrings::DisconnectDisplayDisabled);
 
         if( config_cycle_delay < 0x00 ||
             config_cycle_delay > 0x0f )

@@ -335,6 +335,12 @@ public:
         Key_RFN_DisconnectMinutes,
         Key_RFN_ConnectMinutes,
 
+        Key_RFN_TempAlarmIsSupported,
+        Key_RFN_TempAlarmIsEnabled,
+        Key_RFN_TempAlarmRepeatInterval,
+        Key_RFN_TempAlarmRepeatCount,
+        Key_RFN_TempAlarmHighTempThreshold,
+
         Key_RF_DA_DnpSlaveAddress
     };
 

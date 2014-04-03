@@ -381,6 +381,8 @@ enum YukonError_t
 
     ErrorNoPointsOnDevice,
 
+    ErrorUnsupportedFeature,
+
     FinalError
 };
 

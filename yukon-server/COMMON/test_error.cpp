@@ -226,7 +226,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of
     ("Unknown Error")
     ("Unknown Error")
     ("The device has no points attached.")
-    .repeat(53, "Unknown Error");
+    ("Feature unsupported for this device.")
+    .repeat(52, "Unknown Error");
 
 BOOST_AUTO_TEST_CASE(test_GetErrorString)
 {

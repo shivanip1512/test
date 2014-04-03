@@ -221,6 +221,7 @@ static const ErrorLookup CtiErrors = boost::assign::map_list_of
     (ErrorRequestTimeout,             error_info(ERRTYPESYSTEM, "Did not receive a response from the device."))
     (ErrorNetworkManagerTimeout,      error_info(ERRTYPESYSTEM, "Did not receive a response from Network Manager."))
     (ErrorNoPointsOnDevice,           error_info(ERRTYPESYSTEM, "The device has no points attached."))
+    (ErrorUnsupportedFeature,         error_info(ERRTYPESYSTEM, "Feature unsupported for this device."))
 
     (UnknownError,                  error_info(ERRTYPESYSTEM,   "Unknown Error"))
     ;

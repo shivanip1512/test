@@ -314,3 +314,10 @@ const string RfnStrings::ConnectDelay                = "connectDelay";
 const string RfnStrings::MaxDisconnects              = "maxDisconnects";
 const string RfnStrings::DisconnectMinutes           = "disconnectMinutes";
 const string RfnStrings::ConnectMinutes              = "connectMinutes";
+
+// Temperature Alarm configuration
+const string RfnStrings::TemperatureAlarmEnabled            = "temperatureAlarmEnabled";
+const string RfnStrings::TemperatureAlarmRepeatInterval     = "temperatureAlarmRepeatInterval";
+const string RfnStrings::TemperatureAlarmRepeatCount        = "temperatureAlarmRepeatCount";
+const string RfnStrings::TemperatureAlarmHighTempThreshold  = "temperatureAlarmHighTempThreshold";
+

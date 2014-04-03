@@ -3,7 +3,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include "config_exceptions.h"
+#include "config_helpers.h"
 #include "config_data_rfn.h"
 #include "dev_rfn420focus.h"
 
@@ -61,19 +61,6 @@ const std::vector<std::string> displayAlphamericConfigKeys = boost::assign::list
     ( Config::RfnStrings::displayAlphameric9 )
     ( Config::RfnStrings::displayAlphameric10 );
 
-template <typename T>
-T getConfigValue( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
-{
-    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
-
-    if( ! val )
-    {
-        throw MissingConfigDataException( configKey );
-    }
-
-    return *val;
-}
-
 } // anonymous namespace
 
 RfnMeterDevice::ConfigMap Rfn420FocusDevice::getConfigMethods(bool readOnly)
@@ -116,15 +103,15 @@ int Rfn420FocusDevice::executePutConfigDisplay(CtiRequestMsg *pReq, CtiCommandPa
 
         for each( const std::string & configKey in displayMetricConfigKeys )
         {
-            config_display_metrics.push_back( getConfigValue<std::string>( deviceConfig, configKey ));
+            config_display_metrics.push_back( getConfigData<std::string>( deviceConfig, configKey ));
         }
 
         for each( const std::string & configKey in displayAlphamericConfigKeys )
         {
-            config_display_alphamerics.push_back( getConfigValue<std::string>( deviceConfig, configKey ));
+            config_display_alphamerics.push_back( getConfigData<std::string>( deviceConfig, configKey ));
         }
 
-        long config_display_duration = getConfigValue<long>( deviceConfig, Config::RfnStrings::displayItemDuration );
+        long config_display_duration = getConfigData<long>( deviceConfig, Config::RfnStrings::displayItemDuration );
 
         if( config_display_duration < 0 || config_display_duration > 255 )
         {

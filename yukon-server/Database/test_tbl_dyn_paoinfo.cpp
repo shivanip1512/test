@@ -300,6 +300,11 @@ BOOST_AUTO_TEST_CASE(test_getKeyString)
         { CtiTableDynamicPaoInfo::Key_RFN_MaxDisconnects,                    "rfn max disconnects" },
         { CtiTableDynamicPaoInfo::Key_RFN_DisconnectMinutes,                 "rfn disconnect minutes" },
         { CtiTableDynamicPaoInfo::Key_RFN_ConnectMinutes,                    "rfn connect minutes" },
+        { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported,              "rfn temp alarm supported" },
+        { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,                "rfn temp alarm enabled" },
+        { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,           "rfn temp alarm repeat interval" },
+        { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,              "rfn temp alarm repeat count" },
+        { CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold,        "rfn temp alarm high temp threshold" },
         { CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress,                 "rf da dnp slave address" },
     };
 

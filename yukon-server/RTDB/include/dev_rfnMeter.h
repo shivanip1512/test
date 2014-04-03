@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dev_rfn.h"
+#include "cmd_rfn_TemperatureAlarm.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/container/flat_map.hpp>
@@ -22,6 +23,7 @@ protected:
         static const std::string ovuv;
         static const std::string display;
         static const std::string disconnect;
+        static const std::string temperaturealarm;
     };
 
     typedef boost::function<int (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
@@ -62,6 +64,12 @@ protected:
 
     virtual int executePutConfigDisconnect (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
     virtual int executeGetConfigDisconnect (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    virtual int executePutConfigTemperatureAlarm(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+    virtual int executeGetConfigTemperatureAlarm(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
+
+    void handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand    & cmd );
+    void handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand    & cmd );
 
 private:
 

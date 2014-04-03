@@ -145,6 +145,12 @@ struct IM_EX_CONFIG RfnStrings
     static const std::string MaxDisconnects;
     static const std::string DisconnectMinutes;
     static const std::string ConnectMinutes;
+
+    // Temperature Alarm configuration
+    static const std::string TemperatureAlarmEnabled;
+    static const std::string TemperatureAlarmRepeatInterval;
+    static const std::string TemperatureAlarmRepeatCount;
+    static const std::string TemperatureAlarmHighTempThreshold;
 };
 
 }

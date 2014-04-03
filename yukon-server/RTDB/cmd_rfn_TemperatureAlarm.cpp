@@ -33,7 +33,17 @@ const std::map<unsigned char, std::string>  alarmStateResolver = boost::assign::
 
 
 RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operation )
-    : _operation( operation )
+    :   _operation( operation ),
+        _isSupported( false )
+{
+    // empty
+}
+
+
+RfnTemperatureAlarmCommand::RfnTemperatureAlarmCommand( const Operation operation, const AlarmConfiguration & configuration )
+    :   _operation( operation ),
+        _isSupported( false ),
+        _configuration( configuration )
 {
     // empty
 }
@@ -48,6 +58,12 @@ unsigned char RfnTemperatureAlarmCommand::getCommandCode() const
 unsigned char RfnTemperatureAlarmCommand::getOperation() const
 {
     return _operation;
+}
+
+
+bool RfnTemperatureAlarmCommand::isSupported() const
+{
+    return _isSupported;
 }
 
 
@@ -86,6 +102,10 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
 
+    // Determine the Supported/Unsupported status
+
+    _isSupported = ( response[2] != AlarmStatus_Unsupported );
+
     return result;
 }
 
@@ -93,9 +113,8 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 ////
 
 
-RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const /*RfnSetTemperatureAlarmConfigurationCommand::*/  AlarmConfiguration & configuration )
-    :   RfnTemperatureAlarmCommand( Operation_SetConfiguration ),
-        _configuration( configuration )
+RfnSetTemperatureAlarmConfigurationCommand::RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration )
+    :   RfnTemperatureAlarmCommand( Operation_SetConfiguration, configuration )
 {
 
         // Input validation?
@@ -182,6 +201,11 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 {
     RfnCommandResult  result = decodeResponseHeader( now, response );
 
+    if ( ! isSupported() )  // bail out if device returns 'Unsupported'
+    {
+        return result;
+    }
+
     // We need 13 bytes
 
     validate( Condition( response.size() == 13, ErrorInvalidData )
@@ -227,7 +251,6 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
     _configuration.alarmRepeatInterval = tlv.value[5];
 
     result.description += "\nAlarm Repeat Interval: " + CtiNumStr(_configuration.alarmRepeatInterval) + " minute(s)";
-
 
     _configuration.alarmRepeatCount = tlv.value[6];
 

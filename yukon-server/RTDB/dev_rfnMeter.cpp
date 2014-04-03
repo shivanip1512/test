@@ -2,14 +2,17 @@
 
 #include "dev_rfnMeter.h"
 #include "tbl_rfnidentifier.h"
-
+#include "config_data_rfn.h"
+#include "config_helpers.h"
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/assign/list_inserter.hpp>
+
+#include <cmath>
 
 namespace Cti {
 namespace Devices {
-
 
 const std::string RfnMeterDevice::ConfigPart::all              = "all";
 const std::string RfnMeterDevice::ConfigPart::freezeday        = "freezeday";
@@ -18,6 +21,7 @@ const std::string RfnMeterDevice::ConfigPart::voltageaveraging = "voltageaveragi
 const std::string RfnMeterDevice::ConfigPart::ovuv             = "ovuv";
 const std::string RfnMeterDevice::ConfigPart::display          = "display";
 const std::string RfnMeterDevice::ConfigPart::disconnect       = "disconnect";
+const std::string RfnMeterDevice::ConfigPart::temperaturealarm = "temperaturealarm";
 
 
 int RfnMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
@@ -70,7 +74,22 @@ int RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &pars
  */
 RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(bool readOnly)
 {
-    return ConfigMap();
+    ConfigMap m;
+
+//    if ( readOnly )
+//    {
+//        boost::assign::insert( m )
+//            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executeGetConfigTemperatureAlarm,    this ) )
+//                ;
+//    }
+//    else
+//    {
+//        boost::assign::insert( m )
+//            ( ConfigPart::temperaturealarm, bindConfigMethod( &RfnMeterDevice::executePutConfigTemperatureAlarm,    this ) )
+//                ;
+//    }
+
+    return m;
 }
 
 /**
@@ -309,6 +328,110 @@ int RfnMeterDevice::executePutConfigDisconnect( CtiRequestMsg * pReq, CtiCommand
     return NoMethod;
 }
 
+int RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+{
+    using Commands::RfnTemperatureAlarmCommand;
+    using Commands::RfnSetTemperatureAlarmConfigurationCommand;
+
+    try
+    {
+        Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+        if ( ! deviceConfig )
+        {
+            return NoConfigData;
+        }
+        
+        const boost::optional<bool> paoSupportedFeature =
+            findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported );
+
+        if ( paoSupportedFeature == false )
+        {
+            return ErrorUnsupportedFeature;
+        }
+
+        RfnTemperatureAlarmCommand::AlarmConfiguration  configuration;
+
+        configuration.alarmEnabled        = getConfigData<bool>( deviceConfig, Config::RfnStrings::TemperatureAlarmEnabled );
+        configuration.alarmRepeatInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmRepeatInterval );
+        configuration.alarmRepeatCount    = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmRepeatCount );
+        unsigned threshold                = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::TemperatureAlarmHighTempThreshold );
+
+        // Convert device configuration threshold value from degrees F to degrees C rounding down
+
+        configuration.alarmHighTempThreshold = static_cast<unsigned>( std::floor( ( threshold - 32 ) * 5 / 9.0 ) );
+
+        const boost::optional<bool>     paoAlarmEnabled        = findDynamicInfo<bool>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled );
+        const boost::optional<unsigned> paoAlarmRepeatInterval = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval );
+        const boost::optional<unsigned> paoAlarmRepeatCount    = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount );
+        const boost::optional<unsigned> paoAlarmThreshold      = findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold );
+
+
+        if (    configuration.alarmEnabled           != paoAlarmEnabled
+             || configuration.alarmRepeatInterval    != paoAlarmRepeatInterval
+             || configuration.alarmRepeatCount       != paoAlarmRepeatCount
+             || configuration.alarmHighTempThreshold != paoAlarmThreshold
+             || parse.isKeyValid("force"))
+        {
+            if ( parse.isKeyValid("verify") )
+            {
+                return ConfigNotCurrent;
+            }
+
+            rfnRequests.push_back( boost::make_shared<RfnSetTemperatureAlarmConfigurationCommand>( configuration ) );
+        }
+        
+        if ( ! parse.isKeyValid("force") && rfnRequests.empty() )
+        {
+            return ConfigCurrent;
+        }
+
+        return NoError;
+    }
+    catch ( const MissingConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return NoConfigData;
+    }
+    catch ( const InvalidConfigDataException &e )
+    {
+        logInfo( e.what(),
+                __FUNCTION__, __FILE__, __LINE__ );
+
+        return ErrorInvalidConfigData;
+    }
+}
+
+int RfnMeterDevice::executeGetConfigTemperatureAlarm( CtiRequestMsg * pReq, CtiCommandParser & parse, ReturnMsgList & returnMsgs, RfnCommandList & rfnRequests )
+{
+    rfnRequests.push_back( boost::make_shared<Commands::RfnGetTemperatureAlarmConfigurationCommand>() );
+
+    return NoError;
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnSetTemperatureAlarmConfigurationCommand & cmd )
+{
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported, cmd.isSupported() );
+}
+
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetTemperatureAlarmConfigurationCommand & cmd )
+{
+    const bool supported = cmd.isSupported();
+
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsSupported, supported );
+
+    if ( supported )
+    {
+        Commands::RfnTemperatureAlarmCommand::AlarmConfiguration    configuration = cmd.getAlarmConfiguration();
+
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmIsEnabled,         configuration.alarmEnabled );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatInterval,    configuration.alarmRepeatInterval );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmRepeatCount,       configuration.alarmRepeatCount );
+        setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_TempAlarmHighTempThreshold, configuration.alarmHighTempThreshold );
+    }
+}
 
 }
 }

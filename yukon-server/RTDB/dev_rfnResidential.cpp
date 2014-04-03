@@ -3,13 +3,14 @@
 #include "std_helper.h"
 #include "config_data_rfn.h"
 #include "config_device.h"
-#include "config_exceptions.h"
+#include "config_helpers.h"
 #include "dev_rfnResidential.h"
 #include "devicetypes.h"
 
 #include <boost/optional.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/assign/list_inserter.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/bimap.hpp>
 
@@ -23,64 +24,6 @@ namespace Devices {
 using Config::RfnStrings;
 
 namespace { // anonymous namespace
-
-/**
- * throws MissingConfigDataException() if no config value exist
- */
-template<typename T>
-T getConfigData( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
-{
-    boost::optional<T> val = deviceConfig->findValue<T>( configKey );
-
-    if( ! val )
-    {
-        throw MissingConfigDataException( configKey );
-    }
-
-    return *val;
-}
-
-/**
- * Specialization of getConfigData()
- * throws InvalidConfigDataException() if config data is out of range
- */
-template<>
-unsigned char getConfigData<unsigned char>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
-{
-    long l_val = getConfigData<long>(deviceConfig, configKey);
-
-    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned char'.
-    if( l_val < 0 || l_val > std::numeric_limits<unsigned char>::max() )
-    {
-        std::ostringstream cause;
-        cause << "invalid value " << l_val << " is out range, expected [0 - " << std::numeric_limits<unsigned char>::max() << "]";
-
-        throw InvalidConfigDataException( configKey, cause.str() );
-    }
-
-    return static_cast<unsigned char>( l_val );
-}
-
-/**
- * Specialization of getConfigData()
- * throws InvalidConfigDataException() if config data is negative
- */
-template<>
-unsigned getConfigData<unsigned>( const Config::DeviceConfigSPtr & deviceConfig, const std::string & configKey )
-{
-    long l_val = getConfigData<long>(deviceConfig, configKey);
-
-    // Rudimentary check to see that we can coerce the 'long' into an 'unsigned'.
-    if( l_val < 0 )
-    {
-        std::ostringstream cause;
-        cause << "invalid value " << l_val << ", expected >= 0";
-
-        throw InvalidConfigDataException( configKey, cause.str() );
-    }
-
-    return static_cast<unsigned>( l_val );
-}
 
 /**
  * retrieve data from a local config map, throws MissingConfigDataException() if no config value can be found
@@ -206,36 +149,38 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
 
 RfnMeterDevice::ConfigMap RfnResidentialDevice::getConfigMethods(bool readOnly)
 {
+    ConfigMap m = RfnMeterDevice::getConfigMethods( readOnly );
+
     if( readOnly )
     {
-        ConfigMap m = boost::assign::map_list_of
-                ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ))
-                ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ))
-                ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ))
-                ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ));
+        boost::assign::insert( m )
+            ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executeReadDemandFreezeInfo,              this ) )
+            ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executeGetConfigInstallTou,               this ) )
+            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executeGetConfigVoltageAveragingInterval, this ) )
+            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executeGetConfigOvUv,                     this ) )
+                ;
 
         if( disconnectConfigSupported() )
         {
             m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executeGetConfigDisconnect, this ) ) );
         }
-
-        return m;
     }
     else
     {
-        ConfigMap m = boost::assign::map_list_of
-                ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ))
-                ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ))
-                ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ))
-                ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ));
+        boost::assign::insert( m )
+            ( ConfigPart::freezeday,        bindConfigMethod( &RfnResidentialDevice::executePutConfigDemandFreezeDay,          this ) )
+            ( ConfigPart::tou,              bindConfigMethod( &RfnResidentialDevice::executePutConfigInstallTou,               this ) )
+            ( ConfigPart::voltageaveraging, bindConfigMethod( &RfnResidentialDevice::executePutConfigVoltageAveragingInterval, this ) )
+            ( ConfigPart::ovuv,             bindConfigMethod( &RfnResidentialDevice::executePutConfigOvUv,                     this ) )
+                ;
 
         if( disconnectConfigSupported() )
         {
             m.insert( ConfigMap::value_type( ConfigPart::disconnect, bindConfigMethod( &RfnResidentialDevice::executePutConfigDisconnect, this ) ) );
         }
-
-        return m;
     }
+
+    return m;
 }
 
 int RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg     * pReq,

@@ -11,6 +11,21 @@ namespace Commands   {
 
 class IM_EX_DEVDB RfnTemperatureAlarmCommand : public RfnCommand
 {
+public:
+
+    virtual RfnCommandResult decodeCommand( const CtiTime now,
+                                            const RfnResponsePayload & response ) = 0;
+
+    struct AlarmConfiguration
+    {
+        bool        alarmEnabled;
+        unsigned    alarmRepeatInterval,
+                    alarmRepeatCount,
+                    alarmHighTempThreshold;
+    };
+
+    bool isSupported() const;
+
 protected:
 
     enum CommandCode
@@ -36,8 +51,14 @@ protected:
         AlarmState_AlarmEnabled     = 0x01
     };
 
+    enum AlarmStatus
+    {
+        AlarmStatus_Unsupported     = 0x02
+    };
 
     RfnTemperatureAlarmCommand( const Operation operation );
+
+    RfnTemperatureAlarmCommand( const Operation operation, const AlarmConfiguration & configuration );
 
     virtual unsigned char getCommandCode() const;
 
@@ -50,18 +71,9 @@ protected:
     RfnCommandResult decodeResponseHeader( const CtiTime now,
                                            const RfnResponsePayload & response );
 
-public:
+    bool _isSupported;
 
-    virtual RfnCommandResult decodeCommand( const CtiTime now,
-                                            const RfnResponsePayload & response ) = 0;
-
-    struct AlarmConfiguration
-    {
-        bool        alarmEnabled;
-        unsigned    alarmRepeatInterval,
-                    alarmRepeatCount,
-                    alarmHighTempThreshold;
-    };
+    AlarmConfiguration  _configuration;
 };
 
 
@@ -70,10 +82,6 @@ public:
 
 class IM_EX_DEVDB RfnSetTemperatureAlarmConfigurationCommand : public RfnTemperatureAlarmCommand
 {
-private:
-
-    AlarmConfiguration  _configuration;
-
 public:
 
     RfnSetTemperatureAlarmConfigurationCommand( const AlarmConfiguration & configuration );
@@ -92,10 +100,6 @@ public:
 
 class IM_EX_DEVDB RfnGetTemperatureAlarmConfigurationCommand : public RfnTemperatureAlarmCommand
 {
-private:
-
-    AlarmConfiguration  _configuration;
-
 public:
 
     RfnGetTemperatureAlarmConfigurationCommand();
