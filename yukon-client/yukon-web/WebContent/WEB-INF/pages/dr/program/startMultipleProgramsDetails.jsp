@@ -73,7 +73,7 @@ updateAllProgramsChecked = function() {
 }
 
 singleProgramChecked = function(boxChecked) {
-    if (document.getElementById(boxChecked).checked) {
+    if (jQuery(boxChecked).prop('checked')) {
         updateAllProgramsChecked();
     } else {
         document.getElementById('allProgramsCheckbox').checked = false;

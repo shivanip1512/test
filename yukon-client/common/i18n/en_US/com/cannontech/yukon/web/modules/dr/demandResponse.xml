@@ -700,6 +700,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.separator">-</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions.title">Actions</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.unknown">This Control Area is not in Load Management</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms">There are currently no programs assigned to this control area.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.inactive">This control area is not active.</entry>

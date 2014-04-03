@@ -11,7 +11,7 @@
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/yukon.dr.asset.details.js"/>
     <cti:includeScript link="/JavaScript/yukon.dr.estimated.load.js"/>
-    <cti:includeScript link="/JavaScript/yukon.dr.program.showActionDataUpdater.js"/>
+    <cti:includeScript link="/JavaScript/yukon.dr.dataUpdater.showAction.js"/>
     <cti:includeScript link="YUKON_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS"/>
     <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
@@ -118,7 +118,7 @@
             <!-- Page Dropdown Actions -->
             <div id="f-page-actions" class="dn">
                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
-                    <div data-start-action="enabled" data-pao-id="${programId}">
+                    <div data-start-action="on" data-pao-id="${programId}">
                         <cti:url var="startProgramUrl" value="/dr/program/start/details">
                                 <cti:param name="programId" value="${programId}"/>
                         </cti:url>
@@ -127,13 +127,13 @@
                                 labelKey=".actions.start"/>
                         </li>
                     </div>
-                    <div class="dn" data-start-action="disabled" data-pao-id="${programId}">
+                    <div class="dn" data-start-action="off" data-pao-id="${programId}">
                         <cm:dropdownOption icon="icon-control-play-blue" disabled="true">
                             <cti:msg2 key=".actions.start"/>
                         </cm:dropdownOption>
                     </div>
 
-                    <div data-stop-action="enabled" data-pao-id="${programId}">
+                    <div data-stop-action="on" data-pao-id="${programId}">
                         <cti:url var="stopProgramUrl" value="/dr/program/stop/details">
                                 <cti:param name="programId" value="${programId}"/>
                         </cti:url>
@@ -142,13 +142,13 @@
                                 labelKey=".actions.stop"/>
                         </li>
                     </div>
-                    <div class="dn" data-stop-action="disabled" data-pao-id="${programId}">
+                    <div class="dn" data-stop-action="off" data-pao-id="${programId}">
                         <cm:dropdownOption icon="icon-control-stop-blue" disabled="true">
                             <cti:msg2 key=".actions.stop"/>
                         </cm:dropdownOption>
                     </div>
 
-                    <div data-change-gears-action="enabled" data-pao-id="${programId}">
+                    <div data-change-gears-action="on" data-pao-id="${programId}">
                         <cti:url var="changeGearsUrl" value="/dr/program/getChangeGearValue">
                             <cti:param name="programId" value="${programId}"/>
                         </cti:url>
@@ -158,13 +158,23 @@
                                     labelKey=".actions.changeGears"/>
                         </li>
                     </div>
-                    <div class="dn" data-change-gears-action="disabled" data-pao-id="${programId}">
+                    <div class="dn" data-change-gears-action="off" data-pao-id="${programId}">
                         <cm:dropdownOption icon="icon-cog-edit" disabled="true">
                             <cti:msg2 key=".actions.changeGears"/>
                         </cm:dropdownOption>
                     </div>
 
-                    <div data-disable-action="enabled" data-pao-id="${programId}">
+                    <div data-enable-program-action="enable-on" data-pao-id="${programId}">
+                        <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
+                            <cti:param name="programId" value="${programId}"/>
+                            <cti:param name="isEnabled" value="true"/>
+                        </cti:url>
+                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
+                                dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
+                                labelKey=".actions.enable"/>
+                        </li>
+                    </div>
+                    <div data-enable-program-action="disable-on" data-pao-id="${programId}">
                         <cti:url var="sendDisableUrl" value="/dr/program/sendEnableConfirm">
                             <cti:param name="programId" value="${programId}"/>
                             <cti:param name="isEnabled" value="false"/>
@@ -174,20 +184,10 @@
                                 labelKey=".actions.disable"/>
                         </li>
                     </div>
-                    <div class="dn" data-disable-action="disabled" data-pao-id="${programId}">
+                    <div class="dn" data-enable-program-action="off" data-pao-id="${programId}">
                         <cm:dropdownOption icon="icon-delete" disabled="true">
                             <cti:msg2 key=".actions.disable"/>
                         </cm:dropdownOption>
-                    </div>
-                    <div data-enable-action data-pao-id="${programId}">
-                        <cti:url var="sendEnableUrl" value="/dr/program/sendEnableConfirm">
-                            <cti:param name="programId" value="${programId}"/>
-                            <cti:param name="isEnabled" value="true"/>
-                        </cti:url>
-                        <li><tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendEnableConfirm.title" 
-                                dialogId="drDialog" actionUrl="${sendEnableUrl}" icon="icon-accept"
-                                labelKey=".actions.enable"/>
-                        </li>
                     </div>
                 </cti:checkPaoAuthorization>
                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
@@ -298,6 +298,6 @@
             </div>
         </div>
     </table>
-    <cti:dataUpdaterCallback function="yukon.dr.program.showActionDataUpdater.updateDetailLinks(${programId})" 
+    <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateProgramMenu(${programId})" 
         initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/>
 </cti:standardPage>

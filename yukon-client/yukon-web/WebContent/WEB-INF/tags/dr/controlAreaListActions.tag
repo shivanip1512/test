@@ -10,130 +10,52 @@
 
 <cti:msgScope paths="modules.dr">
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
-<cti:msg2 var="controlAreaHasNoPrograms" key=".controlAreaDetail.noAssignedPrograms"/>
-<cti:msg2 var="controlAreaInactive" key=".controlAreaDetail.inactive"/>
-<cti:msg2 var="controlAreaFullyActive" key=".controlAreaDetail.fullyActive"/>
-<cti:msg2 var="noControlAreaControl" key=".controlAreaDetail.noControl"/>
-<cti:msg2 var="startAction" key=".controlAreaDetail.actions.start"/>
-<cti:msg2 var="stopAction" key=".controlAreaDetail.actions.stop"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
     <cm:dropdown triggerClasses="fr">
-        <tags:dynamicChoose updaterString="DR_CONTROLAREA/${paoId}/SHOW_ACTION" suffix="${paoId}">
-            
-            <tags:dynamicChooseOption optionId="noAssignedPrograms">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${controlAreaHasNoPrograms}">
-                    ${startAction}
-                </cm:dropdownOption>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${controlAreaHasNoPrograms}">
-                    ${stopAction}
-                </cm:dropdownOption>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="inactiveEnabled">
-                <li>
-                    <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${startControlAreaUrl}" 
-                                       icon="icon-control-play-blue" labelKey=".controlAreaDetail.actions.start"/>
-                </li>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${controlAreaInactive}">
-                    ${stopAction}
-                </cm:dropdownOption>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="enabled">
-                <li>
-                    <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${startControlAreaUrl}" 
-                                       icon="icon-control-play-blue" labelKey=".controlAreaDetail.actions.start"/>
-                </li>
-                <li>
-                    <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${stopControlAreaUrl}" 
-                                       icon="icon-control-stop-blue" labelKey=".controlAreaDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="fullyActiveEnabled">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${controlAreaFullyActive}">
-                    ${startAction}
-                </cm:dropdownOption>
-                <li>
-                    <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${stopControlAreaUrl}" 
-                                       icon="icon-control-stop-blue" labelKey=".controlAreaDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="inactiveDisabled">
-                <li>
-                    <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${startControlAreaUrl}" 
-                                       icon="icon-control-play-blue" labelKey=".controlAreaDetail.actions.start"/>
-                </li>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${controlAreaInactive}">
-                    ${stopAction}
-                </cm:dropdownOption>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="disabled">
-                <li>
-                    <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.startMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${startControlAreaUrl}" 
-                                       icon="icon-control-play-blue" labelKey=".controlAreaDetail.actions.start"/>
-                </li>
-                <li>
-                    <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${stopControlAreaUrl}" 
-                                       icon="icon-control-stop-blue" labelKey=".controlAreaDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-            
-            <tags:dynamicChooseOption optionId="fullyActiveDisabled">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${controlAreaFullyActive}">
-                    ${startAction}
-                </cm:dropdownOption>
-                <li>
-                    <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
-                        <cti:param name="controlAreaId" value="${paoId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink titleKey=".program.stopMultiplePrograms.title" 
-                                       dialogId="drDialog" actionUrl="${stopControlAreaUrl}" 
-                                       icon="icon-control-stop-blue" labelKey=".controlAreaDetail.actions.stop"/>
-                </li>
-            </tags:dynamicChooseOption>
-        </tags:dynamicChoose>
+        <div data-start-action="off" data-pao-id="${paoId}" class="dn">
+            <cm:dropdownOption icon="icon-control-play-blue" disabled="true">
+                <cti:msg2 key=".controlAreaDetail.actions.start"/>
+            </cm:dropdownOption>
+        </div>
+        <div data-start-action="on" data-pao-id="${paoId}">
+            <li>
+                <cti:url var="startControlAreaUrl" value="/dr/program/start/multipleDetails">
+                    <cti:param name="controlAreaId" value="${paoId}"/>
+                </cti:url>
+                <tags:simpleDialogLink titleKey=".program.startMultiplePrograms.title" 
+                       dialogId="drDialog" actionUrl="${startControlAreaUrl}" 
+                       icon="icon-control-play-blue" labelKey=".controlAreaDetail.actions.start"/>
+            </li>
+        </div>
+        <div data-stop-action="off" data-pao-id="${paoId}" class="dn">
+            <cm:dropdownOption icon="icon-control-stop-blue" disabled="true">
+                <cti:msg2 key=".controlAreaDetail.actions.stop"/>
+            </cm:dropdownOption>
+        </div>
+        <div data-stop-action="on" data-pao-id="${paoId}">
+            <li>
+                <cti:url var="stopControlAreaUrl" value="/dr/program/stop/multipleDetails">
+                    <cti:param name="controlAreaId" value="${paoId}"/>
+                </cti:url>
+                <tags:simpleDialogLink titleKey=".program.stopMultiplePrograms.title" 
+                           dialogId="drDialog" actionUrl="${stopControlAreaUrl}"
+                           icon="icon-control-stop-blue" labelKey=".controlAreaDetail.actions.stop"/>
+            </li>
+        </div>
     </cm:dropdown>
+    <cti:dataUpdaterCallback function="yukon.dr.dataUpdater.showAction.updateControlAreaMenu(${paoId})" 
+        initialize="true" state="DR_CONTROLAREA/${paoId}/SHOW_ACTION"/>
 </cti:checkPaoAuthorization>
 
+<cti:msg2 var="noControlAreaControl" key=".controlAreaDetail.noControl"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
     <cm:dropdown triggerClasses="fr">
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noControlAreaControl}">
-            ${startAction}
+            <cti:msg2 key=".controlAreaDetail.actions.start"/>
         </cm:dropdownOption>
         <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${noControlAreaControl}">
-            ${stopAction}
+            <cti:msg2 key=".controlAreaDetail.actions.stop"/>
         </cm:dropdownOption>
     </cm:dropdown>
 </cti:checkPaoAuthorization>

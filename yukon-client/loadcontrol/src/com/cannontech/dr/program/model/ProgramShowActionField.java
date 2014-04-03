@@ -49,8 +49,6 @@ public class ProgramShowActionField extends ProgramBackingFieldBase {
         boolean scheduled = programState == LMProgramBase.STATUS_SCHEDULED;
         boolean disabled = program.getDisableFlag();
 
-        messageSourceAccessor.getMessage(baseKey + "unknown");
-
         programStateMap.put("unknown", false);
         programStateMap.put("running", running);
         programStateMap.put("scheduled", scheduled);

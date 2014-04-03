@@ -10,7 +10,7 @@
 <cti:msgScope paths="modules.dr">
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
-<cti:msg2 var="programUnknown" key=".programDetail.unknown"/>
+<cti:msg2 var="noAssignedPrograms" key=".scenarioDetail.noAssignedPrograms"/>
 <cti:msg2 var="noScenarioControl" key=".scenarioDetail.noControl"/>
 <cti:msg2 var="startAction" key=".scenarioDetail.actions.start"/>
 <cti:msg2 var="stopAction" key=".scenarioDetail.actions.stop"/>
@@ -20,10 +20,10 @@
         <tags:dynamicChoose updaterString="DR_SCENARIO/${paoId}/SHOW_ACTION" suffix="${paoId}">
 
             <tags:dynamicChooseOption optionId="hasNoPrograms">
-                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${programUnknown}">
+                <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noAssignedPrograms}">
                     ${startAction}
                 </cm:dropdownOption>
-                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${programUnknown}">
+                <cm:dropdownOption icon="icon-control-stop-blue" disabled="true" title="${noAssignedPrograms}">
                     ${stopAction}
                 </cm:dropdownOption>
             </tags:dynamicChooseOption>
