@@ -6799,7 +6799,7 @@
             <attribute name="REVERSED_PHASE_C">
                 <basicLookup point="Reversed Phase C" />
             </attribute>
-            <attribute name="RFN_HIGH_TEMPERATURE_THRESHOLD_EXCEEDED">
+            <attribute name="RFN_TEMPERATURE_ALARM">
                 <basicLookup point="RFN High Temperature Threshold Exceeded" />
             </attribute>
             <attribute name="ROM_ERROR">
