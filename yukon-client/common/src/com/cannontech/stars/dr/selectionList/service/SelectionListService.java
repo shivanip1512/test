@@ -46,10 +46,7 @@ public interface SelectionListService {
                                         boolean useInherited, boolean useDefault);
 
     /**
-     * 
-     * Get a list of valid definitions to use with the given energy company and list type.
-     * 
-     * Will return inherited or default lists if the current energycompany doesn't have the list
+     * Returns inherited or default lists if the current energy company doesn't have one
      */
     YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName);
 }
