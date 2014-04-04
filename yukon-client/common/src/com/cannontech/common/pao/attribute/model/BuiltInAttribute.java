@@ -622,6 +622,7 @@ public enum BuiltInAttribute implements Attribute {
                 TABLE_CRC_ERROR,
                 TAMPER_FLAG,                 //[PLC & RFN] Shared
                 TIME_ADJUSTMENT,
+                TIME_SYNC_FAILED,
                 THD_V_OR_TDD_I_ERROR,
                 TOU_SCHEDULE_ERROR,
                 UNCONFIGURED,
@@ -637,6 +638,8 @@ public enum BuiltInAttribute implements Attribute {
                 WATT_HOUR_PULSE_FAILURE);
         
         rfnEventAnalogTypes = ImmutableSet.of(
+                DNP3_ADDRESS_CHANGED,
+                OUTSTATION_DNP3_SERCOMM_LOCKED,
                 OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
                 RFN_BLINK_COUNT,
@@ -733,8 +736,10 @@ public enum BuiltInAttribute implements Attribute {
                 CLOCK_ERROR,
                 CURRENT_WAVEFORM_DISTORTION,
                 DISPLAY_LOCKED_BY_WARNING,
+                DNP3_ADDRESS_CHANGED,
                 INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR,
                 METROLOGY_COMM_FAILURE,
+                OUTSTATION_DNP3_SERCOMM_LOCKED,
                 PHASE_ANGLE_DISPLACEMENT,
                 PHASE_LOSS,
                 POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC,
@@ -742,6 +747,7 @@ public enum BuiltInAttribute implements Attribute {
                 SEASON_CHANGE,
                 SITESCAN_ERROR,
                 TIME_ADJUSTMENT,
+                TIME_SYNC_FAILED,
                 THD_V_OR_TDD_I_ERROR);
         
         // This map defines how attributes are grouped in drop downs and list selectors. 
