@@ -14,7 +14,7 @@ import com.cannontech.messaging.connection.transport.amq.TwoWayTransport;
 
 class HandShakeConnector {
 
-    private static final long INITIAL_WAIT_REPLY_TIME_MILLIS = 1000 * 30;       // 30 seconds
+    private static final long INITIAL_WAIT_REPLY_TIME_MILLIS = 1000 * 15;       // 15 seconds
     private static final long WAIT_REPLY_TIME_MILLIS         = 1000 * 60 * 60;  // 1 hour
     private static final long TIME_TO_LIVE_MILLIS            = 1000 * 60 * 120; // 2 hours
 
@@ -77,6 +77,7 @@ class HandShakeConnector {
             // Create the resulting 2 way transport
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
             
+            // start monitoring after validating a reply message
             clientConnection.setupConnectionMonitor(transport);
             
             // Create and send client connection acknowledge message
@@ -91,7 +92,7 @@ class HandShakeConnector {
         }
         catch (TransportException e) {
         	throw e;
-        }        
+        }
         catch (Exception e) {
             try {
                 if (producer != null) {
@@ -126,8 +127,6 @@ class HandShakeConnector {
             // Create the resulting 2 way transport
             TwoWayTransport transport = new TwoWayTransport(producer, consumer);
             
-            serverConnection.setupConnectionMonitor(transport);
-            
             // Create, setup and send the response message to the clientConnection
             Message rspMsg = producer.getSession().createMessage();
             rspMsg.setJMSReplyTo(consumer.getDestination());
@@ -160,7 +159,10 @@ class HandShakeConnector {
                 throw new TransportException("The client acknowledge message does not have the expected replyto destination: " +
                                               clientAckDest.getPhysicalName() + ", expected " + producer.getDestination().getPhysicalName());
             }
-            
+
+            // start monitoring after validating acknowledgment message
+            serverConnection.setupConnectionMonitor(transport);
+
             // Connection established, return the resulting 2 way transport
             return transport;
         }

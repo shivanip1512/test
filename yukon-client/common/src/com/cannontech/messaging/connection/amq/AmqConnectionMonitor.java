@@ -17,20 +17,19 @@ public class AmqConnectionMonitor {
             inputMonitorTransport =
                 new AmqConsumerTransport(consumer.getConnection(), AdvisorySupport.getProducerAdvisoryTopic(consumer
                     .getDestination()), advisoryListener);
-            
-            // Due to a potential bug in ActiveMQ we deactivate this monitor (by setting the the listener to null)
-            // Instead we rely on the double consumer "trick" in the TwoWayTransport to notify the other end of the connection that we are closing
-            inputMonitorTransport.setListener(null);
-            
+
             inputMonitorTransport.setSelector("producerCount <> 1");
         }
 
-        if (producer != null) {
-            outputMonitorTransport =
-                new AmqConsumerTransport(producer.getConnection(), AdvisorySupport.getConsumerAdvisoryTopic(producer
-                    .getDestination()), advisoryListener);
-            outputMonitorTransport.setSelector("consumerCount <> 1");
-        }
+        // In the activeMQ broker implementation, there is a race condition between the destination destruction and
+        // the removal of consumer that prevents us from monitoring consumers on temporary destinations that we do
+        // not own. Instead we will rely on monitoring the producers only, since we own the input destination.
+        //  if (producer != null) {
+        //      outputMonitorTransport =
+        //          new AmqConsumerTransport(producer.getConnection(), AdvisorySupport.getConsumerAdvisoryTopic(producer
+        //              .getDestination()), advisoryListener);
+        //      outputMonitorTransport.setSelector("consumerCount <> 1");
+        //  }
     }
 
     void start() {
