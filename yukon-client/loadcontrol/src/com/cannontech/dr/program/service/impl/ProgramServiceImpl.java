@@ -288,7 +288,7 @@ public class ProgramServiceImpl implements ProgramService {
             boolean overrideConstraints, boolean observeConstraints, LiteYukonUser liteYukonUser)
                     throws NotFoundException, TimeoutException, UserNotInRoleException, ConnectionException {
 
-        boolean stopScheduled = stopTime!= null && rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
+        boolean stopScheduled = stopTime != null && rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT, liteYukonUser);
 
         LMProgramBase program = loadControlClientConnection.getProgramSafe(programId);
         ProgramStatus programStatus = new ProgramStatus(program);
@@ -388,11 +388,9 @@ public class ProgramServiceImpl implements ProgramService {
     }
     
     @Override
-    public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime,
-                                             Date stopTime, boolean overrideConstraints, boolean observeConstraints,
-                                                         LiteYukonUser user)
-                             throws NotFoundException, TimeoutException, NotAuthorizedException,
-                                     ConnectionException {
+    public List<ProgramStatus> startScenarioBlocking(int scenarioId, Date startTime, Date stopTime, 
+            boolean overrideConstraints, boolean observeConstraints, LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException, ConnectionException {
 
         if (!loadControlClientConnection.isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");
@@ -412,7 +410,7 @@ public class ProgramServiceImpl implements ProgramService {
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
 
             Date programStartDate = datePlusOffset(startTime, scenarioProgram.getStartOffset());
-            Date programStopDate = datePlusOffset(stopTime, scenarioProgram.getStopOffset());
+            Date programStopDate = stopTime == null ? null : datePlusOffset(stopTime, scenarioProgram.getStopOffset());
 
             String gearName = getGearNameForProgram(program, startingGearNumber);
             ProgramStatus programStatus = startProgram(program.getYukonID(), programStartDate, programStopDate, gearName,
@@ -469,6 +467,9 @@ public class ProgramServiceImpl implements ProgramService {
         return controlRequest;
     }
 
+    /**
+     * If date is null, uses now
+     */
     protected Date datePlusOffset(Date date, Duration offset) {
         return new Instant(date).plus(offset).toDate();
     }
