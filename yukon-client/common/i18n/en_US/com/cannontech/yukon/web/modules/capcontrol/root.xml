@@ -260,6 +260,7 @@
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.normal.title">Substation Areas</entry>
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.special.title">Special Substation Areas</entry>
     <entry key="yukon.web.modules.capcontrol.areas.areasContainer.title">Substation Areas</entry>
+    <entry key="yukon.web.modules.capcontrol.areas.noResults">No Areas</entry>
     <entry key="yukon.web.modules.capcontrol.substations">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.areas.feeders">{0} {0,choice,0#Feeders|1#Feeder|1&lt;Feeders}</entry>
     <entry key="yukon.web.modules.capcontrol.areas.banks">{0} {0,choice,0#Banks|1#Bank|1&lt;Banks}</entry>

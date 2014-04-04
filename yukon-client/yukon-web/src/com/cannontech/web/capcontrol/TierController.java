@@ -1,7 +1,7 @@
 package com.cannontech.web.capcontrol;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,8 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -58,35 +61,84 @@ public class TierController {
 
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
-        Map<Boolean, List<ViewableArea>> result = new HashMap<>();
+        Map<AreaType, SearchResults<ViewableArea>> areasByType = new LinkedHashMap<>();
 
-        List<Area> ccAreas = cache.getCbcAreas();
-        List<SpecialArea> specialAreas = cache.getSpecialCbcAreas();
+        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getCbcAreas(), cache, false);
+        SearchResults<ViewableArea> results = SearchResults.pageBasedForWholeList(1, 10, viewableAreas);
+        areasByType.put(AreaType.NORMAL, results);
 
-        List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(ccAreas, cache, false);
-        List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(specialAreas, cache, true);
+        List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialCbcAreas(), cache, true);
+        SearchResults<ViewableArea> specialResults = SearchResults.pageBasedForWholeList(1, 10, viewableSpecialAreas);
+        areasByType.put(AreaType.SPECIAL, specialResults);
 
-        result.put(true, viewableSpecialAreas);
-        result.put(false, viewableAreas);
+        model.addAttribute("areasMap", areasByType);
 
-        model.addAttribute("areasMap", result);
-        
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        model.addAttribute("hasEditingRole", hasEditingRole);
-        
-        boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
-        model.addAttribute("hasAreaControl", hasAreaControl);
-        
+        setUpAreas(model, user);
+
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
-        
-        model.addAttribute("systemStatusCommandId", CommandType.SYSTEM_STATUS.getCommandId());
-        model.addAttribute("resetOpCountCommandId", CommandType.RESET_SYSTEM_OP_COUNTS.getCommandId());
-        
+
         return "tier/areaTier.jsp";
     }
-        
+
+    @RequestMapping("areas/{type}")
+    public String areasList(LiteYukonUser user, ModelMap model, @PathVariable AreaType type, PagingParameters pagingParams) {
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+
+        SearchResults<ViewableArea> results = null;
+        List<ViewableArea> viewableAreas = null;
+        if (type == AreaType.SPECIAL) {
+            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialCbcAreas(), cache, true);
+        } else {
+            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getCbcAreas(), cache, false);
+        }
+        results = SearchResults.pageBasedForWholeList(pagingParams, viewableAreas);
+        model.addAttribute("searchResults", results);
+        model.addAttribute("areaType", type);
+
+        setUpAreas(model, user);
+
+        return "tier/areaTierTable.jsp";
+    }
+
+    private final void setUpAreas(ModelMap model, LiteYukonUser user) {
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
+        model.addAttribute("hasEditingRole", hasEditingRole);
+
+        boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
+        model.addAttribute("hasAreaControl", hasAreaControl);
+        model.addAttribute("systemStatusCommandId", CommandType.SYSTEM_STATUS.getCommandId());
+        model.addAttribute("resetOpCountCommandId", CommandType.RESET_SYSTEM_OP_COUNTS.getCommandId());
+    }
+
+    public enum AreaType {
+        NORMAL("normal", "CBCAREA", false),
+        SPECIAL("special", "CBCSPECIALAREA", true);
+
+        private final String type;
+        private final String updaterType;
+        private final boolean isSpecialArea;
+
+        AreaType(String type, String updaterType, boolean isSpecialArea){
+            this.type = type;
+            this.updaterType = updaterType;
+            this.isSpecialArea = isSpecialArea;
+        }
+
+        public String getType(){
+            return type;
+        }
+
+        public String getUpdaterType(){
+            return updaterType;
+        }
+
+        public boolean isSpecialArea(){
+            return isSpecialArea;
+        }
+    }
+
     @RequestMapping("substations")
     public String substations(HttpServletRequest request, ModelMap model, LiteYukonUser user,
             @RequestParam("bc_areaId") int areaId, Boolean isSpecialArea) {
