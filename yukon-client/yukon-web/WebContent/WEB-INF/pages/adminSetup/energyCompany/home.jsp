@@ -54,7 +54,8 @@ $(document).on('click', 'button.loginButton',function() {
                 
                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
                     <div class="action-area">
-                        <form action="/adminSetup/energyCompany/new">
+                        <cti:url var="newUrl" value="/adminSetup/energyCompany/new"/>
+                        <form action="${newUrl}">
                             <cti:button nameKey="create" icon="icon-plus-green" type="submit" name="create"/>
                         </form>
                     </div>

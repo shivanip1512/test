@@ -12,7 +12,8 @@
     <c:set var="statusPointMonitorId" value="${statusPointMonitor.statusPointMonitorId}"/>
     
     <%-- CREATE FORM --%>
-    <form:form commandName="statusPointMonitor" id="basicInfoForm" action="/amr/statusPointMonitoring/create" method="post">
+    <cti:url var="createUrl" value="/amr/statusPointMonitoring/create"/>
+    <form:form commandName="statusPointMonitor" id="basicInfoForm" action="${createUrl}" method="post">
     
         <form:hidden path="statusPointMonitorId"/>
                     

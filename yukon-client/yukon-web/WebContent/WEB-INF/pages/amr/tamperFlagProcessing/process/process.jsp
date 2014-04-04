@@ -74,8 +74,8 @@
         <div class="column two nogutter">
             <%-- READ INTERNAL FLAGS --%>
             <tags:sectionContainer2 id="readInternalFlagsSection" nameKey="section.readInternalFlags">
-            
-                <form id="readInternalFlagsForm" action="/amr/tamperFlagProcessing/process/readFlags">
+                <cti:url var="readFlagsUrl" value="/amr/tamperFlagProcessing/process/readFlags"/>
+                <form id="readInternalFlagsForm" action="${readFlagsUrl}">
                     <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
                     <%-- note --%>
                     <table class="stacked">
@@ -157,8 +157,8 @@
             
             <%-- RESET INTERNAL FLAGS --%>
             <tags:sectionContainer2 id="resetInternalFlagsSection" nameKey="section.resetInternalFlags">
-            
-                <form id="resetInternalFlagsForm" action="/amr/tamperFlagProcessing/process/resetFlags">
+                <cti:url var="resetFlagsUrl" value="/amr/tamperFlagProcessing/process/resetFlags"/>
+                <form id="resetInternalFlagsForm" action="${resetFlagsUrl}">
         
                     <input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
             

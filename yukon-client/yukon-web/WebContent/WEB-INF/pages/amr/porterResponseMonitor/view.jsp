@@ -153,7 +153,8 @@ $(function () {
     </c:if>
     
     <div class="page-action-area">
-        <form id="editMonitorForm" action="/amr/porterResponseMonitor/editPage" method="get">
+        <cti:url var="editPageUrl" value="/amr/porterResponseMonitor/editPage"/>
+        <form id="editMonitorForm" action="${editPageUrl}" method="get">
             <input type="hidden" name="monitorId" value="${monitorDto.monitorId}">
             <cti:button nameKey="edit" icon="icon-pencil" type="submit" classes="f-blocker"/>
         </form>

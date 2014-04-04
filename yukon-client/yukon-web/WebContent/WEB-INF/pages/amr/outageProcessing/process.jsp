@@ -98,8 +98,8 @@
             <%-- READ OUTAGE LOGS --%>
             <cti:msg2 var="readOutageLogsSectionTitleText" key=".readOutageLogs.title" />
             <tags:sectionContainer id="readOutageLogsSection" title="${readOutageLogsSectionTitleText}">
-            
-                <form id="readOutagesForm" action="/amr/outageProcessing/process/readOutageLogs">
+                <cti:url var="readOutageLogsUrl" value="/amr/outageProcessing/process/readOutageLogs"/>
+                <form id="readOutagesForm" action="${readOutageLogsUrl}">
                     <input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
                     <%-- note --%>
                     <table class="stacked">
