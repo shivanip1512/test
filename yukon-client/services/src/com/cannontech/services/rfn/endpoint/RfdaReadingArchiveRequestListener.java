@@ -10,12 +10,12 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.dr.rfn.message.archive.RfdaArchiveRequest;
-import com.cannontech.dr.rfn.message.archive.RfdaArchiveResponse;
+import com.cannontech.dr.rfn.message.archive.RfDaArchiveRequest;
+import com.cannontech.dr.rfn.message.archive.RfDaArchiveResponse;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
-public class RfdaReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfdaArchiveRequest> {
+public class RfdaReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfDaArchiveRequest> {
     
     private static final String archiveResponseQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveResponse";
     
@@ -28,7 +28,7 @@ public class RfdaReadingArchiveRequestListener extends ArchiveRequestListenerBas
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, RfdaArchiveRequest archiveRequest) {
+        public void processData(RfnDevice rfnDevice, RfDaArchiveRequest archiveRequest) {
         }
     }
     
@@ -62,8 +62,8 @@ public class RfdaReadingArchiveRequestListener extends ArchiveRequestListenerBas
     }
 
     @Override
-    protected Object getRfnArchiveResponse(RfdaArchiveRequest archiveRequest) {
-        RfdaArchiveResponse response = new RfdaArchiveResponse();
+    protected Object getRfnArchiveResponse(RfDaArchiveRequest archiveRequest) {
+        RfDaArchiveResponse response = new RfDaArchiveResponse();
         response.setSensorId(archiveRequest.getSensorId());
         return response;
     }

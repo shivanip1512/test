@@ -8,7 +8,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 /**
  * JMS Queue name: yukon.qr.obj.da.rfn.RfDaArchiveRequest
  */
-public class RfdaArchiveRequest implements RfnIdentifyingMessage, Serializable {
+public class RfDaArchiveRequest implements RfnIdentifyingMessage, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,7 +49,7 @@ public class RfdaArchiveRequest implements RfnIdentifyingMessage, Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfdaArchiveRequest other = (RfdaArchiveRequest) obj;
+        RfDaArchiveRequest other = (RfDaArchiveRequest) obj;
         if (rfnIdentifier == null) {
             if (other.rfnIdentifier != null)
                 return false;
