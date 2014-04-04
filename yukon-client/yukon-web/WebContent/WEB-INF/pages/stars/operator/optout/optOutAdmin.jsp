@@ -39,7 +39,7 @@
             $.ajax({
                 contentType: 'application/json',
                 dataType: 'json',
-                url: '<cti:url value="/stars/operator/optOut/systemOptOuts"/>',
+                url: "${systemOptOutsUrl}",
                 data: programIdArrayJson,
                 type: 'post'
             }).done(function(json, status, xhrobj) {
@@ -154,7 +154,8 @@
                             </table>
                             <br>
                         
-                            <form action="/stars/operator/optOut/admin/setDisabled" method="post">
+                            <cti:url var="setDisabledUrl" value="/stars/operator/optOut/admin/setDisabled"/>
+                            <form action="${setDisabledUrl}" method="post">
                                 <cti:csrfToken/>
                                 <div class="stacked" style="background-color:#EEE;">
                                     <div class="stacked">
@@ -203,7 +204,8 @@
                                 <i:inline key=".cancelOptOuts.cancelOptOutsWarning" />
                             </div>
                             
-                            <form action="/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
+                            <cti:url var="cancelAllOptOutsUrl" value="/stars/operator/optOut/admin/cancelAllOptOuts"/>
+                            <form action="${cancelAllOptOutsUrl}" method="post">
                                 <cti:csrfToken/>
                                 <div style="background-color:#EEE;">
                                     <div>
@@ -278,7 +280,8 @@
                                 </tbody>
                             </table>
                         
-                            <form action="/stars/operator/optOut/admin/setCounts" method="post">
+                            <cti:url var="setCountsUrl" value="/stars/operator/optOut/admin/setCounts"/>
+                            <form action="${setCountsUrl}" method="post">
                                 <cti:csrfToken/>    
                                 <div style="background-color:#EEE">
                                     <div class="stacked">

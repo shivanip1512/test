@@ -108,13 +108,11 @@
             <tags:sectionContainer2 nameKey="settings">
                 
                 <c:if test="${mode == 'EDIT'}">
-                    <cti:url var="editUrl" value="/adminSetup/config/themes/${command.themeId}"/>
-                    <c:set var="action" value="${editUrl}"/>
+                    <cti:url var="action" value="/adminSetup/config/themes/${command.themeId}"/>
                     <c:set var="method" value="PUT"/>
                 </c:if>
                 <c:if test="${mode == 'CREATE'}">
-                    <cti:url var="createUrl" value="/adminSetup/config/themes/"/>
-                    <c:set var="action" value="${createUrl}"/>
+                    <cti:url var="action" value="/adminSetup/config/themes/"/>
                     <c:set var="method" value="POST"/>
                 </c:if>
                 
