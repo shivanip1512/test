@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * JMS Queue name: yukon.qr.obj.da.rfn.RfDaArchiveResponse
  */
-public class RfDaArchiveResponse implements Serializable {
+public class RfdaArchiveResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,7 @@ public class RfDaArchiveResponse implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfDaArchiveResponse other = (RfDaArchiveResponse) obj;
+        RfdaArchiveResponse other = (RfdaArchiveResponse) obj;
         if (sensorId != other.sensorId)
             return false;
         return true;
