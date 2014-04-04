@@ -50,6 +50,7 @@ import com.cannontech.stars.database.db.integration.FailureCRSToSAM_PremMeterChg
 import com.cannontech.stars.database.db.integration.Failure_SwitchReplacement;
 import com.cannontech.stars.database.db.integration.SwitchReplacement;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -203,8 +204,9 @@ public class YukonToCRSFuncs
             
             if( stmt.getRowCount() > 0 )
             {
-                if(stmt.getRowCount() > 1)
+                if(stmt.getRowCount() > 1) {
                     throw new Exception("More than one value retrieved.  Should only be one.");
+                }
                     
                 Contact firstContact = new Contact();
                 firstContact.setContactID(new Integer(stmt.getRow(0)[0].toString()));
@@ -241,8 +243,9 @@ public class YukonToCRSFuncs
             
             if( stmt.getRowCount() > 0 )
             {
-                if(stmt.getRowCount() > 1)
+                if(stmt.getRowCount() > 1) {
                     throw new Exception("More than one value retrieved.  Should only be one.");
+                }
                     
                 CustomerAccount custAccount = new CustomerAccount();
                 custAccount.setAccountID(new Integer(stmt.getRow(0)[0].toString()));
@@ -278,8 +281,9 @@ public class YukonToCRSFuncs
             
             if( stmt.getRowCount() > 0 )
             {
-                if(stmt.getRowCount() > 1)
+                if(stmt.getRowCount() > 1) {
                     throw new Exception("More than one value retrieved.  Should only be one.");
+                }
                     
                 ContactNotification homePhone = new ContactNotification();
                 homePhone.setContactNotifID(new Integer(stmt.getRow(0)[0].toString()));
@@ -315,8 +319,9 @@ public class YukonToCRSFuncs
             
             if( stmt.getRowCount() > 0 )
             {
-                if(stmt.getRowCount() > 1)
+                if(stmt.getRowCount() > 1) {
                     throw new Exception("More than one value retrieved.  Should only be one.");
+                }
                     
                 ServiceCompany serviceCompany = new ServiceCompany();
                 serviceCompany.setCompanyID(new Integer(stmt.getRow(0)[0].toString()));
@@ -344,8 +349,9 @@ public class YukonToCRSFuncs
     	for( int i = 0; i < listEntries.size(); i++)
     	{
     		YukonListEntry listEntry = listEntries.get(i);
-    		if( listEntry.getYukonDefID() == defID)
-    			return listEntry;
+    		if( listEntry.getYukonDefID() == defID) {
+                return listEntry;
+            }
     	}
     	return null;
     }
@@ -472,8 +478,9 @@ public class YukonToCRSFuncs
 			meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
 //			meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
 	        YukonListEntry categoryEntry = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
-	        if( categoryEntry != null)
-	        	meterHardwareBase.getInventoryBase().setCategoryID(new Integer(categoryEntry.getEntryID()));
+	        if( categoryEntry != null) {
+                meterHardwareBase.getInventoryBase().setCategoryID(new Integer(categoryEntry.getEntryID()));
+            }
 			meterHardwareBase.getInventoryBase().setDeviceLabel(meterNumber);
 			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyId());
 			meterHardwareBase = Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
@@ -580,7 +587,9 @@ public class YukonToCRSFuncs
 
 	private static int getApplianceCategoryID(int appDefID, YukonListEntry ciCustTypeEntry, LiteStarsEnergyCompany liteStarsEnergyCompany) {
 		int applCatID = 0;
-		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+		YukonSelectionList serviceTypeList = 
+		        YukonSpringHook.getBean(SelectionListService.class).getSelectionList(liteStarsEnergyCompany, 
+                                                       YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
 		YukonListEntry appCatEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceTypeList, appDefID);
 		if( appCatEntry != null)
 		{
@@ -590,13 +599,15 @@ public class YukonToCRSFuncs
 					applCatID = liteAppCat.getApplianceCategoryID();   //Set this here so if we don't find the correct text, we still get a valid applCatID
                     //This is a hack to attempt to better match the appliance category for the consumption type
                     if (ciCustTypeEntry != null){    //Commercial consumption type of some sort
-                        if( liteAppCat.getDescription().toLowerCase().indexOf("commercial") > -1)
+                        if( liteAppCat.getDescription().toLowerCase().indexOf("commercial") > -1) {
                             break;
+                        }
                     }
                     else    //Residential consumption type
                     {
-                        if( liteAppCat.getDescription().toLowerCase().indexOf("residential") > -1)
+                        if( liteAppCat.getDescription().toLowerCase().indexOf("residential") > -1) {
                             break;
+                        }
                     }
 				}
 			}
@@ -629,10 +640,11 @@ public class YukonToCRSFuncs
     {
 		
     	com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
-    	if (ciCustTypeEntry != null)
-			customer = new CICustomerBase();
-		else
-			customer = new com.cannontech.database.data.customer.Customer();
+    	if (ciCustTypeEntry != null) {
+            customer = new CICustomerBase();
+        } else {
+            customer = new com.cannontech.database.data.customer.Customer();
+        }
     	
 		customer.getCustomer().setPrimaryContactID( contactID );
 		customer.getCustomer().setCustomerNumber(debtorNumber);
@@ -732,27 +744,29 @@ public class YukonToCRSFuncs
     {
     	//These codes are Xcel Energy defined, 5 char codes.
     	int lookupDefID =  0;
-    	if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_INSTALL_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_INSTALL;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_ACTIVATION_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_DEACTIVATION_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_DEACTIVATION;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_REMOVE_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REMOVAL;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_REPAIR_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REPAIR;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_OTHER_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
-    	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_MAINTENANCE_STRING))
-    		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE;
+    	if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_INSTALL_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_INSTALL;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_ACTIVATION_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_ACTIVATION;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_DEACTIVATION_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_DEACTIVATION;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_REMOVE_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REMOVAL;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_REPAIR_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_REPAIR;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_OTHER_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_OTHER;
+        } else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_MAINTENANCE_STRING)) {
+            lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE;
+        }
     	
         List<YukonListEntry> listEntries = selectionList.getYukonListEntries();
     	for( int i = 0; i < listEntries.size(); i++)
     	{
     		YukonListEntry listEntry = listEntries.get(i);
-    		if( listEntry.getYukonDefID() == lookupDefID)
-    			return listEntry;
+    		if( listEntry.getYukonDefID() == lookupDefID) {
+                return listEntry;
+            }
     	}
     	return null;
     }
@@ -889,14 +903,15 @@ public class YukonToCRSFuncs
 //      MFG = Manufacturing
 //      MNC = Municipal
 		YukonListEntry returnEntry = null;
-		if( custType.equalsIgnoreCase("CO"))
-			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "commercial");
-		else if( custType.equalsIgnoreCase("IN"))
-			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "industrial");
-		else if( custType.equalsIgnoreCase("MFG"))
-			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "manufacturing");
-		else if( custType.equalsIgnoreCase("MNC"))
-			returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "municipal");
+		if( custType.equalsIgnoreCase("CO")) {
+            returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "commercial");
+        } else if( custType.equalsIgnoreCase("IN")) {
+            returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "industrial");
+        } else if( custType.equalsIgnoreCase("MFG")) {
+            returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "manufacturing");
+        } else if( custType.equalsIgnoreCase("MNC")) {
+            returnEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(ciCustTypeList, "municipal");
+        }
 		return returnEntry;
 	}    
 	

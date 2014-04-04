@@ -24,11 +24,7 @@ public final class EnergyCompany implements YukonEnergyCompany {
     private EnergyCompany parent;
     private List<EnergyCompany> children;
 
-    /**
-     * Dan:  Make this private and remove the @Deprecated marker.
-     */
-    @Deprecated
-    public EnergyCompany(int ecId, String name, LiteYukonUser user, int contactId) {
+    private EnergyCompany(int ecId, String name, LiteYukonUser user, int contactId) {
         this.ecId = ecId;
         this.name = name;
         this.user = user;
@@ -107,7 +103,7 @@ public final class EnergyCompany implements YukonEnergyCompany {
     }
 
     /**
-     * Get all descendants of this energy company (children, children of children, etc.).  This list
+     * Get all descendants of this energy company (children, children of children, etc.). This list
      * does NOT include the energy company itself.
      */
     public List<EnergyCompany> getDescendants() {

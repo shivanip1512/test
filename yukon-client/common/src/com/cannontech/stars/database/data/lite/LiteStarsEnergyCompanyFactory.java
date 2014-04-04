@@ -6,7 +6,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -19,6 +18,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -41,7 +41,7 @@ public class LiteStarsEnergyCompanyFactory {
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonGroupDao groupDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private YukonListDao listDao;
+    @Autowired private SelectionListService selectionListService;
 
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -65,7 +65,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setWarehouseDao(warehouseDao);
         energyCompany.setYukonJdbcTemplate(jdbcTemplate);
         energyCompany.setYukonGroupDao(groupDao);
-        energyCompany.setYukonListDao(listDao);
+        energyCompany.setSelectionListService(selectionListService);
         energyCompany.setPaoDao(paoDao);
         energyCompany.setEnergyCompanyDao(ecDao);
         energyCompany.setEnergyCompanyService(energyCompanyService);

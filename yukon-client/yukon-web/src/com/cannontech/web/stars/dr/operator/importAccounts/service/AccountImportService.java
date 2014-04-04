@@ -53,6 +53,7 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -91,6 +92,7 @@ public class AccountImportService {
     @Autowired private HardwareEventLogService hardwareLog;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private LmDeviceDtoConverter dtoConverter;
+    @Autowired private SelectionListService selectionListService;
     @Autowired private StarsControllableDeviceHelper deviceHelper;
     @Autowired private StarsCustAccountInformationDao scaiDao; 
     @Autowired private StarsSearchDao starsSearchDao;
@@ -549,7 +551,8 @@ public class AccountImportService {
 
                         result.setInsertSpecified(hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("INSERT"));
                         
-                        YukonSelectionList devTypeList = lsec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+                        YukonSelectionList devTypeList = selectionListService.getSelectionList(lsec, 
+                                                       YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                         YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
                         
                         if (deviceType == null) {
@@ -781,7 +784,8 @@ public class AccountImportService {
                         continue;
                     }
                     
-                    YukonSelectionList devTypeList = lsec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+                    YukonSelectionList devTypeList = selectionListService.getSelectionList(lsec, 
+                                                       YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                     YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
                     if (deviceType == null) {
                         result.hwFileErrors++;

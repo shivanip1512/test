@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
@@ -26,7 +24,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 import com.cannontech.stars.util.ServletUtils;
@@ -39,17 +37,12 @@ import com.google.common.collect.Maps;
 
 public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	
-	private YukonJdbcOperations yukonJdbcOperations;
-	private ContactNotificationDao contactNotificationDao;
-	private StarsDatabaseCache starsDatabaseCache;
-	
-	private AccountSearchResultRowMapper accountSearchResultRowMapper;
-	
-	@PostConstruct
-	public void initialize() {
-		accountSearchResultRowMapper = new AccountSearchResultRowMapper();
-	}
-	
+    @Autowired private YukonJdbcOperations yukonJdbcOperations;
+	@Autowired private ContactNotificationDao contactNotificationDao;
+	@Autowired private YukonEnergyCompanyService ecService;
+
+	private AccountSearchResultRowMapper accountSearchResultRowMapper = new AccountSearchResultRowMapper();
+
 	// ACCOUNT NUMBER
 	@Override
 	public List<Integer> getAccountIdsByAccountNumber(String accountNumber, Set<Integer> energyCompanyIds) {
@@ -303,28 +296,11 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	    	// phone
 	    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.HOME_PHONE);
 	        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContactId, ContactNotificationType.WORK_PHONE);
-			
-	        String energyCompanyName = starsDatabaseCache.getEnergyCompany(energyCompanyId).getName();
+	        
+	        String energyCompanyName = ecService.getEnergyCompany(energyCompanyId).getName();
 	        
 	        return new AccountSearchResult(accountId, energyCompanyId, accountNumber, altTrackingNumber, firstName, 
 	                                       lastName, companyName, homePhoneNotif, workPhoneNotif, address, energyCompanyName);
 		}
 	}
-     
-
-	@Autowired
-	public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
-		this.yukonJdbcOperations = yukonJdbcOperations;
-	}
-	
-	@Autowired
-	public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-		this.contactNotificationDao = contactNotificationDao;
-	}
-	
-	@Autowired
-	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-	
 }

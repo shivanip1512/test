@@ -17,6 +17,7 @@ import com.cannontech.stars.database.db.purchasing.Invoice;
 import com.cannontech.stars.database.db.purchasing.PurchasePlan;
 import com.cannontech.stars.database.db.purchasing.ScheduleTimePeriod;
 import com.cannontech.stars.database.db.purchasing.Shipment;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.ECUtils;
 
 
@@ -90,24 +91,28 @@ public class PurchaseBean
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
-        if(availableMembers == null)
+        if(availableMembers == null) {
             availableMembers = ECUtils.getAllDescendants(energyCompany);
+        }
         return availableMembers;
     }
      
     public YukonSelectionList getAvailableDeviceTypes()
     {
-        if(availableDeviceTypes == null)
-            availableDeviceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, true, true);
+        if(availableDeviceTypes == null) {
+            availableDeviceTypes = YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, 
+                                                    YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+        }
         return availableDeviceTypes;
     }
 
     public List<PurchasePlan> getAvailablePlans() 
     {
-        if(getManageMembers())
+        if(getManageMembers()) {
             availablePlans = PurchasePlan.getAllPurchasePlansForAllMembers(energyCompany.getEnergyCompanyId(), getAvailableMembers());
-        else
+        } else {
             availablePlans = PurchasePlan.getAllPurchasePlans(energyCompany.getEnergyCompanyId());
+        }
         
         return availablePlans;
     }
@@ -124,10 +129,11 @@ public class PurchaseBean
          */
         if(currentPlan == null)
         {
-            if(getAvailablePlans().size() > 0)
+            if(getAvailablePlans().size() > 0) {
                 currentPlan = availablePlans.get(0);
-            else
+            } else {
                 currentPlan = new PurchasePlan();
+            }
         }
         return currentPlan;
     }
@@ -284,13 +290,15 @@ public class PurchaseBean
         
         Integer ecID = Warehouse.getEnergyCompanyIDFromWarehouseID(currentShipment.getWarehouseID());
         
-        if(ecID.compareTo(energyCompany.getEnergyCompanyId()) == 0)
+        if(ecID.compareTo(energyCompany.getEnergyCompanyId()) == 0) {
             serialNumberMember = energyCompany;
+        }
         
         for(int i = 0; i < getAvailableMembers().size(); i++)
         {
-            if(getAvailableMembers().get(i).getEnergyCompanyId() == ecID)
+            if(getAvailableMembers().get(i).getEnergyCompanyId() == ecID) {
                 serialNumberMember = getAvailableMembers().get(i);
+            }
         }
         
         return serialNumberMember;
@@ -300,8 +308,9 @@ public class PurchaseBean
         
         for(int i = 0; i < getAvailableWarehouses().size(); i++)
         {
-            if(getAvailableWarehouses().get(i).getWarehouseID().compareTo(currentShipment.getWarehouseID()) == 0)
+            if(getAvailableWarehouses().get(i).getWarehouseID().compareTo(currentShipment.getWarehouseID()) == 0) {
                 serialNumberWarehouse = getAvailableWarehouses().get(i);
+            }
         }
         
         return serialNumberWarehouse;
@@ -309,11 +318,14 @@ public class PurchaseBean
 
     public YukonListEntry getSerialNumberDeviceState() {
         
-        List<YukonListEntry> deviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true).getYukonListEntries();
+        List<YukonListEntry> deviceStates = 
+                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, 
+                             YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS).getYukonListEntries();
         for(int i = 0; i < deviceStates.size(); i++)
         {
-            if(((YukonListEntry)deviceStates.get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED)
-                serialNumberDeviceState = ((YukonListEntry)deviceStates.get(i));
+            if(deviceStates.get(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED) {
+                serialNumberDeviceState = (deviceStates.get(i));
+            }
         }
         return serialNumberDeviceState;
     }
@@ -323,8 +335,9 @@ public class PurchaseBean
         List<YukonListEntry> deviceTypes = getAvailableDeviceTypes().getYukonListEntries();
         for(int i = 0; i < deviceTypes.size(); i++)
         {
-            if(((YukonListEntry)deviceTypes.get(i)).getEntryID() == currentSchedule.getModelID())
-                serialNumberDeviceType = ((YukonListEntry)deviceTypes.get(i));
+            if(deviceTypes.get(i).getEntryID() == currentSchedule.getModelID()) {
+                serialNumberDeviceType = (deviceTypes.get(i));
+            }
         }
         return serialNumberDeviceType;
     }

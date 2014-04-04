@@ -42,7 +42,9 @@ public class EnergyCompany extends DBPersistent {
             setName( (String) results[0] );
             setPrimaryContactId( (Integer)results[1] );
             setUserId((Integer)results[2]);
-        } else throw new RuntimeException("Incorrect number of columns in result");
+        } else {
+            throw new RuntimeException("Incorrect number of columns in result");
+        }
         
     }
     
@@ -148,12 +150,15 @@ public class EnergyCompany extends DBPersistent {
     }
     
     private boolean isValidValues( Object[] values ) {
-    	if( values == null )
-    		return false;
+    	if( values == null ) {
+            return false;
+        }
     
-    	for( int i = 0; i < values.length; i++ )
-    		if( values[i] == null )
-    			return false;
+    	for( int i = 0; i < values.length; i++ ) {
+            if( values[i] == null ) {
+                return false;
+            }
+        }
     
     
     	return true;
@@ -172,6 +177,7 @@ public class EnergyCompany extends DBPersistent {
     /**
      * @deprecated user getEnergyCompanyId()
      */
+    @Deprecated
     public Integer getEnergyCompanyID() {
         return energyCompanyId;
     }
@@ -179,6 +185,7 @@ public class EnergyCompany extends DBPersistent {
     /**
      * @deprecated use setEnergyCompanyId()
      */
+    @Deprecated
     public void setEnergyCompanyID(Integer newEnergyCompanyID) {
         energyCompanyId = newEnergyCompanyID;
     }
@@ -218,7 +225,8 @@ public class EnergyCompany extends DBPersistent {
 	/**
 	 * @deprecated use getUserId
 	 */
-	public Integer getUserID() {
+	@Deprecated
+    public Integer getUserID() {
 	    return userId;
 	}
 	
@@ -229,7 +237,8 @@ public class EnergyCompany extends DBPersistent {
 	/**
 	 * @deprecated use setUserId
 	 */
-	public void setUserID(Integer userId) {
+	@Deprecated
+    public void setUserID(Integer userId) {
 	    this.userId = userId;
 	}
 
@@ -237,18 +246,20 @@ public class EnergyCompany extends DBPersistent {
 		this.userId = userId;
 	}
 
+    @Override
     public String toString() {
         return getName();
     }
     
     @Override
     public boolean equals(Object o) {
-        if( o instanceof EnergyCompany )    
+        if( o instanceof EnergyCompany ) {
             return ((EnergyCompany)o).getEnergyCompanyId().equals( getEnergyCompanyId() )
                 ? true 
                 : false;
-        else
+        } else {
             return false;
+        }
     }
 
 }

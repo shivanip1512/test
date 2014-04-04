@@ -47,6 +47,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -90,6 +91,7 @@ public class InventoryFilterController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private SelectionListService selectionListService;
 
     /* Setup Filter Rules */
     @RequestMapping(value = "setupFilterRules")
@@ -116,7 +118,8 @@ public class InventoryFilterController {
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-        YukonSelectionList devTypeList = energyCompany.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
+        YukonSelectionList devTypeList = selectionListService.getSelectionList(energyCompany,
+                                                           YukonSelectionListEnum.DEVICE_TYPE.getListName());
         newRule.setDeviceType(devTypeList.getYukonListEntries().get(0).getEntryID());
         
         filterModel.getFilterRules().add(newRule);
@@ -243,7 +246,8 @@ public class InventoryFilterController {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
 
-        return energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true).getYukonListEntries();
+        return selectionListService.getSelectionList(energyCompany, 
+                                 YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE).getYukonListEntries();
     }
 
     /**

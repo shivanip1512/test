@@ -30,6 +30,7 @@ import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.google.common.collect.Lists;
 
 /**
@@ -104,7 +105,9 @@ public final class SettlementConfigFuncs {
 	 */
 	public static List<YukonListEntry> getAllAvailRateSchedules(LiteStarsEnergyCompany liteStarsEC)
 	{
-		YukonSelectionList rateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE);
+	    SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
+		YukonSelectionList rateList = selectionListService.getSelectionList(liteStarsEC, 
+                                                        YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE);
 		return rateList.getYukonListEntries();
 	}
 

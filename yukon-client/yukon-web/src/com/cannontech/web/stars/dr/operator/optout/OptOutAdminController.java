@@ -51,6 +51,7 @@ import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.optout.service.OptOutSurveyService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
@@ -80,6 +81,7 @@ public class OptOutAdminController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private OptOutSurveyService optOutSurveyService;
+    @Autowired private SelectionListService selectionListService;
     
     @RequestMapping(value = "/operator/optOut/admin", method = RequestMethod.GET)
     public String view(YukonUserContext userContext, ModelMap model, Boolean emptyProgramName, Boolean programNotFound) throws Exception {
@@ -132,8 +134,9 @@ public class OptOutAdminController {
             model.addAttribute("energyCompanyOptOutCountsSetting", defaultOptOutCountsSetting.getOptOutCounts());
             
             // Get the customer search by list for search drop down box
-            YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
-            List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
+            YukonSelectionList yukonSelectionList = selectionListService.getSelectionList(energyCompany,
+                                                          YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+            List<YukonListEntry> customerSearchList = new ArrayList<>();
             List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
             for (YukonListEntry entry : yukonListEntries) {
                 if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO) {
@@ -319,7 +322,8 @@ public class OptOutAdminController {
             map.addAttribute("scheduledEvents", events);
         
             // Get the customer search by list for search drop down box
-            YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
+            YukonSelectionList yukonSelectionList = selectionListService.getSelectionList(energyCompany,
+                                              YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE);
             List<YukonListEntry> customerSearchList = new ArrayList<YukonListEntry>();
             List<YukonListEntry> yukonListEntries = yukonSelectionList.getYukonListEntries();
             for (YukonListEntry entry : yukonListEntries) {
@@ -340,10 +344,12 @@ public class OptOutAdminController {
 
            Predicate<OptOutSurvey> isActive = new Predicate<OptOutSurvey>() {
                @Override public boolean apply(OptOutSurvey survey) {
-                   if (survey.getStartDate() != null && survey.getStartDate().after(now))
-                       return false;
-                   if (survey.getStopDate() != null && survey.getStopDate().before(now))
-                       return false;
+                   if (survey.getStartDate() != null && survey.getStartDate().after(now)) {
+                    return false;
+                }
+                   if (survey.getStopDate() != null && survey.getStopDate().before(now)) {
+                    return false;
+                }
                    return true;
                }
            };

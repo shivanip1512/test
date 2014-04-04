@@ -21,7 +21,6 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -29,6 +28,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.MeterHardwareBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
@@ -43,6 +43,7 @@ import com.cannontech.stars.database.db.integration.CRSToSAM_PTJAdditionalMeters
 import com.cannontech.stars.database.db.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.database.db.integration.SwitchReplacement;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
@@ -244,9 +245,9 @@ public final class YukonCRSIntegrator
                             MeterHardwareBase meterHardwareBase =
                                     MeterHardwareBase.retrieveMeterHardwareBase(oldMeterNumber,
                                         customerAccount.getEnergyCompanyID().intValue());
-                            if( meterHardwareBase == null)
+                            if( meterHardwareBase == null) {
                                 errorMsg.append("MeterNumber (" + oldMeterNumber + ") not found for account " + accountNumber + "; ");
-                            else
+                            } else
                             {
                                 meterHardwareBase.getMeterHardwareBase().setMeterNumber(newMeterNumber);
                                 meterHardwareBase.getInventoryBase().setAlternateTrackingNumber(alternateTrackingNumber);
@@ -305,13 +306,15 @@ public final class YukonCRSIntegrator
      */
     public void runCRSToSAM_PTJ(List<CRSToSAM_PTJ> entries)
     {
+        SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
         int newWorkOrderCount = 0;
         for (CRSToSAM_PTJ currentEntry : entries) {
         	StringBuffer errorMsg = new StringBuffer("");
 
             String accountNumber = currentEntry.getPremiseNumber().toString();
-            if(accountNumber.length() <= 0)
-            	errorMsg.append("Invalid accountNumber length ("+ accountNumber.length());
+            if(accountNumber.length() <= 0) {
+                errorMsg.append("Invalid accountNumber length ("+ accountNumber.length());
+            }
             	
         	Integer ptjID = currentEntry.getPTJID( );
             String debtorNumber = currentEntry.getDebtorNumber( );
@@ -325,8 +328,9 @@ public final class YukonCRSIntegrator
             String stateCode = currentEntry.getStateCode( );
             String zipCode = currentEntry.getZipCode();
             String servCompZipCode = zipCode.toString();
-            if( servCompZipCode.length() > 5)
-            	servCompZipCode = servCompZipCode.substring(0, 5);
+            if( servCompZipCode.length() > 5) {
+                servCompZipCode = servCompZipCode.substring(0, 5);
+            }
             String firstName = currentEntry.getFirstName( );  
             String lastName = currentEntry.getLastName( );
             String homePhone = currentEntry.getHomePhone( );
@@ -353,32 +357,36 @@ public final class YukonCRSIntegrator
                 	errorMsg.append("Invalid ConsumptionType found: " + consumType + "; ");
             }
 
-            if( servUtilType.charValue() != 'E')
-            	errorMsg.append("Invalid ServiceUtilityType found: " + servUtilType+ "; ");
+            if( servUtilType.charValue() != 'E') {
+                errorMsg.append("Invalid ServiceUtilityType found: " + servUtilType+ "; ");
+            }
                 
-            int ecID_customer = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
-        	int ecID_workOrder = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;            	
+            int ecID_customer = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
+        	int ecID_workOrder = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;            	
 
         	//Get the serviceCompany from the zipcode
         	LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         	LiteYukonUser liteYukonUser = null;
         	YukonListEntry workTypeEntry = null;
         	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(servCompZipCode);
-        	if( serviceCompany == null)
-        		errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
-        	else
+        	if( serviceCompany == null) {
+                errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
+            } else
         	{
         		ecID_workOrder = serviceCompany.getEnergyCompanyID().intValue();
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(ecID_workOrder);
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        		YukonSelectionList serviceTypeList = selectionListService.getSelectionList(liteStarsEnergyCompany, 
+                            YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, ptjType);
-	        	if( workTypeEntry == null)
-	        		errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
+	        	if( workTypeEntry == null) {
+                    errorMsg.append("Invalid PTJType found: " + ptjType + "; ");
+                }
 	        	
 	        	liteYukonUser = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(crsLoggedUser);
-	        	if( liteYukonUser == null)
-	        		errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
+	        	if( liteYukonUser == null) {
+                    errorMsg.append("Invalid CRSLoggedUser found: " + crsLoggedUser + "; ");
+                }
         	}
 			//Stop here, too many error to update anything data.
 			if( errorMsg.length() > 0)//we have error messages to handle, don't go any further!
@@ -405,7 +413,9 @@ public final class YukonCRSIntegrator
 	        			com.cannontech.database.data.customer.Contact contact = new com.cannontech.database.data.customer.Contact();
 	        			contact = YukonToCRSFuncs.createNewContact(contact, firstName, lastName, homePhone, workPhone, crsContactPhone);
 	        			
-	        			YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
+	        			YukonSelectionList ciCustTypeList = 
+	        			        selectionListService.getSelectionList(liteStarsEnergyCompany,
+		                                               YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
 	        			YukonListEntry ciCustTypeEntry = YukonToCRSFuncs.getCICustTypeEntry(ciCustTypeList, consumType);
 
 	        			//Create a new CustomerAccount data object
@@ -465,7 +475,8 @@ public final class YukonCRSIntegrator
 	    				if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_INSTALL_STRING) )
   						{
 		        			//Create new ApplianceBase (and extension of) objects, Per David.
-                            YukonSelectionList ciCustTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
+                            YukonSelectionList ciCustTypeList = 
+                                    selectionListService.getSelectionList(liteStarsEnergyCompany, YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
                             YukonListEntry ciCustTypeEntry = YukonToCRSFuncs.getCICustTypeEntry(ciCustTypeList, consumType);
 		        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, ciCustTypeEntry, liteStarsEnergyCompany);
   						}
@@ -496,8 +507,9 @@ public final class YukonCRSIntegrator
     			else
 	        	{
 	        		ecID_customer = customerAccount.getEnergyCompanyID().intValue();
-		        	if( ecID_customer != ecID_workOrder)
-		        		errorMsg.append("Customer EnergyCompany (" + ecID_customer+") does not match Service Company Energy Company ("+ecID_workOrder+");");
+		        	if( ecID_customer != ecID_workOrder) {
+                        errorMsg.append("Customer EnergyCompany (" + ecID_customer+") does not match Service Company Energy Company ("+ecID_workOrder+");");
+                    }
 	        	}
 
     			try {
@@ -521,8 +533,9 @@ public final class YukonCRSIntegrator
             		        additionalMeter.getMeterNumber(), customerAccount.getEnergyCompanyID());
             		    // check controllable device is attached to meter
             		    boolean switchAssigned = meterHardwareBaseDao.hasSwitchAssigned(additionalMeterId);
-            		    if (!switchAssigned)
-            		        errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
+            		    if (!switchAssigned) {
+                            errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") has no controllable device attached for account " + accountNumber + "; ");
+                        }
                     } catch (IncorrectResultSizeDataAccessException dae) {
                         errorMsg.append("Additional MeterNumber (" + additionalMeter.getMeterNumber() + ") Not found for account " + accountNumber + "; ");
                     }
@@ -537,12 +550,14 @@ public final class YukonCRSIntegrator
     		}
         	
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+    		YukonSelectionList serviceStatusList = 
+                    selectionListService.getSelectionList(liteStarsEnergyCompany, YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
-        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING) )
-        		servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED;
+        	if( ptjType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_DEACTIVATION_STRING) ) {
+                servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED;
+            }
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, servStat);
 
         	WorkOrderBase workOrder = new WorkOrderBase();
@@ -553,8 +568,9 @@ public final class YukonCRSIntegrator
             workOrder.getWorkOrderBase().setServiceCompanyID(serviceCompany.getServiceCompany().getCompanyID());
             workOrder.getWorkOrderBase().setOrderedBy(liteYukonUser.getUsername());
             String descString = "Meter Number: " + meterNumber + ";";
-            if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y')
-            	descString += "  ApplianceType(s): " + (airCond.charValue() == 'Y'? "Air Conditioner;": "") + (waterHeater.charValue() == 'Y'? " Water Heater;": "");
+            if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y') {
+                descString += "  ApplianceType(s): " + (airCond.charValue() == 'Y'? "Air Conditioner;": "") + (waterHeater.charValue() == 'Y'? " Water Heater;": "");
+            }
             descString += (notes.length() > 0 ? ("   Notes: " + notes) : ""); 
             workOrder.getWorkOrderBase().setDescription(descString);
             workOrder.getWorkOrderBase().setAccountID(customerAccount.getCustomerAccount().getAccountID());
@@ -585,7 +601,8 @@ public final class YukonCRSIntegrator
 	               	{
 	               		YukonListEntry devStateEntry = null;
                         int availableEntryID = -1;
-	               		YukonSelectionList invDevStateList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+                        YukonSelectionList invDevStateList = 
+                                selectionListService.getSelectionList(liteStarsEnergyCompany, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
 		               	for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
 		        		{
 		        			if( invDevStateList.getYukonListEntries().get(i).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL )
@@ -672,6 +689,8 @@ public final class YukonCRSIntegrator
     		
     public void runSwitchReplacement(List<SwitchReplacement> entries)
     {
+        SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
+
         SwitchReplacement currentEntry = null;
 
         for(int j = 0; j < entries.size(); j++)
@@ -682,17 +701,19 @@ public final class YukonCRSIntegrator
             String woType = currentEntry.getWOType();
             String username = currentEntry.getUserName();
 
-        	if( !woType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_MAINTENANCE_STRING))
-        		errorMsg.append("Invalid Work Order Type found: " + woType + "; ");
+        	if( !woType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_MAINTENANCE_STRING)) {
+                errorMsg.append("Invalid Work Order Type found: " + woType + "; ");
+            }
 
         	ArrayList<com.cannontech.stars.database.db.customer.CustomerAccount> customerAccounts = com.cannontech.stars.database.db.customer.CustomerAccount.searchBySerialNumber(serialNumber);
-        	if( customerAccounts.size() < 1)
-        		errorMsg.append("No Customer Account found for Serial Number: " + serialNumber);
-        	else if( customerAccounts.size() > 1)
+        	if( customerAccounts.size() < 1) {
+                errorMsg.append("No Customer Account found for Serial Number: " + serialNumber);
+            } else if( customerAccounts.size() > 1)
         	{
         		errorMsg.append("Multiple Customer Accounts found for Serial Number: " + serialNumber + " - (");
-   				for (int i = 0; i < customerAccounts.size(); i++)
-   					errorMsg.append(customerAccounts.get(i).getAccountNumber() + ", ");
+   				for (int i = 0; i < customerAccounts.size(); i++) {
+                    errorMsg.append(customerAccounts.get(i).getAccountNumber() + ", ");
+                }
         		errorMsg.append(")");
         	}
         	
@@ -716,8 +737,9 @@ public final class YukonCRSIntegrator
         	
         	String zipCode = customerAccount.getAccountSite().getStreetAddress().getZipCode();
             String servCompZipCode = zipCode.toString();
-            if( servCompZipCode.length() > 5)
-            	servCompZipCode = servCompZipCode.substring(0, 5);
+            if( servCompZipCode.length() > 5) {
+                servCompZipCode = servCompZipCode.substring(0, 5);
+            }
         	
         	
         	//Get the serviceCompany from the zipcode
@@ -725,20 +747,23 @@ public final class YukonCRSIntegrator
         	LiteYukonUser liteYukonUser = null;
         	YukonListEntry workTypeEntry = null;
         	ServiceCompany serviceCompany = YukonToCRSFuncs.retrieveServiceCompany(servCompZipCode);
-        	if( serviceCompany == null)
-        		errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
-        	else
+        	if( serviceCompany == null) {
+                errorMsg.append("No serviceCompany found for zipcode " + servCompZipCode + "; ");
+            } else
         	{
         		//Get the energyCompany from the zip code
         		liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(customerAccount.getEnergyCompanyID().intValue());
-        		YukonSelectionList serviceTypeList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        		YukonSelectionList serviceTypeList = selectionListService.getSelectionList(liteStarsEnergyCompany,
+                                                    YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
         		workTypeEntry = YukonToCRSFuncs.getServiceTypeEntry(serviceTypeList, woType);
-	        	if( workTypeEntry == null)
-	        		errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
+	        	if( workTypeEntry == null) {
+                    errorMsg.append("Invalid Work Order Type found (No match for EnergyCompany): " + woType + "; ");
+                }
 	        	
 	        	liteYukonUser = YukonSpringHook.getBean(YukonUserDao.class).findUserByUsername(username);
-	        	if( liteYukonUser == null)
-	        		errorMsg.append("Invalid UserName found: " + username + "; ");
+	        	if( liteYukonUser == null) {
+                    errorMsg.append("Invalid UserName found: " + username + "; ");
+                }
         	}
 
 			//Stop here, too many error to update anything data.
@@ -749,7 +774,8 @@ public final class YukonCRSIntegrator
         	}
 			
         	//No errors, create work order!
-        	YukonSelectionList serviceStatusList = liteStarsEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        	YukonSelectionList serviceStatusList = selectionListService.getSelectionList(liteStarsEnergyCompany,
+                                                  YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
         	
         	//Different service status yields different work order state.
         	int servStat = YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED;
@@ -836,8 +862,9 @@ public final class YukonCRSIntegrator
     		System.exit(-1);			
     	}
     	  	
-    	if(session == null) 		
-    		System.exit(-1);
+    	if(session == null) {
+            System.exit(-1);
+        }
     				
     	YukonCRSIntegrator bulkImporter = new YukonCRSIntegrator();
     	bulkImporter.start();	

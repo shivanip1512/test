@@ -1311,9 +1311,7 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
     </bean>
     
-    <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag">
-        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-    </bean>
+    <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag"/>
 
     <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
         <property name="yukonListDao" ref="yukonListDao"/>

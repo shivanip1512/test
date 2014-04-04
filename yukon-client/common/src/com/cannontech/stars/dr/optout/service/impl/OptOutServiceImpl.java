@@ -1199,9 +1199,8 @@ public class OptOutServiceImpl implements OptOutService {
             request.setInventoryIdList(Collections.singletonList(ooe.getInventoryId()));
             request.setDurationInHours(ooe.getDurationInHours());
             request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
-            
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-            optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
+
+            optOutNotificationService.sendReenableNotification(customerAccount, yukonEnergyCompany, request, user);
 
         } catch (MessagingException e) {
             // Not much we can do - tried to send notification

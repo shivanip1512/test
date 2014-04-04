@@ -63,6 +63,7 @@ import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -401,10 +402,11 @@ public class StarsAdminUtil {
 
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(energyCompany);
         List<LiteStarsEnergyCompany> companies = new ArrayList<LiteStarsEnergyCompany>();
+        SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
         for (int i = 0; i < descendants.size(); i++) {
             LiteStarsEnergyCompany company = descendants.get(i);
             if (company.equals(energyCompany)
-                || company.getYukonSelectionList(newList.getListName(), false, false) == null) {
+                || selectionListService.getSelectionList(company, newList.getListName(), false, false) == null) {
                 companies.add(company);
             }
         }

@@ -45,6 +45,7 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.appliance.ApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMControlHistory;
@@ -78,7 +79,7 @@ import com.google.common.collect.Lists;
  */
 public class StarsDatabaseCache implements DBChangeListener {
 
-    public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
+    public static final int DEFAULT_ENERGY_COMPANY_ID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
 	private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = Duration.standardDays(7);
 	
     // Array of all the energy companies (LiteStarsEnergyCompany)
@@ -176,8 +177,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 
 	public synchronized Map<Integer,StarsYukonUser> getAllStarsYukonUsers() {
-		if (starsYukonUsers == null)
-			starsYukonUsers = new Hashtable<Integer,StarsYukonUser>();
+		if (starsYukonUsers == null) {
+            starsYukonUsers = new Hashtable<Integer,StarsYukonUser>();
+        }
 		return starsYukonUsers;
 	}
 
@@ -320,9 +322,9 @@ public class StarsDatabaseCache implements DBChangeListener {
              *TODO: Will need to add more functionality to handle deletes and adds if STARS is tied
              *together more firmly with Yukon in the future.  (Example might be MCT inventory contents.) 
              */
-            if(msg.getDbChangeType() != DbChangeType.DELETE)
+            if(msg.getDbChangeType() != DbChangeType.DELETE) {
                 litePao = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( msg.getId() );
-            else {
+            } else {
                 CTILogger.debug("DBChangeMsg for a deleted PAO: " + msg);
                 return;
             }
@@ -527,8 +529,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 							com.cannontech.database.db.device.lm.LMProgramDirectGroup.getAllDirectGroups( new Integer(liteProg.getDeviceID()) );
 					
 					int[] groupIDs = new int[ groups.length ];
-					for (int i = 0; i < groups.length; i++)
-						groupIDs[i] = groups[i].getLmGroupDeviceID().intValue();
+					for (int i = 0; i < groups.length; i++) {
+                        groupIDs[i] = groups[i].getLmGroupDeviceID().intValue();
+                    }
 					liteProg.setGroupIDs( groupIDs );
 					
 					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), liteProg.getProgramID() );
@@ -581,8 +584,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 					cachedProgram.setGroupIDs( groupIDs );
 					
 					StarsEnrLMProgram program = ServletUtils.getEnrollmentProgram( energyCompany.getStarsEnrollmentPrograms(), programID );
-					if (program != null)
-						StarsLiteFactory.setAddressingGroups( program, liteProg );
+					if (program != null) {
+                        StarsLiteFactory.setAddressingGroups( program, liteProg );
+                    }
 				}
 				catch (java.sql.SQLException e) {
 					CTILogger.error( e.getMessage(), e );
@@ -634,8 +638,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 	}
 	
 	private synchronized Map<Integer,LiteStarsLMControlHistory> getLMCtrlHistMap() {
-		if (lmCtrlHists == null)
-			lmCtrlHists = new Hashtable<Integer,LiteStarsLMControlHistory>();
+		if (lmCtrlHists == null) {
+            lmCtrlHists = new Hashtable<Integer,LiteStarsLMControlHistory>();
+        }
 		
 		return lmCtrlHists;
 	}
@@ -650,8 +655,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 	    
 		LiteStarsLMControlHistory lmCtrlHist =
 				getLMCtrlHistMap().get( new Integer(groupID));
-		if (lmCtrlHist == null) 
-		    lmCtrlHist = new LiteStarsLMControlHistory( groupID );
+		if (lmCtrlHist == null) {
+            lmCtrlHist = new LiteStarsLMControlHistory( groupID );
+        }
 		
 		// Clear out the cache if we are loading older data. Note this means we never try to fill in gaps in old data
 		// and always load new. 
@@ -676,8 +682,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
 				
 				List<LiteBase> ctrlHistList = new ArrayList<LiteBase>();
-				for (int i = 0; i < ctrlHist.length; i++)
-					ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
+				for (int i = 0; i < ctrlHist.length; i++) {
+                    ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
+                }
 				
 				lmCtrlHist.setLmControlHistory( ctrlHistList );
 			}
@@ -686,8 +693,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 			    // since last time we updated the cache.
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, lmCtrlHist.getLastSearchedCtrlHistID() );
-				for (int i = 0; i < ctrlHist.length; i++)
-					lmCtrlHist.getLmControlHistory().add( StarsLiteFactory.createLite(ctrlHist[i]) );
+				for (int i = 0; i < ctrlHist.length; i++) {
+                    lmCtrlHist.getLmControlHistory().add( StarsLiteFactory.createLite(ctrlHist[i]) );
+                }
 			}
 			
 			lmCtrlHist.setLastSearchedCtrlHistID( maxControlHistID );
@@ -721,20 +729,23 @@ public class StarsDatabaseCache implements DBChangeListener {
 			lmCtrlHist.setLastControlHistory( lastCtrlHist );
 		} else {
 			int startCtrlHistID = 0;
-			if (lmCtrlHist.getLastControlHistory() != null)
-				startCtrlHistID = lmCtrlHist.getLastControlHistory().getLmCtrlHistID();
+			if (lmCtrlHist.getLastControlHistory() != null) {
+                startCtrlHistID = lmCtrlHist.getLastControlHistory().getLmCtrlHistID();
+            }
 			
 			com.cannontech.database.db.pao.LMControlHistory lastCtrlHist =
 					LMControlHistoryUtil.getLastLMControlHistory( groupID, startCtrlHistID );
 			
 			if (lastCtrlHist != null) {
 				LiteLMControlHistory liteCtrlHist = (LiteLMControlHistory) StarsLiteFactory.createLite(lastCtrlHist);
-				if (liteCtrlHist.getLmCtrlHistID() < maxControlHistID)
-					liteCtrlHist.setLmCtrlHistID( maxControlHistID );
+				if (liteCtrlHist.getLmCtrlHistID() < maxControlHistID) {
+                    liteCtrlHist.setLmCtrlHistID( maxControlHistID );
+                }
 				lmCtrlHist.setLastControlHistory( liteCtrlHist );
 			} else {
-				if (lmCtrlHist.getLastControlHistory() == null)
-					lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(maxControlHistID) );
+				if (lmCtrlHist.getLastControlHistory() == null) {
+                    lmCtrlHist.setLastControlHistory( new LiteLMControlHistory(maxControlHistID) );
+                }
 			}
 		}
 		

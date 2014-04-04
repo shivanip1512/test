@@ -12,6 +12,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.ECUtils;
 
 
@@ -62,62 +63,74 @@ public class ManipulationBean
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
-        if(availableMembers == null)
+        if(availableMembers == null) {
             availableMembers = ECUtils.getAllDescendants(energyCompany);
+        }
         return availableMembers;
     }
     
     public YukonSelectionList getAvailableDeviceTypes()
     {
-        if(availableDeviceTypes == null)
-            availableDeviceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, true, true);
+        if(availableDeviceTypes == null) {
+            availableDeviceTypes = YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany,
+                                                          YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+        }
         return availableDeviceTypes;
     }
     
     public List<LiteServiceCompany> getAvailableServiceCompanies()
     {
-        if(availableServiceCompanies == null)
+        if(availableServiceCompanies == null) {
             availableServiceCompanies = energyCompany.getAllServiceCompaniesUpDown();
+        }
         return availableServiceCompanies;
     }
     
     public YukonSelectionList getAvailableDeviceStates()
     {
-        if(availableDeviceStates == null)
-            availableDeviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true);
+        if(availableDeviceStates == null) {
+            availableDeviceStates = YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, 
+                                                     YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+        }
         return availableDeviceStates;
     }
     
     public List<Warehouse> getAvailableWarehouses()
     {
-        if(availableWarehouses == null)
+        if(availableWarehouses == null) {
             availableWarehouses = energyCompany.getAllWarehousesDownward();
+        }
         return availableWarehouses;
     }   
     
     public YukonSelectionList getAvailableServiceTypes()
     {
-        if(availableServiceTypes == null)
-            availableServiceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        if(availableServiceTypes == null) {
+            availableServiceTypes =YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, 
+                                                    YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        }
         return availableServiceTypes;
     }
 
     public YukonSelectionList getAvailableServiceStatuses()
     {
-        if(availableServiceStatuses == null)
-            availableServiceStatuses = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        if(availableServiceStatuses == null) {
+            availableServiceStatuses = YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, 
+                                                    YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        }
         return availableServiceStatuses;
     }
     
     public YukonListEntry getDefaultActionSelection() {
     	if( defaultActionSelection == null)
     	{
-	    	if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
-	    		defaultActionSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
-	    	else if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
-	    		defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
-	    	else
-	    		defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    	if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY) {
+                defaultActionSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
+            } else if( getActionFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY) {
+                defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+            } else {
+                defaultActionSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+            }
     	}
         return defaultActionSelection;
     }

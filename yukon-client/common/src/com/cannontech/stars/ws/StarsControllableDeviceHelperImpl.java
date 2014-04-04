@@ -81,13 +81,13 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         return deviceType;
     }
 
-    private CustomerAccount getCustomerAccount(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private CustomerAccount getCustomerAccount(LmDeviceDto dto, YukonEnergyCompany energyCompany) {
         CustomerAccount custAcct = null;
         try {
-            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(dto), lsec.getLiteID());
+            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(dto), energyCompany.getEnergyCompanyId());
         } catch (NotFoundException e) {
             // convert to a better, Account not found exception
-            throw new StarsAccountNotFoundException(getAccountNumber(dto), lsec.getName(), e);
+            throw new StarsAccountNotFoundException(getAccountNumber(dto), energyCompany.getName(), e);
         }
         return custAcct;
     }
@@ -136,12 +136,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     // Gets Inventory if exists on the account
-    private LiteInventoryBase getInventoryOnAccount(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    private LiteInventoryBase getInventoryOnAccount(LmDeviceDto dto, LiteStarsEnergyCompany energyCompany) {
         
         LiteInventoryBase lib = null;
 
-        CustomerAccount custAcct = getCustomerAccount(dto, lsec);
-        LiteInventoryBase existing = getInventory(dto, lsec);
+        CustomerAccount custAcct = getCustomerAccount(dto, energyCompany);
+        LiteInventoryBase existing = getInventory(dto, energyCompany);
         if (existing != null && existing.getAccountID() == custAcct.getAccountId()) {
             lib = existing;
         }

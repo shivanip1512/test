@@ -8,6 +8,7 @@ import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.SortedSetMultimap;
 
 /**
@@ -40,4 +41,15 @@ public interface SelectionListService {
      * Get a list of valid definitions to use with the given energy company and list type.
      */
     List<YukonDefinition> getValidDefinitions(int ecId, YukonSelectionListEnum listType);
+    
+    YukonSelectionList getSelectionList(YukonEnergyCompany energyCompany, String listName, 
+                                        boolean useInherited, boolean useDefault);
+
+    /**
+     * 
+     * Get a list of valid definitions to use with the given energy company and list type.
+     * 
+     * Will return inherited or default lists if the current energycompany doesn't have the list
+     */
+    YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName);
 }

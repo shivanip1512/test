@@ -19,7 +19,6 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -39,9 +38,9 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    
+
     private Map<Integer, List<Integer>> cachedRouteIds = new ConcurrentHashMap<>();
-    private Map<Integer, YukonEnergyCompany> cachedEnergyCompanies = new ConcurrentHashMap<>();
+    private Map<Integer, EnergyCompany> energyCompanies;
 
     @Autowired
     public YukonEnergyCompanyServiceImpl(AsyncDynamicDataSource asyncDynamicDataSource){
@@ -54,31 +53,17 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         });
         
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.ENERGY_COMPANY,
-                                                              new DatabaseChangeEventListener() {
+                new DatabaseChangeEventListener() {
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                cachedEnergyCompanies.clear();
+                synchronized (YukonEnergyCompanyServiceImpl.this) {
+                    energyCompanies = null;
+                }
             }
         });
         
     }
-    
-    private static YukonRowMapper<EnergyCompany> energyCompanyRowMapper = new YukonRowMapper<EnergyCompany>() {
-        @Override
-        public EnergyCompany mapRow(YukonResultSet rs) throws SQLException {
-            
-            LiteYukonUser user = new LiteYukonUser(rs.getInt("UserID"));
-            user.setUsername(rs.getString("UserName"));
-            user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
-            user.setForceReset(rs.getBoolean("ForceReset"));
-            user.setUserGroupId(rs.getNullableInt("UserGroupId"));
-            
-            EnergyCompany company = new EnergyCompany(rs.getInt("EnergyCompanyId"), rs.getString("Name"), 
-                                                      user, rs.getInt("PrimaryContactId"));
-            return company;
-        }
-    };
-    
+
     @Override
     public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
@@ -239,22 +224,14 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompany(final int ecId) {
-        if (cachedEnergyCompanies.containsKey(ecId)) {
-            return cachedEnergyCompanies.get(ecId);
+    public synchronized EnergyCompany getEnergyCompany(final int ecId) {
+        if (energyCompanies == null) {
+            loadEnergyCompanies();
         }
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyID, Name, PrimaryContactID, YU.UserId, UserName, Status, ForceReset,");
-        sql.append("       UserGroupId");
-        sql.append("FROM EnergyCompany EC, YukonUser YU");
-        sql.append("WHERE EC.UserId = YU.UserId");
-        sql.append("AND EnergyCompanyId").eq(ecId);
-
-        YukonEnergyCompany energyCompany = jdbcTemplate.queryForObject(sql, energyCompanyRowMapper);
-        cachedEnergyCompanies.put(ecId, energyCompany);
-        return energyCompany;
+        
+        return energyCompanies.get(ecId);
     }
-    
+
     @Override
     public List<Integer> getRouteIds(int ecId) {
         if (cachedRouteIds.containsKey(ecId)) {
@@ -269,5 +246,40 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         List<Integer> routeIds = ImmutableList.copyOf(jdbcTemplate.query(sql, RowMapper.INTEGER));
         cachedRouteIds.put(ecId, routeIds);
         return routeIds;
+    }
+
+    private void loadEnergyCompanies() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");
+        sql.append(    "YU.UserId, UserName, Status, ForceReset, UserGroupId");
+        sql.append("FROM EnergyCompany EC");
+        sql.append("LEFT JOIN ECToGenericMapping ECM");
+        sql.append(    "ON EC.EnergyCompanyId = ECM.ItemID");
+        sql.append(    "AND ECM.MappingCategory").eq_k(EcMappingCategory.MEMBER);
+        sql.append("JOIN YukonUser YU on EC.UserId = YU.UserId");
+
+        EnergyCompanyRowCallbackHandler energyCompanyRowCallbackHandler = new EnergyCompanyRowCallbackHandler();
+        jdbcTemplate.query(sql, energyCompanyRowCallbackHandler);
+        energyCompanies = energyCompanyRowCallbackHandler.getEnergyCompanies();
+    }
+
+    private static class EnergyCompanyRowCallbackHandler implements YukonRowCallbackHandler {
+        private EnergyCompany.Builder builder = new EnergyCompany.Builder();
+
+        @Override
+        public void processRow(YukonResultSet rs) throws SQLException {
+            LiteYukonUser user = new LiteYukonUser(rs.getInt("UserID"));
+            user.setUsername(rs.getString("UserName"));
+            user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
+            user.setForceReset(rs.getBoolean("ForceReset"));
+            user.setUserGroupId(rs.getNullableInt("UserGroupId"));
+
+            builder.addEnergyCompany(rs.getInt("EcId"), rs.getString("Name"), user, rs.getInt("PrimaryContactId"),
+                                     rs.getNullableInt("ParentEcId"));
+        }
+
+        public Map<Integer, EnergyCompany> getEnergyCompanies() {
+            return builder.build();
+        }
     }
 }

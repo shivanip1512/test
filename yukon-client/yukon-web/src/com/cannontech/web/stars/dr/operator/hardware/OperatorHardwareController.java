@@ -81,6 +81,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -118,34 +119,35 @@ import com.google.common.collect.Sets;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private HardwareEventLogService hardwareEventLogService;
-    @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private PaoDao paoDao;
-    @Autowired private PointDao pointDao;
-    @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private AddressDao addressDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private SerialNumberValidator serialNumberValidator;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private StarsSearchDao starsSearchDao;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private WarehouseDao warehouseDao;
-    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ContactDao contactDao;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
-    @Autowired private HardwareService hardwareService;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
-    @Autowired private ZigbeeDeviceService zigbeeDeviceService;
-    @Autowired private InventoryDao inventoryDao;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private HardwareModelHelper helper;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private HardwareService hardwareService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private OperatorAccountService operatorAccountService;
     @Autowired private OperatorThermostatHelper operatorThermostatHelper;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private AssetAvailabilityService assetAvailabilityService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SerialNumberValidator serialNumberValidator;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private WarehouseDao warehouseDao;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ZigbeeDeviceService zigbeeDeviceService;
 
     private static final int THERMOSTAT_DETAIL_NUM_ITEMS = 5;
     
@@ -879,7 +881,8 @@ public class OperatorHardwareController {
         
         // Add device types for dropdown menus
         ListMultimap<String, DeviceTypeOption> deviceTypeMap = ArrayListMultimap.create();
-        List<YukonListEntry> deviceTypeList = liteEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
+        List<YukonListEntry> deviceTypeList = selectionListService.getSelectionList(liteEnergyCompany,
+                                    YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
         
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {
             HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());

@@ -5,16 +5,21 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 
-@Configurable("yukonListEntryListTagPrototype")
+@Configurable(value="yukonListEntryListTagPrototype", autowire=Autowire.BY_NAME)
 public class YukonListEntryListTag extends YukonTagSupport {
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
 
 	private String var;
 	/**
@@ -24,16 +29,16 @@ public class YukonListEntryListTag extends YukonTagSupport {
 	 */
 	private String energyCompanyId;
 	private String listName;
-	private StarsDatabaseCache starsDatabaseCache;
     
     @Override
     public void doTag() throws JspException, IOException, NumberFormatException {
-    	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(Integer.parseInt(energyCompanyId));
-    	YukonSelectionListEnum yukonSelectionListEnum = YukonSelectionListEnum.valueOf(listName);
-    	List<YukonListEntry> yukonListEntries = energyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
-    	
-    	this.getJspContext().setAttribute(var, yukonListEntries);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(Integer.parseInt(energyCompanyId));
+        YukonSelectionListEnum yukonSelectionListEnum = YukonSelectionListEnum.valueOf(listName);
+        YukonSelectionList selectionList = 
+                selectionListService.getSelectionList(energyCompany, yukonSelectionListEnum.getListName());
+        List<YukonListEntry> listEntries = selectionList.getYukonListEntries();
+
+        this.getJspContext().setAttribute(var, listEntries);
     }
     
     public void setVar(String var) {
@@ -47,10 +52,4 @@ public class YukonListEntryListTag extends YukonTagSupport {
     public void setListName(String listName) {
 		this.listName = listName;
 	}
-    
-    @Required
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
 }

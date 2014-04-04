@@ -5,8 +5,10 @@ import java.util.List;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 
 /**
  * Helper class for dealing with the YukonListEntry table
@@ -24,7 +26,8 @@ public class YukonListEntryHelper {
     public static int getListEntryId(LiteStarsEnergyCompany energyCompany,
             String listName, int definitionId) {
 
-        YukonSelectionList selectionList = energyCompany.getYukonSelectionList(listName);
+        YukonSelectionList selectionList = 
+                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, listName);
 
         List<YukonListEntry> entries = selectionList.getYukonListEntries();
         for (YukonListEntry entry : entries) {
@@ -50,7 +53,8 @@ public class YukonListEntryHelper {
             LiteStarsEnergyCompany energyCompany, String listName,
             int listEntryId) {
 
-        YukonSelectionList selectionList = energyCompany.getYukonSelectionList(listName);
+        YukonSelectionList selectionList = 
+                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(energyCompany, listName);
 
         List<YukonListEntry> entries = selectionList.getYukonListEntries();
         for (YukonListEntry entry : entries) {
@@ -75,7 +79,8 @@ public class YukonListEntryHelper {
     public static YukonListEntry getEntryForEntryText(String entryText, String listName, LiteStarsEnergyCompany lsec) {
 
         YukonListEntry entry = null;
-        YukonSelectionList selectionList = lsec.getYukonSelectionList(listName);
+        YukonSelectionList selectionList = 
+                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(lsec, listName);
 
         for (YukonListEntry item : selectionList.getYukonListEntries()) {
             if (item.getEntryText().equalsIgnoreCase(entryText)) {

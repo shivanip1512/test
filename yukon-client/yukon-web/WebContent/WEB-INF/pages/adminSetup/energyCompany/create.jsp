@@ -8,7 +8,8 @@
 
 <cti:standardPage module="adminSetup" page="createEnergyCompany">
 
-    <form:form commandName="energyCompanyDto" action="/adminSetup/energyCompany/create">
+    <cti:url var="createUrl" value="/adminSetup/energyCompany/create"/>
+    <form:form commandName="energyCompanyDto" action="${createUrl}">
         <form:hidden path="operatorUserGroupIds" id="operatorUserGroupIds"/>
         <form:hidden path="residentialUserGroupIds" id="residentialUserGroupIds"/>
         <c:if test="${not empty parentId}">

@@ -5,7 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 
 /**
  * @author yao
@@ -30,7 +30,7 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.stars.database.db.customer.CustomerAccount.NONE_INT;
 	
-	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
+	private int energyCompanyID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
 		super();
@@ -251,9 +251,10 @@ public class LiteWorkOrderBase extends LiteBase {
 
 			stat.execute();
 
-			if (stat.getRowCount() <= 0)
-				throw new IllegalStateException(
+			if (stat.getRowCount() <= 0) {
+                throw new IllegalStateException(
 					"Unable to find the WorkOrderBase with OrderID = " + getLiteID());
+            }
 
 			Object[] results = stat.getRow(0);
             setOrderNumber( (String) results[0] );

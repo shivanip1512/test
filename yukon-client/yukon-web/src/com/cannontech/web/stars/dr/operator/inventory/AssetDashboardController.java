@@ -60,6 +60,7 @@ import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -101,6 +102,7 @@ public class AssetDashboardController {
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private EnergyCompanySettingDao ecSettingsDao;
+    @Autowired private SelectionListService selectionListService;
 
     /* Home - Landing Page */
     @RequestMapping("home")
@@ -158,7 +160,9 @@ public class AssetDashboardController {
             
             model.addAttribute("inventorySearch", new InventorySearch());
             
-            List<YukonListEntry> yukonListEntries = liteEc.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName()).getYukonListEntries();
+            List<YukonListEntry> yukonListEntries = 
+                selectionListService.getSelectionList(liteEc, 
+                                              YukonSelectionListEnum.DEVICE_TYPE.getListName()).getYukonListEntries();
             Iterable<YukonListEntry> addHardwareTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
                 @Override
                 public boolean apply(YukonListEntry input) {
@@ -221,7 +225,9 @@ public class AssetDashboardController {
             model.addAttribute("starsMeters", starsMeters);
             
             // PAGING
-            if (page == null) page = 1;
+            if (page == null) {
+                page = 1;
+            }
             itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
             int startIndex = (page - 1) * itemsPerPage;
             

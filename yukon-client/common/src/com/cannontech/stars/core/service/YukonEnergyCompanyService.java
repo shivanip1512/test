@@ -4,9 +4,12 @@ import java.util.List;
 
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface YukonEnergyCompanyService {
+
+    public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
 
     /**
      * This method gets the energy company that the operator is directly associated with.
@@ -82,8 +85,8 @@ public interface YukonEnergyCompanyService {
      */
     boolean isPrimaryOperator(int operatorLoginId);
     
-    YukonEnergyCompany getEnergyCompany(int ecId);
-    
+    EnergyCompany getEnergyCompany(int ecId);
+
     /**
      * Returns an immutable list of all routeIds associated with the energy company
      */

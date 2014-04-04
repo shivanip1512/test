@@ -21,6 +21,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
@@ -38,6 +39,7 @@ public class ChangeDeviceStatusController {
     @Autowired private ChangeDeviceStatusHelper helper;
     @Autowired private YukonEnergyCompanyService energyCompanyService;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SelectionListService selectionListService;
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping("view")
@@ -45,7 +47,8 @@ public class ChangeDeviceStatusController {
         YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
         
-        YukonSelectionList list = lec.getYukonSelectionList(YukonSelectionListEnum.DEVICE_STATUS.getListName(), true, true);
+        YukonSelectionList list = selectionListService.getSelectionList(lec, 
+                                                YukonSelectionListEnum.DEVICE_STATUS.getListName());
         List<YukonListEntry> deviceStatusTypes = list.getYukonListEntries();
         
         model.addAttribute("deviceStatusTypes", deviceStatusTypes);

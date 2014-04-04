@@ -26,9 +26,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.database.db.company.EnergyCompany;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.util.ServletUtil;
 
@@ -43,12 +45,13 @@ public class ReportBean
 	/**
 	 * @deprecated see getter method
 	 */
-	private ReportModelBase model = null;
+	@Deprecated
+    private ReportModelBase model = null;
 	private String type = "";
 	private Vector<ReportTypes> availReportTypes = new Vector<ReportTypes>();
 	private String groupType = "";
 	private int userID = UserUtils.USER_YUKON_ID;
-	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
+	private int energyCompanyID = YukonEnergyCompanyService.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private String start = "";
     private Date startDate = null;
@@ -88,7 +91,9 @@ public class ReportBean
 			loadReportTypes();
 			final Vector<ReportTypes> reportTypes = getReportTypes();
 			if(!reportTypes.isEmpty())
-				setType(reportTypes.get(0));	//default to the first one
+             {
+                setType(reportTypes.get(0));	//default to the first one
+            }
 			setChanged(true);
 		}
 	}
@@ -180,14 +185,16 @@ public class ReportBean
 	}
     
 	public ReportTypes getReportType() {
-		if (type != "")
-			return ReportTypes.valueOf(type);
+		if (type != "") {
+            return ReportTypes.valueOf(type);
+        }
 		return null;
 	}
 
 	public ReportGroup getReportGroup() {
-		if( groupType != "")
-			return ReportGroup.valueOf(groupType);
+		if( groupType != "") {
+            return ReportGroup.valueOf(groupType);
+        }
 		return null;
 	}
 
@@ -199,8 +206,9 @@ public class ReportBean
 	 */
 	public ReportModelBase getModel()
 	{
-		if( getReportController() == null)
-			return null;
+		if( getReportController() == null) {
+            return null;
+        }
 		return getReportController().getReport().getModel();
 	}
     
@@ -259,8 +267,9 @@ public class ReportBean
 	}
 
 	public String buildOptionsHTML() {
-		if( getModel() == null)
-			return "";
+		if( getModel() == null) {
+            return "";
+        }
 
 		return reportController.getHTMLOptionsTable();
 	}
@@ -297,7 +306,9 @@ public class ReportBean
 		{
 			//Need to replace types with the settlement report types based on the energyCompany's Settlement list and yukonListEntries.
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID() );
-			YukonSelectionList list = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
+			SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
+			YukonSelectionList list = selectionListService.getSelectionList(liteEC,
+                                        YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
             List<YukonListEntry> yukListEntries = list.getYukonListEntries();
 			//Loop through all list entries, there may be more than one settlement type per energycompany.
 			for (int i = 0; i < yukListEntries.size(); i ++)
@@ -307,20 +318,22 @@ public class ReportBean
 				//Loop through all reportTypes per yukDefID and add them to intList.
 				availReportTypes = settlementTypes;
 			}
-		}
-		else
-			availReportTypes = ReportTypes.getGroupReportTypes(getReportGroup());
+		} else {
+            availReportTypes = ReportTypes.getGroupReportTypes(getReportGroup());
+        }
 	}
     
     public ReportController getReportController() {
-    	if (reportController == null || isChanged())
-    		createController();
+    	if (reportController == null || isChanged()) {
+            createController();
+        }
         return reportController;
     }
 
     public void createController() {
-    	if( getReportType() != null)
-    		reportController = ReportTypes.create(getReportType());
+    	if( getReportType() != null) {
+            reportController = ReportTypes.create(getReportType());
+        }
     	
         if (reportController == null) {
             setModel(null);

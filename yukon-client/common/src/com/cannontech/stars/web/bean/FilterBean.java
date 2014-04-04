@@ -21,6 +21,7 @@ import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.ECUtils;
@@ -93,7 +94,7 @@ public class FilterBean
     
     public YukonSelectionList getAvailableFilters() {
         if (availableFilters == null){
-            availableFilters = energyCompany.getYukonSelectionList(filterListName, true, true);
+            availableFilters = getSelectionList(filterListName);
         }
         return availableFilters;
     }
@@ -106,15 +107,17 @@ public class FilterBean
     
     public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
-        if(availableMembers == null)
+        if(availableMembers == null) {
             availableMembers = ECUtils.getAllDescendants(energyCompany);
+        }
         return availableMembers;
     }
     
     public YukonSelectionList getAvailableDeviceTypes()
     {
-        if(availableDeviceTypes == null)
-            availableDeviceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, true, true);
+        if(availableDeviceTypes == null) {
+            availableDeviceTypes = getSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+        }
         return availableDeviceTypes;
     }
     
@@ -131,8 +134,9 @@ public class FilterBean
         if(availableDesignationCodes == null)
         {
         	availableDesignationCodes = new ArrayList<ServiceCompanyDesignationCode>();
-        	for(int i = 0; i < getAvailableServiceCompanies().size(); i++)
-        		availableDesignationCodes.addAll(getAvailableServiceCompanies().get(i).getDesignationCodes());
+        	for(int i = 0; i < getAvailableServiceCompanies().size(); i++) {
+                availableDesignationCodes.addAll(getAvailableServiceCompanies().get(i).getDesignationCodes());
+            }
         	
         	
         	Collections.sort(availableDesignationCodes, codeComparator);
@@ -142,29 +146,33 @@ public class FilterBean
 
     public List<Warehouse> getAvailableWarehouses()
     {
-        if(availableWarehouses == null)
+        if(availableWarehouses == null) {
             availableWarehouses = energyCompany.getAllWarehousesDownward();
+        }
         return availableWarehouses;
     }
     
     public YukonSelectionList getAvailableDeviceStates()
     {
-        if(availableDeviceStates == null)
-            availableDeviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true);
+        if(availableDeviceStates == null) {
+            availableDeviceStates = getSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+        }
         return availableDeviceStates;
     }
     
     public YukonSelectionList getAvailableServiceTypes()
     {
-        if(availableServiceTypes == null)
-            availableServiceTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        if(availableServiceTypes == null) {
+            availableServiceTypes = getSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE);
+        }
         return availableServiceTypes;
     }
 
     public YukonSelectionList getAvailableServiceStatuses()
     {
-        if(availableServiceStatuses == null)
-            availableServiceStatuses = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        if(availableServiceStatuses == null) {
+            availableServiceStatuses = getSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS);
+        }
         return availableServiceStatuses;
     }
 
@@ -175,19 +183,21 @@ public class FilterBean
     
     public void setAssignedFilters(ArrayList newFilters)
     {
-        if(newFilters != null)
+        if(newFilters != null) {
             assignedFilters = newFilters;
+        }
     }
 
     public YukonListEntry getDefaultFilterSelection() {
     	if( defaultFilterSelection == null)
     	{
-	    	if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY)
-	    		defaultFilterSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
-	    	else if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY)
-	    		defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
-	    	else
-	    		defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+	    	if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY) {
+                defaultFilterSelection = getAvailableServiceStatuses().getYukonListEntries().get(0);
+            } else if( getFilterListName() == YukonSelectionListDefs.YUK_LIST_NAME_INV_FILTER_BY) {
+                defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+            } else {
+                defaultFilterSelection = getAvailableDeviceTypes().getYukonListEntries().get(0);
+            }
     	}
         return defaultFilterSelection;
     }
@@ -219,7 +229,7 @@ public class FilterBean
         if(availableCustomerTypes == null)
         {
             availableCustomerTypes = new ArrayList<Pair<Integer,String>>();
-            YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
+            YukonSelectionList ciCustTypes = getSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE);
                
         	availableCustomerTypes.add(new Pair<Integer,String>(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
         	
@@ -239,5 +249,9 @@ public class FilterBean
         return noneString;
     }
     
+    private YukonSelectionList getSelectionList(String listName) {
+        SelectionListService listService = YukonSpringHook.getBean(SelectionListService.class);
+        return listService.getSelectionList(energyCompany, listName);
+    }
     
 }

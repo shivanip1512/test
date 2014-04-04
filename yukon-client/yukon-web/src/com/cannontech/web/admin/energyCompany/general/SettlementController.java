@@ -16,11 +16,11 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.settlement.model.AvailableRate;
 import com.cannontech.stars.dr.settlement.model.SettlementDto;
 import com.cannontech.stars.dr.settlement.service.SettlementService;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
@@ -31,13 +31,13 @@ import com.cannontech.web.security.annotation.AuthorizeByCparm;
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_SETTLEMENTS)
 @RequestMapping("/energyCompany/settlement/*")
 public class SettlementController { 
-    
-    private SettlementService settlementService;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonListDao yukonListDao;
+    @Autowired private SettlementService settlementService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private SelectionListService selectionListService;
     
     @RequestMapping("list")
-    public String list(YukonUserContext userContext, ModelMap modelMap, int ecId,
+    public String list(ModelMap modelMap, int ecId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         
@@ -51,8 +51,7 @@ public class SettlementController {
     }
     
     @RequestMapping(value="edit", method=RequestMethod.GET)
-    public String edit(YukonUserContext userContext, ModelMap modelMap, 
-                       EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+    public String edit(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
 
@@ -66,7 +65,7 @@ public class SettlementController {
     }
  
     @RequestMapping(value="edit", params="save", method=RequestMethod.POST)
-    public String save(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
+    public String save(ModelMap modelMap, FlashScope flashScope,
                        SettlementDto settlementDto, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         
@@ -77,9 +76,8 @@ public class SettlementController {
     }
     
     @RequestMapping(value="edit", params="cancel", method=RequestMethod.POST)
-    public String cancel(YukonUserContext userContext, ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+    public String cancel(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-
         return "redirect:list";
     }
 
@@ -106,8 +104,9 @@ public class SettlementController {
      * settlement name, it will return null.
      */
     private String getSettlementName(int energyCompanyId){
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
+        YukonEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        YukonSelectionList yukonSelectionList = selectionListService.getSelectionList(energyCompany, 
+                                                      YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
         
         List<YukonListEntry> settlementNames = yukonSelectionList.getYukonListEntries();
         for (YukonListEntry yukonListEntry : settlementNames) {
@@ -115,22 +114,6 @@ public class SettlementController {
         }
         
         return null;
-    }
-    
-    /* DI Setters */
-    @Autowired
-    public void setSettlementService(SettlementService settlementService) {
-        this.settlementService = settlementService;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
     }
 }
 

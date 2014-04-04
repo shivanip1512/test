@@ -21,6 +21,7 @@ import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.report.WorkOrderBase;
 import com.cannontech.stars.database.db.hardware.LMHardwareBase;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
@@ -62,8 +63,9 @@ public SAMToCRS_PTJ(Integer ptjID, Integer premiseNumber, String debtorNumber, S
 @Override
 public void add() throws java.sql.SQLException 
 {
-	if (getPTJID() == null)
-		setPTJID( getNextPTJID() );
+	if (getPTJID() == null) {
+        setPTJID( getNextPTJID() );
+    }
 
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getWorkOrderNumber(),
     		getStatusCode(), getDateTime_Completed(), getStarsUserName(), getExtract()};
@@ -96,9 +98,9 @@ public void retrieve() throws java.sql.SQLException
         setDateTime_Completed( (Date) results[4]);
         setStarsUserName( (String) results[5] );
         setExtract((Character)results[6]);
-    }
-    else
+    } else {
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
+    }
 }
 
 
@@ -126,8 +128,9 @@ public final Integer getNextPTJID() {
         if (rset.next())
         {
         	int tempID = rset.getInt(1) - 1;
-        	if( tempID < -1)	//only load a min if it's lower, can't use possitive numbers becuase ptj's come across with possitive numbers
-        		nextPTJID = tempID;
+        	if( tempID < -1) {
+                nextPTJID = tempID;
+            }
         }
     }
     catch (java.sql.SQLException e) {
@@ -135,8 +138,12 @@ public final Integer getNextPTJID() {
     }
     finally {
         try {
-            if (rset != null) rset.close();
-            if (pstmt != null) pstmt.close();
+            if (rset != null) {
+                rset.close();
+            }
+            if (pstmt != null) {
+                pstmt.close();
+            }
         }
         catch (java.sql.SQLException e2) {}
     }
@@ -240,8 +247,9 @@ public void setDateTime_Completed(Date timestamp) {
 }
 
 public Character getExtract() {
-	if( extract == null)
-		extract = new Character(' ');
+	if( extract == null) {
+        extract = new Character(' ');
+    }
 	return extract;
 }
 
@@ -261,18 +269,17 @@ public void setExtract(Character extract) {
 public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteAccountInfo liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
 {
     YukonListEntry workTypeEntry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
-    
+    SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
 //  Only run through the SAMToCRS process if workOrder came from CRS Integration.  The CRS PJT number is stored in the AdditionalOrderNumber field
     if(workOrderBase.getWorkOrderBase().getAdditionalOrderNumber() != null && 
        workOrderBase.getWorkOrderBase().getAdditionalOrderNumber().length() > 0)
     {
         String samToCrsStatus = null;
-        if( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
+        if( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED) {
             samToCrsStatus = "P";
-        else if ( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED )
+        } else if (stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED) {
             samToCrsStatus = "X";
-//      else if ( stateYukDefID == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED)
-//          samToCrsStatus = "C";
+        }
         
         if (samToCrsStatus != null && workTypeEntry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE)
         {
@@ -308,8 +315,9 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
         {
             int beginIndex = workOrderBase.getWorkOrderBase().getDescription().indexOf("Meter Number: ");    //"Meter Number: " is hardcoded in the creation of the PTJ using CRSIntegrator
             int endIndex = (beginIndex >= 0 ? workOrderBase.getWorkOrderBase().getDescription().indexOf(";", beginIndex + 14) : beginIndex);
-            if( beginIndex > -1 && endIndex > -1)
+            if( beginIndex > -1 && endIndex > -1) {
                 meterNumber = workOrderBase.getWorkOrderBase().getDescription().substring(beginIndex+14, endIndex);
+            }
         }
         
         MeterHardwareBase meterHardwareBase = MeterHardwareBase.retrieveMeterHardwareBase(workOrderBase.getWorkOrderBase().getAccountID(), meterNumber, liteStarsEC.getEnergyCompanyId());
@@ -319,7 +327,8 @@ public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrd
             if( lmHardwares.size() > 0)
             {
                 YukonListEntry devStateEntry = null;
-                YukonSelectionList invDevStateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
+                YukonSelectionList invDevStateList = selectionListService.getSelectionList(liteStarsEC, 
+                                                    YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS);
                 for (int i = 0; i < invDevStateList.getYukonListEntries().size(); i++)
                 {
                     if( invDevStateList.getYukonListEntries().get(i).getYukonDefID() == devStatYukDefID)

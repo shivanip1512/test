@@ -26,6 +26,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
@@ -49,6 +50,7 @@ public class ChangeDeviceTypeController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private YukonListDao yukonListDao;
+    @Autowired private SelectionListService selectionListService;
    
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
@@ -57,7 +59,8 @@ public class ChangeDeviceTypeController {
         YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
         
-        YukonSelectionList list = lec.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
+        YukonSelectionList list = selectionListService.getSelectionList(lec,
+                                                YukonSelectionListEnum.DEVICE_TYPE.getListName());
         List<YukonListEntry> deviceTypes = list.getYukonListEntries();
         List<YukonListEntry> validEntries = Lists.newArrayList();
         

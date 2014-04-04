@@ -22,7 +22,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.RowMapper;
@@ -47,6 +46,7 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.db.LMProgramWebPublishing;
 import com.cannontech.stars.database.db.appliance.ApplianceCategory;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -80,7 +80,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private YukonListDao yukonListDao;
+    private SelectionListService selectionListService;
     private YukonGroupDao yukonGroupDao;
     private EnergyCompanyDao energyCompanyDao;
     private EnergyCompanyService energyCompanyService;
@@ -380,103 +380,21 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return allApplianceCategories;
     }
 
-    public YukonSelectionList getYukonSelectionList(String listName, boolean useInherited, boolean useDefault) {
-        
-        YukonSelectionList yukonSelectionList = 
-            yukonListDao.findSelectionListByEnergyCompanyIdAndListName(getEnergyCompanyId(), listName);
-        if(yukonSelectionList != null) {
-            return yukonSelectionList;
-        }
-        
-        // If parent company exists, then search the parent company for the list
-        if (getParent() != null && useInherited) {
-            return getParent().getYukonSelectionList(listName, useInherited, useDefault);
-        }
-
-        if (useDefault && !yukonEnergyCompanyService.isDefaultEnergyCompany(this)) {
-            YukonSelectionList dftList = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList( listName, false, false );
-            if (dftList != null) {
-                // If the list is user updatable, returns a copy of the default list; otherwise returns the default list itself
-                if (dftList.isUserUpdateAvailable()) {
-                    return addYukonSelectionList( listName, dftList, true );
-                }
-
-                return dftList;
-            }
-        }
-        
-        return null;
-    }
-    
-    public YukonSelectionList getYukonSelectionList(String listName) {
-        return getYukonSelectionList(listName, true, true);
-    }
-    
     public List<HardwareType> getAvailableThermostatTypes() {
-        List<HardwareType> typeList = new ArrayList<HardwareType>();
-        
-        YukonSelectionList selectionList = this.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+        List<HardwareType> typeList = new ArrayList<>();
+        YukonSelectionList selectionList = 
+                selectionListService.getSelectionList(this, YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
         for(YukonListEntry entry : selectionList.getYukonListEntries()) {
             HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
             if(type.isThermostat()) {
                 typeList.add(type);
             }
         }
-        
         return typeList;
-        
-    }
-
-    private YukonSelectionList addYukonSelectionList(String listName, YukonSelectionList dftList, boolean populateDefault) {
-        try {
-            com.cannontech.database.data.constants.YukonSelectionList list =
-                    new com.cannontech.database.data.constants.YukonSelectionList();
-            com.cannontech.database.db.constants.YukonSelectionList listDB = list.getYukonSelectionList();
-            listDB.setOrdering(dftList.getOrdering().getDbString());
-            listDB.setSelectionLabel( dftList.getSelectionLabel() );
-            listDB.setWhereIsList( dftList.getWhereIsList() );
-            listDB.setListName( listName );
-            listDB.setUserUpdateAvailable("" + CtiUtilities.getBooleanCharacter(dftList.isUserUpdateAvailable()));
-            listDB.setEnergyCompanyId( getEnergyCompanyId() );
-
-            dbPersistentDao.performDBChange(list, TransactionType.INSERT);
-            listDB = list.getYukonSelectionList();
-            
-            YukonSelectionList cList = new YukonSelectionList();
-            StarsLiteFactory.setConstantYukonSelectionList(cList, listDB);
-            
-            if (populateDefault) {
-                for (int i = 0; i < dftList.getYukonListEntries().size(); i++) {
-                    YukonListEntry dftEntry = dftList.getYukonListEntries().get(i);
-                    if (dftEntry.getEntryOrder() < 0) {
-                        continue;
-                    }
-                    
-                    com.cannontech.database.db.constants.YukonListEntry entry =
-                            new com.cannontech.database.db.constants.YukonListEntry();
-                    entry.setListID( listDB.getListID() );
-                    entry.setEntryOrder( new Integer(dftEntry.getEntryOrder()) );
-                    entry.setEntryText( dftEntry.getEntryText() );
-                    entry.setYukonDefID( new Integer(dftEntry.getYukonDefID()) );
-                    dbPersistentDao.performDBChange(entry, TransactionType.INSERT);
-                    
-                    YukonListEntry cEntry = new YukonListEntry();
-                    StarsLiteFactory.setConstantYukonListEntry( cEntry, entry );
-                    cList.getYukonListEntries().add( cEntry );
-                }
-            }
-            
-            return cList;
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        
-        return null;
     }
     
     private YukonListEntry getYukonListEntry(YukonSelectionListEnum listType, int yukonDefID) {
-        YukonSelectionList list = getYukonSelectionList(listType.getListName());
+        YukonSelectionList list = selectionListService.getSelectionList(this, listType.getListName());
         for (int i = 0; i < list.getYukonListEntries().size(); i++) {
             YukonListEntry entry = list.getYukonListEntries().get(i);
             if (entry.getYukonDefID() == yukonDefID) {
@@ -907,7 +825,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     
     public StarsCustSelectionList getStarsCustSelectionList(String listName) {
         StarsCustSelectionList starsList = null;
-        YukonSelectionList yukonList = getYukonSelectionList( listName );
+        
+        YukonSelectionList yukonList = selectionListService.getSelectionList(this, listName);
         if (yukonList != null) {
             starsList = StarsLiteFactory.createStarsCustSelectionList( yukonList );
         }
@@ -1141,8 +1060,8 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
+    public void setSelectionListService(SelectionListService selectionListService) {
+        this.selectionListService = selectionListService;
     }
     
     public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
