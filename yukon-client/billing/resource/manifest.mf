@@ -16,8 +16,7 @@ Class-Path: ./
  jcpagelayout450K.jar 
  jradius-client.jar 
  junit.jar 
- mail.jar 
  saaj.jar 
- wsdl4j.jar 
+ wsdl4j-1.6.3.jar 
  ../export/ 
  ../log/ 

@@ -23,12 +23,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
@@ -45,12 +44,9 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.xml.namespace.SimpleNamespaceContext;
 import org.springframework.xml.transform.TransformerObjectSupport;
-import org.springframework.xml.transform.TraxUtils;
 import org.springframework.xml.xpath.XPathException;
 import org.springframework.xml.xpath.XPathOperations;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -69,7 +65,6 @@ import com.cannontech.common.util.ObjectMapper;
  * @since 1.0.0
  */
 public class SimpleXPathTemplate extends TransformerObjectSupport {
-
     private Properties namespaces;
 
     /** Returns namespaces used in the XPath expression. */
@@ -82,18 +77,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         this.namespaces = namespaces;
     }
 
-    /**
-     * Returns the root element of the given source.
-     *
-     * @param source the source to get the root element from
-     * @return the root element
-     */
-    protected Element getRootElement(Source source) throws TransformerException {
-        DOMResult domResult = new DOMResult();
-        transform(source, domResult);
-        Document document = (Document) domResult.getNode();
-        return document.getDocumentElement();
-    }
     private XPathFactory xpathFactory;
     private Source context;
 
@@ -418,15 +401,13 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         XPath xpath = xpathFactory.newXPath();
         if (getNamespaces() != null && !getNamespaces().isEmpty()) {
             SimpleNamespaceContext namespaceContext = new SimpleNamespaceContext();
-            namespaceContext.setBindings(getNamespaces());
+            for (Map.Entry<Object, Object> entry : getNamespaces().entrySet()) {
+                namespaceContext.bindNamespaceUri((String) entry.getKey(), (String) entry.getValue());
+            }
             xpath.setNamespaceContext(namespaceContext);
         }
         try {
-            if (TraxUtils.isStaxSource(context)) {
-                Element element = getRootElement(context);
-                return xpath.evaluate(expression, element, returnType);
-            }
-            else if (context instanceof SAXSource) {
+            if (context instanceof SAXSource) {
                 SAXSource saxSource = (SAXSource) context;
                 return xpath.evaluate(expression, saxSource.getInputSource(), returnType);
             }
@@ -440,9 +421,6 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
         catch (javax.xml.xpath.XPathException ex) {
             throw new XPathException("Could not evaluate XPath expression [" + expression + "]", ex);
-        }
-        catch (TransformerException ex) {
-            throw new XPathException("Could not transform context to DOM Node", ex);
         }
     }
 
@@ -486,5 +464,4 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         }
         this.context = new JDOMSource(document);
     }
-    
 }

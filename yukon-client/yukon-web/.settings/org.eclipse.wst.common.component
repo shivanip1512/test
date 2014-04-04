@@ -64,7 +64,7 @@
         <dependent-module archiveName="mx4j-tools.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mx4j-tools.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="mail.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mail.jar">
+        <dependent-module archiveName="javax.mail-api-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/javax.mail-api-1.5.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jdom.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom.jar">
@@ -101,9 +101,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-validator-1.4.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-validator-1.4.0.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="spring-ws-1.5.6-all.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/spring-ws-1.5.6-all.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="commons-httpclient.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-httpclient.jar">
@@ -167,9 +164,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jaxrpc.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jaxrpc.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="wsdl4j.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/wsdl4j.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jloox30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jloox30.jar">

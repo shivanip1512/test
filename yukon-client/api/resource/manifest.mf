@@ -4,4 +4,6 @@ Class-Path: ./
  loadcontrol.jar 
  joda-time-2.1.jar 
  commons-io-2.4.jar 
- spring-ws-1.5.5.jar 
+ spring-ws-core-2.1.4.RELEASE.jar 
+ wsdl4j-1.6.3.jar 
+ 

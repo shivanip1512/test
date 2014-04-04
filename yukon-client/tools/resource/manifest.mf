@@ -29,7 +29,7 @@ Class-Path: ./
  jaxm-runtime.jar 
  jaxm-api.jar 
  saaj.jar 
- wsdl4j.jar 
+ wsdl4j-1.6.3.jar 
  SchemaCompare.jar 
  ../log/ 
  ../export/ 

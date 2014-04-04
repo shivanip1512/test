@@ -1,7 +1,6 @@
 package com.cannontech.common.util.xml;
 
-import static org.junit.Assert.fail;
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.jdom.Element;
 import org.joda.time.LocalTime;
@@ -13,7 +12,6 @@ import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 
 public class YukonXPathTemplateTest {
-    
     /**
      * <testElement>
      *      <temperatureElement unit="F">abc</temperatureElement>
@@ -30,7 +28,6 @@ public class YukonXPathTemplateTest {
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
-        
     }
     
     /**
@@ -50,9 +47,9 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
         
-        Assert.assertNotNull(temperatureValue);
-        Assert.assertEquals(TemperatureUnit.FAHRENHEIT, temperatureValue.toFahrenheit().getUnit());
-        Assert.assertEquals(85.0, temperatureValue.toFahrenheit().getValue());
+        assertNotNull(temperatureValue);
+        assertEquals(TemperatureUnit.FAHRENHEIT, temperatureValue.toFahrenheit().getUnit());
+        assertEquals(85.0, temperatureValue.toFahrenheit().getValue(), 0.001);
     }
     
     /**
@@ -72,9 +69,9 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
         
-        Assert.assertNotNull(temperatureValue);
-        Assert.assertEquals(TemperatureUnit.CELSIUS, temperatureValue.toCelsius().getUnit());
-        Assert.assertEquals(26.0, temperatureValue.toCelsius().getValue());
+        assertNotNull(temperatureValue);
+        assertEquals(TemperatureUnit.CELSIUS, temperatureValue.toCelsius().getUnit());
+        assertEquals(26.0, temperatureValue.toCelsius().getValue(), 0.001);
     }
 
     /**
@@ -89,8 +86,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         ThermostatScheduleMode thermostatScheduleMode = yukonTemplate.evaluateAsEnum("/testElement/enumElement/@thermostatScheduleMode", ThermostatScheduleMode.class);
         
-        Assert.assertNotNull(thermostatScheduleMode);
-        Assert.assertEquals(ThermostatScheduleMode.WEEKDAY_WEEKEND, thermostatScheduleMode);
+        assertNotNull(thermostatScheduleMode);
+        assertEquals(ThermostatScheduleMode.WEEKDAY_WEEKEND, thermostatScheduleMode);
     }
 
     /**
@@ -105,8 +102,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         ThermostatScheduleMode thermostatScheduleMode = yukonTemplate.evaluateAsEnum("/testElement/enumElement/@thermostatScheduleMode", ThermostatScheduleMode.class);
         
-        Assert.assertNotNull(thermostatScheduleMode);
-        Assert.assertEquals(ThermostatScheduleMode.WEEKDAY_SAT_SUN, thermostatScheduleMode);
+        assertNotNull(thermostatScheduleMode);
+        assertEquals(ThermostatScheduleMode.WEEKDAY_SAT_SUN, thermostatScheduleMode);
     }
 
     /**
@@ -121,8 +118,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         ThermostatScheduleMode thermostatScheduleMode = yukonTemplate.evaluateAsEnum("/testElement/enumElement", ThermostatScheduleMode.class);
         
-        Assert.assertNotNull(thermostatScheduleMode);
-        Assert.assertEquals(ThermostatScheduleMode.WEEKDAY_WEEKEND, thermostatScheduleMode);
+        assertNotNull(thermostatScheduleMode);
+        assertEquals(ThermostatScheduleMode.WEEKDAY_WEEKEND, thermostatScheduleMode);
     }
 
     /**
@@ -168,8 +165,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
         
-        Assert.assertNotNull(localTime);
-        Assert.assertEquals(new LocalTime(19, 24), localTime);
+        assertNotNull(localTime);
+        assertEquals(new LocalTime(19, 24), localTime);
     }
     
     /**
@@ -184,8 +181,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
         
-        Assert.assertNotNull(localTime);
-        Assert.assertEquals(new LocalTime(5, 42), localTime);
+        assertNotNull(localTime);
+        assertEquals(new LocalTime(5, 42), localTime);
     }
 
     /**
@@ -200,7 +197,7 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
         
-        Assert.assertNull(localTime);
+        assertNull(localTime);
     }
 
     /**
@@ -215,8 +212,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
         
-        Assert.assertNotNull(localTime);
-        Assert.assertEquals(new LocalTime(19, 4), localTime);
+        assertNotNull(localTime);
+        assertEquals(new LocalTime(19, 4), localTime);
     }
 
     /**
@@ -231,8 +228,8 @@ public class YukonXPathTemplateTest {
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
         
-        Assert.assertNotNull(localTime);
-        Assert.assertEquals(new LocalTime(), localTime);
+        assertNotNull(localTime);
+        assertEquals(new LocalTime(), localTime);
     }
 
     /**
