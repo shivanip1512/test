@@ -2,11 +2,6 @@
 
 #include <limits.h>
 
-#include <rw/thr/thrfunc.h>
-#include <rw/toolpro/sockport.h>
-#include <rw/toolpro/inetaddr.h>
-#include <rw/toolpro/neterr.h>
-
 #include <boost/scoped_ptr.hpp>
 
 #include "dlldefs.h"
@@ -19,6 +14,7 @@
 #include "queue.h"
 #include "readers_writer_lock.h"
 #include "connection_base.h"
+#include "worker_thread.h"
 
 namespace cms {
 class Connection;
@@ -55,19 +51,19 @@ public:
 
 protected:
 
-    CtiConnection( const std::string& title, Que_t *inQ = NULL, INT tt = 3 );
-
+    CtiConnection( const std::string& title, Que_t *inQ = NULL, int termSeconds = 3 );
     virtual ~CtiConnection();
 
     std::string _name;
+    std::string _peerName;
     const std::string _title;
-
-    INT _termTime;
-
-    CtiTime _birth;
+    
+    const Cti::Timing::Chrono _termDuration;
+    
     CtiTime _lastInQueueWrite;
-
-    RWThreadFunction outthread;
+    CtiTime _peerConnectTime;
+    
+    Cti::WorkerThread _outthread;
 
     Que_t  _outQueue; // contains message to send
     Que_t* _inQueue;  // contains message received
@@ -76,7 +72,8 @@ protected:
     typedef Lock::reader_lock_guard_t  ReaderGuard;
     typedef Lock::writer_lock_guard_t  WriterGuard;
 
-    mutable Lock _connLock;
+    mutable Lock     _connLock;
+    mutable CtiMutex _peerMutex;
 
     // State Descriptions:
     union
@@ -101,18 +98,22 @@ protected:
 
     virtual bool establishConnection         () = 0;
     virtual void abortConnection             ();
-    virtual void deleteResources             ();
+    virtual void releaseResources            ();
     virtual void writeIncomingMessageToQueue ( CtiMessage* msg );
     virtual void messagePeek                 ( const CtiMessage& msg );
 
-    void checkCancellation ( INT mssleep = 0 );
+    void checkInterruption ();
+    void checkInterruption ( const Cti::Timing::Chrono &duration );
 
-    void OutThread        (); // OutBound messages to the applicaiton go through here
-    void ThreadInitiate   (); // This function starts the execution of the next two, which are threads.
+    void outThreadFunc    (); // OutBound messages to the application go through here
+    void threadInitiate   (); // This function starts the execution of the next two, which are threads.
     void cleanConnection  ();
     void forceTermination ();
     void destroyDestIn    ();
     void triggerReconnect ();
+    void resetPeer        ( const std::string &peerName );
+
+    boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
     std::auto_ptr<cms::Session> _sessionIn;
     std::auto_ptr<cms::Session> _sessionOut;

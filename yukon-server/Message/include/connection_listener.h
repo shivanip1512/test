@@ -11,14 +11,18 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 
     boost::shared_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
 
-    std::auto_ptr<cms::Session>                            _session;
-    std::auto_ptr<cms::Destination>                        _clientReplyDest;
-    std::auto_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
+    boost::scoped_ptr<cms::Session>                            _session;
+    boost::scoped_ptr<cms::Destination>                        _clientReplyDest;
+    boost::scoped_ptr<Cti::Messaging::ActiveMQ::QueueConsumer> _consumer;
 
     typedef std::map<std::string, CtiTime> DestTimeMap;
     DestTimeMap requestTimeMap;
 
-    CtiCriticalSection _closeConnectionMux;
+    typedef Cti::readers_writer_lock_t Lock;
+    typedef Lock::reader_lock_guard_t  ReaderGuard;
+    typedef Lock::writer_lock_guard_t  WriterGuard;
+
+    mutable Lock _connLock;
 
     bool _closed;
     bool _valid;
@@ -32,7 +36,6 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
 
     void releaseResources();
-    void closeConnection();
     bool validateRequest( const std::string &replyTo );
 
 public:

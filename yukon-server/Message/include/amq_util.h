@@ -168,10 +168,12 @@ class IM_EX_MSG ManagedProducer : public ManagedDestination
 protected:
     const boost::scoped_ptr<cms::MessageProducer> _producer;
 
-public:
     ManagedProducer ( cms::MessageProducer* producer );
 
+public:
     virtual ~ManagedProducer ();
+
+    virtual void close();
 
     void setTimeToLiveMillis ( long long time );
 
@@ -187,10 +189,12 @@ class IM_EX_MSG ManagedConsumer : public ManagedDestination
 protected:
     const boost::scoped_ptr<cms::MessageConsumer> _consumer;
 
-public:
     ManagedConsumer ( cms::MessageConsumer* consumer );
 
+public:
     virtual ~ManagedConsumer ();
+
+    virtual void close();
 
     void setMessageListener (cms::MessageListener * listener);
 
@@ -210,86 +214,80 @@ class IM_EX_MSG DestinationProducer : public ManagedProducer
 protected:
     const boost::scoped_ptr<cms::Destination> _dest;
 
+    DestinationProducer ( cms::MessageProducer* producer, cms::Destination *dest );
+
 public:
+    // allow the creation of destination producer for responding to replyTo destinations
     DestinationProducer ( cms::Session &session, cms::Destination *dest );
 
     virtual ~DestinationProducer ();
 
-    virtual const cms::Destination* getDestination () const;
+    const cms::Destination* getDestination () const;
 };
 
+/*-----------------------------------------------------------------------------
+  Managed destination message consumer
+-----------------------------------------------------------------------------*/
+class IM_EX_MSG DestinationConsumer : public ManagedConsumer
+{
+protected:
+    const boost::scoped_ptr<cms::Destination> _dest;
+
+    DestinationConsumer ( cms::MessageConsumer* consumer, cms::Destination *dest );
+public:
+
+    virtual ~DestinationConsumer ();
+
+    const cms::Destination* getDestination () const;
+};
 
 /*-----------------------------------------------------------------------------
   Managed Queue message producer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG QueueProducer : public ManagedProducer
+class IM_EX_MSG QueueProducer : public DestinationProducer
 {
-protected:
-    const boost::scoped_ptr<cms::Queue> _dest;
-
 public:
     QueueProducer ( cms::Session &session, cms::Queue* dest );
 
     virtual ~QueueProducer ();
-
-    virtual const cms::Destination* getDestination () const;
 };
-
 
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG QueueConsumer : public ManagedConsumer
+class IM_EX_MSG QueueConsumer : public DestinationConsumer
 {
-protected:
-    const boost::scoped_ptr<cms::Queue> _dest;
-
 public:
     QueueConsumer ( cms::Session &session, cms::Queue* dest );
 
     virtual ~QueueConsumer ();
-
-    virtual const cms::Destination* getDestination () const;
 };
-
 
 /*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG TopicConsumer : public ManagedConsumer
+class IM_EX_MSG TopicConsumer : public DestinationConsumer
 {
-protected:
-    const boost::scoped_ptr<cms::Topic> _dest;
-
 public:
     TopicConsumer ( cms::Session &session, cms::Topic* dest );
 
     TopicConsumer ( cms::Session &session, cms::Topic* dest, const std::string &selector );
 
     virtual ~TopicConsumer ();
-
-    virtual const cms::Destination* getDestination () const;
 };
-
 
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
-class IM_EX_MSG TempQueueConsumer : public ManagedConsumer
+class IM_EX_MSG TempQueueConsumer : public QueueConsumer
 {
-protected:
-    const boost::scoped_ptr<cms::TemporaryQueue> _dest;
-
 public:
     TempQueueConsumer ( cms::Session &session, cms::TemporaryQueue* dest );
 
     virtual ~TempQueueConsumer ();
 
-    void close ();
-
-    virtual const cms::Destination* getDestination () const;
+    virtual void close (); // override close to delete the destination
 };
-
 
 /*-----------------------------------------------------------------------------
   creator functions for Managed destinations message consumer / producer

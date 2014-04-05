@@ -6,13 +6,11 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 {
     const std::string _serverQueueName;
 
-    boost::scoped_ptr<Cti::Messaging::ActiveMQ::ManagedConnection> _connection;
-
     std::auto_ptr<CtiRegistrationMsg>      _regMsg;
     std::auto_ptr<CtiPointRegistrationMsg> _ptRegMsg;
 
-    CtiCriticalSection _abortConnMux;
-    bool               _canAbortConn;
+    CtiMutex _abortConnMux;
+    bool     _canAbortConn;
 
     void recordRegistration      ( const CtiMessage& msg );
     void recordPointRegistration ( const CtiMessage& msg );
@@ -22,7 +20,6 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     virtual bool establishConnection ();
     virtual void abortConnection     ();
-    virtual void deleteResources     ();
 
     std::auto_ptr<cms::ExceptionListener> _exceptionListener;
 
@@ -34,7 +31,7 @@ public:
 
     CtiClientConnection ( const std::string &serverQueueName,
                           Que_t *inQ = NULL,
-                          INT tt = 3 );
+                          int termSeconds = 3 );
 
     virtual ~CtiClientConnection ();
 };

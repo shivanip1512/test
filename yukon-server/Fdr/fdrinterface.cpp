@@ -479,8 +479,6 @@ BOOL CtiFDRInterface::stop( void )
 {
     try
     {
-        // tell dispatch we are shutting down
-        disconnect();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             logNow() << "Attemping to cancel threadFunctionReloadDb" << endl;
@@ -519,13 +517,8 @@ BOOL CtiFDRInterface::stop( void )
             logNow() << "All threads have joined up" << endl;
         }
 
-        {
-            ReaderGuard guard(iDispatchLock);
-            if( iDispatchConn )
-            {
-                iDispatchConn->close();
-            }
-        }
+        // tell dispatch we are shutting down
+        disconnect();
     }
     catch (...)
     {
@@ -845,6 +838,14 @@ CtiPointRegistrationMsg* CtiFDRInterface::buildRegistrationPointList()
 void CtiFDRInterface::disconnect( void )
 {
     sendMessageToDispatch( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15 ) );
+
+    {
+        ReaderGuard guard(iDispatchLock);
+        if( iDispatchConn )
+        {
+            iDispatchConn->close();
+        }
+    }
 }
 
 

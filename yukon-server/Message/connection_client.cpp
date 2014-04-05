@@ -12,12 +12,12 @@ using namespace Cti::Messaging::ActiveMQ;
 namespace { // anonymous
 
 template <typename MuxType>
-struct Barrier
+struct InsideScope
 {
     MuxType &_mux;
     bool    &_flag;
 
-    Barrier( MuxType& mux, bool &flag )
+    InsideScope( MuxType& mux, bool &flag )
         :   _mux(mux),
             _flag(flag)
     {
@@ -25,7 +25,7 @@ struct Barrier
         _flag = true;
     }
 
-    ~Barrier()
+    ~InsideScope()
     {
         CtiLockGuard<MuxType> lock(_mux);
         _flag = false;
@@ -45,10 +45,9 @@ volatile long CtiClientConnection::_clientConnectionCount = 0;
  */
 CtiClientConnection::CtiClientConnection( const string &serverQueueName,
                                           Que_t *inQ,
-                                          INT tt ) :
-    CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, tt ),
+                                          int termSeconds ) :
+    CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, termSeconds ),
     _serverQueueName( serverQueueName ),
-    _connection( new ManagedConnection( Broker::flowControlURI )),
     _canAbortConn( false )
 {
     // create exception listener and register function and caller
@@ -76,7 +75,13 @@ CtiClientConnection::~CtiClientConnection()
  */
 void CtiClientConnection::onException( const cms::CMSException& ex )
 {
-    _valid = false;
+    if( _valid )
+    {
+        _valid = false;
+
+        // interrupt the current or the next getQueue() call
+        _outQueue.interruptRead();
+    }
 
     logException( __FILE__, __LINE__, typeid(ex).name(), ex.getMessage() );
 }
@@ -91,7 +96,7 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
  */
 bool CtiClientConnection::establishConnection()
 {
-    Barrier<CtiCriticalSection> insideEstablishConn(_abortConnMux, _canAbortConn);
+    InsideScope<CtiMutex> insideEstablishConn(_abortConnMux, _canAbortConn);
 
     const long receiveMillis    = 1000 * 60 * 60;  // 1 hour
     const long timeToLiveMillis = 1000 * 60 * 120; // 2 hours
@@ -102,13 +107,24 @@ bool CtiClientConnection::establishConnection()
         {
             try
             {
-                // clean up activemq objects before resetting the connection
-                CtiConnection::deleteResources();
+                {
+                    CtiLockGuard<CtiMutex> lock(_abortConnMux);
+
+                    if( _dontReconnect )
+                    {
+                        return false;
+                    }
+
+                    // clean up activemq objects before resetting the connection
+                    CtiConnection::releaseResources();
+
+                    _connection.reset( new ManagedConnection( Broker::flowControlURI ));
+                }
 
                 logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"."
                                          "\nbroker URI: \"" + _connection->getBrokerUri() + "\"" );
 
-                // reset and start connection to the broker, throws ConnectionException
+                // start connection to the broker, throws ConnectionException
                 _connection->start();
 
                 logDebug( __FUNCTION__, "connected to the broker" );
@@ -156,6 +172,8 @@ bool CtiClientConnection::establishConnection()
 
                         _producer.reset( createDestinationProducer( *_sessionOut, inMessage->getCMSReplyTo() ));
 
+                        resetPeer( _producer->getDestPhysicalName() );
+
                         _valid = true;
 
                         logStatus( __FUNCTION__, "successfully connected.\n"
@@ -166,8 +184,8 @@ bool CtiClientConnection::establishConnection()
                     {
                         logStatus( __FUNCTION__, "timeout while trying to connect to \"" + _serverQueueName + "\". reconnecting." );
 
-                        // check for a cancellation before re-sending a handshake message
-                        checkCancellation();
+                        // check for thread interruption before re-sending a handshake message
+                        checkInterruption();
                     }
                 }
             }
@@ -188,8 +206,8 @@ bool CtiClientConnection::establishConnection()
                 }
             }
 
-            // check for a cancellation after each connection attempt
-            checkCancellation();
+            // check for thread interruption after each connection attempt
+            checkInterruption();
         }
 
         if( _dontReconnect )
@@ -238,15 +256,17 @@ bool CtiClientConnection::establishConnection()
 }
 
 /**
- * Abort the connection
+ * Abort the connection attempt and disable reconnection
  */
 void CtiClientConnection::abortConnection()
 {
     try
     {
-        CtiLockGuard<CtiCriticalSection> lock(_abortConnMux);
+        CtiLockGuard<CtiMutex> lock(_abortConnMux);
 
-        if( _canAbortConn )
+        _dontReconnect = true;
+
+        if( _connection && _canAbortConn )
         {
             // Close the connection as well as any child session, consumer, producer
             _connection->close();
@@ -256,16 +276,6 @@ void CtiClientConnection::abortConnection()
     {
         // since we are shutting down, we dont care about exceptions
     }
-}
-
-/**
- * delete cms resources and destroy connection object
- */
-void CtiClientConnection::deleteResources()
-{
-    CtiConnection::deleteResources();
-
-    _connection.reset();
 }
 
 /**
@@ -321,21 +331,27 @@ void CtiClientConnection::messagePeek( const CtiMessage& msg )
 {
     try
     {
-        if( msg.isA() == MSG_REGISTER )
+        switch( msg.isA() )
         {
-            recordRegistration( msg );
-        }
-        else if( msg.isA() == MSG_POINTREGISTRATION )
-        {
-            recordPointRegistration( msg );
-        }
-        else if( msg.isA() == MSG_MULTI )
-        {
-            const CtiMultiMsg& pMulti = dynamic_cast<const CtiMultiMsg&>( msg );
-
-            for(int i = 0; i < pMulti.getCount() && i < 3; i++)    // Only look at the first three entries
+            case MSG_REGISTER:
             {
-                messagePeek( *pMulti.getData()[i] );               // recurse.
+                recordRegistration( msg );
+                break;
+            }
+            case MSG_POINTREGISTRATION:
+            {
+                recordPointRegistration( msg );
+                break;
+            }
+            case MSG_MULTI:
+            {
+                const CtiMultiMsg& pMulti = dynamic_cast<const CtiMultiMsg&>( msg );
+
+                for(int i = 0; i < pMulti.getCount() && i < 3; i++)    // Only look at the first three entries
+                {
+                    messagePeek( *pMulti.getData()[i] );               // recurse.
+                }
+                break;
             }
         }
     }

@@ -141,7 +141,7 @@ void ManagedConnection::closeConnection()
         // log error if close has failed
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime::now() << "Error closing ActiveMQ connection: \"" << errorMessage << "\" "
+            dout << CtiTime::now() << " Error closing ActiveMQ connection: \"" << errorMessage << "\" "
                  << ((attempt != maxAttempt) ? ", will retry " : " ") << __FILE__ << " ("<< __LINE__ << ")" << endl;
         }
 
@@ -188,7 +188,7 @@ void ManagedConnection::start()
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime::now() << "Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
+                    dout << CtiTime::now() << " Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
                 }
 
                 prevMessage = e.getMessage();
@@ -292,6 +292,11 @@ void ManagedProducer::send( cms::Message *message )
    _producer->send( message );
 }
 
+void ManagedProducer::close()
+{
+    return _producer->close();
+}
+
 /*-----------------------------------------------------------------------------
   Managed message consumer
 -----------------------------------------------------------------------------*/
@@ -324,9 +329,21 @@ cms::Message* ManagedConsumer::receiveNoWait()
     return _consumer->receiveNoWait();
 }
 
+void ManagedConsumer::close()
+{
+    return _consumer->close();
+}
+
 /*-----------------------------------------------------------------------------
   Managed destination message producer
 -----------------------------------------------------------------------------*/
+
+DestinationProducer::DestinationProducer( cms::MessageProducer *producer, cms::Destination *dest ) :
+    ManagedProducer( producer ),
+    _dest( dest )
+{
+}
+
 DestinationProducer::DestinationProducer( cms::Session &session, cms::Destination *dest ) :
     ManagedProducer( session.createProducer( dest )),
     _dest( dest )
@@ -342,13 +359,29 @@ const cms::Destination* DestinationProducer::getDestination() const
     return _dest.get();
 }
 
+/*-----------------------------------------------------------------------------
+  Managed destination message consumer
+-----------------------------------------------------------------------------*/
+DestinationConsumer::DestinationConsumer( cms::MessageConsumer *consumer, cms::Destination *dest ) :
+    ManagedConsumer( consumer ),
+    _dest( dest )
+{
+}
+
+DestinationConsumer::~DestinationConsumer()
+{
+}
+
+const cms::Destination* DestinationConsumer::getDestination() const
+{
+    return _dest.get();
+}
 
 /*-----------------------------------------------------------------------------
   Managed Queue message producer
 -----------------------------------------------------------------------------*/
 QueueProducer::QueueProducer( cms::Session &session, cms::Queue* dest ) :
-    ManagedProducer( session.createProducer( dest )),
-    _dest( dest )
+    DestinationProducer( session.createProducer( dest ), dest )
 {
 }
 
@@ -356,18 +389,11 @@ QueueProducer::~QueueProducer()
 {
 }
 
-const cms::Destination* QueueProducer::getDestination() const
-{
-    return _dest.get();
-}
-
-
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
 QueueConsumer::QueueConsumer( cms::Session &session, cms::Queue* dest ) :
-    ManagedConsumer( session.createConsumer( dest )),
-    _dest( dest )
+    DestinationConsumer( session.createConsumer( dest ), dest )
 {
 }
 
@@ -375,24 +401,16 @@ QueueConsumer::~QueueConsumer()
 {
 }
 
-const cms::Destination* QueueConsumer::getDestination() const
-{
-    return _dest.get();
-}
-
-
 /*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
 TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest ) :
-    ManagedConsumer( session.createConsumer( dest )),
-    _dest( dest )
+     DestinationConsumer( session.createConsumer( dest ), dest )
 {
 }
 
 TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest, const string &selector ) :
-    ManagedConsumer( session.createConsumer( dest, selector )),
-    _dest( dest )
+     DestinationConsumer( session.createConsumer( dest, selector ), dest )
 {
 }
 
@@ -400,18 +418,11 @@ TopicConsumer::~TopicConsumer()
 {
 }
 
-const cms::Destination* TopicConsumer::getDestination() const
-{
-    return _dest.get();
-}
-
-
 /*-----------------------------------------------------------------------------
   Managed temporary queue message consumer
 -----------------------------------------------------------------------------*/
 TempQueueConsumer::TempQueueConsumer( cms::Session &session, cms::TemporaryQueue* dest ) :
-    ManagedConsumer( session.createConsumer( dest )),
-    _dest( dest )
+    QueueConsumer( session, dest )
 {
 }
 
@@ -429,15 +440,10 @@ TempQueueConsumer::~TempQueueConsumer()
 
 void TempQueueConsumer::close()
 {
-    _consumer->close(); // close the message consumer (if it exist), before closing the destination
-    _dest->destroy();
-}
+    ManagedConsumer::close(); // close the message consumer, before closing the destination
 
-const cms::Destination* TempQueueConsumer::getDestination() const
-{
-    return _dest.get();
+    static_cast<cms::TemporaryQueue&>(*_dest).destroy();
 }
-
 
 }
 }

@@ -8,7 +8,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 using namespace Cti::Messaging::ActiveMQ;
 
-
 volatile long CtiServerConnection::_serverConnectionCount = 0;
 
 /**
@@ -19,13 +18,19 @@ volatile long CtiServerConnection::_serverConnectionCount = 0;
  */
 CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerConnection,
                                           Que_t *inQ,
-                                          INT tt ) :
-    CtiConnection( string( "Server Connection " ) + CtiNumStr( InterlockedIncrement( &_serverConnectionCount )), inQ, tt ),
-    _connection( listenerConnection.getConnection() ),
+                                          int termSeconds ) :
+    CtiConnection( string( "Server Connection " ) + CtiNumStr( InterlockedIncrement( &_serverConnectionCount )), inQ, termSeconds ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
     setName( listenerConnection.getServerQueueName() );
 
+    // use the same managed connection as the listener
+    _connection = listenerConnection.getConnection();
+
+    // set the outbound destination physical name
+    _peerName = destPhysicalName(*_replyDest);
+
+    // consider server connections valid by default
     _valid = true;
 }
 
@@ -129,14 +134,4 @@ bool CtiServerConnection::establishConnection()
 
         throw;
     }
-}
-
-/**
- * delete cms resources and destroy connection object
- */
-void CtiServerConnection::deleteResources()
-{
-    CtiConnection::deleteResources();
-
-    _connection.reset();
 }

@@ -70,6 +70,7 @@ private:
     queue_t      *_col;
     std::string   _name;
     unsigned int  _insertValue;
+    bool          _interruptRead;
 
     boost::xtime xt_eot;
 
@@ -95,7 +96,8 @@ public:
 
     CtiQueue() :
     _col(0),
-    _name("Unnamed Queue")
+    _name("Unnamed Queue"),
+    _interruptRead(false)
     {
         xt_eot.sec  = INT_MAX;
         xt_eot.nsec = 0;
@@ -105,6 +107,30 @@ public:
     {
         lock_t scoped_lock(mux, xt_eot);
         resetCollection();
+    }
+
+   /**
+    * interrupt a wait on the current or the next getQueue().
+    * the next getQueue() will return immediately with a NULL pointer or a valid object if the
+    * collection is not empty.
+    */
+    void interruptRead()
+    {
+        lock_t scoped_lock(mux, xt_eot);
+
+        try
+        {
+            dataAvailable.notify_one();
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            }
+        }
+
+        _interruptRead = true;
     }
 
     void putQueue(T *pt)
@@ -176,6 +202,13 @@ public:
             lock_t scoped_lock(mux, xt_eot);
             while( getCollection().empty() )
             {
+                if( _interruptRead )
+                {
+                    // if the collection is empty, reset the interrupt flag and return a NULL object
+                    _interruptRead = false;
+                    return NULL;
+                }
+
                 dataAvailable.wait(scoped_lock);
             }
 
@@ -183,6 +216,9 @@ public:
             getCollection().erase(getCollection().begin());
 
             // cerr << "Number of entries " << getCollection().entries() << endl;
+
+            // make sure the interrupt flag is false
+            _interruptRead = false;
         }
         catch(...)
         {
@@ -210,6 +246,13 @@ public:
             {
                 if(getCollection().empty())
                 {
+                    if( _interruptRead )
+                    {
+                        // if the collection is empty, reset the interrupt flag and return a NULL object
+                        _interruptRead = false;
+                        return NULL;
+                    }
+
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
                     if(wRes == true && !getCollection().empty())
@@ -223,6 +266,9 @@ public:
                     pval = (getCollection().begin())->dataPointer;
                     getCollection().erase(getCollection().begin());
                 }
+                
+                // make sure the interrupt flag is set to false
+                _interruptRead = false;
             }
             // mutex automatically released in LockGuard destructor
         }

@@ -45,45 +45,62 @@ CtiListenerConnection::~CtiListenerConnection()
  */
 void CtiListenerConnection::start()
 {
-    if( _valid && !_closed )
+    if( _valid || _closed )
     {
         return;
     }
 
-    if( _closed )
-    {
-        Sleep(1000);
-        return;
-    }
-
-    while( !_closed )
+    for( ; ; )
     {
         try
         {
-            logDebug( __FUNCTION__, "connecting to the broker." );
-
-            releaseResources();
-
+            //
+            // release resources and reset the connection
+            //
             {
-                CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+                WriterGuard guard(_connLock);
 
                 if( _closed )
                 {
-                    break; // prevent starting a new connection while closing
+                    // prevent starting a new connection while closing
+                    return;
                 }
+
+                releaseResources();
 
                 _connection.reset( new ManagedConnection( Broker::flowControlURI ));
             }
 
-            _connection->start();
+            logDebug( __FUNCTION__, "connecting to the broker." );
 
-            // Create a Session
-            _session.reset( _connection->createSession() );
+            //
+            // connect to the broker
+            //
+            {
+                ReaderGuard guard(_connLock);
+                _connection->start();
+            }
 
-            // Create managed queue consumer
-            _consumer.reset( createQueueConsumer( *_session, _serverQueueName ));
+            //
+            // create session and consumer
+            //
+            {
+                WriterGuard guard(_connLock);
 
-            _valid = true;
+                if( _closed )
+                {
+                    // connection has closed during broker connection attempt
+                    return;
+                }
+
+                // Create a Session
+                _session.reset( _connection->createSession() );
+
+                // Create managed queue consumer
+                _consumer.reset( createQueueConsumer( *_session, _serverQueueName ));
+
+                _valid = true;
+            }
 
             logStatus( __FUNCTION__, "successfully connected." );
 
@@ -111,7 +128,7 @@ void CtiListenerConnection::start()
 void CtiListenerConnection::close()
 {
     {
-        CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
+        ReaderGuard guard(_connLock);
 
         if( _closed )
         {
@@ -121,13 +138,23 @@ void CtiListenerConnection::close()
         // once the connection has been closed, it cannot be restarted
         _closed = true;
 
-        closeConnection();
+        if( _consumer )
+        {
+            // if the consumer exist, we are currently connected, close the consumer and release resources
+            _consumer->close();
+        }
+        else if( _connection )
+        {
+            // if the consumer does not exist, but the connection does, we are currently trying to establish a connection,
+            // abort the connection attempt by closing it.
+            _connection->close();
+        }
     }
 
-    // this delay allow to complete any functions we are currently in, before doing a cleanup
-    Sleep(1000);
-
-    releaseResources();
+    {
+        WriterGuard guard(_connLock);
+        releaseResources();
+    }
 
     logStatus( __FUNCTION__, "has closed." );
 }
@@ -138,7 +165,9 @@ void CtiListenerConnection::close()
  */
 bool CtiListenerConnection::verifyConnection()
 {
-    if( _closed || !_connection || !_connection->verifyConnection() )
+    ReaderGuard guard(_connLock);
+
+    if( !_connection || !_connection->verifyConnection() || _closed )
     {
         _valid = false;
     }
@@ -152,9 +181,9 @@ bool CtiListenerConnection::verifyConnection()
  */
 bool CtiListenerConnection::acceptClient()
 {
-    _clientReplyDest.reset();
+    ReaderGuard guard(_connLock);
 
-    if( _closed || !_valid )
+    if( !_valid || _closed )
     {
         return false;
     }
@@ -164,9 +193,9 @@ bool CtiListenerConnection::acceptClient()
         const int timeoutMillis = 1000 * 30; // 30 seconds
 
         // We should block here until the connection is closed or if there is a timeout
-        auto_ptr<cms::Message> message( _consumer->receive(timeoutMillis) );
+        boost::scoped_ptr<cms::Message> message( _consumer->receive(timeoutMillis) );
 
-        if( ! message.get() || message->getCMSType() != MessageType::clientInit || ! message->getCMSReplyTo() )
+        if( ! message || message->getCMSType() != MessageType::clientInit || ! message->getCMSReplyTo() )
         {
             return false;
         }
@@ -224,6 +253,8 @@ bool CtiListenerConnection::validateRequest( const string &replyTo )
  */
 boost::shared_ptr<ManagedConnection> CtiListenerConnection::getConnection() const
 {
+    ReaderGuard guard(_connLock);
+
     return _connection;
 }
 
@@ -235,7 +266,7 @@ auto_ptr<cms::Destination> CtiListenerConnection::getClientReplyDest() const
 {
     auto_ptr<cms::Destination> clone;
 
-    if( _clientReplyDest.get() )
+    if( _clientReplyDest )
     {
         clone.reset( _clientReplyDest->clone() );
     }
@@ -317,30 +348,7 @@ void CtiListenerConnection::logException( string fileName, int line, string exce
  */
 void CtiListenerConnection::releaseResources()
 {
-    CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
-
-    closeConnection();
-
     _consumer.reset();
     _session.reset();
     _connection.reset(); // release the shared_ptr (child server connection may still be sharing this)
-}
-
-/**
- * close the underlying cms connection if it exist
- */
-void CtiListenerConnection::closeConnection()
-{
-    try
-    {
-        if( _connection )
-        {
-            // Close the connection as well as any child session, consumer, producer, destinations
-            _connection->close();
-        }
-    }
-    catch(...)
-    {
-        // catch all exception, no throw
-    }
 }

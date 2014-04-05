@@ -1,5 +1,6 @@
 #pragma once
 
+#include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
 #include <rw/thr/condtion.h>

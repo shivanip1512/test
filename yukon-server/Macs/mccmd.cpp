@@ -43,6 +43,7 @@
 #include "smartmap.h"
 
 #include <rw/thr/thrutil.h>
+#include <rw/thr/thrfunc.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/range.hpp>

@@ -142,8 +142,7 @@ connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		configkey.h configval.h readers_writer_lock.h \
-		critical_section.h connection_base.h amq_util.h \
-		countdown_timer.h
+		critical_section.h connection_base.h amq_util.h
 connection_base.obj:	precompiled.h mutex.h dlldefs.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		connection_base.h

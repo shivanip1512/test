@@ -95,6 +95,8 @@ BeatThePeakAlertLevel.obj \
 xml.obj \
 DeviceAttributeLookup.obj \
 DeviceConfigLookup.obj \
+timing_util.obj \
+worker_thread.obj \
 
 
 CTIPROGS=\
