@@ -78,7 +78,11 @@ void CtiListenerConnection::start()
             //
             {
                 ReaderGuard guard(_connLock);
-                _connection->start();
+
+                if( _connection )
+                {
+                    _connection->start();
+                }
             }
 
             //
