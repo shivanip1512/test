@@ -724,8 +724,6 @@ void CtiConnection::checkInterruption( const Chrono &duration )
     }
     catch( WorkerThread::Interrupted& )
     {
-        logStatus( __FUNCTION__, "hola2" );
-
         logDebug( __FUNCTION__, "Connection Thread Interrupted.");
         forceTermination();
     }
