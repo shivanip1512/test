@@ -237,7 +237,7 @@ public enum PaoType implements DatabaseRepresentationSource {
 
     WEATHER_LOCATION(DeviceTypes.WEATHER_LOCATION, "WEATHER LOCATION", PaoCategory.DEVICE, PaoClass.VIRTUAL),
 
-    RF_DA(DeviceTypes.RF_DA, "RFDA", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RF_DA(DeviceTypes.RF_DA, "RF-DA", PaoCategory.DEVICE, PaoClass.RFMESH),
     ;
     
     private final int deviceTypeId;

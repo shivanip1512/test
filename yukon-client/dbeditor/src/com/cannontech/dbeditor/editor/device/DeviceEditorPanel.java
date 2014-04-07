@@ -48,7 +48,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PAOGroups.MCT440_2131B, PAOGroups.MCT440_2132B, PAOGroups.MCT440_2133B,  
             PAOGroups.RFWMETER,
             PAOGroups.IPC410FL, PAOGroups.IPC420FD, PAOGroups.IPC430S4E, PAOGroups.IPC430SL,
-            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4
+            PAOGroups.RFN430SL0, PAOGroups.RFN430SL1, PAOGroups.RFN430SL2, PAOGroups.RFN430SL3, PAOGroups.RFN430SL4,
+            PAOGroups.RF_DA
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
