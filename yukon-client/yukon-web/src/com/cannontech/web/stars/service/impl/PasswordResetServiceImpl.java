@@ -43,9 +43,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
 
 public class PasswordResetServiceImpl implements PasswordResetService {
-    private final Logger logger = YukonLogManager.getLogger(PasswordResetServiceImpl.class);
-    private final Cache<UUID, LiteYukonUser> userToPasswordSetCache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
-    
+    private final Logger log = YukonLogManager.getLogger(PasswordResetServiceImpl.class);
+    private final Cache<UUID, LiteYukonUser> userToPasswordSetCache =
+            CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
+
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
@@ -55,7 +56,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+
     @Override
     public PasswordResetInfo getPasswordResetInfo(String forgottenPasswordField) {
         // Check to see if we have a user that matches the information supplied
@@ -75,27 +76,32 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     @Override
-    public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContact, YukonUserContext userContext) {
-        
+    public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContact,
+            YukonUserContext userContext) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<LiteContactNotification> emailAddresses = contactNotificationDao.getNotificationsForContactByType(liteContact, ContactNotificationType.EMAIL);
+        List<LiteContactNotification> emailAddresses =
+                contactNotificationDao.getNotificationsForContactByType(liteContact, ContactNotificationType.EMAIL);
         if (emailAddresses.isEmpty()) {
             throw new NotFoundException("A valid email address was not found for the supplied contact "+liteContact);
         }
         
-        MessageSourceResolvable subjectKey = new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.subject");
+        MessageSourceResolvable subjectKey =
+                new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.subject");
         String subject = messageSourceAccessor.getMessage(subjectKey);
 
-        MessageSourceResolvable bodyKey = new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.body", forgottenPasswordResetUrl);
+        MessageSourceResolvable bodyKey =
+                new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.body",
+                    forgottenPasswordResetUrl);
         String htmlBody = messageSourceAccessor.getMessage(bodyKey);
         
         for (LiteContactNotification emailAddress : emailAddresses) {
             try {
                 EmailHtmlMessage emailMessage = 
-                        new EmailHtmlMessage(InternetAddress.parse(emailAddress.getNotification()), subject, htmlBody, htmlBody);
+                        new EmailHtmlMessage(InternetAddress.parse(emailAddress.getNotification()), subject, htmlBody,
+                            htmlBody);
                 emailService.sendMessage(emailMessage);
             } catch (MessagingException e) {
-                logger.error(e);
+                log.error("error sending email", e);
                 throw new EmailException(e);
             }
         }
@@ -105,11 +111,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     public String getPasswordResetUrl(String username, HttpServletRequest request) {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
         String passwordResetKey = getPasswordKey(user);
-        
+
         String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
-        String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
-        baseurl += "/login/changePassword?k=" + passwordResetKey;
-        
+        String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL,
+            defaultYukonExternalUrl.toString())+ "/login/changePassword?k=" + passwordResetKey;
+
         return baseurl;
     }
 
@@ -139,7 +145,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         
         passwordResetInfo.setUser(yukonUserDao.findUserByUsername(forgottenPasswordField));
         if (passwordResetInfo.isValidUser()) {
-            List<LiteContact> passwordResetContacts = contactDao.getContactsByLoginId(passwordResetInfo.getUser().getUserID());
+            List<LiteContact> passwordResetContacts =
+                    contactDao.getContactsByLoginId(passwordResetInfo.getUser().getUserID());
             if (!passwordResetContacts.isEmpty()) {
                 passwordResetInfo.setContact(passwordResetContacts.get(0));
             }
@@ -149,13 +156,15 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     /**
-     * This method will attempt to get the passwordResetInfo by the email address.  It will attempt to get a user attached to that email
-     * address or set the user to null if one doesn't exist.
+     * This method will attempt to get the passwordResetInfo by the email address.  It will attempt to get a user
+     * attached to that email address or set the user to null if one doesn't exist.
      */
     private PasswordResetInfo getPasswordResetInfoByEmailAddress(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
         //get all contact notifications by email address
-        List<LiteContactNotification> contactNotifications = contactNotificationDao.getNotificationsForNotificationByType(forgottenPasswordField, ContactNotificationType.EMAIL);
+        List<LiteContactNotification> contactNotifications =
+                contactNotificationDao.getNotificationsForNotificationByType(forgottenPasswordField,
+                    ContactNotificationType.EMAIL);
         HashSet<Integer> contactIDs = Sets.newHashSet();
         //make sure if more then 1 email found it is for the same contact
         for (LiteContactNotification contactNotification : contactNotifications) {
@@ -173,8 +182,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     }
 
     /**
-     * This method will attempt to get the passwordResetInfo by the account number.  This method will use all the energy companies in 
-     * the system to track down the supplied account.  After that it will use the account to derive the user and primary contact information.
+     * This method will attempt to get the passwordResetInfo by the account number. This method will use all
+     * the energy companies in the system to track down the supplied account. After that it will use the
+     * account to derive the user and primary contact information.
      */
     private PasswordResetInfo getPasswordResetInfoByAccountNumber(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
@@ -191,5 +201,4 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         
         return passwordResetInfo;
     }
-
 }

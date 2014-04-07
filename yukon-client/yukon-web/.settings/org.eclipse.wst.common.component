@@ -64,7 +64,10 @@
         <dependent-module archiveName="mx4j-tools.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mx4j-tools.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="javax.mail-api-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/javax.mail-api-1.5.1.jar">
+        <dependent-module archiveName="mailapi-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mailapi-1.5.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="smtp-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/smtp-1.5.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jdom.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom.jar">
