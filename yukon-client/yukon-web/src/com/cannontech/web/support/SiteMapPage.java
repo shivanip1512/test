@@ -59,7 +59,7 @@ public enum SiteMapPage implements DisplayableEnum {
     ESTIMATED_LOAD(SiteMapCategory.DR, "yukon.web.modules.dr.estimatedLoad.pageName", "/dr/estimatedLoad/home",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, YukonRole.LM_DIRECT_LOADCONTROL),
 
-    AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.normal.pageName", "/capcontrol/tier/areas",
+    AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.pageName", "/capcontrol/tier/areas",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
     IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedule/schedules",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
