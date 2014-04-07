@@ -11,19 +11,23 @@ namespace Timing {
  */
 class IM_EX_CTIBASE Chrono
 {
-    boost::optional<unsigned long> _millis;
+    enum DurationType {
+        Milliseconds,
+        Infinite
+    };
 
-    Chrono();
-    Chrono( unsigned long millis );
+    const unsigned long _millis;
+    const DurationType  _durationType;
+
+    Chrono( DurationType durationType, unsigned long millis );
 
 public:
     unsigned long milliseconds() const;
-
     std::string toString() const;
 
     operator bool() const
     {
-        return _millis;
+        return (_durationType != Infinite);
     }
 
     static Chrono milliseconds( unsigned long millis );

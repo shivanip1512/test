@@ -7,40 +7,39 @@
 namespace Cti {
 namespace Timing {
 
-Chrono::Chrono()
-{}
-
-Chrono::Chrono( unsigned long millis ) : _millis(millis)
-{}
+Chrono::Chrono( DurationType durationType, unsigned long millis ) :
+    _durationType(durationType),
+    _millis( millis )
+{
+}
 
 unsigned long Chrono::milliseconds() const
 {
-    assert( _millis );
-    return *_millis;
+    return _millis;
 }
 
 std::string Chrono::toString() const
 {
-    if( ! _millis )
+    if( _durationType == Infinite )
     {
-        return "undefined";
+        return "infinite";
     }
 
-    return CtiNumStr(*_millis) + " milliseconds";
+    return CtiNumStr(_millis) + " milliseconds";
 }
 
 Chrono Chrono::milliseconds( unsigned long millis )
 {
-    return Chrono(millis);
+    return Chrono( Milliseconds, millis);
 }
 
 Chrono Chrono::seconds( unsigned long seconds )
 {
     assert( seconds <= (ULONG_MAX / 1000) );
-    return Chrono(1000 * seconds);
+    return Chrono( Milliseconds, 1000 * seconds);
 }
 
-Chrono Chrono::infinite = Chrono();
+Chrono Chrono::infinite = Chrono( Infinite, std::numeric_limits<unsigned long>::max() );
 
 } // Timing
 } // Cti

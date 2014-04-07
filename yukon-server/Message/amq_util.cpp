@@ -91,12 +91,25 @@ ManagedConnection::ManagedConnection( const string &brokerUri ) :
     _brokerUri( brokerUri ),
     _closed( false )
 {
+    if( ! (_hCloseEvent = CreateEvent(NULL,FALSE,FALSE,NULL)) )
+    {
+        throw ConnectionException("Unexpected CreateEvent() has failed with error code: " + ::GetLastError() );
+    }
 }
 
 ManagedConnection::~ManagedConnection()
 {
-    // make sure connection is closed before destroying it
-    closeConnection();
+    try
+    {
+        // make sure connection is closed before destroying it
+        close();
+    }
+    catch(...)
+    {
+        // we dont care about exception in the destructor
+    }
+
+    ::CloseHandle(_hCloseEvent);
 }
 
 // YUK-12801 (workaround)
@@ -150,19 +163,45 @@ void ManagedConnection::closeConnection()
     }
 }
 
+void ManagedConnection::waitCloseEvent( unsigned millis )
+{
+    // expecting WaitForSingleObject() to return WAIT_TIMEOUT
+    // or WAIT_OBJECT_0 (if there is a connection close event).
+    
+    switch( ::WaitForSingleObject( _hCloseEvent, millis ) )
+    {
+        case WAIT_TIMEOUT:
+        {
+            return; // if its a timeout, do not throw and return;
+        }
+        case WAIT_OBJECT_0:
+        {
+            throw ConnectionException("Connection has closed");
+        }
+        // unexpected results
+        case WAIT_ABANDONED:
+        {
+            throw ConnectionException("Unexpected WAIT_ABANDONED");
+        }
+        case WAIT_FAILED:
+        {
+            throw ConnectionException("Unexpected WAIT_FAILED, error code: " + ::GetLastError() );
+        }
+    }
+}
 
 void ManagedConnection::start()
 {
-    const int initialReconnectDelay = 1;    // 1 sec
-    const int maxReconnectDelay     = 30;   // 30 sec
-    const int maxReconnectAttempts  = 120;  // 120 attempts (about 1 hour, considering 30 sec/attempt)
-    const int loggingFreq           = 10;   // every 10 attempt (about 5 min, considering 30 sec/attempt)
+    const unsigned initialReconnectMillis = 1000;       // 1 sec
+    const unsigned maxReconnectMillis     = 1000 * 30;  // 30 sec
+    const unsigned maxReconnectAttempts   = 120;        // 120 attempts (about 1 hour, considering 30 sec/attempt)
+    const unsigned loggingFreq            = 10;         // every 10 attempt (about 5 min, considering 30 sec/attempt)
 
     string prevMessage;
 
-    int reconnectDelay = initialReconnectDelay;
+    unsigned reconnectMillis = initialReconnectMillis;
 
-    for(int connAttempt = 1; connAttempt <= maxReconnectAttempts; connAttempt++)
+    for(unsigned connAttempt = 1; connAttempt <= maxReconnectAttempts; connAttempt++)
     {
         try
         {
@@ -193,20 +232,17 @@ void ManagedConnection::start()
 
                 prevMessage = e.getMessage();
             }
-
-            // re-throw if the connection is either closed or if we reach the maximum number of attempts
-            if( connAttempt >= maxReconnectAttempts )
-            {
-                throw ConnectionException("Maximum number of connection attempt has been reached");
-            }
         }
 
-        for(int sleepIter = 0; sleepIter < reconnectDelay && !_closed; sleepIter++)
+        // re-throw if we reach the maximum number of attempts
+        if( connAttempt == maxReconnectAttempts )
         {
-            Sleep(1000);
+            throw ConnectionException("Maximum number of connection attempt has been reached");
         }
 
-        reconnectDelay = min( 2 * reconnectDelay, maxReconnectDelay );
+        waitCloseEvent( reconnectMillis );
+
+        reconnectMillis = min( 2 * reconnectMillis, maxReconnectMillis );
     }
 }
 
@@ -214,7 +250,18 @@ void ManagedConnection::close()
 {
     ReaderGuard guard( _lock );
 
+    if( _closed )
+    {
+        return;
+    }
+
     _closed = true;
+
+    if( ! ::SetEvent( _hCloseEvent ) )
+    {
+        CtiLockGuard<CtiLogger> dout_guard(dout);
+        dout << CtiTime::now() << "Unexpected SetEvent() has failed with error code: " + ::GetLastError();
+    }
 
     closeConnection();
 }

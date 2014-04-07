@@ -101,7 +101,8 @@ class IM_EX_MSG ManagedConnection
 {
     const std::string _brokerUri;
 
-    bool _closed;
+    bool   _closed;
+    HANDLE _hCloseEvent;
 
     boost::scoped_ptr<cms::Connection> _connection;
 
@@ -112,6 +113,7 @@ class IM_EX_MSG ManagedConnection
     mutable Lock _lock;
 
     void closeConnection();
+    void waitCloseEvent( unsigned millis );
 
 public:
     ManagedConnection( const std::string& brokerUri );

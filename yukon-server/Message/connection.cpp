@@ -298,8 +298,8 @@ void CtiConnection::receiveAllMessages()
 
         while( (elapsedMillis = timer.elapsed()) < timeoutMillis )
         {
-            // receive with a timeout of 250 ms or less
-            ScopedMessage<cms::Message> msg( _consumer->receive( std::min<int>( 250, timeoutMillis - elapsedMillis )));
+            // receive with a timeout set to the remaining millis
+            ScopedMessage<cms::Message> msg( _consumer->receive( timeoutMillis - elapsedMillis ));
 
             if( ! msg.get() )
             {
@@ -475,8 +475,8 @@ void CtiConnection::close()
         {
             logDebug( __FUNCTION__, "waiting for outbound Queue to flush " + CtiNumStr(entries) + " entries." );
 
-            // sleep for 250 ms or less
-            Sleep( std::min<DWORD>( 250, _termDuration.milliseconds() - elapsedMillis ));
+            // sleep for 100 ms or less
+            Sleep( std::min<DWORD>( 100, _termDuration.milliseconds() - elapsedMillis ));
         }
 
         _outQueue.clearAndDestroy(); // Get rid of the evidence...
@@ -485,7 +485,7 @@ void CtiConnection::close()
         _outthread.interrupt();
 
         // interrupt the current or the next getQueue() call
-        _outQueue.interruptRead();
+        _outQueue.interruptNextRead();
 
         _outthread.tryJoinOrTerminateFor( Chrono::seconds(2) );
 
@@ -681,7 +681,7 @@ void CtiConnection::triggerReconnect()
         _valid = false;
     
         // interrupt the current or the next getQueue() call
-        _outQueue.interruptRead();
+        _outQueue.interruptNextRead();
     }
 }
 
