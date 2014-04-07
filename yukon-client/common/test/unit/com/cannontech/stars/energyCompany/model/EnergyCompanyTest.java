@@ -1,14 +1,19 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class EnergyCompanyTest {
     private final static Object[][] sampleEnergyCompaniesInfo = new Object[][] {
@@ -24,10 +29,17 @@ public class EnergyCompanyTest {
         {9, "Another Random Power Co.", "arpop", 200, null},
         {100, "We Pretend Power & Light", "wpop", 300, null},
         {101, "Don't You Dare Pizza!", "pizza", 301, 100},
+
+        {200, "Bobs grandson's grandson", "",   301, 201},
+        {201, "Bobs grandson", "",              301, 202},
+        {202, "Bobs child", "",                 301, 203},
+        {203, "Bob", "",                        301, null},
     };
 
+    Map<Integer, EnergyCompany> energyCompanies;
+
     private void basicTests(EnergyCompany ec, String name, int numberOfChildrenExpected, EnergyCompany parent) {
-        assertEquals("Wrong name for ecId " + ec.getEnergyCompanyId() + ".", name, ec.getName());
+        assertEquals("Wrong name for ecId " + ec.getId() + ".", name, ec.getName());
         assertEquals("Incorrect number of children of " + name + " EnergyCompany.",
             numberOfChildrenExpected, ec.getChildren().size());
 
@@ -40,11 +52,15 @@ public class EnergyCompanyTest {
     }
 
     private void verifyCorrectDescendants(EnergyCompany ec, EnergyCompany... descendants) {
-        assertTrue(ec.getDescendants(false).containsAll(ImmutableList.copyOf(descendants)));
+        List<EnergyCompany> descendantsList = Lists.newArrayList(descendants);
+        List<EnergyCompany> desc = ec.getDescendants(false);
+        assertTrue(ec.getDescendants(false).containsAll(descendantsList));
+        descendantsList.add(ec);
+        assertTrue(ec.getDescendants(true).containsAll(descendantsList));
     }
 
-    @Test
-    public void test() {
+    @Before
+    public void setupEnergyCompanies() {
         Builder builder = new EnergyCompany.Builder();
         int userId = 7000;
         for (Object[] sampleEcInfo : sampleEnergyCompaniesInfo) {
@@ -56,11 +72,14 @@ public class EnergyCompanyTest {
 
             builder.addEnergyCompany(ecId, name, new LiteYukonUser(++userId, userName), contactId, parentEcId);
         }
-        Map<Integer, EnergyCompany> energyCompanies = builder.build();
+        energyCompanies = builder.build();
 
         assertEquals("Incorrect number of EnergyCompany objects in map.",
             sampleEnergyCompaniesInfo.length, energyCompanies.size());
+    }
 
+    @Test
+    public void basicTests() {
         EnergyCompany mepl = energyCompanies.get(1);
         basicTests(mepl, "Middle Earth Power & Light", 3, null);
 
@@ -98,17 +117,40 @@ public class EnergyCompanyTest {
         verifyCorrectChildren(shire, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
         verifyCorrectChildren(wePretend, pizza);
 
-        verifyCorrectDescendants(mepl,
-            moria, shire, westernRegionsElectric, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
-        verifyCorrectDescendants(shire, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
-        verifyCorrectDescendants(wePretend, pizza);
-
         try {
             mepl.getChildren().add(pizza);
             fail("should throw exception");
         } catch (UnsupportedOperationException e) {
             // Cool beans...we aren't allowed to mess with the children list after the fact.
         }
+    }
+
+    @Test
+    public void test_descendants() {
+        EnergyCompany bob = energyCompanies.get(203);
+        EnergyCompany bobII = energyCompanies.get(202);
+        EnergyCompany bobIII = energyCompanies.get(201);
+        EnergyCompany bobIV = energyCompanies.get(200);
+
+        verifyCorrectDescendants(bob, bobII, bobIII, bobIV);
+        verifyCorrectDescendants(bobII, bobIII, bobIV);
+        verifyCorrectDescendants(bobIII, bobIV);
+        verifyCorrectDescendants(bobIV);
+
+        EnergyCompany mepl = energyCompanies.get(1);
+        EnergyCompany moria = energyCompanies.get(2);
+        EnergyCompany shire = energyCompanies.get(3);
+        EnergyCompany westernRegionsElectric = energyCompanies.get(4);
+        EnergyCompany northShireLoop = energyCompanies.get(5);
+        EnergyCompany westernTerritoriesOfShire = energyCompanies.get(6);
+        EnergyCompany durinTookGardens = energyCompanies.get(7);
+        EnergyCompany wePretend = energyCompanies.get(100);
+        EnergyCompany pizza = energyCompanies.get(101);
+
+        verifyCorrectDescendants(mepl,
+            moria, shire, westernRegionsElectric, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
+        verifyCorrectDescendants(shire, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
+        verifyCorrectDescendants(wePretend, pizza);
 
         try {
             mepl.getDescendants(false).add(pizza);

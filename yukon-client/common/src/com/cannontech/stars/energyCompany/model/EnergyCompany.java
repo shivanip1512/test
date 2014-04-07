@@ -1,6 +1,6 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public final class EnergyCompany implements YukonEnergyCompany {
     public int getEnergyCompanyId() {
         return ecId;
     }
-    
+
     public int getId() {
         return ecId;
     }
@@ -118,8 +118,7 @@ public final class EnergyCompany implements YukonEnergyCompany {
     public List<EnergyCompany> getDescendants(boolean addSelf) {
         ImmutableList.Builder<EnergyCompany> builder = ImmutableList.builder();
         for (EnergyCompany child : children) {
-            builder.add(child);
-            builder.addAll(child.getChildren());
+            builder.addAll(child.getDescendants(true));
         }
         if (addSelf) {
             builder.add(this);
