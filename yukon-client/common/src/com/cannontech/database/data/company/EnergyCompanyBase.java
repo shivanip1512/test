@@ -1,192 +1,90 @@
 package com.cannontech.database.data.company;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.cannontech.common.editor.EditorPanel;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.customer.Contact;
+import com.cannontech.database.db.CTIDbChange;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
-/**
- * Insert the type's description here.
- * Creation date: (12/6/00 3:54:11 PM)
- * @author: 
- */
+public class EnergyCompanyBase extends DBPersistent implements CTIDbChange, EditorPanel {
+    private EnergyCompany energyCompany = null;
 
-public class EnergyCompanyBase extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
-{
-	private com.cannontech.database.db.company.EnergyCompany energyCompany = null;
+    public EnergyCompanyBase() {
+        super();
+    }
 
-	//private CustomerAddress customerAddress = null;
-	//private CustomerWebSettings customerWebSettings = null;
-	//private CustomerBaseLine customerBaseLine = null;
-	
-	//contains com.cannontech.database.data.device.customer.CustomerContact
-	//private java.util.Vector operatorLoginsVector = null;
+    @Override
+    public void add() throws SQLException {
+        getEnergyCompany().add();
+    }
 
-	//containts com.cannontech.database.db.customer.CICustomerBase
-	private java.util.Vector ciCustomerVector = null;
-/**
- * LMProgramBase constructor comment.
- */
-public EnergyCompanyBase() {
-	super();
-}
-/**
- * This method was created in VisualAge.
- */
-public void add() throws java.sql.SQLException 
-{
-	getEnergyCompany().add();
-}
-/**
- * This method was created in VisualAge.
- */
-public void delete() throws java.sql.SQLException
-{
-/*	delete(
-		com.cannontech.database.db.device.lm.LMEnergyExchangeCustomerList.TABLE_NAME,
-		"CustomerID",
-		getCiCustomerBase().getDeviceID());
+    @Override
+    public void delete() throws SQLException {
+        delete("EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId());
+        delete("EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId());
+        getEnergyCompany().delete();
 
-	// delete all the ownership of meters for this customer
-	com.cannontech.database.db.pao.PAOowner.deleteAllPWOowners( getCiCustomerBase().getDeviceID(), getDbConnection() );
+        if (getEnergyCompany().getPrimaryContactId() != null
+            && getEnergyCompany().getPrimaryContactId().intValue() != CtiUtilities.NONE_ZERO_ID) {
+            Contact contact = new Contact();
+            contact.setContactID(getEnergyCompany().getPrimaryContactId());
+            contact.setDbConnection(getDbConnection());
+            contact.delete();
+        }
+    }
 
-	// delete all the contacts for this customer
-	com.cannontech.database.db.customer.CustomerContact.deleteAllCustomerContacts( getCiCustomerBase().getDeviceID(), getDbConnection() );
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        DBChangeMsg[] msgs =
+            { new DBChangeMsg(getEnergyCompany().getEnergyCompanyId().intValue(), DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                DBChangeMsg.CAT_ENERGY_COMPANY, dbChangeType) };
 
-	// delete all the relations from a graph to this customer
-	com.cannontech.database.db.customer.CustomerContact.deleteCustomerGraphList( getCiCustomerBase().getDeviceID(), getDbConnection() );
+        return msgs;
+    }
 
-	getCustomerWebSettings().delete();
-	delete("LMEnergyExchangeHourlyCustomer", "CustomerID", getCustomerID() );
-	delete("LMEnergyExchangeCustomerReply", "CustomerID", getCustomerID() );
-	delete("LMCurtailCustomerActivity", "CustomerID", getCustomerID() );
-		
-	getCiCustomerBase().delete();
+    public EnergyCompany getEnergyCompany() {
+        if (energyCompany == null) {
+            energyCompany = new EnergyCompany();
+        }
 
-	getCustomerBaseLine().delete();
-	
-	//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
-	getCustomerAddress().setAddressID( 
-				com.cannontech.database.db.customer.CICustomerBase.getCustomerAddressID(getCiCustomerBase().getDeviceID(), getDbConnection()) );
+        return energyCompany;
+    }
 
-	getCiCustomerBase().delete();
+    @Override
+    public void retrieve() throws java.sql.SQLException {
+        getEnergyCompany().retrieve();
+    }
 
-	getCustomerAddress().delete();
+    @Override
+    public void setDbConnection(Connection conn) {
+        super.setDbConnection(conn);
+        getEnergyCompany().setDbConnection(conn);
+    }
 
+    public void setEnergyCompany(EnergyCompany newEnergyCompany) {
+        energyCompany = newEnergyCompany;
+    }
 
-	super.delete();
+    public void setEnergyCompanyID(Integer ecID) {
+        getEnergyCompany().setEnergyCompanyId(ecID);
+    }
 
+    public void setName(String name) {
+        getEnergyCompany().setName(name);
+    }
 
-	setDbConnection(null);
-*/
-	delete( "EnergyCompanyCustomerList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId() );
-	delete( "EnergyCompanyOperatorLoginList", "EnergyCompanyID", getEnergyCompany().getEnergyCompanyId() );
-	getEnergyCompany().delete();
-	
-	if (getEnergyCompany().getPrimaryContactId() != null
-		&& getEnergyCompany().getPrimaryContactId().intValue() != com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID)
-	{
-		com.cannontech.database.data.customer.Contact contact =
-				new com.cannontech.database.data.customer.Contact();
-		contact.setContactID( getEnergyCompany().getPrimaryContactId() );
-		contact.setDbConnection( getDbConnection() );
-		contact.delete();
-	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (12/19/2001 1:45:25 PM)
- * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
- */
-public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType)
-{
-	DBChangeMsg[] msgs = {
-	        new DBChangeMsg(
-	                        getEnergyCompany().getEnergyCompanyId().intValue(),
-	                        DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-	                        DBChangeMsg.CAT_ENERGY_COMPANY,
-	                        dbChangeType)
-	};
+    public String getName() {
+        return getEnergyCompany().getName();
+    }
 
-	return msgs;
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:43:13 AM)
- * @return com.cannontech.database.db.company.EnergyCompany
- */
-public com.cannontech.database.db.company.EnergyCompany getEnergyCompany() 
-{
-	if( energyCompany == null )
-		energyCompany = new com.cannontech.database.db.company.EnergyCompany();
-
-	return energyCompany;
-}
-/**
- * This method was created in VisualAge.
- */
-public void retrieve() throws java.sql.SQLException
-{
-	getEnergyCompany().retrieve();
-}
-/**
- * Insert the method's description here.
- * Creation date: (1/4/00 3:32:03 PM)
- * @param conn java.sql.Connection
- */
-public void setDbConnection(java.sql.Connection conn)
-{
-	super.setDbConnection(conn);
-	getEnergyCompany().setDbConnection(conn);
-
-/*	for (int i = 0; i < getCustomerContactVector().size(); i++)
-		 ((com.cannontech.database.db.DBPersistent) getCustomerContactVector().elementAt(i)).setDbConnection(conn);
-
-	for (int i = 0; i < getGraphVector().size(); i++)
-		 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).setDbConnection(conn);
-
-	for (int i = 0; i < getMeterVector().size(); i++)
-		 ((com.cannontech.database.db.DBPersistent) getMeterVector().elementAt(i)).setDbConnection(conn);
-*/
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2002 10:43:13 AM)
- * @param newEnergyCompany com.cannontech.database.db.company.EnergyCompany
- */
-public void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany newEnergyCompany) {
-	energyCompany = newEnergyCompany;
-}
-/**
- * This method was created in VisualAge.
- * @param deviceID java.lang.Integer
- */
-public void setEnergyCompanyID(Integer ecID)
-{
-	getEnergyCompany().setEnergyCompanyId( ecID );
-}
-
-public void setName(String name) {
-	getEnergyCompany().setName(name);
-}
-
-public String getName() {
-	return getEnergyCompany().getName();
-}
-
-/**
- * This method was created in VisualAge.
- */
-public void update() throws java.sql.SQLException 
-{
-	getEnergyCompany().update();
-	
-	// delete all the customer contacts for this customer
-	//com.cannontech.database.db.customer.CustomerContact.deleteAllCustomerContacts( getCiCustomerBase().getDeviceID(), getCiCustomerBase().getDbConnection() );
-
-
-	// delete all the ownership of meters for this customer
-	//com.cannontech.database.db.pao.PAOowner.deleteAllPWOowners( getCiCustomerBase().getDeviceID(), getDbConnection() );
-	// add all the current selected meters for this customer
-	//for (int i = 0; i < getMeterVector().size(); i++)
-		 //((com.cannontech.database.db.pao.PAOowner) getMeterVector().elementAt(i)).add();	
-}
+    @Override
+    public void update() throws java.sql.SQLException {
+        getEnergyCompany().update();
+    }
 }
