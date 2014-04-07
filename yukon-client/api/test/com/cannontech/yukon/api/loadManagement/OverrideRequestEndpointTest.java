@@ -28,6 +28,7 @@ import com.cannontech.stars.dr.optout.exception.OptOutCountLimitException;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCounts;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
@@ -243,7 +244,7 @@ public class OverrideRequestEndpointTest {
     private class MockYukonEnergyCompanyService extends YukonEnergyCompanyServiceAdapter{
 
         @Override
-        public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+        public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
             return null;
         }
     }

@@ -1,15 +1,18 @@
 package com.cannontech.stars.core.service.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -25,7 +28,6 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -35,6 +37,8 @@ import com.google.common.collect.Maps;
 
 
 public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService {
+    private final Logger log = YukonLogManager.getLogger(YukonEnergyCompanyServiceImpl.class);
+
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -67,15 +71,59 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     @Override
     public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId); 
+        YukonEnergyCompany yukonEnergyCompany = getEnergyCompany(energyCompanyId);
         return yukonEnergyCompany;
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-        int energyCompanyId = getEnergyCompanyIdByOperator(operator);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        return energyCompany;
+    public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+        int ecId = getEnergyCompanyIdByOperator(operator);
+        return getEnergyCompany(ecId);
+    }
+    
+    @Override
+    public YukonEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+        try {
+            return getEnergyCompanyByOperator(user);
+        } catch (EnergyCompanyNotFoundException e) {
+            // either not an operator or no energy company associated
+            log.debug("EnergyCompany By Operator (" + user + ") Not Found: " + e);
+        }
+
+        // primary contact
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ectam.EnergyCompanyId");
+            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca, Customer cu, Contact c");
+            sql.append("WHERE ectam.AccountId = ca.AccountId");
+            sql.append("    AND ca.CustomerId = cu.CustomerId");
+            sql.append("    AND cu.PrimaryContactID = c.ContactID");
+            sql.append("    AND c.LoginId").eq(user.getUserID());
+
+            int ecId = jdbcTemplate.queryForInt(sql);
+            return getEnergyCompany(ecId);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            log.debug("EnergyCompany By Contact (" + user + ") Not Found: " + e);
+        }
+
+        // additional contact
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT ectam.EnergyCompanyId");
+            sql.append("FROM ECToAccountMapping ectam, CustomerAccount ca,");
+            sql.append("    CustomerAdditionalContact cac, Contact c");
+            sql.append("WHERE ectam.AccountId = ca.AccountId");
+            sql.append("    AND ca.CustomerId = cac.CustomerID");
+            sql.append("    AND cac.ContactID = c.ContactID");
+            sql.append("    AND c.LoginId").eq(user.getUserID());
+
+            int ecId = jdbcTemplate.queryForInt(sql);
+            return getEnergyCompany(ecId);
+        } catch(IncorrectResultSizeDataAccessException e) {
+            log.debug("EnergyCompany By AdditionalContact (" + user + ") Not Found: " + e);
+        }
+
+        throw new EnergyCompanyNotFoundException("Energy company doesn't exist for user " + user);
     }
 
     @Override
@@ -106,14 +154,13 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     @Override
     public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
-        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId); 
+        YukonEnergyCompany yukonEnergyCompany = getEnergyCompany(energyCompanyId); 
         return yukonEnergyCompany;
     }
     
     @Override
-    public List<YukonEnergyCompany> getAllEnergyCompanies() {
-        List<YukonEnergyCompany> energyCompanies = Lists.<YukonEnergyCompany>newArrayList(starsDatabaseCache.getAllEnergyCompanies());
-        return energyCompanies;
+    public List<EnergyCompany> getAllEnergyCompanies() {
+        return new ArrayList<>(getEnergyCompanies().values());
     }
 
     @Override
@@ -224,12 +271,13 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public synchronized EnergyCompany getEnergyCompany(final int ecId) {
-        if (energyCompanies == null) {
-            loadEnergyCompanies();
+    public synchronized EnergyCompany getEnergyCompany(int ecId) {
+        EnergyCompany energyCompany = getEnergyCompanies().get(ecId);
+        if (energyCompany == null) {
+            throw new EnergyCompanyNotFoundException("Energy company id = " + ecId + " does not exist.");
         }
-        
-        return energyCompanies.get(ecId);
+
+        return energyCompany;
     }
 
     @Override
@@ -248,19 +296,22 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return routeIds;
     }
 
-    private void loadEnergyCompanies() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");
-        sql.append(    "YU.UserId, UserName, Status, ForceReset, UserGroupId");
-        sql.append("FROM EnergyCompany EC");
-        sql.append("LEFT JOIN ECToGenericMapping ECM");
-        sql.append(    "ON EC.EnergyCompanyId = ECM.ItemID");
-        sql.append(    "AND ECM.MappingCategory").eq_k(EcMappingCategory.MEMBER);
-        sql.append("JOIN YukonUser YU on EC.UserId = YU.UserId");
-
-        EnergyCompanyRowCallbackHandler energyCompanyRowCallbackHandler = new EnergyCompanyRowCallbackHandler();
-        jdbcTemplate.query(sql, energyCompanyRowCallbackHandler);
-        energyCompanies = energyCompanyRowCallbackHandler.getEnergyCompanies();
+    private synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
+        if (energyCompanies == null) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");
+            sql.append(    "YU.UserId, UserName, Status, ForceReset, UserGroupId");
+            sql.append("FROM EnergyCompany EC");
+            sql.append("LEFT JOIN ECToGenericMapping ECM");
+            sql.append(    "ON EC.EnergyCompanyId = ECM.ItemID");
+            sql.append(    "AND ECM.MappingCategory").eq_k(EcMappingCategory.MEMBER);
+            sql.append("JOIN YukonUser YU on EC.UserId = YU.UserId");
+    
+            EnergyCompanyRowCallbackHandler energyCompanyRowCallbackHandler = new EnergyCompanyRowCallbackHandler();
+            jdbcTemplate.query(sql, energyCompanyRowCallbackHandler);
+            energyCompanies = energyCompanyRowCallbackHandler.getEnergyCompanies();
+        }
+        return energyCompanies;
     }
 
     private static class EnergyCompanyRowCallbackHandler implements YukonRowCallbackHandler {

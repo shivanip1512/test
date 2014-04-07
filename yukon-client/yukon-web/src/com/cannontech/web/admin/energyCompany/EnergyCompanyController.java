@@ -38,6 +38,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -86,10 +87,10 @@ public class EnergyCompanyController {
         
         if (superUser) {
             /* For super users show all energy companies. */
-            List<YukonEnergyCompany> companies =
+            List<EnergyCompany> companies =
                 Lists.newArrayList(yukonEnergyCompanyService.getAllEnergyCompanies());
             if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
-                Iterator<YukonEnergyCompany> iter = companies.iterator();
+                Iterator<EnergyCompany> iter = companies.iterator();
                 while (iter.hasNext()) {
                     YukonEnergyCompany ec = iter.next();
                     if (yukonEnergyCompanyService.isDefaultEnergyCompany(ec)) {
@@ -102,13 +103,13 @@ public class EnergyCompanyController {
             return "energyCompany/home.jsp";
         }
 
-        List<YukonEnergyCompany> companies = Lists.newArrayList();
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        
-        if (energyCompany != null && energyCompany.getOperatorLoginIDs().contains(user.getUserID())) {
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
+
+        List<EnergyCompany> companies = Lists.newArrayList();
+        if (lsec != null && lsec.getOperatorLoginIDs().contains(user.getUserID())) {
             /* If they belong to an energy company and are an operator, show energy company and all descendants. */
-            companies.addAll(ecMappingDao.getChildEnergyCompanies(energyCompany.getEnergyCompanyId()));
+            companies.addAll(energyCompany.getDescendants(false));
         }
         
         setupHomeModelMap(modelMap, user, companies);
@@ -215,18 +216,18 @@ public class EnergyCompanyController {
     
     /* Helper Methods */
     
-    private void setupHomeModelMap(ModelMap modelMap, LiteYukonUser user, List<YukonEnergyCompany> companies) {
+    private void setupHomeModelMap(ModelMap modelMap, LiteYukonUser user, List<EnergyCompany> companies) {
         modelMap.addAttribute("companies", companies);
         modelMap.addAttribute("parentLogins", getParentLogins(companies));
         modelMap.addAttribute("canManageMembers", energyCompanyService.canManageMembers(user));
         modelMap.addAttribute("loggedInUserId", user.getUserID());
     }
     
-    private Map<Integer, Integer> getParentLogins(Iterable<YukonEnergyCompany> companies) {
+    private Map<Integer, Integer> getParentLogins(Iterable<EnergyCompany> companies) {
         Map<Integer, Integer> parentLogins = Maps.newHashMap();
-        for (YukonEnergyCompany company : companies) {
+        for (EnergyCompany company : companies) {
             if(starsDatabaseCache.getEnergyCompany(company).getParent() != null) {
-                int energyCompanyId = company.getEnergyCompanyId();
+                int energyCompanyId = company.getId();
                 LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompanyId);
                 if (parentLogin != null) {
                     parentLogins.put(energyCompanyId, parentLogin.getUserID());

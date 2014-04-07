@@ -20,7 +20,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -164,9 +164,9 @@ public class SubstationController {
         Substation substation = new Substation();
         substation.setId(id);
 
-        List<YukonEnergyCompany> allEnergyCompanies = yukonEnergyCompanyService.getAllEnergyCompanies();
-        for (YukonEnergyCompany yukonEnergyCompany : allEnergyCompanies) {
-            energyCompanyService.removeSubstationFromEnergyCompany(yukonEnergyCompany.getEnergyCompanyId(), id);
+        List<EnergyCompany> allEnergyCompanies = yukonEnergyCompanyService.getAllEnergyCompanies();
+        for (EnergyCompany energyCompany : allEnergyCompanies) {
+            energyCompanyService.removeSubstationFromEnergyCompany(energyCompany.getId(), id);
         }
         
         strmDao.removeAllBySubstationId(id);
@@ -192,6 +192,7 @@ public class SubstationController {
     
     private class SubstationComparator implements Comparator<Substation> {
         
+        @Override
         public int compare(Substation o1, Substation o2) {
             return o1.getName().compareToIgnoreCase(o2.getName());
         }

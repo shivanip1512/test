@@ -18,6 +18,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
@@ -37,6 +38,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.Lists;
 
@@ -51,6 +53,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
 
     @Override
     public void doManualAdjustment(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
@@ -201,8 +204,9 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         log.debug("Sending porter ExpressCom broadcast command: " + command.getType());
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
-            LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) yecService.getEnergyCompanyByOperator(command.getUser());
-            int routeId = energyCompany.getDefaultRouteId();
+            EnergyCompany energyCompany = yecService.getEnergyCompanyByOperator(command.getUser());
+            LiteStarsEnergyCompany lsec = energyCompanyFactory.createEnergyCompany(energyCompany.getId());
+            int routeId = lsec.getDefaultRouteId();
             Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
             String xcomCommand = xcomCommandBuilder.getBroadcastCancelAllOptOuts(spid);
             

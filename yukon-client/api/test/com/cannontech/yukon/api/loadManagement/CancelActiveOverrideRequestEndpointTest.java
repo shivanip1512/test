@@ -22,6 +22,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.loadManagement.adapters.CustomerAccountDaoAdapter;
 import com.cannontech.yukon.api.loadManagement.adapters.LmHardwareBaseDaoAdapter;
@@ -191,7 +192,7 @@ public class CancelActiveOverrideRequestEndpointTest {
     private class MockYukonEnergyCompanyService extends YukonEnergyCompanyServiceAdapter {
 
         @Override
-        public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+        public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
             return null;
         }
     }

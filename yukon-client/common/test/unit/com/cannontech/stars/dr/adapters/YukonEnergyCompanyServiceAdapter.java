@@ -10,7 +10,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyService {
 
     @Override
-    public List<YukonEnergyCompany> getAllEnergyCompanies() {
+    public List<EnergyCompany> getAllEnergyCompanies() {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -25,7 +25,7 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+    public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
         throw new UnsupportedOperationException("not implemented");
     }
     
@@ -76,6 +76,11 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
 
     @Override
     public List<Integer> getRouteIds(int ecId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public YukonEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
         throw new UnsupportedOperationException("not implemented");
     }
 }
