@@ -6,10 +6,11 @@ import com.cannontech.common.util.LazyList;
 import com.cannontech.common.util.TimeZoneFormat;
 
 public class ExportFormat {
+    
     private int formatId;
     private ArchivedValuesExportFormatType formatType;
     private String formatName;
-    private String delimiter;
+    private String delimiter = DataExportDelimiter.COMMA.getValue();
     private String header;
     private String footer;
     private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
@@ -20,6 +21,7 @@ public class ExportFormat {
     public int getFormatId() {
         return formatId;
     }
+    
     public void setFormatId(int formatId) {
         this.formatId = formatId;
     }
@@ -27,6 +29,7 @@ public class ExportFormat {
     public ArchivedValuesExportFormatType getFormatType() {
         return formatType;
     }
+    
     public void setFormatType(ArchivedValuesExportFormatType formatType) {
         this.formatType = formatType;
     }
@@ -34,6 +37,7 @@ public class ExportFormat {
     public String getFooter() {
         return footer;
     }
+    
     public void setFooter(String footer) {
         this.footer = footer;
     }
@@ -41,6 +45,7 @@ public class ExportFormat {
     public String getHeader() {
         return header;
     }
+    
     public void setHeader(String header) {
         this.header = header;
     }
@@ -48,6 +53,7 @@ public class ExportFormat {
     public String getFormatName() {
         return formatName;
     }
+    
     public void setFormatName(String formatName) {
         this.formatName = formatName;
     }
@@ -55,6 +61,7 @@ public class ExportFormat {
     public String getDelimiter() {
         return delimiter;
     }
+    
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
     }
@@ -62,9 +69,11 @@ public class ExportFormat {
     public List<ExportAttribute> getAttributes() {
         return attributes;
     }
+    
     public void setAttributes(List<ExportAttribute> attributes) {
         this.attributes = attributes;
     }
+    
     public void addAttribute(ExportAttribute attribute) {
         attributes.add(attribute);
     }
@@ -72,6 +81,7 @@ public class ExportFormat {
     public List<ExportField> getFields() {
         return fields;
     }
+    
     public void setFields(List<ExportField> fields) {
         this.fields = fields;
     }
@@ -79,8 +89,13 @@ public class ExportFormat {
     public void setDateTimeZoneFormat(TimeZoneFormat tzFormat) {
         this.tzFormat = tzFormat;
     }
+    
     public TimeZoneFormat getDateTimeZoneFormat() {
         return tzFormat;
+    }
+    
+    public DataExportDelimiter getDelimiterType() {
+        return DataExportDelimiter.getForValue(delimiter);
     }
 
 }

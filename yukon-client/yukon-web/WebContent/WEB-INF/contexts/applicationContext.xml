@@ -1614,10 +1614,10 @@
 
     <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
 
-    <bean id="exportFormatValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFormatValidator"/>
-    <bean id="exportAttributeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportAttributeValidator"/>
-    <bean id="exportFieldValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.ExportFieldValidator"/>
-    <bean id="dataRangeValidator" class="com.cannontech.web.amr.archivedValuesExporter.validator.DataRangeValidator"/>
+    <bean id="exportFormatValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFormatValidator"/>
+    <bean id="exportAttributeValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportAttributeValidator"/>
+    <bean id="exportFieldValidator" class="com.cannontech.web.tools.dataExporter.validator.ExportFieldValidator"/>
+    <bean id="dataRangeValidator" class="com.cannontech.web.tools.dataExporter.validator.DataRangeValidator"/>
     
     <bean id="widgetHelper" class="com.cannontech.web.widget.AttributeReadingHelper"/>
     
@@ -1645,7 +1645,7 @@
     
     <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
         <property name="decider" ref="meterMenuDecider"/>
-        <constructor-arg value="/amr/archivedValuesExporter/view"/>
+        <constructor-arg value="/tools/data-exporter/view"/>
         <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
     </bean>
     <bean id="menuItemBulkCollectionAction" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">

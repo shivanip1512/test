@@ -17,9 +17,11 @@
 
 yukon.namespace('yukon.dialogConfirm');
 yukon.dialogConfirm = (function () {
+    
     var _initialized = false,
         _current_dialog = null,
-        _INDEX_OF_ACTION_BUTTON = 1, // Action button is the right of 2 buttons = [1]
+        _ok_event = 'yukon.dialog.confirm.ok',
+        _cancel_event = 'yukon.dialog.confirm.cancel',
 
         /*---------------------*/
         /* 'PRIVATE' functions */
@@ -47,15 +49,24 @@ yukon.dialogConfirm = (function () {
                     'title': args.strings.title,
                     'modal': true 
                 };
+            
             event.preventDefault();
             event.stopPropagation();
-            //determine the 'ok' and 'cancel' events
+            
             buttons.push({text: args.strings.cancel, click: _default._cancel_action});
-            buttons.push({text: args.strings.ok, click: _default._ok_action, 'class':'primary action'});
-            actionButton = buttons[_INDEX_OF_ACTION_BUTTON];
+            
+            actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action'};
+            buttons.push(actionButton);
 
-            //is the intent to redirect on ok?
-            if (element.attr("href")) {
+            // Determine the 'ok' and 'cancel' events.
+            if (element.attr('ok-event')) {
+                actionButton.click = function () {
+                    _current_dialog.trigger(element.attr('ok-event'));
+                    _close_dialog();
+                };
+            }
+            // Is the intent to redirect on ok?
+            else if (element.attr("href")) {
                 actionButton.click = function () {
                     _close_dialog();
                     window.location = element.attr("href");
@@ -77,7 +88,7 @@ yukon.dialogConfirm = (function () {
                     window.location = element.data("href");
                 };
             }
-            //is the intent to submit a form on ok?
+            // Is the intent to submit a form on ok?
             else if (element.attr("type") != undefined && element.attr("type").toLowerCase() == "submit") {
                 actionButton.click = function () {
                     var form = element.closest("form")[0],
@@ -89,19 +100,19 @@ yukon.dialogConfirm = (function () {
                     form.submit();
                 };
             }
-            //is the intent to submit a specific form on ok?
+            // Is the intent to submit a specific form on ok?
             else if (element.attr("data-form")) {
                 actionButton.click = function () {
                     $(element.attr("data-form"))[0].submit();
                 };
             }
 
-            //inject the message into the dialog
+            // Inject the message into the dialog
             $("#yukon_dialog_confirm .confirm-message").html(args.strings.message);
-            //show the dialog
+            // Show the dialog
             _current_dialog = $('#yukon_dialog_confirm').dialog($.extend(defaults, args));
             
-            // kindof a hack to get buttons disabled when the action is slow
+            // Kindof a hack to get buttons disabled when the action is slow
             if (args.disable_group) {
                 $('#yukon_dialog_confirm').closest('.ui-dialog').find('.ui-dialog-buttonset button').each(function (idx, button) {
                     var b = $(button);
@@ -122,19 +133,20 @@ yukon.dialogConfirm = (function () {
         _default = {
             _ok_action: function(event) {
                 if (_current_dialog) {
-                    _current_dialog.trigger("yukonDialogConfirmOk");
+                    _current_dialog.trigger(_ok_event);
                 }
                 _close_dialog();
             },
             
             _cancel_action: function(event) {
                 if (_current_dialog) {
-                    _current_dialog.trigger("yukonDialogConfirmCancel");
+                    _current_dialog.trigger(_cancel_event);
                 }
                 _close_dialog();
             }
         },
         mod = {};
+        
     /*---------------------*/
     /* 'PUBLIC' functions */
     /*---------------------*/
@@ -154,69 +166,69 @@ yukon.dialogConfirm = (function () {
     mod = {
         add : function (args) {
 
-            //initialize the dialog if needed
-            _init();
+        //initialize the dialog if needed
+        _init();
 
-            //the default values are NOT i18n'd.  The intent is for the developer to resolve
-            //these strings [title, message, ok, cancel] when calling this function
-            var defaults = {
-                    on: null,
-                    'eventType': 'click',
-                    'strings': {
-                        'title': "UNDEFINED TITLE",
-                        'message': "UNDEFINED MESSAGE",
-                        'ok': 'UNDEFINED OK TEXT',
-                        'cancel': 'UNDEFINED CANCEL TEXT'}
-                };
+        //the default values are NOT i18n'd.  The intent is for the developer to resolve
+        //these strings [title, message, ok, cancel] when calling this function
+        var defaults = {
+                on: null,
+                'eventType': 'click',
+                'strings': {
+                    'title': "UNDEFINED TITLE",
+                    'message': "UNDEFINED MESSAGE",
+                    'ok': 'UNDEFINED OK TEXT',
+                    'cancel': 'UNDEFINED CANCEL TEXT'}
+            };
 
-            $.extend(defaults, args);
+        $.extend(defaults, args);
 
-            if (defaults.on) {
-                //store the data on the element
-                var element = $(defaults.on);
-                element.data('args', defaults);
+        if (defaults.on) {
+            //store the data on the element
+            var element = $(defaults.on);
+            element.data('args', defaults);
 
-                //remove the href redirect for buttons as applied in yukon.js for buttons with 
-                //a data-href attribute since the binding is likely to be higher in the call
-                //stack than the binding for this function.  Simply removing the data-href attribute
-                //solves the problem as yukon.js binds that event to the document.
-                if (element.is('[data-href]')) {
-                    element.data('href', element.attr('data-href'));
-                    element.removeAttr('data-href');
-                }
-                if (element.is('[onclick]')) {
-                    element.data('onclick', element.attr('onclick'));
-                    element.removeAttr('onclick');
-                }
-
-                //register the event handler
-                $(document).on(defaults.eventType, defaults.on, _show_window);
-                return true;
+            //remove the href redirect for buttons as applied in yukon.js for buttons with 
+            //a data-href attribute since the binding is likely to be higher in the call
+            //stack than the binding for this function.  Simply removing the data-href attribute
+            //solves the problem as yukon.js binds that event to the document.
+            if (element.is('[data-href]')) {
+                element.data('href', element.attr('data-href'));
+                element.removeAttr('data-href');
             }
-            return false;
+            if (element.is('[onclick]')) {
+                element.data('onclick', element.attr('onclick'));
+                element.removeAttr('onclick');
+            }
+
+            //register the event handler
+            $(document).on(defaults.eventType, defaults.on, _show_window);
+            return true;
+        }
+        return false;
         },
 
-        /*
-         * Close the current dialog and perform the cancel action.  By default this 
-         * will trigger a 'yukonDialogConfirmCancel' event on the #yukon_dialog_confirm element
-         */
+    /*
+     * Close the current dialog and perform the cancel action.  By default this 
+     * will trigger a 'yukon.dialog.confirm.cancel' event on the #yukon_dialog_confirm element
+     */
         cancel : function () {
-            return _default._cancel_action;
+        return _default._cancel_action;
         },
 
-        /*
-         * Return the current dialog if exists, null otherwise
-         */
+    /*
+     * Return the current dialog if exists, null otherwise
+     */
         current_dialog : function () {
-           return _current_dialog; 
+       return _current_dialog; 
         },
         
-        /*
-         * Close the current dialog and perform the ok action.  By default this 
-         * will trigger a 'yukonDialogConfirmOk' event on the #yukon_dialog_confirm element
-         */
+    /*
+     * Close the current dialog and perform the ok action.  By default this 
+     * will trigger a 'yukon.dialog.confirm.ok' event on the #yukon_dialog_confirm element
+     */
         ok : function () {
-            return _default._ok_action;
+        return _default._ok_action;
         }
     };
     return mod;

@@ -1,7 +1,7 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <cti:includeScript link="JQUERY_DATE_TIME_ENTRY"/>
 <cti:includeScript link="JQUERY_MOUSEWHEEL"/>

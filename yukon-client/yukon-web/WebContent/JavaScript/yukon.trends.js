@@ -12,7 +12,7 @@ yukon.trends = (function() {
         
         init: function (trendId) {
             yukon.ui.elementGlass.show('[data-trend]');
-            $.getJSON(yukon.url('/trends/' + trendId + '/data'), function(trend) {
+            $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function(trend) {
                 
                 var labels = JSON.parse(decodeURIComponent($('#label-json').html()));
                 // Create the chart
@@ -119,7 +119,7 @@ yukon.trends = (function() {
                     ex = chart.series[0].xAxis.getExtremes(),
                     trendId = $(this).closest('li').data('trendId');
                 
-                window.location = yukon.url('/trends/' + trendId + '/csv?' + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
+                window.location = yukon.url('/tools/trends/' + trendId + '/csv?' + 'from=' + new Date(ex.min).getTime() + '&to=' + new Date(ex.max).getTime()); 
             });
         }
     };

@@ -2,7 +2,7 @@ var stopJobId;
 
 $(function() {
     
-    $(document).on('yukonDialogConfirmOk', function(event) {
+    $(document).on('yukon.dialog.confirm.ok', function(event) {
         event.preventDefault();
         //close the dialog
         yukon.dialogConfirm.cancel();

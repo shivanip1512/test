@@ -562,7 +562,7 @@ yukon.DeviceDataMonitor = (function () {
             $(_processor_add_btn_selector).on("click", _processor_add);
             $(_monitor_update_btn).on("click", _show_update_dialog);
             $(_monitor_toggle_btn).on("click", _monitor_toggle_enabled);
-            $(document).on("yukonDialogConfirmOk", _monitor_delete);
+            $(document).on("yukon.dialog.confirm.ok", _monitor_delete);
             $(document).on(_update_or_create_event, _monitor_update_or_create);
             $(document).on("click", "." + _supported_details_trigger_class, _supported_details_toggle);
             $(document).on("click", _undo_row_links, _get_supported_counts);

@@ -63,90 +63,10 @@
 <entry key="yukon.web.menu.tools.scripts">Scripts</entry>
 <entry key="yukon.web.menu.tools.tdc">Data Viewer</entry>
 
-<!-- OLD KEYS -->
-<entry key="yukon.web.menu.module"></entry>
-<entry key="yukon.web.menu.locationSelect">Select a location...</entry>
 <entry key="yukon.web.menu.home">Home</entry>
-<entry key="yukon.web.menu.home.title">Return to the home page</entry>
 <entry key="yukon.web.menu.logout">Logout</entry>
-<entry key="yukon.web.menu.logout.title">Logout of Yukon</entry>
-<entry key="yukon.web.menu.backToEc">Back to ({0})</entry>
-<entry key="yukon.web.menu.backToEc.title">Logout as member operator and login as previous user.</entry>
-<entry key="yukon.web.menu.alertBeforeNum">Alerts (</entry>
-<entry key="yukon.web.menu.alertAfterNum">)</entry>
 
-<!-- Consumer Account Information -->
-<entry key="yukon.web.menu.portal.consumerAccountInformation">Consumer Account Information</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.newAccount">New Account</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.accountImport">Import Account</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.optOutAdmin">Opt Out Administration</entry>
-<entry key="yukon.web.menu.portal.consumerAccountInformation.commercialcurtailment">C&amp;I Curtailment</entry>
-
-<!-- Metering -->
-<entry key="yukon.web.menu.portal.metering">Metering</entry>
-<entry key="yukon.web.menu.portal.metering.allTrends">All Trends</entry>
-<entry key="yukon.web.menu.portal.metering.bulkImporter">Bulk Importer</entry>
-<entry key="yukon.web.menu.portal.metering.metering">Metering</entry>
-<entry key="yukon.web.menu.portal.metering.bulkOperations">Bulk Operations</entry>
-
-<!-- Client Launcher -->
-<entry key="yukon.web.menu.portal.clientLauncher">Client Launcher</entry>
-<entry key="yukon.web.menu.portal.clientLauncher.databaseEditor">Database Editor</entry>
-<entry key="yukon.web.menu.portal.clientLauncher.tabularDataConsole">Tabular Data Console</entry>
-<entry key="yukon.web.menu.portal.clientLauncher.trending">Trending</entry>
-<entry key="yukon.web.menu.portal.clientLauncher.esubstationEditor">Esubstation Editor</entry>
-<entry key="yukon.web.menu.portal.clientLauncher.commander">Commander</entry>
-
-<!-- Load Response -->
-<entry key="yukon.web.menu.portal.loadResponse">Load Response</entry>
-<entry key="yukon.web.menu.portal.loadResponse.direct">Direct</entry>
-<entry key="yukon.web.menu.portal.loadResponse.ciCurtailment">CI Curtailment</entry>
-<entry key="yukon.web.menu.portal.loadResponse.oddsForControl">Odds for Control</entry>
-<entry key="yukon.web.menu.portal.loadResponse.demandResponse">Demand Response</entry>
-
-<!-- Distribution Automation -->
-<entry key="yukon.web.menu.portal.distributionAutomation">Distribution Automation</entry>
-<entry key="yukon.web.menu.portal.distributionAutomation.capControl">Volt/Var Management</entry>
-<entry key="yukon.web.menu.portal.distributionAutomation.eSub">eSubstation</entry>
-<entry key="yukon.web.menu.portal.distributionAutomation.importer">Importer</entry>
-
-<!-- Hardware Inventory -->
-<entry key="yukon.web.menu.portal.hardwareInventory">Hardware Inventory</entry>
-<entry key="yukon.web.menu.portal.hardwareInventory.purchasing">Purchasing</entry>
-<entry key="yukon.web.menu.portal.hardwareInventory.inventory">Inventory</entry>
-
-<!-- Work Orders -->
-<entry key="yukon.web.menu.portal.workOrders">Work Orders</entry>
-<entry key="yukon.web.menu.portal.workOrders.serviceOrderList">Service Order List</entry>
-
-<!-- Analysis -->
-<entry key="yukon.web.menu.portal.analysis">Analysis</entry>
-<entry key="yukon.web.menu.portal.analysis.reporting">Reporting</entry>
-<entry key="yukon.web.menu.portal.analysis.commander">Commander</entry>
-<entry key="yukon.web.menu.portal.analysis.archivedDateExport">Data Export</entry>
-<entry key="yukon.web.menu.portal.analysis.visualDisplays">Power Supplier Loads</entry>
-<entry key="yukon.web.menu.portal.analysis.surveys">Surveys</entry>
-
-<!-- Administration -->
-<entry key="yukon.web.menu.portal.administration">Administration</entry>
-<entry key="yukon.web.menu.portal.administration.memberManagement">Member Management</entry>
-<entry key="yukon.web.menu.portal.administration.viewBatchCommands">View Batch Commands</entry>
-<entry key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents">View Scheduled Opt Out Events</entry>
-<entry key="yukon.web.menu.portal.administration.support">Support</entry>
-<entry key="yukon.web.menu.portal.administration.viewLogs">View Logs</entry>
-<entry key="yukon.web.menu.portal.administration.manageIndexes">Manage Indexes</entry>
-<entry key="yukon.web.menu.portal.administration.deviceConfiguration">Device Configuration</entry>
-
-<!-- TODO: remove this since it now lives in system administration -->
-<entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
-
-<entry key="yukon.web.menu.subMenuDefaultTitle">Display Menu for {0}</entry>
-<entry key="yukon.web.menu.simpleMenuDefaultTitle">Goto {0}</entry>
-
-<!-- Any of the following menu items can be suffixed with a ".title" to set the tooltip.
-     If the tooltip isn't specifically set, the yukon.web.menu.topMenuDefaultTitle or
-     yukon.web.menu.subMenuDefaultTitle will be used with the name of the menu (as 
-     configured below) passed in. -->
+<!-- OLD KEYS -->
      
 <!-- AMR Module -->
 <entry key="yukon.web.menu.config.amr.meters">Metering</entry>

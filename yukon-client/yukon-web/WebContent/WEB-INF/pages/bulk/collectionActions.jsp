@@ -76,7 +76,7 @@
         
         <cti:url var="deviceCollectionReportUrl" value="/bulk/deviceCollectionReport"/>
         <cti:url var="dataAnalysisUrl" value="/bulk/archiveDataAnalysis/home/setup"/>
-        <cti:url var="archivedValueDataExporterUrl" value="/amr/archivedValuesExporter/view"/>
+        <cti:url var="archivedValueDataExporterUrl" value="/tools/data-exporter/view"/>
         
         <cti:url var="addPointsUrl" value="/bulk/addPoints/home"/>
         <cti:url var="updatePointsUrl" value="/bulk/updatePoints/home"/>

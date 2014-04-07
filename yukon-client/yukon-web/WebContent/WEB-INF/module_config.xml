@@ -180,15 +180,15 @@
         <labelArgument>${trendName}</labelArgument>
       </page>
       <page name="tdc.home" type="BASIC">
-        <link>/tdc</link>
+        <link>/tools/data-viewer</link>
         <pages>
           <page name="tdc.display.CREATE" type="BASIC"/>
           <page name="tdc.display.VIEW" type="DETAIL">
-            <link>/tdc/{displayId}</link>
+            <link>/tools/data-viewer/{displayId}</link>
             <labelArgument>${displayName}</labelArgument>
             <pages>
               <page name="tdc.display.EDIT" type="BASIC">
-                <link>/tdc/{displayId}/edit</link>
+                <link>/tools/data-viewer/{displayId}/edit</link>
               </page>
             </pages>
           </page>
@@ -266,7 +266,7 @@
             </pages>
           </page>
           <page name="bulk.archivedValueExporter" type="BASIC">
-            <link>/amr/archivedValuesExporter/view</link>
+            <link>/tools/data-exporter/view</link>
             <pages>
               <page name="bulk.archivedValueExporter.EDIT" type="DETAIL_CHILD" hideFavorite="true">
                 <labelArgument>${formatName}</labelArgument>
@@ -278,7 +278,7 @@
             </pages>
           </page>
           <page name="archivedValueExporterScheduleSetup" type="BASIC">
-            <link>/amr/archivedValuesExporter/scheduleReport</link>
+            <link>/tools/data-exporterscheduleReport</link>
           </page>
           <page name="bulk.deviceSelection" type="BASIC">
             <link>/bulk/deviceSelection</link>

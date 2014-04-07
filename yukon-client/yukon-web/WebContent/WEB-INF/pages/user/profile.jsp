@@ -44,7 +44,7 @@
                                         <tags:selectWithItems items="${notificationTypes}" path="contact.otherNotifications[${row.index}].contactNotificationType" inputClass="f-contactNotif-type"/>
                                     </td>
                                     <td class="value">
-                                        <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-formatPhone" : ""}'></tags:input>
+                                        <tags:input path="contact.otherNotifications[${row.index}].notificationValue" inputClass='f-contactNotif-val${isPhone ? " f-format-phone" : ""}'></tags:input>
                                     </td>
                                     <td class="actions">
                                         <cti:button renderMode="buttonImage" icon="icon-cross" classes="f-remove"/>

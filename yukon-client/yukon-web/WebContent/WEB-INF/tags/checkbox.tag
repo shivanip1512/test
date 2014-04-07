@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="onclick" %>

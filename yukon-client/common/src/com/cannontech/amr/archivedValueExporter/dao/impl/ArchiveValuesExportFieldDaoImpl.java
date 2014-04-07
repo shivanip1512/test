@@ -13,6 +13,7 @@ import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.DataSelection;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
+import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
@@ -34,51 +35,66 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
 
     @Autowired YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired NextValueHelper nextValueHelper;
-
+    
     @Override
     @Transactional
-    public List<ExportField> create(List<ExportField> fields) {
+    public List<ExportField> create(List<ExportField> exportFields) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO ");
         sql.append(TABLE_NAME);
         sql.append(" (FieldID,FormatID,FieldType,AttributeID,AttributeField,Pattern,MaxLength,PadChar,PadSide,RoundingMode,MissingAttribute,MissingAttributeValue) ");
         sql.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ");
         List<Object[]> batchArgs = Lists.newArrayList();
-        for (ExportField field : fields) {
+        
+        for (ExportField exportField : exportFields) {
+            
             int fieldId = nextValueHelper.getNextValue(TABLE_NAME);
-            int formatId = field.getFormatId();
-            String fieldType = SqlUtils.convertStringToDbValue(field.getFieldType().name());
+            int formatId = exportField.getFormatId();
+            FieldType fieldType = exportField.getField().getType();
+            String fieldTypeString = SqlUtils.convertStringToDbValue(fieldType.name());
             Integer attributeID = null;
-            if (field.getFieldType().equals(FieldType.ATTRIBUTE)) {
-                attributeID = field.getAttribute().getAttributeId();
+            
+            if (fieldType == FieldType.ATTRIBUTE) {
+                attributeID = exportField.getField().getAttribute().getAttributeId();
             }
+            
             String attributeField = SqlUtils.convertStringToDbValue("");
-            if (field.getAttributeField() != null) {
-                attributeField = field.getAttributeField().name();
+            if (exportField.getField().isAttributeType()) {
+                attributeField = exportField.getAttributeField().name();
             }
-            // Don't use 'SqlUtils.convertStringToDbValue' since we need to store a null in the db for an empty string.
-            String pattern = field.getPattern().equals("") ? null : field.getPattern();
-            int maxLength = field.getMaxLength();
-            String padChar = SqlUtils.convertStringToDbValue(field.getPadChar());
+            
+            String pattern = null;
+            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType()) {
+                //Don't use 'SqlUtils.convertStringToDbValue' since we need to store a null in the db for an empty string.
+                pattern = exportField.getPattern().equals("") ? null : exportField.getPattern();
+            }
+            
+            int maxLength = exportField.getMaxLength();
+            String padChar = SqlUtils.convertStringToDbValue(exportField.getPadChar());
             String padSide = SqlUtils.convertStringToDbValue("");
-            if(field.getPadSide() != null){
-                padSide = field.getPadSide().name();
+            if (exportField.getPadSide() != null) {
+                padSide = exportField.getPadSide().name();
             }
+            
             String roundingMode = SqlUtils.convertStringToDbValue("");
-            if(field.getRoundingMode() != null){
-                roundingMode = field.getRoundingMode().name();
+            if (exportField.isValue()) {
+                roundingMode = exportField.getRoundingMode().name();
             }
             String missingAttribute =  SqlUtils.convertStringToDbValue("");
-            if(field.getMissingAttribute() != null){
-                missingAttribute  = field.getMissingAttribute().name();
+            if (exportField.getMissingAttribute() != null) {
+                missingAttribute  = exportField.getMissingAttribute().name();
             }
-            String missingAttributeValue = SqlUtils.convertStringToDbValue(field.getMissingAttributeValue());
-            batchArgs.add(new Object[] { fieldId, formatId, fieldType, attributeID, attributeField,
-                    pattern, maxLength, padChar, padSide, roundingMode, missingAttribute,
-                    missingAttributeValue });
+            String missingAttributeValue = SqlUtils.convertStringToDbValue(exportField.getMissingAttributeValue());
+            
+            batchArgs.add(new Object[] {
+                fieldId, formatId, fieldTypeString, attributeID, attributeField,
+                pattern, maxLength, padChar, padSide, roundingMode, missingAttribute,
+                missingAttributeValue
+            });
         }
         yukonJdbcTemplate.batchUpdate(sql.getSql(), batchArgs);
-        return fields;
+        return exportFields;
     }
 
     @Override
@@ -108,45 +124,51 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
     }
 
     private YukonRowMapper<ExportField> createRowMapper() {
-        final YukonRowMapper<ExportField> mapper =
-            new YukonRowMapper<ExportField>() {
-                @Override
-                public ExportField mapRow(YukonResultSet rs) throws SQLException {
-                    final ExportField field = new ExportField();
-                    field.setFieldId(rs.getInt("FieldID"));
-                    field.setFormatId(rs.getInt("FormatID"));
-                    field.setFieldType(rs.getEnum("FieldType", FieldType.class));
-                    if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("AttributeID")))) {
-                        final ExportAttribute attribute = new ExportAttribute();
-                        attribute.setFormatId(rs.getInt("FormatID"));
-                        attribute.setAttributeId(rs.getInt("AttributeID"));
-                        attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
-                        attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
-                        attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
-                        field.setAttribute(attribute);
-                        field.setAttributeField(rs.getEnum("AttributeField", AttributeField.class));
-                    }
-                    // Don't use 'SqlUtils.convertDbValueToString' here since a null in the db needs to represent an empty string.
-                    field.setPattern((rs.getString("Pattern") == null) ? "" : rs.getString("Pattern"));
-                    field.setMaxLength(rs.getInt("MaxLength"));
-                    if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("PadSide")))){
-                        field.setPadSide(rs.getEnum("PadSide", PadSide.class));
-                    }
-                    field.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
-                    if (field.getPadChar().isEmpty() && field.getPadSide() != null 
-                        && (field.getPadSide() == PadSide.LEFT || field.getPadSide() == PadSide.RIGHT)) {
-                        field.setPadChar(" ");
-                    }
-                    if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("RoundingMode")))){
-                        field.setRoundingMode(rs.getEnum("RoundingMode", YukonRoundingMode.class));
-                    }
-                    field.setMissingAttributeValue(SqlUtils.convertDbValueToString(rs.getString("MissingAttributeValue")));
-                    if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("MissingAttribute")))) {
-                        field.setMissingAttribute(rs.getEnum("MissingAttribute",MissingAttribute.class));
-                    }
-                    return field;
+        final YukonRowMapper<ExportField> mapper = new YukonRowMapper<ExportField>() {
+            @Override
+            public ExportField mapRow(YukonResultSet rs) throws SQLException {
+                
+                final ExportField exportField = new ExportField();
+                final Field field = new Field();
+                
+                exportField.setFieldId(rs.getInt("FieldID"));
+                exportField.setFormatId(rs.getInt("FormatID"));
+                field.setType(rs.getEnum("FieldType", FieldType.class));
+                if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("AttributeID")))) {
+                    final ExportAttribute attribute = new ExportAttribute();
+                    attribute.setFormatId(rs.getInt("FormatID"));
+                    attribute.setAttributeId(rs.getInt("AttributeID"));
+                    attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
+                    attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
+                    attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
+                    field.setAttribute(attribute);
+                    exportField.setAttributeField(rs.getEnum("AttributeField", AttributeField.class));
                 }
-            };
+                // Don't use 'SqlUtils.convertDbValueToString' here since a null in the db needs to represent an empty string.
+                exportField.setPattern((rs.getString("Pattern") == null) ? "" : rs.getString("Pattern"));
+                exportField.setMaxLength(rs.getInt("MaxLength"));
+                if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("PadSide")))){
+                    exportField.setPadSide(rs.getEnum("PadSide", PadSide.class));
+                }
+                exportField.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
+                if (exportField.getPadChar().isEmpty() && exportField.getPadSide() != null 
+                    && (exportField.getPadSide() == PadSide.LEFT || exportField.getPadSide() == PadSide.RIGHT)) {
+                    exportField.setPadChar(" ");
+                }
+                if(!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("RoundingMode")))){
+                    exportField.setRoundingMode(rs.getEnum("RoundingMode", YukonRoundingMode.class));
+                }
+                exportField.setMissingAttributeValue(SqlUtils.convertDbValueToString(rs.getString("MissingAttributeValue")));
+                if (!StringUtils.isEmpty(SqlUtils.convertDbValueToString(rs.getString("MissingAttribute")))) {
+                    exportField.setMissingAttribute(rs.getEnum("MissingAttribute",MissingAttribute.class));
+                }
+                exportField.setField(field);
+                
+                return exportField;
+            }
+        };
+        
         return mapper;
     }
+    
 }

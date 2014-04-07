@@ -406,9 +406,9 @@ $("button.blockElement").click( function() {
                 </tr>
                 <tr>
                     <td><label>Phone 1:</label><input type="text" name="phone1"
-                        class="f-formatPhone" /></td>
-                    <td>Add the <b>f-formatPhone</b> class to the tag/button. <br /> <br /> <pre class="code">
-&lt;input type="text" name="phone1" class="f-formatPhone"/&gt;
+                        class="f-format-phone" /></td>
+                    <td>Add the <b>f-format-phone</b> class to the tag/button. <br /> <br /> <pre class="code">
+&lt;input type="text" name="phone1" class="f-format-phone"/&gt;
             </pre>
                     </td>
                 </tr>

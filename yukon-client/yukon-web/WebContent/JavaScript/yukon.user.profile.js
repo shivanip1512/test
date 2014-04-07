@@ -130,7 +130,7 @@ yukon.userProfile = (function () {
             $(document).on('click', '#contactNotifs td .f-remove', this.removeContactNotifRow);
             $(document).on('change', 'select.f-contactNotif-type', this.updateContactNotifInputFormatting);
 
-            $(document).on('yukonDialogConfirmOk', '#yukon_dialog_confirm', this.resetAllPreferences);
+            $(document).on('yukon.dialog.confirm.ok', '#yukon_dialog_confirm', this.resetAllPreferences);
 
             _initialized = true;
         },
@@ -218,9 +218,9 @@ yukon.userProfile = (function () {
             var input = ctrlSelect.closest('tr').find('input.f-contactNotif-val');
 
             var isPhone = selectedOptionValue == 'CALL_BACK_PHONE' || selectedOptionValue == 'CELL_PHONE' || selectedOptionValue == 'FAX' || selectedOptionValue == 'HOME_PHONE' || selectedOptionValue == 'PHONE' || selectedOptionValue == 'WORK_PHONE';
-            input.removeClass('f-formatPhone');
+            input.removeClass('f-format-phone');
             if (isPhone) {
-                input.addClass('f-formatPhone');
+                input.addClass('f-format-phone');
                 for (var ii=0; ii < input.length; ii++) {
                     yukon.ui.formatPhone(input[ii]);
                 }

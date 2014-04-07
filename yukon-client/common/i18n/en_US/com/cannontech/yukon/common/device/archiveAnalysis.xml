@@ -166,23 +166,31 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.updatedFormat">Updated the format {0}</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.deletedFormat">Deleted the format {0}</entry>
 
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatSettings.title">Format Settings:</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatSettings.title">Format Settings</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.nameOfFormat">Name of Format</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter">Delimiter</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.header">Header</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.footer">Footer</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectDevices.label">Select Devices</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noSelectedDevice">Devices Selected: None</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeSetup.title">Attribute Setup:</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attributeSetup.title">Attribute Setup</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timeZoneFormat">Time Zone Format</entry>
 
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.attribute">Attribute</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataSelection">Data Selection</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysPrevious">Days previous</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysPrevious">Days Previous</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.excludeAbnormal">Exclude Readings with Abnormal Quality</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.excludeAbnormal.help.title">Exclude Abnormal Readings</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.excludeAbnormal.help">
+        <![CDATA[Features like the Validation Monitors can set a 'questionable' quality on readings.
+        <br><br>Checking this option would ensure that any reading without a quality of 'normal' would<br> 
+        be excluded from any file generated using this format for this attribute.]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.normalOnly">Exclude Abnormal</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataType">Data Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.actions">Actions</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldSetup.title">Field Setup:</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldSetup.title">Field Setup</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.field">Field</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.missingValue">Missing Value</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.rounding">Rounding</entry>
@@ -251,21 +259,24 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.iconCopyFormat">Click to copy {0}</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.iconCreateFormat">Click to create {0}</entry>
     
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.comma">Comma ( , )</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.semicolon">Semicolon ( ; )</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.colon">Colon ( : )</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.spaceDelim"><![CDATA[Space ( &nbsp;&nbsp )]]></entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noneDelim"><![CDATA[None (  )]]></entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.custom">Custom</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.COMMA">Comma ( , )</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.SEMI_COLON">Semicolon ( ; )</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.COLON">Colon ( : )</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.SPACE"><![CDATA[Space ( &nbsp;&nbsp )]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.NONE"><![CDATA[None (  )]]></entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.delimiter.CUSTOM">Custom</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.CUSTOM">Custom</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noFormat">No Format</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noFormatsCreated">No formats have been created.</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.#####">#####</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.###.###">###.###</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.####.##">####.##</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.MM/dd/yyyy">MM/dd/yyyy</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dd/MM/yyyy">dd/MM/yyyy</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.hh:mm:ss a">hh:mm:ss a</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.HH:mm:ss">HH:mm:ss</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingPattern.FIVE_ZERO">#####</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingPattern.THREE_THREE">###.###</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingPattern.FOUR_TWO">####.##</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingPattern.CUSTOM">Custom</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timestampPattern.MONTH_DAY_YEAR">MM/dd/yyyy</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timestampPattern.DAY_MONTH_YEAR">dd/MM/yyyy</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timestampPattern.HOUR_MINUTE_SECOND_12">hh:mm:ss a</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timestampPattern.HOUR_MINUTE_SECOND_24">HH:mm:ss</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timestampPattern.CUSTOM">Custom</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.space">Space</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.zero">Zero ( 0 )</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.timezone"> * All times are {0} </entry>

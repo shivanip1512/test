@@ -43,7 +43,9 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     @Override
     @Transactional
     public ExportFormat create(ExportFormat format) {
+        
         format.setFormatId(nextValueHelper.getNextValue(TABLE_NAME));
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto(TABLE_NAME);
         sink.addValue("FormatID", format.getFormatId());
@@ -53,8 +55,10 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("Footer",  format.getFooter());
         sink.addValue("FormatType", format.getFormatType());
         sink.addValue("TimeZoneFormat", format.getDateTimeZoneFormat());
+        
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
+        
         return format;
     }
     
@@ -62,6 +66,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     @Override
     @Transactional
     public ExportFormat update(ExportFormat format) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.update(TABLE_NAME);
         sink.addValue("FormatID", format.getFormatId());
@@ -72,20 +77,25 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("FormatType", format.getFormatType());
         sink.addValue("TimeZoneFormat", format.getDateTimeZoneFormat());
         sql.append("WHERE FormatID").eq(format.getFormatId());
+        
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
+        
         return format;
     }
     
     @Override
     @Transactional
     public void delete(int formatId) {
+        
         archiveValuesExportFieldDao.deleteByFormatId(formatId);
         archiveValuesExportAttributeDao.deleteByFormatId(formatId);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM");
         sql.append(TABLE_NAME);
         sql.append("WHERE FormatID").eq(formatId);
+        
         yukonJdbcTemplate.update(sql);
     }
     
@@ -98,11 +108,18 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatID").eq(formatId);
+            
             format = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex){
             throw new NotFoundException("The format id supplied does not exist.");
         }
         return format;
+    }
+    
+    @Override
+    public String getName(int id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder("select FormatName from ArchiveValuesExportFormat where FormatId").eq(id);
+        return yukonJdbcTemplate.queryForString(sql);
     }
     
     @Override
@@ -168,16 +185,18 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
      *
      * @param format
      */
-    private void createAttributesAndFields(ExportFormat format){
+    private void createAttributesAndFields(ExportFormat format) {
+        
         archiveValuesExportFieldDao.deleteByFormatId(format.getFormatId());
         archiveValuesExportAttributeDao.deleteByFormatId(format.getFormatId());
         updateAttributesWithFormatId(format);
         updateFieldsWithFormatId(format);
-        for(ExportAttribute attribute:format.getAttributes()){
+        for (ExportAttribute attribute : format.getAttributes()) {
             List<ExportField> exportFields = getExportFieldsByAttributeId(format, attribute);
             ExportAttribute newAttribute = archiveValuesExportAttributeDao.create(attribute);
             updateFieldsWithAttributeId(exportFields,newAttribute);
         }
+        
         archiveValuesExportFieldDao.create(format.getFields());
     }
     
@@ -190,7 +209,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
     private List<ExportField> getExportFieldsByAttributeId(ExportFormat format, ExportAttribute attribute){
         List<ExportField> exportFields = new ArrayList<ExportField>();
         for(ExportField field:format.getFields()){
-            if(field.getFieldType().equals(FieldType.ATTRIBUTE) && field.getAttribute().getAttributeId() == attribute.getAttributeId()){
+            if(field.getField().getType().equals(FieldType.ATTRIBUTE) && field.getField().getAttribute().getAttributeId() == attribute.getAttributeId()){
                 exportFields.add(field);
             }
         }
@@ -229,7 +248,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
      */
     private void updateFieldsWithAttributeId(List<ExportField> exportFields, ExportAttribute newAttribute){
         for (ExportField field : exportFields) {
-            field.setAttribute(newAttribute);
+            field.getField().setAttribute(newAttribute);
         }
     }
 

@@ -135,8 +135,8 @@
                 <tags:sectionContainer2 nameKey="generalInfoSection">
                     <tags:nameValueContainer2 id="generalInfoTable">
                         <tags:inputNameValue nameKey=".name" path="companyName" inputClass="string" size="45" maxlength="60"/>
-                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f-formatPhone" maxlength="16"/>
-                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="f-formatPhone"  maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainPhone" path="mainPhoneNumber" inputClass="f-format-phone" maxlength="16"/>
+                        <tags:inputPhone nameKey=".mainFax" path="mainFaxNumber" inputClass="f-format-phone"  maxlength="16"/>
                         <tags:inputNameValue nameKey=".email" path="emailContactNotification" inputClass="String" maxlength="130"/>
                         <tags:inputNameValue nameKey=".HIType" path="hiType" size="35" maxlength="40"/>
                     </tags:nameValueContainer2>

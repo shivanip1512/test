@@ -11,7 +11,7 @@ import com.cannontech.common.pao.PaoIdentifier;
  *    
  *    <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
  *        <property name="decider" ref="meterMenuDecider"/>
- *        <constructor-arg value="/amr/archivedValuesExporter/view"/>
+ *        <constructor-arg value="/tools/data-exporter/view"/>
  *        <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
  *    </bean>
  */

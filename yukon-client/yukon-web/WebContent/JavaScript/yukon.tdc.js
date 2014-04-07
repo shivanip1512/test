@@ -39,9 +39,9 @@ yukon.tdc = (function () {
         },
         init : function () {
             
-            $('#latestData').load(yukon.url('/tdc/refresh'));
+            $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
             setInterval(function () {
-                $('#latestData').load(yukon.url('/tdc/refresh'));
+                $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
             }, 4000);
 
             $('#display_tabs').tabs({
@@ -62,7 +62,7 @@ yukon.tdc = (function () {
             });
             
             $('.f-ack-all').click(function () {
-                $.post(yukon.url('/tdc/acknowledgeAll'), {}).done(function (data) {
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAll'), {}).done(function (data) {
                     yukon.ui.flashSuccess(data.success);
                 });
             });    
@@ -73,14 +73,14 @@ yukon.tdc = (function () {
                 var args = {};
                 args.pointId = pointId;
                 args.condition = condition;
-                $.post(yukon.url('/tdc/acknowledge'), args).done(function (data) {
-                    $('#latestData').load(yukon.url('/tdc/refresh'));
+                $.post(yukon.url('/tools/data-viewer/acknowledge'), args).done(function (data) {
+                    $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
                 });
             });
             $('.f-trend').click(function (event) {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var pointId = $(this).parent().attr("pointId");
-                var url = yukon.url("/tdc/trend");
+                var url = yukon.url("/tools/data-viewer/trend");
                 var data = {
                     pointId : pointId
                 };
@@ -96,7 +96,7 @@ yukon.tdc = (function () {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var pointId = $(this).parent().attr("pointId");
                 var deviceId = $(this).parent().attr("deviceId");
-                var url = yukon.url("/tdc/tags");
+                var url = yukon.url("/tools/data-viewer/tags");
                 var data = {
                     deviceId : deviceId,
                     pointId : pointId
@@ -112,7 +112,7 @@ yukon.tdc = (function () {
             $('.f-enableDisable').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var popupTitle = $(this).parent().attr("popupTitle");
-                var url = yukon.url("/tdc/enableDisable");
+                var url = yukon.url("/tools/data-viewer/enableDisable");
                 var data = {
                     pointId : pointId
                 };
@@ -126,7 +126,7 @@ yukon.tdc = (function () {
             });
             $('.f-manualEntry').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
-                var url = yukon.url("/tdc/manualEntry");
+                var url = yukon.url("/tools/data-viewer/manualEntry");
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var data = {
                     pointId : pointId
@@ -142,7 +142,7 @@ yukon.tdc = (function () {
             $('.f-manualControl').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var deviceId = $(this).parent().attr("deviceId");
-                var url = yukon.url("/tdc/manualControl");
+                var url = yukon.url("/tools/data-viewer/manualControl");
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var data = {
                     deviceId : deviceId,
@@ -160,7 +160,7 @@ yukon.tdc = (function () {
                 var popupTitle = $(this).parent().attr("popupTitle");
                 var deviceId = $(this).parent().attr("deviceId");
                 var deviceName = $(this).parent().attr("deviceName");
-                var url = yukon.url("/tdc/altScanRate");
+                var url = yukon.url("/tools/data-viewer/altScanRate");
                 var data = {
                     deviceName : deviceName,
                     deviceId : deviceId
@@ -179,7 +179,7 @@ yukon.tdc = (function () {
 	   			 var data = {
 	        		displayId: displayId
 	    		};
-	    		$.post(yukon.url('/tdc/acknowledgeAlarmsForDisplay'), data)
+	    		$.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForDisplay'), data)
 	        		.done(function (data) {
 	            	yukon.ui.flashSuccess(data.success);
 	        	});
@@ -193,7 +193,7 @@ yukon.tdc = (function () {
                    };
                    $("#dropdown_"+pointId).find("ul").hide();
                    $("#dropdown_"+pointId).removeClass("menu-open");
-                   $.post(yukon.url('/tdc/acknowledgeAlarm'), data).done(function (data) {});
+                   $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function (data) {});
                });
             
             $(document).on('click', '.f-one-alarm-ack-b', function () {
@@ -203,14 +203,14 @@ yukon.tdc = (function () {
                             pointId : pointId,
                             condition : condition
                         };
-                        $.post(yukon.url('/tdc/acknowledgeAlarm'), data).done(
+                        $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(
                                 function (data) {
                                 });
                     });
             $('.f-mult-alarm-ack').click(function (event) {
                 var pointId = $(this).parent().attr("pointId");
                 var popupTitle = $(this).parent().attr("popupTitle");
-                var url = yukon.url("/tdc/unacknowledged");
+                var url = yukon.url("/tools/data-viewer/unacknowledged");
                 var data = {
                     pointId : pointId
                 };
@@ -254,7 +254,7 @@ yukon.tdc = (function () {
             
             $(document).on('click', '.f-tags-save', function() {
                 $.ajax({
-                    url: yukon.url('/tdc/tagsSave'),
+                    url: yukon.url('/tools/data-viewer/tagsSave'),
                     data: $("#tagsForm").serialize(),
                     type: "POST",
                     success: function(data) {
@@ -264,7 +264,7 @@ yukon.tdc = (function () {
             });
             
             $(document).on('click', '.f-tags-add', function() {
-                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tdc/tagAdd'));
+                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagAdd'));
             });
             
             $(document).on('click', '.f-tags-remove', function() {
@@ -272,7 +272,7 @@ yukon.tdc = (function () {
                 console.info(rowIndex);
                 
                 $("#rowIndex").val(rowIndex);
-                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tdc/tagRemove'));
+                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagRemove'));
             });
             
             $(document).on('click', '.f-ack-alarm', function() {
@@ -281,7 +281,7 @@ yukon.tdc = (function () {
                 data.condition = $(this).attr("condition");
                 $("#"+data.condition).hide();
                 $("#"+data.condition).removeClass("f-ack-alarm");
-                $.post(yukon.url('/tdc/acknowledgeAlarm'), data).done(function(json) {
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function(json) {
                     if ($('.f-ack-alarm').length === 0) $('.f-ack-alarms-for-point').hide();
                 });
             });
@@ -290,7 +290,7 @@ yukon.tdc = (function () {
                 var pointId = $(this).attr("pointId");
                 var data = {};
                 data.pointId = pointId;
-                $.post(yukon.url('/tdc/acknowledgeAlarmsForPoint'), data).done(function(data) {  
+                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForPoint'), data).done(function(data) {  
                     yukon.ui.flashSuccess(data.success);
                     $('#tdc-popup').dialog('close');
                 });

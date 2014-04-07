@@ -18,7 +18,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -61,7 +61,6 @@ import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.JsonView;
 
 @Controller
 @RequestMapping("/highBill/*")
@@ -104,7 +103,7 @@ public class HighBillController {
         model.addAttribute("readable", readable);
         
         // point id
-        addPointIdToMav(model, meter);
+        addPointIdToModel(model, meter);
         
         // new report or previous?
         boolean analyze = ServletRequestUtils.getBooleanParameter(request, "analyze", false);
@@ -430,11 +429,10 @@ public class HighBillController {
     }
     
     @RequestMapping("initiateLoadProfile")
-    public ModelAndView initiateLoadProfile(HttpServletRequest request, ModelMap model) throws Exception {
-
-        ModelAndView mav = new ModelAndView(new JsonView());
+    public @ResponseBody Map<String, String> initiateLoadProfile(HttpServletRequest request, ModelMap model) throws Exception {
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        Map<String, String> json = new HashMap<>();
         
         String returnMsg = "";
         
@@ -544,15 +542,15 @@ public class HighBillController {
             returnMsg = e.getMessage();
         }
 
-        model.addAttribute("returnMsg", returnMsg);
+        json.put("returnMsg", returnMsg);
         
-        return mav;
+        return json;
     }
 
     /**
      * HELPER to get pointId, and set to mav
      */
-    private void addPointIdToMav(ModelMap model, PlcMeter meter) {
+    private void addPointIdToModel(ModelMap model, PlcMeter meter) {
         
         LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
         int pointId = point.getPointID();

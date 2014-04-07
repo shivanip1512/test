@@ -55,5 +55,8 @@ public interface ArchiveValuesExportFormatDao {
      * @param
      */
     public void delete(int formatId);
+
+    /** Returns the name of the format */
+    public String getName(int id);
     
 }

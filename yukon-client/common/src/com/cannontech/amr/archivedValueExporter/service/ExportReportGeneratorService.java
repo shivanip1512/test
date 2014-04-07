@@ -3,6 +3,7 @@ package com.cannontech.amr.archivedValueExporter.service;
 import java.util.List;
 
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
+import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -20,5 +21,5 @@ public interface ExportReportGeneratorService {
     /**
      * Generates preview.
      */
-    public List<String> generatePreview(ExportFormat format, YukonUserContext userContext);
+    public Preview generatePreview(ExportFormat format, YukonUserContext userContext);
 }

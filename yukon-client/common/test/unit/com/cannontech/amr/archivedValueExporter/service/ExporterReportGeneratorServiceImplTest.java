@@ -27,7 +27,9 @@ import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
+import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.ChangeIdRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
@@ -254,20 +256,20 @@ public class ExporterReportGeneratorServiceImplTest {
     
     @Test
     public void generateFixedFormatPreview_Test() {
-        List<String> previewReportRows = exporterReportGeneratorService.generatePreview(basicFixedFormatExport, userContextOne);
+        Preview preview = exporterReportGeneratorService.generatePreview(basicFixedFormatExport, userContextOne);
 
-        Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("Meter Name,Meter Number,1234546,"+dateTimeFormatter.print(Instant.now())+",1234546,Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("End File", previewReportRows.get(2));
+        Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", preview.getHeader());
+        Assert.assertEquals("Meter Name,Meter Number,1234546," + dateTimeFormatter.print(Instant.now()) + ",1234546,Plain Text", preview.getBody());
+        Assert.assertEquals("End File", preview.getFooter());
     }
 
     @Test
     public void generateDyanamicFormatPreview_Test() {
-        List<String> previewReportRows = exporterReportGeneratorService.generatePreview(basicDyanamicFormatExport, userContextOne);
+        Preview preview = exporterReportGeneratorService.generatePreview(basicDyanamicFormatExport, userContextOne);
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546,"+dateTimeFormatter.print(Instant.now())+",Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("End File", previewReportRows.get(2));
+        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", preview.getHeader());
+        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody());
+        Assert.assertEquals("End File", preview.getFooter());
     }
 
     @Test
@@ -409,7 +411,7 @@ public class ExporterReportGeneratorServiceImplTest {
     private ExportField getExportField(int fieldId, FieldType fieldType) {
         ExportField exportField = getExportFieldBase(fieldId);
 
-        exportField.setFieldType(fieldType);
+        exportField.getField().setType(fieldType);
         
         return exportField;
     }
@@ -421,7 +423,7 @@ public class ExporterReportGeneratorServiceImplTest {
     private ExportField getExportField(int fieldId, FieldType fieldType, String pattern) {
         ExportField exportField = getExportFieldBase(fieldId);
 
-        exportField.setFieldType(fieldType);
+        exportField.getField().setType(fieldType);
         exportField.setPattern(pattern);
 
         return exportField;
@@ -434,8 +436,8 @@ public class ExporterReportGeneratorServiceImplTest {
     private ExportField getExportField(int fieldId, FieldType fieldType, ExportAttribute exportAttribute) {
         ExportField exportField = getExportFieldBase(fieldId);
 
-        exportField.setFieldType(fieldType);
-        exportField.setAttribute(exportAttribute);
+        exportField.getField().setType(fieldType);
+        exportField.getField().setAttribute(exportAttribute);
 
         return exportField;
     }
@@ -447,9 +449,9 @@ public class ExporterReportGeneratorServiceImplTest {
     private ExportField getExportField(int fieldId, FieldType fieldType, ExportAttribute exportAttribute, AttributeField attributeField, String pattern) {
         ExportField exportField = getExportFieldBase(fieldId);
         
-        exportField.setFieldType(fieldType);
+        exportField.getField().setType(fieldType);
         exportField.setAttributeField(attributeField);
-        exportField.setAttribute(exportAttribute);
+        exportField.getField().setAttribute(exportAttribute);
         exportField.setPattern(pattern);
         
         return exportField;
@@ -459,8 +461,9 @@ public class ExporterReportGeneratorServiceImplTest {
      * This method returns a default base of an exportField that can be used an overwritten to make a usable ExportField.
      */
     private ExportField getExportFieldBase(int fieldId) {
-        ExportField exportField = new ExportField();
         
+        ExportField exportField = new ExportField();
+        exportField.setField(new Field());
         exportField.setFieldId(fieldId);
         exportField.setMaxLength(0);
         exportField.setPadSide(NONE);

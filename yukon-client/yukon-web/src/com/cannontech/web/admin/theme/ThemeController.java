@@ -73,9 +73,9 @@ public class ThemeController {
     }
     
     @RequestMapping(value="/config/themes/{id}", method=RequestMethod.GET)
-    public String view(ModelMap model, YukonUserContext context, @PathVariable int id) {
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
-        buildModel(model, context, themeDao.getTheme(id), PageEditMode.VIEW);
+        buildModel(model, userContext, themeDao.getTheme(id), PageEditMode.VIEW);
         return "config/themes.jsp";
     }
     

@@ -31,7 +31,7 @@
         <permissions>
           <role name="TRENDING" />
         </permissions>
-        <link>/trends</link>
+        <link>/tools/trends</link>
       </option>
       <option name="import" section="true">
         <permissions>
@@ -213,13 +213,13 @@
         <permissions>
           <roleProperty name="ARCHIVED_DATA_EXPORT" />
         </permissions>
-        <link>/amr/archivedValuesExporter/view</link>
+        <link>/tools/data-exporter/view</link>
       </option>
       <option name="tdc">
         <permissions>
           <role name="TABULAR_DISPLAY_CONSOLE" />
         </permissions>
-        <link>/tdc</link>
+        <link>/tools/data-viewer</link>
       </option>
       <option name="deviceConfiguration">
         <permissions>
