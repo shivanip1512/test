@@ -68,7 +68,6 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -141,7 +140,7 @@ public class AccountServiceTest extends EasyMockSupport {
             }
             
             @Override
-            public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
+            public EnergyCompany getEnergyCompanyByAccountId(int accountId) {
                 Builder ecBuilder = new EnergyCompany.Builder();
                 ecBuilder.addEnergyCompany(1, "test energy company", null, 1, null);
                 return ecBuilder.build().get(1);

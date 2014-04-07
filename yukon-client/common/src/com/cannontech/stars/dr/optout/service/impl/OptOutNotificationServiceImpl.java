@@ -36,6 +36,7 @@ import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.tools.email.EmailMessage;
@@ -60,7 +61,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     @Autowired private YukonUserContextService userContextService;
 
     @Override
-    public void sendOptOutNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
+    public void sendOptOutNotification(CustomerAccount customerAccount, EnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
@@ -81,7 +82,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     }
 
     @Override
-    public void sendCancelScheduledNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
+    public void sendCancelScheduledNotification(CustomerAccount customerAccount, EnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 
@@ -102,7 +103,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     }
 
     @Override
-    public void sendReenableNotification(CustomerAccount customerAccount, YukonEnergyCompany energyCompany,
+    public void sendReenableNotification(CustomerAccount customerAccount, EnergyCompany energyCompany,
             OptOutRequest request, LiteYukonUser user) throws MessagingException {
         YukonUserContext yukonUserContext = getDefaultEnergyCompanyUserContext(energyCompany);
 

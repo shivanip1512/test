@@ -15,12 +15,12 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
+    public EnergyCompany getEnergyCompanyByAccountId(int accountId) {
         throw new UnsupportedOperationException("not implemented");
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
+    public EnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
         throw new UnsupportedOperationException("not implemented");
     }
 
@@ -80,7 +80,7 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+    public EnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

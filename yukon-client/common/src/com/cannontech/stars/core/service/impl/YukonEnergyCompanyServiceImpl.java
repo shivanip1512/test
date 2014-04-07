@@ -69,10 +69,10 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByAccountId(int accountId) {
+    public EnergyCompany getEnergyCompanyByAccountId(int accountId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-        YukonEnergyCompany yukonEnergyCompany = getEnergyCompany(energyCompanyId);
-        return yukonEnergyCompany;
+        EnergyCompany energyCompany = getEnergyCompany(energyCompanyId);
+        return energyCompany;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
     
     @Override
-    public YukonEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
+    public EnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
         try {
             return getEnergyCompanyByOperator(user);
         } catch (EnergyCompanyNotFoundException e) {
@@ -126,6 +126,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         throw new EnergyCompanyNotFoundException("Energy company doesn't exist for user " + user);
     }
 
+    @Deprecated
     @Override
     public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -152,10 +153,10 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
+    public EnergyCompany getEnergyCompanyByInventoryId(int inventoryId) {
         int energyCompanyId = ecMappingDao.getEnergyCompanyIdForInventoryId(inventoryId);
-        YukonEnergyCompany yukonEnergyCompany = getEnergyCompany(energyCompanyId); 
-        return yukonEnergyCompany;
+        EnergyCompany energyCompany = getEnergyCompany(energyCompanyId); 
+        return energyCompany;
     }
     
     @Override
@@ -190,6 +191,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return childToParentMap;
     }
     
+    @Deprecated
     @Override
     public List<Integer> getChildEnergyCompanies(int energyCompanyId) {
         Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
@@ -228,6 +230,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return childEnergyCompanyIds;
     }
     
+    @Deprecated
     @Override
     public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -239,6 +242,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
 
+    @Deprecated
     @Override
     public Integer getParentEnergyCompany(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -250,6 +254,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return jdbcTemplate.queryForInt(sql);
     }
     
+    @Deprecated
     @Override
     public Integer findParentEnergyCompany(int energyCompanyId) {
         try {
@@ -271,7 +276,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public synchronized EnergyCompany getEnergyCompany(int ecId) {
+    public EnergyCompany getEnergyCompany(int ecId) {
         EnergyCompany energyCompany = getEnergyCompanies().get(ecId);
         if (energyCompany == null) {
             throw new EnergyCompanyNotFoundException("Energy company id = " + ecId + " does not exist.");

@@ -32,7 +32,7 @@ public interface YukonEnergyCompanyService {
      * This user can be an operator or residential user.
      * If no energy company is found throws EnergyCompanyNotFoundException
      */
-    YukonEnergyCompany getEnergyCompanyByUser(LiteYukonUser user);
+    EnergyCompany getEnergyCompanyByUser(LiteYukonUser user);
 
     /**
      * This method returns whether or not the operator provided is an Energy Company Operator
@@ -43,13 +43,13 @@ public interface YukonEnergyCompanyService {
      * This method gets the yukon energy company that is associated with the supplied account.  
      * This method should be used as the primary option when you are working with an account. 
      */
-    YukonEnergyCompany getEnergyCompanyByAccountId(int accountId);
+    EnergyCompany getEnergyCompanyByAccountId(int accountId);
 
     /**
      * This method gets the yukon energy company that is associated with the supplied inventory.  
      * This method should be used as the primary option when you are working with an inventory. 
      */
-    YukonEnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
+    EnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
     
     /**
      * Returns a list of all energy companies

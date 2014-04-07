@@ -111,6 +111,7 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -134,6 +135,7 @@ public class OptOutServiceImpl implements OptOutService {
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private EnergyCompanyService ecService;
+    @Autowired private YukonEnergyCompanyService yEcService;
     @Autowired @Qualifier("main") private Executor executor;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
@@ -334,8 +336,7 @@ public class OptOutServiceImpl implements OptOutService {
                 @Override
                 public void run() {
                     try {
-                         LiteStarsEnergyCompany energyCompany = 
-                                starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+                        EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
                         optOutNotificationService.sendOptOutNotification(customerAccount, energyCompany, request, user);
                     } catch (MessagingException e) {
                         // Not much we can do - tried to send notification
@@ -502,7 +503,7 @@ public class OptOutServiceImpl implements OptOutService {
 					request.setDurationInHours(event.getDurationInHours());
 					request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 					
-					LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+					EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
 					optOutNotificationService.sendCancelScheduledNotification(customerAccount, energyCompany, request, user);
 				} catch (MessagingException e) {
 					// Not much we can do - tried to send notification
@@ -1200,7 +1201,8 @@ public class OptOutServiceImpl implements OptOutService {
             request.setDurationInHours(ooe.getDurationInHours());
             request.setQuestions(new ArrayList<ScheduledOptOutQuestion>());
 
-            optOutNotificationService.sendReenableNotification(customerAccount, yukonEnergyCompany, request, user);
+            EnergyCompany energyCompany = yEcService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            optOutNotificationService.sendReenableNotification(customerAccount, energyCompany, request, user);
 
         } catch (MessagingException e) {
             // Not much we can do - tried to send notification

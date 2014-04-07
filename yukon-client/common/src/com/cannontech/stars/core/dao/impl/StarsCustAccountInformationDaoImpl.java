@@ -22,14 +22,15 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteAccountSite;
 import com.cannontech.stars.database.data.lite.LiteCustomerAccount;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInformationDao {
@@ -39,6 +40,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonEnergyCompanyService ecService;
     
     private static final YukonRowMapper<LiteAccountInfo> mapper = new YukonRowMapper<LiteAccountInfo>() {
         @Override
@@ -104,7 +106,9 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     
     @Override
     public LiteAccountInfo getById(int accountId, int energyCompanyId) {
-        if (accountId == 0) return CustomerAccountPlaceHolder.getPlaceHolderAccount();
+        if (accountId == 0) {
+            return CustomerAccountPlaceHolder.getPlaceHolderAccount();
+        }
 
         // Get all the accessible energy companies
         Set<Integer> childEnergycompanyIds = ecMappingDao.getChildEnergyCompanyIds(energyCompanyId);
@@ -188,11 +192,9 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         }
     }
     
-    private List<Integer> getEnergyCompanyIdList(int energyCompanyId) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteStarsEnergyCompany> energyCompanyList = ECUtils.getAllDescendants(energyCompany);
-        List<Integer> energyCompanyIdList = ECUtils.toIdList(energyCompanyList);
-        return energyCompanyIdList;
+    private List<Integer> getEnergyCompanyIdList(int ecId) {
+        List<EnergyCompany> energyCompnies = ecService.getEnergyCompany(ecId).getDescendants(true);
+        return Lists.transform(energyCompnies, YukonEnergyCompanyService.TO_ID_FUNCTION);
     }
     
 }
