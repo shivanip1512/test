@@ -148,10 +148,7 @@ bool WorkerThread::tryForDurationToPause( const Timing::Chrono &duration )
 
 /**
  * request the thread to resume execution
- * call only if pause(), or if tryPauseForMillis() has succeeded
- *
- * @return true if thread is paused,
- *         false otherwize
+ * call only if pause() or if tryForDurationToPause() has succeeded
  */
 void WorkerThread::resume()
 {
@@ -167,7 +164,7 @@ void WorkerThread::resume()
 /**
  * block if paused and wait for call on resume()
  *
- * @return true if thread as paused, and as been resumed,
+ * @return true if thread was paused and has been resumed,
  *         false otherwise
  * @throw  boost::thread_interrupted
  */
@@ -214,7 +211,7 @@ void WorkerThread::sleepFor( const Timing::Chrono &duration )
 }
 
 /**
- * wrapper function
+ * thread wrapper function executed on top of the function provided
  */
 void WorkerThread::executeWrapper()
 {
