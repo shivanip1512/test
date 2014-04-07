@@ -6,11 +6,9 @@ import javax.jms.MessageListener;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQDestination;
 
-import com.cannontech.messaging.connection.transport.TransportException;
-
 public class TwoWayTransport extends AmqTransport {
 
-    private static final long MAX_READ_TIME_AFTER_CLOSE = 1000; // 1s
+    private static final long MAX_READ_TIME_AFTER_CLOSE_MILLIS = 1000; // 1 second
     private ActiveMQDestination outQueue;
     private ActiveMQDestination inQueue;
 
@@ -64,8 +62,7 @@ public class TwoWayTransport extends AmqTransport {
         }
 
         if (inTransport != null) {
-            emptyConsumerMessageWithSecondConsumer();
-            // emptyConsumerMessage();
+            emptyConsumerMessage();
             inTransport.close();
             inTransport = null;
         }
@@ -74,65 +71,27 @@ public class TwoWayTransport extends AmqTransport {
     }
 
     /**
-     * This method is willingly unused. See emptyConsumerMessageWithSecondConsumer for details.
+     * Empty the receiving message queue
      */
-    @SuppressWarnings("unused")
     private void emptyConsumerMessage() {
         MessageListener listener = getListener();
         setListener(null);
 
         if (listener != null) {
-            long currentTime = System.currentTimeMillis();
-            long endTime = currentTime + MAX_READ_TIME_AFTER_CLOSE;
+            long currentTimeMillis = System.currentTimeMillis();
+            long endTimeMillis = currentTimeMillis + MAX_READ_TIME_AFTER_CLOSE_MILLIS;
 
-            while (currentTime < endTime) {
-                Message msg = receiveMessage(endTime - currentTime);
+            while (currentTimeMillis < endTimeMillis) {
+                Message msg = receiveMessage(endTimeMillis - currentTimeMillis);
 
                 if (msg == null) {
                     break;
                 }
 
                 listener.onMessage(msg);
-                currentTime = System.currentTimeMillis();
+                currentTimeMillis = System.currentTimeMillis();
             }
         }
-    }
-
-    /**
-     * We use this method instead of emptyConsumerMessage because of a potential bug in ActiveMQ regarding the
-     * producerCount never returning to zero. This method will simply create another consumer to empty the receiving
-     * queue. It will react exactly the same way from the point of view of this client connection. On the other end of
-     * the connection however, consumer count will reach 2 thus forcing the disconnection process (witch is ultimately what
-     * we want).
-     */
-    private void emptyConsumerMessageWithSecondConsumer() {
-        MessageListener listener = getListener();
-        setListener(null);
-
-        try {
-            AmqConsumerTransport tempInTransport = new AmqConsumerTransport(getConnection(), inQueue, listener);
-            tempInTransport.start();
-
-            if (listener != null) {
-                long currentTime = System.currentTimeMillis();
-                long endTime = currentTime + MAX_READ_TIME_AFTER_CLOSE;
-
-                while (currentTime < endTime) {
-                    Message msg = tempInTransport.receiveMessage(endTime - currentTime);
-
-                    if (msg == null) {
-                        break;
-                    }
-
-                    listener.onMessage(msg);
-                    currentTime = System.currentTimeMillis();
-                }
-            }
-
-            tempInTransport.close();
-        }
-        catch (TransportException e) {}
-
     }
 
     public ActiveMQDestination getOutQueue() {
