@@ -1,8 +1,6 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
@@ -51,12 +49,32 @@ public class EnergyCompanyTest {
         assertTrue(ec.getChildren().containsAll(ImmutableList.copyOf(children)));
     }
 
-    private void verifyCorrectDescendants(EnergyCompany ec, EnergyCompany... descendants) {
-        List<EnergyCompany> descendantsList = Lists.newArrayList(descendants);
-        List<EnergyCompany> desc = ec.getDescendants(false);
-        assertTrue(ec.getDescendants(false).containsAll(descendantsList));
-        descendantsList.add(ec);
-        assertTrue(ec.getDescendants(true).containsAll(descendantsList));
+    private void verifyDescendants(boolean assertion, EnergyCompany ec, EnergyCompany... descendants) {
+        List<EnergyCompany> expectedDescendants = Lists.newArrayList(descendants);
+        List<EnergyCompany> returnedDescendants = ec.getDescendants(false);
+        List<EnergyCompany> expectedDescendantsAndSelf = Lists.newArrayList(descendants);
+        expectedDescendantsAndSelf.add(ec);
+        List<EnergyCompany> returnedDescendantsAndSelf = ec.getDescendants(true);
+
+        boolean gotExpected = expectedDescendants.containsAll(returnedDescendants)
+                && returnedDescendants.containsAll(returnedDescendants)
+                && expectedDescendantsAndSelf.containsAll(returnedDescendantsAndSelf)
+                && returnedDescendantsAndSelf.containsAll(expectedDescendantsAndSelf);
+        assertEquals(assertion, gotExpected);
+    }
+
+    private void verifyParents(boolean assertion, EnergyCompany ec, EnergyCompany... parents) {
+        List<EnergyCompany> expectedParents = Lists.newArrayList(parents);
+        List<EnergyCompany> returnedParents = ec.getParents(false);
+        List<EnergyCompany> expectedParentsAndSelf = Lists.newArrayList(parents);
+        expectedParentsAndSelf.add(ec);
+        List<EnergyCompany> returnedParentsAndSelf = ec.getParents(true);
+
+        boolean gotExpected = expectedParents.containsAll(returnedParents)
+                    && expectedParentsAndSelf.containsAll(returnedParentsAndSelf)
+                    && returnedParents.containsAll(expectedParents)
+                    && returnedParentsAndSelf.containsAll(expectedParentsAndSelf);
+        assertEquals(assertion, gotExpected);
     }
 
     @Before
@@ -126,16 +144,34 @@ public class EnergyCompanyTest {
     }
 
     @Test
+    public void test_parents() {
+        EnergyCompany bob = energyCompanies.get(203);
+        EnergyCompany bobII = energyCompanies.get(202);
+        EnergyCompany bobIII = energyCompanies.get(201);
+        EnergyCompany bobIV = energyCompanies.get(200);
+
+        verifyParents(true, bobIV, bobIII, bobII, bob);
+        verifyParents(true, bobIII, bobII, bob);
+        verifyParents(true, bobII, bob);
+        verifyParents(true, bob);
+
+        verifyParents(false, bobII);
+    }
+    
+    @Test
     public void test_descendants() {
         EnergyCompany bob = energyCompanies.get(203);
         EnergyCompany bobII = energyCompanies.get(202);
         EnergyCompany bobIII = energyCompanies.get(201);
         EnergyCompany bobIV = energyCompanies.get(200);
 
-        verifyCorrectDescendants(bob, bobII, bobIII, bobIV);
-        verifyCorrectDescendants(bobII, bobIII, bobIV);
-        verifyCorrectDescendants(bobIII, bobIV);
-        verifyCorrectDescendants(bobIV);
+        verifyDescendants(true, bob, bobII, bobIII, bobIV);
+        verifyDescendants(true, bobII, bobIII, bobIV);
+        verifyDescendants(true, bobIII, bobIV);
+        verifyDescendants(true, bobIV);
+        
+        
+        verifyDescendants(false, bobII);
 
         EnergyCompany mepl = energyCompanies.get(1);
         EnergyCompany moria = energyCompanies.get(2);
@@ -147,10 +183,10 @@ public class EnergyCompanyTest {
         EnergyCompany wePretend = energyCompanies.get(100);
         EnergyCompany pizza = energyCompanies.get(101);
 
-        verifyCorrectDescendants(mepl,
+        verifyDescendants(true, mepl,
             moria, shire, westernRegionsElectric, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
-        verifyCorrectDescendants(shire, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
-        verifyCorrectDescendants(wePretend, pizza);
+        verifyDescendants(true, shire, northShireLoop, westernTerritoriesOfShire, durinTookGardens);
+        verifyDescendants(true, wePretend, pizza);
 
         try {
             mepl.getDescendants(false).add(pizza);

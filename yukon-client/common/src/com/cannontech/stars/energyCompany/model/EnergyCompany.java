@@ -1,6 +1,6 @@
 package com.cannontech.stars.energyCompany.model;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,6 +112,20 @@ public final class EnergyCompany implements YukonEnergyCompany {
         return children;
     }
 
+    /**
+     * Get all descendants of this energy company (children, children of children, etc.).
+     */
+    public List<EnergyCompany> getParents(boolean addSelf) {
+        ImmutableList.Builder<EnergyCompany> builder = ImmutableList.builder();
+        if (parent != null) {
+            builder.addAll(parent.getParents(true));
+        }
+        if (addSelf) {
+            builder.add(this);
+        }
+        return builder.build();
+    }
+    
     /**
      * Get all descendants of this energy company (children, children of children, etc.).
      */
