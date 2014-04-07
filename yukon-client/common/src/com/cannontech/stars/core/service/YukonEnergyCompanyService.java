@@ -6,10 +6,18 @@ import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.base.Function;
 
 public interface YukonEnergyCompanyService {
 
-    public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
+    final int DEFAULT_ENERGY_COMPANY_ID = -1;
+
+    Function<YukonEnergyCompany, Integer> TO_ID_FUNCTION = new Function<YukonEnergyCompany, Integer>() {
+        @Override
+        public Integer apply(YukonEnergyCompany energyCompany) {
+            return energyCompany.getEnergyCompanyId();
+        }
+    };
 
     /**
      * This method gets the energy company that the operator is directly associated with.

@@ -1,5 +1,7 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import java.util.List;
+
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -221,7 +223,8 @@ public class OverrideRequestEndpointTest {
     private class MockCustomerAccountDao extends CustomerAccountDaoAdapter {
 
         @Override
-        public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber, YukonEnergyCompany energyCompany) {
+        public CustomerAccount getByAccountNumber(String accountNumber, 
+                                                  List<? extends YukonEnergyCompany> energyCompany) {
 
             if (accountNumber.equals(UNKNOWN_ACCOUNT_NUMBER)) {
                 throw new NotFoundException("Unknown account");

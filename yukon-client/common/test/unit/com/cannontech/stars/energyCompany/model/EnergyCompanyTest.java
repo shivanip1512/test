@@ -40,7 +40,7 @@ public class EnergyCompanyTest {
     }
 
     private void verifyCorrectDescendants(EnergyCompany ec, EnergyCompany... descendants) {
-        assertTrue(ec.getDescendants().containsAll(ImmutableList.copyOf(descendants)));
+        assertTrue(ec.getDescendants(false).containsAll(ImmutableList.copyOf(descendants)));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class EnergyCompanyTest {
         }
 
         try {
-            mepl.getDescendants().add(pizza);
+            mepl.getDescendants(false).add(pizza);
             fail("should throw exception");
         } catch (UnsupportedOperationException e) {
             // Awesome...we can't mess with the descendant list after the fact.

@@ -549,8 +549,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     public int addYukonMeter(int meterId, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
         accountId = accountId == null ? 0 : accountId;
         
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         try {
             LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByDeviceId(meterId);
             liteInventoryBase.setAccountID(accountId);

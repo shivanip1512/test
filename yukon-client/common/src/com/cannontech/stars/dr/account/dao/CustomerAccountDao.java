@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -94,19 +93,9 @@ public interface CustomerAccountDao {
 
     public CustomerAccount getByAccountNumber(String accountNumber, int energyCompanyId);
     
-    public CustomerAccount getByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
+    public CustomerAccount getByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
     
-    public CustomerAccount findByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
-    
-    /**
-     * Searches for an account number with one energy company and its descendants. Caller should
-     * probably call {@link YukonEnergyCompanyService#getEnergyCompanyByOperator(LiteYukonUser)} before
-     * calling this method.
-     * @param accountNumber
-     * @param yukonEnergyCompany - the top level energy company which will be searched
-     * @return
-     */
-    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber,  YukonEnergyCompany yukonEnergyCompany);
+    public CustomerAccount findByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
     
     /**
      * Method to get a total count of the number of customer accounts in the system.  If the assignedProgramIds are supplied

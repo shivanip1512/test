@@ -39,14 +39,14 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountRowMapper;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.ECUtils;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.HashMultimap;
@@ -64,6 +64,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private static final YukonRowMapper<CustomerAccount> rowMapper;
     private static final YukonRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
@@ -166,8 +167,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-        return getByAccountNumberForDescendentsOfEnergyCompany(accountNumber, energyCompany);
+        YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(yec.getEnergyCompanyId());
+        return getByAccountNumber(accountNumber, energyCompany.getDescendants(true));
     }
     
     @Override
@@ -187,20 +189,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         }
         return account;
     }
-    
-    @Override
-    public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(final String accountNumber, YukonEnergyCompany yukonEnergyCompany) {
-
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteStarsEnergyCompany> allDescendants = ECUtils.getAllDescendants(energyCompany);
-        List<Integer> energyCompanyIds = 
-            Lists.transform(allDescendants, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
-        return getByAccountNumber(accountNumber, energyCompanyIds);
-    }
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
-    public CustomerAccount getByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
+    public CustomerAccount getByAccountNumber(final String accountNumber, 
+                                              List<? extends YukonEnergyCompany> energyCompanies) {
+        List<Integer> energyCompanyIds = Lists.transform(energyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
         sql.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
@@ -218,7 +213,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Override
-    public CustomerAccount findByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
+    public CustomerAccount findByAccountNumber(final String accountNumber, 
+                                               List<? extends YukonEnergyCompany> energyCompanyIds) {
         try {
             return getByAccountNumber(accountNumber, energyCompanyIds);
         } catch (NotFoundException e) {

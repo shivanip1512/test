@@ -9,6 +9,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 /**
  * Helper class for dealing with the YukonListEntry table
@@ -76,11 +77,11 @@ public class YukonListEntryHelper {
      * @param lsec - Current energy company
      * @return The yukon entry id
      */
-    public static YukonListEntry getEntryForEntryText(String entryText, String listName, LiteStarsEnergyCompany lsec) {
+    public static YukonListEntry getEntryForEntryText(String entryText, String listName, YukonEnergyCompany yec) {
 
         YukonListEntry entry = null;
         YukonSelectionList selectionList = 
-                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(lsec, listName);
+                YukonSpringHook.getBean(SelectionListService.class).getSelectionList(yec, listName);
 
         for (YukonListEntry item : selectionList.getYukonListEntries()) {
             if (item.getEntryText().equalsIgnoreCase(entryText)) {

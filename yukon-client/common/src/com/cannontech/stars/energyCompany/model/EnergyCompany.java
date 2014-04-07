@@ -76,7 +76,12 @@ public final class EnergyCompany implements YukonEnergyCompany {
     }
 
     @Override
+    @Deprecated
     public int getEnergyCompanyId() {
+        return ecId;
+    }
+    
+    public int getId() {
         return ecId;
     }
 
@@ -86,7 +91,12 @@ public final class EnergyCompany implements YukonEnergyCompany {
     }
 
     @Override
+    @Deprecated
     public LiteYukonUser getEnergyCompanyUser() {
+        return user;
+    }
+
+    public LiteYukonUser getUser() {
         return user;
     }
 
@@ -103,14 +113,16 @@ public final class EnergyCompany implements YukonEnergyCompany {
     }
 
     /**
-     * Get all descendants of this energy company (children, children of children, etc.). This list
-     * does NOT include the energy company itself.
+     * Get all descendants of this energy company (children, children of children, etc.).
      */
-    public List<EnergyCompany> getDescendants() {
+    public List<EnergyCompany> getDescendants(boolean addSelf) {
         ImmutableList.Builder<EnergyCompany> builder = ImmutableList.builder();
         for (EnergyCompany child : children) {
             builder.add(child);
             builder.addAll(child.getChildren());
+        }
+        if (addSelf) {
+            builder.add(this);
         }
         return builder.build();
     }

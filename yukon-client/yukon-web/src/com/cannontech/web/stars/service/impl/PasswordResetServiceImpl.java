@@ -24,24 +24,22 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.tools.email.EmailException;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailHtmlMessage;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.service.PasswordResetService;
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class PasswordResetServiceImpl implements PasswordResetService {
@@ -54,6 +52,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private EmailService emailService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -179,15 +178,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
      */
     private PasswordResetInfo getPasswordResetInfoByAccountNumber(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
-        
-        List<LiteEnergyCompany> allEnergyCompanies = energyCompanyDao.getAllEnergyCompanies();
-        List<Integer> allEnergyCompanyIds = Lists.transform(allEnergyCompanies, new Function<LiteEnergyCompany, Integer>() {
-            @Override
-            public Integer apply(LiteEnergyCompany liteEnergyCompany) {
-                return liteEnergyCompany.getEnergyCompanyID();
-            }});
-        
-        CustomerAccount passwordResetCustomerAccount = customerAccountDao.findByAccountNumber(forgottenPasswordField, allEnergyCompanyIds);
+        CustomerAccount passwordResetCustomerAccount = 
+                customerAccountDao.findByAccountNumber(forgottenPasswordField, ecService.getAllEnergyCompanies());
         // getYukonUserByAccountId is more of a find method.  It returns null if it doesn't exist.
         if (passwordResetCustomerAccount != null) {
             passwordResetInfo.setUser(customerAccountDao.getYukonUserByAccountId(passwordResetCustomerAccount.getAccountId()));

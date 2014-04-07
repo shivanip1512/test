@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public abstract class OverrideRequestEndpointBase {
     
@@ -29,11 +30,11 @@ public abstract class OverrideRequestEndpointBase {
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
         int energyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
-        List<Integer> energyCompanyIds = yukonEnergyCompanyService.getChildEnergyCompanies(energyCompanyId);
-        energyCompanyIds.add(energyCompanyId);
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(energyCompanyId);
+        List<EnergyCompany> energyCompanies = energyCompany.getDescendants(true);
 
         try {
-            return customerAccountDao.getByAccountNumber(accountNumber, energyCompanyIds);
+            return customerAccountDao.getByAccountNumber(accountNumber, energyCompanies);
         } catch (NotFoundException e) {
             throw new AccountNotFoundException("Account " + accountNumber+ " couldn't be found.");
         }
