@@ -9,11 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.Validate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -344,27 +342,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
             }
         }
         return typeList;
-    }
-    
-    private YukonListEntry getYukonListEntry(YukonSelectionListEnum listType, int yukonDefID) {
-        YukonSelectionList list = selectionListService.getSelectionList(this, listType.getListName());
-        for (int i = 0; i < list.getYukonListEntries().size(); i++) {
-            YukonListEntry entry = list.getYukonListEntries().get(i);
-            if (entry.getYukonDefID() == yukonDefID) {
-                return entry;
-            }
-        }
-        
-        return new YukonListEntry();
-    }
-
-    public YukonListEntry getYukonListEntry(int yukonDefId) {
-        YukonDefinition yukonDefinition = YukonDefinition.getById(yukonDefId);
-        if (yukonDefinition == null) {
-            return null;
-        }
-
-        return getYukonListEntry(yukonDefinition.getRelevantList(), yukonDefId);
     }
 
     public synchronized List<LiteServiceCompany> getServiceCompanies() {

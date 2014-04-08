@@ -2,11 +2,14 @@ package com.cannontech.stars.util;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryCategory;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 
@@ -24,7 +27,8 @@ public class InventoryUtils {
      */
     @Deprecated
 	public static int getInventoryCategoryID(int deviceTypeID, LiteStarsEnergyCompany energyCompany) {
-		YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( deviceTypeID );
+        YukonListEntry entry = YukonSpringHook.getBean(YukonListDao.class).getYukonListEntry( deviceTypeID );
+        SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
 		
 		if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM ||
 			entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM ||
@@ -44,18 +48,18 @@ public class InventoryUtils {
             entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_XCOM ||
             entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM)
 		{
-			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
+			return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC).getEntryID();
 		}
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102 ||
 		        entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO ||
 		        entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_ZIGBEE ||
 		        entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_ZIGBEE)
 		{
-			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
+			return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC).getEntryID();
 		}
 		else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER)
 		{
-			return energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
+			return selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).getEntryID();
 		}
 		
 		return CtiUtilities.NONE_ZERO_ID;

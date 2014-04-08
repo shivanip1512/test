@@ -49,6 +49,7 @@ import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -75,6 +76,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private SelectionListService selectionListService;
 
     @Override
     @Transactional
@@ -115,7 +117,9 @@ public class HardwareServiceImpl implements HardwareService {
         if (delete) {
             InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
             YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
-            if (pao.getPaoIdentifier().getPaoType().isRfn()) deletePao = true;
+            if (pao.getPaoIdentifier().getPaoType().isRfn()) {
+                deletePao = true;
+            }
             
             // Warn the ExtensionService we are about to delete.
             hardwareTypeExtensionService.preDeleteCleanup(pao, id);
@@ -146,8 +150,8 @@ public class HardwareServiceImpl implements HardwareService {
         int accountId = lib.getAccountID();
         int inventoryId = lib.getInventoryID();
         LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompany(lib.getEnergyCompanyId());
-        int hwEventEntryId = ec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-        int uninstallActionId = ec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
+        int hwEventEntryId = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
+        int uninstallActionId = selectionListService.getListEntry(ec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
         
         /* Add an uninstall event for this hardware */
         LiteLMHardwareEvent liteLMHardwareEvent = new LiteLMHardwareEvent();

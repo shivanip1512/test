@@ -477,7 +477,9 @@ public class YukonToCRSFuncs
 			meterHardwareBase.setAccountID(accountID);
 			meterHardwareBase.getMeterHardwareBase().setMeterNumber(meterNumber);
 //			meterHardwareBase.getMeterHardwareBase().setMeterTypeID();	//TODO ? meterType
-	        YukonListEntry categoryEntry = liteStarsEnergyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
+	        YukonListEntry categoryEntry =
+	                YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteStarsEnergyCompany,
+                                                     YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
 	        if( categoryEntry != null) {
                 meterHardwareBase.getInventoryBase().setCategoryID(new Integer(categoryEntry.getEntryID()));
             }

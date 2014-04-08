@@ -25,6 +25,7 @@ import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.workOrder.dao.WorkOrderBaseDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -245,8 +246,9 @@ public class CreateServiceRequestAction implements ActionBase {
 		StarsFactory.setWorkOrderBase( workOrder, createOrder );
         
 		if (createOrder.getCurrentState() == null) {
-			workOrder.getWorkOrderBase().setCurrentStateID( new Integer(
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID()) );
+		    YukonListEntry listEntry = YukonSpringHook.getBean(SelectionListService.class).getListEntry(energyCompany,
+                                                             YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING);
+			workOrder.getWorkOrderBase().setCurrentStateID(listEntry.getEntryID());
 		}
 		if (!createOrder.hasAccountID()) {
 			if (liteAcctInfo != null){

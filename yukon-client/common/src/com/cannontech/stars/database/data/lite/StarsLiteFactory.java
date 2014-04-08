@@ -52,6 +52,7 @@ import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -63,6 +64,7 @@ import com.cannontech.stars.xml.serialize.*;
 public class StarsLiteFactory {
     private final static LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean(LMHardwareEventDao.class);
     private final static AddressDao addressDao = YukonSpringHook.getBean(AddressDao.class);
+    private final static SelectionListService selectionListService  = YukonSpringHook.getBean(SelectionListService.class);
 
     public static LiteBase createLite( com.cannontech.database.db.DBPersistent db ) {
         LiteBase lite = null;
@@ -468,7 +470,7 @@ public class StarsLiteFactory {
         setLiteStarsAppliance( liteApp, appliance );
         
         LiteApplianceCategory liteAppCat = energyCompany.getApplianceCategory( appliance.getApplianceBase().getApplianceCategoryID().intValue() );
-        if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
+        if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceAirConditioner app =
                     com.cannontech.stars.database.db.appliance.ApplianceAirConditioner.getApplianceAirConditioner( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -476,7 +478,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppAirConditioner( liteApp.getAirConditioner(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUALSTAGE).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceDualStageAirCond app =
                     com.cannontech.stars.database.db.appliance.ApplianceDualStageAirCond.getApplianceDualStageAirCond( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -484,7 +486,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppDualStageAirCond( liteApp.getDualStageAirCond(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_CHILLER).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceChiller app =
                     com.cannontech.stars.database.db.appliance.ApplianceChiller.getApplianceChiller( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -492,7 +494,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppChiller( liteApp.getChiller(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_WATER_HEATER).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceWaterHeater app =
                     com.cannontech.stars.database.db.appliance.ApplianceWaterHeater.getApplianceWaterHeater( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -500,7 +502,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppWaterHeater( liteApp.getWaterHeater(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_DUAL_FUEL).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceDualFuel app =
                     com.cannontech.stars.database.db.appliance.ApplianceDualFuel.getApplianceDualFuel( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -508,7 +510,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppDualFuel( liteApp.getDualFuel(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GRAIN_DRYER).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceGrainDryer app =
                     com.cannontech.stars.database.db.appliance.ApplianceGrainDryer.getApplianceGrainDryer( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -516,7 +518,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppGrainDryer( liteApp.getGrainDryer(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_STORAGE_HEAT).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceStorageHeat app =
                     com.cannontech.stars.database.db.appliance.ApplianceStorageHeat.getApplianceStorageHeat( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -524,7 +526,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppStorageHeat( liteApp.getStorageHeat(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_HEAT_PUMP).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceHeatPump app =
                     com.cannontech.stars.database.db.appliance.ApplianceHeatPump.getApplianceHeatPump( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -532,7 +534,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppHeatPump( liteApp.getHeatPump(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_IRRIGATION).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceIrrigation app =
                     com.cannontech.stars.database.db.appliance.ApplianceIrrigation.getApplianceIrrigation( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -540,7 +542,7 @@ public class StarsLiteFactory {
                 StarsLiteFactory.setLiteAppIrrigation( liteApp.getIrrigation(), app );
             }
         }
-        else if (liteAppCat.getCategoryID() == energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR).getEntryID()) {
+        else if (liteAppCat.getCategoryID() == selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_APP_CAT_GENERATOR).getEntryID()) {
             com.cannontech.stars.database.db.appliance.ApplianceGenerator app =
                     com.cannontech.stars.database.db.appliance.ApplianceGenerator.getApplianceGenerator( appliance.getApplianceBase().getApplianceID() );
             if (app != null) {
@@ -1496,7 +1498,7 @@ public class StarsLiteFactory {
         }
         else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
             starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-                    energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER),
+                    selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER),
                     DeviceType.class) );
             
             MCT mct = new MCT();
@@ -2223,7 +2225,7 @@ public class StarsLiteFactory {
     public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {
         StarsLMProgramEvent starsEvent = new StarsLMProgramEvent();
         
-        YukonListEntry optOutEntry = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION );
+        YukonListEntry optOutEntry = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION );
         starsEvent.setEventAction( optOutEntry.getEntryText() );
         starsEvent.setYukonDefID( optOutEntry.getYukonDefID() );
         starsEvent.setEventDateTime( new Date(event.getStartDateTime()) );

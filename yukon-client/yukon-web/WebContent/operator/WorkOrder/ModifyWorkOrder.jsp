@@ -37,11 +37,11 @@
     EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
     List<EventBase> eventBases = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());
     
-	int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
-	int statusAssigned = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
-	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
-	int statusCompleted = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
-	int statusCancelled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
+	int statusPending = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+	int statusAssigned = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
+	int statusScheduled = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, (YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
+	int statusCompleted = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
+	int statusCancelled = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
 %>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

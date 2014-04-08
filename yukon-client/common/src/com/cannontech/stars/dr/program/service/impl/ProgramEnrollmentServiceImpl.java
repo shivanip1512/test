@@ -66,6 +66,7 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.HardwareEnrollmentInfo;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -98,6 +99,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private ProgramDao programDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LMHardwareControlInformationService lmHardwareControlInformationService;
+    @Autowired private SelectionListService selectionListService;
 
     private final Map<Integer, Object> accountIdMutex
         = Collections.synchronizedMap(new HashMap<Integer, Object>());
@@ -372,8 +374,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         int accountID = liteAcctInfo.getCustomerAccount().getAccountID();
 
-        int dftLocationID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID();
-        int dftManufacturerID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID();
+        int dftLocationID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID();
+        int dftManufacturerID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_MANU_UNKNOWN).getEntryID();
 
         // Set the termination time a little bit earlier than the signup date
         Date signupDate = new Date();
@@ -796,9 +798,9 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
 
         // Get action & event type IDs
-        int progEventEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID();
-        int signUpEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID();
-        int termEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
+        int progEventEntryID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMPROGRAM).getEntryID();
+        int signUpEntryID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).getEntryID();
+        int termEntryID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
 
         com.cannontech.stars.database.data.event.LMProgramEvent event =
                 new com.cannontech.stars.database.data.event.LMProgramEvent();

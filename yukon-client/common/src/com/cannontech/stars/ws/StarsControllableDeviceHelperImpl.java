@@ -39,6 +39,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -56,6 +57,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private SelectionListService selectionListService;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -185,7 +187,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         if (lmHardware) {
             LiteLmHardwareBase lmhw = new LiteLmHardwareBase();
-            lmhw.setCategoryID(lsec.getYukonListEntry(type.getInventoryCategory().getDefinitionId()).getEntryID());
+            lmhw.setCategoryID(selectionListService.getListEntry(lsec, type.getInventoryCategory().getDefinitionId()).getEntryID());
             lmhw.setLmHardwareTypeID(deviceType.getEntryID());
             lmhw.setManufacturerSerialNumber(getSerialNumber(dto));
             lmhw.setInstallDate(new Date().getTime());

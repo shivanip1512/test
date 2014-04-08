@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -49,4 +50,6 @@ public interface SelectionListService {
      * Returns inherited or default lists if the current energy company doesn't have one
      */
     YukonSelectionList getSelectionList(YukonEnergyCompany yukonEnergyCompany, String listName);
+    
+    YukonListEntry getListEntry(YukonEnergyCompany energyCompany, int yukonDefId);
 }

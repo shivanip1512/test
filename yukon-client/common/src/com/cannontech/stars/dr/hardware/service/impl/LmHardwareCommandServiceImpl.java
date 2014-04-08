@@ -44,6 +44,7 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.HardwareStrategyType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandStrategy;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
@@ -66,6 +67,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private SelectionListService selectionListService;
 
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
@@ -171,11 +173,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         }
     
         // Add "Config" to hardware events
-        int event = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int config = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
+        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int config = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_CONFIG).getEntryID();
         addHardwareEvents(ecId, inventoryId, event, config);
         
-        int available = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
+        int available = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
@@ -196,11 +198,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec.getEnergyCompanyId());
         
         // Add "Activation Completed" to hardware events
-        int event = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int complete = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
+        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int complete = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
         addHardwareEvents(yec.getEnergyCompanyId(), inventoryId, event, complete);
 
-        int available = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
+        int available = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, available);
     }
     
@@ -221,11 +223,11 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         log.debug("Out-of-Service command sent: " + command);
         
         // Add "Termination" to hardware events
-        int event = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int termination = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
+        int event = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int termination = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).getEntryID();
         addHardwareEvents(ecId, inventoryId, event, termination);
             
-        int unavailable = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID();
+        int unavailable = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL).getEntryID();
         inventoryBaseDao.updateCurrentState(inventoryId, unavailable);
     }
     

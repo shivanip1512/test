@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty property="STYLE_SHEET" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <%
-int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
+int statusPending = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 %>
 <script language="JavaScript">
 function validate(form) {

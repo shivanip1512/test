@@ -22,6 +22,7 @@ import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.DeviceActivationService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 
 public class DeviceActivationServiceImpl implements DeviceActivationService {
     
@@ -30,6 +31,7 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
     @Autowired private LmHardwareBaseDao hardwareBaseDao;
     @Autowired private LMCustomerEventBaseDao customerEventBaseDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private SelectionListService selectionListService;
     
     @Override
     public boolean isValidActivation(String accountNumber, String serialNumber, LiteYukonUser user) {
@@ -65,9 +67,9 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
             inventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getLiteID());
             dbChangeManager.processDbChange(inventoryBase.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
                 DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
-
-            int eventTypeId = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-            int installActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
+            
+            int eventTypeId = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+            int installActID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL ).getEntryID();
             
             LMCustomerEventBase eventBase = new LMCustomerEventBase();
             eventBase.setActionId(installActID);

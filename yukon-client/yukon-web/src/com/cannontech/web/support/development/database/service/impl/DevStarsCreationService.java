@@ -30,6 +30,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.EnergyCompanyService;
@@ -51,6 +52,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private UserGroupDao userGroupDao;
+    @Autowired private SelectionListService selectionListService;
 
     private static int complete ;
     private static int total;
@@ -61,18 +63,20 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     }
 
     public void executeSetup(DevStars devStars) {
-        if (_lock.tryLock()) try {
-            total = devStars.getTotal();
-            complete = 0;
-            if (devStars.getEnergyCompany() == null) {
-                createOperatorsGroup(devStars);
-                createEnergyCompany(devStars);
+        if (_lock.tryLock()) {
+            try {
+                total = devStars.getTotal();
+                complete = 0;
+                if (devStars.getEnergyCompany() == null) {
+                    createOperatorsGroup(devStars);
+                    createEnergyCompany(devStars);
+                }
+                createResidentialGroup(devStars);
+                setupStarsAccounts(devStars);
+                createStars(devStars);
+            } finally {
+                _lock.unlock();
             }
-            createResidentialGroup(devStars);
-            setupStarsAccounts(devStars);
-            createStars(devStars);
-        } finally {
-            _lock.unlock();
         }
     }
 
@@ -354,7 +358,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         hardware.setRouteId(routeId);
         hardware.setEnergyCompanyId(energyCompany.getEnergyCompanyId());
         hardware.setHardwareType(hardwareType);
-        YukonListEntry typeEntry = energyCompany.getYukonListEntry(hardwareType.getDefinitionId());
+        YukonListEntry typeEntry = selectionListService.getListEntry(energyCompany, hardwareType.getDefinitionId());
         hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
         hardware.setDisplayType(hardwareType.name());
         hardware.setCategoryName("Category");

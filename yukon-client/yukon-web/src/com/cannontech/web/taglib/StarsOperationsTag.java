@@ -10,10 +10,12 @@ import javax.servlet.jsp.JspException;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.model.OperatorInventorySearchBy;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
@@ -68,8 +70,10 @@ public class StarsOperationsTag extends YukonTagSupport {
 				// Inventory search by list
 				if (YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY
 						.equals(custSelectionList.getListName())) {
-					YukonListEntry devTypeMCT = liteEC
-							.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+				    
+					YukonListEntry devTypeMCT = 
+					        YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, 
+                                                         YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
 
 					StarsSelectionListEntry[] selectionListValues = custSelectionList
 							.getStarsSelectionListEntry();

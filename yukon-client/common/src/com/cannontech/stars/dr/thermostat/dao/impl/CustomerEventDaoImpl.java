@@ -32,6 +32,7 @@ import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
@@ -58,6 +59,7 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired protected SystemDateFormattingService systemDateFormattingService;
+    @Autowired private SelectionListService selectionListService;
 
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
@@ -203,16 +205,12 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
         Temperature previousCoolTemperature = event.getPreviousCoolTemperature();
         boolean holdTemperature = event.isHoldTemperature();
 
-        LiteStarsEnergyCompany liteStarsEnergyCompany = 
-            starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
-
         ThermostatMode mode = event.getMode();
-        YukonListEntry modeListEntry = 
-            liteStarsEnergyCompany.getYukonListEntry(mode.getDefinitionId());
+        
+        YukonListEntry modeListEntry = selectionListService.getListEntry(yukonEnergyCompany, mode.getDefinitionId());
 
         ThermostatFanState fanState = event.getFanState();
-        YukonListEntry fanStateEntry = 
-            liteStarsEnergyCompany.getYukonListEntry(fanState.getDefinitionId());
+        YukonListEntry fanStateEntry = selectionListService.getListEntry(yukonEnergyCompany, fanState.getDefinitionId());
 
         Integer eventId = event.getEventId();
         Integer thermostatId = event.getThermostatId();

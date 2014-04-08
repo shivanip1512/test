@@ -34,6 +34,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.event.model.EventBase;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderCurrentStateEnum;
 import com.cannontech.stars.dr.workOrder.model.WorkOrderDto;
 import com.cannontech.stars.dr.workOrder.service.WorkOrderService;
@@ -59,6 +60,7 @@ public class OperatorWorkOrderController {
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WorkOrderService workOrderService;
+    @Autowired private SelectionListService selectionListService;
     
     private final String baseKey = "yukon.web.modules.operator.workOrder.";
     
@@ -234,7 +236,7 @@ public class OperatorWorkOrderController {
         LiteStarsEnergyCompany energyCompany = 
             starsDatabaseCache.getEnergyCompany(fragment.getEnergyCompanyId());
         YukonListEntry yukonListEntry = 
-            energyCompany.getYukonListEntry(WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
+                selectionListService.getListEntry(energyCompany, WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
         model.addAttribute("assignedEntryId", yukonListEntry.getEntryID());
         
         boolean showWorkOrderNumberField = !rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ORDER_NUMBER_AUTO_GEN, context.getYukonUser());

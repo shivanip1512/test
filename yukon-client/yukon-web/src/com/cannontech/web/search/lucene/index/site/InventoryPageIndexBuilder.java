@@ -28,6 +28,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 
 @Service
 public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
@@ -35,6 +36,7 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private SelectionListService selectionListService;
 
     private final static SqlFragmentSource baseQuery;
     private final static SqlFragmentSource queryTables;
@@ -121,12 +123,12 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
                 displayName = displayType + " " + devicePaoName;
                 meterNumber = rs.getString("deviceMeterNumber");
             } else {
-                YukonListEntry deviceType = energyCompany.getYukonListEntry(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+                YukonListEntry deviceType = selectionListService.getListEntry(energyCompany, YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
                 displayType = deviceType.getEntryText();
                 displayName = rs.getString("deviceLabel");
             }
         } else if (hardwareCategory == InventoryCategory.NON_YUKON_METER) {
-            YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+            YukonListEntry mctDeviceType = selectionListService.getListEntry(energyCompany, YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
             displayType = mctDeviceType.getEntryText();
             meterNumber = rs.getString("meterMeterNumber");
             displayName = displayType + " " + meterNumber;

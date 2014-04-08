@@ -32,6 +32,7 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
@@ -57,7 +58,8 @@ public class MeterProfileController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private HardwareModelHelper helper;
     @Autowired private OperatorAccountService operatorAccountService;
-    
+    @Autowired private SelectionListService selectionListService;
+
     /**
      * View page GET
      */
@@ -136,7 +138,7 @@ public class MeterProfileController {
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
+        YukonListEntry typeEntry = selectionListService.getListEntry(energyCompany, HardwareType.NON_YUKON_METER.getDefinitionId());
         
         Hardware hardware = new Hardware();
         hardware.setHardwareType(HardwareType.NON_YUKON_METER);

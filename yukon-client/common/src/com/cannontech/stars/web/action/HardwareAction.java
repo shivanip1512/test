@@ -40,6 +40,7 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.util.InventoryUtils;
@@ -114,8 +115,9 @@ public class HardwareAction {
                 com.cannontech.stars.database.db.event.LMHardwareEvent eventDB = event.getLMHardwareEvent();
                 com.cannontech.stars.database.db.event.LMCustomerEventBase eventBaseDB = event.getLMCustomerEventBase();
                 
-                int hwEventEntryID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE ).getEntryID();
-                int uninstallActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL ).getEntryID();
+                SelectionListService selectionListService = YukonSpringHook.getBean(SelectionListService.class);
+                int hwEventEntryID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+                int uninstallActID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL).getEntryID();
                 
                 eventBaseDB.setEventTypeID( new Integer(hwEventEntryID) );
                 eventBaseDB.setActionID( new Integer(uninstallActID) );

@@ -69,6 +69,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -88,18 +89,19 @@ import com.google.common.collect.Maps;
  */
 public class InventoryDaoImpl implements InventoryDao {
 
-    private @Autowired ECMappingDao ecMappingDao;
-    private @Autowired YukonEnergyCompanyService yukonEnergyCompanyService;
-    private @Autowired LMHardwareEventDao hardwareEventDao;
-    private @Autowired StarsDatabaseCache starsDatabaseCache;
-    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
-    private @Autowired InventoryIdentifierMapper inventoryIdentifierMapper;
-    private @Autowired YukonListDao yukonListDao;
-    private @Autowired PaoDefinitionDao paoDefinitionDao;
-    private @Autowired AccountEventLogService accountEventLogService;
-    private @Autowired CustomerAccountDao customerAccountDao;
-    private @Autowired DefaultRouteService defaultRouteService;
-    private @Autowired YukonEnergyCompanyService ecService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private LMHardwareEventDao hardwareEventDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private InventoryIdentifierMapper inventoryIdentifierMapper;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private SelectionListService selectionListService;
 
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
@@ -906,7 +908,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
         /* The category id is the entry id of the yukon list entry for this category in this energy company. */
         int categoryDefId = hardwareType.getInventoryCategory().getDefinitionId();
-        YukonListEntry categoryEntryOfEnergyCompany = starsDatabaseCache.getEnergyCompany(ec).getYukonListEntry(categoryDefId);
+        YukonListEntry categoryEntryOfEnergyCompany = selectionListService.getListEntry(ec, categoryDefId);
         return categoryEntryOfEnergyCompany.getEntryID();
     }
 

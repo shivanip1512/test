@@ -62,6 +62,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.google.common.collect.ArrayListMultimap;
@@ -89,6 +90,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private SelectionListService selectionListService;
 
     @Override
     public Hardware getHardware(int inventoryId) {
@@ -180,7 +182,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             } else {
                 /* Not attached to a real MCT yet. Use label for name if you can */
                 /* and use the MCT list enty of the energy company as the device type. */
-                YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+                YukonListEntry mctDeviceType = selectionListService.getListEntry(energyCompany,YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
                 hardware.setDisplayType(mctDeviceType.getEntryText());
                 if (StringUtils.isNotBlank(liteInventoryBase.getDeviceLabel())) {
                     hardware.setDisplayName(liteInventoryBase.getDeviceLabel());
@@ -197,7 +199,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
             hardware.setHardwareType(hardwareType);
             
-            YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
+            YukonListEntry mctDeviceType = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
             String deviceType = mctDeviceType.getEntryText();
             hardware.setDisplayName(deviceType + " " + meterNumber);
             hardware.setDisplayType(deviceType);
@@ -705,7 +707,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
 
         /* LMHardwareBase Fields */
         meterHardware.setMeterNumber(hardware.getMeterNumber());
-        YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
+        YukonListEntry typeEntry = selectionListService.getListEntry(energyCompany, HardwareType.NON_YUKON_METER.getDefinitionId());
         meterHardware.setMeterTypeID(typeEntry.getEntryID());
         
         if(StringUtils.isBlank(meterHardware.getDeviceLabel())){

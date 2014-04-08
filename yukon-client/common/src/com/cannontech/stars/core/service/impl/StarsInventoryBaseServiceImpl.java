@@ -50,6 +50,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
+import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
@@ -73,6 +74,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private SelectionListService selectionListService;
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -170,9 +172,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     public void addInstallHardwareEvent(LiteInventoryBase liteInv, String installNotes,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
-        int hwEventTypeID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
+        int hwEventTypeID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
                                          .getEntryID();
-        int installActionID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
+        int installActionID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
                                            .getEntryID();
 
         LiteLMHardwareEvent lmHwEvent = new LiteLMHardwareEvent();
@@ -190,8 +192,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private void addDeviceStatusEvent(LiteInventoryBase liteInv, LiteStarsEnergyCompany lsec, LiteYukonUser user) {
 
         // get the entry ids needed to add device status events
-        int hwEventTypeID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
-        int completedActId = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
+        int hwEventTypeID = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int completedActId = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
         
         int statusDefID = yukonListDao.getYukonListEntry(liteInv.getCurrentStateID()).getYukonDefID();
         int devicesCurrentStatus = inventoryBaseDao.getDeviceStatus(liteInv.getInventoryID());
@@ -290,7 +292,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
         // Update the "install" event if necessary
-        int installActionID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
+        int installActionID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL)
                                            .getEntryID();
         List<LiteLMHardwareEvent> hwHist = hardwareEventDao.getByInventoryAndActionId(liteInv.getInventoryID(),
                                                                                       installActionID);
@@ -385,9 +387,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private void addUnInstallHardwareEvent(LiteInventoryBase liteInv,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
-        int hwEventTypeID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
+        int hwEventTypeID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
                                          .getEntryID();
-        int unInstallActionID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL)
+        int unInstallActionID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_UNINSTALL)
                                              .getEntryID();
 
         LiteLMHardwareEvent lmHwEvent = new LiteLMHardwareEvent();

@@ -246,6 +246,24 @@ public class SelectionListServiceImpl implements SelectionListService {
         return null;
     }
 
+    @Override
+    public YukonListEntry getListEntry(YukonEnergyCompany energyCompany, int yukonDefId) {
+        YukonDefinition yukonDefinition = YukonDefinition.getById(yukonDefId);
+        if (yukonDefinition == null) {
+            return null;
+        }
+
+        YukonSelectionList list = getSelectionList(energyCompany, yukonDefinition.getRelevantList().getListName());
+        for (int i = 0; i < list.getYukonListEntries().size(); i++) {
+            YukonListEntry entry = list.getYukonListEntries().get(i);
+            if (entry.getYukonDefID() == yukonDefId) {
+                return entry;
+            }
+        }
+
+        return new YukonListEntry();
+    }
+
     private YukonSelectionList addSelectionList(YukonEnergyCompany energyCompany, String listName, 
                                                 YukonSelectionList dftList, boolean populateDefault) {
         try {
