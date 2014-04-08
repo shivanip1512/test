@@ -13,8 +13,8 @@ import com.cannontech.dr.assetavailability.InventoryRelayAppliance;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -137,7 +137,7 @@ public class MockLmHardwareConfigurationDao implements LMHardwareConfigurationDa
     @Override
     public LMHardwareConfiguration getStaticLoadGroupMapping(LiteAccountInfo liteAcct,
                                                              LiteLmHardwareBase lmHw,
-                                                             LiteStarsEnergyCompany energyCompany) {
+                                                             YukonEnergyCompany energyCompany) {
         throw new MethodNotImplementedException();
     }
 

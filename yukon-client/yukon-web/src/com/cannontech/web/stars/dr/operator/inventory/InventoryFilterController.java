@@ -50,6 +50,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
@@ -242,10 +243,7 @@ public class InventoryFilterController {
     
     @ModelAttribute(value="ciCustomerTypes")
     public List<YukonListEntry> getCiCustomerTypes(YukonUserContext userContext) {
-
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         return selectionListService.getSelectionList(energyCompany, 
                                  YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE).getYukonListEntries();
     }

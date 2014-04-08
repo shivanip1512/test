@@ -30,7 +30,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -135,9 +134,7 @@ public class MeterProfileController {
     @RequestMapping(value="create", method=RequestMethod.GET)
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         YukonListEntry typeEntry = selectionListService.getListEntry(energyCompany, HardwareType.NON_YUKON_METER.getDefinitionId());
         
         Hardware hardware = new Hardware();

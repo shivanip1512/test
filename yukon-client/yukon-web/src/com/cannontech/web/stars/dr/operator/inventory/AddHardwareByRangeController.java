@@ -31,7 +31,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -131,7 +130,6 @@ public class AddHardwareByRangeController {
     
     private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
         EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         

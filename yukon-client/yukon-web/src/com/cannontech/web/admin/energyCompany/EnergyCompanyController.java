@@ -226,7 +226,7 @@ public class EnergyCompanyController {
     private Map<Integer, Integer> getParentLogins(Iterable<EnergyCompany> companies) {
         Map<Integer, Integer> parentLogins = Maps.newHashMap();
         for (EnergyCompany company : companies) {
-            if(starsDatabaseCache.getEnergyCompany(company).getParent() != null) {
+            if(company.getParent() != null) {
                 int energyCompanyId = company.getId();
                 LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompanyId);
                 if (parentLogin != null) {

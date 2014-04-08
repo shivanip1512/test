@@ -111,17 +111,13 @@ public class AssetDashboardController {
     /* Home - Landing Page */
     @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext context) {
-        
         LiteYukonUser user = context.getYukonUser();
-
         boolean ecOperator = ecService.isEnergyCompanyOperator(context.getYukonUser());
         
         if (ecOperator) {
+            EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
             
-            YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
-            LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(yec);
-            
-            int ecId = yec.getEnergyCompanyId();
+            int ecId = energyCompany.getId();
             model.addAttribute("energyCompanyId", ecId);
             
             MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
@@ -165,7 +161,7 @@ public class AssetDashboardController {
             model.addAttribute("inventorySearch", new InventorySearch());
             
             List<YukonListEntry> yukonListEntries = 
-                selectionListService.getSelectionList(liteEc, 
+                selectionListService.getSelectionList(energyCompany, 
                                               YukonSelectionListEnum.DEVICE_TYPE.getListName()).getYukonListEntries();
             Iterable<YukonListEntry> addHardwareTypes = Iterables.filter(yukonListEntries, new Predicate<YukonListEntry>() {
                 @Override
@@ -358,8 +354,6 @@ public class AssetDashboardController {
         model.addAttribute("editingRoleProperty", YukonRoleProperty.INVENTORY_CREATE_HARDWARE.name());
         EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
         model.addAttribute("energyCompanyId", energyCompany.getId());
-        
-        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
         
         MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         

@@ -445,8 +445,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Override
     @Transactional
     public int createHardware(Hardware hardware, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         int inventoryId;
         String deviceLabel;
         
@@ -668,7 +667,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return false;
     }
     
-    private LiteLmHardwareBase buildLmHardware(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
+    private LiteLmHardwareBase buildLmHardware(Hardware hardware, YukonEnergyCompany energyCompany) {
         LiteLmHardwareBase lmHardware = new LiteLmHardwareBase();
         
         /* InventoryBase fields */
@@ -694,7 +693,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return lmHardware;
     }
     
-    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
+    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, YukonEnergyCompany energyCompany) {
         LiteMeterHardwareBase meterHardware = new LiteMeterHardwareBase();
         
         /* InventoryBase fields */
@@ -717,7 +716,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return meterHardware;
     }
     
-    private LiteInventoryBase buildInventoryBase(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
+    private LiteInventoryBase buildInventoryBase(Hardware hardware, YukonEnergyCompany energyCompany) {
         LiteInventoryBase liteInventoryBase = new LiteInventoryBase();
         
         /* InventoryBase fields */

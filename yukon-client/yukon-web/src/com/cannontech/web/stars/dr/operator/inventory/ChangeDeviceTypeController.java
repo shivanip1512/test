@@ -25,9 +25,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -56,10 +55,9 @@ public class ChangeDeviceTypeController {
 
     @RequestMapping("view")
     public String view(HttpServletRequest request, ModelMap model, String taskId, LiteYukonUser user) throws ServletRequestBindingException {
-        YukonEnergyCompany ec = energyCompanyService.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lec = starsDatabaseCache.getEnergyCompany(ec);
+        EnergyCompany energyCompany = energyCompanyService.getEnergyCompanyByOperator(user);
         
-        YukonSelectionList list = selectionListService.getSelectionList(lec,
+        YukonSelectionList list = selectionListService.getSelectionList(energyCompany,
                                                 YukonSelectionListEnum.DEVICE_TYPE.getListName());
         List<YukonListEntry> deviceTypes = list.getYukonListEntries();
         List<YukonListEntry> validEntries = Lists.newArrayList();

@@ -73,6 +73,7 @@ import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.UserUtils;
@@ -208,15 +209,21 @@ public class OperatorAccountController {
     public String imports(ModelMap model, YukonUserContext userContext) {
         
         boolean isEcOperator = ecService.isEnergyCompanyOperator(userContext.getYukonUser());
-        if (!isEcOperator) throw NotAuthorizedException.ecOperator(userContext.getYukonUser());
+        if (!isEcOperator) {
+            throw NotAuthorizedException.ecOperator(userContext.getYukonUser());
+        }
         
         List<AccountImportResult> completed = new ArrayList<>();
         for (AccountImportResult result : recentResultsCache.getCompleted()) {
-            if (!result.isPrescan()) completed.add(result);
+            if (!result.isPrescan()) {
+                completed.add(result);
+            }
         }
         List<AccountImportResult> pending = new ArrayList<>();
         for (AccountImportResult result : recentResultsCache.getPending()) {
-            if (!result.isPrescan()) pending.add(result);
+            if (!result.isPrescan()) {
+                pending.add(result);
+            }
         }
         model.addAttribute("completed", completed);
         model.addAttribute("pending", pending);
@@ -516,9 +523,8 @@ public class OperatorAccountController {
     }
     
     private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(context.getYukonUser());
-        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(context.getYukonUser());
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
         LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountId);
         
         buildAccountDto(model, context, accountId, residentialUser, energyCompany);
@@ -527,10 +533,10 @@ public class OperatorAccountController {
     }
     
     private void buildAccountDto(ModelMap model, YukonUserContext context, int accountId, 
-                                 LiteYukonUser residentialUser, LiteStarsEnergyCompany energyCompany) {
+                                 LiteYukonUser residentialUser, EnergyCompany energyCompany) {
 
         /* AccountDto */
-        AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getEnergyCompanyId(), context);
+        AccountDto accountDto = accountService.getAccountDto(accountId, energyCompany.getId(), context);
 
         /* OperatorGeneralUiExtras */
         OperatorGeneralUiExtras operatorGeneralUiExtras = operatorAccountService.getOperatorGeneralUiExtras(accountId, context);
@@ -656,9 +662,8 @@ public class OperatorAccountController {
         /* Verify the user has permission to edit accounts */
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         String currentAccountNumber = customerAccount.getAccountNumber();
         
@@ -876,19 +881,18 @@ public class OperatorAccountController {
     }
     
     private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
-        YukonEnergyCompany yukonEnergyCompany = ecService.getEnergyCompanyByOperator(user);
-        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
         
-        List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getId());
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         boolean supportsPasswordSet = 
                 authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthenticationCategory());
         modelMap.addAttribute("supportsPasswordSet", supportsPasswordSet);
-        modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        modelMap.addAttribute("energyCompanyId", energyCompany.getId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
         modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
         modelMap.addAttribute("mode", PageEditMode.CREATE);

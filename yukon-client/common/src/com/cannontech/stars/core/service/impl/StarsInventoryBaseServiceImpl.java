@@ -51,6 +51,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
@@ -156,7 +157,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     @Override
-    public void initStaticLoadGroup(LiteLmHardwareBase lmHw, LiteStarsEnergyCompany energyCompany) {
+    public void initStaticLoadGroup(LiteLmHardwareBase lmHw, YukonEnergyCompany energyCompany) {
         // get the static load group mapping
         LiteAccountInfo liteAcct = starsCustAccountInformationDao.getByAccountId(lmHw.getAccountID());
         LMHardwareConfiguration lmHwConfig = lmHardwareConfigurationDao.getStaticLoadGroupMapping(liteAcct,
@@ -170,7 +171,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
     @Override
     public void addInstallHardwareEvent(LiteInventoryBase liteInv, String installNotes,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+                                        YukonEnergyCompany energyCompany, LiteYukonUser user) {
 
         int hwEventTypeID = selectionListService.getListEntry(energyCompany, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
                                          .getEntryID();
@@ -189,7 +190,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     // adds the Device status event
-    private void addDeviceStatusEvent(LiteInventoryBase liteInv, LiteStarsEnergyCompany lsec, LiteYukonUser user) {
+    private void addDeviceStatusEvent(LiteInventoryBase liteInv, YukonEnergyCompany lsec, LiteYukonUser user) {
 
         // get the entry ids needed to add device status events
         int hwEventTypeID = selectionListService.getListEntry(lsec, YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
