@@ -19,6 +19,8 @@
 <%@ page import="com.cannontech.stars.database.data.event.EventWorkOrder" %>
 <%@ page import="com.cannontech.stars.dr.event.model.EventBase" %>
 <%@ page import="com.cannontech.common.model.ContactNotificationType" %>
+<%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
+<%@ page import="com.cannontech.stars.dr.selectionList.service.SelectionListService" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
