@@ -70,7 +70,10 @@
         <dependent-module archiveName="smtp-1.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/smtp-1.5.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jdom.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom.jar">
+        <dependent-module archiveName="jdom-1.1.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom-1.1.3.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jdom-2.0.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jdom-2.0.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jopcbridge.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jopcbridge.jar">
@@ -175,10 +178,7 @@
         <dependent-module archiveName="nagasena.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/nagasena.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="xml-apis.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xml-apis.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="xercesImpl.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl.jar">
+        <dependent-module archiveName="xercesImpl-2.11.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl-2.11.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/yukon-web/build/classes"/>
