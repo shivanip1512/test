@@ -47,12 +47,45 @@
 <% 
     REPORT_BEAN.setUserID(lYukonUser.getUserID());
     String menuSelection = null;
-
+	String groupName=null;
     Object groupType = request.getParameter("groupType");
     if (groupType == null) {
-        REPORT_BEAN.setGroupType(ReportGroup.METERING.name());
-    }
-    final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
+    	%>
+    		<cti:checkRolesAndProperties value="STATISTICAL_REPORTS_GROUP">
+   				<% groupName =  ReportGroup.STATISTICAL.name(); %>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
+       			<cti:checkRolesAndProperties value="ENABLE_SETTLEMENTS">
+       				<% groupName = ReportGroup.SETTLEMENT.name(); %>
+       			</cti:checkRolesAndProperties>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="DATABASE_REPORTS_GROUP">
+   				<% groupName = ReportGroup.DATABASE.name();%>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="CI_CURTAILMENT_REPORTS_GROUP">
+   				<% groupName = ReportGroup.CCURT.name();%>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="ADMIN_REPORTS_GROUP">
+   				<% groupName = ReportGroup.ADMINISTRATIVE.name();%>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="STARS_REPORTS_GROUP">
+   				<% groupName = ReportGroup.STARS.name(); %>
+       		</cti:checkRolesAndProperties>
+       		<cti:checkRolesAndProperties value="CAP_CONTROL_REPORTS_GROUP"> 
+       			<% groupName = ReportGroup.CAP_CONTROL.name(); %>
+       		</cti:checkRolesAndProperties>
+	       	<cti:checkRolesAndProperties value="LOAD_MANAGEMENT_REPORTS_GROUP">  
+    	   		<% groupName = ReportGroup.LOAD_MANAGEMENT.name(); %>
+			</cti:checkRolesAndProperties>
+			<cti:checkRolesAndProperties value="AMR_REPORTS_GROUP"> 
+       			<% groupName = ReportGroup.METERING.name(); %>
+			</cti:checkRolesAndProperties>	
+			
+			
+	<% REPORT_BEAN.setGroupType(groupName);	}
+    
+   	final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
+    
     if( reportGroup == ReportGroup.ADMINISTRATIVE)
         menuSelection = "reports|administrator";
     else if (reportGroup == ReportGroup.METERING)
