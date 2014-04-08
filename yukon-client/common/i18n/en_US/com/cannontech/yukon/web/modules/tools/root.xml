@@ -14,6 +14,9 @@
     <entry key="yukon.web.modules.tools.downloadSvg">Download SVG</entry>
     <entry key="yukon.web.modules.tools.downloadCsv">Download CSV</entry>
     
+    <!-- Map -->
+    <entry key="yukon.web.modules.tools.map.pageName">Map Devices</entry>
+    
     <!-- Trends -->
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>
     <entry key="yukon.web.modules.tools.trend.pageName">Trends</entry>
