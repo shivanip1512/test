@@ -51,7 +51,6 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
-import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -76,6 +75,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.impl.EnergyCompanySettingDaoImpl;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -145,7 +145,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
         
         /* Create Energy Company */
-        EnergyCompany energyCompany = new EnergyCompany();
+        com.cannontech.database.db.company.EnergyCompany energyCompany = new com.cannontech.database.db.company.EnergyCompany();
         energyCompany.setName(energyCompanyDto.getName());
         energyCompany.setPrimaryContactId(contact.getContactID());
         energyCompany.setUserId(adminUser.getUserID());
@@ -154,15 +154,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
         
-        /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
         dbChangeManager.processDbChange(energyCompany.getEnergyCompanyId(), 
                                         DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
                                         DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DbChangeType.ADD);
 
         /* Set Default Route */
-        com.cannontech.stars.energyCompany.model.EnergyCompany ec = 
-                ecService.getEnergyCompany(liteEnergyCompany.getEnergyCompanyId());
+        EnergyCompany ec = ecService.getEnergyCompany(liteEnergyCompany.getEnergyCompanyId());
         defaultRouteService.updateDefaultRoute(ec, energyCompanyDto.getDefaultRouteId(), user);
         
         /* Set Operator Group List */
@@ -455,8 +453,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      */
     private void deleteEnergyCompanyBase(LiteStarsEnergyCompany lsec, String dbAlias) {
-        com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany = 
-                ecService.getEnergyCompany(lsec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
         log.info("Deleting energy company base id# " + lsec.getEnergyCompanyId());
         String sql;
         // Delete all other generic mappings
@@ -673,11 +670,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {
         
         // remove (i.e. steal) route from children
-        final com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany
-            = ecService.getEnergyCompany(energyCompanyId);
-        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany>() {
+        final EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<EnergyCompany>() {
             @Override
-            public void handle(com.cannontech.stars.energyCompany.model.EnergyCompany item) throws Exception {
+            public void handle(EnergyCompany item) throws Exception {
                 if (item.equals(energyCompany)) {
                     // might as well skip ourselves
                     return;
@@ -706,11 +702,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public int removeRouteFromEnergyCompany(int energyCompanyId, final int routeId) {
         
         // make sure removed route isn't the default route
-        com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany
-            = ecService.getEnergyCompany(energyCompanyId);
-        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany>() {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<EnergyCompany>() {
             @Override
-            public void handle(com.cannontech.stars.energyCompany.model.EnergyCompany item) throws Exception {
+            public void handle(EnergyCompany item) throws Exception {
                 int defaultRouteId = defaultRouteService.getDefaultRouteId(item);
                 if (routeId == defaultRouteId) {
                     throw new RuntimeException("cannot delete the default route");
@@ -752,15 +747,14 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         return rowsDeleted;
     }
     
-    private static void callbackWithSelfAndEachDescendant(com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany,
-                           SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany> simpleCallback) {
+    private static void callbackWithSelfAndEachDescendant(EnergyCompany energyCompany, SimpleCallback<EnergyCompany> simpleCallback) {
         try {
             simpleCallback.handle(energyCompany);
         } catch (Exception e) {
             ExceptionHelper.throwOrWrap(e);
         }
-        Iterable<com.cannontech.stars.energyCompany.model.EnergyCompany> children = energyCompany.getChildren();
-        for (com.cannontech.stars.energyCompany.model.EnergyCompany energyCompanyChild : children) {
+        Iterable<EnergyCompany> children = energyCompany.getChildren();
+        for (EnergyCompany energyCompanyChild : children) {
             callbackWithSelfAndEachDescendant(energyCompanyChild, simpleCallback);
         }
     }

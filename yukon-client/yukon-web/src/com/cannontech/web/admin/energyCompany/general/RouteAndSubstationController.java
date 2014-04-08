@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.energyCompany.general;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -95,12 +96,13 @@ public class RouteAndSubstationController {
         setupModelMap(modelMap, energyCompanyInfoFragment, userContext);
         modelMap.addAttribute("mode", PageEditMode.VIEW);
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
         
         List<LiteYukonPAObject> availableRoutes = getAvailableRoutes(energyCompany);
         modelMap.addAttribute("availableRoutes", availableRoutes);
 
-        List<LiteSubstation> availableSubstations = getAvailableSubstations(energyCompany);
+        List<LiteSubstation> availableSubstations = getAvailableSubstations(lsec);
         modelMap.addAttribute("availableSubstations", availableSubstations);
 
         return "energyCompany/routesAndSubstations.jsp";
@@ -206,7 +208,8 @@ public class RouteAndSubstationController {
         return "redirect:/adminSetup/substations/routeMapping/view";
     }
     
-    private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment, YukonUserContext userContext) {
+    private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment,
+                               YukonUserContext userContext) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         int ecId = energyCompanyInfoFragment.getEnergyCompanyId();
         LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ecId);
@@ -215,14 +218,14 @@ public class RouteAndSubstationController {
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);
         
-        Iterable<LiteYukonPAObject> allRoutes = lsec.getAllRoutes();
+        Iterable<LiteYukonPAObject> allRoutes = ecService.getAllRoutes(energyCompany);
         Map<LiteYukonPAObject, Reason> routeToReason = Maps.newLinkedHashMap();
         for (LiteYukonPAObject liteYukonPAObject : allRoutes) {
             routeToReason.put(liteYukonPAObject, Reason.CAN_DELETE);
         }
         
         if (energyCompany.getParent() != null) {
-            Iterable<LiteYukonPAObject> ineritedRoutes = lsec.getParent().getAllRoutes();
+            Iterable<LiteYukonPAObject> ineritedRoutes = ecService.getAllRoutes(energyCompany.getParent());
             for (LiteYukonPAObject liteYukonPAObject : ineritedRoutes) {
                 routeToReason.put(liteYukonPAObject, Reason.INHERITED);
             }
@@ -252,12 +255,10 @@ public class RouteAndSubstationController {
      * This method returns a list of all the available routes that can be selected for the given
      * energy company.
      */
-    private List<LiteYukonPAObject> getAvailableRoutes(LiteStarsEnergyCompany energyCompany) {
-        List<LiteYukonPAObject> availableRoutes = Lists.newArrayList();
-        
+    private List<LiteYukonPAObject> getAvailableRoutes(EnergyCompany energyCompany) {
+        List<LiteYukonPAObject> availableRoutes = new ArrayList<>();
         availableRoutes.addAll(Lists.newArrayList(paoDao.getAllLiteRoutes()));
-        availableRoutes.removeAll(energyCompany.getAllRoutes());
-
+        availableRoutes.removeAll(ecService.getAllRoutes(energyCompany));
         return availableRoutes;
     }
     

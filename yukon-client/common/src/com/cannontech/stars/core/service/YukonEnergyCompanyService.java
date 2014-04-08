@@ -3,6 +3,7 @@ package com.cannontech.stars.core.service;
 import java.util.List;
 
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -76,6 +77,12 @@ public interface YukonEnergyCompanyService {
      */
     List<Integer> getRouteIds(int ecId);
 
+    /**
+     * Returns all routes assigned to this energy company (or all routes in yukon
+     * if it is a single energy company system), ordered alphabetically.
+     */
+    List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany);
+    
     /**
      * This method gets the energy company id for the operator supplied.
      * 

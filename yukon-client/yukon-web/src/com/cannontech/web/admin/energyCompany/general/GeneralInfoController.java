@@ -351,7 +351,7 @@ public class GeneralInfoController {
     
     @ModelAttribute("routes")
     public List<LiteYukonPAObject> getRoutes(int ecId) {
-        return starsDatabaseCache.getEnergyCompany(ecId).getAllRoutes();
+        return ecService.getAllRoutes(ecService.getEnergyCompany(ecId));
     }
     
     @ModelAttribute("canCreateMembers")

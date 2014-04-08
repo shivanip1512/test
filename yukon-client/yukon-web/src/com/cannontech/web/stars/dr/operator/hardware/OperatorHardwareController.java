@@ -669,7 +669,7 @@ public class OperatorHardwareController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
+        List<LiteYukonPAObject> routes = yukonEnergyCompanyService.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 

@@ -146,7 +146,8 @@ public class AddHardwareByRangeController {
         
         HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
         HardwareClass hardwareClass = hardwareType.getHardwareClass();
-        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
+        
+        List<LiteYukonPAObject> routes = yukonEnergyCompanyService.getAllRoutes(energyCompany);
         
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);

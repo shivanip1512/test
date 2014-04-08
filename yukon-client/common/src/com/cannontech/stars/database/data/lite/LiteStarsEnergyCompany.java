@@ -16,10 +16,8 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -28,10 +26,8 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.DbChangeManager;
@@ -49,10 +45,8 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -67,22 +61,18 @@ import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsSubstation;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompany {
-    private PaoDao paoDao;
     private DBPersistentDao dbPersistentDao;
     private DbChangeManager dbChangeManager;
     private ECMappingDao ecMappingDao;
-    private DefaultRouteService defaultRouteService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private SelectionListService selectionListService;
     private YukonGroupDao yukonGroupDao;
-    private EnergyCompanyDao energyCompanyDao;
     private EnergyCompanyService energyCompanyService;
     private RoleDao roleDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
@@ -163,7 +153,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final Map<Integer, Integer> programIdToAppCatIdMap = new ConcurrentHashMap<>();
     private final Map<Integer, LiteApplianceCategory> appCategoryMap = new ConcurrentHashMap<>();
 
-    private volatile int defaultRouteId = CtiUtilities.NONE_ZERO_ID;
     private int operDftGroupID = com.cannontech.database.db.user.YukonGroup.EDITABLE_MIN_GROUP_ID - 1;
     
     private class EnergyCompanyHierarchy {
@@ -261,14 +250,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      */
     public void setUser(LiteYukonUser user) {
         this.user = user;
-    }
-
-    /**
-     * This method resets the default routeId for the given energy company.  This will cause the
-     * get method to look up the value next time it is needed instead of using the cached value.
-     */
-    public void resetAllStoredRoutes() {
-        defaultRouteId = CtiUtilities.NONE_ZERO_ID;
     }
 
     /**
@@ -549,39 +530,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         sql.append("WHERE EnergyCompanyID").eq(getEnergyCompanyId());
         List<Integer> list = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return list;
-    }
-    
-    /**
-     * Returns all routes assigned to this energy company (or all routes in yukon
-     * if it is a single energy company system), ordered alphabetically.
-     */
-    public List<LiteYukonPAObject> getAllRoutes() {
-        if (energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, this.getEnergyCompanyId())) {
-            List<LiteYukonPAObject> result = IterableUtils.safeList(paoDao.getAllLiteRoutes());
-            return result; 
-        }
-
-        List<LiteYukonPAObject> inheritedRoutes = ImmutableList.of();
-        if (getParent() != null) {
-            inheritedRoutes = getParent().getAllRoutes();
-        }
-        List<LiteYukonPAObject> routeList = Lists.newArrayList(inheritedRoutes);
-        
-        routeList.addAll(getRoutes());
-
-        Collections.sort( routeList, LiteComparators.liteStringComparator );
-        return Collections.unmodifiableList(routeList);
-    }
-
-    public List<LiteYukonPAObject> getRoutes() {
-        List<Integer> routeIDs = yukonEnergyCompanyService.getRouteIds(this.getEnergyCompanyId());
-        List<LiteYukonPAObject> routeList =  Lists.newArrayListWithCapacity(routeIDs.size());
-        for (Integer routeId : routeIDs) {
-            LiteYukonPAObject liteRoute = paoDao.getLiteYukonPAO(routeId);
-            routeList.add(liteRoute);
-        }
-
-        return Collections.unmodifiableList(routeList);
     }
 
     public LiteApplianceCategory getApplianceCategory(int applianceCategoryID) {
@@ -1034,18 +982,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
 
     public void setSelectionListService(SelectionListService selectionListService) {
         this.selectionListService = selectionListService;
-    }
-    
-    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
-        this.defaultRouteService = defaultRouteService;
-    }
-    
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
     }
     
     public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {

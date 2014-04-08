@@ -373,7 +373,7 @@ public class AssetDashboardController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
+        List<LiteYukonPAObject> routes = ecService.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
@@ -600,7 +600,7 @@ public class AssetDashboardController {
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
+        List<LiteYukonPAObject> routes = ecService.getAllRoutes(energyCompany);
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
