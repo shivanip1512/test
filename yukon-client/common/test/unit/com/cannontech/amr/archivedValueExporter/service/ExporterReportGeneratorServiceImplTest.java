@@ -61,6 +61,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class ExporterReportGeneratorServiceImplTest {
+    
     private PaoSelectionService paoSelectionService = new MockPaoSelectionServiceImpl();
     private AttributeService attributeService = new MockAttributeServiceImpl();
     private MeterDao meterDao = new MockMeterDaoImpl();
@@ -259,7 +260,7 @@ public class ExporterReportGeneratorServiceImplTest {
         Preview preview = exporterReportGeneratorService.generatePreview(basicFixedFormatExport, userContextOne);
 
         Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", preview.getHeader());
-        Assert.assertEquals("Meter Name,Meter Number,1234546," + dateTimeFormatter.print(Instant.now()) + ",1234546,Plain Text", preview.getBody());
+        Assert.assertEquals("Meter Name,Meter Number,1234546," + dateTimeFormatter.print(Instant.now()) + ",1234546,Plain Text", preview.getBody().get(0));
         Assert.assertEquals("End File", preview.getFooter());
     }
 
@@ -268,7 +269,7 @@ public class ExporterReportGeneratorServiceImplTest {
         Preview preview = exporterReportGeneratorService.generatePreview(basicDyanamicFormatExport, userContextOne);
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", preview.getHeader());
-        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody());
+        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody().get(0));
         Assert.assertEquals("End File", preview.getFooter());
     }
 
