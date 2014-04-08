@@ -8,28 +8,29 @@
     <script>
     $(document).ready(function(){
         updateImportTypeSelection();
-        $("#importTypeSelector").change(function(){
+        $('#importTypeSelector').change(function(){
             updateImportTypeSelection();
             //get the import type value, remove spaces, lowercase
             var importType = $('#importTypeSelector').val().replace(/_/g, '');
             importType = importType.toLowerCase();
-            $("#importForm").attr("action", "/capcontrol/import/" + importType + "File");
+            $('#importForm').attr('action', yukon.url('/capcontrol/import/') + importType + 'File');
         });
     });
 
     function updateImportTypeSelection() {
-        var itemSelected = $("#importTypeSelector").val();
+        var itemSelected = $('#importTypeSelector').val();
         //hide all rows
         $("[class^='importType_']").hide();
         //show rows for the selected interface
-        $(".importType_" + itemSelected).show();
+        $('.importType_' + itemSelected).show();
     }
     </script>
 
     <div class="column-10-14">
         <div class="column one">
             <tags:sectionContainer2 nameKey="importContainer" styleClass="stacked">
-                <form id="importForm" method="post" action="/capcontrol/import/cbcFile" enctype="multipart/form-data">
+                <cti:url var="cbcFileUrl" value="/capcontrol/import/cbcFile"/>
+                <form id="importForm" method="post" action="${cbcFileUrl}" enctype="multipart/form-data">
                     <cti:csrfToken/>
                     <cti:msg2 key=".importTypeSelect" var="importTypeName" htmlEscape="true"/>
                     <cti:msg2 key="yukon.common.file" var="fileName" htmlEscape="true"/>

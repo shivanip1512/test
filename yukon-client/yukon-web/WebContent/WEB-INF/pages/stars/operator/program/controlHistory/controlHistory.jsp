@@ -1,10 +1,11 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <cti:standardPage module="operator" page="controlHistory">
 
-<cti:url var="completeHistoryUrl" value="/stars/operator/program/controlHistory/completeHistoryView"/>
+<c:set var="completeHistoryUrl" value="/stars/operator/program/controlHistory/completeHistoryView"/>
     
     <div id="programs">
         <div class="clearfix stacked">

@@ -11,7 +11,8 @@
                     <cti:msg2 var="importTitle" key=".importHeader"/>
                     <tags:sectionContainer title="${importTitle}">
                         <div class="stacked"><i:inline key=".importDescription"/></div>
-                        <form id="importForm" method="post" action="/bulk/pointImport/submitImport" enctype="multipart/form-data">
+                        <cti:url var="submitImportUrl" value="/bulk/pointImport/submitImport"/>
+                        <form id="importForm" method="post" action="${submitImportUrl}" enctype="multipart/form-data">
                             <cti:csrfToken/>
                             <tags:nameValueContainer2>
                                 <tags:nameValue2 nameKey=".importTypeSelectLabel">

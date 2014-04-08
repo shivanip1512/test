@@ -9,7 +9,7 @@
     $(document).ready(function(){
         updateInterfaceSelection();
         
-        $("#interfaceColumnSelector").change(function(){
+        $('#interfaceColumnSelector').change(function(){
             updateInterfaceSelection();
         });
         
@@ -20,7 +20,7 @@
                     if(data.error) {
                         yukon.ui.flashError(data.error);
                     } else {
-                        var url = '/bulk/fdrTranslationManager/importResults?';
+                        var url = yukon.url('/bulk/fdrTranslationManager/importResults?');
                         url += 'resultId=' + data.resultId;
                         url += '&fileName=' + data.fileName;
                         url += '&ignoreInvalidColumns=' + data.ignoreInvalidColumns;
@@ -33,14 +33,14 @@
     });
     
     function updateInterfaceSelection() {
-        var itemSelected = $("#interfaceColumnSelector").val();
+        var itemSelected = $('#interfaceColumnSelector').val();
         //hide all rows
         $("[class^='interface_']").hide();
         //show rows for the selected interface
-        $(".interface_" + itemSelected).show();
+        $('.interface_' + itemSelected).show();
         //update the sample files link
-        var filePath = "/WebConfig/custom/sample_bulk_files/fdr_translations/" + itemSelected + "_sample.csv";
-        $("#sampleFileLink").attr("href", filePath);
+        var filePath = yukon.url('/WebConfig/custom/sample_bulk_files/fdr_translations/') + itemSelected + '_sample.csv';
+        $('#sampleFileLink').attr('href', filePath);
     }
     </script>
     
@@ -52,7 +52,8 @@
             </div>
             <div class="stacked clearfix">
                 <%-- This form submitted through ajax --%>
-                <form id="importForm" method="post" action="/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
+                <cti:url var="submitImportUrl" value="/bulk/fdrTranslationManager/submitImport"/>
+                <form id="importForm" method="post" action="${submitImportUrl}" enctype="multipart/form-data">
                     <cti:csrfToken/>
                     <cti:msg2 key="yukon.common.file" var="fileName"/>
                     <tags:nameValueContainer>
@@ -72,7 +73,8 @@
                 <h3><i:inline key=".reportTitle"/></h3>
                 <i:inline key=".reportText"/>
             </div>
-            <form id="downloadReportForm" method="post" action="/bulk/fdrTranslationManager/report" class="clearfix">
+            <cti:url var="reportUrl" value="/bulk/fdrTranslationManager/report"/>
+            <form id="downloadReportForm" method="post" action="${reportUrl}" class="clearfix">
                 <cti:csrfToken/>
                 <div class="action-area">
                   <cti:button type="submit" nameKey="download" icon="icon-download"/>

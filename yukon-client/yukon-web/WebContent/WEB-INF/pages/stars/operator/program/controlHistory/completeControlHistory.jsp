@@ -4,7 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:url var="controlHistoryView" value="/stars/operator/program/controlHistory"/>
-<cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
+<c:set var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
 
 <cti:standardPage module="operator" page="completeControlHistory">
     

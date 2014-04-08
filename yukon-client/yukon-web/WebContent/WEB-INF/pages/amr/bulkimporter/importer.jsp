@@ -19,7 +19,8 @@
 <cti:url var="bulkHomeUrl" value="/bulk/bulkHome"/>
 <div class="warning stacked"><i:inline key=".header" arguments="${bulkHomeUrl}"/></div>
 
-<form id="actionsForm" method="post" action="/amr/bulkimporter/upload" enctype="multipart/form-data">
+<cti:url var="uploadUrl" value="/amr/bulkimporter/upload"/>
+<form id="actionsForm" method="post" action="${uploadUrl}" enctype="multipart/form-data">
     <cti:csrfToken/>
 <cti:msg2 var="actionsHeader" key=".actions.header" />
 <cti:msg2 var="actionsLoadDataLabel" key=".actions.loadDataFromFileLabel" />
