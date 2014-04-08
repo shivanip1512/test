@@ -39,7 +39,7 @@
     
 	int statusPending = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 	int statusAssigned = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
-	int statusScheduled = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, (YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
+	int statusScheduled = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
 	int statusCompleted = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 	int statusCancelled = YukonSpringHook.getBean(SelectionListService.class).getListEntry(liteEC, YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
 %>
