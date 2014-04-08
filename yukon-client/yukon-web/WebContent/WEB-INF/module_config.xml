@@ -383,6 +383,7 @@
                       <page name="bulk.massDeleteResults" type="BASIC"/>
                     </pages>
                   </page>
+                  <page name="map" type="BASIC"/>
                 </pages>
               </page>
             </pages>
