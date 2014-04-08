@@ -389,7 +389,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 {
                     sendE2eDataRequestPacket(
                             activeRequest.currentPacket.payloadSent,
-                            activeRequest.currentPacket.asidSent,
+                            activeRequest.request.command->getApplicationServiceId(),
                             rfnId);
 
                     activeRequest.currentPacket.retransmits++;
@@ -644,7 +644,7 @@ void RfnRequestManager::receiveConfirm(const E2eMessenger::Confirm &msg)
 RfnRequestManager::PacketInfo
     RfnRequestManager::sendE2eDataRequestPacket(
         const std::vector<unsigned char> &e2ePacket,
-        const ApplicationServiceIdentifiers asid,
+        const ApplicationServiceIdentifiers &asid,
         const RfnIdentifier &rfnIdentifier)
 {
     E2eMessenger::Request msg;
@@ -657,7 +657,6 @@ RfnRequestManager::PacketInfo
     PacketInfo transmissionReceipt;
 
     transmissionReceipt.payloadSent = e2ePacket;
-    transmissionReceipt.asidSent    = asid;
     boost::random::uniform_int_distribution<> random_factor(0, gConfigParms.getValueAsInt("E2EDT_CON_RETX_RAND_FACTOR", E2EDT_CON_RETX_RAND_FACTOR));
 
     transmissionReceipt.retransmissionDelay = gConfigParms.getValueAsInt("E2EDT_CON_RETX_TIMEOUT", E2EDT_CON_RETX_TIMEOUT);

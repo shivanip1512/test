@@ -44,7 +44,12 @@ void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnId
 
 namespace {
 
-bool isE2eDt(ApplicationServiceIdentifiers asid)
+bool operator==(const unsigned char value, const ApplicationServiceIdentifiers &asid)
+{
+    return value == asid.value;
+}
+
+bool isE2eDt(const unsigned char &asid)
 {
     return (asid == ApplicationServiceIdentifiers::ChannelManager)
         || (asid == ApplicationServiceIdentifiers::E2EDT)
@@ -52,7 +57,7 @@ bool isE2eDt(ApplicationServiceIdentifiers asid)
         || (asid == ApplicationServiceIdentifiers::HubMeterCommandSet);
 }
 
-bool isDnp3(ApplicationServiceIdentifiers asid)
+bool isDnp3(const unsigned char &asid)
 {
     return asid == ApplicationServiceIdentifiers::E2EAP_DNP3;
 }
@@ -177,7 +182,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
 }
 
 
-void E2eMessenger::sendE2eDt(const Request &req, ApplicationServiceIdentifiers asid, Confirm::Callback callback)
+void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers &asid, Confirm::Callback callback)
 {
     E2eDataRequestMsg msg;
 

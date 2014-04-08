@@ -68,10 +68,8 @@ double RfnCommand::adjustByScalingFactor(double value, double scalingFactor) con
 }
 
 // Defaults to Advanced Metrology, which operates via Channel Manager
-Messaging::Rfn::ApplicationServiceIdentifiers RfnCommand::getApplicationServiceId() const
+const Messaging::Rfn::ApplicationServiceIdentifiers &RfnCommand::getApplicationServiceId() const
 {
-    using Messaging::Rfn::ApplicationServiceIdentifiers;
-
     return ApplicationServiceIdentifiers::ChannelManager;
 }
 

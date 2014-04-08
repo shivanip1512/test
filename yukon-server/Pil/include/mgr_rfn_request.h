@@ -66,21 +66,19 @@ private:
 
     typedef Messaging::Rfn::E2eMessenger E2eMessenger;
     typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
-    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
 
     Protocols::E2eDataTransferProtocol _e2edt;
 
     struct PacketInfo
     {
         std::vector<unsigned char> payloadSent;
-        ApplicationServiceIdentifiers asidSent;
         CtiTime  timeSent;
         unsigned retransmissionDelay;
         unsigned retransmits;
         unsigned maxRetransmits;
     };
 
-    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers asid, const RfnIdentifier &rfnIdentifier);
+    PacketInfo sendE2eDataRequestPacket(const std::vector<unsigned char> &e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
 
     void receiveConfirm(const E2eMessenger::Confirm &msg);
     void receiveIndication(const E2eMessenger::Indication &msg);

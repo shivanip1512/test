@@ -28,7 +28,7 @@ public:
 
     virtual void invokeResultHandler( ResultHandler & rh ) const;
 
-    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
+    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
 
     unsigned short getDnpSlaveAddress() const;
 

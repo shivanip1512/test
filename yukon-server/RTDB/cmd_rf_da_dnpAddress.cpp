@@ -14,10 +14,8 @@ namespace Devices {
 namespace Commands {
 
 
-using Messaging::Rfn::ApplicationServiceIdentifiers;
-
 // Defaults to Advanced Metrology, which operates via Channel Manager
-ApplicationServiceIdentifiers RfDaReadDnpSlaveAddressCommand::getApplicationServiceId() const
+const Messaging::Rfn::ApplicationServiceIdentifiers &RfDaReadDnpSlaveAddressCommand::getApplicationServiceId() const
 {
     return ApplicationServiceIdentifiers::HubMeterCommandSet;
 }

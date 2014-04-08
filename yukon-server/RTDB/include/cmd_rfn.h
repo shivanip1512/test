@@ -90,7 +90,9 @@ public:
     //  to be overridden by children that require a result handler
     virtual void invokeResultHandler(ResultHandler &rh) const;
 
-    virtual Messaging::Rfn::ApplicationServiceIdentifiers getApplicationServiceId() const;
+    typedef Messaging::Rfn::ApplicationServiceIdentifiers ApplicationServiceIdentifiers;
+
+    virtual const ApplicationServiceIdentifiers &getApplicationServiceId() const;
 
 protected:
 
