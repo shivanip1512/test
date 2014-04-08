@@ -24,11 +24,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandRequestExecutor;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 
 /**
  * Implementation class for CommandRequestHardwareExecutor
@@ -41,6 +41,7 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
 	@Autowired private InventoryDao inventoryDao;
 	@Autowired private PaoDao paoDao;
 	@Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
+	@Autowired private DefaultRouteService defaultRouteService;
 	
 	private Logger logger = YukonLogManager.getLogger(LmHardwareCommandRequestExecutorImpl.class);
 
@@ -110,9 +111,8 @@ public class LmHardwareCommandRequestExecutorImpl implements LmHardwareCommandRe
             routeId = paoDao.getLiteYukonPAO(hardware.getDeviceID()).getRouteID();
         }
         if (routeId == CtiUtilities.NONE_ZERO_ID) {
-            YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryID());
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yec.getEnergyCompanyId());
-            routeId = energyCompany.getDefaultRouteId();
+            EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(hardware.getInventoryID());
+            routeId = defaultRouteService.getDefaultRouteId(energyCompany);
         }
         return routeId;
 	}

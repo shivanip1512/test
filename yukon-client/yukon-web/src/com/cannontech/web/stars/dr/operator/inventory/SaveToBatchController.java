@@ -28,7 +28,9 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
@@ -47,12 +49,14 @@ public class SaveToBatchController {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private SaveToBatchHelper helper;
     @Autowired private PaoDao paoDao;
+    @Autowired private DefaultRouteService defaultRouteService;
+
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
     
     @RequestMapping("setup")
     public String setup(HttpServletRequest request, ModelMap model, String taskId, YukonUserContext userContext) throws ServletRequestBindingException, RemoteException {
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        LiteStarsEnergyCompany liteStarsEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompany);
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
@@ -73,13 +77,12 @@ public class SaveToBatchController {
         String ecDefaultRoute;
         int ecDefaultRouteId = -1;    // All routeId's must be positive.  If this value persists   
         try {                         // beyond the try block below, then there is no default route.
-            ecDefaultRouteId = liteStarsEnergyCompany.getDefaultRouteId();
-            ecDefaultRoute = paoDao.getYukonPAOName(ecDefaultRouteId);
+            ecDefaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(energyCompany));
             ecDefaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + ecDefaultRoute;
         } catch(NotFoundException e) {
             ecDefaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
-        List<LiteYukonPAObject> routes = liteStarsEnergyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
         model.addAttribute("routes", routes);
         model.addAttribute("ecDefaultRoute", ecDefaultRoute);
    

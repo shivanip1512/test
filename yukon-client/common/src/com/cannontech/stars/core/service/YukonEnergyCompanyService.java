@@ -62,10 +62,14 @@ public interface YukonEnergyCompanyService {
      * This method returns "true" if this is a primary operator.
      */
     boolean isPrimaryOperator(int operatorLoginId);
-    
+
     EnergyCompany getEnergyCompany(int ecId);
-    
+
     EnergyCompany findEnergyCompany(int ecId);
+
+    EnergyCompany getEnergyCompany(String energyCompanyName);
+
+    EnergyCompany findEnergyCompany(String energyCompanyName);
 
     /**
      * Returns an immutable list of all routeIds associated with the energy company

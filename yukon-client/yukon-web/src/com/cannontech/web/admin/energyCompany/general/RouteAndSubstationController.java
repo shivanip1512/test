@@ -20,11 +20,14 @@ import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -69,6 +72,8 @@ public class RouteAndSubstationController {
     }
 
     @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
+    @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private GeneralInfoService generalInfoService;
     @Autowired private PaoDao paoDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -203,26 +208,27 @@ public class RouteAndSubstationController {
     
     private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment, YukonUserContext userContext) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        int ecId = energyCompanyInfoFragment.getEnergyCompanyId();
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
         
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);
         
-        Iterable<LiteYukonPAObject> allRoutes = energyCompany.getAllRoutes();
+        Iterable<LiteYukonPAObject> allRoutes = lsec.getAllRoutes();
         Map<LiteYukonPAObject, Reason> routeToReason = Maps.newLinkedHashMap();
         for (LiteYukonPAObject liteYukonPAObject : allRoutes) {
             routeToReason.put(liteYukonPAObject, Reason.CAN_DELETE);
         }
         
         if (energyCompany.getParent() != null) {
-            Iterable<LiteYukonPAObject> ineritedRoutes = energyCompany.getParent().getAllRoutes();
+            Iterable<LiteYukonPAObject> ineritedRoutes = lsec.getParent().getAllRoutes();
             for (LiteYukonPAObject liteYukonPAObject : ineritedRoutes) {
                 routeToReason.put(liteYukonPAObject, Reason.INHERITED);
             }
         }
         
-        LiteYukonPAObject defaultRoute = energyCompany.getDefaultRoute();
+        LiteYukonPAObject defaultRoute = defaultRouteService.getDefaultRoute(energyCompany);
         if (defaultRoute != null) {
             routeToReason.put(defaultRoute, Reason.THIS_DEFAULT);
         }
@@ -235,9 +241,9 @@ public class RouteAndSubstationController {
         modelMap.addAttribute("isSingleEnergyCompany", energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SINGLE_ENERGY_COMPANY, energyCompany.getEnergyCompanyId()));
         modelMap.addAttribute("ecRoutes", routeToReason);
 
-        List<LiteSubstation> inheritedSubstations = getInheritedSubstations(energyCompany);
+        List<LiteSubstation> inheritedSubstations = getInheritedSubstations(lsec);
         modelMap.addAttribute("inheritedSubstations", inheritedSubstations);
-        List<LiteSubstation> ecSubstations = getECSubstations(energyCompany);
+        List<LiteSubstation> ecSubstations = getECSubstations(lsec);
         modelMap.addAttribute("ecSubstations", ecSubstations);
     }
 
@@ -255,14 +261,14 @@ public class RouteAndSubstationController {
         return availableRoutes;
     }
     
-    private Set<LiteYukonPAObject> getAllChildDefaultRoutes(LiteStarsEnergyCompany energyCompany) {
-        Iterable<LiteStarsEnergyCompany> children = energyCompany.getChildren();
+    private Set<LiteYukonPAObject> getAllChildDefaultRoutes(EnergyCompany energyCompany) {
+        Iterable<EnergyCompany> children = energyCompany.getChildren();
         if (Iterables.isEmpty(children)) {
             return ImmutableSet.of();
         }
         ImmutableSet.Builder<LiteYukonPAObject> builder = ImmutableSet.builder();
-        for (LiteStarsEnergyCompany child : children) {
-            LiteYukonPAObject defaultRoute = child.getDefaultRoute();
+        for (EnergyCompany child : children) {
+            LiteYukonPAObject defaultRoute = defaultRouteService.getDefaultRoute(energyCompany);
             if (defaultRoute != null) {
                 builder.add(defaultRoute);
             }
@@ -277,7 +283,9 @@ public class RouteAndSubstationController {
      */
     private boolean checkRoutePermission(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                          LiteYukonUser yukonUser) {
-        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, yukonUser)) return true;
+        if (rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, yukonUser)) {
+            return true;
+        }
 
         LiteStarsEnergyCompany energyCompany = 
             starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());

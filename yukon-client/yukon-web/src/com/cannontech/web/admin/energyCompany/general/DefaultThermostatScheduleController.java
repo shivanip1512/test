@@ -29,6 +29,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
@@ -38,6 +39,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
@@ -70,6 +72,7 @@ public class DefaultThermostatScheduleController {
     @Autowired private ThermostatService thermostatService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     @RequestMapping("view")
     public String view(YukonUserContext userContext, ModelMap modelMap, int ecId, 
@@ -205,7 +208,7 @@ public class DefaultThermostatScheduleController {
     private void setupModelMap(ModelMap modelMap, EnergyCompanyInfoFragment energyCompanyInfoFragment, YukonUserContext userContext) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
 
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyInfoFragment.getEnergyCompanyId());
         
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         modelMap.addAttribute("generalInfo", generalInfo);

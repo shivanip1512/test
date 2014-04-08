@@ -86,7 +86,9 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.WebClientException;
@@ -123,6 +125,7 @@ public class OperatorHardwareController {
     @Autowired private AssetAvailabilityService assetAvailabilityService;
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
@@ -651,26 +654,26 @@ public class OperatorHardwareController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         model.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(lsec.getEnergyCompanyId());
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("none", accessor.getMessage("yukon.web.defaults.none"));
         
         String defaultRoute;
         try {
-            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteId());
+            defaultRoute = paoDao.getYukonPAOName(defaultRouteService.getDefaultRouteId(energyCompany));
             defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(yukonEnergyCompanyService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getParents(true), 
-                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+                Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         // Setup elements to hide/show based on device type/class

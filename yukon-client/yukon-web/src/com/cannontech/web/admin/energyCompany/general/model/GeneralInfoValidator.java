@@ -8,14 +8,15 @@ import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.util.Validator;
 import com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator;
 
 public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
-    
-    @Autowired private EnergyCompanyDao energyCompanyDao;
+
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private YukonEnergyCompanyService ecService;
+
     boolean ecNameChange = true;
 
     public GeneralInfoValidator() {
@@ -53,7 +54,7 @@ public class GeneralInfoValidator extends SimpleValidator<GeneralInfo> {
             errors.rejectValue("email", "yukon.web.modules.adminSetup.generalInfo.invalidEmail");
         }
 
-        if (ecNameChange && energyCompanyDao.findEnergyCompanyByName(generalInfo.getName()) != null) {
+        if (ecNameChange && ecService.findEnergyCompany(generalInfo.getName()) != null) {
             // Found an energycompany already using this name.
             errors.rejectValue("name", "yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable");
         }

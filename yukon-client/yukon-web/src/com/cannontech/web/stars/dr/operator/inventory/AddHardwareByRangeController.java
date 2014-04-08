@@ -36,6 +36,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -61,8 +62,9 @@ public class AddHardwareByRangeController {
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private AddByRangeHelper helper;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
-    private RecentResultsCache<AbstractInventoryTask> resultsCache;
+    @Autowired private DefaultRouteService defaultRouteService;
     
+    private RecentResultsCache<AbstractInventoryTask> resultsCache;
     private AbrValidator validator = new AbrValidator();
     
     private class AbrValidator extends SimpleValidator<AddByRange> {
@@ -128,14 +130,15 @@ public class AddHardwareByRangeController {
     }
     
     private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
-        EnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {
-            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteId());
+            int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+            defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
@@ -143,16 +146,16 @@ public class AddHardwareByRangeController {
         
         HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
         HardwareClass hardwareClass = hardwareType.getHardwareClass();
-        List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
         
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        List<Integer> energyCompanyIds = Lists.transform(ec.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+        List<Integer> energyCompanyIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
         
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());
-        model.addAttribute("ecId", ec.getId());
+        model.addAttribute("ecId", energyCompany.getId());
         model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         model.addAttribute("defaultRoute", defaultRoute);
         model.addAttribute("routes", routes);

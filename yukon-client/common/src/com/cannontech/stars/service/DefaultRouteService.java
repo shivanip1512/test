@@ -1,10 +1,14 @@
 package com.cannontech.stars.service;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public interface DefaultRouteService {
-    public int getDefaultRoute(LiteStarsEnergyCompany energyCompany);
-    public void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID, LiteYukonUser user);
-    public void removeDefaultRoute(LiteStarsEnergyCompany energyCompany);
+    int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
+
+    int getDefaultRouteId(EnergyCompany energyCompany);
+    LiteYukonPAObject getDefaultRoute(EnergyCompany energyCompany);
+    void updateDefaultRoute(EnergyCompany energyCompany, int routeID, LiteYukonUser user);
+    void removeDefaultRoute(EnergyCompany energyCompany);
 }

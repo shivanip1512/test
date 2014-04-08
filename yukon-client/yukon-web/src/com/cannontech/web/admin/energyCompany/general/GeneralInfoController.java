@@ -33,7 +33,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -302,7 +302,7 @@ public class GeneralInfoController {
     private void setupModelMap(ModelMap model, LiteYukonUser user, int ecId, EnergyCompanyInfoFragment fragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
       
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
         GeneralInfo generalInfo = generalInfoService.getGeneralInfo(energyCompany);
         model.addAttribute("generalInfo", generalInfo);
         

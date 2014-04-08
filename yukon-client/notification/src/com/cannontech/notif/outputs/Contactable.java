@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -95,14 +96,14 @@ public class Contactable {
     public LiteEnergyCompany getEnergyCompany() {
         int energyCompanyID;
         try {
-            energyCompanyID = _contactableBase.getContactableCustomer()
-                    .getEnergyCompanyID();
+            energyCompanyID = _contactableBase.getContactableCustomer().getEnergyCompanyID();
         } catch (UnknownCustomerException e) {
-            energyCompanyID = YukonSpringHook.getBean(EnergyCompanyDao.class).DEFAULT_ENERGY_COMPANY_ID;
+            energyCompanyID = YukonSpringHook.getBean(YukonEnergyCompanyService.class).DEFAULT_ENERGY_COMPANY_ID;
         }
         return YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(energyCompanyID);
     }
 
+    @Override
     public String toString() {
         return _contactableBase.toString();
     }

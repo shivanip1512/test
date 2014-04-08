@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -17,11 +16,11 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.web.admin.energyCompany.general.model.GeneralInfo;
 
 public class GeneralInfoService {
@@ -31,16 +30,17 @@ public class GeneralInfoService {
     @Autowired private AddressDao addressDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private DefaultRouteService defaultRouteService;
     @Autowired private DbChangeManager dbChangeManager;
     
-    public GeneralInfo getGeneralInfo(LiteStarsEnergyCompany energyCompany) {
+    public GeneralInfo getGeneralInfo(EnergyCompany energyCompany) {
         GeneralInfo info = new GeneralInfo();
-        info.setEcId(energyCompany.getEnergyCompanyId());
+        info.setEcId(energyCompany.getId());
         info.setName(energyCompany.getName());
         
-        LiteContact contact = contactDao.getContact(energyCompany.getPrimaryContactID());
+        LiteContact contact = contactDao.getContact(energyCompany.getContactId());
         
         LiteContactNotification phone = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.PHONE);
         if (phone != null) {
@@ -61,9 +61,9 @@ public class GeneralInfoService {
             info.setAddress(Address.getDisplayableAddress((addressDao.getByAddressId(contact.getAddressID()))));
         }
         
-        info.setDefaultRouteId(energyCompany.getDefaultRouteId());
+        info.setDefaultRouteId(defaultRouteService.getDefaultRouteId(energyCompany));
         
-        LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompany.getEnergyCompanyId());
+        LiteYukonUser parentLogin = ecMappingDao.findParentLogin(energyCompany.getId());
         if (parentLogin != null) {
             info.setParentLogin(parentLogin.getUserID());
         }
@@ -72,9 +72,9 @@ public class GeneralInfoService {
     }
     
     @Transactional
-    public void save(GeneralInfo generalInfo, LiteYukonUser user) throws CommandExecutionException, WebClientException {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(generalInfo.getEcId());
-        LiteContact contact = contactDao.getContact(energyCompany.getPrimaryContactID());
+    public void save(GeneralInfo generalInfo, LiteYukonUser user) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(generalInfo.getEcId());
+        LiteContact contact = contactDao.getContact(energyCompany.getContactId());
         int contactId = contact.getContactID();
         int addressId = contact.getAddressID();
         
@@ -100,8 +100,8 @@ public class GeneralInfoService {
         defaultRouteService.updateDefaultRoute(energyCompany, generalInfo.getDefaultRouteId(), user);
         
         if (energyCompany.getParent() != null) {
-            int parentEcId = energyCompany.getParent().getEnergyCompanyId();
-            int energyCompanyId = energyCompany.getEnergyCompanyId();
+            int parentEcId = energyCompany.getParent().getId();
+            int energyCompanyId = energyCompany.getId();
             Integer parentLogin = generalInfo.getParentLogin();
             if (parentLogin == null) {
                 ecMappingDao.removeParentLogin(parentEcId, energyCompanyId);

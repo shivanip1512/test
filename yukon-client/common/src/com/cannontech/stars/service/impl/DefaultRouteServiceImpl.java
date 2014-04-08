@@ -13,11 +13,13 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.YukonResultSet;
@@ -26,13 +28,14 @@ import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
 import com.cannontech.database.data.device.lm.LMGroupPlcExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 
 public class DefaultRouteServiceImpl implements DefaultRouteService {
@@ -43,13 +46,14 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private PaoPermissionService paoPermissionService;
     @Autowired private YukonJdbcOperations yukonJdbcTemplate;
+    @Autowired private PaoDao paoDao;
     
     @Override
-    public int getDefaultRoute(LiteStarsEnergyCompany energyCompany) {
-        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getEnergyCompanyUser(), Permission.DEFAULT_ROUTE);
+    public int getDefaultRouteId(EnergyCompany energyCompany) {
+        Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if(permittedPaoIds.isEmpty()) {
             log.info("no permitted PAOs found for default route for energy company " + energyCompany.getName());
-            return LiteStarsEnergyCompany.INVALID_ROUTE_ID;
+            return INVALID_ROUTE_ID;
         }
 
         List<Integer> serialGroupIds = getPermittedSerialGroupIds(permittedPaoIds);
@@ -57,7 +61,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         // get a serial group whose serial number is set to 0, the route id of this group is the default route id
         if (serialGroupIds.isEmpty()) {
             log.info("no serial group IDs for default route found for energy company " + energyCompany.getName());
-            return LiteStarsEnergyCompany.INVALID_ROUTE_ID;
+            return INVALID_ROUTE_ID;
         }
 
         // get versacom serial groups
@@ -67,7 +71,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql2.append("  JOIN LMGroupVersacom LMGV ON PAO.PAObjectId = LMGV.DeviceId");
         sql2.append("WHERE LMGV.DeviceId").in(serialGroupIds);
 
-        List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, new IntegerRowMapper());
+        List<Integer> versacomDefaultRouteIds = yukonJdbcTemplate.query(sql2, RowMapper.INTEGER);
         if (versacomDefaultRouteIds.size() > 0) {
             return versacomDefaultRouteIds.get(0);
         }
@@ -79,42 +83,43 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql3.append("  JOIN LMGroupExpresscom LMGE ON PAO.PAObjectId = LMGE.LMGroupId");
         sql3.append("WHERE LMGE.LmGroupId").in(serialGroupIds);
 
-        List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, new IntegerRowMapper());
+        List<Integer> expresscomDefaultRouteIds = yukonJdbcTemplate.query(sql3, RowMapper.INTEGER);
         if (expresscomDefaultRouteIds.size() > 0) {
             return expresscomDefaultRouteIds.get(0);
         }
 
         log.info("no default route id found for energy company " + energyCompany.getName());
-        return LiteStarsEnergyCompany.INVALID_ROUTE_ID;
+        return INVALID_ROUTE_ID;
 
     }
     
     @Override
-    public void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeId, LiteYukonUser user) {
-        
-        int previousRouteId = energyCompany.getDefaultRouteId();
-        if (previousRouteId != routeId) {
-            if (routeId == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+    public void updateDefaultRoute(EnergyCompany energyCompany, int newRouteId, LiteYukonUser user) {
+        int currentRouteId = getDefaultRouteId(energyCompany);
+        if (currentRouteId != newRouteId) {
+            if (newRouteId == INVALID_ROUTE_ID) {
                 removeDefaultRoute(energyCompany);
-            } else if (previousRouteId == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
-                setupNewDefaultRoute(energyCompany, routeId);
-            } else if (routeId > 0 || previousRouteId > 0) {
-                if (routeId < 0) routeId = 0;
-                updateExistingDefaultRoute(energyCompany, routeId);
+            } else if (currentRouteId == INVALID_ROUTE_ID) {
+                setupNewDefaultRoute(energyCompany, newRouteId);
+            } else if (newRouteId > 0 || currentRouteId > 0) {
+                if (newRouteId < 0) {
+                    newRouteId = 0;
+                }
+                updateExistingDefaultRoute(energyCompany, newRouteId);
             }
             
             // Sending out DB change to notify possible other servers.
             dbChangeManager.processDbChange(DbChangeType.UPDATE, 
                                             DbChangeCategory.ENERGY_COMPANY_ROUTE, 
-                                            energyCompany.getEnergyCompanyId());
+                                            energyCompany.getId());
 
             // Logging Default Route Id
             starsEventLogService.energyCompanyDefaultRouteChanged(user, energyCompany.getName(),
-                                                                  previousRouteId, routeId);
+                                                                  currentRouteId, newRouteId);
         }
     }
 
-    private void updateExistingDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) {
+    private void updateExistingDefaultRoute(EnergyCompany energyCompany, int routeID) {
         Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if (!permittedPaoIds.isEmpty()) {
             List<Integer> routeGroupIds = getPermittedSerialGroupIds(permittedPaoIds);
@@ -146,11 +151,11 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql.append("  AND exc.SerialNumber = '0'");
         sql.append("  AND macro.OwnerID").in(permittedPaoIDs);
         
-        List<Integer> routeGroupIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+        List<Integer> routeGroupIds = yukonJdbcTemplate.query(sql, RowMapper.INTEGER);
         return routeGroupIds;
     }
 
-    private void setupNewDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) {
+    private void setupNewDefaultRoute(EnergyCompany energyCompany, int routeID) {
         // Assign the default route to the energy company
         // Checks to see if the LMGroupExpressCom exists
         String nameOfDefaultRoute = energyCompany.getName() + " Default Route";
@@ -211,12 +216,12 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         sql1.append(  "AND PAO.PAOClass").eq_k(PaoClass.GROUP);
         sql1.append(  "AND PAO.PAOName").eq(nameOfDefaultRoute);
 
-        List<Integer> paoObjectIds = yukonJdbcTemplate.query(sql1, new IntegerRowMapper());
+        List<Integer> paoObjectIds = yukonJdbcTemplate.query(sql1, RowMapper.INTEGER);
         return paoObjectIds;
     }
     
     @Override
-    public void removeDefaultRoute(final LiteStarsEnergyCompany energyCompany) {
+    public void removeDefaultRoute(final EnergyCompany energyCompany) {
         Set<Integer> permittedPaoIds = paoPermissionService.getPaoIdsForUserPermission(energyCompany.getUser(), Permission.DEFAULT_ROUTE);
         if (!permittedPaoIds.isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -250,5 +255,15 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
                 }
             });
         }
+    }
+
+    @Override
+    public LiteYukonPAObject getDefaultRoute(EnergyCompany energyCompany) {
+        int routeId = getDefaultRouteId(energyCompany);
+        LiteYukonPAObject liteRoute = null;
+        if (routeId != CtiUtilities.NONE_ZERO_ID && routeId != INVALID_ROUTE_ID) {
+            liteRoute = paoDao.getLiteYukonPAO(routeId);
+        }
+        return liteRoute;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
@@ -289,7 +290,26 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         EnergyCompany energyCompany = getEnergyCompanies().get(ecId);
         return energyCompany;
     }
-    
+
+    @Override
+    public EnergyCompany getEnergyCompany(String energyCompanyName) {
+        EnergyCompany energyCompany = findEnergyCompany(energyCompanyName);
+        if (energyCompany == null) {
+            throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
+        }
+        return energyCompany;
+    }
+
+    @Override
+    public EnergyCompany findEnergyCompany(String energyCompanyName) {
+        for (EnergyCompany energyCompany : getEnergyCompanies().values()) {
+            if (energyCompanyName.equalsIgnoreCase(energyCompany.getName())) {
+                return energyCompany;
+            }
+        }
+        return null;
+    }
+
     @Override
     public List<Integer> getRouteIds(int ecId) {
         if (cachedRouteIds.containsKey(ecId)) {

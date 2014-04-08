@@ -30,9 +30,9 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.support.development.database.objects.DevAMR;
@@ -65,7 +65,7 @@ public class SetupDevDbMethodController {
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
     @Autowired private RoleDao roleDao;
-    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -369,7 +369,7 @@ public class SetupDevDbMethodController {
             if (devStars.getEnergyCompany() == null) {
                 if (StringUtils.isBlank(devStars.getNewEnergyCompanyName())) {
                     errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
-                } else if (ecDao.findEnergyCompanyByName(devStars.getNewEnergyCompanyName()) != null){
+                } else if (ecService.findEnergyCompany(devStars.getNewEnergyCompanyName()) != null){
                     errors.rejectValue("energyCompany", "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.unavailable");
                 }
                 

@@ -14,8 +14,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
@@ -37,7 +35,8 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private YukonUserDao yukonUserDao;
+
+    private int defaultEcId = -1;
 
     private SimpleTableAccessTemplate<EnergyCompany> simpleTableTemplate;
     private final static FieldMapper<EnergyCompany> fieldMapper = new FieldMapper<EnergyCompany>() {
@@ -65,7 +64,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         simpleTableTemplate.setTableName("EnergyCompany");
         simpleTableTemplate.setFieldMapper(fieldMapper);
         simpleTableTemplate.setPrimaryKeyField("EnergyCompanyId");
-        simpleTableTemplate.setPrimaryKeyValidOver(DEFAULT_ENERGY_COMPANY_ID - 1); /*TODO should default ec be editable? */
+        simpleTableTemplate.setPrimaryKeyValidOver(defaultEcId - 1); /*TODO should default ec be editable? */
     }
 
     public class DisplayableServiceCompany {
@@ -125,31 +124,9 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     public LiteEnergyCompany getEnergyCompany(LiteYukonUser user) {
         LiteEnergyCompany liteEnergyCompany = databaseCache.getALiteEnergyCompanyByUserID(user);
         if (liteEnergyCompany == null) {
-            return getEnergyCompany(DEFAULT_ENERGY_COMPANY_ID);
+            return getEnergyCompany(defaultEcId);
         }
         return liteEnergyCompany;
-    }
-
-    @Override
-    public LiteEnergyCompany getEnergyCompanyByName(final String energyCompanyName) {
-
-        List<LiteEnergyCompany> energyCompanies = databaseCache.getAllEnergyCompanies();
-        for (final LiteEnergyCompany energyCompany : energyCompanies) {
-            String name = energyCompany.getName();
-            if (name.equalsIgnoreCase(energyCompanyName)) {
-                return energyCompany;
-            }
-        }
-        throw new NotFoundException("Energy Company with name: " + energyCompanyName + " not found.");
-    }
-
-    @Override
-    public LiteEnergyCompany findEnergyCompanyByName(final String energyCompanyName) {
-        LiteEnergyCompany company = null;
-        try {
-            company = getEnergyCompanyByName(energyCompanyName);
-        } catch (NotFoundException e) {/* Ignore */}
-        return company;
     }
 
     @Override
@@ -204,11 +181,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
             sql.values(energyCompany.getEnergyCompanyId(), energyCompany.getUserId());
             yukonJdbcTemplate.update(sql);
         }
-    }
-
-    @Override
-    public List<LiteEnergyCompany> getAllEnergyCompanies() {
-        return databaseCache.getAllEnergyCompanies();
     }
 
 }

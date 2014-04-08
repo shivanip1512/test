@@ -68,6 +68,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -105,6 +106,7 @@ public class AssetDashboardController {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private EnergyCompanySettingDao ecSettingsDao;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private DefaultRouteService defaultRouteService;
 
     /* Home - Landing Page */
     @RequestMapping("home")
@@ -363,7 +365,8 @@ public class AssetDashboardController {
         
         String defaultRoute;
         try {
-            defaultRoute = paoDao.getYukonPAOName(lsec.getDefaultRouteId());
+            int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+            defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
@@ -567,10 +570,12 @@ public class AssetDashboardController {
         model.addAttribute("hardwareHistory", hardwareUiService.getHardwareHistory(inventoryId));
         
         /* Warehouses */
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(hardware.getEnergyCompanyId());
-        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(hardware.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompany(lsec.getEnergyCompanyId());
         
-        List<Warehouse> warehouses = energyCompany.getWarehouses();
+        model.addAttribute("energyCompanyId", lsec.getEnergyCompanyId());
+        
+        List<Warehouse> warehouses = lsec.getWarehouses();
         model.addAttribute("warehouses", warehouses);
 
         /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
@@ -587,19 +592,19 @@ public class AssetDashboardController {
         
         String defaultRoute;
         try {
-            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteId());
+            int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+            defaultRoute = paoDao.getYukonPAOName(defaultRouteId);
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
         model.addAttribute("routes", routes);
         
         List<Integer> energyCompanyIds = 
-                Lists.transform(ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getParents(true), 
-                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+                Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
         model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */

@@ -11,7 +11,6 @@ import javax.naming.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -107,7 +106,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private AccountService accountService;
     @Autowired private UserGroupDao userGroupDao ;
@@ -125,7 +124,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         boolean topLevelEc = parentId == null;
         
         /* Check energy company name availability */
-        if(energyCompanyDao.findEnergyCompanyByName(energyCompanyDto.getName()) != null) {
+        if(ecService.findEnergyCompany(energyCompanyDto.getName()) != null) {
             throw new EnergyCompanyNameUnavailableException();
         }
 
@@ -162,7 +161,9 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                         DbChangeType.ADD);
 
         /* Set Default Route */
-        defaultRouteService.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
+        com.cannontech.stars.energyCompany.model.EnergyCompany ec = 
+                ecService.getEnergyCompany(liteEnergyCompany.getEnergyCompanyId());
+        defaultRouteService.updateDefaultRoute(ec, energyCompanyDto.getDefaultRouteId(), user);
         
         /* Set Operator Group List */
         List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
@@ -209,7 +210,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public boolean canEditEnergyCompany(LiteYukonUser user, int ecId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)
-                && yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
+                && ecService.isDefaultEnergyCompany(energyCompany)) {
             return false;
         }
         boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
@@ -247,7 +248,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public boolean canDeleteEnergyCompany(LiteYukonUser user, int ecId) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
+        if (ecService.isDefaultEnergyCompany(energyCompany)) {
             return false;
         }
 
@@ -290,8 +291,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
-            YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(ecId);
-            if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
+            YukonEnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
+            if (ecService.isDefaultEnergyCompany(energyCompany)) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }
         }
@@ -341,10 +342,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             @Override
             public boolean check(LiteYukonUser user) {
                 
-                boolean isOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(user);
+                boolean isOperator = ecService.isEnergyCompanyOperator(user);
 
                 if (isOperator) {
-                    YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+                    YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
                     return canEditEnergyCompany(user, yec.getEnergyCompanyId());
                 } else {
                     boolean superUser = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_SUPER_USER, user);
@@ -363,7 +364,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany( energyCompanyId );
         String energyCompanyName = energyCompany.getName();
 
-        if (yukonEnergyCompanyService.isDefaultEnergyCompany(energyCompany)) {
+        if (ecService.isDefaultEnergyCompany(energyCompany)) {
             throw new IllegalArgumentException("The default energy company cannot be deleted.");
         }
 
@@ -447,17 +448,19 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     /**
      * @param energyCompanyId
-     * @param energyCompany
+     * @param lsec
      * @param stmt
      * @return
      * @throws CommandExecutionException
      * @throws TransactionException
      */
-    private void deleteEnergyCompanyBase(LiteStarsEnergyCompany energyCompany, String dbAlias) {
-        log.info("Deleting energy company base id# " + energyCompany.getEnergyCompanyId());
+    private void deleteEnergyCompanyBase(LiteStarsEnergyCompany lsec, String dbAlias) {
+        com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany = 
+                ecService.getEnergyCompany(lsec.getEnergyCompanyId());
+        log.info("Deleting energy company base id# " + lsec.getEnergyCompanyId());
         String sql;
         // Delete all other generic mappings
-        sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + energyCompany.getEnergyCompanyId();
+        sql = "DELETE FROM ECToGenericMapping WHERE EnergyCompanyID = " + lsec.getEnergyCompanyId();
         SqlStatement stmt = new SqlStatement(sql, dbAlias);
         try {
             stmt.execute();
@@ -465,30 +468,31 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             ExceptionHelper.throwOrWrap(e);
         }        
         // Delete membership from the energy company hierarchy
-        if (energyCompany.getParent() != null) {
+        if (lsec.getParent() != null) {
             try {
-                StarsAdminUtil.removeMember( energyCompany.getParent(), energyCompany.getLiteID() );
+                StarsAdminUtil.removeMember( lsec.getParent(), lsec.getLiteID() );
             } catch (TransactionException e) {
                 e.printStackTrace();
             }
         }
         
         // Delete LM groups created for the default route
-        if (energyCompany.getDefaultRouteId() >= 0) {
+        int defaultRouteId = defaultRouteService.getDefaultRouteId(energyCompany);
+        if (defaultRouteId >= 0) {
             defaultRouteService.removeDefaultRoute(energyCompany);
         }
                 
         // Delete the energy company!
         
         EnergyCompanyBase ec = new EnergyCompanyBase();
-        ec.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
-        ec.getEnergyCompany().setPrimaryContactId(energyCompany.getPrimaryContactID());
+        ec.setEnergyCompanyID( lsec.getEnergyCompanyId() );
+        ec.getEnergyCompany().setPrimaryContactId(lsec.getPrimaryContactID());
         
-        log.info("Deleting energy company id# " + energyCompany.getEnergyCompanyId());
+        log.info("Deleting energy company id# " + lsec.getEnergyCompanyId());
         dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
         
-        StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
-        LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(energyCompany.getPrimaryContactID());
+        StarsDatabaseCache.getInstance().deleteEnergyCompany( lsec.getLiteID() );
+        LiteContact liteContact = YukonSpringHook.getBean(ContactDao.class).getContact(lsec.getPrimaryContactID());
         if (liteContact != null) {
             dbChangeManager.processDbChange(liteContact.getContactID(),
                                             DBChangeMsg.CHANGE_CONTACT_DB,
@@ -669,10 +673,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public void addRouteToEnergyCompany(int energyCompanyId, final int routeId) {
         
         // remove (i.e. steal) route from children
-        final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<LiteStarsEnergyCompany>() {
+        final com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany
+            = ecService.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany>() {
             @Override
-            public void handle(LiteStarsEnergyCompany item) throws Exception {
+            public void handle(com.cannontech.stars.energyCompany.model.EnergyCompany item) throws Exception {
                 if (item.equals(energyCompany)) {
                     // might as well skip ourselves
                     return;
@@ -681,10 +686,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 
                 // we don't want the full behavior of removeRouteFromEnergyCompany
                 // because it is okay if our children still map routeId as the default
-                ecMappingDao.deleteECToRouteMapping(item.getEnergyCompanyId(), routeId);
+                ecMappingDao.deleteECToRouteMapping(item.getId(), routeId);
                 dbChangeManager.processDbChange(DbChangeType.DELETE, 
                                                 DbChangeCategory.ENERGY_COMPANY_ROUTE,
-                                                item.getEnergyCompanyId());
+                                                item.getId());
             }
             
         });
@@ -701,11 +706,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     public int removeRouteFromEnergyCompany(int energyCompanyId, final int routeId) {
         
         // make sure removed route isn't the default route
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<LiteStarsEnergyCompany>() {
+        com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany
+            = ecService.getEnergyCompany(energyCompanyId);
+        callbackWithSelfAndEachDescendant(energyCompany, new SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany>() {
             @Override
-            public void handle(LiteStarsEnergyCompany item) throws Exception {
-                if (routeId == item.getDefaultRouteId()) {
+            public void handle(com.cannontech.stars.energyCompany.model.EnergyCompany item) throws Exception {
+                int defaultRouteId = defaultRouteService.getDefaultRouteId(item);
+                if (routeId == defaultRouteId) {
                     throw new RuntimeException("cannot delete the default route");
                 }
             }
@@ -745,16 +752,16 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         return rowsDeleted;
     }
     
-    private static void callbackWithSelfAndEachDescendant(LiteStarsEnergyCompany energyCompany,
-                                                   SimpleCallback<LiteStarsEnergyCompany> simpleCallback) {
+    private static void callbackWithSelfAndEachDescendant(com.cannontech.stars.energyCompany.model.EnergyCompany energyCompany,
+                           SimpleCallback<com.cannontech.stars.energyCompany.model.EnergyCompany> simpleCallback) {
         try {
             simpleCallback.handle(energyCompany);
         } catch (Exception e) {
             ExceptionHelper.throwOrWrap(e);
         }
-        Iterable<LiteStarsEnergyCompany> children = energyCompany.getChildren();
-        for (LiteStarsEnergyCompany liteStarsEnergyCompany : children) {
-            callbackWithSelfAndEachDescendant(liteStarsEnergyCompany, simpleCallback);
+        Iterable<com.cannontech.stars.energyCompany.model.EnergyCompany> children = energyCompany.getChildren();
+        for (com.cannontech.stars.energyCompany.model.EnergyCompany energyCompanyChild : children) {
+            callbackWithSelfAndEachDescendant(energyCompanyChild, simpleCallback);
         }
     }
 

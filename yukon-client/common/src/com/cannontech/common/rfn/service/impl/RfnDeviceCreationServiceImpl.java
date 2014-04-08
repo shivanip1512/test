@@ -37,13 +37,14 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
@@ -64,6 +65,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
@@ -187,12 +189,14 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             if (StringUtils.isEmpty(ecName)) {
                 throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
             }
-            final LiteEnergyCompany ec = energyCompanyDao.getEnergyCompanyByName(ecName);
-            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getEnergyCompanyID());
+            EnergyCompany ec = ecService.getEnergyCompany(ecName);
+            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getId());
             
             List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(type.getDefinitionId(), lsec);
             
-            if (typeEntries.isEmpty()) throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType());
+            if (typeEntries.isEmpty()) {
+                throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType());
+            }
             
             hardware = new Hardware();
             YukonListEntry typeEntry = typeEntries.get(0);
@@ -200,7 +204,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             hardware.setHardwareType(HardwareType.valueOf(typeEntry.getYukonDefID()));
             hardware.setSerialNumber(rfnIdentifier.getSensorSerialNumber());
             hardware.setDeviceId(device.getPaoIdentifier().getPaoId());
-            hardware.setEnergyCompanyId(ec.getEnergyCompanyID());
+            hardware.setEnergyCompanyId(ec.getId());
             
             List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
             hardware.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
@@ -211,24 +215,29 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         hardwareSevice.createHardware(hardware, user);
     }
     
+    @Override
     public void incrementDeviceLookupAttempt() {
         deviceLookupAttempt.incrementAndGet();
     }
     
+    @Override
     public void incrementNewDeviceCreated() {
         newDeviceCreated.incrementAndGet();
     }
     
+    @Override
     @ManagedAttribute
     public String getUnkownTempaltes() {
         return unknownTemplatesEncountered.entrySet().toString();
     }
     
+    @Override
     @ManagedAttribute
     public int getDeviceLookupAttempt() {
         return deviceLookupAttempt.get();
     }
     
+    @Override
     @ManagedAttribute
     public int getNewDeviceCreated() {
         return newDeviceCreated.get();

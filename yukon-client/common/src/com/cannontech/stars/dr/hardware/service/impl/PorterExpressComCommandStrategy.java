@@ -17,7 +17,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -40,6 +39,7 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.google.common.collect.Lists;
 
 public class PorterExpressComCommandStrategy implements LmHardwareCommandStrategy {
@@ -54,6 +54,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
     @Autowired private YukonEnergyCompanyService yecService;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
+    @Autowired private DefaultRouteService defaultRouteService;
 
     @Override
     public void doManualAdjustment(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
@@ -205,8 +206,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
         
         if (command.getType() == LmHardwareCommandType.CANCEL_TEMP_OUT_OF_SERVICE) {
             EnergyCompany energyCompany = yecService.getEnergyCompanyByOperator(command.getUser());
-            LiteStarsEnergyCompany lsec = energyCompanyFactory.createEnergyCompany(energyCompany.getId());
-            int routeId = lsec.getDefaultRouteId();
+            int routeId = defaultRouteService.getDefaultRouteId(energyCompany);
             Integer spid = (Integer) command.getParams().get(LmHardwareCommandParam.SPID);
             String xcomCommand = xcomCommandBuilder.getBroadcastCancelAllOptOuts(spid);
             

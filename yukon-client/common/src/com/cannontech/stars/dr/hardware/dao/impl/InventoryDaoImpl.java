@@ -70,9 +70,11 @@ import com.cannontech.stars.dr.hardware.model.HardwareStatus;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -96,6 +98,9 @@ public class InventoryDaoImpl implements InventoryDao {
     private @Autowired PaoDefinitionDao paoDefinitionDao;
     private @Autowired AccountEventLogService accountEventLogService;
     private @Autowired CustomerAccountDao customerAccountDao;
+    private @Autowired DefaultRouteService defaultRouteService;
+    private @Autowired YukonEnergyCompanyService ecService;
+
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
@@ -108,7 +113,7 @@ public class InventoryDaoImpl implements InventoryDao {
     
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
-        AttributeDefinition definition = (AttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        AttributeDefinition definition = paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         int pointOffset = definition.getPointTemplate().getOffset();
         PointType pointType = definition.getPointTemplate().getPointType();
         
@@ -280,6 +285,7 @@ public class InventoryDaoImpl implements InventoryDao {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
@@ -395,6 +401,7 @@ public class InventoryDaoImpl implements InventoryDao {
             this.yukonEnergyCompany = yukonEnergyCompany;
         }
 
+        @Override
         public Thermostat mapRow(YukonResultSet rs) throws SQLException {
 
             Thermostat thermostat = new Thermostat();
@@ -410,6 +417,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
             LiteStarsEnergyCompany liteStarsEnergyCompany = 
                 starsDatabaseCache.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
+            EnergyCompany energyCompany = ecService.getEnergyCompany(yukonEnergyCompany.getEnergyCompanyId());
             
             // Convert the category entryid into a InventoryCategory enum value
             int categoryEntryId = rs.getInt("CategoryId");
@@ -430,7 +438,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
             int routeId = rs.getInt("RouteId");
             if (routeId == CtiUtilities.NONE_ZERO_ID) {
-                routeId = liteStarsEnergyCompany.getDefaultRouteId();
+                routeId = defaultRouteService.getDefaultRouteId(energyCompany);
             }
             thermostat.setRouteId(routeId);
 
@@ -524,6 +532,7 @@ public class InventoryDaoImpl implements InventoryDao {
     public List<InventoryIdentifier> getYukonInventoryForDeviceIds(List<Integer> deviceIds) {
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
@@ -546,6 +555,7 @@ public class InventoryDaoImpl implements InventoryDao {
         Set<InventoryIdentifier> result = new HashSet<InventoryIdentifier>();
         
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT I.InventoryID, H.LMHardwareTypeID, M.MeterTypeID");
@@ -693,6 +703,7 @@ public class InventoryDaoImpl implements InventoryDao {
         };
         
         List<Pair<Integer, Integer>> idsList = chunkingSqlTemplate.query(sqlFragmentGenerator, inventoryIds, new YukonRowMapper<Pair<Integer, Integer>>() {
+            @Override
             public Pair<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
                 int deviceId = rs.getInt("DeviceId");
                 int inventoryId = rs.getInt("InventoryId");
@@ -861,7 +872,9 @@ public class InventoryDaoImpl implements InventoryDao {
                 result.setEnergyCompanyName(rs.getString("EnergyCompanyName"));
                 result.setLabel(rs.getString("DeviceLabel"));
                 result.setLastName(rs.getString("ContLastName"));
-                if (usePhone) result.setPhoneNumber(rs.getString("Notification"));
+                if (usePhone) {
+                    result.setPhoneNumber(rs.getString("Notification"));
+                }
                 if (identifier.getHardwareType().isMeter()) {
                     result.setSerialNumber(rs.getString("MeterNumber"));
                     if (!starsMeters) {
@@ -870,7 +883,9 @@ public class InventoryDaoImpl implements InventoryDao {
                 } else {
                     result.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
                 }
-                if (useWorkOrder) result.setWorkOrderNumber(rs.getString("OrderNumber"));
+                if (useWorkOrder) {
+                    result.setWorkOrderNumber(rs.getString("OrderNumber"));
+                }
                 
                 return result;
             }
@@ -898,6 +913,7 @@ public class InventoryDaoImpl implements InventoryDao {
     @Override
     public List<String> getThermostatLabels(List<Integer> thermostatIds) {
         List<String> deviceLabels = chunkingSqlTemplate.query(new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT IB.DeviceLabel");
@@ -964,6 +980,7 @@ public class InventoryDaoImpl implements InventoryDao {
         }
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT IB.InventoryId, IB.DeviceId, LMHB.ManufacturerSerialNumber, IB.DeviceLabel, ECIM.EnergyCompanyId, IB.AccountId, CA.AccountNumber");
@@ -1003,6 +1020,7 @@ public class InventoryDaoImpl implements InventoryDao {
         final List<Integer> paoIds = Lists.transform(paos, PaoUtils.getPaoIdFunction());
         
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT IB.InventoryId, IB.DeviceId, LMHB.ManufacturerSerialNumber, IB.DeviceLabel, ECIM.EnergyCompanyId, IB.AccountId, CA.AccountNumber, LMHB.LmHardwareTypeId");

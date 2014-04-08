@@ -91,7 +91,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     private final static long serialVersionUID = 1L;
     
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
-    public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
 
     private static final String[] OPERATOR_SELECTION_LISTS = {
         YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
@@ -264,33 +263,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         this.user = user;
     }
 
-    /**
-     * This method gets the default route.  It will either use the cached value stored in this class 
-     * or try to figure out the default route from the database if the routeId is CtiUtilities.NONE_ZERO_ID(0).
-     */
-    public int getDefaultRouteId() {
-        // the following is thread safe as long as defaultRouteId is volatile
-        int tempDefaultRouteId = defaultRouteId;
-        if (tempDefaultRouteId == CtiUtilities.NONE_ZERO_ID) {
-            tempDefaultRouteId = defaultRouteService.getDefaultRoute(this);
-            defaultRouteId = tempDefaultRouteId;
-        }
-        
-        return tempDefaultRouteId;
-    }
-    
-    /**
-     * This method gets the default route.  It will return null if the routeId is 0 or invalid.
-     */
-    public LiteYukonPAObject getDefaultRoute() {
-        int routeId = getDefaultRouteId();
-        LiteYukonPAObject liteRoute = null;
-        if (routeId != CtiUtilities.NONE_ZERO_ID && routeId != INVALID_ROUTE_ID) {
-            liteRoute = paoDao.getLiteYukonPAO(routeId);
-        }
-        return liteRoute;
-    }
-    
     /**
      * This method resets the default routeId for the given energy company.  This will cause the
      * get method to look up the value next time it is needed instead of using the cached value.

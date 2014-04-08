@@ -88,4 +88,14 @@ public class YukonEnergyCompanyServiceAdapter implements YukonEnergyCompanyServi
     public EnergyCompany findEnergyCompany(int ecId) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public EnergyCompany getEnergyCompany(String energyCompanyName) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public EnergyCompany findEnergyCompany(String energyCompanyName) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

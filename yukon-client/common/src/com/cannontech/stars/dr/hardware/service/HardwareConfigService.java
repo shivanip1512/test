@@ -33,9 +33,9 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
@@ -43,7 +43,7 @@ import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
@@ -52,7 +52,6 @@ public class HardwareConfigService {
 
     @Autowired private CommandScheduleDao commandScheduleDao;
     @Autowired private CommandRequestRouteExecutor commandRequestRouteExecutor;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanyService ecService;
     @Autowired private com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
@@ -60,6 +59,7 @@ public class HardwareConfigService {
     @Autowired private InventoryConfigTaskDao inventoryConfigTaskDao;
     @Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
+    @Autowired private YukonEnergyCompanyService yEcService;
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
 
@@ -226,13 +226,13 @@ public class HardwareConfigService {
     }
 
     @PostConstruct
-    public void init() throws InterruptedException {
+    public void init() {
         log.debug("HardwareConfigService - starting up");
 
-        List<LiteEnergyCompany> allEnergyCompanies = energyCompanyDao.getAllEnergyCompanies();
-        for (LiteEnergyCompany energyCompany : allEnergyCompanies) {
-            log.debug("HardwareConfigService - starting task for ecId = " + energyCompany.getEnergyCompanyID());
-            Runnable task = new EnergyCompanyRunnable(energyCompany.getEnergyCompanyID());
+        List<EnergyCompany> allEnergyCompanies = yEcService.getAllEnergyCompanies();
+        for (EnergyCompany energyCompany : allEnergyCompanies) {
+            log.debug("HardwareConfigService - starting task for ecId = " + energyCompany.getId());
+            Runnable task = new EnergyCompanyRunnable(energyCompany.getId());
             executor.scheduleWithFixedDelay(task, 1, 1, TimeUnit.MINUTES);
         }
     }
