@@ -65,6 +65,7 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.MeteringType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -78,6 +79,7 @@ import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -92,7 +94,7 @@ public class AssetDashboardController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private PaoDao paoDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
@@ -110,11 +112,11 @@ public class AssetDashboardController {
         
         LiteYukonUser user = context.getYukonUser();
 
-        boolean ecOperator = yukonEnergyCompanyService.isEnergyCompanyOperator(context.getYukonUser());
+        boolean ecOperator = ecService.isEnergyCompanyOperator(context.getYukonUser());
         
         if (ecOperator) {
             
-            YukonEnergyCompany yec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
+            YukonEnergyCompany yec = ecService.getEnergyCompanyByOperator(user);
             LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(yec);
             
             int ecId = yec.getEnergyCompanyId();
@@ -195,7 +197,7 @@ public class AssetDashboardController {
                          Integer page,
                          FlashScope flashScope) {
         rpDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
+        YukonEnergyCompany ec = ecService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
         LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(ec);
         
         String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
@@ -352,26 +354,29 @@ public class AssetDashboardController {
         }
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.INVENTORY_CREATE_HARDWARE.name());
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        model.addAttribute("energyCompanyId", ec.getEnergyCompanyId());
+        EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
+        model.addAttribute("energyCompanyId", energyCompany.getId());
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompany);
         
         MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(context);
         
         String defaultRoute;
         try {
-            defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteId());
+            defaultRoute = paoDao.getYukonPAOName(lsec.getDefaultRouteId());
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
             defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         model.addAttribute("defaultRoute", defaultRoute);
         
-        List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
+        List<LiteYukonPAObject> routes = lsec.getAllRoutes();
         model.addAttribute("routes", routes);
         
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));
+        List<Integer> energyCompanyIds = 
+                Lists.transform(ecService.getEnergyCompany(energyCompany.getId()).getParents(true), 
+                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
@@ -592,7 +597,10 @@ public class AssetDashboardController {
         List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
         model.addAttribute("routes", routes);
         
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));
+        List<Integer> energyCompanyIds = 
+                Lists.transform(ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getParents(true), 
+                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         /* Setup elements to hide/show based on device type/class */
         model.addAttribute("displayTypeKey", ".displayType." + clazz);

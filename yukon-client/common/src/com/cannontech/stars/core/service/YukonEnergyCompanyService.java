@@ -64,6 +64,8 @@ public interface YukonEnergyCompanyService {
     boolean isPrimaryOperator(int operatorLoginId);
     
     EnergyCompany getEnergyCompany(int ecId);
+    
+    EnergyCompany findEnergyCompany(int ecId);
 
     /**
      * Returns an immutable list of all routeIds associated with the energy company

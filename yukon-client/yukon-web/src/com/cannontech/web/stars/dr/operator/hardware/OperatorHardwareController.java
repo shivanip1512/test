@@ -668,7 +668,10 @@ public class OperatorHardwareController {
         List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
         model.addAttribute("routes", routes);
         
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));
+        List<Integer> energyCompanyIds = 
+                Lists.transform(yukonEnergyCompanyService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getParents(true), 
+                                YukonEnergyCompanyService.TO_ID_FUNCTION);
+        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         
         // Setup elements to hide/show based on device type/class
         HardwareClass clazz = type.getHardwareClass();

@@ -28,7 +28,6 @@ import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -36,6 +35,8 @@ import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.simplereport.YukonReportDefinitionFactory;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -50,6 +51,7 @@ import com.google.common.collect.Maps;
 public class SurveyReportController {
     @Autowired private SurveyDao surveyDao;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     @Autowired private SimpleReportService simpleReportService;
@@ -133,7 +135,7 @@ public class SurveyReportController {
         }
         model.addAttribute("questionsById", questionsById);
         model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
 
         return "surveyReport/config.jsp";
     }
@@ -178,7 +180,7 @@ public class SurveyReportController {
 
         int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
         model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
 
         return "surveyReport/report.jsp";
     }

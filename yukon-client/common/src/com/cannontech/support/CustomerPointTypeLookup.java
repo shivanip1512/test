@@ -14,16 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.customer.CICustomerPointType;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public class CustomerPointTypeLookup {
 
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     /**
      * This holds the map of keys to list of point types. In this
@@ -59,7 +61,7 @@ public class CustomerPointTypeLookup {
      * @param energyCompany
      * @return List of applicable point types
      */
-    public Set<CICustomerPointType> getApplicablePoints(LiteEnergyCompany energyCompany) {
+    public Set<CICustomerPointType> getApplicablePoints(EnergyCompany energyCompany) {
         Set<String> keys = getPointTypeGroups(energyCompany);
         if (keys.isEmpty()) {
             return Collections.emptySet();
@@ -71,10 +73,10 @@ public class CustomerPointTypeLookup {
         return result;
     }
 
-    public Set<String> getPointTypeGroups(LiteEnergyCompany energyCompany) {
+    public Set<String> getPointTypeGroups(EnergyCompany energyCompany) {
 
-        String property = energyCompanySettingDao.getString(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
-        boolean propertyEnabled = energyCompanySettingDao.isEnabled(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getEnergyCompanyID());
+        String property = energyCompanySettingDao.getString(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getId());
+        boolean propertyEnabled = energyCompanySettingDao.isEnabled(EnergyCompanySettingType.APPLICABLE_POINT_TYPE_KEY, energyCompany.getId());
         
         if (!propertyEnabled || StringUtils.isBlank(property)) {
             return Collections.emptySet();
@@ -92,8 +94,8 @@ public class CustomerPointTypeLookup {
      * @return
      */
     public Set<String> getPointTypeGroups(LiteCICustomer liteCICustomer) {
-        int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyID);
+        int energyCompanyId = liteCICustomer.getEnergyCompanyID();
+        EnergyCompany energyCompany = ecService.findEnergyCompany(energyCompanyId);
         return getPointTypeGroups(energyCompany);
     }
 
@@ -104,8 +106,8 @@ public class CustomerPointTypeLookup {
      * @return List of applicable point types
      */
     public Set<CICustomerPointType> getApplicablePoints(LiteCICustomer liteCICustomer) {
-        int energyCompanyID = liteCICustomer.getEnergyCompanyID();
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyID);
+        int energyCompanyId = liteCICustomer.getEnergyCompanyID();
+        EnergyCompany energyCompany = ecService.findEnergyCompany(energyCompanyId);
         return getApplicablePoints(energyCompany);
     }
 

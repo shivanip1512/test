@@ -281,10 +281,15 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         if (energyCompany == null) {
             throw new EnergyCompanyNotFoundException("Energy company id = " + ecId + " does not exist.");
         }
-
         return energyCompany;
     }
 
+    @Override
+    public EnergyCompany findEnergyCompany(int ecId) {
+        EnergyCompany energyCompany = getEnergyCompanies().get(ecId);
+        return energyCompany;
+    }
+    
     @Override
     public List<Integer> getRouteIds(int ecId) {
         if (cachedRouteIds.containsKey(ecId)) {

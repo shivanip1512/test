@@ -45,23 +45,11 @@ public interface EnergyCompanyDao {
     LiteEnergyCompany[] getEnergyCompaniesByCustomer(int customerID_);
 
     /**
-     * Returns the LiteYukonUser associated with this energy company.
-     */
-    LiteYukonUser getEnergyCompanyUser(LiteEnergyCompany company);
-
-    /**
-     * Returns the LiteYukonUser associated with this energy company.
-     */
-    LiteYukonUser getEnergyCompanyUser(int energyCompanyID);
-
-    /**
      * Adds a customer and energy company to EnergyCompanyCustomerList
      */
     void addEnergyCompanyCustomerListEntry(int customerId, int ecId);
 
-    List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId);
-
-    List<Integer> getParentEnergyCompanyIds(int energyCompanyId);
+    List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds);
 
     List<LiteEnergyCompany> getAllEnergyCompanies();
 
@@ -71,6 +59,4 @@ public interface EnergyCompanyDao {
      * Creates or updates energy company.
      */
     void save(EnergyCompany energyCompany);
-
-    String retrieveCompanyName(int energyCompanyId);
 }

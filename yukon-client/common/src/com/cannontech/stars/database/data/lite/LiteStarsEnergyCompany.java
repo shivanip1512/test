@@ -219,7 +219,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     @Override
     public String getName() {
         if (name == null) {
-            setName(energyCompanyDao.retrieveCompanyName(getEnergyCompanyId()));
+            setName(yukonEnergyCompanyService.getEnergyCompany(getEnergyCompanyId()).getName());
         }
         return name;
     }

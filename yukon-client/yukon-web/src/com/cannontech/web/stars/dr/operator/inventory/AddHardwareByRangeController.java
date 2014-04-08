@@ -35,7 +35,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -45,6 +45,7 @@ import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCol
 import com.cannontech.web.stars.dr.operator.inventory.service.AbstractInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper.AddByRangeTask;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -127,7 +128,7 @@ public class AddHardwareByRangeController {
     }
     
     private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
-        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        EnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
@@ -147,10 +148,12 @@ public class AddHardwareByRangeController {
         boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
+        List<Integer> energyCompanyIds = Lists.transform(ec.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+        
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());
-        model.addAttribute("ecId", ec.getEnergyCompanyId());
-        model.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyId()));
+        model.addAttribute("ecId", ec.getId());
+        model.addAttribute("serviceCompanies", energyCompanyDao.getAllServiceCompanies(energyCompanyIds));
         model.addAttribute("defaultRoute", defaultRoute);
         model.addAttribute("routes", routes);
         model.addAttribute("none", accessor.getMessage("yukon.web.defaults.none"));

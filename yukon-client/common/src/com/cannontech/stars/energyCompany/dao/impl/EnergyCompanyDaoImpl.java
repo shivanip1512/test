@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.Lists;
 
 public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
 
@@ -92,14 +90,11 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
 
     @Override
-    public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId) {
-        List<Integer> energyCompanyIds = Lists.newArrayList();
-        energyCompanyIds.add(energyCompanyId);
-        energyCompanyIds.addAll(getParentEnergyCompanyIds(energyCompanyId));
+    public List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
         sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
-        sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
+        sql.append("where ecgm.EnergyCompanyID").in(energyCompanyIds);
         
         return yukonJdbcTemplate.query(sql.getSql(),
             new RowMapper<DisplayableServiceCompany>() {
@@ -113,29 +108,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
                 }
             },
             sql.getArguments());
-    }
-
-    @Override
-    public List<Integer> getParentEnergyCompanyIds(int energyCompanyId) {
-        List<Integer> parentIds = Lists.newArrayList();
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select EnergyCompanyId");
-        sql.append("from ECToGenericMapping");
-        sql.append("where MappingCategory").eq_k(EcMappingCategory.MEMBER);
-        sql.append("and ItemId = ").appendArgument(energyCompanyId);
-
-        try {
-            int parentId = yukonJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
-            parentIds.add(parentId);
-            
-            /* Recursive call to get the whole parent chain */
-            parentIds.addAll(getParentEnergyCompanyIds(parentId));
-        } catch (EmptyResultDataAccessException e) {
-            /* We found the last parent which means we are done */
-        }
-
-        return parentIds;
     }
 
     @Override
@@ -199,17 +171,6 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     }
 
     @Override
-    public LiteYukonUser getEnergyCompanyUser(LiteEnergyCompany company) {
-        return yukonUserDao.getLiteYukonUser(company.getUserID());
-    }
-
-    @Override
-    public LiteYukonUser getEnergyCompanyUser(int energyCompanyID) {
-        LiteEnergyCompany ec = getEnergyCompany(energyCompanyID);
-        return (ec == null ? null : getEnergyCompanyUser(ec));
-    }
-    
-    @Override
     public void addEnergyCompanyCustomerListEntry(int customerId,
             int energyCompanyId) {
         String sql = "INSERT INTO EnergyCompanyCustomerList VALUES (?,?)";
@@ -231,17 +192,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
                                         DBChangeMsg.CAT_ENERGY_COMPANY,
                                         DbChangeType.UPDATE);
     }
-    
-    @Override
-    public String retrieveCompanyName(int energyCompanyId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Name");
-        sql.append("FROM EnergyCompany");
-        sql.append("WHERE EnergyCompanyId").eq(energyCompanyId);
-        
-        return yukonJdbcTemplate.queryForString(sql);
-    }
-    
+
     @Override
     @Transactional
     public void save(EnergyCompany energyCompany) {

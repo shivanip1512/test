@@ -38,6 +38,7 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
@@ -66,6 +67,7 @@ public class SurveyController {
     @Autowired private SurveyDao surveyDao;
     @Autowired private SurveyService surveyService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private Validator detailsValidator = new SimpleValidator<Survey>(Survey.class) {
         @Override
@@ -134,7 +136,7 @@ public class SurveyController {
             surveyService.findSurveys(ecId, backingBean.getStartIndex(), backingBean.getItemsPerPage());
         model.addAttribute("surveys", surveys);
         model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
 
         return "survey/list.jsp";
     }
@@ -235,7 +237,7 @@ public class SurveyController {
 
         int ecId = energyCompanyDao.getEnergyCompany(userContext.getYukonUser()).getEnergyCompanyID();
         model.addAttribute("ecId", ecId);
-        model.addAttribute("energyCompanyName", energyCompanyDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
 
         return "survey/edit.jsp";
     }

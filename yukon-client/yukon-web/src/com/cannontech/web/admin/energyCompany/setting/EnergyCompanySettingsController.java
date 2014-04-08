@@ -167,7 +167,7 @@ public class EnergyCompanySettingsController {
 
         model.addAttribute("settingsBean", settingsBean);
         model.addAttribute("mappedPropertiesHelper", mappedPropertiesHelper);
-        model.addAttribute("energyCompanyName", ecDao.retrieveCompanyName(ecId));
+        model.addAttribute("energyCompanyName", ecService.getEnergyCompany(ecId).getName());
         model.addAttribute("categories", SettingCategory.values());
         model.addAttribute("energyCompanyInfoFragment", ecInfoFragment);
 
