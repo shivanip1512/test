@@ -91,10 +91,6 @@ ManagedConnection::ManagedConnection( const string &brokerUri ) :
     _brokerUri( brokerUri ),
     _closed( false )
 {
-    if( ! (_hCloseEvent = CreateEvent(NULL,FALSE,FALSE,NULL)) )
-    {
-        throw ConnectionException("Unexpected CreateEvent() has failed with error code: " + ::GetLastError() );
-    }
 }
 
 ManagedConnection::~ManagedConnection()
@@ -108,8 +104,6 @@ ManagedConnection::~ManagedConnection()
     {
         // we dont care about exception in the destructor
     }
-
-    ::CloseHandle(_hCloseEvent);
 }
 
 // YUK-12801 (workaround)
@@ -132,30 +126,34 @@ void ManagedConnection::closeConnection()
         return;
     }
 
-    for( unsigned attempt=0; attempt != maxAttempt; attempt++ )
+    for( unsigned attempt=1; ; attempt++ )
     {
-        string errorMessage;
-
         try
         {
             conn->close();
-        }
-        catch(cms::CMSException& e)
-        {
-            errorMessage = e.what(); // capture the error message
-        }
 
-        // check if the connection was closed
-        if( conn->isClosed() )
-        {
+            // if close() does not throw there is no error
             return;
         }
-
-        // log error if close has failed
+        catch( cms::CMSException& e )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime::now() << " Error closing ActiveMQ connection: \"" << errorMessage << "\" "
-                 << ((attempt != maxAttempt) ? ", will retry " : " ") << __FILE__ << " ("<< __LINE__ << ")" << endl;
+            // re-check if the connection was closed
+            if( conn->isClosed() )
+            {
+                return;
+            }
+
+            // log an error if close() has failed
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << CtiTime::now() << " Error closing ActiveMQ connection: \"" << e.what() << "\" "
+                     << ((attempt != maxAttempt) ? ", will retry " : " ") << __FILE__ << " ("<< __LINE__ << ")" << endl;
+            }
+        }
+
+        if( attempt == maxAttempt )
+        {
+            return;
         }
 
         Sleep(delayMillis);
@@ -165,28 +163,20 @@ void ManagedConnection::closeConnection()
 
 void ManagedConnection::waitCloseEvent( unsigned millis )
 {
-    // expecting WaitForSingleObject() to return WAIT_TIMEOUT
-    // or WAIT_OBJECT_0 (if there is a connection close event).
-    
-    switch( ::WaitForSingleObject( _hCloseEvent, millis ) )
+    try
     {
-        case WAIT_TIMEOUT:
-        {
-            return; // if its a timeout, do not throw and return;
-        }
-        case WAIT_OBJECT_0:
+        boost::unique_lock<boost::mutex> lock( _closeMux );
+
+        if( _closeCond.timed_wait( lock, boost::posix_time::milliseconds( millis )) && _closed )
         {
             throw ConnectionException("Connection has closed");
         }
-        // unexpected results
-        case WAIT_ABANDONED:
-        {
-            throw ConnectionException("Unexpected WAIT_ABANDONED");
-        }
-        case WAIT_FAILED:
-        {
-            throw ConnectionException("Unexpected WAIT_FAILED, error code: " + ::GetLastError() );
-        }
+    }
+    catch( boost::thread_interrupted& )
+    {
+        close();
+
+        throw; // re-throw the exception
     }
 }
 
@@ -201,7 +191,7 @@ void ManagedConnection::start()
 
     unsigned reconnectMillis = initialReconnectMillis;
 
-    for(unsigned connAttempt = 1; connAttempt <= maxReconnectAttempts; connAttempt++)
+    for( unsigned attempt=1; ; attempt++ )
     {
         try
         {
@@ -223,7 +213,7 @@ void ManagedConnection::start()
         catch( cms::CMSException& e )
         {
             // print exception about every 5 min or if exception message changes
-            if( connAttempt % loggingFreq == 1 || e.getMessage() != prevMessage )
+            if( attempt % loggingFreq == 1 || e.getMessage() != prevMessage )
             {
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -234,14 +224,14 @@ void ManagedConnection::start()
             }
         }
 
-        // re-throw if we reach the maximum number of attempts
-        if( connAttempt == maxReconnectAttempts )
+        if( attempt == maxReconnectAttempts )
         {
             throw ConnectionException("Maximum number of connection attempt has been reached");
         }
 
         waitCloseEvent( reconnectMillis );
 
+        // find the next delay before reconnecting
         reconnectMillis = min( 2 * reconnectMillis, maxReconnectMillis );
     }
 }
@@ -250,17 +240,17 @@ void ManagedConnection::close()
 {
     ReaderGuard guard( _lock );
 
-    if( _closed )
     {
-        return;
-    }
+        boost::unique_lock<boost::mutex> lock( _closeMux );
 
-    _closed = true;
+        if( _closed )
+        {
+            return;
+        }
 
-    if( ! ::SetEvent( _hCloseEvent ) )
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime::now() << "Unexpected SetEvent() has failed with error code: " + ::GetLastError();
+        _closed = true;
+
+        _closeCond.notify_one();
     }
 
     closeConnection();

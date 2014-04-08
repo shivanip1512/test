@@ -6,6 +6,7 @@
 #include "cms/Connection.h"
 #include "activemq/commands/DestinationInfo.h"
 #include "boost/thread/mutex.hpp"
+#include "boost/thread/condition_variable.hpp"
 
 namespace Cti {
 namespace Messaging {
@@ -101,8 +102,9 @@ class IM_EX_MSG ManagedConnection
 {
     const std::string _brokerUri;
 
-    bool   _closed;
-    HANDLE _hCloseEvent;
+    bool                      _closed;
+    boost::condition_variable _closeCond;
+    boost::mutex              _closeMux;
 
     boost::scoped_ptr<cms::Connection> _connection;
 
