@@ -19,7 +19,6 @@
                 <td><input type="hidden" name="attributes[?]"></td>
                 <td></td>
                 <td></td>
-                <td></td>
                 <td>
                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="f-remove fr M0"/>
                     <cti:button icon="icon-pencil" renderMode="buttonImage" classes="f-edit fr"/>
@@ -92,6 +91,10 @@
                         </c:forEach>
                     </form:select>
                 </tags:nameValue2>
+                <tags:nameValue2 excludeColon="true">
+                    <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
+                    <tags:helpInfoPopup nameKey=".excludeAbnormal.help"/>
+                </tags:nameValue2>
                 
             </tags:nameValueContainer2>
             
@@ -106,7 +109,6 @@
                             <th><i:inline key=".attribute"/></th>
                             <th><i:inline key=".dataSelection"/></th>
                             <th><i:inline key=".daysPrevious"/></th>
-                            <th><i:inline key=".normalOnly"/><tags:helpInfoPopup nameKey=".excludeAbnormal.help"/></th>
                             <th></th>
                         </tr>
                     </thead>
@@ -120,7 +122,6 @@
                                 </td>
                                 <td><span><cti:msg2 key="${attribute.dataSelection}"/></span></td>
                                 <td><span>${fn:escapeXml(attribute.daysPrevious)}</span></td>
-                                <td><span>${attribute.excludeAbnormal}</span></td>
                                 <td>
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="f-remove fr M0"/>
                                     <cti:button icon="icon-pencil" renderMode="buttonImage" classes="f-edit fr"/>

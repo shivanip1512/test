@@ -78,7 +78,8 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
                                 new Date(), 
                                 false, 
                                 Clusivity.INCLUSIVE_INCLUSIVE, 
-                                Order.REVERSE);
+                                Order.REVERSE,
+                                null);
         
         Iterable<RfnOutageLog> logs = Iterables.transform(data.get(meter.getPaoIdentifier()), new Function<PointValueQualityHolder, RfnOutageLog>() {
             @Override

@@ -45,16 +45,26 @@ public class BannerFormat extends FileFormatBase {
         final Map<String, BannerData> recordsByMeterNumber = getBannerRecords();
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedUsageAttributeDatas =
-                rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.USAGE, 
-                                                           getBillingFileDefaults().getEnergyStartDate(),
-                                                           getBillingFileDefaults().getEndDate(),
-                                                           1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
+                rawPointHistoryDao.getLimitedAttributeData(allDevices, 
+                        BuiltInAttribute.USAGE, 
+                        getBillingFileDefaults().getEnergyStartDate(),
+                        getBillingFileDefaults().getEndDate(),
+                        1,
+                        false,
+                        Clusivity.EXCLUSIVE_INCLUSIVE, 
+                        Order.REVERSE,
+                        null);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedPeakDemandAttributeDatas =
-                rawPointHistoryDao.getLimitedAttributeData(allDevices, BuiltInAttribute.PEAK_DEMAND, 
-                                                           getBillingFileDefaults().getDemandStartDate(),
-                                                           getBillingFileDefaults().getEndDate(),
-                                                           1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
+                rawPointHistoryDao.getLimitedAttributeData(allDevices, 
+                        BuiltInAttribute.PEAK_DEMAND, 
+                        getBillingFileDefaults().getDemandStartDate(),
+                        getBillingFileDefaults().getEndDate(),
+                        1,
+                        false,
+                        Clusivity.EXCLUSIVE_INCLUSIVE,
+                        Order.REVERSE,
+                        null);
         
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(allDevices);
         for (YukonMeter meter : meters) {

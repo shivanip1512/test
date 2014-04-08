@@ -55,6 +55,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("Footer",  format.getFooter());
         sink.addValue("FormatType", format.getFormatType());
         sink.addValue("TimeZoneFormat", format.getDateTimeZoneFormat());
+        sink.addValue("ExcludeAbnormal", format.isExcludeAbnormal());
         
         yukonJdbcTemplate.update(sql);
         createAttributesAndFields(format);
@@ -76,6 +77,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         sink.addValue("Footer",  format.getFooter());
         sink.addValue("FormatType", format.getFormatType());
         sink.addValue("TimeZoneFormat", format.getDateTimeZoneFormat());
+        sink.addValue("ExcludeAbnormal", format.isExcludeAbnormal());
         sql.append("WHERE FormatID").eq(format.getFormatId());
         
         yukonJdbcTemplate.update(sql);
@@ -104,7 +106,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType, TimeZoneFormat");
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType, TimeZoneFormat, ExcludeAbnormal");
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE FormatID").eq(formatId);
@@ -127,7 +129,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         ExportFormat format = null;
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType, TimeZoneFormat");
+            sql.append("SELECT FormatID, FormatName, Delimiter, Header, Footer, FormatType, TimeZoneFormat, ExcludeAbnormal");
             sql.append("FROM");
             sql.append(TABLE_NAME);
             sql.append("WHERE upper(FormatName)").eq(formatName.toUpperCase());
@@ -151,6 +153,7 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
         final YukonRowMapper<ExportFormat> mapper = new YukonRowMapper<ExportFormat>() {
             @Override
             public ExportFormat mapRow(YukonResultSet rs) throws SQLException {
+                
                 final ExportFormat format = new ExportFormat();
                 format.setFormatId(rs.getInt("FormatID"));
                 format.setFormatName(rs.getStringSafe("FormatName"));
@@ -161,7 +164,9 @@ public class ArchiveValuesExportFormatDaoImpl implements ArchiveValuesExportForm
                 format.setAttributes(archiveValuesExportAttributeDao.getByFormatId(format.getFormatId()));
                 format.setFields(archiveValuesExportFieldDao.getByFormatId(format.getFormatId()));
                 format.setDateTimeZoneFormat(rs.getEnum("TimeZoneFormat", TimeZoneFormat.class));
-                return format ;
+                format.setExcludeAbnormal(rs.getBoolean("ExcludeAbnormal"));
+                
+                return format;
             }
         };
         return mapper;

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -25,6 +27,8 @@ import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -53,6 +57,8 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ListMultimap;
 
 public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorService {
@@ -64,6 +70,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ConfigurationSource configSource;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
 
@@ -83,6 +90,23 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
     private static double previewValue = 1234546.012;
     private static PointQuality previewQuality = PointQuality.Normal;
+    private static Set<PointQuality> excludedQualities = ImmutableSet.of(PointQuality.Abnormal, 
+                                                                         PointQuality.Invalid, 
+                                                                         PointQuality.Questionable, 
+                                                                         PointQuality.Uninitialized, 
+                                                                         PointQuality.Unreasonable);
+    @PostConstruct
+    private void pointQualities() {
+        String qualityList = configSource.getString(MasterConfigStringKeysEnum.EXCLUDED_POINT_QUALITIES);
+        if (StringUtils.isNotEmpty(qualityList)) {
+            String[] strings = qualityList.split("\\s*,\\s*");
+            Builder<PointQuality> b = ImmutableSet.builder();
+            for (String string : strings) {
+                b.add(PointQuality.valueOf(string));
+            }
+            excludedQualities = b.build();
+        }
+    }
     private static int fakePaoId = -1;
     
     @Override
@@ -144,7 +168,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                         DateTime startDate = getStartDate(field.getField().getAttribute(), endOfDay);
                         Range<Instant> dateRange = Range.exclusiveInclusive(startDate.toInstant(), endOfDay.toInstant());
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
-                                getFixedAttributeData(paos, field.getField().getAttribute(), dateRange);
+                                getFixedAttributeData(paos, field.getField().getAttribute(), dateRange, format);
                         
                         endDateAttributeData.put(field.getFieldId(), attributeData);
                     }
@@ -157,7 +181,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
-                            getDynamicAttributeData(paos, attribute, dateRange, null);
+                            getDynamicAttributeData(paos, attribute, dateRange, null, format);
                     generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
                         dateRangeAttributeData);
                 }
@@ -170,7 +194,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
-                            getDynamicAttributeData(paos, attribute, previousDaysDateRange, null);
+                            getDynamicAttributeData(paos, attribute, previousDaysDateRange, null, format);
                     generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
                         previousDaysAttributeData);
                 }
@@ -183,7 +207,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
 
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
-                            getDynamicAttributeData(paos, attribute, null, changeIdRange);
+                            getDynamicAttributeData(paos, attribute, null, changeIdRange, format);
                     generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
                         sinceLastChangeIdAttributeData);
                 }
@@ -222,8 +246,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private void generateFixedBody(List<String> reportRows, Iterable<? extends YukonPao> paos,
-            Map<? extends YukonPao, PaoData> paoDataByPao, ExportFormat format, 
+    private void generateFixedBody(List<String> reportRows, 
+            Iterable<? extends YukonPao> paos,
+            Map<? extends YukonPao, PaoData> paoDataByPao, 
+            ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
             YukonUserContext userContext) {
 
@@ -242,19 +268,25 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
      */
-    private void generateDynamicBody(List<String> reportRows, Iterable<? extends YukonPao> paos,
-            Map<? extends YukonPao, PaoData> paoDataByPao, ExportFormat format, YukonUserContext userContext,
-            Attribute attribute, ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData) {
+    private void generateDynamicBody(List<String> reportRows, 
+            Iterable<? extends YukonPao> paos,
+            Map<? extends YukonPao, PaoData> paoDataByPao, 
+            ExportFormat format, 
+            YukonUserContext userContext,
+            Attribute attribute, 
+            ListMultimap<PaoIdentifier, 
+            PointValueQualityHolder> attributeData) {
         
         for (YukonPao pao : paos) {
             List<PointValueQualityHolder> pointData = attributeData.get(pao.getPaoIdentifier());
             for (PointValueQualityHolder pointValueQualityHolder : pointData) {
+                
                 PaoData data = null;
-                if(paoDataByPao != null){
+                if (paoDataByPao != null) {
                     data = paoDataByPao.get(pao);
                 }
                 String reportRow = generateReportRow(format, pao, attribute, data,
-                    pointValueQualityHolder, userContext);
+                        pointValueQualityHolder, userContext);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     reportRows.add(reportRow);
                 }
@@ -265,9 +297,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * This method generates one row to the given report.
      */
-    private String generateReportRow(ExportFormat format, YukonPao pao, Attribute attribute, PaoData paoData,
-                                     PointValueQualityHolder pointValueQualityHolder, 
-                                     YukonUserContext userContext) {
+    private String generateReportRow(ExportFormat format, 
+            YukonPao pao, 
+            Attribute attribute, 
+            PaoData paoData,
+            PointValueQualityHolder pointValueQualityHolder, 
+            YukonUserContext userContext) {
 
         StringBuilder reportRow = new StringBuilder();
         
@@ -353,6 +388,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicPreviewAttributeData(ExportFormat format,
             Map<? extends YukonPao, PaoData> previewData) {
+        
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = ArrayListMultimap.create();
 
         PointData pointData = new PointData();
@@ -369,6 +405,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      */
     private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getFixedPreviewAttributeData(ExportFormat format,
             Map<? extends YukonPao, PaoData> previewData) {
+        
         Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData = new HashMap<>();
 
         for (ExportField field : format.getFields()) {
@@ -388,7 +425,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      *
      */
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getFixedAttributeData(List<? extends YukonPao> paos,
-            ExportAttribute attribute, ReadableRange<Instant> dateRange) {
+            ExportAttribute attribute, 
+            ReadableRange<Instant> dateRange,
+            ExportFormat format) {
+        
         Order order = null;
         OrderBy orderBy = null;
 
@@ -411,8 +451,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 break;
         }
 
+        Set<PointQuality> excludeQualities = format.isExcludeAbnormal() ? excludedQualities : null;
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
-            rawPointHistoryDao.getLimitedAttributeData(paos, attribute.getAttribute(), dateRange, null, 1, false, order, orderBy);
+            rawPointHistoryDao.getLimitedAttributeData(paos, attribute.getAttribute(), dateRange, null, 1, false, order, orderBy, excludeQualities);
         return attributeDataValues;
     }
 
@@ -420,18 +461,28 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
      * This is method is a helper method for retrieving the raw point history data for the supplied dateRange or changeIdRange.
      */
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getDynamicAttributeData(List<? extends YukonPao> paos,
-            Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange) {
+            Attribute attribute, 
+            ReadableRange<Instant> dateRange, 
+            ReadableRange<Long> changeIdRange,
+            ExportFormat format) {
+        
+        Set<PointQuality> excludeQualities = format.isExcludeAbnormal() ? excludedQualities : null;
         ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues = 
-                rawPointHistoryDao.getAttributeData(paos, attribute, dateRange, changeIdRange, false, Order.FORWARD, null);
+                rawPointHistoryDao.getAttributeData(paos, attribute, dateRange, changeIdRange, false, Order.FORWARD, null, excludeQualities);
+        
         return attributeDataValues;
     }
 
     /**
-     * Builds the data row for the report. If the the value was not found, and a user
+     * Builds the data row for the report. If the value was not found, and a user
      * selected to skip a record, it returns "SKIP_RECORD_SKIP_RECORD".
      */
-    private String getDataRow(ExportFormat format, YukonPao pao, PaoData paoData, YukonUserContext userContext,
-                              Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
+    private String getDataRow(ExportFormat format, 
+            YukonPao pao, 
+            PaoData paoData, 
+            YukonUserContext userContext,
+            Map<Integer, 
+            ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
 
         StringBuilder dataRow = new StringBuilder();
         

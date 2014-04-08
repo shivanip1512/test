@@ -58,7 +58,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
 	        ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
 	            rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate, 
-	                                                false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD);
+	                                                false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD, null);
 
 	        resultsPerAttribute.put(attribute, resultsForAttribute);
 	        estimatedSize += resultsForAttribute.size();
@@ -104,7 +104,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
-            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false);
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();
         }
@@ -162,7 +162,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
             ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute;
             resultsForAttribute = rawPointHistoryDao.getAttributeData(meters, attribute, startDate, endDate,
-                                                                       false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD);
+                                                                       false, Clusivity.INCLUSIVE_INCLUSIVE, Order.FORWARD, null);
 
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();
@@ -212,7 +212,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         for (BuiltInAttribute attribute : attributesToLoad) {
 
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
-                rawPointHistoryDao.getSingleAttributeData(meters, attribute, false);
+                rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
 
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();

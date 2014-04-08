@@ -196,6 +196,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                                 null,
                                                 !includeDisabledPaos,
                                                 Order.FORWARD,
+                                                null,
                                                 null);
 
         Map<PointIdTimestamp, PaoIdentifier> idToPaoIdentifierMap = Maps.newHashMap();

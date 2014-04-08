@@ -256,9 +256,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     @Override
-    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final boolean excludeDisabledPaos) {
+    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, 
+            Attribute attribute, 
+            final boolean excludeDisabledPaos,
+            final Set<PointQuality> excludeQualities) {
+        
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = 
-                getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE);
+                getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE, excludeQualities);
         
         return Maps.transformValues(limitedStuff.asMap(), new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
             @Override
@@ -277,7 +281,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             final int maxRows, 
             final boolean excludeDisabledPaos, 
             final Order order,
-            final OrderBy orderBy) {
+            final OrderBy orderBy,
+            final Set<PointQuality> excludeQualities) {
         
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
@@ -304,6 +309,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         if (excludeDisabledPaos) {
                             sql.append("AND yp.DisableFlag").eq(YNBoolean.NO);
                         }
+                        if (excludeQualities != null && !excludeQualities.isEmpty()) {
+                            sql.append("AND rph.Quality").notIn(excludeQualities);
+                        }
                         sql.append(") numberedRows");
                         sql.append("WHERE numberedRows.rn").lte(maxRows);
                         sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
@@ -319,12 +327,19 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
-            Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate,
-            final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity,
-            final Order order) {
+            Iterable<? extends YukonPao> displayableDevices, 
+            Attribute attribute, 
+            final Date startDate,
+            final Date stopDate, 
+            final int maxRows, 
+            final boolean excludeDisabledPaos, 
+            final Clusivity clusivity,
+            final Order order,
+            final Set<PointQuality> excludeQualities) {
+        
         Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
         return getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
-            maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP);
+            maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP, excludeQualities);
     }
     
     @Override
@@ -333,11 +348,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                                                                                         ReadableRange<Instant> dateRange,
                                                                                         final int maxRows,
                                                                                         final boolean excludeDisabledPaos,
-                                                                                        final Order order) {
+                                                                                        final Order order,
+                                                                                        final Set<PointQuality> excludeQualities) {
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeDatas = ArrayListMultimap.create(IterableUtils.guessSize(displayableDevices), 20); 
         for (Attribute attribute : attributes) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedAttributeData = getLimitedAttributeData(displayableDevices, attribute, dateRange, null,
-                                    maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP);
+                                    maxRows, excludeDisabledPaos, order, OrderBy.TIMESTAMP, excludeQualities);
             limitedAttributeDatas.putAll(limitedAttributeData);
         }
         return limitedAttributeDatas;
@@ -345,8 +361,15 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(
-            Iterable<? extends YukonPao> paos, Attribute attribute, final ReadableRange<Instant> dateRange,
-            final ReadableRange<Long> changeIdRange, final boolean excludeDisabledPaos, final Order order, final Double minimumValue) {
+            Iterable<? extends YukonPao> paos, 
+            Attribute attribute, 
+            final ReadableRange<Instant> dateRange,
+            final ReadableRange<Long> changeIdRange, 
+            final boolean excludeDisabledPaos, 
+            final Order order, 
+            final Double minimumValue,
+            final Set<PointQuality> excludeQualities) {
+        
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             @Override
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -361,8 +384,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
-                        if(minimumValue != null) {
-                            sql.append(  "AND rph.value").gt(minimumValue);
+                        if (minimumValue != null) {
+                            sql.append("AND rph.value").gt(minimumValue);
+                        }
+                        if (excludeQualities != null && !excludeQualities.isEmpty()) {
+                            sql.append("AND rph.Quality").notIn(excludeQualities);
                         }
                         appendChangeIdClause(sql, changeIdRange);
                         appendTimeStampClause(sql, dateRange);
@@ -383,10 +409,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-            Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity,
-            Order order) {
+            Attribute attribute, 
+            Date startDate, 
+            Date stopDate, 
+            boolean excludeDisabledPaos, 
+            Clusivity clusivity,
+            Order order,
+            Set<PointQuality> excludeQualities) {
+        
         Range<Instant> dateRange = clusivity.makeRange(startDate, stopDate).translate(CtiUtilities.INSTANT_FROM_DATE);
-        return getAttributeData(paos, attribute, dateRange, null, excludeDisabledPaos, order, null);
+        return getAttributeData(paos, attribute, dateRange, null, excludeDisabledPaos, order, null, excludeQualities);
     }
 
     @Override

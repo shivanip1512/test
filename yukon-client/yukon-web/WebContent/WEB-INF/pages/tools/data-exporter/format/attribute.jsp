@@ -12,9 +12,6 @@
         <tags:selectNameValue nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
         <tags:selectNameValue items="${dataSelection}" nameKey=".dataSelection" path="dataSelection"/>
         <tags:inputNameValue nameKey=".daysPrevious" path="daysPrevious" maxlength="3" size="3"/>
-        <tags:nameValue2 excludeColon="true">
-            <tags:checkbox descriptionNameKey=".excludeAbnormal" path="excludeAbnormal"/>
-        </tags:nameValue2>
     </tags:nameValueContainer2>
 </form:form>
 

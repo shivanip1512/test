@@ -11,7 +11,6 @@ public class ExportAttribute {
     private BuiltInAttribute attribute;
     private DataSelection dataSelection;
     private int daysPrevious = 1;
-    private boolean excludeAbnormal = true;
     
     @JsonIgnore
     public int getAttributeId() {
@@ -56,14 +55,6 @@ public class ExportAttribute {
     public void setDaysPrevious(Integer daysPrevious) {
         this.daysPrevious = daysPrevious;
     }
-    
-    public boolean isExcludeAbnormal() {
-        return excludeAbnormal;
-    }
-    
-    public void setExcludeAbnormal(boolean excludeAbnormal) {
-        this.excludeAbnormal = excludeAbnormal;
-    }
 
     @Override
     public int hashCode() {
@@ -75,7 +66,6 @@ public class ExportAttribute {
         result = prime * result
                 + ((dataSelection == null) ? 0 : dataSelection.hashCode());
         result = prime * result + daysPrevious;
-        result = prime * result + (excludeAbnormal ? 1231 : 1237);
         result = prime * result + formatId;
         return result;
     }
@@ -97,8 +87,6 @@ public class ExportAttribute {
             return false;
         if (daysPrevious != other.daysPrevious)
             return false;
-        if (excludeAbnormal != other.excludeAbnormal)
-            return false;
         if (formatId != other.formatId)
             return false;
         return true;
@@ -107,9 +95,9 @@ public class ExportAttribute {
     @Override
     public String toString() {
         return String
-                .format("ExportAttribute [attributeId=%s, formatId=%s, attribute=%s, dataSelection=%s, daysPrevious=%s, excludeAbnormal=%s]",
+                .format("ExportAttribute [attributeId=%s, formatId=%s, attribute=%s, dataSelection=%s, daysPrevious=%s]",
                         attributeId, formatId, attribute, dataSelection,
-                        daysPrevious, excludeAbnormal);
+                        daysPrevious);
     }
-
+    
 }

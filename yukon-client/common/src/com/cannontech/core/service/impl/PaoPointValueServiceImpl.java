@@ -68,7 +68,8 @@ public class PaoPointValueServiceImpl implements PaoPointValueService {
                                                            range,
                                                            maxRows,
                                                            !includeDisabledPaos,
-                                                           Order.REVERSE);
+                                                           Order.REVERSE,
+                                                           null);
             pointData = Lists.newArrayList(limitedAttributeDatas.values());
 
             Set<Integer> pointIdsSet = Sets.newHashSet();

@@ -152,14 +152,12 @@ yukon.dataExporterFormat = (function () {
                         var row = $('#attribute-template tr').clone(),
                             attribute = row.find('td:first-child'),
                             dataSelection = attribute.next(),
-                            daysPrevious = dataSelection.next(),
-                            excludeAbnormal = daysPrevious.next();
+                            daysPrevious = dataSelection.next();
                         
                         attribute.find('input').val(JSON.stringify(data.attribute));
                         attribute.append('<span>' + data.text.attribute + '</span>');
                         dataSelection.append('<span>' + data.text.dataSelection + '</span>');
                         daysPrevious.append('<span>' + data.text.daysPrevious + '</span>');
-                        excludeAbnormal.append('<span>' + data.text.excludeAbnormal + '</span>');
                         
                         $('#attributes-table tbody').append(row);
                         yukon.ui.reindexInputs(row.closest('table'));
@@ -229,7 +227,6 @@ yukon.dataExporterFormat = (function () {
                     popup.find('select[name=attribute]').val(attribute.attribute);
                     popup.find('select[name=dataSelection]').val(attribute.dataSelection);
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
-                    popup.find('input[name=excludeAbnormal]').prop('checked', attribute.excludeAbnormal);
                     popup.dialog({
                         title: _config.text.editAttribute,
                         width: 'auto',
@@ -273,8 +270,7 @@ yukon.dataExporterFormat = (function () {
                     attribute = row.find('td:first-child'),
                     originalValue = JSON.parse(attribute.find('input').val()),
                     dataSelection = attribute.next(),
-                    daysPrevious = dataSelection.next(),
-                    excludeAbnormal = daysPrevious.next();
+                    daysPrevious = dataSelection.next();
                 
                 $('#attribute-form').ajaxSubmit({
                     url: _attributeUrl, 
@@ -288,7 +284,6 @@ yukon.dataExporterFormat = (function () {
                         attribute.find('span').text(data.text.attribute);
                         dataSelection.find('span').text(data.text.dataSelection);
                         daysPrevious.find('span').text(data.text.daysPrevious);
-                        excludeAbnormal.find('span').text(data.text.excludeAbnormal);
                         
                         // update any fields using this attribute
                         $('#fields-table tbody td:first-child').each(function(idx, el) {

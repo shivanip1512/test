@@ -72,7 +72,7 @@ public class MeterUsageModel extends FilteredReportModelBase<MeterUsageModel.Met
         List<YukonMeter> meters = meterDao.getMetersForYukonPaos(devices);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults = 
-        	rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
+        	rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
            
         for (YukonMeter meter : meters) {
         	Double previousReading = null;

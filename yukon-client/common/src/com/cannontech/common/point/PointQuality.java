@@ -3,6 +3,7 @@ package com.cannontech.common.point;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum PointQuality implements DatabaseRepresentationSource {
+    
     Uninitialized(0, "Uninitialized", "Uninit"),
     InitDefault(1, "Init Default", "Init-Def"),	//not used JOtteson 6/30/2009
     InitLastKnown(2, "Init Last Known", "Init-Last"),	//not used JOtteson 6/30/2009

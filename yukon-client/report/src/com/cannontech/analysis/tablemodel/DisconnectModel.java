@@ -167,9 +167,9 @@ public class DisconnectModel extends FilteredReportModelBase<DisconnectModel.Dis
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
         if (showHistory) {
-            intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
+            intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
         } else {
-            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(meters, attribute, null, null, 1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE);
+            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(meters, attribute, null, null, 1, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.REVERSE, null);
         }
 
         for (DisconnectMeter meter : meters) {

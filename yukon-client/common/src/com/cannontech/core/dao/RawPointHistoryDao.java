@@ -144,11 +144,17 @@ public interface RawPointHistoryDao {
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
      * @param clusivity - determines whether each end of range is inclusive or exclusive
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
+     * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      * @return
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-        Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, Clusivity clusivity,
-        Order order);
+        Attribute attribute, 
+        Date startDate, 
+        Date stopDate, 
+        boolean excludeDisabledPaos, 
+        Clusivity clusivity,
+        Order order,
+        Set<PointQuality> excludeQualities);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
@@ -156,8 +162,13 @@ public interface RawPointHistoryDao {
      * Only returns data with a value greater than the specified minimum value.
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
-        Attribute attribute, ReadableRange<Instant> dateRange, ReadableRange<Long> changeIdRange, 
-        boolean excludeDisabledPaos, Order order, Double minimumValue);
+        Attribute attribute, 
+        ReadableRange<Instant> dateRange, 
+        ReadableRange<Long> changeIdRange, 
+        boolean excludeDisabledPaos, 
+        Order order, 
+        Double minimumValue,
+        Set<PointQuality> excludeQualities);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
@@ -188,9 +199,18 @@ public interface RawPointHistoryDao {
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
      * @param clusivity - determines whether each end of range is inclusive or exclusive
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
+     * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, 
+            Attribute attribute, 
+            Date startDate, 
+            Date stopDate, 
+            int maxRows, 
+            boolean excludeDisabledPaos, 
+            Clusivity clusivity, 
+            Order order,
+            Set<PointQuality> excludeQualities);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a list of Attributes. This data will be returned as a ListMultimap
@@ -205,6 +225,7 @@ public interface RawPointHistoryDao {
      * @param maxRows The maximum number of rows to return for each PAO
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
+     * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      * @return
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices,
@@ -212,7 +233,8 @@ public interface RawPointHistoryDao {
                                                                                         ReadableRange<Instant> dateRange,
                                                                                         int maxRows,
                                                                                         boolean excludeDisabledPaos,
-                                                                                        Order order);
+                                                                                        Order order,
+                                                                                        Set<PointQuality> excludeQualities);
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as
      * a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao
@@ -229,10 +251,18 @@ public interface RawPointHistoryDao {
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
      * @param order - controls ordering  [ASC, DESC]
      * @param orderBy - controls field to order by  [timestamp, value]
+     * @param excludeQualities - if not null and not empty, rows with point qualities in this set will be discarded
      */
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(
-        Iterable<? extends YukonPao> paos, Attribute attribute, ReadableRange<Instant> dateRange,
-        ReadableRange<Long> changeIdRange, int maxRows, boolean excludeDisabledPaos, Order order, OrderBy orderBy);
+        Iterable<? extends YukonPao> paos, 
+        Attribute attribute, 
+        ReadableRange<Instant> dateRange,
+        ReadableRange<Long> changeIdRange, 
+        int maxRows, 
+        boolean excludeDisabledPaos, 
+        Order order, 
+        OrderBy orderBy,
+        Set<PointQuality> excludeQualities);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as
@@ -281,7 +311,10 @@ public interface RawPointHistoryDao {
      *   
      * and converting the Multimap into a Map (because there will only be one value per key).
      */
-    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos);
+    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> paos,
+            Attribute attribute,
+            boolean excludeDisabledPaos,
+            Set<PointQuality> excludeQualities);
 
 
     /**
@@ -376,4 +409,5 @@ public interface RawPointHistoryDao {
     * in the specified date range.
     */
    public Set<Integer> getCommunicatingInventoryByLoadGroups(Iterable<Integer> loadGroupIds, ReadableRange<Instant> dateRange);
+
 }

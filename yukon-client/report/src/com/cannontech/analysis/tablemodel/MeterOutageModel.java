@@ -113,7 +113,7 @@ public class MeterOutageModel extends FilteredReportModelBase<MeterOutageModel.M
         List<YukonMeter> meters = getMetersForYukonPaos(devices);
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
-        intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.INCLUSIVE_INCLUSIVE, getOrderDirection());
+        intermediateResults = rawPointHistoryDao.getAttributeData(meters, attribute, getStartDate(), getStopDate(), false, Clusivity.INCLUSIVE_INCLUSIVE, getOrderDirection(), null);
 
         for (YukonMeter meter : meters) {
             List<PointValueQualityHolder> values = intermediateResults.get(meter.getPaoIdentifier());

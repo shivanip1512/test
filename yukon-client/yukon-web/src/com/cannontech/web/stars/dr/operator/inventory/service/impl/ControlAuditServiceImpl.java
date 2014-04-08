@@ -94,9 +94,9 @@ public class ControlAuditServiceImpl implements ControlAuditService {
         Date start = settings.getFrom().toDate();
         Date end = settings.getTo().toDate();
         
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data = rphDao.getAttributeData(rphLookup.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data = rphDao.getAttributeData(rphLookup.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data = rphDao.getAttributeData(rphLookup.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data = rphDao.getAttributeData(rphLookup.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data = rphDao.getAttributeData(rphLookup.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data = rphDao.getAttributeData(rphLookup.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> all = ArrayListMultimap.create();
         all.putAll(r1Data);

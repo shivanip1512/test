@@ -226,7 +226,6 @@ public class DataExporterFormatController {
         text.put("attribute", accessor.getMessage(attribute.getAttribute().getMessage()));
         text.put("dataSelection", accessor.getMessage(attribute.getDataSelection()));
         text.put("daysPrevious", attribute.getDaysPrevious());
-        text.put("excludeAbnormal", attribute.isExcludeAbnormal());
         
         json.put("text", text);
         

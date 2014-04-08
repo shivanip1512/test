@@ -78,7 +78,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
                 if (useLastChangeId) {  // get data by token (lastChangeId)
                     billingAttributeData = rawPointHistoryDao.getAttributeDataByChangeIdRange(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), changeIdRange, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
                 } else {    // get data by date range
-                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
+                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD, null);
                 }
                 
                 for (Entry<PaoIdentifier, PointValueQualityHolder> entry : billingAttributeData.entries()) {

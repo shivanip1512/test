@@ -533,9 +533,9 @@ yukon.ui = (function () {
          * Reindex the name of every input in a table to support spring binding.
          * Will also enable/disable any move up/move down buttons properly.
          * 
-         * @param table Element or css selector for the table/table ancestor.
-         * @param rowCallback Optional function to fire after processing each row.
-         *                    Takes the row element as an arg.
+         * @param {element, string} table - Element or css selector for the table/table ancestor.
+         * @param {function} [rowCallback] - Optional function to fire after processing each row.
+         *                                   Takes the row element as an arg.
          */
         reindexInputs: function(table, rowCallback) {
             table = $(table);

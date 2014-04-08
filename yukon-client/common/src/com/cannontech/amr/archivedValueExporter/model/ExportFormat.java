@@ -14,6 +14,7 @@ public class ExportFormat {
     private String header;
     private String footer;
     private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
+    private boolean excludeAbnormal = true;
     
     private List<ExportAttribute> attributes =  LazyList.ofInstance(ExportAttribute.class);
     private List<ExportField> fields =  LazyList.ofInstance(ExportField.class);
@@ -94,8 +95,96 @@ public class ExportFormat {
         return tzFormat;
     }
     
+    public boolean isExcludeAbnormal() {
+        return excludeAbnormal;
+    }
+    
+    public void setExcludeAbnormal(boolean excludeAbnormal) {
+        this.excludeAbnormal = excludeAbnormal;
+    }
+    
     public DataExportDelimiter getDelimiterType() {
         return DataExportDelimiter.getForValue(delimiter);
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((attributes == null) ? 0 : attributes.hashCode());
+        result = prime * result
+                + ((delimiter == null) ? 0 : delimiter.hashCode());
+        result = prime * result + (excludeAbnormal ? 1231 : 1237);
+        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+        result = prime * result + ((footer == null) ? 0 : footer.hashCode());
+        result = prime * result + formatId;
+        result = prime * result
+                + ((formatName == null) ? 0 : formatName.hashCode());
+        result = prime * result
+                + ((formatType == null) ? 0 : formatType.hashCode());
+        result = prime * result + ((header == null) ? 0 : header.hashCode());
+        result = prime * result
+                + ((tzFormat == null) ? 0 : tzFormat.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExportFormat other = (ExportFormat) obj;
+        if (attributes == null) {
+            if (other.attributes != null)
+                return false;
+        } else if (!attributes.equals(other.attributes))
+            return false;
+        if (delimiter == null) {
+            if (other.delimiter != null)
+                return false;
+        } else if (!delimiter.equals(other.delimiter))
+            return false;
+        if (excludeAbnormal != other.excludeAbnormal)
+            return false;
+        if (fields == null) {
+            if (other.fields != null)
+                return false;
+        } else if (!fields.equals(other.fields))
+            return false;
+        if (footer == null) {
+            if (other.footer != null)
+                return false;
+        } else if (!footer.equals(other.footer))
+            return false;
+        if (formatId != other.formatId)
+            return false;
+        if (formatName == null) {
+            if (other.formatName != null)
+                return false;
+        } else if (!formatName.equals(other.formatName))
+            return false;
+        if (formatType != other.formatType)
+            return false;
+        if (header == null) {
+            if (other.header != null)
+                return false;
+        } else if (!header.equals(other.header))
+            return false;
+        if (tzFormat != other.tzFormat)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return String
+                .format("ExportFormat [formatId=%s, formatType=%s, formatName=%s, delimiter=%s, header=%s, footer=%s, tzFormat=%s, excludeAbnormal=%s, attributes=%s, fields=%s]",
+                        formatId, formatType, formatName, delimiter, header,
+                        footer, tzFormat, excludeAbnormal, attributes, fields);
+    }
+    
 }

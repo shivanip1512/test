@@ -464,10 +464,10 @@ public class ArchivedValuesRequestEndpoint {
 
             if (selector.getNumberOfRows() != null) {
                 return rawPointHistoryDao.getLimitedAttributeData(paos, attribute, dateRange, changeIdRange,
-                    selector.getNumberOfRows(), false, selector.getOrder(), OrderBy.TIMESTAMP);
+                    selector.getNumberOfRows(), false, selector.getOrder(), OrderBy.TIMESTAMP, null);
             } else {
                 return rawPointHistoryDao.getAttributeData(paos, attribute, dateRange, changeIdRange, false,
-                    selector.getOrder(), null);
+                    selector.getOrder(), null, null);
             }
         }
 
