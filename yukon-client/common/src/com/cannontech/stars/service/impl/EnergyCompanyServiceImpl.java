@@ -132,7 +132,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         UserGroup ecAdminUserGrp =  StarsAdminUtil.createOperatorAdminUserGroup(energyCompanyDto.getName(), energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
         
         /* Create the primary operator login */
-        LiteYukonUser adminUser = 
+        LiteYukonUser ecUser = 
                 StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdminUsername(), energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, ecAdminUserGrp, null);
 
         /* Create Contact */
@@ -148,7 +148,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         com.cannontech.database.db.company.EnergyCompany energyCompany = new com.cannontech.database.db.company.EnergyCompany();
         energyCompany.setName(energyCompanyDto.getName());
         energyCompany.setPrimaryContactId(contact.getContactID());
-        energyCompany.setUserId(adminUser.getUserID());
+        energyCompany.setUserId(ecUser.getUserID());
         energyCompanyDao.save(energyCompany);
         
         /* This method doesn't 'create' anything, it just news a LiteStarsEnergyCompany and injects dependencies. */
@@ -160,8 +160,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                                         DbChangeType.ADD);
 
         /* Set Default Route */
-        EnergyCompany ec = ecService.getEnergyCompany(liteEnergyCompany.getEnergyCompanyId());
-        defaultRouteService.updateDefaultRoute(ec, energyCompanyDto.getDefaultRouteId(), user);
+        defaultRouteService.setupNewDefaultRoute(energyCompanyDto.getName(), ecUser, energyCompanyDto.getDefaultRouteId());
         
         /* Set Operator Group List */
         List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
@@ -176,7 +175,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         /* Add as member to parent */
         if (parentId != null) {
-            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, adminUser.getUserID(), user);
+            StarsAdminUtil.addMember(starsDatabaseCache.getEnergyCompany(parentId), liteEnergyCompany, ecUser.getUserID(), user);
         }
         
         starsDatabaseCache.addEnergyCompany(liteEnergyCompany);

@@ -90,9 +90,8 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
 
         log.info("no default route id found for energy company " + energyCompany.getName());
         return INVALID_ROUTE_ID;
-
     }
-    
+
     @Override
     public void updateDefaultRoute(EnergyCompany energyCompany, int newRouteId, LiteYukonUser user) {
         int currentRouteId = getDefaultRouteId(energyCompany);
@@ -100,7 +99,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
             if (newRouteId == INVALID_ROUTE_ID) {
                 removeDefaultRoute(energyCompany);
             } else if (currentRouteId == INVALID_ROUTE_ID) {
-                setupNewDefaultRoute(energyCompany, newRouteId);
+                setupNewDefaultRoute(energyCompany.getName(), energyCompany.getUser(), newRouteId);
             } else if (newRouteId > 0 || currentRouteId > 0) {
                 if (newRouteId < 0) {
                     newRouteId = 0;
@@ -155,17 +154,21 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         return routeGroupIds;
     }
 
-    private void setupNewDefaultRoute(EnergyCompany energyCompany, int routeID) {
+    @Override
+    public void setupNewDefaultRoute(String ecName, LiteYukonUser ecUser, int newRouteId) {
+        if (newRouteId == INVALID_ROUTE_ID) {
+            return;
+        }
         // Assign the default route to the energy company
         // Checks to see if the LMGroupExpressCom exists
-        String nameOfDefaultRoute = energyCompany.getName() + " Default Route";
+        String nameOfDefaultRoute = ecName + " Default Route";
         List<Integer> paoObjectIds = getDeviceGroupByName(nameOfDefaultRoute);
         LMGroupPlcExpressCom expresscomGroup;
         if (paoObjectIds.size() == 0) {
             //  Creates the expresscom if it doesn't exist.
             expresscomGroup = (LMGroupPlcExpressCom) LMFactory.createLoadManagement(PaoType.LM_GROUP_EXPRESSCOMM.getDeviceTypeId());
             expresscomGroup.setPAOName(nameOfDefaultRoute);  
-            expresscomGroup.setRouteID(routeID);
+            expresscomGroup.setRouteID(newRouteId);
             dbPersistentDao.performDBChange(expresscomGroup, TransactionType.INSERT);
         } else {
             if (paoObjectIds.size() > 1) {
@@ -179,7 +182,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         }
 
         // Checks to see if the MacroGroup Exists
-        String nameOfSerialGroup = energyCompany.getName() + " Serial Group";
+        String nameOfSerialGroup = ecName + " Serial Group";
         List<Integer> macroGroupIds = getDeviceGroupByName(nameOfSerialGroup);
         MacroGroup serialGroup;
         PaoType macroGroupType = PaoType.MACRO_GROUP;
@@ -205,7 +208,7 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         
         PaoType paoType = macroGroupType;
         PaoIdentifier pao = new PaoIdentifier(serialGroup.getPAObjectID(), paoType);
-        paoPermissionService.addPermission(energyCompany.getUser(), pao, Permission.DEFAULT_ROUTE, true);
+        paoPermissionService.addPermission(ecUser, pao, Permission.DEFAULT_ROUTE, true);
     }
 
     private List<Integer> getDeviceGroupByName(String nameOfDefaultRoute) {
@@ -266,4 +269,5 @@ public class DefaultRouteServiceImpl implements DefaultRouteService {
         }
         return liteRoute;
     }
+
 }

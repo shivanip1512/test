@@ -9,6 +9,19 @@ public interface DefaultRouteService {
 
     int getDefaultRouteId(EnergyCompany energyCompany);
     LiteYukonPAObject getDefaultRoute(EnergyCompany energyCompany);
-    void updateDefaultRoute(EnergyCompany energyCompany, int routeID, LiteYukonUser user);
+
+    /**
+     * If current default route id is invalid (-1) this sets up a new default route.
+     * If {@code newRouteId} is invalid (-1) this removes default route.
+     * Otherwise this updates the default route
+     * 
+     * Does nothing if {@code newRouteId} equals the current default route id.
+     */
+    void updateDefaultRoute(EnergyCompany energyCompany, int newRouteId, LiteYukonUser user);
     void removeDefaultRoute(EnergyCompany energyCompany);
+
+    /**
+     * Does nothing if {@code newRouteId} equals the invalid (-1) route id.
+     */
+    void setupNewDefaultRoute(String ecName, LiteYukonUser ecUser, int newRouteId);
 }
