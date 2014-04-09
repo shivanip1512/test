@@ -47,7 +47,7 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
         chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
     }
     
-    static YukonRowMapper<Map.Entry<Integer, AllRelayCommunicationTimes>> allRelayCommunicationTimesRowMapper = 
+    private final static YukonRowMapper<Map.Entry<Integer, AllRelayCommunicationTimes>> allRelayCommunicationTimesRowMapper = 
             new YukonRowMapper<Map.Entry<Integer, AllRelayCommunicationTimes>>() {
         @Override
         public Map.Entry<Integer, AllRelayCommunicationTimes> mapRow(YukonResultSet rs) throws SQLException{
@@ -169,10 +169,10 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
         sql.append("FROM DynamicLcrCommunications");
         sql.append("WHERE DeviceId").eq(times.getDeviceId());
         AllRelayCommunicationTimes existingRelayCommunicationTimes = 
-                jdbcTemplate.query(sql, allRelayCommunicationTimesRowMapper).get(0).getValue();
+                jdbcTemplate.queryForObject(sql, allRelayCommunicationTimesRowMapper).getValue();
         
         sql = new SqlStatementBuilder();
-        boolean updatedValue = false;
+        boolean valueUpdated = false;
         SqlParameterSink parameterSink = sql.update("DynamicLcrCommunications");
         
         // Each value will be updated only if the new timestamp is not null and
@@ -182,13 +182,13 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
                 && (existingRelayCommunicationTimes.getLastCommunicationTime() == null
                 || lastCommunicationTime.isAfter(existingRelayCommunicationTimes.getLastCommunicationTime()))) { 
             parameterSink.addValue("LastCommunication", lastCommunicationTime);
-            updatedValue = true;
+            valueUpdated = true;
         }
         if (lastNonZeroRuntime != null 
                 && (existingRelayCommunicationTimes.getLastNonZeroRuntime() == null
                 || lastNonZeroRuntime.isAfter(existingRelayCommunicationTimes.getLastNonZeroRuntime()))) {
             parameterSink.addValue("LastNonZeroRuntime", lastNonZeroRuntime);
-            updatedValue = true;
+            valueUpdated = true;
         }
         Map<Integer, Instant> existingRelayRuntimeMap = existingRelayCommunicationTimes.getRelayRuntimeMap();
         for (Integer relay : existingRelayRuntimeMap.keySet()) {
@@ -196,17 +196,16 @@ public class DynamicLcrCommunicationsDaoImpl implements DynamicLcrCommunications
                     && (existingRelayRuntimeMap.get(relay) == null
                     || relayRuntimes.get(relay).isAfter(existingRelayRuntimeMap.get(relay)))) {
                 parameterSink.addValue(relayIdToColumnName.get(relay), relayRuntimes.get(relay));
-                updatedValue = true;
+                valueUpdated = true;
             }
         }
-        if (updatedValue) {
+        if (valueUpdated) {
             sql.append("WHERE DeviceId").eq(times.getDeviceId());
             int rowsAffected = jdbcTemplate.update(sql);
             return rowsAffected != 0;
-        } else {
-            // None of the values were newer than existing ones, so no update occurred.
-            return false;
         }
+        // None of the values were newer than existing ones, so no update occurred.
+        return false;
     }
     
 }
