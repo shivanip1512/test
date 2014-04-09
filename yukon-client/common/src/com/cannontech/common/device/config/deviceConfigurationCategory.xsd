@@ -27,7 +27,6 @@
             <xs:enumeration value="rfnDisconnectConfiguration"/>
             <xs:enumeration value="mctDisconnectConfiguration"/>
             <xs:enumeration value="rfnOvUv"/>
-            <xs:enumeration value="rfnTempAlarm"/>
         </xs:restriction>
     </xs:simpleType>
     

@@ -289,13 +289,6 @@
         <integer field="alarmRepeatInterval" default="60" minValue="60" maxValue="240"/>
         <integer field="ovuvRepeats" default="2" minValue="1" maxValue="3"/>
     </category>
-
-    <category type="rfnTempAlarm">
-        <boolean field="alarmEnabled" default="false"/>
-        <integer field="highThreshold" default="0" minValue="0" maxValue="65535"/>
-        <integer field="temperatureAlarmRepeatInterval" default="15" minValue="0" maxValue="255"/>
-        <integer field="alarmRepeatCount" default="2" minValue="0" maxValue="255"/>
-    </category>
     
     <category type="demandFreeze">
         <integer field="demandFreezeDay" default="0" minValue="0" maxValue="32"/>
