@@ -125,7 +125,6 @@ public class StrategyDaoImpl implements StrategyDao {
         return rowsAffected == 1;
     }
 
-    @Transactional
     private boolean deleteStrategyAssignmentsByStrategyId(int strategyId){
         String deleteStrategyAssignments = "DELETE FROM CCSeasonStrategyAssignment WHERE StrategyId = ?";
         int rowsAffected = yukonJdbcTemplate.update(deleteStrategyAssignments, strategyId);

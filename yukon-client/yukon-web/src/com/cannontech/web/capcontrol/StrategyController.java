@@ -57,7 +57,7 @@ public class StrategyController {
     }
 
     @RequestMapping(value="deleteStrategy")
-    public String deleteStrategy(HttpServletRequest request, ModelMap model, int strategyId, FlashScope flash) {
+    public String deleteStrategy(int strategyId, FlashScope flash) {
         String name = strategyDao.getForId(strategyId).getStrategyName();
         List<String> otherPaosUsingStrategy = strategyDao.getAllOtherPaoNamesUsingStrategyAssignment(strategyId, strategyId);
         if (otherPaosUsingStrategy.isEmpty()) {
