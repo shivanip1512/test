@@ -19,7 +19,9 @@ yukon.favorites = (function () {
 
         if (typeof data.path === 'undefined') {
             data.path = window.location.pathname + window.location.search;
-            data.path = data.path.substring(YG.APP_NAME.length);
+            if (YG.APP_NAME.length > 0) {
+            	data.path = data.path.substring(YG.APP_NAME.length - 1);
+            }
         }
         return data;
     },
