@@ -8,12 +8,13 @@ import java.util.Set;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
+
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeStateGroup;
 import com.cannontech.common.util.LazyList;
 
-public class DeviceDataMonitor implements PointMonitor, Serializable {
+public class DeviceDataMonitor implements PointMonitor, Serializable,  Comparable<DeviceDataMonitor>{
     
     private static final long serialVersionUID = 1L;
 
@@ -152,5 +153,9 @@ public class DeviceDataMonitor implements PointMonitor, Serializable {
     public String toString() {
         return "DeviceDataMonitor [id=" + id + ", name=" + name + ", groupName=" + groupName
                + ", enabled=" + enabled + "]";
+    }
+    @Override
+    public int compareTo(DeviceDataMonitor deviceDataMonitors) {
+        return this.getName().compareToIgnoreCase(deviceDataMonitors.getName());
     }
 }

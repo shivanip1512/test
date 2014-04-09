@@ -67,6 +67,7 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
 
     protected void putMonitorsInModel(ModelMap model, YukonUserContext context) {
         List<DeviceDataMonitor> deviceDataMonitors = deviceDataMonitorDao.getAllMonitors();
+        Collections.sort(deviceDataMonitors);
         model.addAttribute("deviceDataMonitors", deviceDataMonitors);
         
         List<OutageMonitor> outageMonitors = outageMonitorDao.getAll();
@@ -82,9 +83,11 @@ public class AllMonitorsWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("statusPointMonitors", statusPointMonitors);
         
         List<PorterResponseMonitor> porterResponseMonitors = porterResponseMonitorDao.getAllMonitors();
+       Collections.sort(porterResponseMonitors);
         model.addAttribute("porterResponseMonitors", porterResponseMonitors);
         
         List<ValidationMonitor> validationMonitors = validationMonitorDao.getAll();
+        Collections.sort(validationMonitors);
         model.addAttribute("validationMonitors", validationMonitors);
         
     }

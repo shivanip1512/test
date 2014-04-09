@@ -12,7 +12,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
-public class PorterResponseMonitor {
+public class PorterResponseMonitor implements Comparable<PorterResponseMonitor> {
 	private Integer monitorId;
 	private String name;
 	private String groupName;
@@ -111,5 +111,9 @@ public class PorterResponseMonitor {
                     stateGroup,
                     attribute,
                     evaluatorStatus);
+    }
+    @Override
+    public int compareTo(PorterResponseMonitor porterResponseMonitors) {
+        return this.getName().compareToIgnoreCase(porterResponseMonitors.getName());
     }
 }

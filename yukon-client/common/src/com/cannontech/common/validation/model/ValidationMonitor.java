@@ -2,13 +2,10 @@
  * 
  */
 package com.cannontech.common.validation.model;
-
 import org.springframework.core.style.ToStringCreator;
-
 import com.cannontech.amr.MonitorEvaluatorStatus;
 import com.cannontech.amr.monitors.PointMonitor;
-
-public class ValidationMonitor implements PointMonitor {
+public class ValidationMonitor implements PointMonitor,Comparable<ValidationMonitor> {
     private Integer validationMonitorId;
     private double reasonableMaxKwhPerDay = 150.0;
     private double kwhReadingError = 0.1000001;
@@ -115,4 +112,8 @@ public class ValidationMonitor implements PointMonitor {
         return tsc.toString();
     }
 
+    @Override
+    public int compareTo(ValidationMonitor validationMonitors) {
+        return this.getName().compareToIgnoreCase(validationMonitors.getName());
+    }
 }
