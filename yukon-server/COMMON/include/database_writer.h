@@ -17,11 +17,12 @@ private:
 
 public:
 
-    DatabaseWriter(Cti::Database::DatabaseConnection &conn, const std::string &command = "");
+    DatabaseWriter(DatabaseConnection &conn, const std::string &command = "");
     ~DatabaseWriter();
 
     RowWriter &setCommandText(const std::string &command);
     bool execute();
+    const ErrorCodes *executeReturningErrorCode();
 
     RowWriter &operator<<(const SpecialValues operand);
     RowWriter &operator<<(const bool operand);

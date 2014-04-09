@@ -96,6 +96,12 @@ bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, co
 bool IM_EX_CTIBASE executeUpdater( DatabaseWriter& updater, const char* file, const int line, const LogDebug::Options logDebug );
 
 /**
+ * Execute a database insert command
+ * @return normalized error code, or null if no error
+ */
+IM_EX_CTIBASE const ErrorCodes *executeInserter( DatabaseWriter &inserter, const char* file, const int line, const LogDebug::Options logDebug );
+
+/**
  * Helper method to create a string of the format
  * "table.column in (x, y, z)" or
  * "table.column = x" or

@@ -7,11 +7,13 @@ namespace Database {
 
 class IM_EX_CTIBASE DatabaseTransaction
 {
-    DatabaseConnection &_conn;
+    DatabaseConnection *_conn;
 
 public:
 
     DatabaseTransaction(DatabaseConnection &conn);
+
+    bool rollback();  //  roll back the transaction immediately
 
     ~DatabaseTransaction();
 };

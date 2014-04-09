@@ -50,6 +50,27 @@ bool DatabaseWriter::execute()
     return retVal;
 }
 
+const ErrorCodes *DatabaseWriter::executeReturningErrorCode()
+{
+    try
+    {
+        _command.Execute();
+
+        return 0;
+    }
+    catch(SAException &x)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
+                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
+            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
+        }
+
+        return DatabaseConnection::resolveErrorCode(_command.Connection(), x);
+    }
+}
+
 RowWriter &DatabaseWriter::operator<<(const SpecialValues operand)
 {
     _command << SANull();

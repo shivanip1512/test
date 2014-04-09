@@ -5,14 +5,6 @@
 
 class SAConnection;
 
-namespace Cti
-{
-    namespace Database
-    {
-        class DatabaseWriter;
-    }
-}
-
 //various database connection options
 IM_EX_CTIBASE
 void setDatabaseParams(const std::string& dbDll, const std::string& dbName,

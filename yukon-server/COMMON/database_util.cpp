@@ -96,6 +96,37 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
     return executeUpdater( updater, file, line, logDebug, LogNoRowsAffected::Enable );
 }
 
+/**
+ * Execute a database insert command
+ * @return normalized error code, or null if no error
+ */
+const ErrorCodes *executeInserter( DatabaseWriter &inserter, const char* file, const int line, const LogDebug::Options logDebug )
+{
+    if( logDebug == LogDebug::Enable )
+    {
+        std::string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> guard(dout);
+            dout << CtiTime() << " **** DEBUG **** DB command : " << file << " (" << line << ")" << std::endl
+                 << loggedSQLstring << std::endl;
+        }
+    }
+
+    const ErrorCodes *ec = inserter.executeReturningErrorCode();
+
+    if( ec )
+    {
+        std::string loggedSQLstring = inserter.asString();
+        {
+            CtiLockGuard<CtiLogger> guard(dout);
+            dout << CtiTime() << " **** ERROR **** DB command : " << file << " (" << line << ")" << std::endl
+                 << loggedSQLstring << std::endl;
+        }
+    }
+
+    return ec;
+}
+
 
 /**
  * Helper method to create a string of the format

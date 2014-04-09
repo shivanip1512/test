@@ -6,15 +6,24 @@ namespace Cti {
 namespace Database {
 
 DatabaseTransaction::DatabaseTransaction(DatabaseConnection &conn) :
-    _conn(conn)
+    _conn(&conn)
 {
-    _conn.beginTransaction();
+    _conn->beginTransaction();
+}
+
+bool DatabaseTransaction::rollback()
+{
+    bool success = _conn->rollbackTransaction();
+
+    _conn = 0;
+
+    return success;
 }
 
 DatabaseTransaction::~DatabaseTransaction()
 {
-    _conn.commitTransaction();
+    _conn && _conn->commitTransaction();
 }
 
 }
-}// Namespace Cti::Database
+}

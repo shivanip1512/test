@@ -4,12 +4,25 @@
 #include "guard.h"
 
 class SAConnection;
+class SAException;
 
 namespace Cti {
 namespace Database {
 
 typedef std::set<long> id_set;
 typedef id_set::const_iterator id_set_itr;
+
+struct IM_EX_CTIBASE ErrorCodes
+{
+    const std::string name;
+
+    static const ErrorCodes ErrorCode_ForeignKeyViolated;
+    static const ErrorCodes ErrorCode_PrimaryKeyViolated;
+    static const ErrorCodes ErrorCode_Other;
+
+private:
+    ErrorCodes(const std::string name_);
+};
 
 class IM_EX_CTIBASE DatabaseConnection
 {
@@ -26,7 +39,13 @@ protected:
 
     friend class DatabaseWriter;
     friend class DatabaseReader;
-    //friend class DatabaseTransaction;
+    friend class DatabaseTransaction;
+
+    void beginTransaction();
+    bool rollbackTransaction();
+    bool commitTransaction();
+
+    static const ErrorCodes *resolveErrorCode(const SAConnection *conn, const SAException &x);
 
 public:
     DatabaseConnection();
@@ -34,10 +53,6 @@ public:
     virtual ~DatabaseConnection();
 
     bool isValid() const;
-
-    //  Move these to protected/private when all transactions are handled by DatabaseTransaction
-    void beginTransaction();
-    bool commitTransaction();
 };
 
 }
