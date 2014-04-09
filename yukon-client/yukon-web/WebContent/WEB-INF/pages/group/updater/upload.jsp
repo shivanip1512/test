@@ -28,7 +28,7 @@
     <div class="error">${error}</div>
 </c:when>
 <c:when test="${success}">
-    <div class="success"><i:inline key="success" arguments="${deviceCount}"/></div>
+    <div class="success"><i:inline key=".success" arguments="${deviceCount}"/></div>
 </c:when>
 </c:choose>
 
