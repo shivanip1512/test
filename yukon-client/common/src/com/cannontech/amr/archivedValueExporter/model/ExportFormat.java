@@ -14,7 +14,7 @@ public class ExportFormat {
     private String header;
     private String footer;
     private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
-    private boolean excludeAbnormal = true;
+    private boolean excludeAbnormal = false;
     
     private List<ExportAttribute> attributes =  LazyList.ofInstance(ExportAttribute.class);
     private List<ExportField> fields =  LazyList.ofInstance(ExportField.class);

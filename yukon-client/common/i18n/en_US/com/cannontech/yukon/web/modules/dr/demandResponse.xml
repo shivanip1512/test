@@ -12,6 +12,8 @@
 
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
 <entry key="yukon.web.modules.dr.blankField">N/A</entry>
+<entry key="yukon.web.modules.dr.configure.label">Configure</entry>
+<entry key="yukon.web.modules.dr.details">Details</entry>
 
 <entry key="yukon.web.modules.dr.paoType.LM_SCENARIO">Scenario</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_CONTROL_AREA">Control Area</entry>
@@ -426,13 +428,20 @@
 <entry key="yukon.web.modules.dr.home.typeHeader.linkText">Type</entry>
 <entry key="yukon.web.modules.dr.home.stateHeader.linkText">State</entry>
 
+<!-- Ecobees -->
+<entry key="yukon.web.modules.dr.home.ecobee.title">Ecobee Statistics</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.title">Ecobee Configuration</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.errorChecking">Error Checking</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.dataCollection">Data Collection</entry>
+<entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
+
 <entry key="yukon.web.modules.dr.home.rfPerformance.title">RF Broadcast Performance</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.details">Broadcast Performance Details</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last24Hr">Last 24 Hours</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last7Days">Last 7 Days</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last30Days">Last 30 Days</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.statsTooltip">success / failed / unknown</entry>
-<entry key="yukon.web.modules.dr.home.rfPerformance.configure.label">Configure</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.title">Broadcast Performance Configuration</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.ok">Save</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.configure.dailyTestCommand">Daily Test Command</entry>
@@ -447,7 +456,7 @@
 <entry key="yukon.web.modules.dr.home.rfPerformance.percentage">Percent Successful</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.subject">RF Performance Results</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.header"><![CDATA[
-Daily performance report is available.<br />
+Daily performance report is available.<br>
 More detail is available on the <a href="{0}">Broadcast Performance Details</a> page.
 ]]></entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.email.footer">This email was generated at {0}</entry>

@@ -5,13 +5,12 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.dr');
 yukon.namespace('yukon.dr.dashboard');
 
-yukon.dr.dashboard = (function () {
+yukon.dr.dashboard = (function() {
     
-    var _commandTimeSelector = '.f-time-label',
-        _emailTimeSelector = '.f-email-time-label',
+    var _commandTimeSelector = '#broadcast-config .f-time-label',
+        _emailTimeSelector = '#broadcast-config .f-email-time-label',
         timeFormatter = yukon.timeFormatter,
         mod;
 
@@ -24,7 +23,7 @@ yukon.dr.dashboard = (function () {
                 _initialEmail = $('#rf-performance-email').val();
             
             /** Setup the command time slider */
-            $(".f-broadcast-config .f-time-slider").slider({
+            $("#broadcast-config .f-time-slider").slider({
                 max: 24 * 60 - 15,
                 min: 0,
                 value: _initialCommandTime,
@@ -42,7 +41,7 @@ yukon.dr.dashboard = (function () {
             });
             
             /** Setup the email time slider */
-            $(".f-broadcast-config .f-email-time-slider").slider({
+            $("#broadcast-config .f-email-time-slider").slider({
                 max: 24 * 60 - 15,
                 min: 0,
                 value: _initialEmailTime,
@@ -64,11 +63,11 @@ yukon.dr.dashboard = (function () {
             $(_emailTimeSelector).html(timeFormatter.formatTime(_initialEmailTime, 0));
             
             /** Handle email on/off toggle button.  TODO make on-off toggle button resuable */
-            $(document).on('click', '.f-broadcast-config .toggle-on-off .button', function() {
-                $('.f-broadcast-config .toggle-on-off .button').toggleClass('on');
+            $(document).on('click', '#broadcast-config .toggle-on-off .button', function() {
+                $('#broadcast-config .toggle-on-off .button').toggleClass('on');
                 $('.f-notif-group').toggle('fade');
                 $('.f-email-schedule').toggle('fade');
-                if ($('.f-broadcast-config .toggle-on-off .yes').hasClass('on')) {
+                if ($('#broadcast-config .toggle-on-off .yes').hasClass('on')) {
                     $('#rf-performance-email').val('true');
                 } else {
                     $('#rf-performance-email').val('false');
@@ -77,13 +76,13 @@ yukon.dr.dashboard = (function () {
             });
             
             if (_initialEmail === 'true') {
-                $('.f-broadcast-config .toggle-on-off .yes').addClass('on');
-                $('.f-broadcast-config .toggle-on-off .no').removeClass('on');
+                $('#broadcast-config .toggle-on-off .yes').addClass('on');
+                $('#broadcast-config .toggle-on-off .no').removeClass('on');
                 $('.f-notif-group').show();
                 $('.f-email-schedule').show();
             } else {
-                $('.f-broadcast-config .toggle-on-off .no').addClass('on');
-                $('.f-broadcast-config .toggle-on-off .yes').removeClass('on');
+                $('#broadcast-config .toggle-on-off .no').addClass('on');
+                $('#broadcast-config .toggle-on-off .yes').removeClass('on');
                 $('.f-notif-group').hide();
                 $('.f-email-schedule').hide();
             }
@@ -91,7 +90,8 @@ yukon.dr.dashboard = (function () {
         }
         
     };
+    
     return mod;
 }());
 
-$(function () {yukon.dr.dashboard.init();});
+$(function() { yukon.dr.dashboard.init(); });

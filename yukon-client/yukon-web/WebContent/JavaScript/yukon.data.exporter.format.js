@@ -47,16 +47,6 @@ yukon.dataExporterFormat = (function () {
     },
     
     /** 
-     * Returns button array for jquery ui dialogs where the 'ok' action triggers the event supplied.
-     * @param {string} eventName - The name of the event to fire when 'ok button is clicked.
-     * @param {element} target - The target of the event.
-     */
-    _buttons = function(eventName, target) {
-        return [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
-                {text: _config.text.ok, click: function() { $(target).trigger(eventName); }, 'class': 'primary action'}];
-    },
-    
-    /** 
      * Returns an object of extra post data needed to post a field 
      * using the ajaxSubmit method on the jquery.form plugin. 
      */
@@ -114,7 +104,7 @@ yukon.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
                         width: 'auto',
-                        buttons: _buttons('yukon.data.export.format.attribute.add', popup)
+                        buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
                 });
             });
@@ -129,7 +119,7 @@ yukon.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addField,
                         width: 'auto',
-                        buttons: _buttons('yukon.data.export.format.field.add', popup)
+                        buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.add', target: popup})
                     });
                 });
                 
@@ -230,7 +220,7 @@ yukon.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.editAttribute,
                         width: 'auto',
-                        buttons: _buttons('yukon.data.export.format.attribute.edit', row)
+                        buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.edit', target: row})
                     });
                 });
             });
@@ -253,7 +243,7 @@ yukon.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.editField,
                         width: 'auto',
-                        buttons: _buttons('yukon.data.export.format.field.edit', row)
+                        buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.edit', target: row})
                     });
                 });
                 

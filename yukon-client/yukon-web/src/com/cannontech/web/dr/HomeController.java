@@ -140,6 +140,12 @@ public class HomeController {
             model.addAttribute("settings", settings);
         }
         
+        /** ECOBEE */
+//        OnOff ecobee = globalSettingDao.getEnum(GlobalSettingType.ECOBEE, OnOff.class);
+//        boolean showEcobeeStats = (ecobee == OnOff.ON);
+        boolean showEcobeeStats = true;
+        model.addAttribute("showEcobeeStats", showEcobeeStats);
+        
         return "dr/home.jsp";
     }
     

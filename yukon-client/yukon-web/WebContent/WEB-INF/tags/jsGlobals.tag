@@ -14,6 +14,12 @@ var YG = {
         PHONE: {
             FORMATS: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
         },
-        APP_NAME: '${appName}'
+        
+        APP_NAME: '${appName}',
+        
+        TEXT: {
+            ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
+            cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>'
+        }
 };
 </script>

@@ -201,34 +201,63 @@ yukon.ui = (function () {
             
             return btn;
         },
+        
+        /** 
+         * Returns button array for jquery ui dialogs.  The 'ok' action can have a 
+         * custom target and/or event.
+         * @param {object} options - An object literal with the following properties:
+         *        {string} [event=yukon.dialog.ok] - The name of the event to fire when 'ok' button is clicked. Defaults to 'yukon.dialog.ok'.
+         *        {string, element} [form] - If present, submits the form supplied or the first form element found inside the popup. 
+         *                                   'event' is not fired when 'form' is present. 
+         *        {string, element} [target=the popup element] - The target of the event (element or selector). Defaults to the popup.
+         *        {string} [okText=YG.TEXT.ok] - The text of the ok button. Defaults to YG.TEXT.ok.
+         *        {string} [cancelText=YG.TEXT.cancel] - The text of the cancel button. Defaults to YG.TEXT.cancel.
+         */
+        buttons: function(options) {
+            
+            var defaults = {
+                    event: 'yukon.dialog.ok',
+                    okText: YG.TEXT.ok,
+                    cancelText: YG.TEXT.cancel,
+                };
+            if (typeof(options) !== 'undefined') {
+                $.extend(defaults, options);
+            }
+            
+            return [{text: defaults.cancelText, click: function(ev) { $(this).dialog('close'); }},
+                    {text: defaults.okText, 
+                     click: function(ev) {
+                         // Don't close the popup here.  We may want it to stay open, ie: validation failed.
+                         if (defaults.hasOwnProperty('form')) {
+                             var form = $(defaults.form);
+                             if (!form.is('form')) form = $(this).closest('.ui-dialog-content').find('form');
+                             form.submit();
+                         } else {
+                             defaults.target = defaults.target ? defaults.target : $(this).closest('.ui-dialog-content');
+                             $(defaults.target).trigger(defaults.event);
+                         }
+                     }, 
+                     'class': 'primary action'}];
+        },
 
         autoWire: function () {
             var html;
             
-            $(function() {
                 
-                /** Add fancy tooltip support (tipsy)
-                 *  To give an item a custom tooltip, give it a class of 'f-has-tooltip'
-                 *  and precede it, in the markup, with an item of class f-tooltip that
-                 *  has the content in HTML. The code below searches backward in the
-                 *  document for the element with class f-tooltip
-                 * 
-                 *  tipsy initialization:
-                 *    attaches tooltip handlers to all elements with a class of f-has-tooltip
-                 *    or a title attribute
-                 */
-                var tooltipTargets = ['.f-has-tooltip'],// use browser-native tooltips for all but the fancy HTML ones
-                    resetTipsyInner = function() {
-                        // voodoo so inner div has full height of its container
-                        setTimeout(function() {
-                            $('.tipsy-inner').addClass('clearfix');
-                        }, 100);
-                    };
-                // some pages do not include the tipsy libary
-                if ('undefined' === typeof $.fn.tipsy) {
-                    return;
-                }
-                $(tooltipTargets).each(function(index, element) {
+            /** Add fancy tooltip support (tipsy)
+             *  To give an item a custom tooltip, give it a class of 'f-has-tooltip'
+             *  and precede it, in the markup, with an item of class f-tooltip that
+             *  has the content in HTML. The code below searches backward in the
+             *  document for the element with class f-tooltip
+             * 
+             *  tipsy initialization:
+             *    attaches tooltip handlers to all elements with a class of f-has-tooltip
+             *    or a title attribute
+             */
+            // some pages do not include the tipsy libary
+            if ('undefined' !== typeof $.fn.tipsy) {
+                // use browser-native tooltips for all but the fancy HTML ones
+                $('.f-has-tooltip').each(function(index, element) {
                     $(element).tipsy({
                         html: true,
                         // some tooltips actually are around 175 px in height
@@ -236,12 +265,13 @@ yukon.ui = (function () {
                         opacity: 1.0,
                         title: function() {
                             var elem = $(this),
-                                tip,
-                                    toolTipped = elem.closest('.f-has-tooltip');
+                            tip,
+                            toolTipped = elem.closest('.f-has-tooltip');
                             if ( 0 < toolTipped.length ) {
-                                    tip = toolTipped.prevAll('.f-tooltip').first();
+                                tip = toolTipped.prevAll('.f-tooltip').first();
                                 if (0 < tip.length) { // if a .f-tooltip was found...
-                                    resetTipsyInner();
+                                    // voodoo so inner div has full height of its container
+                                    setTimeout(function() { $('.tipsy-inner').addClass('clearfix'); }, 100);
                                     return tip.html();
                                 }
                             }
@@ -250,11 +280,10 @@ yukon.ui = (function () {
                         fade: true
                     });
                 });
-                /** Add placeholder functionality if needed */
-                if (!Modernizr.input.placeholder) {
-                    $('input, textarea').placeholder();
-                }
-            });
+            }
+                
+            /** Add placeholder functionality if needed */
+            if (!Modernizr.input.placeholder) $('input, textarea').placeholder();
 
             /** Initialize our keyboard table traversal (j/k keys) */
             $('.compact-results-table.f-traversable').traverse('tr', {
@@ -341,9 +370,12 @@ yukon.ui = (function () {
                 }
             });
     
-            /** Close a dialog */
-            $(document).on('click', '.f-close', function(event) {
-                $(this).closest('.ui-dialog-content').dialog('close');
+            /** Close dialogs when clicking .f-close elements or the yukon.dialog.ok event fires. */
+            $(document).on('click', '.f-close', function(ev) {
+                $(ev.target).closest('.ui-dialog-content').dialog('close');
+            });
+            $(document).on('yukon.dialog.ok', function(ev) {
+                $(ev.target).closest('.ui-dialog-content').dialog('close');
             });
 
             /** Format phone numbers initially and on input blur */
@@ -403,15 +435,49 @@ yukon.ui = (function () {
             /** Initialize any tabbed containers */
             $('.tabbed-container.f-init').tabs().show();
         
-            /** Show any popups when a popup trigger is clicked */
+            /** 
+             * Show a popup when a popup trigger (element with a [popup] attribute) is clicked.
+             * The value of the [popup] attribute should be a css selector of the popup element.
+             * The popup element's attributes are as follows:
+             * 
+             * dialog -      If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
+             *               function for button behaviors.
+             * data-width  - Width of the popup. Default is 'auto'.
+             * data-height - Height of the popup. Default is 'auto'.
+             * data-title  - The title of the popup.
+             * data-event  - If present and [dialog] is present, the value of [data-event] will be the name
+             *               of the event to fire when clicking the 'ok' button.
+             * data-target - If present and [dialog] is present' the value of [data-target] will be the 
+             *               target of the event fired when clicking the ok button.
+             * data-url      If present, the contents of the popup element will be replaced with the 
+             *               response of an ajax request to the url before the popup is shown.
+             */
             $(document).on('click', '[popup]', function(ev) {
                 var trigger = $(this),
                     popup = $(trigger.attr('popup')),
-                    width = popup.is('[data-width]') ? popup.data('width') : 'auto',
-                    height = popup.is('[data-height]') ? popup.data('height') : 'auto',
-                    title = popup.data('title');
-                    
-                popup.dialog({width: width, height: height, title: title});
+                    dialog = popup.is('[dialog]'),
+                    options = {
+                        width: popup.is('[data-width]') ? popup.data('width') : 'auto',
+                        height: popup.is('[data-height]') ? popup.data('height') : 'auto',
+                        title: popup.data('title')
+                    },
+                    buttonOptions = {};
+                
+                if (dialog) {
+                    if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
+                    if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
+                    if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
+                    options.buttons = mod.buttons(buttonOptions);
+                }
+                
+                if (popup.is('[data-url]')) {
+                    popup.load(popup.data('url'), function() {
+                        popup.dialog(options);
+                    });
+                } else {
+                    popup.dialog(options);
+                }
+                
             });
         },
 

@@ -421,8 +421,6 @@ public class DataExporterFormatController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> config = new HashMap<>();
         Map<String, String> text = new HashMap<>();
-        text.put("ok", accessor.getMessage("yukon.common.okButton"));
-        text.put("cancel", accessor.getMessage("yukon.common.cancel"));
         text.put("editAttribute", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.editAttribute.title"));
         text.put("addAttribute", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.addAttribute.title"));
         text.put("editField", accessor.getMessage("yukon.web.modules.tools.bulk.archivedValueExporter.editField.title"));

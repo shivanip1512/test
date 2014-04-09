@@ -97,14 +97,10 @@
                         </tags:nameValueContainer2>
                     </div>
                     <div class="action-area">
-                        <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".rfPerformance.details"/></a>
-                        <cti:button nameKey="rfPerformance.configure" id="b-broadcast-config" icon="icon-cog-edit"/>
+                        <a href="<cti:url value="/dr/rf/details"/>"><i:inline key=".details"/></a>
+                        <cti:button nameKey="configure" icon="icon-cog-edit" popup="#broadcast-config"/>
                     </div>
-                    <d:inline okEvent="submit" 
-                              nameKey="rfPerformance.configure" 
-                              on="#b-broadcast-config"
-                              options="{width:500}"
-                              classes="f-broadcast-config">
+                    <div dialog id="broadcast-config" data-form data-width="500" data-title="<cti:msg2 key=".rfPerformance.configure.title"/>" class="dn">
                         <form:form action="rf/performance" method="POST" commandName="settings">
                             <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
                                 <tags:nameValue2 nameKey=".rfPerformance.configure.dailyTestCommand" valueClass="full-width" nameClass="wsnw">
@@ -149,7 +145,74 @@
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </form:form>
-                    </d:inline>
+                    </div>
+                </tags:sectionContainer2>
+            </c:if>
+            <c:if test="${showEcobeeStats}">
+                <tags:sectionContainer2 nameKey="ecobee">
+                    <div class="stacked">
+                        <tags:nameValueContainer2 naturalWidth="false">
+                            <tr>
+                                <td class="name">Queries (April):</td>
+                                <td class="value full-width">
+                                    <div class="progress" style="width: 80px;float:left;">
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 27.0%"></div>
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 50.0%"></div>
+                                        <div class="progress-bar progress-bar-default" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 23.0%"></div>
+                                    </div>
+                                    <div class="fl" style="margin-left: 10px;" title="data collection / reports / reads">
+                                        <span style="margin-right: 10px;width:48px;display: inline-block;">15200</span>
+                                        <span class="label label-success">4104</span>
+                                        <span class="label label-info">7600</span>
+                                        <span class="label label-default">3496</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="name">Issues:</td>
+                                <td class="value full-width"><span class="label label-danger">6</span> devices, <span class="label label-danger">8</span> groups</td>
+                            </tr>
+                            <tr>
+                                <td class="name"></td>
+                                <td class="value full-width"></td>
+                            </tr>
+                        </tags:nameValueContainer2>
+                    </div>
+                    <div class="action-area">
+                        <a href="<cti:url value="/dr/ecobee"/>"><i:inline key=".details"/></a>
+                        <cti:button nameKey="configure" popup="#ecobee-config" icon="icon-cog-edit"/>
+                        <div dialog id="ecobee-config" data-width="500" data-title="<cti:msg2 key=".ecobee.configure.title"/>" class="dn">
+                            <form:form action="ecobee/config" method="POST">
+                                <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                                    <tags:nameValue2 nameKey=".ecobee.configure.errorChecking" rowId="ecobee-error-checking-toggle">
+<%--                                         <tags:hidden path="checkErrors"/> --%>
+                                        <div class="button-group toggle-on-off">
+                                            <cti:button nameKey="on" classes="on yes M0"/>
+                                            <cti:button nameKey="off" classes="no M0"/>
+                                        </div>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".ecobee.configure.dailyErrorCheck" rowId="ecobee-error-check-schedule">
+                                        <div class="column-6-18 clearfix stacked">
+                                            <div class="column one">
+                                                <span class="f-time-label fwb">&nbsp;</span>
+<%--                                                 <tags:hidden path="errorCheckTime"/> --%>
+                                            </div>
+                                            <div class="column two nogutter">
+                                                <div class="f-time-slider" style="margin-top: 7px;"></div>
+                                            </div>
+                                        </div>
+                                    </tags:nameValue2>
+                                    <tags:nameValue2 nameKey=".ecobee.configure.dataCollection" rowId="ecobee-data-collection-toggle">
+<%--                                         <tags:hidden path="dataCollection"/> --%>
+                                        <div class="button-group toggle-on-off">
+                                            <cti:button nameKey="on" classes="on yes M0"/>
+                                            <cti:button nameKey="off" classes="no M0"/>
+                                        </div>
+                                    </tags:nameValue2>
+                                </tags:nameValueContainer2>
+                            </form:form>
+                        </div>
+                    </div>
                 </tags:sectionContainer2>
             </c:if>
         </div>
