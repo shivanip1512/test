@@ -2,7 +2,6 @@ package com.cannontech.stars.core.service;
 
 import java.util.List;
 
-import com.cannontech.core.dao.EnergyCompanyNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -83,25 +82,6 @@ public interface YukonEnergyCompanyService {
      */
     List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany);
     
-    /**
-     * This method gets the energy company id for the operator supplied.
-     * 
-     * @throws EnergyCompanyNotFoundException
-     * @deprecated Use {@link #getEnergyCompanyByOperator()}.getEnergyCompanyId()
-     */
-    @Deprecated
-    int getEnergyCompanyIdByOperator(LiteYukonUser operator);
-
-    /**
-     * This method returns all of the child energy companies underneath the supplied energy company 
-     * no matter how many levels deep that may be.
-     * 
-     * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
-     * @deprecated Use {@link #getEnergyCompany()}.getDescendants(false)
-     */
-    @Deprecated
-    List<Integer> getChildEnergyCompanies(int energyCompanyId);
-
     /**
      * This method returns the direct child energy companies underneath the energy company.
      * It will not return any of the children of the child energy companies.  If you want that data you'll want to

@@ -12,20 +12,23 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchService {
 
-	private RolePropertyDao rolePropertyDao;
-	private OperatorAccountSearchDao operatorAccountSearchDao;
-	@Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private OperatorAccountSearchDao operatorAccountSearchDao;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private YukonEnergyCompanyService ecService;
 	
 	@Override
 	public AccountSearchResultHolder customerAccountSearch(OperatorAccountSearchBy searchBy, 
@@ -54,13 +57,12 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	            rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, 
 	                                          userContext.getYukonUser());
 			boolean searchMembers = adminManageMembers && energyCompany.hasChildEnergyCompanies();
-			
-			// searchEnergyCompanyIds
+
 			Set<Integer> searchEnergyCompanyIds = Sets.newHashSet(energyCompany.getLiteID());
 			if (searchMembers) {
-				 for (LiteStarsEnergyCompany company : energyCompany.getChildren()) {
-		            searchEnergyCompanyIds.addAll(company.getAllEnergyCompaniesDownward());
-		        }
+			    List<EnergyCompany> descendantEcs = 
+	                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(false);
+			    searchEnergyCompanyIds.addAll(Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION));
 			}
 	        
 	        // by acct number
@@ -115,7 +117,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         
         SearchResults<AccountSearchResult> searchResult = new SearchResults<AccountSearchResult>();
         searchResult.setBounds(startIndex, pageCount, accountIds.size());
-        searchResult.setResultList((List<AccountSearchResult>) accountSearchResultsList);
+        searchResult.setResultList(accountSearchResultsList);
         
         if (error == null && accountSearchResultsList.size() == 0) {
         	error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.noResultsFound");
@@ -123,15 +125,5 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         
         AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(searchBy, searchValue, searchResult, error);
         return accountSearchResultHolder;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setOperatorAccountSearchDao(OperatorAccountSearchDao operatorAccountSearchDao) {
-		this.operatorAccountSearchDao = operatorAccountSearchDao;
 	}
 }

@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryToECFilter;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseWithECIdRowMapper;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -16,7 +15,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private final static String[] searchColumnNames = new String[] {
         "ManufacturerSerialNumber"
@@ -47,9 +46,9 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
             throw new IllegalArgumentException("The energy company id was not supplied.");
         }
 
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<Integer> energyCompanyIds = energyCompany.getAllEnergyCompaniesDownward();
-        sqlFilters.add(new InventoryToECFilter(energyCompanyIds));
+        List<Integer> descendantEcIds = 
+                Lists.transform(ecService.getEnergyCompany(energyCompanyId).getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+        sqlFilters.add(new InventoryToECFilter(descendantEcIds));
     }
 
     @Override
@@ -61,10 +60,4 @@ public class LmHardwareBasePicker extends DatabasePicker<LMHardwareBase> {
     public List<OutputColumn> getOutputColumns() {
         return outputColumns;
     }
-
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
 }

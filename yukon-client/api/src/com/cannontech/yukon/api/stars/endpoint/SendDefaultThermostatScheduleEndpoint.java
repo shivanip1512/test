@@ -71,7 +71,7 @@ public class SendDefaultThermostatScheduleEndpoint {
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT, user);
             
             // Get the inventoryIds from the serial numbers supplied.
-            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
             List<Integer> inventoryIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
             
             // Send out default thermostat schedule

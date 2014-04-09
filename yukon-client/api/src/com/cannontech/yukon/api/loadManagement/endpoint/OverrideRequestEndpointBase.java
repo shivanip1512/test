@@ -29,8 +29,7 @@ public abstract class OverrideRequestEndpointBase {
     protected RolePropertyDao rolePropertyDao;
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
-        int energyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
-        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompany(energyCompanyId);
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         List<EnergyCompany> energyCompanies = energyCompany.getDescendants(true);
 
         try {

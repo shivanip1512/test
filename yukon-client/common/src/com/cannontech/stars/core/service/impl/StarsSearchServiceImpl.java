@@ -34,13 +34,15 @@ import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.report.WorkOrderBase;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.google.common.collect.Lists;
 
 public class StarsSearchServiceImpl implements StarsSearchService {
     @Autowired private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonEnergyCompanyService ecService;
     @Autowired private ContactDao contactDao;
     
     @Override
@@ -120,7 +122,9 @@ public class StarsSearchServiceImpl implements StarsSearchService {
 
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if(searchMembers) {
-            allEnergyCompanyIDs = energyCompany.getAllEnergyCompaniesDownward();
+            List<EnergyCompany> descendantEcs = 
+                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }
@@ -158,7 +162,9 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     public List<Integer> searchAccountByAddress(LiteStarsEnergyCompany energyCompany, String address, boolean searchMembers, boolean partialMatch) {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if( searchMembers) {
-            allEnergyCompanyIDs = energyCompany.getAllEnergyCompaniesDownward();
+            List<EnergyCompany> descendantEcs = 
+                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }
@@ -205,10 +211,13 @@ public class StarsSearchServiceImpl implements StarsSearchService {
     }
 
     @Override
-    public List<Integer> searchAccountByLastName(LiteStarsEnergyCompany energyCompany, String lastName, boolean searchMembers, boolean partialMatch) {
+    public List<Integer> searchAccountByLastName(LiteStarsEnergyCompany energyCompany, String lastName, 
+                                                 boolean searchMembers, boolean partialMatch) {
         List<Integer> allEnergyCompanyIDs = new ArrayList<>();
         if(searchMembers) {
-            allEnergyCompanyIDs = energyCompany.getAllEnergyCompaniesDownward();
+            List<EnergyCompany> descendantEcs = 
+                    ecService.getEnergyCompany(energyCompany.getEnergyCompanyId()).getDescendants(true);
+            allEnergyCompanyIDs = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
         } else {
             allEnergyCompanyIDs.add(energyCompany.getEnergyCompanyId());
         }

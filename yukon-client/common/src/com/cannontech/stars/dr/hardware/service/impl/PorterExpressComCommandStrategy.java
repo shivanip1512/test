@@ -98,7 +98,7 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
             try {
                 int ecId = -1;
                 if (yecService.isEnergyCompanyOperator(user)) {
-                    ecId = yecService.getEnergyCompanyIdByOperator(user);
+                    ecId = yecService.getEnergyCompanyByOperator(user).getId();
                 } else {
                     ecId = yecService.getEnergyCompanyByAccountId(account.getAccountId()).getEnergyCompanyId();
                 }

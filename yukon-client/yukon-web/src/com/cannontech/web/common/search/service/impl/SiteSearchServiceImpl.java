@@ -30,6 +30,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.search.result.Page;
 import com.cannontech.web.common.search.service.SiteSearchService;
@@ -185,15 +186,14 @@ public class SiteSearchServiceImpl implements SiteSearchService {
         BooleanQuery query = new BooleanQuery();
         Query noEcQuery = new TermQuery(new Term("energyCompanyId", "none"));
         try {
-            int ecId = ecService.getEnergyCompanyIdByOperator(user);
+            EnergyCompany energyCompany = ecService.getEnergyCompanyByOperator(user);
             BooleanQuery ecQuery = new BooleanQuery();
             ecQuery.add(noEcQuery, Occur.SHOULD);
-            ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(ecId))), Occur.SHOULD);
+            ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(energyCompany.getId()))), Occur.SHOULD);
             boolean searchChildEcs = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, user);
             if (searchChildEcs) {
-                List<Integer> childEcIds = ecService.getChildEnergyCompanies(ecId);
-                for (Integer childEcId : childEcIds) {
-                    ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(childEcId))), Occur.SHOULD);
+                for (EnergyCompany childEc : energyCompany.getDescendants(false)) {
+                    ecQuery.add(new TermQuery(new Term("energyCompanyId", Integer.toString(childEc.getId()))), Occur.SHOULD);
                 }
             }
             query.add(ecQuery, Occur.MUST);

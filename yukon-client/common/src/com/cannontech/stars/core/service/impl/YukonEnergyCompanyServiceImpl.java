@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -41,7 +40,6 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 /*
  * This 'service' should be treated like a DAO.
@@ -89,8 +87,17 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
 
     @Override
     public EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
-        int ecId = getEnergyCompanyIdByOperator(operator);
-        return getEnergyCompany(ecId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ECOLL.EnergyCompanyId");
+        sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
+        sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
+
+        try {
+            int energyCompanyId = jdbcTemplate.queryForInt(sql);
+            return getEnergyCompany(energyCompanyId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
+        }
     }
     
     @Override
@@ -138,26 +145,10 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         throw new EnergyCompanyNotFoundException("Energy company doesn't exist for user " + user);
     }
 
-    @Deprecated
-    @Override
-    public int getEnergyCompanyIdByOperator(LiteYukonUser operator) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ECOLL.EnergyCompanyId");
-        sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");
-        sql.append("WHERE ECOLL.OperatorLoginId").eq(operator.getUserID());
-        
-        try {
-            int energyCompanyId = jdbcTemplate.queryForInt(sql);
-            return energyCompanyId;
-        } catch (EmptyResultDataAccessException e) {
-            throw new EnergyCompanyNotFoundException("No energy company found for user id: " + operator.getUserID(), e);
-        }
-    }
-    
     @Override
     public boolean isEnergyCompanyOperator(LiteYukonUser operator) {
         try {
-            getEnergyCompanyIdByOperator(operator);
+            getEnergyCompanyByOperator(operator);
         } catch (EnergyCompanyNotFoundException e) {
             return false;
         }
@@ -180,68 +171,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     public boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany) {
         return energyCompany.getEnergyCompanyId() == StarsDatabaseCache.DEFAULT_ENERGY_COMPANY_ID;
     }
-    
-    /**
-     * This method returns a map that contains all of the child to parent energy company mappings.
-     */
-    protected Map<Integer, Integer> getChildToParentEnergyCompanyHierarchy() {
-        
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyId, ItemId");
-        sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
-        
-        final Map<Integer, Integer> childToParentMap = Maps.newHashMap();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                int parentEnergyCompanyId = rs.getInt("EnergyCompanyId");
-                int childEnergyCompanyId = rs.getInt("ItemId");
-                childToParentMap.put(childEnergyCompanyId, parentEnergyCompanyId);
-            }});
-        
-        return childToParentMap;
-    }
-    
-    @Deprecated
-    @Override
-    public List<Integer> getChildEnergyCompanies(int energyCompanyId) {
-        Map<Integer, Integer> childToParentMap = getChildToParentEnergyCompanyHierarchy();
-        return getChildEnergyCompanies(energyCompanyId, childToParentMap);
-    }
 
-    /**
-     * This method is a helper method for getChildEnergyCompanies(energyCompanyId).  Using this method allows us to 
-     * make recursive calls without having to make repeated calls to the database to get the child to parent energy company map.
-     */
-    private List<Integer> getChildEnergyCompanies(int energyCompanyId, Map<Integer, Integer> childToParentMap) {
-        List<Integer> result = Lists.newArrayList();
-
-        List<Integer> directChildrenEnergyCompanyIds = getDirectChildEnergyCompanies(energyCompanyId, childToParentMap);
-        result.addAll(directChildrenEnergyCompanyIds);
-        for (int directChildEnergycompanyId : directChildrenEnergyCompanyIds) {
-            result.addAll(getChildEnergyCompanies(directChildEnergycompanyId, childToParentMap));
-        }
-
-        return result;
-    }
-
-    /**
-     * This method is a helper method for getChildEnergyCompanies(energyCompanyId, childToParentMap).  Using this method allows us to 
-     * make recursive calls without having to make repeated calls to the database to get the child to parent energy company map.
-     */
-    private List<Integer> getDirectChildEnergyCompanies(int energyCompanyId, Map<Integer, Integer> childToParentMap) {
-        // Getting the EnergyCompanyIds for this energy company's direct parent and children.
-        List<Integer> childEnergyCompanyIds = Lists.newArrayList();
-        for (Entry<Integer, Integer> childToParentEntry : childToParentMap.entrySet()) {
-            if (energyCompanyId == childToParentEntry.getValue()) {
-                childEnergyCompanyIds.add(childToParentEntry.getKey());
-            }
-        }
-        
-        return childEnergyCompanyIds;
-    }
-    
     @Deprecated
     @Override
     public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
@@ -366,7 +296,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
         return Collections.unmodifiableList(routeList);
     }
     
-    private synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
+    protected synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
         if (energyCompanies == null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");
@@ -376,7 +306,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
             sql.append(    "ON EC.EnergyCompanyId = ECM.ItemID");
             sql.append(    "AND ECM.MappingCategory").eq_k(EcMappingCategory.MEMBER);
             sql.append("JOIN YukonUser YU on EC.UserId = YU.UserId");
-    
+
             EnergyCompanyRowCallbackHandler energyCompanyRowCallbackHandler = new EnergyCompanyRowCallbackHandler();
             jdbcTemplate.query(sql, energyCompanyRowCallbackHandler);
             energyCompanies = energyCompanyRowCallbackHandler.getEnergyCompanies();

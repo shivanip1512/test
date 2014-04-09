@@ -93,7 +93,7 @@ public class SendTextMessageEndpoint {
             // Validate text message
             Matcher matcher = pattern.matcher(deviceTextMessage.getMessage());
             if (matcher.matches()) {
-                int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+                int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
                 Map<String, Integer> serialNumberToInventoryIdMap =
                     inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(), yukonEnergyCompanyId);
 

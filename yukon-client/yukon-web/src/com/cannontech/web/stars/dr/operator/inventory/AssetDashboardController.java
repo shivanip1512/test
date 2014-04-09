@@ -231,11 +231,11 @@ public class AssetDashboardController {
             itemsPerPage = CtiUtilities.itemsPerPage(itemsPerPage);
             int startIndex = (page - 1) * itemsPerPage;
             
-            SearchResults<InventorySearchResult> results = inventoryDao.search(inventorySearch, 
-                                                                              liteEc.getAllEnergyCompaniesDownward(), 
-                                                                              startIndex, 
-                                                                              itemsPerPage,
-                                                                              starsMeters);
+            List<EnergyCompany> descendantEcs = 
+                    ecService.getEnergyCompany(liteEc.getEnergyCompanyId()).getDescendants(true);
+            List<Integer> ecDescendantIds = Lists.transform(descendantEcs, YukonEnergyCompanyService.TO_ID_FUNCTION);
+            SearchResults<InventorySearchResult> results = 
+                    inventoryDao.search(inventorySearch, ecDescendantIds, startIndex, itemsPerPage, starsMeters);
 
             // Redirect to inventory page if only one result is found
            if (results.getHitCount() == 1) {

@@ -135,7 +135,7 @@ public class SendManualThermostatSettingEndpoint {
         // Get all the serial numbers used in this web service call.
         Collection<String> serialNumbers = manualThermostatSetting.getSerialNumbers();
 
-        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+        int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
         return inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompanyId);
     }
 }

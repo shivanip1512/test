@@ -64,7 +64,7 @@ public class RunThermostatProgramEndpoint {
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
             
             // Send out run thermostat program commands
-            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyIdByOperator(user);
+            int yukonEnergyCompanyId = yukonEnergyCompanyService.getEnergyCompanyByOperator(user).getId();
             List<Integer> thermostatIds = inventoryDao.getInventoryIds(serialNumbers, yukonEnergyCompanyId);
 
             // Send out run program commands

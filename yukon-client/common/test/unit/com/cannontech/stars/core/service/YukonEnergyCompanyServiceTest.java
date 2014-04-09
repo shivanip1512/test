@@ -11,7 +11,9 @@ import org.junit.Test;
 import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl;
-import com.google.common.collect.Maps;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany.Builder;
+import com.google.common.collect.Lists;
 
 public class YukonEnergyCompanyServiceTest {
     /**
@@ -23,54 +25,56 @@ public class YukonEnergyCompanyServiceTest {
      *                  \                                           
      *                    6  -  7
      */
-    private Map<Integer, Integer> childToParentHierarchy;
-    
+    private Map<Integer, EnergyCompany> energyCompanies;
+
     public MockAsyncDynamicDataSourceImpl asyncDynamicDataSource = new MockAsyncDynamicDataSourceImpl() {
         @Override
         public void addDatabaseChangeEventListener(DbChangeCategory changeCategory,
                                                    com.cannontech.core.dynamic.DatabaseChangeEventListener listener) {
+            
             // No need to do anything for this test
         }
     };
-    
-    public YukonEnergyCompanyService yukonEnergyCompanyService  = new YukonEnergyCompanyServiceImpl(asyncDynamicDataSource) {
+
+    public YukonEnergyCompanyService ecService  = new YukonEnergyCompanyServiceImpl(asyncDynamicDataSource) {
         @Override
-        protected Map<Integer, Integer> getChildToParentEnergyCompanyHierarchy() {
-            return childToParentHierarchy;
+        public EnergyCompany getEnergyCompany(int ecId) {
+            return energyCompanies.get(ecId);
         }
     };
-    
+
     @Before
     public void setup() {
-        childToParentHierarchy = Maps.newHashMap();
-        childToParentHierarchy.put(1, 0);
-        childToParentHierarchy.put(2, 1);
-        childToParentHierarchy.put(3, 1);
-        childToParentHierarchy.put(4, 1);
-        childToParentHierarchy.put(5, 4);
-        childToParentHierarchy.put(6, 4);
-        childToParentHierarchy.put(7, 6);
-        childToParentHierarchy.put(8, 2);
+        Builder ecBuilder = new EnergyCompany.Builder();
+        ecBuilder.addEnergyCompany(0, "", null, 0, null);
+        ecBuilder.addEnergyCompany(1, "", null, 0, 0);
+        ecBuilder.addEnergyCompany(2, "", null, 0, 1);
+        ecBuilder.addEnergyCompany(3, "", null, 0, 1);
+        ecBuilder.addEnergyCompany(4, "", null, 0, 1);
+        ecBuilder.addEnergyCompany(5, "", null, 0, 4);
+        ecBuilder.addEnergyCompany(6, "", null, 0, 4);
+        ecBuilder.addEnergyCompany(7, "", null, 0, 6);
+        ecBuilder.addEnergyCompany(8, "", null, 0, 2);
+        energyCompanies = ecBuilder.build();
     }
-    
+
     @Test
     public void childEnergyCompaniesTest_NoChildren() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getChildEnergyCompanies(7);
+        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(7).getDescendants(false);
         Assert.assertTrue(childEnergyCompanies.isEmpty());
     }
 
     @Test
     public void childEnergyCompaniesTest_OneChild() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getChildEnergyCompanies(6);
+        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(6).getDescendants(false);
 
         Assert.assertEquals(1, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(7), childEnergyCompanies);
     }
 
-
     @Test
     public void childEnergyCompaniesTest_MultipleChildren() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getChildEnergyCompanies(4);
+        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(4).getDescendants(false);
 
         Assert.assertEquals(3, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(5, 6, 7), childEnergyCompanies);
@@ -78,7 +82,7 @@ public class YukonEnergyCompanyServiceTest {
 
     @Test
     public void childEnergyCompaniesTest_TopEnergyCompany() {
-        List<Integer> childEnergyCompanies = yukonEnergyCompanyService.getChildEnergyCompanies(0);
+        List<EnergyCompany> childEnergyCompanies = ecService.getEnergyCompany(0).getDescendants(false);
 
         Assert.assertEquals(8, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), childEnergyCompanies);
@@ -87,7 +91,9 @@ public class YukonEnergyCompanyServiceTest {
     /**
      * This method checks the supplied energyCompanyId list and makes sure it only items contained in the list.
      */
-    private void testExpectedEnergyCompanyIdList(List<Integer> expectedEnergyCompanyIds, List<Integer> actualEnergyCompanyIds) {
+    private void testExpectedEnergyCompanyIdList(List<Integer> expectedEnergyCompanyIds,
+                                                 List<EnergyCompany> actualEnergyCompanies) {
+        List<Integer> actualEnergyCompanyIds = Lists.transform(actualEnergyCompanies, YukonEnergyCompanyService.TO_ID_FUNCTION);
         Assert.assertTrue(actualEnergyCompanyIds.containsAll(expectedEnergyCompanyIds));
         Assert.assertTrue(expectedEnergyCompanyIds.containsAll(actualEnergyCompanyIds));
     }
