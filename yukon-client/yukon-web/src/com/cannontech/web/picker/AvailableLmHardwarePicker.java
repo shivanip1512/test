@@ -2,7 +2,6 @@ package com.cannontech.web.picker;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +10,18 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.AvailableLmHardwareFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardware> {
     
-    private ECMappingDao ecMappingDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     private HardwareClass hardwareClass;
     
@@ -48,8 +50,9 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
-            Set<Integer> parentEcIds = ecMappingDao.getParentEnergyCompanyIds(energyCompanyId);
-            AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(parentEcIds, hardwareClass);
+            EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+            AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(parentIds, hardwareClass);
             sqlFilters.add(energyCompanyIdsFilter);
         }
     }
@@ -66,12 +69,6 @@ public class AvailableLmHardwarePicker extends DatabasePicker<DisplayableLmHardw
     
     public void setHardwareClass(HardwareClass hardwareClass) {
         this.hardwareClass = hardwareClass;
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
     }
 
 }

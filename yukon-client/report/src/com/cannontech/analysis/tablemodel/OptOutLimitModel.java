@@ -37,7 +37,7 @@ import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -197,10 +197,10 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         Validate.notNull(getStopDateAsInstant(), "End date must not be null");
 
         ReadableInstant optOutEndDate = getStopDateAsInstant();
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         // Find the limits for the given opt out end date
-        List<LiteUserGroup> residentialGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+        List<LiteUserGroup> residentialGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getId());
         List<Integer> userGroupIds = 
             Lists.transform(residentialGroups, new Function<LiteUserGroup, Integer>() {
                 @Override
@@ -224,7 +224,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             }
             Integer optOutLimit = residentialGroupOptOutLimit.getLimit();
             
-            TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompany.getEnergyCompanyId());
+            TimeZone ecTimeZone = ecService.getDefaultTimeZone(energyCompany.getId());
             DateTimeZone energyCompanyTimeZone = DateTimeZone.forTimeZone(ecTimeZone);
             // Setting up the time period for the report.
             OpenInterval optOutLimitInterval = 
@@ -263,7 +263,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             if (programIds != null) {
                 // Get the enrollments for the programIds supplied
                 List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-                Set<Integer> usableEnergyCompanies = ecMappingDao.getChildEnergyCompanyIds(energyCompanyId);
+                List<Integer> usableEnergyCompanies = Lists.transform(energyCompany.getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
                 List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getIntersectingEnrollments(usableEnergyCompanies, groupIdsFromSQL, reportInterval);
                 
                 // Build up a multimap of account ids to enrolled inventory ids.

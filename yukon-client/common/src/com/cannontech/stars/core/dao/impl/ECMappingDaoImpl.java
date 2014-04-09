@@ -2,10 +2,7 @@
 
 package com.cannontech.stars.core.dao.impl;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -30,11 +27,6 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.ECUtils;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -282,60 +274,6 @@ public class ECMappingDaoImpl implements ECMappingDao {
         return yukonJdbcTemplate.update(sql);
     }
 
-    @Override
-    public Set<YukonEnergyCompany> getChildEnergyCompanies(int energyCompanyId) {
-        
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-
-        // Get all of the child energy companies including itself for the supplied energy company id.
-        List<LiteStarsEnergyCompany> availableChildEnergyCompanies = ECUtils.getAllDescendants(energyCompany);
-        
-        Set<YukonEnergyCompany> availableEnergyCompanies = Sets.newHashSet();
-        availableEnergyCompanies.addAll(availableChildEnergyCompanies);
-                
-        return availableEnergyCompanies;
-    }
-
-    @Override
-    public Set<Integer> getChildEnergyCompanyIds(int energyCompanyId) {
-        Set<YukonEnergyCompany> childEnergyCompanies = getChildEnergyCompanies(energyCompanyId);
-        
-        Collection<Integer> childEnergyCompanyIds = 
-            Collections2.transform(childEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
-        
-        return Sets.newHashSet(childEnergyCompanyIds);
-        
-    }
-    
-    @Override
-    public LinkedHashSet<YukonEnergyCompany> getParentEnergyCompanies(int energyCompanyId) {
-
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        
-        //  Get all the energy companies to the supplied energy company id.
-        List<LiteStarsEnergyCompany> allParentEnergyCompanies = ECUtils.getAllAscendants(energyCompany);
-
-        LinkedHashSet<YukonEnergyCompany> availableEnergyCompanies = Sets.newLinkedHashSet();
-        availableEnergyCompanies.addAll(allParentEnergyCompanies);
-        
-        return availableEnergyCompanies;
-
-    }
-    
-    @Override
-    public LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId) {
-
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        
-        //  Get all the energy companies to the supplied energy company id.
-        List<LiteStarsEnergyCompany> allParentEnergyCompanies = ECUtils.getAllAscendants(energyCompany);
-        List<Integer> energyCompaniesIdList = 
-            Lists.transform(allParentEnergyCompanies, LiteStarsEnergyCompany.getEnergyCompanyToEnergyCompanyIdFunction());
-        
-        return Sets.newLinkedHashSet(energyCompaniesIdList);
-
-    }
-    
     @Override
     public List<Integer> getAccountIds(int ecId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

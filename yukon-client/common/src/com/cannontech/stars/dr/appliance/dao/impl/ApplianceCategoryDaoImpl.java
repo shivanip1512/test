@@ -31,6 +31,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -91,8 +92,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Transactional(propagation = Propagation.SUPPORTS)
     public List<Integer> getApplianceCategoryIdsByEC(int energyCompanyId) {
         // Get available appliance category energy companies.
-        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        Set<Integer> appCatEnergyCompanyIds = getAppCatEnergyCompanyIds(yukonEnergyCompany);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = getAppCatEnergyCompanyIds(energyCompany);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ItemId "); // ItemId represents applianceCategoryId in this case.
@@ -229,14 +230,15 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     }
 
     @Override
-    public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany) {
+    public Set<Integer> getAppCatEnergyCompanyIds(EnergyCompany energyCompany) {
         boolean inheritParentAppCats =
             ecSettingDao.getBoolean(EnergyCompanySettingType.INHERIT_PARENT_APP_CATS,
-                yukonEnergyCompany.getEnergyCompanyId());
+                                    energyCompany.getId());
         if (inheritParentAppCats) {
-            return ecMappingDao.getParentEnergyCompanyIds(yukonEnergyCompany.getEnergyCompanyId());
+            List<Integer> parentIds = Lists.transform(energyCompany.getParents(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
+            return new HashSet<>(parentIds);
         }
-        return Collections.singleton(yukonEnergyCompany.getEnergyCompanyId());
+        return Collections.singleton(energyCompany.getId());
     }
 
     @Override

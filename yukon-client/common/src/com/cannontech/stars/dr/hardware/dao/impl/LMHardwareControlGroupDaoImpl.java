@@ -3,13 +3,13 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -119,6 +119,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         }
     }
     
+    @Override
     public List<DistinctEnrollment> getDistinctEnrollments(int accountId, boolean past) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT InventoryId, LMGroupId, AccountId, ProgramId");
@@ -157,11 +158,13 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void add(final LMHardwareControlGroup hardwareControlGroup) {
         template.insert(hardwareControlGroup);
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final LMHardwareControlGroup hardwareControlGroup) {
         int rowsAffected = 
@@ -170,11 +173,13 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void update(final LMHardwareControlGroup hardwareControlGroup){
         template.update(hardwareControlGroup);
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void unenrollHardware(int inventoryId) {
         
@@ -188,6 +193,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         yukonJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void resetEntriesForProgram(int programId, LiteYukonUser user) {
      
@@ -246,6 +252,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         yukonJdbcTemplate.update(optOutSQL);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareControlGroup getById(final int controlEntryId) {
         SqlStatementBuilder selectById = new SqlStatementBuilder();
@@ -255,6 +262,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.queryForObject(selectById, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByLMGroupId(final int groupId) {
         SqlStatementBuilder selectByLMGroupId = new SqlStatementBuilder();
@@ -264,6 +272,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByLMGroupId, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryId(final int inventoryId) {
         SqlStatementBuilder selectByInventoryId = new SqlStatementBuilder();
@@ -273,6 +282,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByInventoryId, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByAccountId(final int accountId) {
         SqlStatementBuilder selectByAccountId = new SqlStatementBuilder();
@@ -282,6 +292,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
     }
     
+    @Override
     public List<LMHardwareControlGroup> getForPastEnrollments(int accountId) {
         SqlStatementBuilder selectByAccountId = new SqlStatementBuilder();
         selectByAccountId.appendFragment(selectSql);
@@ -291,6 +302,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
     }
 
+    @Override
     public List<LMHardwareControlGroup> getForActiveEnrollments(int accountId, int inventoryId, int lmGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectSql);
@@ -303,6 +315,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
     public List<LMHardwareControlGroup> getForPastEnrollments(int accountId, int inventoryId, int lmGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectSql);
@@ -315,6 +328,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByAccountId(final int accountId) {
         List<Integer> list = 
@@ -322,6 +336,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStartDateRange(Date first, Date second) {
         SqlStatementBuilder selectByEnrollStartRange = new SqlStatementBuilder();
@@ -332,6 +347,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByEnrollStartRange, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStopDateRange(Date first, Date second) {
         SqlStatementBuilder selectByEnrollStopRange = new SqlStatementBuilder();
@@ -342,6 +358,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByEnrollStopRange, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStartDateRange(Date first, Date second) {
         SqlStatementBuilder selectByOptOutStartRange = new SqlStatementBuilder();
@@ -352,6 +369,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByOptOutStartRange, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStopDateRange(Date first, Date second) {
         SqlStatementBuilder selectByOptOutStopRange = new SqlStatementBuilder();
@@ -362,6 +380,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByOptOutStopRange, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, 
                                                                            int accountId, 
@@ -376,6 +395,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, 
                                                                              int accountId, 
@@ -389,6 +409,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper);
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, 
                                                                                 int lmGroupId, 
@@ -403,6 +424,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper);
     }
     
+    @Override
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type) {
 
         SqlStatementBuilder selectByInventoryIdAndGroupIdAndAccountIdAndType = new SqlStatementBuilder();
@@ -427,6 +449,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper);
     }
 
+    @Override
     public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId) {
         SqlStatementBuilder selectCurrentEnrollmentByAccountId = new SqlStatementBuilder();
         selectCurrentEnrollmentByAccountId.appendFragment(selectSql);
@@ -437,6 +460,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByAccountId, rowMapper);
     }    
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
@@ -450,11 +474,13 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper);
     }
 
+    @Override
     public Multimap<Integer, LMHardwareControlGroup> getCurrentEnrollmentByInventoryIds(
             final Iterable<Integer> inventoryIds) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.appendFragment(selectSql);
@@ -481,6 +507,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return retVal;
     }
 
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
@@ -494,6 +521,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper);
     }      
 
+    @Override
     public LMHardwareControlGroup 
                 findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
 
@@ -512,6 +540,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         }
     }    
     
+    @Override
     public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, 
                                                                                  int accountId) {
         SqlStatementBuilder selectCurrentOptOutsByProgramIdAndAccountId = new SqlStatementBuilder();
@@ -524,6 +553,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper);
     }
     
+    @Override
     public List<LMHardwareControlGroup> 
                 getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, 
                                                                    int accountId) {
@@ -538,6 +568,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return yukonJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper);
     }    
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAll() {
         return yukonJdbcTemplate.query(selectSql, rowMapper);
@@ -614,6 +645,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
 
     private static final YukonRowMapper<LMHardwareControlGroup> createRowMapper() {
         final YukonRowMapper<LMHardwareControlGroup> rowMapper = new YukonRowMapper<LMHardwareControlGroup>() {
+            @Override
             public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
                 LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
                 hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryId"));
@@ -637,6 +669,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     
     private static final ParameterizedRowMapper<LMHardwareConfiguration> createOldConfigInfoRowMapper() {
         final ParameterizedRowMapper<LMHardwareConfiguration> oldConfigInfoRowMapper = new ParameterizedRowMapper<LMHardwareConfiguration>() {
+            @Override
             public LMHardwareConfiguration mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LMHardwareConfiguration hardwareConfiguration = new LMHardwareConfiguration();
                 hardwareConfiguration.setInventoryId(rs.getInt("InventoryId"));
@@ -651,6 +684,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     
     private static final ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
         ParameterizedRowMapper<Integer> rowMapper = new ParameterizedRowMapper<Integer>() {
+            @Override
             public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
                 int id = rs.getInt("LmGroupId");
                 return Integer.valueOf(id);
@@ -660,6 +694,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
     
     private FieldMapper<LMHardwareControlGroup> controlGroupFieldMapper = new FieldMapper<LMHardwareControlGroup>() {
+        @Override
         public void extractValues(MapSqlParameterSource p, LMHardwareControlGroup controlInfo) {
             p.addValue("inventoryId", controlInfo.getInventoryId());
             p.addValue("lmGroupId", controlInfo.getLmGroupId());
@@ -674,9 +709,11 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             p.addValue("userIdSecondAction", controlInfo.getUserIdSecondAction());
             p.addValue("programId", controlInfo.getProgramId());
         }
+        @Override
         public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
             return controlInfo.getControlEntryId();
         }
+        @Override
         public void setPrimaryKey(LMHardwareControlGroup controlInfo, int value) {
             controlInfo.setControlEntryId(value);
         }
@@ -691,12 +728,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId) {
         List<LMHardwareConfiguration> list = yukonJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId) {
         List<LMHardwareConfiguration> list = yukonJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
@@ -712,7 +751,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
 
     @Override
-    public List<LMHardwareControlGroup> getIntersectingEnrollments(Set<Integer> energyCompanyIds, List<Integer> loadGroupIds, OpenInterval enrollmentInterval) {
+    public List<LMHardwareControlGroup> getIntersectingEnrollments(Collection<Integer> energyCompanyIds, List<Integer> loadGroupIds, OpenInterval enrollmentInterval) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(selectSql);

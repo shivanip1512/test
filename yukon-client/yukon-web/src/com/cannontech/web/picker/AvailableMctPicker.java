@@ -1,5 +1,6 @@
 package com.cannontech.web.picker;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,13 +12,15 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
 import com.cannontech.common.search.result.UltraLightPao;
-import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 public class AvailableMctPicker extends DatabasePaoPicker {
-    
-    private ECMappingDao ecMappingDao;
-    private PaoDefinitionDao paoDefinitionDao;
+
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 
     @Override
     protected void updateFilters(List<SqlFilter> sqlFilters,
@@ -28,22 +31,12 @@ public class AvailableMctPicker extends DatabasePaoPicker {
             int energyCompanyId = NumberUtils.toInt(extraArgs);
             
             // gather parents energyCompanyIds
-            Set<Integer> parentEnergyCompanies = ecMappingDao.getParentEnergyCompanyIds(energyCompanyId);
+            EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+            Set<Integer> parentIds = new HashSet<>(Lists.transform(energyCompany.getParents(true),
+                                                                   YukonEnergyCompanyService.TO_ID_FUNCTION));
             
-            AvailableMctFilter energyCompanyIdsFilter = 
-                new AvailableMctFilter(parentEnergyCompanies, paoDefinitionDao);
+            AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(parentIds, paoDefinitionDao);
             sqlFilters.add(energyCompanyIdsFilter);
         }
-    }
-
-    // DI Setters
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
     }
 }

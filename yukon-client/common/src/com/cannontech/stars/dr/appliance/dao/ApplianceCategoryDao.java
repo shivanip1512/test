@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 public interface ApplianceCategoryDao {
 
@@ -38,5 +38,5 @@ public interface ApplianceCategoryDao {
      * This method will get all the energy company ids that can
      * have an appliance category this energy company can use.
      */
-    public Set<Integer> getAppCatEnergyCompanyIds(YukonEnergyCompany yukonEnergyCompany);
+    public Set<Integer> getAppCatEnergyCompanyIds(EnergyCompany energyCompany);
 }

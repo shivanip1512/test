@@ -86,6 +86,7 @@ import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class EnergyCompanyServiceImpl implements EnergyCompanyService {
@@ -287,8 +288,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
     @Override
     public void verifyViewPageAccess(LiteYukonUser user, int ecId) {
+        EnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
         if (!configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEFAULT_ENERGY_COMPANY_EDIT)) {
-            YukonEnergyCompany energyCompany = ecService.getEnergyCompany(ecId);
             if (ecService.isDefaultEnergyCompany(energyCompany)) {
                 throw new NotAuthorizedException("default energy company is not editable");
             }
@@ -297,9 +298,11 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
             return;
         }
         /* Check my own and all my anticendants operator login list for this user's id. */
-        for (int energyCompanyId : ecMappingDao.getParentEnergyCompanyIds(ecId)) {
-            LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-            if(energyCompany.getOperatorLoginIDs().contains(user.getUserID())) {
+        List<Integer> parentIds = Lists.transform(energyCompany.getParents(true),
+                                                  YukonEnergyCompanyService.TO_ID_FUNCTION);
+        for (int energyCompanyId : parentIds) {
+            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+            if(lsec.getOperatorLoginIDs().contains(user.getUserID())) {
                 return;
             }
         }

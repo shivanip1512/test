@@ -111,10 +111,11 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
         }
 
         // Get all the accessible energy companies
-        Set<Integer> childEnergycompanyIds = ecMappingDao.getChildEnergyCompanyIds(energyCompanyId);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        List<Integer> childEnergyCompanyIds = Lists.transform(energyCompany.getDescendants(true), YukonEnergyCompanyService.TO_ID_FUNCTION);
 
         LiteAccountInfo info = getByAccountId(accountId);
-        if (!childEnergycompanyIds.contains(info.getEnergyCompanyId())) {
+        if (!childEnergyCompanyIds.contains(info.getEnergyCompanyId())) {
             // do explicit security log statement
             return null;
         }

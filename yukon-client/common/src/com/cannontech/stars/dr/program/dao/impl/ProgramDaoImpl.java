@@ -33,7 +33,7 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowMapperAdapter;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -43,7 +43,7 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -55,10 +55,11 @@ public class ProgramDaoImpl implements ProgramDao {
 
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private ApplianceCategoryDao applianceCategoryDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private YukonEnergyCompanyService ecService;
+    
     private ChunkingSqlTemplate chunkingSqlTemplate;
     
     @PostConstruct
@@ -163,7 +164,9 @@ public class ProgramDaoImpl implements ProgramDao {
 
         for (final Program program : programList) {
             int programsApplianceCategoryId = program.getApplianceCategoryId();
-            if (programsApplianceCategoryId == applianceCategoryId) resultList.add(program);
+            if (programsApplianceCategoryId == applianceCategoryId) {
+                resultList.add(program);
+            }
         }
         return resultList;
     }
@@ -198,8 +201,8 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true)
     public Program getByProgramName(String programName, int energyCompanyId) {
         
-        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
@@ -220,8 +223,8 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true)
     public Program getByAlternateProgramName(String alternateProgramName, int energyCompanyId) {
         
-        YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
+        EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+        Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);

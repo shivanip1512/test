@@ -50,7 +50,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -180,7 +180,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Get the current enrollments.  This list will be updated to reflect the desired enrollment
         // data then passed to applyEnrollments which will make it so.
         List<ProgramEnrollment> enrollmentData = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(customerAccount.getAccountId());
         
         // This handles an unenrollment with no program given.  In this case we we just want to unenroll
         // the device from every program it is enrolled.
@@ -195,9 +195,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
              * This method also take care of the validation for the applianceCategory, program, and loadGroup
              * and includes checking to see if they belong to one another.
              */
-            Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), yukonEnergyCompany); 
+            Program program = programService.getByProgramName(enrollmentHelper.getProgramName(), energyCompany); 
 
-            Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
+            Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
             ApplianceCategory applianceCategory = 
                 getApplianceCategoryByName(enrollmentHelper.getApplianceCategoryName(), program, appCatEnergyCompanyIds);
 
@@ -209,7 +209,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         // Adding or Removing the new program enrollment to the active enrollment list, which is needed
         // in legacy code to process enrollment
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            boolean trackHardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, yukonEnergyCompany.getEnergyCompanyId());
+            boolean trackHardwareAddressingEnabled = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getId());
             addProgramEnrollment(enrollmentData, programEnrollment, enrollmentHelper.isSeasonalLoad(), trackHardwareAddressingEnabled);
         } else if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
@@ -379,8 +379,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         LoadGroup loadGroup = null; 
         if (!StringUtils.isBlank(loadGroupName)){
             loadGroup = loadGroupDao.getByLoadGroupName(loadGroupName);
-            if (!loadGroup.getProgramIds().contains(program.getProgramId()))
+            if (!loadGroup.getProgramIds().contains(program.getProgramId())) {
                 throw new IllegalArgumentException("The supplied load group does not belong to the supplied program.");
+            }
         }
         return loadGroup;
     }

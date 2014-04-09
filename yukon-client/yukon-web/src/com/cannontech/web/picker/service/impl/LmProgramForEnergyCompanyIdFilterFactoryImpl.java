@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.pao.db.LmProgramForEnergyCompanyIdFilter;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.web.picker.service.LmProgramForEnergyCompanyIdFilterFactory;
 
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
 
-    private ApplianceCategoryDao applianceCategoryDao;
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private YukonEnergyCompanyService ecService;
 	
 	@Override
 	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
@@ -27,24 +27,14 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 		int energyCompanyId = NumberUtils.toInt(energyCompanyIdExtraArg);
 		
 		// gather parents energyCompanyIds
-		YukonEnergyCompany yukonEnergyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-		Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(yukonEnergyCompany);
+		EnergyCompany energyCompany = ecService.getEnergyCompany(energyCompanyId);
+		
+		Set<Integer> appCatEnergyCompanyIds = applianceCategoryDao.getAppCatEnergyCompanyIds(energyCompany);
 		
         // use the LmProgramForEnergyCompanyIdsFilter filter
         LmProgramForEnergyCompanyIdFilter filter = new LmProgramForEnergyCompanyIdFilter(appCatEnergyCompanyIds);
         
         return filter;
 	}
-	
-	// DI Setter
-	@Autowired
-	public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-	
-	@Autowired
-	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-	
+
 }

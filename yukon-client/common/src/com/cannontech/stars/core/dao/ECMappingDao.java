@@ -1,8 +1,6 @@
 package com.cannontech.stars.core.dao;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.users.model.LiteUserGroup;
@@ -11,7 +9,6 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public interface ECMappingDao {
 
@@ -142,31 +139,6 @@ public interface ECMappingDao {
      * @param energyCompanyId
      */
     void updateECToAccountMapping(int accountId, int energyCompanyId);
-
-
-    /**
-     * Returns all the member energy companies, including itself,  of the supplied energy company.
-     */
-    Set<YukonEnergyCompany> getChildEnergyCompanies(int energyCompanyId);
-
-    /**
-     * Returns all the member energy companies, including itself,  of the supplied energy company.
-     */
-    Set<Integer> getChildEnergyCompanyIds(int energyCompanyId);
-
-    /**
-     * Returns all the energy companies that the supplied energy company is a
-     * member of, including itself. It will also be ordered from child energy company
-     * to the further most parent energy company.
-     */
-    LinkedHashSet<YukonEnergyCompany> getParentEnergyCompanies(int energyCompanyId);
-
-    /**
-     * Returns all the energy company ids that the supplied energy company is a
-     * member of, including itself. It will also be ordered from child energy company
-     * to the further most parent energy company.
-     */
-    LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId);
 
     /**
      * Returns a list of the operator user groups for an energy company

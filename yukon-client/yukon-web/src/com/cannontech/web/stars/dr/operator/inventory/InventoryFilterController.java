@@ -255,11 +255,8 @@ public class InventoryFilterController {
     @ModelAttribute(value="energyCompanies")
     public List<YukonEnergyCompany> getEnergyCompanies(YukonUserContext userContext) {
         List<YukonEnergyCompany> energyCompanies = Lists.newArrayList();
-        
-        YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
-        Set<YukonEnergyCompany> childEnergyCompanies = ecMappingDao.getChildEnergyCompanies(yukonEnergyCompany.getEnergyCompanyId());
-        energyCompanies.addAll(childEnergyCompanies);
-        
+        EnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
+        energyCompanies.addAll(energyCompany.getDescendants(true));
         return energyCompanies;
     }
     
