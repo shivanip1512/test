@@ -293,7 +293,7 @@
     <category type="rfnTempAlarm">
         <boolean field="alarmEnabled" default="false"/>
         <integer field="highThreshold" default="0" minValue="0" maxValue="65535"/>
-        <integer field="alarmRepeatInterval" default="15" minValue="0" maxValue="255"/>
+        <integer field="temperatureAlarmRepeatInterval" default="15" minValue="0" maxValue="255"/>
         <integer field="alarmRepeatCount" default="2" minValue="0" maxValue="255"/>
     </category>
     

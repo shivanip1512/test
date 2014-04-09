@@ -426,8 +426,8 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.alarmEnabled.description">When true, temperature alarming is enabled for the device. Else, temperature alarming is disabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.highThreshold">High Temperature Threshold</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.highThreshold.description">Temperatures higher than this threshold will trigger a temperature alarm (in degrees Fahrenheit).</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.alarmRepeatInterval">Alarm Repeat Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.alarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatInterval">Alarm Repeat Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.alarmRepeatCount">Alarm Repeat Count</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.alarmRepeatCount.description">The number of times the device will report an alarm whose state has not changed.</entry>
 
