@@ -1,79 +1,58 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteHolidaySchedule;
 
-/**
- * Insert the type's description here.
- * Creation date: (8/24/2001 10:53:23 AM)
- * @author: 
- */
 public class HolidayScheduleLoader implements Runnable {
-	private String databaseAlias = null;
-	private java.util.ArrayList allHolidaySchedules = null;
-/**
- * HolidayScheduleLoader constructor comment.
- */
-public HolidayScheduleLoader(java.util.ArrayList holidaySchedules ,String dbAlias) {
-	super();
-	this.allHolidaySchedules = holidaySchedules ;
-	this.databaseAlias = dbAlias;
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/24/2001 10:54:17 AM)
- */
-public void run()
-{
+    private String databaseAlias = null;
+    private ArrayList allHolidaySchedules = null;
 
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
+    public HolidayScheduleLoader(ArrayList holidaySchedules, String dbAlias) {
+        this.allHolidaySchedules = holidaySchedules;
+        this.databaseAlias = dbAlias;
+    }
 
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-	String sqlString = "SELECT HOLIDAYSCHEDULEID,HOLIDAYSCHEDULENAME FROM HOLIDAYSCHEDULE WHERE HOLIDAYSCHEDULEID >= 0";
+    @Override
+    public void run() {
+        // temp code
+        Date timerStart = new Date();
+        Date timerStop = null;
+        // temp code
+        String sqlString =
+            "SELECT HOLIDAYSCHEDULEID,HOLIDAYSCHEDULENAME FROM HOLIDAYSCHEDULE WHERE HOLIDAYSCHEDULEID >= 0";
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+        java.sql.Connection conn = null;
+        java.sql.Statement stmt = null;
+        java.sql.ResultSet rset = null;
+        try {
+            conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery(sqlString);
 
-		while (rset.next())
-		{
-			int holidayScheduleID = rset.getInt(1);
-			String holidayScheduleName = rset.getString(2).trim();
+            while (rset.next()) {
+                int holidayScheduleID = rset.getInt(1);
+                String holidayScheduleName = rset.getString(2).trim();
 
-			com.cannontech.database.data.lite.LiteHolidaySchedule hs =
-				new com.cannontech.database.data.lite.LiteHolidaySchedule( holidayScheduleID );
-				
-			hs.setHolidayScheduleName(holidayScheduleName);
+                LiteHolidaySchedule hs = new LiteHolidaySchedule(holidayScheduleID);
 
-			allHolidaySchedules.add(hs);
-		}
+                hs.setHolidayScheduleName(holidayScheduleName);
 
-	}
-	catch (java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-		//temp code
-		timerStop = new java.util.Date();
-		com.cannontech.clientutils.CTILogger.info(
-            (timerStop.getTime() - timerStart.getTime())*.001 + 
-               " Secs for HolidayScheduleLoader (" + allHolidaySchedules.size() + " loaded)" );
-               
-		//temp code
-	}
+                allHolidaySchedules.add(hs);
+            }
+        } catch (java.sql.SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, stmt, conn);
+            // temp code
+            timerStop = new Date();
+            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
+                + " Secs for HolidayScheduleLoader (" + allHolidaySchedules.size() + " loaded)");
 
-}
+            // temp code
+        }
+    }
 }
