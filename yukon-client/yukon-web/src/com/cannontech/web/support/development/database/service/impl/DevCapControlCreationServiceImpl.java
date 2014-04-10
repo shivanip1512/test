@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
@@ -22,8 +23,9 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.web.support.development.database.objects.DevCapControl;
 import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
+import com.cannontech.web.support.development.database.service.DevCapControlCreationService;
 
-public class DevCapControlCreationService extends DevObjectCreationBase {
+public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
     @Autowired private CapControlCreationService capControlCreationService;
     @Autowired private SubstationDao substationDao;
     @Autowired private CapbankDao capbankDao;
@@ -38,20 +40,26 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     private static int complete;
     private static int total;
     
+    @Override
     public boolean isRunning() {
         return _lock.isLocked();
     }
 
+    @Override
+    @Transactional
     public void executeSetup(DevCapControl devCapControl) {
-        if (_lock.tryLock()) try {
-            total = devCapControl.getTotal();
-            complete = 0;
-            createCapControl(devCapControl);
-        } finally {
-            _lock.unlock();
+        if (_lock.tryLock()) {
+            try {
+                total = devCapControl.getTotal();
+                complete = 0;
+                createCapControl(devCapControl);
+            } finally {
+                _lock.unlock();
+            }
         }
     }
     
+    @Override
     public int getPercentComplete() {
         if (total >= 1) {
             return (complete*100) / total;

@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.Hardware;
@@ -40,9 +41,10 @@ import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
 import com.cannontech.web.support.development.database.objects.DevStars;
 import com.cannontech.web.support.development.database.objects.DevStarsAccounts;
+import com.cannontech.web.support.development.database.service.DevStarsCreationService;
 import com.google.common.collect.Lists;
 
-public class DevStarsCreationService extends DevObjectCreationBase {
+public class DevStarsCreationServiceImpl extends DevObjectCreationBase implements DevStarsCreationService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
@@ -58,20 +60,32 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     private static int total;
     private static final ReentrantLock _lock = new ReentrantLock();
 
+    @Override
     public boolean isRunning() {
         return _lock.isLocked();
     }
 
-    public void executeSetup(DevStars devStars) {
+    @Override
+    @Transactional
+    public void executeEnergyCompanyCreation(DevStars devStars) {
         if (_lock.tryLock()) {
             try {
-                total = devStars.getTotal();
-                complete = 0;
                 if (devStars.getEnergyCompany() == null) {
                     createOperatorsGroup(devStars);
                     createEnergyCompany(devStars);
                 }
                 createResidentialGroup(devStars);
+            } finally {
+                _lock.unlock();
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    public void executeStarsAccountCreation(DevStars devStars) {
+        if (_lock.tryLock()) {
+            try {
                 setupStarsAccounts(devStars);
                 createStars(devStars);
             } finally {
@@ -79,7 +93,22 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             }
         }
     }
+    
+    @Override
+    public boolean doesAccountExist(String accountNumber,int  energyCompanyId){ 
+        // Checks to see if the account number is already being used.
+        try {
+            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
+            if (customerAccount != null){
+                return true;
+            }
+        } catch (NotFoundException e) {
+            // account doesn't exist
+        }
+        return false;
+    }
 
+    @Override
     public int getPercentComplete() {
         if (total >= 1) {
             return (complete*100) / total;
@@ -149,7 +178,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID);
 
         try {
-            LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(energyCompanyDto,  yukonUser, null);
+            LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(energyCompanyDto, yukonUser, null);
             devStars.setEnergyCompany(ec);
         } catch (Exception e) {
             log.error("Unable to create new energycompany " + energyCompanyDto.getName());
@@ -421,17 +450,4 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         }
         return true;
     }
-
-    public boolean doesAccountExist(String accountNumber,int  energyCompanyId){ 
-        // Checks to see if the account number is already being used.
-        try {
-            CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(accountNumber, energyCompanyId);
-            if (customerAccount != null){
-                return true;
-            }
-        } catch (NotFoundException e ) { }
-
-        return false;
-    }
-
 }

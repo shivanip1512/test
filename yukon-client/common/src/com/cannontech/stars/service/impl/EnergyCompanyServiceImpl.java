@@ -118,7 +118,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private SystemDateFormattingService systemDateFormattingService;
 
     @Override
-    @Transactional(rollbackFor = {ConfigurationException.class, RuntimeException.class})
+    @Transactional(rollbackFor={ConfigurationException.class, RuntimeException.class})
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId)
     throws TransactionException, CommandExecutionException, ConfigurationException, SQLException {
         

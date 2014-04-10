@@ -43,11 +43,11 @@ import com.cannontech.web.support.development.database.objects.DevEventLog;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.objects.DevRoleProperties;
 import com.cannontech.web.support.development.database.objects.DevStars;
-import com.cannontech.web.support.development.database.service.impl.DevAMRCreationService;
-import com.cannontech.web.support.development.database.service.impl.DevCapControlCreationService;
+import com.cannontech.web.support.development.database.service.DevAMRCreationService;
+import com.cannontech.web.support.development.database.service.DevCapControlCreationService;
+import com.cannontech.web.support.development.database.service.DevRolePropUpdaterService;
+import com.cannontech.web.support.development.database.service.DevStarsCreationService;
 import com.cannontech.web.support.development.database.service.impl.DevEventLogCreationService;
-import com.cannontech.web.support.development.database.service.impl.DevRolePropUpdaterService;
-import com.cannontech.web.support.development.database.service.impl.DevStarsCreationService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -220,7 +220,8 @@ public class SetupDevDbMethodController {
         } else if (!devStarsCreationService.isRunning()) {
             
             try {
-                devStarsCreationService.executeSetup(devStars);
+                devStarsCreationService.executeEnergyCompanyCreation(devStars);
+                devStarsCreationService.executeStarsAccountCreation(devStars);
                 flashScope.setConfirm(YukonMessageSourceResolvable .createDefaultWithoutCode("Successfully setup stars"));
             } catch (Exception e) {
                 log.warn("caught exception in Setup Stars", e);
