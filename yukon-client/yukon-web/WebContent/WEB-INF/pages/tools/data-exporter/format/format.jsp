@@ -83,7 +83,7 @@
                 <tags:inputNameValue nameKey=".footer" path="footer" size="100" maxlength="255" inputClass="f-footer"/>
 
                 <tags:nameValue2 nameKey=".timeZoneFormat">
-                    <form:select path="dateTimeZoneFormat">
+                    <form:select id="date-timezone-format" path="dateTimeZoneFormat">
                         <c:forEach var="dateTZFormat" items="${dateTimeZoneFormats}">
                             <form:option value="${dateTZFormat}">
                                 <cti:msg2 key="${dateTZFormat}"/>

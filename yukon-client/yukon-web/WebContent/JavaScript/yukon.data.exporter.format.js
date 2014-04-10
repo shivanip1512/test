@@ -95,6 +95,9 @@ yukon.dataExporterFormat = (function () {
             /** Update preview if they change the delimiter */
             delimiter.on('input', function(ev) { _updatePreview(); });
             
+            /** Update preview if they change the timezone */
+            $('#date-timezone-format').on('change', function(ev) { _updatePreview(); });
+            
             /** Add attribute button clicked, shows add attribute popup. */
             $('#b-add-attribute').click(function(ev) {
                 
