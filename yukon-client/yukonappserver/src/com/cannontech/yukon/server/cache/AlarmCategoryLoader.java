@@ -1,71 +1,64 @@
 package com.cannontech.yukon.server.cache;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 
-/**
- * Insert the type's description here.
- * Creation date: (3/15/00 3:57:58 PM)
- * @author: 
- */
 public class AlarmCategoryLoader implements Runnable {
-	private java.util.ArrayList allAlarmStates = null;
-	private String databaseAlias = null;
-/**
- * StateGroupLoader constructor comment.
- */
-public AlarmCategoryLoader(java.util.ArrayList alarmStateArray, String alias) {
-	super();
-	this.allAlarmStates = alarmStateArray;
-	this.databaseAlias = alias;
-}
-/**
- * run method comment.
- */
-public void run() {
-//temp code
-java.util.Date timerStart = null;
-java.util.Date timerStop = null;
-//temp code
+    private ArrayList allAlarmStates = null;
+    private String databaseAlias = null;
 
-//temp code
-timerStart = new java.util.Date();
-//temp code
-	String sqlString = "SELECT AlarmCategoryID, CategoryName FROM AlarmCategory " +
-			"WHERE AlarmCategoryID > 0 ORDER BY AlarmCategoryID";
+    public AlarmCategoryLoader(ArrayList alarmStateArray, String alias) {
+        this.allAlarmStates = alarmStateArray;
+        this.databaseAlias = alias;
+    }
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( this.databaseAlias );
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+    @Override
+    public void run() {
+        // temp code
+        Date timerStart = null;
+        Date timerStop = null;
+        // temp code
 
-		while (rset.next())
-		{
-			int alarmID = rset.getInt(1);
-			String alarmName = rset.getString(2).trim();
+        // temp code
+        timerStart = new Date();
+        // temp code
+        String sqlString = "SELECT AlarmCategoryID, CategoryName FROM AlarmCategory "
+                + "WHERE AlarmCategoryID > 0 ORDER BY AlarmCategoryID";
 
-			com.cannontech.database.data.lite.LiteAlarmCategory la =
-				new com.cannontech.database.data.lite.LiteAlarmCategory(alarmID, alarmName);
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        try {
+            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery(sqlString);
 
-			allAlarmStates.add(la);
-		}
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-//temp code
-timerStop = new java.util.Date();
-com.cannontech.clientutils.CTILogger.info( 
-    (timerStop.getTime() - timerStart.getTime())*.001 + 
-      " Secs for AlarmCategoryLoader (" + allAlarmStates.size() + " loaded)" );
-//temp code
-	}
-}
+            while (rset.next()) {
+                int alarmID = rset.getInt(1);
+                String alarmName = rset.getString(2).trim();
+
+                LiteAlarmCategory la = new LiteAlarmCategory(alarmID, alarmName);
+
+                allAlarmStates.add(la);
+            }
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, stmt, conn);
+            // temp code
+            timerStop = new Date();
+            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
+                + " Secs for AlarmCategoryLoader (" + allAlarmStates.size() + " loaded)");
+            // temp code
+        }
+    }
 }

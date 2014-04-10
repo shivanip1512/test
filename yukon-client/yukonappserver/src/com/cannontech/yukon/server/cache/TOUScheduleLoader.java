@@ -1,89 +1,66 @@
-/*
- * Created on Sep 22, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.yukon.server.cache;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
 
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class TOUScheduleLoader implements Runnable {
-	
-	private String databaseAlias = null;
-	private java.util.ArrayList allTOUSchedules = null;
-/**
- * TOUScheduleLoader constructor comment.
- */
-public TOUScheduleLoader(java.util.ArrayList touSchedules ,String dbAlias) {
-	super();
-	this.allTOUSchedules = touSchedules ;
-	this.databaseAlias = dbAlias;
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (9/22/2004 3:54:17 PM)
- */
-public void run()
-{
+    private String databaseAlias = null;
+    private ArrayList allTOUSchedules = null;
 
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
+    public TOUScheduleLoader(ArrayList touSchedules, String dbAlias) {
+        this.allTOUSchedules = touSchedules;
+        this.databaseAlias = dbAlias;
+    }
 
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-	String sqlString = "SELECT TOUSCHEDULEID,TOUSCHEDULENAME, TOUDEFAULTRATE FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0 ORDER BY TOUSCHEDULENAME";
+    @Override
+    public void run() {
+        // temp code
+        Date timerStart = new Date();
+        Date timerStop = null;
+        // temp code
+        String sqlString =
+            "SELECT TOUSCHEDULEID,TOUSCHEDULENAME, TOUDEFAULTRATE FROM TOUSCHEDULE WHERE TOUSCHEDULEID >= 0 ORDER BY TOUSCHEDULENAME";
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        try {
+            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery(sqlString);
 
-		while (rset.next())
-		{
-			int scheduleID = rset.getInt(1);
-			String scheduleName = rset.getString(2).trim();
-			String defaultRate = rset.getString(3).trim();
+            while (rset.next()) {
+                int scheduleID = rset.getInt(1);
+                String scheduleName = rset.getString(2).trim();
+                String defaultRate = rset.getString(3).trim();
 
-			com.cannontech.database.data.lite.LiteTOUSchedule tou =
-				new com.cannontech.database.data.lite.LiteTOUSchedule( scheduleID );
-				
-			tou.setScheduleName(scheduleName);
-			tou.setDefaultRate(defaultRate);
-			
-			if(scheduleID != 0)
-				allTOUSchedules.add(tou);
-		}
-	}
-	catch (java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-		//temp code
-		timerStop = new java.util.Date();
-		com.cannontech.clientutils.CTILogger.info(
-			(timerStop.getTime() - timerStart.getTime())*.001 + 
-			   " Secs for TOUScheduleLoader (" + allTOUSchedules.size() + " loaded)" );
-               
-		//temp code
-	}
+                LiteTOUSchedule tou = new LiteTOUSchedule(scheduleID);
 
-}
+                tou.setScheduleName(scheduleName);
+                tou.setDefaultRate(defaultRate);
+
+                if (scheduleID != 0) {
+                    allTOUSchedules.add(tou);
+                }
+            }
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, stmt, conn);
+            // temp code
+            timerStop = new Date();
+            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
+                + " Secs for TOUScheduleLoader (" + allTOUSchedules.size() + " loaded)");
+            // temp code
+        }
+    }
 }

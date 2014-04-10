@@ -1,79 +1,62 @@
 package com.cannontech.yukon.server.cache;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteBaseline;
 
-/**
- * Insert the type's description here.
- * Creation date: (8/24/2001 10:53:23 AM)
- * @author: 
- */
 public class BaselineLoader implements Runnable {
-	private String databaseAlias = null;
-	private java.util.ArrayList allBaselines = null;
-/**
- * HolidayScheduleLoader constructor comment.
- */
-public BaselineLoader(java.util.ArrayList baselines ,String dbAlias) {
-	super();
-	this.allBaselines = baselines ;
-	this.databaseAlias = dbAlias;
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/24/2001 10:54:17 AM)
- */
-public void run()
-{
+    private String databaseAlias = null;
+    private ArrayList allBaselines = null;
 
-	//temp code
-	java.util.Date timerStart = null;
-	java.util.Date timerStop = null;
-	//temp code
+    public BaselineLoader(ArrayList baselines, String dbAlias) {
+        this.allBaselines = baselines;
+        this.databaseAlias = dbAlias;
+    }
 
-	//temp code
-	timerStart = new java.util.Date();
-	//temp code
-	String sqlString = "SELECT BASELINEID, BASELINENAME FROM BASELINE WHERE BASELINEID >= 0";
+    @Override
+    public void run() {
+        // temp code
+        Date timerStart = new Date();
+        Date timerStop = null;
+        // temp code
+        String sqlString = "SELECT BASELINEID, BASELINENAME FROM BASELINE WHERE BASELINEID >= 0";
 
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(this.databaseAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(sqlString);
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        try {
+            conn = PoolManager.getInstance().getConnection(this.databaseAlias);
+            stmt = conn.createStatement();
+            rset = stmt.executeQuery(sqlString);
 
-		while (rset.next())
-		{
-			int baselineID = rset.getInt(1);
-			String baselineName = rset.getString(2).trim();
+            while (rset.next()) {
+                int baselineID = rset.getInt(1);
+                String baselineName = rset.getString(2).trim();
 
-			com.cannontech.database.data.lite.LiteBaseline basil =
-				new com.cannontech.database.data.lite.LiteBaseline( baselineID );
-				
-			basil.setBaselineName(baselineName);
+                LiteBaseline basil = new LiteBaseline(baselineID);
 
-			allBaselines.add(basil);
-		}
+                basil.setBaselineName(baselineName);
 
-	}
-	catch (java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-		//temp code
-		timerStop = new java.util.Date();
-		com.cannontech.clientutils.CTILogger.info(
-            (timerStop.getTime() - timerStart.getTime())*.001 + 
-               " Secs for BaselineLoader (" + allBaselines.size() + " loaded)" );
-               
-		//temp code
-	}
+                allBaselines.add(basil);
+            }
 
-}
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, stmt, conn);
+            // temp code
+            timerStop = new Date();
+            CTILogger.info((timerStop.getTime() - timerStart.getTime()) * .001
+                + " Secs for BaselineLoader (" + allBaselines.size() + " loaded)");
+            // temp code
+        }
+    }
 }
