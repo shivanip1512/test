@@ -96,7 +96,6 @@ public class TdcDisplayController {
     @Autowired private DateFormattingService dateFormattingService;
     
     private final static int itemsPerPage = 10;
-    private final static PagingParameters EVERYTHING = new PagingParameters(Integer.MAX_VALUE, 1);
     
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
@@ -562,7 +561,7 @@ public class TdcDisplayController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Display display = displayDao.getDisplayById(displayId);
         List<DisplayData> displayData = tdcService.getDisplayData(display,
-                userContext.getJodaTimeZone(), EVERYTHING);
+                userContext.getJodaTimeZone(), PagingParameters.EVERYTHING);
         TdcDownloadHelper helper =
             new TdcDownloadHelper(accessor,
                                   registrationService,

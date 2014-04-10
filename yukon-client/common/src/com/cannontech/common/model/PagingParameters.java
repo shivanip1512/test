@@ -2,7 +2,9 @@ package com.cannontech.common.model;
 import static com.google.common.base.Preconditions.*;
 
 public final class PagingParameters {
-
+    
+    public final static PagingParameters EVERYTHING = new PagingParameters(Integer.MAX_VALUE, 1);
+    
     private final int page;
     private final int itemsPerPage;
     private final int startIndex;
