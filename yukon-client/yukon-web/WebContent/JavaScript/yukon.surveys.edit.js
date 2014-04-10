@@ -5,7 +5,6 @@
  * @requires jQuery UI 1.9.2+
  */
 
-yukon.namespace('yukon.surveys');
 yukon.namespace('yukon.surveys.edit');
 
 yukon.surveys.edit = (function () {

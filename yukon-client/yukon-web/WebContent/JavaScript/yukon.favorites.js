@@ -11,16 +11,16 @@ yukon.favorites = (function () {
 
     var _dataFavoriteButton = function (button) {
 
-        var data = { module:    button.attr('data-module'),
-                     name:      button.attr('data-name'),
-                     labelArgs: button.attr('data-label-args'),
-                     path:      button.attr('data-path')
+        var data = { module:    button.data('module'),
+                     name:      button.data('name'),
+                     labelArgs: button.data('labelArgs'),
+                     path:      button.data('path')
                    };
 
         if (typeof data.path === 'undefined') {
             data.path = window.location.pathname + window.location.search;
             if (YG.APP_NAME.length > 0) {
-            	data.path = data.path.substring(YG.APP_NAME.length - 1);
+                data.path = data.path.substring(YG.APP_NAME.length - 1);
             }
         }
         return data;
@@ -28,8 +28,8 @@ yukon.favorites = (function () {
 
     _dataSubscribeButton = function (button) {
 
-        var data = { subscriptionType: button.attr('data-subscription-type'),
-                     refId:   button.attr('data-ref-id')
+        var data = { subscriptionType: button.data('subscriptionType'),
+                     refId:   button.data('refId')
                    };
         return data;
     },
@@ -124,7 +124,7 @@ yukon.favorites = (function () {
                 var button = $(this);
 
                 _initializeFavoriteIcon(button);
-                button.unbind('click');
+                button.off('click');
                 button.click( function() {
                     _toggleFavorite(button);
                 });
@@ -134,7 +134,7 @@ yukon.favorites = (function () {
 
                 var button = $(this);
 
-                button.unbind('click');
+                button.off('click');
                 button.click(function() {
                     var actionDo = function(){
                             _toggleFavorite(button, 'icon-star', 'icon-star');
@@ -158,7 +158,7 @@ yukon.favorites = (function () {
                 var button = $(this);
 
                 _initializeSubscribedIcon(button);
-                button.unbind('click');
+                button.off('click');
                 button.click(function() {
                     _toggleSubscribed(button);
                 });
@@ -167,14 +167,14 @@ yukon.favorites = (function () {
             $('.b-subscribe.remove').each( function() {
                 var button = $(this);
 
-                button.unbind('click');
+                button.off('click');
                 button.click(function() {
                     var row = button.closest('tr'),
                         actionDo = function(){
                             _toggleSubscribed(button, 'icon-feed', 'icon-feed');
                         },
                         actionUndo = actionDo,
-                        name = button.attr('data-name');
+                        name = button.data('name');
 
                     localUi.removeWithUndo(row, actionDo, actionUndo, name) ;
                 });
