@@ -420,6 +420,17 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats">OV/UV Alarm Repeat Count</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnOvUv.ovuvRepeats.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
 
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.title">RFN Temperature Alarm Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.definition">Configuration parameters for the temperature alarm feature for RFN devices.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmEnabled">Temperature Alarm Enabled</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmEnabled.description">When true, temperature alarming is enabled for the RFN device. Else, the temperature alarming is disabled.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmHighTempThreshold">High Temperature Threshold</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmHighTempThreshold.description">Temperatures higher than this threshold will trigger a temperature alarm (in degrees Fahrenheit).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatInterval">Temperature Alarm Repeat Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatInterval.description">Time before repeating an alarm if state didn't change (in minutes).</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatCount">Temperature Alarm Repeat Count</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnTempAlarm.temperatureAlarmRepeatCount.description">The number of times the RFN device will report an alarm whose state has not changed.</entry>
+
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
     <entry key="yukon.web.modules.tools.configs.noSelectedTypes">At least one device type must be selected.</entry>    

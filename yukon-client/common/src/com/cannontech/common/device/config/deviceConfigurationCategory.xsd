@@ -2,7 +2,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     jaxb:version="2.0">
-    
     <xs:simpleType name="CategoryType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="timeZone"/>
@@ -27,9 +26,10 @@
             <xs:enumeration value="rfnDisconnectConfiguration"/>
             <xs:enumeration value="mctDisconnectConfiguration"/>
             <xs:enumeration value="rfnOvUv"/>
+            <xs:enumeration value="rfnTempAlarm"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:complexType name="DeviceCategories">
         <xs:choice maxOccurs="unbounded">
             <xs:element name="category">
@@ -39,5 +39,4 @@
             </xs:element>
         </xs:choice>
     </xs:complexType>
-    
 </xs:schema>
