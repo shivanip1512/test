@@ -130,6 +130,7 @@ public enum JwsJnlp {
                 "spring-integration-core-2.1.4.RELEASE.jar",
                 "spring-integration-jms-2.1.4.RELEASE.jar",
                 "spring-xml-2.1.4.RELEASE.jar",
+                "stax2-api-3.1.4.jar",
                 "SqlServer.jar",
                 "xbean-spring-3.4.jar",
                 "xercesImpl-2.11.0.jar",
