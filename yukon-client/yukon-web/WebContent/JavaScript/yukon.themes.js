@@ -246,7 +246,7 @@ yukon.themes = (function () {
                         copy.find('.f-category-value').text(data.result.image.category);
                         copy.find('.f-size-value').text(data.result.image.size);
                         copy.find('.simple-input-image img').attr('alt', data.result.image.name);
-                        copy.find('.simple-input-image img').attr('src', '/common/images/' + data.result.image.id + '/thumb');
+                        copy.find('.simple-input-image img').attr('src', yukon.url('/common/images/') + data.result.image.id + '/thumb');
 
                         copy.insertAfter(uploadArea);
                     } else {/* ignore for now */}

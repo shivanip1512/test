@@ -13,7 +13,8 @@
 <cti:msgScope paths="yukon.common.imagePicker">
 <div class="separated-sections image-picker" data-category="${category}" data-original-image-id="${selected}">
     <div class="section clearfix">
-        <form action="/common/images" method="post">
+        <cti:url var="imagesUrl" value="/common/images"/>
+        <form action="${imagesUrl}" method="post">
             <cti:csrfToken/>
             <label for="uploader-${cti:escapeJavaScript(category)}" class="uploadLabel">
                 <i:inline key=".uploadNew"/>
