@@ -21,7 +21,7 @@
     
     <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
     
-    <div id="f-page-buttons">
+    <div id="page-buttons">
         <c:if test="${not empty trends}">
             <cm:dropdown type="button" icon="icon-download" key="yukon.web.components.button.export.label">
                 <cm:dropdownOption key=".printChart" icon="icon-printer" classes="f-print"/>

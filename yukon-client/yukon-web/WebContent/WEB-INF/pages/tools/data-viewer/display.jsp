@@ -14,7 +14,7 @@
     <cti:includeScript link="/JavaScript/yukon.tdc.js" />
     <flot:defaultIncludes />
 
-    <div id="f-page-buttons" class="dn">
+    <div id="page-buttons" class="dn">
         <c:if test="${display.acknowledgable}">
             <tags:dynamicChoose updaterString="TDC/ALARM_DISPLAY/${display.displayId}" suffix="${display.displayId}">
                 <tags:dynamicChooseOption optionId="MULT_ALARMS">

@@ -7,7 +7,7 @@
 
 <cti:standardPage module="amr" page="phaseDetect.results">
     <c:if test="${not empty cacheKey}">
-        <div id="f-page-buttons">
+        <div id="page-buttons">
             <cti:simpleReportLinkFromNameTag definitionName="phaseDetectDefinition" viewType="csvView" cacheKey="${cacheKey}" var="exportUrl"/>
             <cti:msg2 key=".exportCsv" var="exportLabel"/>
             <cti:button label="${exportLabel}" href="${exportUrl}" icon="icon-page-white-excel"/>

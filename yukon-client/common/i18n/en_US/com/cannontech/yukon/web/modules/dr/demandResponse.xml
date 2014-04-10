@@ -436,6 +436,8 @@
 <entry key="yukon.web.modules.dr.home.ecobee.configure.dailyErrorCheck">Daily Error Check</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.issues.title">Issues ({0})</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads</entry>
 
 <entry key="yukon.web.modules.dr.home.rfPerformance.title">RF Broadcast Performance</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last24Hr">Last 24 Hours</entry>

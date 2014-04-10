@@ -72,7 +72,7 @@
         </div>
         <div class="column two nogutter" id="latestData"></div>
     </div>
-    <div id="f-page-buttons" class="dn">
+    <div id="page-buttons" class="dn">
         <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
             <tags:dynamicChooseOption optionId="MULT_ALARMS">
                 <cti:button nameKey="tdc.alarm.acknowledgeAll" icon="icon-tick" classes="f-ack-all" />

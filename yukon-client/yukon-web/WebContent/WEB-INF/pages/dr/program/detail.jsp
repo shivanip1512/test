@@ -116,7 +116,7 @@
                 on the dynamically updated SHOW_ACTION value
             --%>
             <!-- Page Dropdown Actions -->
-            <div id="f-page-actions" class="dn">
+            <div id="page-actions" class="dn">
                 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
                     <div data-start-action="on" data-pao-id="${programId}">
                         <cti:url var="startProgramUrl" value="/dr/program/start/details">

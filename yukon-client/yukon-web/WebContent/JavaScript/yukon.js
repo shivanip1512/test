@@ -408,9 +408,9 @@ yukon.ui = (function () {
             mod._autofocus();
 
             /** Init page 'Actions' button */
-            html = $('#f-page-actions')[0];
+            html = $('#page-actions')[0];
             if (typeof html !== 'undefined') {
-                $('#f-page-actions').remove();
+                $('#page-actions').remove();
                 var menu = $('#b-page-actions .dropdown-menu');
                 menu.html(html.innerHTML);
                 if (menu.find('.icon').length === menu.find('.icon-blank').length) {
@@ -420,9 +420,9 @@ yukon.ui = (function () {
             }
 
             /** Init page buttons */
-            html = $('#f-page-buttons')[0];
+            html = $('#page-buttons')[0];
             if (typeof html !== 'undefined') {
-                $('#f-page-buttons').remove();
+                $('#page-buttons').remove();
                 $('.page-actions').append(html.innerHTML);
             }
         

@@ -16,7 +16,7 @@
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
-<div id="f-page-buttons" class="dn">
+<div id="page-buttons" class="dn">
     <cti:button id="dd-download" icon="icon-page-white-excel" nameKey="download"/>
 </div>
     

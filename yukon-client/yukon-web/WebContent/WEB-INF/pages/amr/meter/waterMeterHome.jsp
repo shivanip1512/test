@@ -17,7 +17,7 @@
         <cti:param name="collectionType" value="idList" />
         <cti:param name="idList.ids" value="${deviceId}" />
     </cti:url>
-    <div id="f-page-actions" class="dn">
+    <div id="page-actions" class="dn">
         <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
         <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" />
     </div>

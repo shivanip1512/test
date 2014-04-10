@@ -153,7 +153,7 @@
                     <div class="stacked">
                         <tags:nameValueContainer2 naturalWidth="false">
                             <tr>
-                                <td class="name">Queries (April):</td>
+                                <td class="name">Queries (${month}):</td>
                                 <td class="value full-width">
                                     <div class="progress" style="width: 80px;float:left;">
                                         <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0.0%" aria-valuemin="0" aria-valuemax="100" style="width: 27.0%"></div>

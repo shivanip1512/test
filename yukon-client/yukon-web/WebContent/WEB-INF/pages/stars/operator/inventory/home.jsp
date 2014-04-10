@@ -39,7 +39,7 @@ function showFileUpload() {
 
 <!-- Page Dropdown Actions -->
 <c:if test="${showActions}">
-    <div id="f-page-actions" class="dn">
+    <div id="page-actions" class="dn">
         <c:if test="${showAccountCreate}">
             <cti:url var="createAccountUrl" value="/stars/operator/account/accountCreate"/>
             <cm:dropdownOption href="${createAccountUrl}" icon="icon-plus-green" key=".create.account"/>

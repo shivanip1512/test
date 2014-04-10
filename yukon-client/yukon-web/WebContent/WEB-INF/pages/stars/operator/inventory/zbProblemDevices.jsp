@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="zbProblemDevices">
 
     <c:if test="${fn:length(devices) > 0}">
-        <div id="f-page-buttons">
+        <div id="page-buttons">
             <cti:button nameKey="csv" href="/stars/operator/inventory/zbProblemDevices/csv" icon="icon-page-white-excel"/>
         </div>
     </c:if>

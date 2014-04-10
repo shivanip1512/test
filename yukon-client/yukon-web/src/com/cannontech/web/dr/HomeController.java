@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -145,6 +146,7 @@ public class HomeController {
 //        boolean showEcobeeStats = (ecobee == OnOff.ON);
         boolean showEcobeeStats = true;
         model.addAttribute("showEcobeeStats", showEcobeeStats);
+        model.addAttribute("month", new DateTime().toString("MMM"));
         
         return "dr/home.jsp";
     }

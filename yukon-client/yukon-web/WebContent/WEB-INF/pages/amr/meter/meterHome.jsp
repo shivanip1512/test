@@ -13,7 +13,7 @@
     <cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/deviceGroup.css"/>
 
     <c:if test="${not hasActions}">
-        <div id="f-page-buttons">
+        <div id="page-buttons">
             <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
                 <cti:param name="collectionType" value="idList"/>
                 <cti:param name="idList.ids" value="${deviceId}"/>
@@ -23,7 +23,7 @@
     </c:if>
 
     <c:if test="${hasActions}">
-        <div id="f-page-actions" class="dn">
+        <div id="page-actions" class="dn">
             <c:if test="${moveSupported}">
                 <cti:url var="moveInUrl" value="/meter/moveIn">
                     <cti:param name="deviceId" value="${deviceId}"/>

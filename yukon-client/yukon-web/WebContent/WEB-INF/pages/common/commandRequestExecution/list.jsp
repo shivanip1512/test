@@ -86,7 +86,7 @@
     
     
     <%-- RESULTS TABLE --%>
-    <div id="f-page-buttons" class="dn"><cti:button nameKey="filter" id="filterButton" icon="icon-filter"/></div>
+    <div id="page-buttons" class="dn"><cti:button nameKey="filter" id="filterButton" icon="icon-filter"/></div>
     <table id="cresTable" class="compact-results-table row-highlighting">
         <thead>
             <tr>

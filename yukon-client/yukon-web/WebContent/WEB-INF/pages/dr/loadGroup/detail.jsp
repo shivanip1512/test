@@ -74,7 +74,7 @@
                     on the dynamically updated SHOW_ACTION value
                 --%>
                 <!-- Page Dropdown Actions -->
-                <div id="f-page-actions" class="dn">
+                <div id="page-actions" class="dn">
 
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${loadGroup}">
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
