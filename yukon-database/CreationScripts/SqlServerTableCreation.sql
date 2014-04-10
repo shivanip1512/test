@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/3/2014 4:27:49 PM                          */
+/* Created on:     4/6/2014 4:07:38 PM                          */
 /*==============================================================*/
 
 
@@ -5000,6 +5000,10 @@ create table EstimatedLoadFormula (
    FunctionIntercept    float                not null,
    constraint PK_EstimatedLoadFormula primary key (EstimatedLoadFormulaId)
 )
+go
+
+alter table EstimatedLoadFormula
+   add constraint AK_EstimatedLoadFormula_Name unique (Name)
 go
 
 /*==============================================================*/

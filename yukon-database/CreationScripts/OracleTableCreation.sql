@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/3/2014 4:19:18 PM                          */
+/* Created on:     4/6/2014 4:09:01 PM                          */
 /*==============================================================*/
 
 
@@ -4750,6 +4750,9 @@ create table EstimatedLoadFormula  (
    FunctionIntercept    FLOAT                           not null,
    constraint PK_EstimatedLoadFormula primary key (EstimatedLoadFormulaId)
 );
+
+alter table EstimatedLoadFormula
+   add constraint AK_EstimatedLoadFormula_Name unique (Name);
 
 /*==============================================================*/
 /* Table: EstimatedLoadFormulaAssignment                        */
