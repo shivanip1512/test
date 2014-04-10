@@ -87,8 +87,8 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 	@Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
 	@Autowired private CommandPermissionConverter commandPermissionConverter;
 	@Autowired private @Qualifier("main") Executor executor;
+    @Autowired private @Qualifier("porter") BasicServerConnection porterConnection;
 
-    private BasicServerConnection porterConnection;
     private Set<Permission> loggableCommandPermissions = new HashSet<>();
 
     private Map<CommandCompletionCallback<? super T>, CommandResultMessageListener> msgListeners = new ConcurrentHashMap<>();
@@ -620,11 +620,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     private class RequestHolder {
         public Request request;
         public T command;
-    }
-
-    @Required
-    public void setPorterConnection(BasicServerConnection porterConnection) {
-        this.porterConnection = porterConnection;
     }
 
     @Required

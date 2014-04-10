@@ -60,11 +60,21 @@
 	
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool"/>
 
-    <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype" />
-    <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" scope="prototype" />
-    <bean id="porterConnection" factory-bean="connectionPool" factory-method="getDefPorterConn" scope="prototype" />
-    <bean id="macsConnection" factory-bean="connectionPool" factory-method="getDefMacsConn" scope="prototype"/>
-    <bean id="cbcConnection" factory-bean="connectionPool" factory-method="getDefCapControlConn" scope="prototype"/>
+    <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype">
+        <qualifier value="notification"/>
+    </bean>
+    <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" scope="prototype">
+        <qualifier value="dispatch"/>
+    </bean>
+    <bean id="porterConnection" factory-bean="connectionPool" factory-method="getDefPorterConn" scope="prototype">
+        <qualifier value="porter"/>
+    </bean>
+    <bean id="macsConnection" factory-bean="connectionPool" factory-method="getDefMacsConn" scope="prototype">
+        <qualifier value="macs"/>
+    </bean>
+    <bean id="cbcConnection" factory-bean="connectionPool" factory-method="getDefCapControlConn" scope="prototype">
+        <qualifier value="cbc"/>
+    </bean>
 
     <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
         <property name="sequenceNameLookup" ref="sequenceNameLookup" />
