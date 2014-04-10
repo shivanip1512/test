@@ -66,13 +66,18 @@
                 <fileset dir=".." includes="**/*.jar"/>
             </classpath>
         </taskdef>
-    	<xjc schema="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd" package="com.cannontech.common.pao.definition.model.jaxb" destdir="src">
+        <!-- Update the timestamps on the xsd files so JAXB will always generate new output -->
+        <touch file="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd"/>
+        <touch file="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd"/>
+    	<xjc schema="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd"
+                package="com.cannontech.common.pao.definition.model.jaxb" destdir="src" removeOldOutput="yes">
     	    <arg value="-extension"/>
     		<arg value="-Xdefault-value"/>
     		<!-- Everything in this "produces" dir should be overwritten on fresh build -->
     		<produces dir="src/com/cannontech/common/pao/definition/model/jaxb"/>
         </xjc>
-    	<xjc schema="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd" package="com.cannontech.common.device.config.model.jaxb" destdir="src">
+    	<xjc schema="src/com/cannontech/common/device/config/configurationCategoryDefinition.xsd"
+                package="com.cannontech.common.device.config.model.jaxb" destdir="src" removeOldOutput="yes">
             <arg value="-extension"/>
             <arg value="-Xdefault-value"/>
             <!-- Everything in this "produces" dir should be overwritten on fresh build -->
