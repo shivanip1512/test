@@ -1,17 +1,17 @@
 package com.cannontech.web.updater;
 
 public class UpdateValue {
-	private String fullIdentifier;
+	private UpdateIdentifier identifier;
     private String value;
     private boolean unavailable = false;
     
-    public UpdateValue(String identifier, String value) {
-        this.fullIdentifier = identifier;
+    public UpdateValue(UpdateIdentifier identifier, String value) {
+        this.identifier = identifier;
         this.value = value;
     }
     
-    public UpdateValue(String identifier) {
-    	this.fullIdentifier = identifier;
+    public UpdateValue(UpdateIdentifier identifier) {
+    	this.identifier = identifier;
     	this.unavailable = true;
     }
     
@@ -19,53 +19,15 @@ public class UpdateValue {
     	if (unavailable) {
     		throw new IllegalStateException("Can't call getValue if unavailable");
     	}
-        return value;
+        return value.trim();
     }
-    public void setValue(String value) {
-        this.value = value;
-    }
-    public String getFullIdentifier() {
-        return fullIdentifier;
-    }
-    public void setFullIdentifier(String identifier) {
-        this.fullIdentifier = identifier;
+
+    public UpdateIdentifier getIdentifier() {
+        return identifier;
     }
     
     public boolean isUnavailable() {
 		return unavailable;
 	}
-
-    // Eclipse generated...
-    @Override
-    public int hashCode() {
-        final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ((fullIdentifier == null) ? 0 : fullIdentifier.hashCode());
-        result = PRIME * result + ((value == null) ? 0 : value.hashCode());
-        return result;
-    }
-
-    // Eclipse generated...
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final UpdateValue other = (UpdateValue) obj;
-        if (fullIdentifier == null) {
-            if (other.fullIdentifier != null)
-                return false;
-        } else if (!fullIdentifier.equals(other.fullIdentifier))
-            return false;
-        if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
-        return true;
-    }
-    
+   
 }

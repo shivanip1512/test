@@ -26,7 +26,6 @@ import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
-import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 @Controller
 @RequestMapping("/capbank/*")
@@ -37,7 +36,6 @@ public class CapBankWebController {
 	private FilterCacheFactory filterCacheFactory;
 	private CapControlDao capControlDao;
 	private CachingPointFormattingService cachingPointFormattingService;
-	private PointUpdateBackingService pointUpdateBackingService;
 	
 	@RequestMapping("capBankLocations")
 	public String capBankLocations(ModelMap model, LiteYukonUser user, int value, boolean specialArea) {
@@ -115,7 +113,6 @@ public class CapBankWebController {
         
         // Get some pre work done to speed things up on the page load.
         cachingPointFormattingService.addLitePointsToCache(pointList);
-        pointUpdateBackingService.notifyOfImminentPoints(pointList);
         
         return "cbcPointTimestamps.jsp";
 	}
@@ -142,10 +139,5 @@ public class CapBankWebController {
 	public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
         this.cachingPointFormattingService = cachingPointFormattingService;
     }
-	
-	@Autowired
-	public void setPointUpdateBackingService(PointUpdateBackingService pointUpdateBackingService) {
-        this.pointUpdateBackingService = pointUpdateBackingService;
-    }
-	
+
 }

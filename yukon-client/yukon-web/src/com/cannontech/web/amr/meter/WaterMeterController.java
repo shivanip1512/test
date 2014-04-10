@@ -26,7 +26,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.updater.point.PointUpdateBackingService;
 
 @Controller
 @CheckRole({YukonRole.METERING,YukonRole.APPLICATION_BILLING,YukonRole.SCHEDULER,YukonRole.DEVICE_ACTIONS})
@@ -38,7 +37,6 @@ public class WaterMeterController {
     private PointDao pointDao = null;
     private PaoLoadingService paoLoadingService = null;
     private CachingPointFormattingService cachingPointFormattingService = null;
-    private PointUpdateBackingService pointUpdateBackingService = null;
     private PaoDefinitionDao paoDefinitionDao = null;
 
     @RequestMapping("home")
@@ -56,7 +54,6 @@ public class WaterMeterController {
         // do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         cachingPointFormattingService.addLitePointsToCache(litePoints);
-        pointUpdateBackingService.notifyOfImminentPoints(litePoints);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
@@ -100,11 +97,6 @@ public class WaterMeterController {
     @Autowired
     public void setCachingPointFormattingService(CachingPointFormattingService cachingPointFormattingService) {
         this.cachingPointFormattingService = cachingPointFormattingService;
-    }
-    
-    @Autowired
-    public void setPointUpdateBackingService(PointUpdateBackingService pointUpdateBackingService) {
-        this.pointUpdateBackingService = pointUpdateBackingService;
     }
     
     @Autowired

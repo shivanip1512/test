@@ -38,7 +38,7 @@ public class ClassUpdaterTag extends YukonTagSupport {
         
         String className = value.isUnavailable() ? initialClassName :  value.getValue();
         out.print("<span data-class-updater=\""
-                + StringEscapeUtils.escapeHtml4(value.getFullIdentifier()) + "\" class=\"" + className + "\" >");
+                + StringEscapeUtils.escapeHtml4(value.getIdentifier().getFullIdentifier()) + "\" class=\"" + className + "\" >");
         getJspBody().invoke(null);
         out.print("</span>");
     }

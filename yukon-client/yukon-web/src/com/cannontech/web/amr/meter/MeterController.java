@@ -52,7 +52,6 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.updater.point.PointUpdateBackingService;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -70,7 +69,6 @@ public class MeterController extends MultiActionController {
     @Autowired private PaoLoadingService paoLoadingService = null;
     @Autowired private DeviceFilterCollectionHelper filterCollectionHelper = null;
     @Autowired private CachingPointFormattingService cachingPointFormattingService = null;
-    @Autowired private PointUpdateBackingService pointUpdateBackingService = null;
     @Autowired private RolePropertyDao rolePropertyDao = null;
     @Autowired private PaoDefinitionDao paoDefinitionDao = null;
     @Autowired private MspMeterSearchService mspMeterSearchService;
@@ -177,8 +175,7 @@ public class MeterController extends MultiActionController {
         // do some hinting to speed loading
         List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
         cachingPointFormattingService.addLitePointsToCache(litePoints);
-        pointUpdateBackingService.notifyOfImminentPoints(litePoints);
-
+        
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);

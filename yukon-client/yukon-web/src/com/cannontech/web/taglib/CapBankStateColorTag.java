@@ -43,7 +43,7 @@ public class CapBankStateColorTag extends YukonTagSupport {
         stateBoxContentBuilder.append("class=\"box state-box\" ");
         stateBoxContentBuilder.append("style=\"background-color: " + color + "\" ");
         stateBoxContentBuilder.append("data-color-updater=\""
-                + StringEscapeUtils.escapeHtml4(value.getFullIdentifier()) + "\" data-format=\"background\" >");
+                + StringEscapeUtils.escapeHtml4(value.getIdentifier().getFullIdentifier()) + "\" data-format=\"background\" >");
         stateBoxContentBuilder.append("</span>\n");
         String stateBoxContent = stateBoxContentBuilder.toString();
 

@@ -54,10 +54,10 @@ public class PointValueTag extends YukonTagSupport {
         if (useColor) {
             final UpdateValue latestValue = registrationService.getLatestValue(pointId, "{stateColor|#%02X%02X%02X}", getUserContext());
             final String color = latestValue.isUnavailable() ? "black" :  latestValue.getValue();
-            out.print("<span style=\"color: " + color + " !important;\" data-color-updater=\"" + latestValue.getFullIdentifier() + "\">");
+            out.print("<span style=\"color: " + color + " !important;\" data-color-updater=\"" + latestValue.getIdentifier().getFullIdentifier() + "\">");
         }
         
-        out.print("<span data-updater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
+        out.print("<span data-updater=\"" + value.getIdentifier().getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
         out.print(outputText);
         out.print("</span>");
         if (useColor) {

@@ -679,9 +679,6 @@
         </property>
         <property name="backs">
             <map>
-                <entry key="POINT">
-                    <ref local="pointUpdateBackingService" />
-                </entry>
                 <entry key="ALERT">
                     <ref local="alertUpdateBackingService" />
                 </entry>
@@ -807,6 +804,13 @@
                 </entry>
                 <entry key="TDC">
                     <ref local="tdcBackingService" />
+                </entry>
+            </map>
+        </property>
+        <property name="bulkBacks">
+            <map>
+                <entry key="POINT">
+                    <ref local="pointUpdateBackingService" />
                 </entry>
             </map>
         </property>

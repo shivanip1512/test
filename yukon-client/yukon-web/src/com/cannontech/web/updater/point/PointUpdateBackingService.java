@@ -1,16 +1,21 @@
 package com.cannontech.web.updater.point;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dynamic.AllPointDataListener;
@@ -18,12 +23,16 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.updater.UpdateBackingService;
-import com.google.common.collect.Sets;
+import com.cannontech.web.updater.BulkUpdateBackingService;
+import com.cannontech.web.updater.UpdateIdentifier;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
-public class PointUpdateBackingService implements UpdateBackingService, AllPointDataListener {
+public class PointUpdateBackingService implements BulkUpdateBackingService, AllPointDataListener {
+    private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
+
     private TimeSource timeSource;
     private AsyncDynamicDataSource asyncDataSource;
     private PointFormattingService pointFormattingService;
@@ -31,80 +40,82 @@ public class PointUpdateBackingService implements UpdateBackingService, AllPoint
     private int maxOverSize = maxCacheSize / 20;
     private Map<Integer, DatedPointValue> cache = 
         Collections.synchronizedMap(new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true));
-    private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
+    private final static Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
-    public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
-        PointIdentifier pointIdentifier = getPointIdentifier(identifier);
-        
-        PointValueQualityHolder latestValue = doGetLatestValue(pointIdentifier.pointId, afterDate);
-        if (latestValue == null) return null;
-        String valueString;
-        try {
-            Format formatEnum = Format.valueOf(pointIdentifier.format);
-            valueString = pointFormattingService.getValueString(latestValue, formatEnum, userContext);
-        } catch (IllegalArgumentException e) {
-            valueString = pointFormattingService.getValueString(latestValue, pointIdentifier.format, userContext);
-        }
-
-        return valueString;
-    }
-    
-    public PointIdentifier getPointIdentifier(String identifier) {
-        Matcher m = idSplitter.matcher(identifier);
-        if (!m.matches() || m.groupCount() != 2) {
-            throw new RuntimeException("identifier string isn't well formed: " + identifier);
-        }
-        String idStr = m.group(1);
-        String format = m.group(2);
-
-        int pointId = Integer.parseInt(idStr);
-        
-        PointIdentifier pointIdentifier = new PointIdentifier();
-        pointIdentifier.pointId = pointId;
-        pointIdentifier.format = format;
-        
-        return pointIdentifier;
-    }
-    
     @Override
-    public boolean isValueAvailableImmediately(String identifier,
-    		long afterDate, YukonUserContext userContext) {
-        PointIdentifier pointIdentifier = getPointIdentifier(identifier);
-        boolean containsKey = cache.containsKey(pointIdentifier.pointId);
-        
-    	return containsKey;
-    }
-
-    private PointValueQualityHolder doGetLatestValue(int pointId, long afterDate) {
-        DatedPointValue value = cache.get(pointId);
-        if (value == null) {
-        	PointValueQualityHolder pointData = asyncDataSource.getAndRegisterForPointData(this, pointId);
-            value = createWrapper(pointData);
-            cache.put(pointData.getId(), value);
+    public Map<UpdateIdentifier, String> getLatestValues(List<UpdateIdentifier> updateIdentifiers, long afterDate,
+                                                         YukonUserContext userContext, boolean registerForPointData) {
+        if (log.isDebugEnabled()) {
+            log.debug("getLatestValues - handling " + Joiner.on("; ").join(updateIdentifiers));
         }
-        
-        if (value.receivedTime < afterDate) {
-            return null;
+        ListMultimap<Integer, PointIdentifier> identifiers = ArrayListMultimap.create();
+        for (UpdateIdentifier updateIdentifier : updateIdentifiers) {
+            PointIdentifier pointIdentifier = new PointIdentifier(updateIdentifier);
+            identifiers.put(pointIdentifier.pointId, pointIdentifier);
         }
+        List<DatedPointValue> latestValues = getLatestValues(identifiers.keySet(), afterDate, registerForPointData);
+        Map<UpdateIdentifier, String> formattedValues = formatValues(identifiers, latestValues, userContext);
+        log.debug("getLatestValues - done");
+        return formattedValues;
+    }
         
-        return value.value;
+    /*
+     * Returns latest values
+     */
+    private List<DatedPointValue> getLatestValues(Set<Integer> pointIds, long afterDate, boolean registerForPointData) {
+        Set<Integer> pointsToRegister = new HashSet<>();
+        List<DatedPointValue> values = new ArrayList<>();
+        for (Integer pointId : pointIds) {
+            DatedPointValue value = cache.get(pointId);
+            if (value == null) {
+                if (registerForPointData) {
+                    pointsToRegister.add(pointId);
+                }
+            } else if (value.receivedTime >= afterDate) {
+                values.add(value);
+            }
+        }
+        if (!pointsToRegister.isEmpty()) {
+            log.debug("Registering points");
+            Set<? extends PointValueQualityHolder> points =
+                asyncDataSource.getAndRegisterForPointData(this, pointsToRegister);
+            for (PointValueQualityHolder point : points) {
+                DatedPointValue value = new DatedPointValue(point);
+                cache.put(point.getId(), value);
+                if (value.receivedTime >= afterDate) {
+                    values.add(value);
+                }
+            }
+        }
+        return values;
     }
-    
-	public void notifyOfImminentPoints(Iterable<LitePoint> litePoints) {
-		Set<Integer> pointIds = Sets.newHashSetWithExpectedSize(30);
-		for (LitePoint litePoint : litePoints) {
-			pointIds.add(litePoint.getPointID());
-		}
-		asyncDataSource.registerForPointData(this, pointIds);
-	}
 
-	private DatedPointValue createWrapper(PointValueQualityHolder pointData) {
-        DatedPointValue result = new DatedPointValue();
-        result.receivedTime = timeSource.getCurrentMillis();
-        result.value = pointData;
-        return result;
+    /*
+     * Formats latest values
+     */
+    private Map<UpdateIdentifier, String> formatValues(ListMultimap<Integer, PointIdentifier> identifiers,
+                                                       List<DatedPointValue> values, YukonUserContext userContext) {
+
+        Map<UpdateIdentifier, String> formattedValues = new HashMap<>();
+        for (DatedPointValue datedPointValue : values) {
+            List<PointIdentifier> pointIdentifier = identifiers.get(datedPointValue.value.getId());
+            for (PointIdentifier identifier : pointIdentifier) {
+                String valueString;
+                try {
+                    Format formatEnum = Format.valueOf(identifier.format);
+                    valueString =
+                        pointFormattingService.getValueString(datedPointValue.value, formatEnum, userContext);
+                } catch (IllegalArgumentException e) {
+                    valueString = pointFormattingService.getValueString(datedPointValue.value,
+                                                                        identifier.format,
+                                                                        userContext);
+                }
+                formattedValues.put(identifier.updateIdentifier, valueString);
+            }
+        }
+        return formattedValues;
     }
-
+	   
     private void trimCache() {
         int toTrim = cache.size() - maxCacheSize;
         if (toTrim > maxOverSize) {
@@ -122,11 +133,27 @@ public class PointUpdateBackingService implements UpdateBackingService, AllPoint
     private class DatedPointValue {
     	PointValueQualityHolder value;
     	long receivedTime;
+        DatedPointValue(PointValueQualityHolder pointData) {
+            this.receivedTime = timeSource.getCurrentMillis();
+            this.value = pointData;
+        }
     }
     
     private class PointIdentifier {
         int pointId;
         String format;
+        UpdateIdentifier updateIdentifier;
+        PointIdentifier(UpdateIdentifier identifier) {
+            Matcher m = idSplitter.matcher(identifier.getRemainder());
+            if (!m.matches() || m.groupCount() != 2) {
+                throw new RuntimeException("identifier string isn't well formed: " + identifier);
+            }
+            String idStr = m.group(1);
+            String format = m.group(2);
+            this.pointId = Integer.parseInt(idStr);
+            this.format = format;
+            this.updateIdentifier = identifier;
+        }
     }
 
     public void pointDataReceived(PointValueQualityHolder pointData) {
@@ -155,7 +182,7 @@ public class PointUpdateBackingService implements UpdateBackingService, AllPoint
     
     private void usePointData(PointValueQualityHolder pointData) {
         trimCache();
-        DatedPointValue value = createWrapper(pointData);
+        DatedPointValue value = new DatedPointValue(pointData);
         cache.put(pointData.getId(), value);
     }
     
@@ -182,6 +209,4 @@ public class PointUpdateBackingService implements UpdateBackingService, AllPoint
             PointFormattingService pointFormattingService) {
         this.pointFormattingService = pointFormattingService;
     }
-
-    
 }

@@ -20,7 +20,7 @@ public class PointDataRegistrationServiceImpl implements PointDataRegistrationSe
 	    UpdateValue updateValue = getLatestValue(pointId, format, userContext);
 	
 	    String spanStr = "<span title=\"pointId:" + pointId + "\" data-updater=\"" + 
-	    updateValue.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
+	    updateValue.getIdentifier().getFullIdentifier() + "\" class=\"pointValueTagSpan\" >";
 	    
 	    spanStr += (updateValue.isUnavailable() ? "..." : updateValue.getValue());
 	    spanStr += "</span>";

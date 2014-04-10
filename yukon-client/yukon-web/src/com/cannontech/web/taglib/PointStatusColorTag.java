@@ -56,7 +56,7 @@ public class PointStatusColorTag extends YukonTagSupport {
                 beforeBodyBuilder.append(" class=\"" + styleClass + "\"");
             }
             
-            beforeBodyBuilder.append(" data-color-updater=\"" + value.getFullIdentifier() + "\">");
+            beforeBodyBuilder.append(" data-color-updater=\"" + value.getIdentifier().getFullIdentifier() + "\">");
             String before = beforeBodyBuilder.toString();
             
             final StringBuilder afterBodyBuilder = new StringBuilder();

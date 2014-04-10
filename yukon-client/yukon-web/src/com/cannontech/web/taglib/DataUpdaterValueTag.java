@@ -24,7 +24,7 @@ public class DataUpdaterValueTag extends YukonTagSupport {
         UpdateValue value = dataUpdaterService.getFirstValue(getType() + "/" + getIdentifier(), getUserContext());
         
         JspWriter out = getJspContext().getOut();
-        out.print("<span data-updater=\"" + value.getFullIdentifier() + "\" class=\"" + styleClass + "\" >");
+        out.print("<span data-updater=\"" + value.getIdentifier().getFullIdentifier() + "\" class=\"" + styleClass + "\" >");
         String newValue = value.isUnavailable() ? initialValue : value.getValue();
         out.print(StringEscapeUtils.escapeHtml4(newValue));
         out.print("</span>");
