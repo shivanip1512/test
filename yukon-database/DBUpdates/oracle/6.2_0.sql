@@ -481,7 +481,8 @@ ON CCEventLog (EventType, DateTime, EventSubtype, PointID);
 /* @error ignore-begin */
 ALTER TABLE EstimatedLoadFormula
     ADD CONSTRAINT AK_EstimatedLoadFormula_Name UNIQUE (Name);
-/* @error ignore-end *//* End YUK-13225 */
+/* @error ignore-end */
+/* End YUK-13225 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
