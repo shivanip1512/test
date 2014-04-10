@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -62,6 +65,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
@@ -82,11 +86,16 @@ public class EstimatedLoadController {
     @Autowired private WeatherDataService weatherDataService;
 
     private String baseKey = "yukon.web.modules.dr.formula.";
-    private FormulaBeanValidator formulaBeanValidator = new FormulaBeanValidator(baseKey);
+    private FormulaBeanValidator formulaBeanValidator;
     public static enum SortBy {NAME, CALCULATION_TYPE, TYPE, GEAR_CONTROL_METHOD,
                                APP_CAT_AVERAGE_LOAD, IS_ASSIGNED, PROGRAM_NAME}
     
     private static final String ITEMS_PER_PAGE = "10";
+
+    @PostConstruct
+    void init() {
+        formulaBeanValidator = new FormulaBeanValidator(baseKey, formulaDao);
+    }
 
     @RequestMapping("home")
     public String home(ModelMap model,YukonUserContext context) {

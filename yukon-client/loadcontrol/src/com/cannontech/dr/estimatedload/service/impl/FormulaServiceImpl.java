@@ -216,7 +216,14 @@ public class FormulaServiceImpl implements FormulaService {
      * @return The output of the function as a Double. 
      */
     private Double evaluateFunction(FormulaFunction f, Double inputValue) {
-        Double outputValue = f.getQuadratic() * Math.pow(inputValue, 2) + f.getLinear() * inputValue; 
+        Double outputValue;
+        if (f.getInput().getInputType() == FormulaInput.InputType.CONTROL_PERCENT) {
+            // Convert the integer gear control percentage (0 - 100) to a decimal (0.0 - 1.0).
+            Double percentageInputValue = inputValue / 100.0;
+            outputValue = f.getQuadratic() * Math.pow(percentageInputValue, 2) + f.getLinear() * percentageInputValue; 
+        } else {
+            outputValue = f.getQuadratic() * Math.pow(inputValue, 2) + f.getLinear() * inputValue; 
+        }
         return outputValue;
     }
 

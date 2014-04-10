@@ -635,6 +635,7 @@ More detail is available on the <a href="{0}">Broadcast Performance Details</a> 
 <entry key="yukon.web.modules.dr.formula.error.notValidNumber">Not a valid number</entry>
 <entry key="yukon.web.modules.dr.formula.error.noEntries">Cannot have 0 entries.</entry>
 <entry key="yukon.web.modules.dr.formula.error.invalidPoint">Invalid Point</entry>
+<entry key="yukon.web.modules.dr.formula.error.nameInUse">Formula name already in use.</entry>
 <entry key="yukon.web.modules.dr.formula.formulaSettings.title">Formula Settings</entry>
 <entry key="yukon.web.modules.dr.formula.formulaType">Formula Type</entry>
 <entry key="yukon.web.modules.dr.formula.functionIntercept">Function Intercept</entry>

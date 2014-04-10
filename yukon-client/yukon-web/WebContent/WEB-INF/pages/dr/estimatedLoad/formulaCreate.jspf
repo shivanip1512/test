@@ -25,6 +25,7 @@
 
     <div class="page-action-area">
         <cti:button nameKey="create" type="submit" classes="primary action"/>
-        <cti:button nameKey="cancel" href="/dr/estimatedLoad/home"/>
+        <cti:url var="home" value="/dr/estimatedLoad/home"/>
+        <cti:button nameKey="cancel" href="${home}"/>
     </div>
 </form:form>

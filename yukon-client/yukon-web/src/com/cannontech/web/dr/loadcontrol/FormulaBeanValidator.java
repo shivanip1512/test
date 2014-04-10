@@ -12,20 +12,33 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.dr.estimatedload.Formula;
 import com.cannontech.dr.estimatedload.FormulaInput.InputType;
+import com.cannontech.dr.estimatedload.dao.FormulaDao;
 
 public class FormulaBeanValidator extends SimpleValidator<FormulaBean> {
 
     private String baseKey;
-    public FormulaBeanValidator(String baseKey) {
+    private FormulaDao formulaDao;
+    
+    public FormulaBeanValidator(String baseKey, FormulaDao formulaDao) {
         super(FormulaBean.class);
         this.baseKey = baseKey + "error.";
+        this.formulaDao = formulaDao;
     }
 
     @Override
     protected void doValidation(FormulaBean bean, Errors errors) {
         // Probably prudent to check for NaN, infinity etc
         YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", bean.getName(), false, 32);
-
+        
+        // Determine if name is in use.  Must do for new formulas (formulaId is null) as well as existing
+        // formulas whose names have been edited (name in db is not same as name in bean).
+        if (bean.getFormulaId() == null
+                || !formulaDao.getFormulaById(bean.getFormulaId()).getName().equals(bean.getName())) {
+            if (formulaDao.isFormulaNameInUse(bean.getName())) {
+                errors.rejectValue("name", baseKey + "nameInUse");
+            }
+        }
+        
         if (bean.getCalculationType() == Formula.CalculationType.FUNCTION) {
             
             YukonValidationUtils.checkIsValidDouble(errors, "functionIntercept", bean.getFunctionIntercept().doubleValue());

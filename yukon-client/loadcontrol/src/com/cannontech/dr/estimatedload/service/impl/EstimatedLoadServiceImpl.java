@@ -51,10 +51,17 @@ public class EstimatedLoadServiceImpl implements EstimatedLoadService {
         
         double kWSavingsNow = calculateKwSavingsNow(program, partialReductionAmount.getMaxKwSavings());
         
-        return new EstimatedLoadAmount(partialReductionAmount.getConnectedLoad(),
+        return roundValues(partialReductionAmount.getConnectedLoad(),
                 partialReductionAmount.getDiversifiedLoad(), 
                 partialReductionAmount.getMaxKwSavings(),
                 kWSavingsNow);
+    }
+
+    /** Rounds the result values to the nearest double representation of integer values. */
+    private EstimatedLoadResult roundValues(double connectedLoad, double diversifiedLoad, double maxKwSavings,
+            double kwSavingsNow) {
+        return new EstimatedLoadAmount(Math.rint(connectedLoad), Math.rint(diversifiedLoad), Math.rint(maxKwSavings),
+                Math.rint(kwSavingsNow));
     }
 
     /** This method calculates the first three estimated load values: Connected Load, Diversified Load,

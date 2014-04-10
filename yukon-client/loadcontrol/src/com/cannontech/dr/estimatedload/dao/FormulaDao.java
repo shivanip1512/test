@@ -21,6 +21,9 @@ public interface FormulaDao {
     /** Deletes a formula by its id **/
     public void deleteFormulaById(int formulaId);
 
+    /** Determines if a formula exists with a given name. */
+    public boolean isFormulaNameInUse(String name);
+
     /** 
      * Searches formula inputs and returns true if this pao is used as an input for a formula.
      * returns false if not

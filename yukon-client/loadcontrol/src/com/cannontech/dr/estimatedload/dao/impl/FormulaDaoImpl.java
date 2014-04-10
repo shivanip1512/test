@@ -102,6 +102,14 @@ public class FormulaDaoImpl implements FormulaDao {
         return yukonJdbcTemplate.queryForLimitedResults(sql, formulaRowMapper, 1).get(0);
     }
 
+    @Override
+    public boolean isFormulaNameInUse(String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM").append(formulaTableName).append("WHERE Name").eq(name);
+        int count = yukonJdbcTemplate.queryForInt(sql);
+        return count > 0;
+    }
+
     /** Returns the base query used for retrieving formula objects.  If no whereClause is supplied,
      * the query provided will select all Formula objects.
      * 
