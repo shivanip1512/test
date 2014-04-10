@@ -106,7 +106,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
     }
 
     /*
-     * Returns a latest cached value. If the cached value is not found an update values is returned
+     * Returns a latest cached value. If the cached value is not found an update value is returned
      * with the value not set.
      */
     private UpdateValue getFirstValue(BulkUpdateBackingService back, UpdateIdentifier identifier,
