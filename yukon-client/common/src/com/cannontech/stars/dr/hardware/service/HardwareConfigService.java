@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.service;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -72,7 +73,7 @@ public class HardwareConfigService {
         }
 
         private void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
-                final LiteLmHardwareBase hardware, String command, LiteYukonUser user)
+                final LiteLmHardwareBase hardware, String command)
                 throws CommandCompletionException {
             CommandCompletionCallback<CommandRequestRoute> callback =
                 new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
@@ -117,7 +118,7 @@ public class HardwareConfigService {
                     status = Status.SUCCESS;
                     for (String command : commands) {
                         log.trace("processing command [" + command + "]");
-                        blockingCommandExecute(template, hardware, command, user);
+                        blockingCommandExecute(template, hardware, command);
                         if (hadErrors) {
                             log.error("error(s) executing command [" + command +
                                       "]; inventory id=" + inventoryId +
@@ -229,12 +230,11 @@ public class HardwareConfigService {
     public void init() {
         log.debug("HardwareConfigService - starting up");
 
-        List<EnergyCompany> allEnergyCompanies = yEcService.getAllEnergyCompanies();
+        Collection<EnergyCompany> allEnergyCompanies = yEcService.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
             log.debug("HardwareConfigService - starting task for ecId = " + energyCompany.getId());
             Runnable task = new EnergyCompanyRunnable(energyCompany.getId());
             executor.scheduleWithFixedDelay(task, 1, 1, TimeUnit.MINUTES);
         }
     }
-
 }

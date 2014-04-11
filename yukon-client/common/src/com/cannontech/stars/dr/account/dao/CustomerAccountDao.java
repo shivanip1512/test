@@ -84,7 +84,7 @@ public interface CustomerAccountDao {
 
     CustomerAccount getByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies);
 
-    CustomerAccount findByAccountNumber(String accountNumber, List<? extends YukonEnergyCompany> energyCompanies);
+    CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanies);
 
     /**
      * Get a total count of the number of customer accounts in the system. If the assignedProgramIds

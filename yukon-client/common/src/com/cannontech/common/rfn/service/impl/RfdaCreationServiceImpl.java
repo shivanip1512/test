@@ -16,8 +16,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfdaCreationService;
 
 public class RfdaCreationServiceImpl implements RfdaCreationService {
-    
-
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
@@ -30,10 +28,13 @@ public class RfdaCreationServiceImpl implements RfdaCreationService {
     public RfnDevice create(final RfnIdentifier rfnIdentifier) {
         String deviceName = "RFDA_" + rfnIdentifier.getCombinedIdentifier();
         
-        YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RF_DA, deviceName, rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorManufacturer(), rfnIdentifier.getSensorSerialNumber(), true);
+        YukonDevice newDevice = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RF_DA, deviceName,
+            rfnIdentifier.getSensorModel(), rfnIdentifier.getSensorManufacturer(),
+            rfnIdentifier.getSensorSerialNumber(), true);
         RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), rfnIdentifier);
-        
-        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getCombinedIdentifier(), "N/A", deviceName);
+
+        rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(),
+            device.getRfnIdentifier().getCombinedIdentifier(), "N/A", deviceName);
         return device;
     }
     
@@ -58,5 +59,4 @@ public class RfdaCreationServiceImpl implements RfdaCreationService {
     public int getNewDeviceCreated() {
         return newDeviceCreated.get();
     }
-    
 }

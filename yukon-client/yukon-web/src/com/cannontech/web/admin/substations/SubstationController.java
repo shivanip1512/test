@@ -1,5 +1,6 @@
 package com.cannontech.web.admin.substations;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,15 +34,17 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
 @Controller
 public class SubstationController { 
-
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private TypeReference<List<Integer>> integerListType
-        = new TypeReference<List<Integer>>() {/*Jackson requires*/};
+    private TypeReference<List<Integer>> integerListType = new TypeReference<List<Integer>>() {/*Jackson requires*/};
 
+    /**
+     * @param request unused
+     * @param response unused
+     */
     @RequestMapping("routeMapping/view")
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView();
@@ -49,7 +52,10 @@ public class SubstationController {
         
         return mav;
     }
-    
+
+    /**
+     * @param response unused
+     */
     @RequestMapping("routeMapping/viewRoute")
     public ModelAndView viewRoute(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
@@ -68,6 +74,10 @@ public class SubstationController {
         return mav;
     }
 
+    /**
+     * @param request unused
+     * @param response unused
+     */
     @RequestMapping("routeMapping/viewSubstation")
     public ModelAndView viewSubstation(HttpServletRequest request, HttpServletResponse response) {
         
@@ -128,9 +138,11 @@ public class SubstationController {
         return viewRoute(request,response);
     }
 
+    /**
+     * @param response unused
+     */
     @RequestMapping(value="routeMapping/edit", params="add")
     public ModelAndView addSubstation(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         ModelAndView mav = new ModelAndView("redirect:view");
 
         String name = ServletRequestUtils.getStringParameter(request, "name");
@@ -145,15 +157,16 @@ public class SubstationController {
         return mav;
     }
 
-
     @RequestMapping("routeMapping/updateSubstation")
     public ModelAndView updateSubstation(HttpServletRequest request, HttpServletResponse response) {
         return viewSubstation(request, response);
     }
 
+    /**
+     * @param response unused
+     */
     @RequestMapping(value="routeMapping/edit", params="remove")
     public ModelAndView removeSubstation(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
         ModelAndView mav = new ModelAndView("redirect:view");
 
         Integer id = ServletRequestUtils.getIntParameter(request, "selection_list");
@@ -164,7 +177,7 @@ public class SubstationController {
         Substation substation = new Substation();
         substation.setId(id);
 
-        List<EnergyCompany> allEnergyCompanies = yukonEnergyCompanyService.getAllEnergyCompanies();
+        Collection<EnergyCompany> allEnergyCompanies = yukonEnergyCompanyService.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
             energyCompanyService.removeSubstationFromEnergyCompany(energyCompany.getId(), id);
         }
@@ -175,6 +188,10 @@ public class SubstationController {
         return mav;
     }
 
+    /**
+     * @param request unused
+     * @param response unused
+     */
     @RequestMapping("routeMapping/removeAll")
     public ModelAndView removeAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -191,7 +208,6 @@ public class SubstationController {
     }
     
     private class SubstationComparator implements Comparator<Substation> {
-        
         @Override
         public int compare(Substation o1, Substation o2) {
             return o1.getName().compareToIgnoreCase(o2.getName());

@@ -212,8 +212,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
 
     @Override
-    public CustomerAccount findByAccountNumber(final String accountNumber, 
-                                               List<? extends YukonEnergyCompany> energyCompanyIds) {
+    public CustomerAccount findByAccountNumber(String accountNumber, Iterable<? extends YukonEnergyCompany> energyCompanyIds) {
         try {
             return getByAccountNumber(accountNumber, energyCompanyIds);
         } catch (NotFoundException e) {

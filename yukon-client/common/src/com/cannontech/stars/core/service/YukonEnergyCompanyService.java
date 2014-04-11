@@ -1,5 +1,6 @@
 package com.cannontech.stars.core.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,14 +21,15 @@ public interface YukonEnergyCompanyService {
     };
 
     /**
-     * Returns energy company associated with this operator user.
+     * Get energy company associated with this operator user.
      * 
-     * If this user is a residential customer, or no energy company is found throws EnergyCompanyNotFoundException
+     * If this user is a residential customer, or no energy company is found throws
+     * EnergyCompanyNotFoundException
      */
     EnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator);
 
     /**
-     * Returns energy company associated with this user.
+     * Get energy company associated with this user.
      * 
      * This user can be an operator or residential user.
      * If no energy company is found returns default energy company
@@ -35,32 +37,29 @@ public interface YukonEnergyCompanyService {
     EnergyCompany getEnergyCompany(LiteYukonUser user);
 
     /**
-     * This method returns whether or not the operator provided is an Energy Company Operator
+     * Determine whether or not the operator provided is an Energy Company Operator.
      */
     boolean isEnergyCompanyOperator(LiteYukonUser operator);
-    
+
     /**
-     * This method gets the yukon energy company that is associated with the supplied account.  
-     * This method should be used as the primary option when you are working with an account. 
+     * Get the energy company that is associated with the supplied account.
+     * This method should be used as the primary option when you are working with an account.
      */
     EnergyCompany getEnergyCompanyByAccountId(int accountId);
 
     /**
-     * This method gets the yukon energy company that is associated with the supplied inventory.  
-     * This method should be used as the primary option when you are working with an inventory. 
+     * Get the energy company that is associated with the supplied inventory.
+     * This method should be used as the primary option when you are working with inventory.
      */
     EnergyCompany getEnergyCompanyByInventoryId(int inventoryId);
-    
+
     /**
-     * Returns a list of all energy companies
+     * Get a list of all energy companies
      */
-    List<EnergyCompany> getAllEnergyCompanies();
+    Collection<EnergyCompany> getAllEnergyCompanies();
 
     boolean isDefaultEnergyCompany(YukonEnergyCompany energyCompany);
 
-    /**
-     * This method returns "true" if this is a primary operator.
-     */
     boolean isPrimaryOperator(int operatorLoginId);
 
     EnergyCompany getEnergyCompany(int ecId);
@@ -72,27 +71,27 @@ public interface YukonEnergyCompanyService {
     EnergyCompany findEnergyCompany(String energyCompanyName);
 
     /**
-     * Returns an immutable list of all routeIds associated with the energy company
+     * Get an immutable list of all routeIds associated with the energy company
      */
     List<Integer> getRouteIds(int ecId);
 
     /**
-     * Returns all routes assigned to this energy company (or all routes in yukon
-     * if it is a single energy company system), ordered alphabetically.
+     * Get all routes assigned to this energy company (or all routes in Yukon if it is a single energy company
+     * system), ordered alphabetically.
      */
     List<LiteYukonPAObject> getAllRoutes(EnergyCompany energyCompany);
-    
+
     void addCustomerListEntry(int customerId, EnergyCompany energyCompany);
-    
+
     List<Integer> getCustomerListEntries(EnergyCompany energyCompany);
-    
+
     List<EnergyCompany> getEnergyCompaniesByCustomer(int customerId);
 
-    
     /**
-     * This method returns the direct child energy companies underneath the energy company.
-     * It will not return any of the children of the child energy companies.  If you want that data you'll want to
-     * use the getChildEnergyCompanies method above.
+     * Get the direct child energy companies underneath the energy company.
+     * 
+     * It will not return any of the children of the child energy companies.  If you want that data you'll want
+     * to use the getChildEnergyCompanies method above.
      * 
      * @param energyCompanyId - The energyCompanyId supplied is not included in the resulting list.
      * @deprecated Use {@link #getEnergyCompany()}.getChildren()
@@ -101,7 +100,8 @@ public interface YukonEnergyCompanyService {
     List<Integer> getDirectChildEnergyCompanies(int energyCompanyId);
 
     /**
-     * This method returns the parent energy company id of the energy company id supplied.  This method will throw an exception
+     * Get the parent energy company id of the energy company id supplied.  This method will
+     * throw an exception
      * if you supply the default energy company or the main energy company.
      * @deprecated Use {@link #getEnergyCompany()}.getParent()
      */
@@ -109,7 +109,7 @@ public interface YukonEnergyCompanyService {
     Integer getParentEnergyCompany(int energyCompanyId);
 
     /**
-     * This method returns the parent energy company id of the energy company id supplied.  This will return null
+     * Get  the parent energy company id of the energy company id supplied.  This will return null
      * if the energy company id is the default energy company or the main energy company.
      * @deprecated Use {@link #getEnergyCompany()}
      */

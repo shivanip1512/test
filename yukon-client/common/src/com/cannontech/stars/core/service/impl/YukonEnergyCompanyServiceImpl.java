@@ -2,6 +2,7 @@ package com.cannontech.stars.core.service.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -149,8 +150,8 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public List<EnergyCompany> getAllEnergyCompanies() {
-        return new ArrayList<>(getEnergyCompanies().values());
+    public Collection<EnergyCompany> getAllEnergyCompanies() {
+        return getEnergyCompanies().values();
     }
 
     @Override
@@ -187,7 +188,9 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     public Integer findParentEnergyCompany(int energyCompanyId) {
         try {
             return getParentEnergyCompany(energyCompanyId);
-        } catch (IncorrectResultSizeDataAccessException e) {}
+        } catch (IncorrectResultSizeDataAccessException e) {
+            // find
+        }
         
         return null;
     }
@@ -313,7 +316,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
     
     /**
-     * Returns energy company id for customer account or default energy company's id
+     * Return energy company id for customer account or default energy company's id
      */
     private int getEnergyCompanyIdForUser(LiteYukonUser user) {
         // primary contact

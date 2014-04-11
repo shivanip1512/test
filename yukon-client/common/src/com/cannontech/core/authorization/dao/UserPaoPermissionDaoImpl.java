@@ -31,7 +31,6 @@ import com.google.common.collect.Multimap;
  * User implementation for PaoPermissionDao
  */
 public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser> {
-
     private JdbcOperations jdbcTemplate = null;
     private YukonJdbcTemplate yukonJdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
@@ -43,115 +42,123 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
-    
+
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
+    @Override
     public List<PaoPermission> getPermissions(LiteYukonUser user) {
-        return this.getPermissions(user.getUserID());
+        return getPermissions(user.getUserID());
     }
 
+    @Override
     public List<PaoPermission> getPermissionsForPao(LiteYukonUser user, YukonPao pao) {
-        return this.getPermissionsForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId());
+        return getPermissionsForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId());
     }
 
-    public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, YukonPao pao,
-            Permission permission) {
-        return this.hasPermissionForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
+    @Override
+    public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, YukonPao pao, Permission permission) {
+        return hasPermissionForPao(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
+    @Override
     public void addPermission(LiteYukonUser user, int paoId, Permission permission, boolean allow) {
-        this.addPermission(user.getUserID(), paoId, permission, allow);
+        addPermission(user.getUserID(), paoId, permission, allow);
     }
 
+    @Override
     public void removePermission(LiteYukonUser user, YukonPao pao, Permission permission) {
-        this.removePermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
+        removePermission(user.getUserID(), pao.getPaoIdentifier().getPaoId(), permission);
     }
 
+    @Override
     public void removeAllPermissions(LiteYukonUser it) {
-        this.removeAllPermissions(it.getUserID());
+        removeAllPermissions(it.getUserID());
     }
 
+    @Override
     public void removeAllPaoPermissions(int paoId) {
         String sql = "delete from UserPaoPermission where paoid = ?";
         jdbcTemplate.update(sql, new Object[] { paoId });
     }
 
+    @Override
     public void removeAllPermissions(int userId) {
         String sql = "delete from UserPaoPermission where userid = ?";
         jdbcTemplate.update(sql, new Object[] { userId });
     }
-    
+
+    @Override
     public void removeAllPermissions(LiteYukonUser it, Permission permission) {
         String sql = "delete from UserPaoPermission where userid = ? and permission = ?";
         jdbcTemplate.update(sql, new Object[] { it.getUserID(), permission.name() });
     }
 
+    @Override
     public List<Integer> getPaosForPermission(LiteYukonUser user, Permission permission) {
-        return this.getPaosForPermission(user.getUserID(), permission);
+        return getPaosForPermission(user.getUserID(), permission);
     }
 
     private List<Integer> getPaosForPermission(int userID, Permission permission) {
-
         String sql = "select paoid from userpaopermission where userid = ? and permission = ?";
 
-        List<Integer> paoIdList = jdbcTemplate.queryForList(sql, new Object[] { userID,
-                permission.name() }, Integer.class);
+        List<Integer> paoIdList =
+            jdbcTemplate.queryForList(sql, new Object[] { userID, permission.name() }, Integer.class);
         return paoIdList;
     }
 
+    @Override
     public List<Integer> getPaosForPermission(List<LiteYukonUser> itList, Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
+    @Override
     public List<PaoPermission> getPermissions(List<LiteYukonUser> it) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, YukonPao pao,
-            Permission permission) {
+    @Override
+    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, YukonPao pao, Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
+    @Override
     public AuthorizationResponse hasPermissionForPao(int userId, int paoId, Permission permission) {
-        String sql;
-        sql = "select allow from UserPaoPermission where userid = ? and paoid = ? " + "and permission = ?";
+        String sql = "select allow from UserPaoPermission where userid = ? and paoid = ? and permission = ?";
 
-        List<String> allowList = jdbcTemplate.queryForList(sql, new Object[] { userId, paoId,
-                permission.name() }, String.class);
-        
+        List<String> allowList =
+            jdbcTemplate.queryForList(sql, new Object[] { userId, paoId, permission.name() }, String.class);
+
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
         } else if (allowList.size() == 1) {
             if (allowList.get(0).equals(AllowDeny.ALLOW.name())) {
                 return AuthorizationResponse.AUTHORIZED;
-            } else {
-                return AuthorizationResponse.UNAUTHORIZED;
             }
+            return AuthorizationResponse.UNAUTHORIZED;
         } else {
             throw new IncorrectResultSizeDataAccessException(1, allowList.size());
         }
     }
-    
+
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-                                                                               final LiteYukonUser it, 
-                                                                               final Permission permission) {
-        
+        final LiteYukonUser it, final Permission permission) {
+
         final Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
 
         final Multimap<Integer, PaoIdentifier> paoLookup = ArrayListMultimap.create();
-        for(PaoIdentifier pao : paos) {
+        for (PaoIdentifier pao : paos) {
             int paoId = pao.getPaoId();
             paoLookup.put(paoId, pao);
         }
-        
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        
-        template.query(new SqlFragmentGenerator<Integer>() {
-            public SqlFragmentSource generate(List<Integer> subList) {
 
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+
+        template.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT allow, paoId ");
                 sql.append("FROM UserPaoPermission ");
@@ -160,72 +167,58 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
                 sql.append("    AND permission").eq(permission);
                 return sql;
             }
-        },
-        paoLookup.keySet(),
-        new PaoPermissionRowCallbackHandler(paoLookup, result));
+        }, paoLookup.keySet(), new PaoPermissionRowCallbackHandler(paoLookup, result));
 
         // Add any leftover paos to the unknown list - there was no row in the paopermission table
         // for these paos
         result.putAll(AuthorizationResponse.UNKNOWN, paoLookup.values());
-        
+
         return result;
-        
     }
-    
+
     @Override
     public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
-                                                                               List<LiteYukonUser> it,
-                                                                               Permission permission) {
+        List<LiteYukonUser> it, Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
     private List<PaoPermission> getPermissions(int userId) {
-
         String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ?";
-        List<? extends PaoPermission> uppList = jdbcTemplate.query(sql,
-                                                         new Object[] { userId },
-                                                         new UserPaoPermissionMapper());
+        List<? extends PaoPermission> uppList =
+            jdbcTemplate.query(sql, new Object[] { userId }, new UserPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(uppList);
         return result;
     }
 
     private List<PaoPermission> getPermissionsForPao(int userId, int paoId) {
-
         String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ? and paoid = ?";
-        List<? extends PaoPermission> uppList = jdbcTemplate.query(sql,
-                                                         new Object[] { userId, paoId },
-                                                         new UserPaoPermissionMapper());
+        List<? extends PaoPermission> uppList =
+            jdbcTemplate.query(sql, new Object[] { userId, paoId }, new UserPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(uppList);
         return result;
     }
 
     private void addPermission(int userId, int paoId, Permission permission, boolean allow) {
-
         int id = nextValueHelper.getNextValue("userpaopermission");
         AllowDeny allowDeny = allow ? AllowDeny.ALLOW : AllowDeny.DENY;
 
         String sql = "insert into UserPaoPermission values (?,?,?,?,?)";
         jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.name(), allowDeny.name() });
     }
-    
 
     private void removePermission(int userId, int paoId, Permission permission) {
-
-        String sql = "delete from UserPaoPermission where userid = ? and paoid = ? "
-                + "and permission = ?";
-        jdbcTemplate.update(sql, new Object[] { userId, paoId, permission.name() });  // use name here
-
+        String sql = "delete from UserPaoPermission where userid = ? and paoid = ? " + "and permission = ?";
+        jdbcTemplate.update(sql, new Object[] { userId, paoId, permission.name() }); // use name here
     }
 
     /**
      * Mapping class to process a result set row into a UserPaoPermission
      */
     private class UserPaoPermissionMapper implements ParameterizedRowMapper<UserPaoPermission> {
-
+        @Override
         public UserPaoPermission mapRow(ResultSet rs, int rowNum) throws SQLException {
-
             UserPaoPermission upp = new UserPaoPermission();
             upp.setId(rs.getInt("userPaoPermissionId"));
             upp.setUserId(rs.getInt("userId"));
@@ -238,5 +231,4 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
             return upp;
         }
     }
-
 }
