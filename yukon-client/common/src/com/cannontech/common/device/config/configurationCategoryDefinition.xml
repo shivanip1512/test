@@ -120,7 +120,9 @@
         <boolean field="localTime" default="false"/>
         <boolean field="enableDnpTimesyncs" default="false"/>
         <boolean field="omitTimeRequest" default="false"/>
-        <boolean field="enableUnsolicitedMessages" default="true"/>
+        <boolean field="enableUnsolicitedMessagesClass1" default="true"/>
+        <boolean field="enableUnsolicitedMessagesClass2" default="true"/>
+        <boolean field="enableUnsolicitedMessagesClass3" default="true"/>
     </category>
 
     <category type="demandProfile">

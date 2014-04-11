@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     CtiXfer xfer;
 
-    dnp.setConfigData( 2, false, false, false, false );
+    dnp.setConfigData( 2, false, false, false, false, false, false );
 
     {
         BOOST_CHECK_EQUAL(0, dnp.generate(xfer));

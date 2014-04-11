@@ -81,7 +81,8 @@ bool DNPInterface::setCommand( Command command, output_point &point )
 }
 
 void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
-                                  bool omitTimeRequest, bool enableUnsolicited )
+                                  bool omitTimeRequest, bool enableUnsolicitedClass1,
+                                  bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 )
 {
     _config.reset(
        new DNP::config_data(
@@ -89,7 +90,9 @@ void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, b
           useLocalTime,
           enableDnpTimesyncs,
           omitTimeRequest,
-          enableUnsolicited));
+          enableUnsolicitedClass1,
+          enableUnsolicitedClass2,
+          enableUnsolicitedClass3));
 
     _app_layer.setConfigData(_config.get());
 }
@@ -152,9 +155,18 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited);
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                if ( _config->enableUnsolicitedClass1 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                }
+                if ( _config->enableUnsolicitedClass2 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                }
+                if ( _config->enableUnsolicitedClass3 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                }
 
                 break;
             }
@@ -162,9 +174,18 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited);
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                if ( _config->enableUnsolicitedClass1 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                }
+                if ( _config->enableUnsolicitedClass2 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                }
+                if ( _config->enableUnsolicitedClass3 )
+                {
+                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                }
 
                 break;
             }
@@ -675,7 +696,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     setCommand(Command_ResetDeviceRestartBit);
                 }
 
-                if( _config->enableUnsolicited )
+                if( _config->isAnyUnsolicitedEnabled() )
                 {
                     Command_deq_itr itr = std::find(_additional_commands.begin(),
                                                     _additional_commands.end(),

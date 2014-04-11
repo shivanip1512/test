@@ -99,7 +99,8 @@ public:
     bool setCommand( Command command, output_point &point );
 
     void setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
-                        bool omitTimeRequest, bool enableUnsolicited );
+                        bool omitTimeRequest, bool enableUnsolicitedClass1,
+                        bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 );
 
     void setInternalRetries( unsigned retries ) const;
 

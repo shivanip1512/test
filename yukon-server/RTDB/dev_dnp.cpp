@@ -758,9 +758,12 @@ void DnpDevice::loadConfigData()
     const bool useLocalTime = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::useLocalTime));
     const bool enableDnpTimesyncs = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableDnpTimesyncs));
     const bool omitTimeRequest = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest));
-    const bool enableUnsolicited = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicited));
+    const bool enableUnsolicitedClass1 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass1));
+    const bool enableUnsolicitedClass2 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass2));
+    const bool enableUnsolicitedClass3 = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicitedClass3));
 
-    _dnp.setConfigData(internalRetries, useLocalTime, enableDnpTimesyncs, omitTimeRequest, enableUnsolicited);
+    _dnp.setConfigData(internalRetries, useLocalTime, enableDnpTimesyncs, omitTimeRequest,
+                       enableUnsolicitedClass1, enableUnsolicitedClass2, enableUnsolicitedClass3);
 }
 
 bool DnpDevice::isConfigurationValueTrue(const std::string &configKey) const
